@@ -61,7 +61,6 @@
      [accordion/section {:title   name
                          :icon    [chat-icon.screen/contact-icon-contacts-tab
                                    (multiaccounts/displayed-photo multiaccount)]
-                         :count   0
                          :content [accordion-content]}]
      [react/view {:flex            1
                   :flex-direction  :column

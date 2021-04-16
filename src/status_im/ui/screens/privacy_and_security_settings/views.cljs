@@ -5,6 +5,7 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
+            [status-im.utils.config :as config]
             [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.ui.components.topbar :as topbar]
             [status-im.utils.platform :as platform])
@@ -65,30 +66,36 @@
                       :on-press                #(re-frame/dispatch
                                                  [:multiaccounts.ui/preview-privacy-mode-switched
                                                   ((complement boolean) preview-privacy?)])}]
-      [quo/list-item {:size                    :small
-                      :title                   (i18n/label :t/chat-link-previews)
-                      :chevron                 true
-                      :on-press                #(re-frame/dispatch [:navigate-to :link-previews-settings])
-                      :accessibility-label    :chat-link-previews}]
-      [quo/list-item {:size                    :small
-                      :title                   (i18n/label :t/accept-new-chats-from)
-                      :chevron                 true
-                      :accessory               :text
-                      :accessory-text           (i18n/label (if messages-from-contacts-only
-                                                              :t/contacts
-                                                              :t/anyone))
-                      :on-press                #(re-frame/dispatch [:navigate-to :messages-from-contacts-only])
-                      :accessibility-label    :accept-new-chats-from}]
+      [quo/list-item {:size                :small
+                      :title               (i18n/label :t/chat-link-previews)
+                      :chevron             true
+                      :on-press            #(re-frame/dispatch [:navigate-to :link-previews-settings])
+                      :accessibility-label :chat-link-previews}]
+      [quo/list-item {:size                :small
+                      :title               (i18n/label :t/accept-new-chats-from)
+                      :chevron             true
+                      :accessory           :text
+                      :accessory-text      (i18n/label (if messages-from-contacts-only
+                                                         :t/contacts
+                                                         :t/anyone))
+                      :on-press            #(re-frame/dispatch [:navigate-to :messages-from-contacts-only])
+                      :accessibility-label :accept-new-chats-from}]
+      (when config/metrics-enabled?
+        [quo/list-item {:size                :small
+                        :title               (i18n/label :t/anonymous-usage-data)
+                        :chevron             true
+                        :on-press            #(re-frame/dispatch [:navigate-to :anonymous-metrics-settings])
+                        :accessibility-label :anonymous-usage-data}])
       (when platform/android?
-        [quo/list-item {:size                    :small
-                        :title                   (i18n/label :t/webview-camera-permission-requests)
-                        :active                  webview-allow-permission-requests?
-                        :accessory               :switch
-                        :subtitle                (i18n/label :t/webview-camera-permission-requests-subtitle)
-                        :subtitle-max-lines      2
-                        :on-press                #(re-frame/dispatch
-                                                   [:multiaccounts.ui/webview-permission-requests-switched
-                                                    ((complement boolean) webview-allow-permission-requests?)])}])
+        [quo/list-item {:size               :small
+                        :title              (i18n/label :t/webview-camera-permission-requests)
+                        :active             webview-allow-permission-requests?
+                        :accessory          :switch
+                        :subtitle           (i18n/label :t/webview-camera-permission-requests-subtitle)
+                        :subtitle-max-lines 2
+                        :on-press           #(re-frame/dispatch
+                                              [:multiaccounts.ui/webview-permission-requests-switched
+                                               ((complement boolean) webview-allow-permission-requests?)])}])
       [separator]
       [quo/list-item
        {:size                :small

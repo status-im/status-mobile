@@ -48,6 +48,7 @@
 (def communities-enabled? (enabled? (get-config :COMMUNITIES_ENABLED "0")))
 (def database-management-enabled? (enabled? (get-config :DATABASE_MANAGEMENT_ENABLED "0")))
 (def debug-webview? (enabled? (get-config :DEBUG_WEBVIEW "0")))
+(def metrics-enabled? (enabled? (get-config :METRICS_ENABLED "0")))
 
 ;; CONFIG VALUES
 (def log-level
@@ -80,6 +81,7 @@
    :profile-pictures-visibility 1
    :log-level log-level
    :webview-allow-permission-requests? false
+   :anon-metrics/should-send? false
    :link-previews-enabled-sites #{}
    :link-preview-request-enabled true})
 

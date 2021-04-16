@@ -105,7 +105,7 @@
   [rn/view {:style (styles/invite-instructions)}
    [rn/view {:style (styles/invite-instructions-title)}
     [quo/text {:color :secondary}
-     (i18n/label :t/invite-instruction)]]
+     (i18n/label :t/how-it-works)]]
    [rn/view {:style (styles/invite-warning)}
     [quo/text (i18n/label :t/invite-warning)]]
    [rn/view {:style (styles/invite-instructions-content)}

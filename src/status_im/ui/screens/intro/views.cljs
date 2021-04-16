@@ -24,8 +24,8 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview intro []
-  (letsubs  [{window-height :height} [:dimensions/window]
-             view-id [:view-id]]
+  (letsubs [{window-height :height} [:dimensions/window]
+            view-id [:view-id]]
     [react/view {:style styles/intro-view}
      [carousel/viewer [{:image (resources/get-theme-image :chat)
                         :title :intro-title1

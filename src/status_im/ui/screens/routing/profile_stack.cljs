@@ -15,6 +15,7 @@
              offline-messaging-settings]
             [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
             [status-im.ui.screens.link-previews-settings.views :as link-previews-settings]
+            [status-im.ui.screens.anonymous-metrics-settings.views :as anonymous-metrics-settings]
             [status-im.ui.screens.privacy-and-security-settings.views :as privacy-and-security]
             [status-im.ui.screens.privacy-and-security-settings.messages-from-contacts-only :as messages-from-contacts-only]
             [status-im.ui.screens.sync-settings.views :as sync-settings]
@@ -84,6 +85,8 @@
      :component dapps-permissions/dapps-permissions}
     {:name      :link-previews-settings
      :component link-previews-settings/link-previews-settings}
+    {:name      :anonymous-metrics-settings
+     :component anonymous-metrics-settings/settings}
     {:name      :privacy-and-security
      :component privacy-and-security/privacy-and-security}
     {:name      :messages-from-contacts-only

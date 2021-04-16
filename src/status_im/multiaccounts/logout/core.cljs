@@ -13,15 +13,17 @@
 
 (fx/defn logout-method
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
-  (let [key-uid (get-in db [:multiaccount :key-uid])]
+  (let [key-uid              (get-in db [:multiaccount :key-uid])
+        should-send-metrics? (get-in db [:multiaccount :anon-metrics/should-send?])]
     (fx/merge cofx
               {::logout                              nil
                ::multiaccounts/webview-debug-changed false
-               ::disable-local-notifications          nil
+               ::disable-local-notifications         nil
                :keychain/clear-user-password         key-uid
                ::init/open-multiaccounts             #(re-frame/dispatch [::init/initialize-multiaccounts % {:logout? logout?}])}
               (notifications/logout-disable)
-              (anon-metrics/stop-transferring)
+              (when should-send-metrics?
+                (anon-metrics/stop-transferring))
               (keychain/save-auth-method key-uid auth-method)
               (transport/stop-whisper)
               (wallet/clear-timeouts)

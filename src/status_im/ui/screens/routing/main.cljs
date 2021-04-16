@@ -6,6 +6,7 @@
             [status-im.ui.screens.stickers.views :as stickers]
             [status-im.ui.screens.home.views :as home]
             [status-im.ui.screens.add-new.new-chat.views :as new-chat]
+            [status-im.ui.screens.anonymous-metrics-settings.views :as anon-metrics-settings]
             [status-im.add-new.core :as new-chat.events]
             [status-im.ui.screens.routing.intro-login-stack :as intro-login-stack]
             [status-im.ui.screens.routing.chat-stack :as chat-stack]
@@ -80,6 +81,9 @@
        {:name         :welcome
         :back-handler :noop
         :component    home/welcome}
+       {:name         :anon-metrics-opt-in
+        :back-handler :noop
+        :component    anon-metrics-settings/new-account-opt-in}
        {:name       :new-chat
         :on-focus   [::new-chat.events/new-chat-focus]
         :transition :presentation-ios
@@ -171,7 +175,13 @@
         :component  wallet.buy-crypto/website}
        {:name      :invite-people-community
         :component communities.invite/invite
-        :insets     {:bottom true}}]
+        :insets     {:bottom true}}
+       {:name :anon-metrics-learn-more
+        :transition :presentation-ios
+        :component anon-metrics-settings/learn-more}
+       {:name :anon-metrics-view-data
+        :transition :presentation-ios
+        :component anon-metrics-settings/view-data}]
 
       (when config/quo-preview-enabled?
         [{:name      :quo-preview

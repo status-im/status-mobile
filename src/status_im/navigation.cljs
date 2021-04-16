@@ -47,7 +47,7 @@
    ::anon-metrics/transform-and-log {:coeffects {:event [:navigate-to go-to-view-id screen-params]}}})
 
 (fx/defn navigate-to
-  {:events       [:navigate-to]}
+  {:events [:navigate-to]}
   [cofx go-to-view-id screen-params]
   (navigate-to-cofx cofx go-to-view-id screen-params))
 

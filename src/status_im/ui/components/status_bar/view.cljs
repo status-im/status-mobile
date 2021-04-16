@@ -3,11 +3,15 @@
             [status-im.ui.components.status-bar.styles :as styles]
             [status-im.utils.platform :as platform]))
 
-(def route->bar-type (merge {:qr-scanner {:type :black}
+(def route->bar-type (merge {:qr-scanner    {:type :black}
                              :image-preview {:type :black}}
                             (when platform/ios?
-                              {:new-chat        {:type :black}
-                               :new-public-chat {:type :black}})))
+                              {:new-chat                {:type :black}
+                               :contact-toggle-list     {:type :black}
+                               :new-group               {:type :black}
+                               :anon-metrics-view-data  {:type :black}
+                               :anon-metrics-learn-more {:type :black}
+                               :new-public-chat         {:type :black}})))
 
 ;; TODO: Integrate into navigation
 (defn get-config [view-id]

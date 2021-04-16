@@ -220,6 +220,15 @@
 (reg-root-key-sub :activity.center/notifications :activity.center/notifications)
 (reg-root-key-sub :activity.center/notifications-count :activity.center/notifications-count)
 
+;; anon. metrics
+(reg-root-key-sub :anon-metrics/opt-in-screen-displayed? :anon-metrics/opt-in-screen-displayed?)
+(reg-root-key-sub :anon-metrics/show-thank-you? :anon-metrics/show-thank-you?)
+(reg-root-key-sub :anon-metrics/events :anon-metrics/events)
+(reg-root-key-sub :anon-metrics/total-count :anon-metrics/total-count)
+(reg-root-key-sub :anon-metrics/fetching? :anon-metrics/fetching?)
+(reg-root-key-sub :anon-metrics/data-visible? :anon-metrics/data-visible?)
+(reg-root-key-sub :anon-metrics/learn-more-visible? :anon-metrics/learn-more-visible?)
+
 (re-frame/reg-sub
  :communities
  :<- [:raw-communities]

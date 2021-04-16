@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
+            [status-im.anon-metrics.core :as anon-metrics]
             [status-im.native-module.core :as status]
             [status-im.network.net-info :as network]
             [status-im.db :refer [app-db]]
@@ -53,7 +54,8 @@
                                    (assoc :multiaccounts/loading false))
                ;; NOTE: Try to dispatch later navigation because of that https://github.com/react-navigation/react-navigation/issues/6879
                :dispatch-later [{:dispatch [::initialize-view {:logout? logout?}]
-                                 :ms       100}]})))
+                                 :ms       100}]
+               :dispatch [::anon-metrics/fetch-opt-in-screen-displayed?]})))
 
 (fx/defn start-app
   {:events [:init/app-started]}
