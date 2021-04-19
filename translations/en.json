@@ -1509,6 +1509,10 @@
     "rpc-usage-copy": "Copy",
     "community-message-preview": "Invitation to join {{community-name}}",
     "non-contacts": "Non contacts",
+    "community": "Community",
+    "verified-community": "✓ Verified community",
+    "community-info-not-found": "Community information not found",
+    "not-found": "Not found",
     "activity": "Activity",
     "reject-and-delete": "Reject and delete",
     "accept-and-add": "Accept and add"

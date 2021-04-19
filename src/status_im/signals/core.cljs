@@ -8,6 +8,7 @@
             [status-im.transport.message.core :as transport.message]
             [status-im.notifications.local :as local-notifications]
             [status-im.chat.models.message :as models.message]
+            [status-im.chat.models.link-preview :as link.preview]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
@@ -69,4 +70,5 @@
       "messages.new" (transport.message/sanitize-messages-and-process-response cofx event-js true)
       "wallet" (ethereum.subscriptions/new-wallet-event cofx (js->clj event-js :keywordize-keys true))
       "local-notifications" (local-notifications/process cofx (js->clj event-js :keywordize-keys true))
+      "community.found" (link.preview/cache-community-preview-data (js->clj event-js :keywordize-keys true))
       (log/debug "Event " type " not handled"))))

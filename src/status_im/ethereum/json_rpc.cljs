@@ -84,6 +84,7 @@
    "wakuext_emojiReactionsByChatID" {}
    "wakuext_getLinkPreviewWhitelist" {}
    "wakuext_getLinkPreviewData" {}
+   "wakuext_requestCommunityInfoFromMailserver" {}
    ;;TODO not used anywhere?
    "wakuext_deleteChat" {}
    "wakuext_saveContact" {}

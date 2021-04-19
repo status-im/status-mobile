@@ -27,6 +27,7 @@
 (def links {:public-chat        "%s/%s"
             :private-chat       "%s/p/%s"
             :community-requests "%s/cr/%s"
+            :community          "%s/c/%s"
             :group-chat         "%s/g/%s"
             :user               "%s/u/%s"
             :browse             "%s/b/%s"})
@@ -63,6 +64,10 @@
 (fx/defn handle-community-requests [cofx {:keys [community-id]}]
   (log/info "universal-links: handling community request  " community-id)
   (navigation/navigate-to-cofx cofx :community-requests-to-join {:community-id community-id}))
+
+(fx/defn handle-community [cofx {:keys [community-id]}]
+  (log/info "universal-links: handling community" community-id)
+  (navigation/navigate-to-cofx cofx :community {:community-id community-id}))
 
 (fx/defn handle-public-chat [cofx {:keys [topic]}]
   (log/info "universal-links: handling public chat" topic)
@@ -122,6 +127,7 @@
     :public-chat        (handle-public-chat cofx data)
     :private-chat       (handle-private-chat cofx data)
     :community-requests (handle-community-requests cofx data)
+    :community          (handle-community cofx data)
     :contact            (handle-view-profile cofx data)
     :browser            (handle-browse cofx data)
     :eip681             (handle-eip681 cofx data)

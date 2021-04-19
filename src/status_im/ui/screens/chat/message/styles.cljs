@@ -103,6 +103,9 @@
    :height 94
    :align-self :center})
 
+(def community-preview-header
+  {:margin 8 :margin-left 12})
+
 (defn link-preview-wrapper [outgoing timeline]
   {:overflow                   :hidden
    :border-top-left-radius     16

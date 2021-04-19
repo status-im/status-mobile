@@ -27,16 +27,23 @@
                #{})
              {})))
 
+(fx/defn resolve-community-info
+  {:events [::resolve-community-info]}
+  [cofx community-id]
+  {::json-rpc/call [{:method     (json-rpc/call-ext-method "requestCommunityInfoFromMailserver")
+                     :params     [community-id]
+                     :on-success #()
+                     :on-error   #(log/error "Failed to request community info from mailserver")}]})
+
 (fx/defn load-link-preview-data
   {:events [::load-link-preview-data]}
   [cofx link]
-  (fx/merge cofx
-            {::json-rpc/call [{:method     (json-rpc/call-ext-method "getLinkPreviewData")
-                               :params     [link]
-                               :on-success #(re-frame/dispatch [::cache-link-preview-data link %])
-                               :on-error   #(re-frame/dispatch [::cache-link-preview-data
-                                                                link
-                                                                {:error (str  "Can't get preview data for " link)}])}]}))
+  {::json-rpc/call [{:method     (json-rpc/call-ext-method "getLinkPreviewData")
+                     :params     [link]
+                     :on-success #(re-frame/dispatch [::cache-link-preview-data link %])
+                     :on-error   #(re-frame/dispatch [::cache-link-preview-data
+                                                      link
+                                                      {:error (str  "Can't get preview data for " link)}])}]})
 
 (fx/defn cache-link-preview-data
   {:events [::cache-link-preview-data]}
@@ -45,6 +52,15 @@
    cofx
    :link-previews-cache
    (assoc (get multiaccount :link-previews-cache {}) site data)))
+
+(defn community-link [id]
+  (str "https://join.status.im/c/" id))
+
+(defn cache-community-preview-data
+  [{:keys [id] :as community}]
+  (re-frame/dispatch [::cache-link-preview-data
+                      (community-link id)
+                      community]))
 
 (fx/defn should-suggest-link-preview
   {:events [::should-suggest-link-preview]}

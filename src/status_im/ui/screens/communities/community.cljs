@@ -117,11 +117,11 @@
          :icon                :main-icons/objects
          :on-press            #(hide-sheet-and-dispatch [::communities/export-pressed id])}])]))
 
-(defn welcome-blank-page []
+(defn blank-page [text]
   [rn/view {:style {:padding 16 :flex 1 :flex-direction :row :align-items :center :justify-content :center}}
    [quo/text {:align :center
               :color :secondary}
-    (i18n/label :t/welcome-community-blank-message)]])
+    text]])
 
 (defn community-chat-item [{:keys [chat-id] :as home-item}]
   [inner-item/home-list-item
@@ -136,7 +136,7 @@
 
 (defn community-chat-list [chats]
   (if (empty? chats)
-    [welcome-blank-page]
+    [blank-page (i18n/label :t/welcome-community-blank-message)]
     [list/flat-list
      {:key-fn                       :chat-id
       :content-container-style      {:padding-vertical 8}
@@ -188,59 +188,66 @@
       :data                         chats
       :render-fn                    channel-preview-item}]))
 
+(defn unknown-community []
+  [rn/view {:style {:flex 1}}
+   [topbar/topbar {:title  (i18n/label :t/not-found)}]
+   [blank-page (i18n/label :t/community-info-not-found)]])
+
 (defn community [route]
   (let [{:keys [community-id]} (get-in route [:route :params])
         {:keys [id chats name images members permissions color joined can-request-access?
                 can-join? requested-to-join-at admin]
          :as   community}      (<sub [:communities/community community-id])]
-    [rn/view {:style {:flex 1}}
-     [topbar/topbar
-      {:content
-       [toolbar-content
-        id
-        name
-        color
-        images
-        (not= (:access permissions) constants/community-no-membership-access)
-        (count members)]
-       :right-accessories
-       (when (or admin joined)
-         [{:icon                :main-icons/more
-           :accessibility-label :community-menu-button
-           :on-press #(>evt [:bottom-sheet/show-sheet
+    (if community
+      [rn/view {:style {:flex 1}}
+       [topbar/topbar
+        {:content
+         [toolbar-content
+          id
+          name
+          color
+          images
+          (not= (:access permissions) constants/community-no-membership-access)
+          (count members)]
+         :right-accessories
+         (when (or admin joined)
+           [{:icon                :main-icons/more
+             :accessibility-label :community-menu-button
+             :on-press #(>evt [:bottom-sheet/show-sheet
+                               {:content (fn []
+                                           [community-actions community])}])}])}]
+       (if joined
+         [community-channel-list id]
+         [community-channel-preview-list id chats])
+       (when admin
+         [components.plus-button/plus-button
+          {:on-press #(>evt [:bottom-sheet/show-sheet
                              {:content (fn []
-                                         [community-actions community])}])}])}]
-     (if joined
-       [community-channel-list id]
-       [community-channel-preview-list id chats])
-     (when admin
-       [components.plus-button/plus-button
-        {:on-press #(>evt [:bottom-sheet/show-sheet
-                           {:content (fn []
-                                       [community-plus-actions community])}])
-         :accessibility-label :new-chat-button}])
-     (when-not joined
-       (cond
-         can-join?
-         [toolbar/toolbar
-          {:show-border? true
-           :center       [quo/button {:on-press #(>evt [::communities/join id])
-                                      :type     :secondary}
-                          (i18n/label :t/join)]}]
-         can-request-access?
-         (if (and (pos? requested-to-join-at)
-                  (not (can-request-access-again? requested-to-join-at)))
+                                         [community-plus-actions community])}])
+           :accessibility-label :new-chat-button}])
+       (when-not joined
+         (cond
+           can-join?
            [toolbar/toolbar
             {:show-border? true
-             :left       [quo/text {:color :secondary} (i18n/label :t/membership-request-pending)]}]
-           [toolbar/toolbar
-            {:show-border? true
-             :center       [quo/button {:on-press #(>evt [::communities/request-to-join id])
+             :center       [quo/button {:on-press #(>evt [::communities/join id])
                                         :type     :secondary}
-                            (i18n/label :t/request-access)]}])
-         :else
-         [toolbar/toolbar
-          {:show-border? true
-           :center       [quo/button {:on-press #(>evt [::communities/join id])
-                                      :type     :secondary}
-                          (i18n/label :t/follow)]}]))]))
+                            (i18n/label :t/join)]}]
+           can-request-access?
+           (if (and (pos? requested-to-join-at)
+                    (not (can-request-access-again? requested-to-join-at)))
+             [toolbar/toolbar
+              {:show-border? true
+               :left       [quo/text {:color :secondary} (i18n/label :t/membership-request-pending)]}]
+             [toolbar/toolbar
+              {:show-border? true
+               :center       [quo/button {:on-press #(>evt [::communities/request-to-join id])
+                                          :type     :secondary}
+                              (i18n/label :t/request-access)]}])
+           :else
+           [toolbar/toolbar
+            {:show-border? true
+             :center       [quo/button {:on-press #(>evt [::communities/join id])
+                                        :type     :secondary}
+                            (i18n/label :t/follow)]}]))]
+      [unknown-community])))

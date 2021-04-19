@@ -7,7 +7,9 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.chat.message.styles :as styles]
             [status-im.react-native.resources :as resources]
-            [status-im.chat.models.link-preview :as link-preview])
+            [status-im.chat.models.link-preview :as link-preview]
+            [status-im.ui.screens.communities.icon :as communities.icon]
+            [status-im.constants :as constants])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn link-belongs-to-domain [link domain]
@@ -16,16 +18,25 @@
     (string/starts-with? link (str "https://www." domain)) true
     :else false))
 
+(defn community-id-from-link [link]
+  (nth (re-find constants/regx-community-universal-link link) 4))
+
 (defn domain-info-if-whitelisted [link whitelist]
   (first (filter
           #(link-belongs-to-domain link (:address %))
           whitelist)))
 
 (defn link-extended-info [link whitelist enabled-list]
-  (let [domain-info (domain-info-if-whitelisted link whitelist)]
-    {:whitelisted (not (nil? domain-info))
-     :enabled (contains? enabled-list (:title domain-info))
-     :link link}))
+  (let [domain-info (domain-info-if-whitelisted link whitelist)
+        community-id (community-id-from-link link)]
+    (if-not community-id
+      {:whitelisted (not (nil? domain-info))
+       :enabled (contains? enabled-list (:title domain-info))
+       :link link}
+      {:whitelisted true
+       :enabled true
+       :link link
+       :community true})))
 
 (defn previewable-link [links whitelist enabled-list]
   (->> links
@@ -88,6 +99,45 @@
                           :style styles/link-preview-site}
                 site]])]])))))
 
+(defview community-preview [community outgoing timeline]
+  (let [{:keys [name members description verified]} community
+        members-count (count members)]
+    [react/view (styles/link-preview-wrapper outgoing timeline)
+     (if verified [quo/text {:size :small
+                             :color :link
+                             :style styles/community-preview-header}
+                   (i18n/label :t/verified-community)]
+         [quo/text {:size :small
+                    :color :secondary
+                    :style styles/community-preview-header}
+          (i18n/label :t/community)])
+     [quo/separator]
+     [react/view {:flex-direction :row :align-self :flex-start :margin 12}
+      [communities.icon/community-icon community]
+      [react/view {:flex 1 :flex-direction :column :margin-left 12}
+       [quo/text {:weight :bold :size :large} name]
+       [quo/text description]
+       [quo/text {:size :small
+                  :color :secondary}
+        (i18n/label-pluralize members-count :t/community-members {:count members-count})]]]
+     [quo/separator]
+     [quo/button {:on-press #(re-frame/dispatch [:navigate-to
+                                                 :community
+                                                 {:community-id (:id community)}])
+                  :type     :secondary}
+      (i18n/label :t/view)]]))
+
+(defview community-preview-loader [community-link outgoing timeline]
+  (letsubs [cache [:link-preview/cache]]
+    {:component-did-mount (fn []
+                            (let [community (get cache community-link)
+                                  community-id (community-id-from-link community-link)]
+                              (when-not community
+                                (re-frame/dispatch
+                                 [::link-preview/resolve-community-info community-id]))))}
+    (when-let [community (get cache community-link)]
+      [community-preview community outgoing timeline])))
+
 (defview link-preview-wrapper [links outgoing timeline]
   (letsubs
     [ask-user? [:link-preview/link-preview-request-enabled]
@@ -95,9 +145,9 @@
      enabled-sites   [:link-preview/enabled-sites]]
     (when links
       (let [link-info (previewable-link links whitelist enabled-sites)
-            {:keys [link whitelisted enabled]} link-info]
-        (when (and link whitelisted)
-          (if enabled
-            [link-preview-loader link outgoing timeline]
-            (when ask-user?
-              [link-preview-enable-request])))))))
+            {:keys [link whitelisted enabled community]} link-info
+            link-whitelisted (and link whitelisted)]
+        (cond
+          community [community-preview-loader link outgoing timeline]
+          (and link-whitelisted enabled) [link-preview-loader link outgoing timeline]
+          (and link-whitelisted ask-user?) [link-preview-enable-request])))))
