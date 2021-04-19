@@ -109,6 +109,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         devices_chat[0].add_members_to_group_chat([devices_username[2]])
         devices_home[2].toggle_airplane_mode()
         devices_home[2].connection_offline_icon.wait_for_invisibility_of_element(60)
+
         if not devices_home[2].get_chat(chat_name).is_element_displayed():
             self.drivers[0].fail('Invite to group chat was not fetched from offline')
         devices_chat[2] = devices_home[2].get_chat(chat_name).click()

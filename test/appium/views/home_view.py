@@ -77,6 +77,10 @@ class HomeView(BaseView):
         self.invite_friends_button = Button(self.driver, accessibility_id="invite-friends-button")
         self.stop_status_service_button = Button(self.driver, accessibility_id="STOP")
 
+        # Notification centre
+        self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
+        self.notifications_unread_badge = Button(self.driver, accessibility_id="notifications-unread-badge")
+
         # Options on long tap
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")
         self.delete_chat_button = Button(self.driver, accessibility_id="delete-chat-button")
@@ -113,7 +117,18 @@ class HomeView(BaseView):
 
     def get_chat(self, username):
         self.driver.info("**Looking for chat '%s'**" % username)
-        return ChatElement(self.driver, username[:25])
+        chat_element = ChatElement(self.driver, username[:25])
+        if not chat_element.is_element_displayed():
+            self.notifications_unread_badge.wait_and_click(30)
+            chat_element.wait_for_element(20)
+            chat_element.click()
+            self.home_button.double_click()
+        return chat_element
+
+    def get_chat_from_home_view(self, username):
+        self.driver.info("**Looking for chat '%s'**" % username)
+        chat_element = ChatElement(self.driver, username[:25])
+        return chat_element
 
     def get_username_below_start_new_chat_button(self, username_part):
         return Text(self.driver, xpath="//*[@content-desc='enter-contact-code-input']/../..//*[starts-with(@text,'%s')]" % username_part)

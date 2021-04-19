@@ -33,7 +33,7 @@ class TestChatManagement(SingleDeviceTestCase):
             i+=1
         home.relogin()
         for chat_name in one_to_one, public, group:
-            if home.get_chat(chat_name).is_element_displayed():
+            if home.get_chat_from_home_view(chat_name).is_element_displayed():
                 self.driver.fail('Deleted %s is present after relaunch app' % chat_name)
 
     @marks.testrail_id(5387)
@@ -65,13 +65,13 @@ class TestChatManagement(SingleDeviceTestCase):
             i+=1
             chat.get_back_to_home_view()
         for chat_name in one_to_one, public, group:
-            if home.get_chat(chat_name).is_element_displayed():
+            if home.get_chat_from_home_view(chat_name).is_element_displayed():
                 self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % chat_name)
         self.driver.close_app()
         self.driver.launch_app()
         sign_in.sign_in()
         for chat_name in one_to_one, public, group:
-            if home.get_chat(chat_name).is_element_displayed():
+            if home.get_chat_from_home_view(chat_name).is_element_displayed():
                 self.errors.append('Deleted %s is shown after re-login, but the chat has been deleted' % chat_name)
 
         # TODO: blocked due to #11683 - enable after fix
@@ -707,7 +707,10 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_1.block_contact()
 
         device_1.just_fyi('no 1-1, messages from blocked user are hidden in public chat')
-        if home_1.get_chat(basic_user['username']).is_element_displayed():
+        from views.home_view import ChatElement
+        blocked_chat_user = ChatElement(self.drivers[0], basic_user['username'])
+
+        if blocked_chat_user.is_element_displayed():
             home_1.driver.fail("Chat with blocked user '%s' is not deleted" % device_2.driver.number)
         public_chat_after_block_1 = home_1.join_public_chat(chat_name)
         if public_chat_after_block_1.chat_element_by_text(message_before_block_2).is_element_displayed():
@@ -723,10 +726,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_2.get_back_to_home_view()
         home_2.join_public_chat(chat_name)
         chat_public_2 = home_2.get_chat_view()
+        [chat_public_2.send_message(message_after_block_2) for _ in range(2)]
 
-        for _ in range(2):
-            chat_public_2.chat_message_input.send_keys(message_after_block_2)
-            chat_public_2.send_message_button.click()
 
         device_1.just_fyi("check that new messages and push notifications don't arrive from blocked user")
         device_1.open_notification_bar()
@@ -737,8 +738,10 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         if public_chat_after_block_1.chat_element_by_text(message_after_block_2).is_element_displayed():
             self.errors.append("Message from blocked user '%s' is received" % device_2.driver.number)
         public_chat_after_block_1.get_back_to_home_view()
-        if home_1.get_chat(basic_user['username']).is_element_displayed():
-            device_2.driver.fail("Chat with blocked user is reappeared after receiving new messages")
+        if home_1.notifications_unread_badge.is_element_displayed():
+            device_1.driver.fail("Unread badge is shown after receiving new message from blocked user")
+        if blocked_chat_user.is_element_displayed():
+            device_2.driver.fail("Chat with blocked user is reappeared after receiving new messages in home view")
         device_1.open_notification_bar()
         home_1.stop_status_service_button.click()
 
@@ -756,7 +759,9 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.click_system_home_button()
         self.drivers[0].launch_app()
         device_1.sign_in()
-        if home_1.get_chat(basic_user['username']).is_element_displayed():
+        if home_1.notifications_unread_badge.is_element_displayed():
+            device_1.driver.fail("Unread badge is shown after after fetching new messages from offline")
+        if blocked_chat_user.is_element_displayed():
             self.errors.append("Chat with blocked user is reappeared after fetching new messages from offline")
         home_1.join_public_chat(chat_name)
         home_1.get_chat_view()

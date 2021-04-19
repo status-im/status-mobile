@@ -460,14 +460,16 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_2_chat = device_2_home.add_contact(device_1_public_key)
 
-        message = 'test message'
-        device_2_chat.chat_message_input.send_keys(message)
-        device_2_chat.send_message_button.click()
+        message, message_2= 'test message', 'test message2'
+        device_2_chat.send_message(message)
+        chat_element = device_1_home.get_chat(default_username_2)
+        device_1.dapp_tab_button.click()
+        device_2_chat.send_message(message_2)
+
 
         if device_1_home.home_button.counter.text != '1':
             self.errors.append('New messages counter is not shown on Home button')
-
-        chat_element = device_1_home.get_chat(default_username_2)
+        device_1.home_button.click()
         if chat_element.new_messages_counter.text != '1':
             self.errors.append('New messages counter is not shown on chat element')
 

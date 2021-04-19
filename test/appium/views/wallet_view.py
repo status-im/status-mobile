@@ -97,8 +97,8 @@ class WalletView(BaseView):
         self.manage_assets_button = Button(self.driver, accessibility_id="wallet-manage-assets")
         self.scan_tokens_button = Button(self.driver, accessibility_id="wallet-scan-token")
         self.stt_check_box = Button(self.driver, xpath="//*[@text='STT']/../android.view.ViewGroup[@content-desc='checkbox']")
-        self.all_assets_full_names = Text(self.driver, xpath="//*[@content-desc='checkbox']/../../android.widget.TextView[1]")
-        self.all_assets_symbols = Button(self.driver, xpath="//*[@content-desc='checkbox']/../../android.widget.TextView[2]")
+        self.all_assets_full_names = Text(self.driver, xpath="//*[@content-desc='checkbox']/../android.widget.TextView[1]")
+        self.all_assets_symbols = Button(self.driver, xpath="//*[@content-desc='checkbox']/../android.widget.TextView[2]")
         self.currency_item_text = Text(self.driver, xpath="//*[@content-desc='currency-item']//android.widget.TextView")
 
 

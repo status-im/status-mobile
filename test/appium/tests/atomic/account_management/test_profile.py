@@ -35,7 +35,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in.just_fyi('Delete 2nd multiaccount')
         public_key, username = sign_in.get_public_key_and_username(return_username=True)
         profile.privacy_and_security_button.click()
-        profile.delete_my_profile_button.click()
+        profile.delete_my_profile_button.scroll_and_click()
         for text in (username, delete_alert_warning):
             if not profile.element_by_text(text).is_element_displayed():
                 self.errors.append('Required %s is not shown when deleting multiaccount' % text)
@@ -50,7 +50,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in.sign_in()
         sign_in.profile_button.click()
         profile.privacy_and_security_button.click()
-        profile.delete_my_profile_button.click()
+        profile.delete_my_profile_button.scroll_and_click()
         profile.delete_my_profile_password_input.set_value(common_password)
         profile.delete_profile_button.click()
         profile.ok_button.click()
