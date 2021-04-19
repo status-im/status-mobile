@@ -61,8 +61,7 @@
 (fx/defn ensure-and-open-chat
   {:events [:ensure-and-open-chat]}
   [{:keys [db]} response-js]
-  {:db (update db :activity.center/notifications dissoc :cursor)
-   :dispatch-n [[:sanitize-messages-and-process-response response-js]
+  {:dispatch-n [[:sanitize-messages-and-process-response response-js]
                 [:chat.ui/navigate-to-chat (.-id (aget (.-chats response-js) 0))]]})
 
 (fx/defn dismiss-all-activity-center-notifications
@@ -93,20 +92,43 @@
                      :on-success #()
                      :on-error   #()}]})
 
+(fx/defn load-notifications [{:keys [db]} cursor]
+  (when-not (:activity.center/loading? db)
+    {:db (assoc db :activity.center/loading? true)
+     ::json-rpc/call [{:method     (json-rpc/call-ext-method "activityCenterNotifications")
+                       :params     [cursor 20]
+                       :on-success #(re-frame/dispatch [:activity-center-notifications-success %])
+                       :on-error   #(re-frame/dispatch [:activity-center-notifications-error %])}]}))
+
+(fx/defn clean-notifications [{:keys [db]}]
+  {:db (dissoc db :activity.center/notifications)})
+
 (fx/defn get-activity-center-notifications
   {:events [:get-activity-center-notifications]}
-  [{:keys [db]}]
+  [{:keys [db] :as cofx}]
+  (let [{:keys [cursor]} (:activity.center/notifications db)]
+    (fx/merge cofx
+              (clean-notifications)
+              (load-notifications ""))))
+
+(fx/defn load-more-activity-center-notifications
+  {:events [:load-more-activity-center-notifications]}
+  [{:keys [db] :as cofx}]
   (let [{:keys [cursor]} (:activity.center/notifications db)]
     (when (not= cursor "")
-      {::json-rpc/call [{:method     (json-rpc/call-ext-method "activityCenterNotifications")
-                         :params     [cursor 20]
-                         :on-success #(re-frame/dispatch [:activity-center-notifications-success %])
-                         :on-error   #(log/warn "failed to get notification center activities" %)}]})))
+      (load-notifications cofx cursor))))
+
+(fx/defn activity-center-notifications-error
+  {:events [:activity-center-notifications-error]}
+  [{:keys [db]} error]
+  (log/warn "failed to load activity center notifications" error)
+  {:db (dissoc db :activity.center/loading?)})
 
 (fx/defn activity-center-notifications-success
   {:events [:activity-center-notifications-success]}
   [{:keys [db]} {:keys [cursor notifications]}]
   {:db (-> db
+           (dissoc :activity.center/loading?)
            (assoc-in [:activity.center/notifications :cursor] cursor)
            (update-in [:activity.center/notifications :notifications]
                       concat
@@ -114,5 +136,5 @@
 
 (fx/defn close-center
   {:events [:close-notifications-center]}
-  [{:keys [db]}]
-  {:db (dissoc db :activity.center/notifications)})
+  [cofx]
+  (clean-notifications cofx))

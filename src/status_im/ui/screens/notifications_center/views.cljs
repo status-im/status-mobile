@@ -74,27 +74,31 @@
   (reset-state))
 
 (defn center []
-  (let [{:keys [notifications]} @(re-frame/subscribe [:activity.center/notifications])]
-    [react/keyboard-avoiding-view {:style {:flex 1}}
-     [topbar/topbar {:navigation {:on-press #(do
-                                               (reset-state)
-                                               (re-frame/dispatch [:close-notifications-center])
-                                               (re-frame/dispatch [:navigate-back]))}
-                     :title      (i18n/label :t/activity)}]
-     [filter-item]
-     [list/flat-list
-      {:key-fn                       #(or (:chat-id %) (:id %))
-       :on-end-reached               #(re-frame/dispatch [:get-activity-center-notifications])
-       :keyboard-should-persist-taps :always
-       :data                         notifications
-       :render-fn                    render-fn}]
-     (when (or @select-all (> (count @selected-items) 0))
-       [toolbar/toolbar
-        {:show-border? true
-         :left         [quo/button {:type     :secondary
-                                    :theme    :negative
-                                    :on-press #(toolbar-action false)}
-                        (i18n/label :t/reject-and-delete)]
-         :right        [quo/button {:type     :secondary
-                                    :on-press #(toolbar-action true)}
-                        (i18n/label :t/accept-and-add)]}])]))
+  (reagent/create-class
+   {:display-name "activity-center"
+    :component-did-mount #(re-frame/dispatch [:get-activity-center-notifications])
+    :reagent-render (fn []
+                      (let [{:keys [notifications]} @(re-frame/subscribe [:activity.center/notifications])]
+                        [react/keyboard-avoiding-view {:style {:flex 1}}
+                         [topbar/topbar {:navigation {:on-press #(do
+                                                                   (reset-state)
+                                                                   (re-frame/dispatch [:close-notifications-center])
+                                                                   (re-frame/dispatch [:navigate-back]))}
+                                         :title      (i18n/label :t/activity)}]
+                         [filter-item]
+                         [list/flat-list
+                          {:key-fn                       #(or (:chat-id %) (:id %))
+                           :on-end-reached               #(re-frame/dispatch [:load-more-activity-center-notifications])
+                           :keyboard-should-persist-taps :always
+                           :data                         notifications
+                           :render-fn                    render-fn}]
+                         (when (or @select-all (> (count @selected-items) 0))
+                           [toolbar/toolbar
+                            {:show-border? true
+                             :left         [quo/button {:type     :secondary
+                                                        :theme    :negative
+                                                        :on-press #(toolbar-action false)}
+                                            (i18n/label :t/reject-and-delete)]
+                             :right        [quo/button {:type     :secondary
+                                                        :on-press #(toolbar-action true)}
+                                            (i18n/label :t/accept-and-add)]}])]))}))

@@ -213,7 +213,6 @@
                   :style {:margin-left 10}
                   :accessibility-label "notifications-button"
                   :on-press #(do
-                               (re-frame/dispatch [:get-activity-center-notifications])
                                (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
                                (re-frame/dispatch [:navigate-to :notifications-center]))
                   :theme    :icon}
