@@ -45,7 +45,7 @@ class TabButton(Button):
         class Counter(Text):
             def __init__(self, driver, parent_locator):
                 super().__init__(driver,
-                                 xpath="//*[@content-desc='%s']//android.view.ViewGroup[2]/android.widget.TextView" % parent_locator)
+                                 xpath="//*[@content-desc='%s']//android.view.ViewGroup/android.widget.TextView" % parent_locator)
         return Counter(self.driver, self.locator)
 
     @property
@@ -228,7 +228,7 @@ class BaseView(object):
         self.discard_button = Button(self.driver, xpath="//*[@text='DISCARD']")
         self.confirm_button = Button(self.driver, translation_id='confirm', uppercase=True)
 
-        self.cross_icon = Button(self.driver, xpath="(//android.view.ViewGroup[@content-desc='icon'])[1]")
+        self.cross_icon = Button(self.driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[1]")
         self.native_close_button = Button(self.driver, id="android:id/aerr_close")
         self.show_roots_button = Button(self.driver, accessibility_id="Show roots")
         self.get_started_button = Button(self.driver, translation_id="get-started")

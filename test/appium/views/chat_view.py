@@ -433,7 +433,7 @@ class ChatView(BaseView):
         self.send_audio_message_button = Button(self.driver, accessibility_id="send-message-button")
         self.play_pause_audio_message_button = Button(self.driver, accessibility_id="play-pause-audio-message-button")
         self.audio_message_in_chat_timer = Text(self.driver,
-                                                xpath="//android.view.ViewGroup[@content-desc='play-pause-audio-message-button']/../..//android.widget.TextView[1]")
+                                                xpath="//*[@content-desc='play-pause-audio-message-button']/../..//android.widget.TextView[1]")
         self.audio_message_recorded_time = Text(self.driver, accessibility_id="audio-message-recorded-time")
 
         # Group chats

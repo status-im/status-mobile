@@ -11,7 +11,6 @@ class BaseWebView(BaseView):
         self.progress_bar_icon = Button(self.driver, xpath="//android.widget.ProgressBar")
         self.url_edit_box_lock_icon = Button(self.driver, xpath="'(//android.view.ViewGroup[@content-desc='icon'])[2]")
         self.policy_summary = Button(self.driver, xpath="//*[@content-desc='Policy summary'] | //*[@text='Policy summary']")
-        self.back_to_home_button = Button(self.driver, xpath="(//android.view.ViewGroup[@content-desc='icon'])[1]")
         self.browser_previous_page_button = Button(self.driver, accessibility_id="previous-page-button")
         self.browser_next_page_button = Button(self.driver, accessibility_id="next-page-button")
 

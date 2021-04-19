@@ -1026,9 +1026,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
                 chat_1.search_user_in_mention_suggestion_list(
                     sender['username']).is_element_displayed()):
             self.errors.append('ENS-owner user is not available in mention suggestion list')
-        device_1.just_fyi('Check there is own username is present in any 1-1 chat')
-        if not chat_1.search_user_in_mention_suggestion_list(own_default_username[1]).is_element_displayed():
-            self.errors.append('Own username is not available in mention suggestion list')
 
         device_1.just_fyi('Check there is no random user in different public chat')
         chat_1.get_back_to_home_view(2)

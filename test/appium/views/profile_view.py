@@ -245,7 +245,7 @@ class ProfileView(BaseView):
         ## Network
         self.network_settings_button = Button(self.driver, accessibility_id="network-button")
         self.active_network_name = Text(self.driver, xpath="//android.widget.TextView[contains(@text,'with upstream RPC')]")
-        self.plus_button = Button(self.driver, xpath="(//android.view.ViewGroup[@content-desc='icon'])[2]")
+        self.plus_button = Button(self.driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[2]")
         self.ropsten_chain_button = Button(self.driver, translation_id="ropsten-network")
         self.custom_network_url_input = EditBox(self.driver, translation_id="rpc-url",
                                                 suffix="/following-sibling::*[1]/android.widget.EditText")

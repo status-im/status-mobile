@@ -6,7 +6,7 @@ from views.base_view import BaseView
 
 class OptionsButton(Button):
     def __init__(self, driver):
-        super().__init__(driver, xpath="(//android.view.ViewGroup[@content-desc='icon'])[2]")
+        super().__init__(driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[2]")
     def click(self):
         self.click_until_presence_of_element(OptionsButton.CopyTransactionHashButton(self.driver))
 

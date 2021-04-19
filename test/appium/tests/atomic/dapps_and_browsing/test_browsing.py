@@ -83,11 +83,10 @@ class TestBrowsing(SingleDeviceTestCase):
         home.dapp_tab_button.double_click()
         browsing_view = dapp.open_url('invalid.takoe')
         browsing_view.element_by_translation_id("web-view-error").wait_for_element(20)
-        browsing_view.cross_icon.click()
+        browsing_view.dapp_tab_button.double_click()
 
         dapp.just_fyi('Checking offline state')
         home.toggle_airplane_mode()
-        home.dapp_tab_button.double_click()
         browsing_view = dapp.open_url('status.im')
         offline_texts = ['Unable to load page', 'ERR_INTERNET_DISCONNECTED']
         for text in offline_texts:
