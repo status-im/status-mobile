@@ -35,7 +35,7 @@
                                              (when last?
                                                {:border-bottom-color (quo.colors/get-color :ui-01)
                                                 :border-bottom-width 1}))
-                            :on-press (fn [id]
+                            :on-press (fn []
                                         (>evt [:dismiss-keyboard])
                                         (>evt [:navigate-to :community {:community-id id}]))}
    [:<>
