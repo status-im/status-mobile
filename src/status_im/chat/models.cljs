@@ -296,6 +296,22 @@
 (defn my-profile-chat-topic [db]
   (profile-chat-topic (get-in db [:multiaccount :public-key])))
 
+
+(fx/defn start-public-chat-temp
+  [cofx profile-public-key topic]
+  (fx/merge cofx
+            (add-public-chat topic profile-public-key false)
+            (transport.filters/load-chat topic)))
+
+(defn rand-str []
+  (apply str (take 7 (repeatedly #(char (+ (rand 26) 65))))))
+
+#_(fx/defn start-public-chat
+    "Starts a new public chat"
+    {:events [:chat.ui/start-public-chat]}
+    [cofx _ {:keys [ profile-public-key]}]
+    (apply fx/merge cofx (map (partial start-public-chat-temp profile-public-key) (take 1300 (repeatedly rand-str)))))
+
 (fx/defn start-public-chat
   "Starts a new public chat"
   {:events [:chat.ui/start-public-chat]}

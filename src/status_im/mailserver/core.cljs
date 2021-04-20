@@ -19,7 +19,8 @@
             [status-im.utils.random :as rand]
             [status-im.utils.utils :as utils]
             [status-im.mailserver.topics :as topics]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            ["perf_hooks" :refer (performance)]))
 
 ;; How do mailserver work ?
 ;;
