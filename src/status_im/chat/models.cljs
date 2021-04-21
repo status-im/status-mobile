@@ -273,7 +273,8 @@
   {:events [:chat.ui/navigate-to-chat]}
   [{db :db :as cofx} chat-id]
   (fx/merge cofx
-            {:db (assoc db :current-chat-id chat-id)}
+            (close-chat)
+            #(assoc-in % [:db :current-chat-id] chat-id)
             (preload-chat-data chat-id)
             (navigation/navigate-to-cofx :chat-stack {:screen :chat})))
 
