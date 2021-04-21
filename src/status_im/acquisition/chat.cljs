@@ -38,7 +38,7 @@
 
 (fx/defn join-public-chat
   [cofx chat-name]
-  (chat/start-public-chat cofx chat-name nil))
+  (chat/start-public-chat cofx chat-name {:navigation-reset? true}))
 
 (fx/defn accept-pack
   {:events [::accept-pack]}
