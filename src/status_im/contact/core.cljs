@@ -4,7 +4,6 @@
             [status-im.data-store.contacts :as contacts-store]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.mailserver.core :as mailserver]
-            [status-im.transport.filters.core :as transport.filters]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
@@ -57,7 +56,6 @@
   (fx/merge cofx
             {:db            (-> db
                                 (update-in [:contacts/contacts public-key] merge contact))}
-            (transport.filters/load-contact contact)
             (fn [cf]
               (contacts-store/save-contact cf
                                            (get-in cf [:db :contacts/contacts public-key])
@@ -98,10 +96,11 @@
   (let [new-contact (update contact
                             :system-tags
                             (fnil #(disj % :contact/added) #{}))]
-    (fx/merge cofx
-              {:db (assoc-in db [:contacts/contacts public-key] new-contact)
-               :dispatch [:offload-messages constants/timeline-chat-id]}
-              (contacts-store/save-contact new-contact nil))))
+    {:db (assoc-in db [:contacts/contacts public-key] new-contact)
+     ::json-rpc/call [{:method "wakuext_removeContact"
+                       :params [public-key]
+                       :on-success #(log/debug "contact removed successfully")}]
+     :dispatch [:offload-messages constants/timeline-chat-id]}))
 
 (fx/defn create-contact
   "Create entry in contacts"
@@ -137,8 +136,7 @@
                                   (update-in [:contacts/contacts public-key] merge contact))
                ::json-rpc/call [{:method "wakuext_ensVerified"
                                  :params [public-key ens-name]
-                                 :on-success #(log/debug "ens name verified successuful")}]}
-              (transport.filters/load-contact contact))))
+                                 :on-success #(log/debug "ens name verified successuful")}]})))
 
 (fx/defn update-nickname
   {:events [:contacts/update-nickname]}

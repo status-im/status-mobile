@@ -6,7 +6,6 @@
             [status-im.contact.core :as models.contact]
             [status-im.communities.core :as models.communities]
             [status-im.pairing.core :as models.pairing]
-            [status-im.transport.filters.core :as models.filters]
             [status-im.data-store.reactions :as data-store.reactions]
             [status-im.data-store.contacts :as data-store.contacts]
             [status-im.data-store.chats :as data-store.chats]
@@ -36,8 +35,6 @@
         ^js installations (.-installations response-js)
         ^js messages (.-messages response-js)
         ^js emoji-reactions (.-emojiReactions response-js)
-        ^js filters (.-filters response-js)
-        ^js removed-filters (.-removedFilters response-js)
         ^js invitations (.-invitations response-js)
         ^js removed-chats (.-removedChats response-js)
         ^js activity-notifications (.-activityCenterNotifications response-js)
@@ -113,20 +110,7 @@
         (js-delete response-js "invitations")
         (fx/merge cofx
                   (process-next response-js sync-handler)
-                  (models.group/handle-invitations (map data-store.invitations/<-rpc invitations))))
-      (seq filters)
-      (let [filters (types/js->clj filters)]
-        (js-delete response-js "filters")
-        (fx/merge cofx
-                  (process-next response-js sync-handler)
-                  (models.filters/handle-filters filters)))
-
-      (seq removed-filters)
-      (let [removed-filters (types/js->clj removed-filters)]
-        (js-delete response-js "removedFilters")
-        (fx/merge cofx
-                  (process-next response-js sync-handler)
-                  (models.filters/handle-filters-removed filters))))))
+                  (models.group/handle-invitations (map data-store.invitations/<-rpc invitations)))))))
 
 (defn group-by-and-update-unviewed-counts
   "group messages by current chat, profile updates, transactions and update unviewed counters in db for not curent chats"
@@ -188,9 +172,7 @@
                                                [{:ms 100 :dispatch [:process-statuses statuses]}])
                                              (when (seq transactions)
                                                (for [transaction-hash transactions]
-                                                 {:ms 100 :dispatch [:watch-tx transaction-hash]}))
-                                             (when (seq chats)
-                                               [{:ms 100 :dispatch [:chat/join-times-messages-checked chats]}]))}
+                                                 {:ms 100 :dispatch [:watch-tx transaction-hash]})))}
               (process-response response-js process-async))))
 
 (fx/defn remove-hash

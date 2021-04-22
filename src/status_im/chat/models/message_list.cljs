@@ -1,5 +1,6 @@
 (ns status-im.chat.models.message-list
   (:require [status-im.constants :as constants]
+            [status-im.utils.fx :as fx]
             [status-im.utils.datetime :as time]
             ["functional-red-black-tree" :as rb-tree]))
 
@@ -180,3 +181,9 @@
   (if message-list
     (array-seq (.-values message-list))
     []))
+
+;;TODO this is too expensive, probably we could mark message somehow and just hide it in the UI
+(fx/defn rebuild-message-list
+  [{:keys [db]} chat-id]
+  {:db (assoc-in db [:message-lists chat-id]
+                 (add-many nil (vals (get-in db [:messages chat-id]))))})

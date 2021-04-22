@@ -5,9 +5,6 @@
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models.chat]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.group-chats.db :as group-chats.db]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.transport.filters.core :as transport.filters]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.constants :as constants]
@@ -17,8 +14,13 @@
   {:events [:navigate-chat-updated]}
   [cofx chat-id]
   (if (get-in cofx [:db :chats chat-id :is-active])
-    (models.chat/navigate-to-chat cofx chat-id)
-    (navigation/navigate-to-cofx cofx :home {})))
+    (models.chat/navigate-to-chat cofx chat-id)))
+
+(fx/defn handle-chat-removed
+  {:events [:chat-removed]}
+  [_ response]
+  {:dispatch-n [[:sanitize-messages-and-process-response response]
+                [:navigate-to :home]]})
 
 (fx/defn handle-chat-update
   {:events [:chat-updated]}
@@ -34,21 +36,6 @@
                      :params     [nil chat-id member]
                      :js-response true
                      :on-success #(re-frame/dispatch [:chat-updated %])}]})
-
-(fx/defn set-up-filter
-  "Listen/Tear down the shared topic/contact-codes. Stop listening for members who
-  have left the chat"
-  [cofx chat-id previous-chat]
-  (let [my-public-key (multiaccounts.model/current-public-key cofx)
-        new-chat (get-in cofx [:db :chats chat-id])
-        members (:members-joined new-chat)]
-    ;; If we left the chat do nothing
-    (when-not (and (group-chats.db/joined? my-public-key previous-chat)
-                   (not (group-chats.db/joined? my-public-key new-chat)))
-      (fx/merge
-       cofx
-       (transport.filters/upsert-group-chat-topics)
-       (transport.filters/load-members members)))))
 
 (fx/defn join-chat
   {:events [:group-chats.ui/join-pressed]}
@@ -111,7 +98,7 @@
   {::json-rpc/call [{:method     (json-rpc/call-ext-method "leaveGroupChat")
                      :params     [nil chat-id true]
                      :js-response true
-                     :on-success #(re-frame/dispatch [:chat-updated %])}]})
+                     :on-success #(re-frame/dispatch [:chat-removed %])}]})
 
 (fx/defn remove
   "Remove chat"
@@ -119,9 +106,6 @@
   [cofx chat-id]
   (fx/merge cofx
             (models.chat/deactivate-chat chat-id)
-            (models.chat/upsert-chat {:chat-id   chat-id
-                                      :is-active false}
-                                     nil)
             (navigation/navigate-to-cofx :home {})))
 
 (def not-blank?
@@ -231,4 +215,3 @@
     :on-accept           #(do
                             (re-frame/dispatch [:bottom-sheet/hide])
                             (re-frame/dispatch [:group-chats.ui/leave-chat-confirmed chat-id]))}})
-

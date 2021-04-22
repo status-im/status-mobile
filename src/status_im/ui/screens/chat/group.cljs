@@ -83,9 +83,9 @@
                               :size      :small
                               :color     colors/gray}]])
 
-(defn calculate-quiet-time [highest-request-to
-                            lowest-request-from]
-  (let [quiet-hours (quot (- highest-request-to lowest-request-from)
+(defn calculate-quiet-time [synced-to
+                            synced-from]
+  (let [quiet-hours (quot (- synced-to synced-from)
                           (* 60 60))]
     (if (<= quiet-hours 24)
       (i18n/label :t/quiet-hours
@@ -94,22 +94,22 @@
                   {:quiet-days (quot quiet-hours 24)}))))
 
 (defview no-messages-community-chat-description-container [chat-id]
-  (letsubs [{:keys [highest-request-to lowest-request-from]}
-            [:mailserver/ranges-by-chat-id chat-id]]
+  (letsubs [{:keys [synced-to synced-from]}
+            [:chats/synced-to-and-from chat-id]]
     [react/text {:style (merge style/intro-header-description
                                {:margin-bottom 36})}
-     (let [quiet-time (calculate-quiet-time highest-request-to
-                                            lowest-request-from)]
+     (let [quiet-time (calculate-quiet-time synced-to
+                                            synced-from)]
        (i18n/label :t/empty-chat-description-community
                    {:quiet-hours quiet-time}))]))
 
 (defview no-messages-private-group-chat-description-container [chat-id]
-  (letsubs [{:keys [highest-request-to lowest-request-from]}
-            [:mailserver/ranges-by-chat-id chat-id]]
+  (letsubs [{:keys [synced-to synced-from]}
+            [:chats/synced-to-and-from chat-id]]
     [react/nested-text {:style (merge style/intro-header-description
                                       {:margin-bottom 36})}
-     (let [quiet-time (calculate-quiet-time highest-request-to
-                                            lowest-request-from)]
+     (let [quiet-time (calculate-quiet-time synced-to
+                                            synced-from)]
        (i18n/label :t/empty-chat-description-public
                    {:quiet-hours quiet-time}))
      [{:style    {:color colors/blue}

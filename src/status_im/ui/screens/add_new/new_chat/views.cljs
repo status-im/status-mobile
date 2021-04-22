@@ -19,7 +19,6 @@
             [status-im.ui.components.invite.views :as invite]
             [status-im.ethereum.ens :as ens]
             [quo.platform :as platform]
-            [status-im.transport.filters.core :as filters]
             [status-im.utils.identicon :as identicon]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
             [status-im.ui.components.animation :as animation]
@@ -82,8 +81,13 @@
       (filter (partial search-contacts lower-filter-text) contacts)
       contacts)))
 
+(defn is-public-key? [k]
+  (and
+   (string? k)
+   (string/starts-with? k "0x")))
+
 (defn is-valid-username? [username]
-  (let [is-chat-key? (and (filters/is-public-key? username)
+  (let [is-chat-key? (and (is-public-key? username)
                           (= (count username) 132))
         is-ens? (ens/valid-eth-name-prefix? username)]
     (or is-chat-key? is-ens?)))

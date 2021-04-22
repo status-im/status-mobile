@@ -1,66 +1,7 @@
 (ns status-im.chat.models-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.chat.models :as chat]))
-
-(deftest upsert-chat-test
-  (testing "upserting a non existing chat"
-    (let [chat-id        "some-chat-id"
-          contact-name   "contact-name"
-          chat-props     {:chat-id chat-id
-                          :extra-prop "some"}
-          cofx           {:now "now"
-                          :db {:contacts/contacts {chat-id
-                                                   {:name contact-name}}}}
-          response      (chat/upsert-chat cofx chat-props nil)
-          actual-chat   (get-in response [:db :chats chat-id])]
-      (testing "it adds the chat to the chats collection"
-        (is actual-chat))
-      (testing "it adds the extra props"
-        (is (= "some" (:extra-prop actual-chat))))
-      (testing "it adds the chat id"
-        (is (= chat-id (:chat-id actual-chat))))
-      (testing "it pulls the name from the contacts"
-        (is (= contact-name (:name actual-chat))))
-      (testing "it sets the timestamp"
-        (is (= "now" (:timestamp actual-chat))))
-      (testing "it adds the contact-id to the contact field"
-        (is (= chat-id (-> actual-chat :contacts first))))))
-  (testing "upserting an existing chat"
-    (let [chat-id        "some-chat-id"
-          chat-props     {:chat-id chat-id
-                          :name "new-name"
-                          :extra-prop "some"}
-          cofx           {:db {:chats {chat-id {:is-active true
-                                                :name "old-name"}}}}
-          response      (chat/upsert-chat cofx chat-props nil)
-          actual-chat   (get-in response [:db :chats chat-id])]
-      (testing "it adds the chat to the chats collection"
-        (is actual-chat))
-      (testing "it adds the extra props"
-        (is (= "some" (:extra-prop actual-chat))))
-      (testing "it updates existins props"
-        (is (= "new-name" (:name actual-chat)))))))
-
-(deftest add-public-chat
-  (with-redefs [gfycat/generate-gfy (constantly "generated")
-                identicon/identicon (constantly "generated")]
-    (let [topic "topic"
-          fx (chat/add-public-chat {:db {}} topic nil nil)
-          chat (get-in fx [:db :chats topic])]
-      (testing "it sets the name"
-        (is (= topic (:name chat))))
-      (testing "it sets the participants"
-        (is (= #{} (:contacts chat))))
-      (testing "it sets the chat-id"
-        (is (= topic (:chat-id chat))))
-      (testing "it sets the group-chat flag"
-        (is (:group-chat chat)))
-      (testing "it does not sets the public flag"
-        (is (:public? chat))))))
 
 (deftest clear-history-test
   (let [chat-id "1"
@@ -96,11 +37,7 @@
                                                     :last-message nil)
                                          chat-id
                                          true)]
-          (is (= 42 (get-in actual [:db :chats chat-id :deleted-at-clock-value]))))))
-    (testing "it adds the relevant rpc calls"
-      (let [actual (chat/clear-history cofx chat-id true)]
-        (is (::json-rpc/call actual))
-        (is (= 2 (count (::json-rpc/call actual))))))))
+          (is (= 42 (get-in actual [:db :chats chat-id :deleted-at-clock-value]))))))))
 
 (deftest remove-chat-test
   (let [chat-id "1"
@@ -110,17 +47,13 @@
                       :chats {chat-id {:last-message {:clock-value 10}}}}}]
     (testing "it deletes all the messages"
       (let [actual (chat/remove-chat cofx chat-id)]
-        (is (= {} (get-in actual [:db :messages chat-id])))))
+        (is (= nil (get-in actual [:db :messages chat-id])))))
     (testing "it sets a deleted-at-clock-value equal to the last message clock-value"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (= 10 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))
     (testing "it sets the chat as inactive"
       (let [actual (chat/remove-chat cofx chat-id)]
-        (is (= false (get-in actual [:db :chats chat-id :is-active])))))
-    (testing "it makes the relevant json-rpc calls"
-      (let [actual (chat/remove-chat cofx chat-id)]
-        (is (::json-rpc/call actual))
-        (is (= 4 (count (::json-rpc/call actual))))))))
+        (is (= false (get-in actual [:db :chats chat-id :is-active])))))))
 
 (deftest multi-user-chat?
   (let [chat-id "1"]

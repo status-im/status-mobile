@@ -33,7 +33,6 @@
             status-im.profile.core
             status-im.chat.models.images
             status-im.ui.screens.privacy-and-security-settings.events
-            status-im.mailserver.topics
             status-im.multiaccounts.login.core
             status-im.multiaccounts.logout.core
             status-im.multiaccounts.update.core

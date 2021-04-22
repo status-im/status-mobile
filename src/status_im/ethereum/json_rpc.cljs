@@ -36,6 +36,12 @@
    "waku_getSymKey" {}
    "waku_markTrustedPeer" {}
    "wakuext_post" {}
+   "wakuext_requestAllHistoricMessages" {}
+   "wakuext_fillGaps" {}
+   "wakuext_syncChatFromSyncedFrom" {}
+   "wakuext_createPublicChat" {}
+   "wakuext_createOneToOneChat" {}
+   "wakuext_createProfileChat" {}
    "wakuext_startMessenger" {}
    "wakuext_sendPairInstallation" {}
    "wakuext_syncDevices" {}
@@ -63,6 +69,7 @@
    "wakuext_sendContactUpdate" {}
    "wakuext_sendContactUpdates" {}
    "wakuext_chats" {}
+   "wakuext_activeChats" {}
    "wakuext_addSystemMessages" {}
    "wakuext_deleteMessagesFrom" {}
    "wakuext_deleteMessagesByChatID" {}
@@ -76,6 +83,8 @@
    "wakuext_muteChat" {}
    "wakuext_unmuteChat" {}
    "wakuext_contacts" {}
+   "wakuext_removeContact" {}
+   "wakuext_clearHistory" {}
    "wakuext_prepareContent" {}
    "wakuext_blockContact" {}
    "wakuext_updateMailservers" {}
@@ -85,6 +94,7 @@
    "wakuext_getLinkPreviewWhitelist" {}
    "wakuext_getLinkPreviewData" {}
    "wakuext_requestCommunityInfoFromMailserver" {}
+   "wakuext_deactivateChat" {}
    ;;TODO not used anywhere?
    "wakuext_deleteChat" {}
    "wakuext_saveContact" {}

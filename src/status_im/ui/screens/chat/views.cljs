@@ -123,6 +123,7 @@
 (defn chat-intro-header-container
   [{:keys [group-chat invitation-admin
            chat-type
+           synced-to
            color chat-id chat-name
            public?]}
    no-messages]
@@ -139,7 +140,7 @@
           :chat-name chat-name
           :public? public?
           :color color
-          :loading-messages? @(re-frame/subscribe [:chats/might-have-join-time-messages? chat-id])
+          :loading-messages? (not (pos? synced-to))
           :no-messages? no-messages}]
      (if group-chat
        [chat-intro opts]

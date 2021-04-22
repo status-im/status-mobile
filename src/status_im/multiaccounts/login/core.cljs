@@ -35,7 +35,6 @@
             [status-im.chat.models.link-preview :as link-preview]
             [status-im.utils.mobile-sync :as utils.mobile-sync]
             [status-im.async-storage.core :as async-storage]
-            [status-im.chat.models :as chat.models]
             [status-im.notifications-center.core :as notifications-center]))
 
 (re-frame/reg-fx
@@ -320,9 +319,8 @@
                :dispatch-later       [{:ms 2000 :dispatch [::initialize-wallet accounts nil nil (:recovered multiaccount) true]}]}
               (finish-keycard-setup)
               (transport/start-messenger)
+              (chat.loading/initialize-chats)
               (communities/fetch)
-              (chat.models/start-timeline-chat)
-              (chat.models/start-profile-chat (:public-key multiaccount))
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount)))))

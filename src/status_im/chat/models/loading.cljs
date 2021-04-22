@@ -28,9 +28,7 @@
                       new-chats)
         chats (merge old-chats chats)]
     {:db (assoc db :chats chats
-                :chats/loading? false)
-     :dispatch-n [[:chat/start-timeline-chat]
-                  [:start-profile-chat (get-in db [:multiaccount :public-key])]]}))
+                :chats/loading? false)}))
 
 (fx/defn initialize-chats
   "Initialize persisted chats on startup"
@@ -115,8 +113,7 @@
         (when (or first-request cursor)
           (merge
            {:db (assoc-in db [:pagination-info chat-id :loading-messages?] true)}
-           {:utils/dispatch-later [{:ms 100 :dispatch [:load-more-reactions cursor chat-id]}
-                                   {:ms 100 :dispatch [:load-gaps chat-id]}]}
+           {:utils/dispatch-later [{:ms 100 :dispatch [:load-more-reactions cursor chat-id]}]}
            (data-store.messages/messages-by-chat-id-rpc
             chat-id
             cursor

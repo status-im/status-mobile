@@ -136,8 +136,6 @@
 (reg-root-key-sub :mailserver/pending-requests :mailserver/pending-requests)
 (reg-root-key-sub :mailserver/request-error? :mailserver/request-error)
 (reg-root-key-sub :mailserver/fetching-gaps-in-progress :mailserver/fetching-gaps-in-progress)
-(reg-root-key-sub :mailserver/gaps :mailserver/gaps)
-(reg-root-key-sub :mailserver/ranges :mailserver/ranges)
 
 ;;contacts
 (reg-root-key-sub ::contacts :contacts/contacts)
@@ -764,6 +762,20 @@
    (get chats chat-id)))
 
 (re-frame/reg-sub
+ :chats/synced-from
+ (fn [[_ chat-id] _]
+   (re-frame/subscribe [:chat-by-id chat-id]))
+ (fn [{:keys [synced-from]}]
+   synced-from))
+
+(re-frame/reg-sub
+ :chats/synced-to-and-from
+ (fn [[_ chat-id] _]
+   (re-frame/subscribe [:chat-by-id chat-id]))
+ (fn [chat]
+   (select-keys chat [:synced-to :synced-from])))
+
+(re-frame/reg-sub
  :chats/current-raw-chat
  :<- [::chats]
  :<- [:chats/current-chat-id]
@@ -826,7 +838,7 @@
  :chats/current-chat-chat-view
  :<- [:chats/current-chat]
  (fn [current-chat]
-   (select-keys current-chat [:chat-id :show-input? :group-chat :admins :invitation-admin :public? :chat-type :color :chat-name])))
+   (select-keys current-chat [:chat-id :show-input? :group-chat :admins :invitation-admin :public? :chat-type :color :chat-name :synced-to :synced-from])))
 
 (re-frame/reg-sub
  :current-chat/metadata
@@ -872,24 +884,6 @@
     (get-in reactions [chat-id message-id]))))
 
 (re-frame/reg-sub
- :chats/messages-gaps
- :<- [:mailserver/gaps]
- (fn [gaps [_ chat-id]]
-   (sort-by :from (vals (get gaps chat-id)))))
-
-(re-frame/reg-sub
- :mailserver/ranges-by-chat-id
- :<- [:mailserver/ranges]
- (fn [ranges [_ chat-id]]
-   (get ranges chat-id)))
-
-(re-frame/reg-sub
- :chats/range
- :<- [:mailserver/ranges]
- (fn [ranges [_ chat-id]]
-   (get ranges chat-id)))
-
-(re-frame/reg-sub
  :mailserver/current-name
  :<- [:mailserver/current-id]
  :<- [:fleets/current-fleet]
@@ -914,12 +908,6 @@
  :<- [::chats]
  (fn [chats [_ chat-id]]
    (get-in chats [chat-id :public?])))
-
-(re-frame/reg-sub
- :chats/might-have-join-time-messages?
- :<- [::chats]
- (fn [chats [_ chat-id]]
-   (get-in chats [chat-id :might-have-join-time-messages?])))
 
 (re-frame/reg-sub
  :chats/message-list
@@ -948,16 +936,18 @@
  (fn [[_ chat-id] _]
    [(re-frame/subscribe [:chats/message-list chat-id])
     (re-frame/subscribe [:chats/chat-messages chat-id])
-    (re-frame/subscribe [:chats/messages-gaps chat-id])
-    (re-frame/subscribe [:chats/range chat-id])
-    (re-frame/subscribe [:chats/all-loaded? chat-id])
-    (re-frame/subscribe [:chats/public? chat-id])])
- (fn [[message-list messages messages-gaps range all-loaded? public?]]
+    (re-frame/subscribe [:chats/loading-messages? chat-id])
+    (re-frame/subscribe [:chats/synced-from chat-id])])
+ (fn [[message-list messages loading-messages? synced-from] [_ chat-id]]
    ;;TODO (perf)
-   (-> (models.message-list/->seq message-list)
-       (chat.db/add-datemarks)
-       (hydrate-messages messages)
-       (chat.db/add-gaps messages-gaps range all-loaded? public?))))
+   (let [message-list-seq (models.message-list/->seq message-list)]
+     ; Don't show gaps if that's the case as we are still loading messages
+     (if (and (empty? message-list-seq) loading-messages?)
+       []
+       (-> message-list-seq
+           (chat.db/add-datemarks)
+           (hydrate-messages messages)
+           (chat.db/collapse-gaps chat-id synced-from))))))
 
 ;;we want to keep data unchanged so react doesn't change component when we leave screen
 (def memo-chat-messages-stream (atom nil))
@@ -2133,8 +2123,8 @@
 (re-frame/reg-sub
  :chats/fetching-gap-in-progress?
  :<- [:mailserver/fetching-gaps-in-progress]
- (fn [gaps [_ ids chat-id]]
-   (seq (select-keys (get gaps chat-id) ids))))
+ (fn [gaps [_ ids _]]
+   (seq (select-keys gaps ids))))
 
 (re-frame/reg-sub
  :mailserver/fetching?

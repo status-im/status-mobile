@@ -28,35 +28,11 @@
       (update-in [:db :messages chat-id] assoc message-id message)
       (update-in [:db :message-lists chat-id] message-list/add message)))
 
-;;TODO this is too expensive, probably we could mark message somehow and just hide it in the UI
-(fx/defn rebuild-message-list
-  [{:keys [db]} chat-id]
-  {:db (assoc-in db [:message-lists chat-id]
-                 (message-list/add-many nil (vals (get-in db [:messages chat-id]))))})
-
 (defn hide-message
   "Hide chat message, rebuild message-list"
   [{:keys [db]} chat-id message-id]
   ;;TODO this is too expensive, probably we could mark message somehow and just hide it in the UI
-  (rebuild-message-list {:db (update-in db [:messages chat-id] dissoc message-id)} chat-id))
-
-(fx/defn join-times-messages-checked
-  "The key :might-have-join-time-messages? in public chats signals that
-  the public chat is freshly (re)created and requests for messages to the
-  mailserver for the topic has not completed yet. Likewise, the key
-  :join-time-mail-request-id is associated a little bit after, to signal that
-  the request to mailserver was a success. When request is signalled complete
-  by mailserver, corresponding event :chat.ui/join-times-messages-checked
-  dissociates these two fileds via this function, thereby signalling that the
-  public chat is not fresh anymore."
-  {:events [:chat/join-times-messages-checked]}
-  [{:keys [db] :as cofx} chat-ids]
-  (reduce (fn [acc chat-id]
-            (cond-> acc
-              (:might-have-join-time-messages? (chat-model/get-chat cofx chat-id))
-              (update :db #(chat-model/dissoc-join-time-fields % chat-id))))
-          {:db db}
-          chat-ids))
+  (message-list/rebuild-message-list {:db (update-in db [:messages chat-id] dissoc message-id)} chat-id))
 
 (fx/defn add-senders-to-chat-users
   {:events [:chat/add-senders-to-chat-users]}
@@ -209,7 +185,7 @@
   (fx/merge cofx
             {:db            (update-in db [:messages chat-id] dissoc message-id)}
             (data-store.messages/delete-message message-id)
-            (rebuild-message-list chat-id)))
+            (message-list/rebuild-message-list chat-id)))
 
 (fx/defn send-message
   [cofx message]

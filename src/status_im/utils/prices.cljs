@@ -1,8 +1,7 @@
 (ns status-im.utils.prices
   (:require [clojure.string :as string]
             [status-im.utils.http :as http]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [status-im.utils.types :as types]))
 
 ;; Responsible for interacting with Cryptocompare API to get current prices for
 ;; currencies and tokens.
@@ -39,10 +38,6 @@
                                      :last-day (:OPEN24HOUR entry)}}))}))))
 
 (defn get-prices [from to mainnet? on-success on-error]
-  (log/debug "[prices] get-prices"
-             "from" from
-             "to" to
-             "mainnet?" mainnet?)
   (http/get
    (gen-price-url from to)
    (fn [resp] (on-success (format-price-resp resp mainnet?)))

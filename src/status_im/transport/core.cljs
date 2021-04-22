@@ -8,7 +8,6 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.publisher :as publisher]
-            [status-im.transport.filters.core :as transport.filters]
             status-im.transport.shh
             [taoensso.timbre :as log]
             [status-im.utils.universal-links.core :as universal-links]))
@@ -49,27 +48,6 @@
           db
           custom-mailservers))
 
-(defn add-mailserver-topics
-  [db mailserver-topics]
-  (assoc db
-         :mailserver/topics
-         (reduce (fn [acc {:keys [topic]
-                           :as mailserver-topic}]
-                   (assoc acc topic
-                          (update mailserver-topic :chat-ids
-                                  #(into #{} %))))
-                 {}
-                 mailserver-topics)))
-
-(defn add-mailserver-ranges
-  [db mailserver-ranges]
-  (assoc db
-         :mailserver/ranges
-         (reduce (fn [acc {:keys [chat-id] :as range}]
-                   (assoc acc chat-id range))
-                 {}
-                 mailserver-ranges)))
-
 (fx/defn start-messenger
   "We should only start receiving messages/processing topics once all the
   initializiation is completed, otherwise we might receive messages/topics
@@ -81,18 +59,12 @@
 
 (fx/defn messenger-started
   {:events [::messenger-started]}
-  [{:keys [db] :as cofx} {:keys [filters
-                                 mailserverTopics
-                                 mailservers
-                                 mailserverRanges] :as response}]
+  [{:keys [db] :as cofx} {:keys [mailservers] :as response}]
   (log/info "Messenger started")
   (fx/merge cofx
             {:db (-> db
                      (assoc :messenger/started? true)
-                     (add-mailserver-ranges mailserverRanges)
-                     (add-mailserver-topics mailserverTopics)
                      (add-custom-mailservers mailservers))}
-            (transport.filters/handle-loaded-filters filters)
             (fetch-node-info-fx)
             (pairing/init)
             (publisher/start-fx)

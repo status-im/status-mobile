@@ -12,6 +12,7 @@
             [status-im.ui.screens.chat.message.command :as message.command]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.sheets :as sheets]
+            [status-im.ui.screens.chat.message.gap :as message.gap]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.contenthash :as contenthash]
@@ -315,6 +316,10 @@
 (defmethod ->message constants/content-type-command
   [message]
   [message.command/command-content message-content-wrapper message])
+
+(defmethod ->message constants/content-type-gap
+  [message]
+  [message.gap/gap message])
 
 (defmethod ->message constants/content-type-system-text [{:keys [content] :as message}]
   [react/view {:accessibility-label :chat-item}

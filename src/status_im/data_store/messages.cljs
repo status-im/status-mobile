@@ -19,6 +19,7 @@
       (clojure.set/rename-keys {:id :message-id
                                 :whisperTimestamp :whisper-timestamp
                                 :commandParameters :command-parameters
+                                :gapParameters :gap-parameters
                                 :messageType :message-type
                                 :localChatId :chat-id
                                 :communityId :community-id

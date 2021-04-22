@@ -75,6 +75,8 @@
       type->rpc
       (clojure.set/rename-keys {:chat-id :id
                                 :membership-update-events :membershipUpdateEvents
+                                :synced-from :syncedFrom
+                                :synced-to :syncedTo
                                 :unviewed-messages-count :unviewedMessagesCount
                                 :last-message :lastMessage
                                 :community-id :communityId
@@ -83,7 +85,7 @@
                                 :last-clock-value :lastClockValue
                                 :profile-public-key :profile})
       (dissoc :public? :group-chat :messages
-              :might-have-join-time-messages? :chat-type
+              :chat-type
               :contacts :admins :members-joined)))
 
 (defn <-rpc [chat]
@@ -92,6 +94,8 @@
       unmarshal-members
       (clojure.set/rename-keys {:id :chat-id
                                 :communityId :community-id
+                                :syncedFrom :synced-from
+                                :syncedTo :synced-to
                                 :membershipUpdateEvents :membership-update-events
                                 :deletedAtClockValue :deleted-at-clock-value
                                 :chatType :chat-type
@@ -104,16 +108,8 @@
       (update :last-message #(when % (messages/<-rpc %)))
       (dissoc :members)))
 
-(fx/defn save-chat [cofx {:keys [chat-id] :as chat} on-success]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "saveChat")
-                     :params [(->rpc chat)]
-                     :on-success #(do
-                                    (log/debug "saved chat" chat-id "successfuly")
-                                    (when on-success (on-success)))
-                     :on-failure #(log/error "failed to save chat" chat-id %)}]})
-
 (fx/defn fetch-chats-rpc [cofx {:keys [on-success]}]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "chats")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "activeChats")
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})

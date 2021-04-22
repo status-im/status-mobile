@@ -12,6 +12,7 @@
 (def ^:const content-type-image 7)
 (def ^:const content-type-audio 8)
 (def ^:const content-type-community 9)
+(def ^:const content-type-gap 10)
 
 (def ^:const emoji-reaction-love 1)
 (def ^:const emoji-reaction-thumbs-up  2)
@@ -47,6 +48,8 @@
 (def ^:const message-type-public-group 2)
 (def ^:const message-type-private-group 3)
 (def ^:const message-type-private-group-system-message 4)
+(def ^:const message-type-community-chat 5)
+(def ^:const message-type-gap 6)
 
 (def ^:const command-state-request-address-for-transaction 1)
 (def ^:const command-state-request-address-for-transaction-declined 2)
