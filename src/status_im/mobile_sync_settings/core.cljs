@@ -41,7 +41,7 @@
        (and logged-in? initialized?)
        [(mailserver/process-next-messages-request)
         (bottom-sheet/hide-bottom-sheet)
-        (wallet/restart-wallet-service {:force-start? true})]
+        (wallet/restart-wallet-service nil)]
 
        logged-in?
        [(mailserver/process-next-messages-request)
@@ -69,7 +69,7 @@
          :remember-syncing-choice? (boolean remember-choice?) {})
         (when (and cellular? sync?)
           (mailserver/process-next-messages-request))
-        (wallet/restart-wallet-service {:force-start? true}))))))
+        (wallet/restart-wallet-service nil))))))
 
 (fx/defn mobile-network-continue-syncing
   {:events [:mobile-network/continue-syncing]}

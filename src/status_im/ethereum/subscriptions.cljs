@@ -45,31 +45,28 @@
   (log/debug "[wallet-subs] recent-history-fetching-ended"
              "accounts" accounts
              "block" blockNumber)
-  (fx/merge
-   cofx
-   {:db (-> db
-            (assoc :ethereum/current-block blockNumber)
-            (update-in [:wallet :accounts]
-                       wallet/remove-transactions-since-block blockNumber)
-            (transactions/update-fetching-status accounts :recent? false)
-            (dissoc :wallet/waiting-for-recent-history?
-                    :wallet/refreshing-history?
-                    :wallet/fetching-error
-                    :wallet/recent-history-fetching-started?))
-    :transactions/get-transfers
-    {:chain-tokens (:wallet/all-tokens db)
-     :addresses    (reduce
-                    (fn [v address]
-                      (let [normalized-address
-                            (eip55/address->checksum address)]
-                        (if (contains? v normalized-address)
-                          v
-                          (conj v address))))
-                    []
-                    accounts)
-     :before-block blockNumber
-     :limit        20}}
-   (wallet.core/restart-wallet-service-default)))
+  {:db (-> db
+           (assoc :ethereum/current-block blockNumber)
+           (update-in [:wallet :accounts]
+                      wallet/remove-transactions-since-block blockNumber)
+           (transactions/update-fetching-status accounts :recent? false)
+           (dissoc :wallet/waiting-for-recent-history?
+                   :wallet/refreshing-history?
+                   :wallet/fetching-error
+                   :wallet/recent-history-fetching-started?))
+   :transactions/get-transfers
+   {:chain-tokens (:wallet/all-tokens db)
+    :addresses    (reduce
+                   (fn [v address]
+                     (let [normalized-address
+                           (eip55/address->checksum address)]
+                       (if (contains? v normalized-address)
+                         v
+                         (conj v address))))
+                   []
+                   accounts)
+    :before-block blockNumber
+    :limit        20}})
 
 (fx/defn fetching-error
   [{:keys [db] :as cofx} {:keys [message]}]

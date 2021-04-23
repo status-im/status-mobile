@@ -564,11 +564,27 @@
      :on-success        #(log/info "[wallet] wallet_checkRecentHistory success")
      :on-error          #(log/error "[wallet] wallet_checkRecentHistory error" %)})))
 
+(def ms-2-min (datetime/minutes 2))
+(def ms-3-min (datetime/minutes 3))
+(def ms-5-min (datetime/minutes 5))
 (def ms-10-min (datetime/minutes 10))
 (def ms-20-min (datetime/minutes 20))
 
-(def ms-2-min (datetime/minutes 2))
-(def ms-4-min (datetime/minutes 4))
+(def custom-intervals
+  {:ms-2-min  ms-2-min
+   :ms-3-min  ms-3-min
+   :ms-5-min  ms-5-min
+   :ms-10-min ms-10-min
+   :ms-20-min ms-20-min})
+
+(def next-custom-interval
+  {:ms-2-min  :ms-3-min
+   :ms-3-min  :ms-5-min
+   :ms-5-min  :ms-10-min})
+
+(defn get-next-custom-interval
+  [{:keys [:wallet-service/custom-interval]}]
+  (get next-custom-interval custom-interval))
 
 (defn get-max-block-with-transfer [db]
   (reduce
@@ -580,13 +596,13 @@
    nil
    (get-in db [:wallet :accounts])))
 
-(defn get-restart-interval
-  [db]
-  (let [max-block (get-max-block-with-transfer db)]
+(defn get-restart-interval [db]
+  (let [max-block       (get-max-block-with-transfer db)
+        custom-interval (get db :wallet-service/custom-interval)]
     (cond
       (ethereum/custom-rpc-node?
        (ethereum/current-network db))
-      ms-4-min
+      ms-2-min
 
       (and max-block
            (zero? max-block)
@@ -594,7 +610,7 @@
       (log/info "[wallet] No transactions found")
 
       :else
-      ms-20-min)))
+      (get custom-intervals custom-interval ms-20-min))))
 
 (defn get-watching-interval [db]
   (if (ethereum/custom-rpc-node?
@@ -607,40 +623,43 @@
   (log/info "[wallet] after-checking-history")
   {:db (dissoc db
                :wallet/recent-history-fetching-started?
-               :wallet/waiting-for-recent-history?
                :wallet/refreshing-history?)})
 
+(defn set-timeout [db]
+  (when-let [interval (get-restart-interval db)]
+    (utils.utils/set-timeout
+     #(re-frame.core/dispatch [::restart])
+     interval)))
+
 (fx/defn check-recent-history
-  [{:keys [db] :as cofx} on-recent-history-fetching]
+  [{:keys [db] :as cofx}
+   {:keys [on-recent-history-fetching force-restart?]}]
   (let [addresses   (map :address (get db :multiaccount/accounts))
         old-timeout (get db :wallet-service/restart-timeout)
-        timeout     (when-let [interval (get-restart-interval db)]
-                      (utils.utils/set-timeout
-                       #(re-frame.core/dispatch [::restart])
-                       interval))]
+        timeout     (if force-restart?
+                      old-timeout
+                      (set-timeout db))]
     {:db            (-> db
                         (assoc :wallet-service/restart-timeout timeout
+                               :wallet-service/custom-interval (get-next-custom-interval db)
                                :wallet/was-started? true
                                :wallet/on-recent-history-fetching on-recent-history-fetching))
      ::check-recent-history addresses
      ::utils.utils/clear-timeouts
-     [old-timeout]}))
+     [(when (not= timeout old-timeout) old-timeout)]}))
 
 (fx/defn restart-wallet-service
   [{:keys [db] :as cofx}
-   {:keys [force-start? ignore-syncing-settings? on-recent-history-fetching]}]
-  (when (or force-start? (:multiaccount db))
-    (let [waiting? (get db :wallet/waiting-for-recent-history?)
-          syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)]
+   {:keys [force-restart? on-recent-history-fetching]
+    :as   params}]
+  (when (:multiaccount db)
+    (let [syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)]
       (log/info "restart-wallet-service"
-                "force-start?" force-start?
+                "force-restart?" force-restart?
                 "syncing-allowed?" syncing-allowed?)
-      (if (and (or syncing-allowed?
-                   ignore-syncing-settings?)
-               (or
-                waiting?
-                force-start?))
-        (check-recent-history cofx on-recent-history-fetching)
+      (if (or syncing-allowed?
+              force-restart?)
+        (check-recent-history cofx params)
         (after-checking-history cofx)))))
 
 (def background-cooldown-time (datetime/minutes 3))
@@ -650,21 +669,14 @@
   (when (and (get db :wallet/was-started?)
              (> (- now background-time)
                 background-cooldown-time))
-    (restart-wallet-service
-     cofx
-     {:force-start? true})))
-
-(fx/defn restart-wallet-service-default
-  [cofx]
-  (restart-wallet-service cofx nil))
+    (restart-wallet-service cofx nil)))
 
 (fx/defn restart
   {:events [::restart]}
-  [{:keys [db] :as cofx} ignore-syncing-settings?]
+  [{:keys [db] :as cofx} force-restart?]
   (restart-wallet-service
    cofx
-   {:force-start?             true
-    :ignore-syncing-settings? ignore-syncing-settings?}))
+   {:force-restart? force-restart?}))
 
 (def pull-to-refresh-cooldown-period (* 1 60 1000))
 
@@ -681,8 +693,7 @@
                    :wallet/last-pull-time now
                    :wallet/refreshing-history? true)}
        (restart-wallet-service
-        {:force-start?             true
-         :ignore-syncing-settings? true})))))
+        {:force-restart? true})))))
 
 (re-frame/reg-fx
  ::start-watching
@@ -794,15 +805,14 @@
   {:events [:wallet/keep-watching]}
   [{:keys [db now] :as cofx}]
   (let [non-empty-history? (get db :wallet/non-empty-tx-history?)
-        restart?           (and (not (get db :wallet/non-empty-tx-history?))
-                                (not (get db :wallet-service/restart-timeout)))]
-    (fx/merge
-     cofx
-     (when-not non-empty-history?
-       {:db (assoc db :wallet/keep-watching-until-ms
-                   (+ now (datetime/minutes 30)))})
-     (when restart?
-       (restart-wallet-service {:force-start? true})))))
+        old-timeout        (get db :wallet-service/restart-timeout)
+        db                 (assoc db :wallet-service/custom-interval :ms-2-min)
+        timeout            (set-timeout db)]
+    {:db (assoc db
+                :wallet/keep-watching-until-ms (+ now (datetime/minutes 30))
+                :wallet-service/restart-timeout timeout
+                :wallet-service/custom-interval (get-next-custom-interval db))
+     ::utils.utils/clear-timeouts [old-timeout]}))
 
 (re-frame/reg-fx
  ::set-inital-range
@@ -823,7 +833,7 @@
   {:events [:wallet/tab-opened]}
   [{:keys [db] :as cofx}]
   (when-not (get db :wallet/was-started?)
-    (restart-wallet-service cofx {:force-start? true})))
+    (restart-wallet-service cofx nil)))
 
 (fx/defn set-max-block [{:keys [db]} address block]
   (log/debug "set-max-block"
