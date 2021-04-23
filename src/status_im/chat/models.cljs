@@ -331,6 +331,7 @@
 
 (fx/defn start-timeline-chat
   "Starts a new timeline chat"
+  {:events [:chat/start-timeline-chat]}
   [cofx]
   (when-not (active-chat? cofx constants/timeline-chat-id)
     (add-public-chat cofx constants/timeline-chat-id nil true)))
