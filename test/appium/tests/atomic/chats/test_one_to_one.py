@@ -16,7 +16,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(6283)
     @marks.high
-    def test_push_notification_1_1_chat(self):
+    def test_push_notification_1_1_chat_no_pn_activity_center(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         device_1_home, device_2_home = device_1.create_user(), device_2.create_user(enable_notifications=True)
@@ -28,14 +28,23 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         profile_1.profile_notifications_toggle_button.click()
         device_1_home = profile_1.get_back_to_home_view()
         device_2_public_key = device_2_home.get_public_key_and_username()
+        message_no_pn, message = 'No PN', 'Text push notification'
+
+        device_2.just_fyi("Device 2 check there is no PN when receiving new message to activity centre")
+        device_2.put_app_to_background()
+        device_1_chat = device_1_home.add_contact(device_2_public_key)
+        device_1_chat.send_message(message_no_pn)
+        device_2.open_notification_bar()
+        if device_2.element_by_text_part(message_no_pn).is_element_displayed():
+           self.errors.append("Push notification with text was received for new message in activity centre")
+        device_2.get_app_from_background()
+        device_2.home_button.click()
+        device_2_home.get_chat(default_username_1).click()
+        device_2_home.profile_button.click()
 
         device_2.just_fyi("Device 2 puts app on background being on Profile view to receive PN with text")
         device_2.click_system_home_button()
-
-        device_1_chat = device_1_home.add_contact(device_2_public_key)
-        message = 'Text push notification'
-        device_1_chat.chat_message_input.send_keys(message)
-        device_1_chat.send_message_button.click()
+        device_1_chat.send_message(message)
 
         device_1.just_fyi("Device 1 puts app on background to receive emoji push notification")
         device_1.profile_button.click()
@@ -344,12 +353,15 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         default_username_1 = profile_1.default_username_text.text
         home_1 = profile_1.get_back_to_home_view()
         public_key_2 = home_2.get_public_key_and_username()
+        chat_1 = home_1.add_contact(public_key_2)
+        chat_1.send_message('hey')
+        home_2.home_button.double_click()
+        home_2.get_chat(default_username_1).click()
 
         home_2.just_fyi("Put app on background (to check Push notification received for audio message)")
         home_2.click_system_home_button()
 
         home_2.just_fyi("Sending audio message to device who is on background")
-        chat_1 = home_1.add_contact(public_key_2)
         chat_1.record_audio_message(message_length_in_seconds=125)
         if not chat_1.element_by_text("Maximum recording time reached").is_element_displayed():
             self.drivers[0].fail("Exceeded 2 mins limit of recording time.")

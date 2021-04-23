@@ -64,7 +64,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_message = sender_message.sign_and_send.click()
         send_message.next_button.click()
         send_message.sign_transaction(keycard=True, default_gas_price=False)
-        sender_message.transaction_status.wait_for_element_text(sender_message.pending)
         updated_timestamp_sender = sender_message.timestamp_message.text
         if updated_timestamp_sender == timestamp_sender:
             self.errors.append("Timestamp of message is not updated after signing transaction")

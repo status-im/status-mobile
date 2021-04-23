@@ -190,8 +190,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_2_chat = device_2_home.get_chat(chat_name).click()
         device_2_chat.decline_invitation_button.click()
         left_system_message = device_2_chat.leave_system_message(device_2_username)
-        if not device_1_chat.chat_element_by_text(left_system_message).is_element_displayed():
-            self.errors.append('No system message after user left the group chat')
+        if device_1_chat.chat_element_by_text(left_system_message).is_element_displayed():
+            self.errors.append('System message after user left the group chat is shown if declined before accepting in Activity Centre')
         if device_2_home.element_by_text(chat_name).is_element_displayed():
             self.errors.append("Group chat '%s' is shown, but user has left" % chat_name)
 
@@ -513,7 +513,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_chat.send_message_button.click()
         device_1_chat.chat_message_input.click()
         for chat in device_1_chat, device_2_chat, device_3_chat:
-            if not chat.image_chat_item.is_element_displayed(30):
+            if not chat.image_chat_item.is_element_displayed(60):
                 self.errors.append('Image is not shown in chat after sending for %s' % chat.driver.number)
 
         device_1.just_fyi('Send audio message to group chat and verify it on all devices')

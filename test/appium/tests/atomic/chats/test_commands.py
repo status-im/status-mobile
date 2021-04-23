@@ -72,7 +72,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         updated_timestamp_sender = sender_message.timestamp_message.text
         if updated_timestamp_sender == timestamp_sender:
             self.errors.append("Timestamp of message is not updated after signing transaction")
-        sender_message.transaction_status.wait_for_element_text(sender_message.pending)
         chat_1.wallet_button.click()
         wallet_1.find_transaction_in_history(amount=amount)
 

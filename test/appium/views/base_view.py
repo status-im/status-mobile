@@ -322,6 +322,11 @@ class BaseView(object):
         for _ in range(times):
             self.driver.press_keycode(4)
 
+    def get_app_from_background(self):
+        self.driver.info('*Get Status back from Recent apps*')
+        self.driver.press_keycode(187)
+        self.status_in_background_button.click()
+
     def put_app_to_background_and_back(self, time_in_background=1):
         self.driver.info('*Put app to background and back*')
         self.driver.press_keycode(187)
