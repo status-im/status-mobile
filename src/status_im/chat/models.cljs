@@ -274,7 +274,8 @@
   [{db :db :as cofx} chat-id]
   (fx/merge cofx
             (close-chat)
-            #(assoc-in % [:db :current-chat-id] chat-id)
+            (fn [{:keys [db]}]
+              {:db (assoc db :current-chat-id chat-id)})
             (preload-chat-data chat-id)
             (navigation/navigate-to-cofx :chat-stack {:screen :chat})))
 

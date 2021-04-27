@@ -164,6 +164,9 @@
 (defn chat-list-key-fn [item]
   (or (:chat-id item) (:id item)))
 
+(defn get-item-layout [_ index]
+  #js {:length 64 :offset (* 64 index) :index index})
+
 (views/defview communities-and-chats []
   (views/letsubs [{:keys [items search-filter]} [:home-items]
                   hide-home-tooltip? [:hide-home-tooltip?]]
@@ -174,6 +177,7 @@
       [welcome-blank-page]
       [list/flat-list
        {:key-fn                       chat-list-key-fn
+        :getItemLayout                get-item-layout
         :initialNumToRender           5
         :keyboard-should-persist-taps :always
         :data                         items

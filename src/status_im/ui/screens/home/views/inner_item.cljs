@@ -13,8 +13,7 @@
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.core :as utils]
             [status-im.utils.datetime :as time]
-            [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
-            [status-im.ui.screens.chat.sheets :as sheets]))
+            [status-im.ui.components.chat-icon.styles :as chat-icon.styles]))
 
 (defn mention-element [from]
   @(re-frame/subscribe [:contacts/contact-name-by-identity from]))
@@ -123,21 +122,6 @@
        [react/view {:style               styles/public-unread
                     :accessibility-label :unviewed-messages-public}]
        [badge/message-counter unviewed-messages-count])]))
-
-(def memo-on-long-press
-  (memoize
-   (fn [chat-id]
-     (fn []
-       (re-frame/dispatch [:bottom-sheet/show-sheet
-                           {:content (fn [] [sheets/chat-actions chat-id])}])))))
-
-(def memo-on-press
-  (memoize
-   (fn [chat-id]
-     (fn []
-       (re-frame/dispatch [:dismiss-keyboard])
-       (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
-       (re-frame/dispatch [:search/home-filter-changed nil])))))
 
 (defn icon-style []
   {:color           colors/black

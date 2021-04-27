@@ -966,13 +966,12 @@
  :chats/chat-messages-stream
  (fn [[_ chat-id] _]
    [(re-frame/subscribe [:chats/raw-chat-messages-stream chat-id])
+    (re-frame/subscribe [:chats/chat-no-messages? chat-id])
     (re-frame/subscribe [:view-id])])
- (fn [[messages view-id]]
-   (if (or (= view-id :chat) (empty? messages))
-     (do
-       (reset! memo-chat-messages-stream messages)
-       messages)
-     @memo-chat-messages-stream)))
+ (fn [[messages empty view-id]]
+   (when (or (= view-id :chat) empty)
+     (reset! memo-chat-messages-stream messages))
+   @memo-chat-messages-stream))
 
 (def memo-profile-messages-stream (atom nil))
 
@@ -980,13 +979,12 @@
  :chats/profile-messages-stream
  (fn [[_ chat-id] _]
    [(re-frame/subscribe [:chats/raw-chat-messages-stream chat-id])
+    (re-frame/subscribe [:chats/chat-no-messages? chat-id])
     (re-frame/subscribe [:view-id])])
- (fn [[messages view-id]]
-   (if (or (= view-id :profile) (empty? messages))
-     (do
-       (reset! memo-profile-messages-stream messages)
-       messages)
-     @memo-profile-messages-stream)))
+ (fn [[messages empty view-id]]
+   (when (or (= view-id :profile) empty)
+     (reset! memo-profile-messages-stream messages))
+   @memo-profile-messages-stream))
 
 (def memo-timeline-messages-stream (atom nil))
 
