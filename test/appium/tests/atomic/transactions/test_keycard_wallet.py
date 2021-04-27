@@ -57,13 +57,13 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sending_amount = wallet_view.get_unique_amount()
         asset = 'STT'
         wallet_view.accounts_status_account.click_until_presence_of_element(wallet_view.send_transaction_button)
+        initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
         wallet_view.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
                                      sign_transaction=True, keycard=True)
         sign_in_view.toggle_airplane_mode()
         self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, confirmations=6, token=True)
 
         sign_in_view.just_fyi('Change that balance is updated and transaction is appeared in history')
-        initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
 
         sign_in_view.toggle_airplane_mode()
         wallet_view.wait_balance_is_changed('STT', initial_amount_STT)
