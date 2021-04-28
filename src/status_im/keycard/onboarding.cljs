@@ -4,6 +4,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
+            [status-im.utils.utils :as utils]
             [status-im.keycard.common :as common]
             [status-im.keycard.mnemonic :as mnemonic]
             [taoensso.timbre :as log]
@@ -274,6 +275,11 @@
                {:mnemonic     mnemonic
                 :pin          pin'}})))
 
+(fx/defn factory-reset-card-toggle
+  {:events [:keycard.onboarding.intro.ui/factory-reset-card-toggle]}
+  [{:keys [db] :as cofx} checked?]
+  {:db (assoc-in db [:keycard :factory-reset-card?] checked?)})
+
 (fx/defn begin-setup-pressed
   {:events [:keycard.onboarding.intro.ui/begin-setup-pressed]}
   [{:keys [db] :as cofx}]
@@ -282,14 +288,34 @@
    {:db (-> db
             (update :keycard
                     dissoc :secrets :card-state :multiaccount-wallet-address
-                    :multiaccount-whisper-public-key
-                    :application-info)
+                    :multiaccount-whisper-public-key :application-info)
             (assoc-in [:keycard :setup-step] :begin)
             (assoc-in [:keycard :pin :on-verified] nil))}
-   (common/show-connection-sheet
-    {:on-card-connected :keycard/get-application-info
-     :on-card-read      :keycard/check-card-state
-     :handler           (common/get-application-info :keycard/check-card-state)})))
+   (if (get-in db [:keycard :factory-reset-card?])
+     (utils/show-confirmation {:title               (i18n/label :t/keycard-factory-reset-title)
+                               :content             (i18n/label :t/keycard-factory-reset-text)
+                               :confirm-button-text (i18n/label :t/yes)
+                               :cancel-button-text  (i18n/label :t/no)
+                               :on-accept           #(re-frame/dispatch [::factory-reset])
+                               :on-cancel           #(re-frame/dispatch [::factory-reset-cancel])})
+     (common/show-connection-sheet
+      {:on-card-connected :keycard/get-application-info
+       :on-card-read      :keycard/check-card-state
+       :handler           (common/get-application-info :keycard/check-card-state)}))))
+
+(fx/defn factory-reset
+  {:events [::factory-reset]}
+  [cofx]
+  (common/show-connection-sheet
+   cofx
+   {:on-card-connected :keycard/factory-reset
+    :on-card-read      :keycard/check-card-state
+    :handler           (common/factory-reset :keycard/check-card-state)}))
+
+(fx/defn factory-reset-cancel
+  {:events [::factory-reset-cancel]}
+  [{:keys [db] :as cofx}]
+  {:db (update db :keycard dissoc :factory-reset-card?)})
 
 (fx/defn cancel-confirm
   {:events [::cancel-confirm]}

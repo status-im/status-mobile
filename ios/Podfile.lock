@@ -628,7 +628,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Keycard:
-    :commit: 75c956d64a7d9fdf63e1aac9c2f36237e792c3eb
+    :commit: abf2be41c70846ab6f11c8bd445faf81b0befc1f
     :git: https://github.com/status-im/Keycard.swift.git
   secp256k1:
     :commit: 46a1fa30d9b8babeae85ff519050f42394ab5fcc

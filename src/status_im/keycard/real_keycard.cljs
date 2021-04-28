@@ -107,6 +107,17 @@
                 (on-success info))))
       (catch on-failure)))
 
+(defn factory-reset
+  [{:keys [on-success on-failure]}]
+  (.. status-keycard
+      (factoryReset)
+      (then (fn [response]
+              (let [info (-> response
+                             (js->clj :keywordize-keys true)
+                             (update :key-uid ethereum/normalized-hex))]
+                (on-success info))))
+      (catch on-failure)))
+
 (defn install-applet [{:keys [on-success on-failure]}]
   (.. status-keycard
       installApplet
@@ -313,6 +324,8 @@
     (set-pairings args))
   (keycard/get-application-info [this args]
     (get-application-info args))
+  (keycard/factory-reset [this args]
+    (factory-reset args))
   (keycard/install-applet [this args]
     (install-applet args))
   (keycard/install-cash-applet [this args]

@@ -11,13 +11,14 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
+            [status-im.ui.components.checkbox.view :as checkbox]
             [quo.core :as quo]
             [status-im.constants :as constants])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview intro []
   (letsubs [flow [:keycard-flow]
-            {:keys [from-key-storage-and-migration?]} [:keycard]]
+            {:keys [from-key-storage-and-migration? factory-reset-card?]} [:keycard]]
     [react/view styles/container
      (when-not from-key-storage-and-migration?
        [topbar/topbar])
@@ -86,6 +87,11 @@
                              [react/text {:style {:color         colors/gray
                                                   :padding-right 35}}
                               text]]]]))]
+      [react/view {:style {:flex-direction :row}}
+       [checkbox/checkbox {:checked?        factory-reset-card?
+                           :style           {:margin-right 10}
+                           :on-value-change #(re-frame/dispatch [:keycard.onboarding.intro.ui/factory-reset-card-toggle %])}]
+       [react/text (i18n/label :t/keycard-factory-reset)]]
       [react/view {:margin-bottom 40}
        [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.intro.ui/begin-setup-pressed])}
         (i18n/label :t/begin-set-up)]]]]))

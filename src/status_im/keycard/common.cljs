@@ -409,6 +409,13 @@
            (navigation/navigate-to-cofx :keycard-recovery-pin nil)))
         (show-wrong-keycard-alert true)))))
 
+(fx/defn factory-reset
+  {:events [:keycard/factory-reset]}
+  [{:keys [db]} on-card-read]
+  (log/debug "[keycard] factory-reset")
+  {:db (update db :keycard dissoc :factory-reset-card?)
+   :keycard/factory-reset {:on-success on-card-read}})
+
 ;; Get application info
 
 (fx/defn get-application-info

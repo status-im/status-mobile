@@ -99,6 +99,25 @@
         [:keycard.callback/on-get-application-info-error
          (error-object->map response)]))})))
 
+(defn factory-reset [{:keys [on-success] :as args}]
+  (log/debug "[keycard] factory-reset")
+  (keycard/factory-reset
+   card
+   (merge
+    args
+    {:on-success
+     (fn [response]
+       (log/debug "[keycard response succ] get-application-info")
+       (re-frame/dispatch
+        [:keycard.callback/on-get-application-info-success
+         response on-success]))
+     :on-failure
+     (fn [response]
+       (log/debug "[keycard response fail] get-application-info")
+       (re-frame/dispatch
+        [:keycard.callback/on-get-application-info-error
+         (error-object->map response)]))})))
+
 (defn install-applet []
   (log/debug "[keycard] install-applet")
   (keycard/install-applet

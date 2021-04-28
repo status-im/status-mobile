@@ -14,6 +14,7 @@
   (remove-event-listener [this event])
   (remove-event-listeners [this])
   (get-application-info [this args])
+  (factory-reset [this args])
   (install-applet [this args])
   (install-cash-applet [this args])
   (init-card [this args])

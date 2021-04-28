@@ -119,6 +119,7 @@
   (log/debug "get-application-info")
   (later #(on-success (get @state :application-info))))
 
+(defn factory-reset [_])
 (defn install-applet [_])
 (defn install-cash-applet [_])
 
@@ -458,6 +459,9 @@
     (remove-event-listeners))
   (keycard/get-application-info [this args]
     (log/debug "simulated card get-application-info")
+    (get-application-info args))
+  (keycard/factory-reset [this args]
+    (log/debug "simulated card factory-reset")
     (get-application-info args))
   (keycard/install-applet [this args]
     (log/debug "simulated card install-applet")

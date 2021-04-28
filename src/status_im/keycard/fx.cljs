@@ -60,6 +60,10 @@
  card/get-application-info)
 
 (re-frame/reg-fx
+ :keycard/factory-reset
+ card/factory-reset)
+
+(re-frame/reg-fx
  :keycard/check-nfc-support
  card/check-nfc-support)
 

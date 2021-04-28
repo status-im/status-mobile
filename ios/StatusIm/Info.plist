@@ -131,6 +131,7 @@
 	<array>
 		<string>A00000080400010101</string>
 		<string>A00000080400010301</string>
+		<string>A000000151000000</string>
 	</array>
 	<key>NFCReaderUsageDescription</key>
 	<string>Enable Keycard</string>
