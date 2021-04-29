@@ -1,3 +1,34 @@
+## 1.13
+
+### For iOS and Android
+### Features
+
+- New activity manager https://github.com/status-im/status-react/issues/11958 
+New chats and group chat invitation will appear in a new section, the activity center, where a user will be able to accept or decline the request.
+https://www.figma.com/file/r59kCQxl6tlC0dHkcAJOpP/Action-center-MVP---Mobile?node-id=2%3A8012 (not fully implemented)
+
+- Receive messages from contacts only option
+Under privacy in settings a user will be able to select whether they want to receive messages and group chat invitations from contacts only.
+
+- Added delivered confirmation for private groups
+Messages sent to private groups will now be marked as confirmed if at least one of the members received it.
+
+- New keycard functionalities: reset a keycard, changing PUK of a card, changing pairing code, create a new keycard backup card.
+
+
+### Improvements
+
+- Improved UI for starting a new private chat
+
+
+### Bugfixes
+
+- Fixed issue with crypto on ramp and requiring camera access
+- Removed Wyre from list of services in buy crypto feature
+- Added support for SOCKS token
+
+
+
 ## 1.12
 ### iOS
 #### Excerpt
