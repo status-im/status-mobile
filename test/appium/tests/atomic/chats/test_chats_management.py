@@ -1047,3 +1047,57 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('ENS-owner user is not available in mention suggestion list of Group chat')
 
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(695771)
+    @marks.medium
+    def test_open_user_profile_long_press_on_message(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        message_from_sender = "Message sender"
+        GroupChat1Name = "GroupChat1"
+        GroupChat2Name = "GroupChat2"
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+
+        device_1.just_fyi('Device1 sets permissions to accept chat requests only from trusted contacts')
+        profile_1 = home_1.profile_button.click()
+        profile_1.privacy_and_security_button.click()
+        profile_1.accept_new_chats_from.click()
+        profile_1.accept_new_chats_from_contacts_only.click()
+        profile_1.profile_button.click()
+        public_key_user_1, username_1 = profile_1.get_public_key_and_username(return_username=True)
+        public_key_user_2, username_2 = home_2.get_public_key_and_username(return_username=True)
+
+        device_1.just_fyi('Device2 creates 1-1 chat Group chats')
+        home_2.home_button.click()
+        one_to_one_device_2 = home_2.add_contact(public_key_user_1)
+        one_to_one_device_2.send_message(message_from_sender)
+        one_to_one_device_2.home_button.click()
+        home_2.create_group_chat([username_1], group_chat_name=GroupChat1Name)
+
+        device_1.just_fyi('Device1 check there are no any chats in Activity Center nor Chats view')
+
+        home_1.home_button.click()
+        if home_1.element_by_text_part(username_2).is_element_displayed() or home_1.element_by_text_part(GroupChat1Name).is_element_displayed():
+            self.errors.append("Chats are present on Chats view despite they created by non-contact")
+        home_1.notifications_button.click()
+        if home_1.element_by_text_part(username_2).is_element_displayed() or home_1.element_by_text_part(GroupChat1Name).is_element_displayed():
+            self.errors.append("Chats are present in Activity Center view despite they created by non-contact")
+
+        device_1.just_fyi('Device1 adds Device2 in Contacts so chat requests should be visible now')
+        home_1.home_button.click()
+        home_1.add_contact(public_key_user_2)
+
+        device_1.just_fyi('Device2 creates 1-1 chat Group chats once again')
+        home_2.home_button.click()
+        home_2.get_chat_from_home_view(username_1).click()
+        one_to_one_device_2.send_message(message_from_sender)
+        one_to_one_device_2.home_button.click()
+        home_2.create_group_chat([username_1], group_chat_name=GroupChat2Name)
+
+        device_1.just_fyi('Device1 verifies 1-1 chat Group chats are visible')
+
+        home_1.home_button.click()
+        if not home_1.element_by_text_part(username_2).is_element_displayed() or not home_1.element_by_text_part(GroupChat2Name).is_element_displayed():
+            self.errors.append("Chats are not present on Chats view while they have to!")
+
+        self.errors.verify_no_errors()

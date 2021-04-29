@@ -336,8 +336,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.toggle_mobile_data()
         sign_in.element_by_text_part('Stop syncing').wait_and_click(60)
         sign_in.wallet_button.click()
-        if wallet_view.asset_by_name('LXS').is_element_displayed():
-            self.errors.append('Token balance is fetched while on cellular network!')
+        if not wallet_view.element_by_text_part('LXS').is_element_displayed():
+            self.errors.append('Token balance is not fetched while on cellular network!')
 
         wallet_view.just_fyi('Add watch-only account when on cellular network')
         wallet_view.add_account_button.click()
