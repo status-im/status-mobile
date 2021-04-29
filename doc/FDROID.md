@@ -14,6 +14,38 @@ First release of Status app was merged in [fdroid/fdroiddata#7179](https://gitla
 
 # Adding New Versions
 
+There are two ways - automated and manual - described below.
+
+## Automated
+
+The script will analyze a provided APK, update the metadata file based on that information, and commit the change to [`fdroiddata`](https://gitlab.com/fdroid/fdroiddata) repo. The creation of merge request is manual.
+
+#### Requirements:
+
+- GitLab account
+- Forked copy of the [`fdroiddata`](https://gitlab.com/fdroid/fdroiddata) repo
+- Link to the release published
+
+#### Steps
+
+1. Use the F-Droid PR update script via `make`:
+    ```sh
+    make fdroid-pr APK=StatusIm-Mobile-v1.16.0-ef34af.apk
+    ```
+    The script also accepts a URL.
+2. Add a fork repo:
+    ```sh
+    git remote add john https://gitlab.com/john/fdroiddata.git
+    ```
+3. Push:
+    ```sh
+    git push john status-im/v1.16.0
+    ```
+4. [Create a PR via the GitLab interface.](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
+
+
+## Manual
+
 You can find our configuration file at [`metadata/im.status.ethereum.yml`](https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/im.status.ethereum.yml)
 
 The file defines all the necessary metadata like `SourceCode`, `Website`, or `License`, but the most important key is `Builds`, which looks like this:
@@ -42,6 +74,7 @@ It contains a list of objects defining each release of the application. In order
 The `versionCode` should be the same as the one in build that was uploaded to Play Store.
 It can be found in the build logs or by using:
 ```
+ > make shell TARGET=android
  > apkanalyzer manifest version-code StatusIm-Mobile-v1.12.0.apk
 2021022512
 ```
@@ -98,6 +131,8 @@ You should also run `lint` and `rewritemeta` for the App ID to verify and fix th
 The original research was done in [#8512](https://github.com/status-im/status-react/issues/8512).
 
 Normally F-Droid server wants to run Gradle itself, but we do not specify the `gradle` key in order to run `make release-fdroid` ourselves in `build` step. We also add `android/build.gradle` to `scanignore` to avoid F-Droid trying to use Gradle directly.
+
+The Android metadata like description or screenshots is [loaded from our repository](https://f-droid.org/en/docs/All_About_Descriptions_Graphics_and_Screenshots/#fastlane-structure) based on the Fastlane [`supply`](https://docs.fastlane.tools/actions/supply/) tool folder structure for updating Google Play store metadata.
 
 Once the PR is merged it may take a few days for the F-Droid server farm to build and deploy the new version to their site and app. You can look up the current state of builds [here](https://f-droid.org/wiki/index.php?title=Special:RecentChanges&days=7&from=&hidebots=0&hideanons=1&hideliu=1&limit=500) and look for your App ID and a `deploy` change after it.
 
