@@ -86,6 +86,7 @@ class TestrailReport(BaseTestReport):
         test_cases['high'] = 735
         test_cases['medium'] = 736
         test_cases['low'] = 737
+        test_cases['upgrade'] = 881
         case_ids = list()
         for arg in argv:
             if "run_testrail_ids" in arg:
@@ -95,10 +96,14 @@ class TestrailReport(BaseTestReport):
             if 'critical or high' in argv:
                 for case in self.get_cases([test_cases['critical'], test_cases['high']]):
                     case_ids.append(case['id'])
+            elif 'upgrade' in argv and 'not upgrade' not in argv:
+                for case in self.get_cases([test_cases['upgrade']]):
+                    case_ids.append(case['id'])
             else:
                 for phase in test_cases:
-                    for case in self.get_cases([test_cases[phase]]):
-                        case_ids.append(case['id'])
+                    if phase != 'upgrade':
+                        for case in self.get_cases([test_cases[phase]]):
+                            case_ids.append(case['id'])
         return case_ids
 
     def add_results(self):

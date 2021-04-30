@@ -41,6 +41,8 @@ upgrade_users = dict()
 
 upgrade_users['chats'] = dict()
 upgrade_users['chats']['passphrase'] = 'identify level pink lift choose winner hour onion style festival rather salmon'
+upgrade_users['chats']['public_key'] = '0x045d8a344ffee0c5ce187d0248a9b8ffc4a12493c9d9e8b9a395f38' \
+                                       '825ebe55ac2350d9e7090e39e6c8d7020aaa799aefe563f1db5b6151370eae246558772ad9e'
 
 wallet_users = dict()
 

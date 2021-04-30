@@ -34,18 +34,42 @@ chats = {
         'messages':{'long': 'Папирус (др.-греч. πάπῡρος, лат. papyrus), или би́блиос (др.-греч. βιβλίος), также ха́рта',
                     'tag': '#what-is-going-on',
                     'reply': 'reply',
-                    'mention': 'All Whopping Dassierat be my friend'},
-        'first_timastamp': 'Mar 25, 2021'
+                    'mention': 'All Whopping Dassierat be my friend'}
     },
     'Thoughtful Stupendous Graywolf': {
         'preview':'hey Thoughtful Stupendous Graywolf !',
         'messages':{
 
         },
-
-
     },
     'Royal Defensive Solenodon': {
         'preview':'Request address for transaction accepted',
+        'messages': {
+            'audio': {
+                'length':'00:10',
+                'timestamp' : '1:02 PM'
+            },
+            'incoming_ETH_shared':{
+                'value':'0.01 ETH',
+                'status': "Shared 'Ethereum account'"
+            },
+            'incoming_ETH_confirmed': {
+                'value': '0.1 ETH',
+                'status': "Confirmed"
+            },
+            'incoming_ETH_declined': {
+                'value': '20 ETH',
+                'status': "Transaction declined"
+            },
+            'incoming_STT_confirmed': {
+                'value': '200 STT',
+                'status': "Confirmed"
+            },
+            'outgoing_STT_sign': {
+                'value': '200 STT',
+                'status': "Address request accepted",
+                'action': 'Sign and send'
+            },
+        }
     }
 }

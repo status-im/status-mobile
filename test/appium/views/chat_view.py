@@ -656,7 +656,7 @@ class ChatView(BaseView):
                 return self.history_start_icon.find_element()
             except NoSuchElementException:
                 size = self.driver.get_window_size()
-                self.driver.swipe(500, size["height"] * 0.1, 500, size["height"] * 0.8)
+                self.driver.swipe(500, size["height"] * 0.25, 500, size["height"] * 0.8)
         else:
             raise Exception('Start of chat history is not reached!')
 

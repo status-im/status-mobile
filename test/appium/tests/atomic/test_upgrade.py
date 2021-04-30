@@ -1,5 +1,5 @@
 from tests import marks
-from tests.base_test_case import SingleDeviceTestCase
+from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import upgrade_users
 from views.sign_in_view import SignInView
 import views.upgrade_dbs.chats.data as chat_data
@@ -119,4 +119,31 @@ class TestUpgradeApplication(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+@marks.upgrade
+class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
+
+    @marks.testrail_id(6285)
+    @marks.skip
+    def test_unread_previews_public_chat_upgrade(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_2.create_user()
+        device_1.just_fyi("Import db, upgrade")
+        home = device_1.import_db(user=upgrade_users['chats'], import_db_folder_name='chats')
+
+        device_1.just_fyi("**Check messages in 1-1 chat**")
+        command_username = 'Royal Defensive Solenodon'
+        messages = chat_data.chats[command_username]['messages']
+        chat = home.get_chat(command_username).click()
+        if chat.add_to_contacts.is_element_displayed():
+            self.errors.append('User is deleted from contacts after upgrade')
+        chat.scroll_to_start_of_history()
+        if chat.audio_message_in_chat_timer.text != messages['audio']['length']:
+            self.errors.append('Timer is not shown for audiomessage')
+        import time
+        time.sleep(100)
+        #device_1.just_fyi("Check messages in Activity centre")
+        # device_2.just_fyi("Create new multiaccount and send new message to device 1")
+        # device_1.just_fyi("Respond to message and check it is shown on device 2")
+        self.errors.verify_no_errors()
 
