@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.2.15'
+library 'status-jenkins-lib@v1.2.16'
 
 pipeline {
   agent { label params.AGENT_LABEL }
