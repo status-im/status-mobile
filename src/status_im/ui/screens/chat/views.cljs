@@ -87,7 +87,8 @@
                           color
                           loading-messages?
                           no-messages?]}]
-  [react/view (style/intro-header-container loading-messages? no-messages?)
+  [react/view {:style (style/intro-header-container loading-messages? no-messages?)
+               :accessibility-label :history-chat}
    ;; Icon section
    [react/view {:style {:margin-top    42
                         :margin-bottom 24}}
@@ -117,7 +118,7 @@
 (defn chat-intro-one-to-one [{:keys [chat-id] :as opts}]
   (let [contact-names @(re-frame/subscribe
                         [:contacts/contact-two-names-by-identity chat-id])]
-    (chat-intro (assoc opts :contact-name (first contact-names)))))
+    [chat-intro (assoc opts :contact-name (first contact-names))]))
 
 (defn chat-intro-header-container
   [{:keys [group-chat invitation-admin
@@ -126,8 +127,8 @@
            public?]}
    no-messages]
   [react/touchable-without-feedback
-   {:style    {:flex        1
-               :align-items :flex-start}
+   {:style               {:flex        1
+                          :align-items :flex-start}
     :on-press (fn [_]
                 (react/dismiss-keyboard!))}
    (let [opts

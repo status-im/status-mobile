@@ -7,7 +7,7 @@ from selenium.common.exceptions import NoSuchElementException
 from tests import emojis
 from time import sleep
 from views.base_element import Button, EditBox, Text, BaseElement, SilentButton
-from views.base_view import BaseView, ProgressBar
+from views.base_view import BaseView
 from views.profile_view import ProfilePictureElement
 
 
@@ -144,9 +144,6 @@ class ChatElementByText(Text):
 
         return TimeStampText(self.driver, self.locator)
 
-    @property
-    def progress_bar(self):
-        return ProgressBar(self.driver, self.locator)
 
     @property
     def member_photo(self):
@@ -168,6 +165,14 @@ class ChatElementByText(Text):
         element = Text(self.driver, prefix=self.locator,
                        xpath="//android.view.ViewGroup//android.widget.TextView[contains(@text,'%s')]" % text)
         return element.is_element_displayed(wait_time)
+
+    @property
+    def uncollapse(self) -> bool:
+        class Collapse(Button):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="/../../..//android.widget.ImageView[@content-desc='icon']")
+
+        return Collapse(self.driver, self.locator).is_element_displayed()
 
     @property
     def status(self) -> str:
@@ -264,12 +269,12 @@ class GroupChatInfoView(BaseView):
 class PreviewMessage(ChatElementByText):
     def __init__(self, driver, text:str):
         super().__init__(driver, text=text)
-        self.locator+="/android.view.ViewGroup/android.view.ViewGroup/"
+        self.locator+="/android.view.ViewGroup/android.view.ViewGroup"
 
     @staticmethod
     def return_element_or_empty(obj):
         try:
-            return obj.find_element()
+            return obj.scroll_to_element()
         except NoSuchElementException:
             return ''
 
@@ -277,21 +282,21 @@ class PreviewMessage(ChatElementByText):
     def preview_image(self):
         class PreviewImage(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="android.widget.ImageView")
+                super().__init__(driver, prefix=parent_locator, xpath="/android.widget.ImageView")
         return PreviewMessage.return_element_or_empty(PreviewImage(self.driver, self.locator))
 
     @property
     def preview_title(self):
         class PreviewTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="android.widget.TextView[1]")
+                super().__init__(driver, prefix=parent_locator, xpath="/android.widget.TextView[1]")
         return PreviewMessage.return_element_or_empty(PreviewTitle(self.driver, self.locator))
 
     @property
     def preview_subtitle(self):
         class PreviewSubTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="android.widget.TextView[2]")
+                super().__init__(driver, prefix=parent_locator, xpath="/android.widget.TextView[2]")
         return PreviewMessage.return_element_or_empty(PreviewSubTitle(self.driver, self.locator))
 
 
@@ -405,6 +410,9 @@ class ChatView(BaseView):
         self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)
         self.request_command = RequestCommand(self.driver)
+
+        # General chat view
+        self.history_start_icon = Button(self.driver, accessibility_id="history-chat")
 
         #Stickers
         self.show_stickers_button = Button(self.driver, accessibility_id="show-stickers-icon")
@@ -640,6 +648,17 @@ class ChatView(BaseView):
         element.scroll_to_element()
         element.click()
         element.wait_for_invisibility_of_element()
+
+    def scroll_to_start_of_history(self, depth=20):
+        self.driver.info('*Scrolling *')
+        for _ in range(depth):
+            try:
+                return self.history_start_icon.find_element()
+            except NoSuchElementException:
+                size = self.driver.get_window_size()
+                self.driver.swipe(500, size["height"] * 0.1, 500, size["height"] * 0.8)
+        else:
+            raise Exception('Start of chat history is not reached!')
 
     def user_profile_image_in_mentions_list(self, username):
         return Button(self.driver, xpath="//*[@content-desc='suggestions-list']//*[@text='%s']/"

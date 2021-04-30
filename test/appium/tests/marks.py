@@ -9,4 +9,5 @@ low = pytest.mark.low
 
 flaky = pytest.mark.flaky
 transaction = pytest.mark.transaction
+upgrade = pytest.mark.upgrade
 skip = pytest.mark.skip

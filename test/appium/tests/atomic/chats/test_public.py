@@ -78,7 +78,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         if home_1.home_button.public_unread_messages.is_element_displayed():
             self.errors.append('New messages public chat badge is shown on Home button')
         if chat_element.new_messages_public_chat.is_element_displayed():
-            self.errors.append('Unread messages badge is shown in public chat while while there are no unread messages')
+            self.errors.append('Unread messages badge is shown in public chat while there are no unread messages')
         [home.get_chat('#' + chat_name).click() for home in (home_1,home_2)]
         chat_1.send_message(message_2)
         chat_2.chat_element_by_text(message_2).wait_for_element(20)

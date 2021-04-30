@@ -37,6 +37,10 @@ dummy_user['public_key'] = "0x04596348471aa19d31c8503fa00f95abd0fc3ca90866881728
                            "a2748453accf9d358b8d7a1448597201c664dc280e37"
 dummy_user['address'] = "0xdF6Bc71206d7ea89ec905a7f5ce8Ff34C85eB04e"
 
+upgrade_users = dict()
+
+upgrade_users['chats'] = dict()
+upgrade_users['chats']['passphrase'] = 'identify level pink lift choose winner hour onion style festival rather salmon'
 
 wallet_users = dict()
 

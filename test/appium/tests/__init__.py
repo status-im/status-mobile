@@ -24,6 +24,8 @@ def get_current_time():
 def debug(text: str):
     logging.debug(text)
 
+appium_root_project_path = os.path.join(os.sep.join(__file__.split(os.sep)[:-1]), '../')
+
 pytest_config_global = dict()
 test_suite_data = TestSuiteData()
 appium_container = AppiumContainer()
@@ -43,7 +45,8 @@ staging_fleet = 'eth.staging'
 prod_fleet = 'eth.prod'
 # This fleet is used in the tests
 used_fleet = staging_fleet
-geth_log_emulator_path = '/storage/emulated/0/Android/data/im.status.ethereum/files/Download/geth.log'
+app_path = '/storage/emulated/0/Android/data/im.status.ethereum/files/Download/'
+geth_log_emulator_path = app_path + 'geth.log'
 
 mailserver_ams = 'mail-01.do-ams3'
 mailserver_hk = 'mail-01.ac-cn-hongkong-c'

@@ -145,11 +145,6 @@ class SendMessageButton(Button):
         super().__init__(driver, accessibility_id="send-message-button")
 
 
-class ProgressBar(BaseElement):
-    def __init__(self, driver, parent_locator: str = ''):
-        super().__init__(driver, xpath="%s//android.widget.ProgressBar" % parent_locator)
-
-
 class AssetButton(Button):
     def __init__(self, driver, asset_name):
         super().__init__(driver, xpath="(//*[@content-desc=':%s-asset-value'])[1]" % asset_name)
@@ -233,7 +228,6 @@ class BaseView(object):
         self.show_roots_button = Button(self.driver, accessibility_id="Show roots")
         self.get_started_button = Button(self.driver, translation_id="get-started")
         self.ok_got_it_button = Button(self.driver, translation_id="ok-got-it")
-        self.progress_bar = ProgressBar(self.driver)
         self.cross_icon_inside_welcome_screen_button = Button(self.driver, accessibility_id='hide-home-button')
         self.status_in_background_button = Button(self.driver, xpath="//*[contains(@content-desc,'Status')]")
         self.cancel_button = Button(self.driver, translation_id="cancel", uppercase=True)

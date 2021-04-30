@@ -1,7 +1,7 @@
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
-
-from tests import common_password
+import os
+from tests import common_password, appium_root_project_path, app_path
 from views.base_element import Button, EditBox, Text
 from views.base_view import BaseView
 
@@ -234,3 +234,23 @@ class SignInView(BaseView):
         self.driver.info("**Open weblink %s**" % url_weblink)
         self.open_universal_web_link(url_weblink)
         self.sign_in()
+
+    def import_db(self, user, import_db_folder_name):
+        self.just_fyi('**Importing database**')
+        import_file_name = 'export.db'
+        home = self.recover_access(user['passphrase'])
+        profile = home.profile_button.click()
+        full_path_to_file = os.path.join(appium_root_project_path, 'views/upgrade_dbs/%s/%s' %
+                                         (import_db_folder_name, import_file_name))
+        profile.logout()
+        self.multi_account_on_login_button.wait_for_visibility_of_element(30)
+        self.get_multiaccount_by_position(1).click()
+        self.password_input.set_value(common_password)
+        self.driver.push_file(source_path=full_path_to_file, destination_path=app_path + import_file_name)
+        self.options_button.click()
+        self.element_by_text('Import unencrypted').click()
+        self.element_by_text('Import unencrypted').wait_for_invisibility_of_element(40)
+        self.sign_in_button.click()
+        self.home_button.wait_for_element(40)
+        self.just_fyi('**Importing database is finished!**')
+        return self.get_home_view()

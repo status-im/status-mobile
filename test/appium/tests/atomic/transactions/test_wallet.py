@@ -457,7 +457,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.manage_assets_button.click()
         token_view = wallet_view.add_custom_token_button.click()
         token_view.contract_address_input.send_keys(contract_address)
-        token_view.progress_bar.wait_for_invisibility_of_element(30)
         if token_view.name_input.text != name:
             self.errors.append('Name for custom token was not set')
         if token_view.symbol_input.text != symbol:

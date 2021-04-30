@@ -48,6 +48,14 @@ class ChatElement(SilentButton):
         return UnreadMessagesCountText(self.driver, self.locator)
 
     @property
+    def chat_preview(self):
+        class PreveiewMessageText(Text):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, xpath="%s//*[@content-desc='chat-message-text']" % parent_locator)
+
+        return PreveiewMessageText(self.driver, self.locator).text
+
+    @property
     def new_messages_public_chat(self):
         class UnreadMessagesPublicChat(BaseElement):
             def __init__(self, driver):
