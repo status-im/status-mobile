@@ -1,3 +1,4 @@
+from tests import transl
 chats = {
     'All Whopping Dassierat': {
         'preview': 'unread 1-1',
@@ -38,9 +39,6 @@ chats = {
     },
     'Thoughtful Stupendous Graywolf': {
         'preview':'hey Thoughtful Stupendous Graywolf !',
-        'messages':{
-
-        },
     },
     'Royal Defensive Solenodon': {
         'preview':'Request address for transaction accepted',
@@ -49,27 +47,28 @@ chats = {
                 'length':'00:10',
                 'timestamp' : '1:02 PM'
             },
+        },
+        'commands':{
             'incoming_ETH_shared':{
                 'value':'0.01 ETH',
                 'status': "Shared 'Ethereum account'"
             },
             'incoming_ETH_confirmed': {
                 'value': '0.1 ETH',
-                'status': "Confirmed"
+                'status': transl["status-confirmed"]
             },
             'incoming_ETH_declined': {
                 'value': '20 ETH',
-                'status': "Transaction declined"
+                'status': transl["transaction-declined"]
             },
             'incoming_STT_confirmed': {
                 'value': '200 STT',
-                'status': "Confirmed"
+                'status': transl["status-confirmed"]
             },
             'outgoing_STT_sign': {
-                'value': '200 STT',
-                'status': "Address request accepted",
-                'action': 'Sign and send'
+                'value': '5 STT',
+                'status': transl["address-request-accepted"],
             },
-        }
+        },
     }
 }

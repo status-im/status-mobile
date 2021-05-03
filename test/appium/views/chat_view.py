@@ -301,8 +301,10 @@ class PreviewMessage(ChatElementByText):
 
 
 class TransactionMessage(ChatElementByText):
-    def __init__(self, driver, text:str):
+    def __init__(self, driver, text:str, transaction_value):
         super().__init__(driver, text=text)
+        if transaction_value:
+            self.xpath = "//*[starts-with(@text,'%s')]/../*[@text='%s']/ancestor::android.view.ViewGroup[@content-desc='chat-item']" % (text, transaction_value)
         # Common statuses for incoming and outgoing transactions
         self.address_requested = self.get_translation_by_key("address-requested")
         self.confirmed = self.get_translation_by_key("status-confirmed")
@@ -331,8 +333,8 @@ class TransactionMessage(ChatElementByText):
 
 
 class OutgoingTransaction(TransactionMessage):
-    def __init__(self, driver, account_name: str):
-        super().__init__(driver, text="↑ Outgoing transaction")
+    def __init__(self, driver, account_name: str, transaction_value):
+        super().__init__(driver, text="↑ Outgoing transaction", transaction_value=transaction_value)
         self.account_name = account_name
         self.address_request_accepted = self.get_translation_by_key("address-request-accepted")
         self.address_received = self.get_translation_by_key("address-received")
@@ -355,8 +357,8 @@ class OutgoingTransaction(TransactionMessage):
 
 
 class IncomingTransaction(TransactionMessage):
-    def __init__(self, driver, account_name: str):
-        super().__init__(driver, text="↓ Incoming transaction")
+    def __init__(self, driver, account_name: str, transaction_value):
+        super().__init__(driver, text="↓ Incoming transaction", transaction_value=transaction_value)
         self.account_name = account_name
         self.shared_account = "Shared '%s'" % account_name
 
@@ -490,17 +492,17 @@ class ChatView(BaseView):
         self.timeline_own_account_photo = Button(self.driver, accessibility_id="own-account-photo")
 
 
-    def get_outgoing_transaction(self, account=None):
+    def get_outgoing_transaction(self, account=None, transaction_value=None) -> object:
         if account is None:
             account = self.status_account_name
-        return OutgoingTransaction(self.driver, account)
+        return OutgoingTransaction(self.driver, account, transaction_value)
 
-    def get_incoming_transaction(self, account=None):
+    def get_incoming_transaction(self, account=None, transaction_value=None) -> object:
         if account is None:
             account = self.status_account_name
-        return IncomingTransaction(self.driver, account)
+        return IncomingTransaction(self.driver, account, transaction_value)
 
-    def get_preview_message_by_text(self, text=None):
+    def get_preview_message_by_text(self, text=None) -> object:
         self.driver.info('**Getting preview message for link:%s**' % text)
         return PreviewMessage(self.driver, text)
 
@@ -650,7 +652,7 @@ class ChatView(BaseView):
         element.wait_for_invisibility_of_element()
 
     def scroll_to_start_of_history(self, depth=20):
-        self.driver.info('*Scrolling *')
+        self.driver.info('*Scrolling th the start of chat history*')
         for _ in range(depth):
             try:
                 return self.history_start_icon.find_element()
@@ -718,6 +720,13 @@ class ChatView(BaseView):
                 self.allow_button.click()
             self.first_image_from_gallery.click()
         self.timeline_send_my_status_button.click()
+
+    def get_transaction_message_by_asset(self, transaction_value, incoming=True) -> object:
+        if incoming:
+            transaction_message = self.get_incoming_transaction(account=None, transaction_value=transaction_value)
+        else:
+            transaction_message = self.get_outgoing_transaction(account=None, transaction_value=transaction_value)
+        return transaction_message
 
     @staticmethod
     def get_resolved_chat_key(username, chat_key):

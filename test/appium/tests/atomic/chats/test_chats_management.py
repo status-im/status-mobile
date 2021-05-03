@@ -1050,7 +1050,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(695771)
     @marks.medium
-    def test_open_user_profile_long_press_on_message(self):
+    def test_activity_center_group_chats_trusted_contacts(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         message_from_sender = "Message sender"

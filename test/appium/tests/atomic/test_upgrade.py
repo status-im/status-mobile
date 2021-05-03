@@ -1,4 +1,4 @@
-from tests import marks
+from tests import marks, pytest_config_global
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import upgrade_users
 from views.sign_in_view import SignInView
@@ -8,7 +8,7 @@ import views.upgrade_dbs.chats.data as chat_data
 class TestUpgradeApplication(SingleDeviceTestCase):
 
     @marks.testrail_id(6284)
-    def test_unread_previews_public_chat_upgrade(self):
+    def test_unread_previews_public_chat_version_upgrade(self):
         sign_in = SignInView(self.driver)
         unread_one_to_one_name, unread_public_name = 'All Whopping Dassierat', '#before-upgrade'
         chats = chat_data.chats
@@ -20,16 +20,15 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         old_version = profile.app_version_text.text
 
         profile.upgrade_app()
-
-        self.app = sign_in.driver.launch_app()
         home = sign_in.sign_in()
 
         home.profile_button.click()
         profile.about_button.click()
         new_version = profile.app_version_text.text
-        # Commented for releases only
-        # if new_version == old_version:
-        #     self.errors.append('Upgraded app version is %s vs base version is %s ' % (new_version, old_version))
+        if 'release' in pytest_config_global['apk_upgrade']:
+            if new_version == old_version:
+                 self.errors.append('Upgraded app version is %s vs base version is %s ' % (new_version, old_version))
+
         home.home_button.click()
 
         home.just_fyi("Check chat previews")
@@ -101,8 +100,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         tag_message = public_chat.chat_element_by_text(messages['tag'])
         if tag_message.emojis_below_message(emoji='love', own=True) !=1:
             self.errors.append("Emojis are not displayed below tag message!")
-        if not public_chat.sticker_message.is_element_displayed():
-            self.errors.append("Sticker is not displayed!")
+        public_chat.sticker_message.scroll_to_element()
         public_chat.element_starts_with_text(messages['tag']).click()
         public_chat.history_start_icon.wait_for_visibility_of_element(20)
         if not public_chat.user_name_text.text == messages['tag']:
@@ -122,14 +120,19 @@ class TestUpgradeApplication(SingleDeviceTestCase):
 @marks.upgrade
 class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
 
-    @marks.testrail_id(6285)
-    @marks.skip
-    def test_unread_previews_public_chat_upgrade(self):
+    @marks.testrail_id(695783)
+    def test_commands_audio_backward_compatibility_upgrade(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        device_2.create_user()
+        device_2_home = device_2.create_user()
+        device_2_public_key = device_2_home.get_public_key_and_username()
+        device_2_home.home_button.click()
+        user = upgrade_users['chats']
+
         device_1.just_fyi("Import db, upgrade")
-        home = device_1.import_db(user=upgrade_users['chats'], import_db_folder_name='chats')
+        home = device_1.import_db(user=user, import_db_folder_name='chats')
+        home.upgrade_app()
+        home = device_1.sign_in()
 
         device_1.just_fyi("**Check messages in 1-1 chat**")
         command_username = 'Royal Defensive Solenodon'
@@ -140,10 +143,35 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         chat.scroll_to_start_of_history()
         if chat.audio_message_in_chat_timer.text != messages['audio']['length']:
             self.errors.append('Timer is not shown for audiomessage')
-        import time
-        time.sleep(100)
-        #device_1.just_fyi("Check messages in Activity centre")
-        # device_2.just_fyi("Create new multiaccount and send new message to device 1")
-        # device_1.just_fyi("Respond to message and check it is shown on device 2")
+        device_1.just_fyi('Check command messages')
+        commnad_messages = chat_data.chats[command_username]['commands']
+        for key in commnad_messages:
+            device_1.just_fyi('Checking %s command messages' % key)
+            amount = commnad_messages[key]['value']
+            chat.element_by_text(amount).scroll_to_element()
+            if 'incoming' in key:
+                message = chat.get_transaction_message_by_asset(amount, incoming=True)
+            else:
+                message = chat.get_transaction_message_by_asset(amount, incoming=False)
+            if not message.transaction_status != commnad_messages[key]['status']:
+                self.errors.append('%s case transaction status is not equal expected after upgrade' % key)
+            if key == 'outgoing_STT_sign':
+                if not message.sign_and_send.is_element_displayed():
+                     self.errors.append('No "sign and send" option is shown for %s' % key)
+        chat.home_button.click()
+
+        #TODO: blocked until resolving importing unread messages to Activity centre
+        # device_1.just_fyi("Check messages in Activity centre")
+        device_2.just_fyi("Create upgraded and non-upgraded app can exchange messages")
+        message, response = "message after upgrade", "response"
+        device_1_chat = home.add_contact(device_2_public_key)
+        device_1_chat.send_message(message)
+        device_2_chat = device_2_home.get_chat(user['username']).click()
+        if not device_2_chat.chat_element_by_text(message).is_element_displayed():
+            self.errors.append("Message sent from upgraded app is not shown on  previous release!")
+        device_2_chat.send_message(response)
+        if not device_1_chat.chat_element_by_text(response).is_element_displayed():
+            self.errors.append("Message sent from previous release is not shown on upgraded app!")
+
         self.errors.verify_no_errors()
 

@@ -584,6 +584,7 @@ class BaseView(object):
     def upgrade_app(self):
         self.driver.info("**Upgrading apk to apk_upgrade**")
         self.driver.install_app(pytest_config_global['apk_upgrade'], replace=True)
+        self.app = self.driver.launch_app()
 
     def search_by_keyword(self, keyword):
         self.driver.info('**Search for** `%s`' % keyword)
