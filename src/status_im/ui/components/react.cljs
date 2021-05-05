@@ -53,6 +53,7 @@
   [switch-class props])
 
 (def touchable-highlight-class (reagent/adapt-react-class (.-TouchableHighlight react-native)))
+(def pressable-class (reagent/adapt-react-class (.-Pressable react-native)))
 (def touchable-without-feedback-class (reagent/adapt-react-class (.-TouchableWithoutFeedback react-native)))
 (def touchable-opacity-class (reagent/adapt-react-class (.-TouchableOpacity react-native)))
 (def activity-indicator-class (reagent/adapt-react-class (.-ActivityIndicator react-native)))
@@ -174,6 +175,9 @@
   [touchable-highlight-class
    (merge {:underlay-color :transparent} props)
    content])
+
+(defn pressable [props content]
+  [pressable-class props content])
 
 (defn touchable-without-feedback [props content]
   [touchable-without-feedback-class

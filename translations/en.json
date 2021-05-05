@@ -1516,5 +1516,6 @@
     "activity": "Activity",
     "reject-and-delete": "Reject and delete",
     "accept-and-add": "Accept and add",
-    "my-profile": "My profile"
+    "my-profile": "My profile",
+    "bip39-password-placeholder": "BIP39 password"
 }

@@ -37,6 +37,7 @@
             :Linking                  {}
             :TouchableWithoutFeedback {}
             :TouchableHighlight       {}
+            :Pressable                {}
             :TouchableOpacity         {}
             :ActivityIndicator        {}
             :StyleSheet               {:create (fn [])}

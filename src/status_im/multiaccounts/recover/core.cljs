@@ -163,7 +163,8 @@
       (popover/show-popover cofx {:view :custom-seed-phrase})
       (when (mnemonic/valid-length? passphrase)
         {::import-multiaccount {:passphrase    (mnemonic/sanitize-passphrase passphrase)
-                                :password      password
+                                :password      (when password
+                                                 (security/safe-unmask-data password))
                                 :success-event ::import-multiaccount-success}}))))
 
 (fx/defn seed-phrase-next-pressed
@@ -263,3 +264,10 @@
             (set-phrase input)
             (count-words)
             (run-validation)))
+
+(fx/defn enter-passphrase-input-changed
+  {:events [:multiaccounts.recover/enter-passphrase-input-changed]}
+  [{:keys [db]} masked-passphrase]
+  {:db (update db :intro-wizard assoc
+               :password masked-passphrase
+               :password-error nil)})
