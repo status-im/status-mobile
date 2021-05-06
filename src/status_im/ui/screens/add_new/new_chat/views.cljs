@@ -191,7 +191,9 @@
                :subtitle (if ens-name (gfycat/generate-gfy public-key) (utils/get-shortened-address public-key))
                :icon     [chat-icon/contact-icon-contacts-tab
                           (identicon/identicon public-key)]
-               :on-press #(re-frame/dispatch [:chat.ui/start-chat public-key])}
+               :on-press #(do
+                            (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false] 3000)
+                            (re-frame/dispatch [:search/home-filter-changed nil]))}
               (when ens-name {:subtitle-secondary public-key}))]
             [quo/text {:style {:margin-horizontal 16}
                        :size  :base
