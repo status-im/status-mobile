@@ -1101,3 +1101,81 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             self.errors.append("Chats are not present on Chats view while they have to!")
 
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(695782)
+    @marks.medium
+    def test_can_accept_or_reject_multiple_chats_from_activity_center(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        message_from_sender = "Message sender"
+        GroupChat1Name = "GroupChat1"
+        GroupChat2Name = "GroupChat2"
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+
+        device_1.just_fyi('Device1 adds Devices and creates 1-1 and Group chat with it')
+        public_key_user_1, username_1 = home_1.get_public_key_and_username(return_username=True)
+        public_key_user_2, username_2 = home_2.get_public_key_and_username(return_username=True)
+        home_1.home_button.click()
+        device_1_one_to_one_chat = home_1.add_contact(public_key_user_2)
+        device_1_one_to_one_chat.send_message(message_from_sender)
+        device_1_one_to_one_chat.home_button.click()
+
+        home_1.create_group_chat([username_2], group_chat_name=GroupChat1Name)
+        home_1.home_button.click()
+        home_2.home_button.click()
+
+        device_1.just_fyi('Device2 rejects both chats and verifies they disappeared and not in Chats too')
+        home_2.notifications_button.click()
+        home_2.notifications_select_button.click()
+        home_2.element_by_text_part(username_1[:10]).click()
+        home_2.element_by_text_part(GroupChat1Name).click()
+        home_2.notifications_reject_and_delete_button.click()
+
+        if home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
+            self.errors.append("1-1 chat is on Activity Center view after action made on it")
+        if home_2.element_by_text_part(GroupChat1Name).is_element_displayed(2):
+            self.errors.append("Group chat is on Activity Center view after action made on it")
+        home_2.home_button.click()
+        if home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
+            self.errors.append("1-1 chat is added on home after rejection")
+        if home_2.element_by_text_part(GroupChat1Name).is_element_displayed(2):
+            self.errors.append("Group chat is added on home after rejection")
+
+        home_2.just_fyi("Verify there are still no chats after relogin")
+        home_2.relogin()
+        if home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
+            self.errors.append("1-1 chat appears on Chats view after relogin")
+        if home_2.element_by_text_part(GroupChat1Name).is_element_displayed(2):
+            self.errors.append("Group chat appears on Chats view after relogin")
+        home_2.notifications_button.click()
+        if home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
+            self.errors.append("1-1 chat request reappears back in Activity Center view after relogin")
+        if home_2.element_by_text_part(GroupChat1Name).is_element_displayed(2):
+            self.errors.append("Group chat request reappears back in Activity Center view after relogin")
+        home_2.home_button.click()
+
+        device_1.just_fyi('Device1 creates 1-1 and Group chat again')
+        home_1.get_chat_from_home_view(username_2).click()
+        device_1_one_to_one_chat.send_message('Some text here')
+        device_1_one_to_one_chat.home_button.click()
+        home_1.create_group_chat([username_2], group_chat_name=GroupChat2Name)
+
+        device_1.just_fyi('Device2 accepts both chats (via Select All button) and verifies they disappeared '
+                          'from activity center view but present on Chats view')
+        home_2.notifications_button.click()
+        home_2.notifications_select_button.click()
+        home_2.notifications_select_all.click()
+        home_2.notifications_accept_and_add_button.click()
+
+        if home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
+            self.errors.append("1-1 chat request stays on Activity Center view after it was accepted")
+        if home_2.element_by_text_part(GroupChat2Name).is_element_displayed(2):
+            self.errors.append("Group chat request stays on Activity Center view after it was accepted")
+        home_2.home_button.click()
+
+        if not home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
+            self.errors.append("1-1 chat is not added on home after accepted from Activity Center")
+        if not home_2.element_by_text_part(GroupChat2Name).is_element_displayed(2):
+            self.errors.append("Group chat is not added on home after accepted from Activity Center")
+
+        self.errors.verify_no_errors()

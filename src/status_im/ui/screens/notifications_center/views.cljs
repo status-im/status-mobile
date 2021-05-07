@@ -49,6 +49,7 @@
         (str (if @select-all (i18n/label :t/all) (count @selected-items))
              " " (string/lower-case (i18n/label :t/selected)))]]
       [quo/button {:type     :secondary
+                   :accessibility-label :select-button-activity-center
                    :on-press #(reset! selecting true)}
        (i18n/label :t/select)])
     (when @selecting
@@ -97,8 +98,10 @@
                             {:show-border? true
                              :left         [quo/button {:type     :secondary
                                                         :theme    :negative
+                                                        :accessibility-label :reject-and-delete-activity-center
                                                         :on-press #(toolbar-action false)}
                                             (i18n/label :t/reject-and-delete)]
                              :right        [quo/button {:type     :secondary
+                                                        :accessibility-label :accept-and-add-activity-center
                                                         :on-press #(toolbar-action true)}
                                             (i18n/label :t/accept-and-add)]}])]))}))

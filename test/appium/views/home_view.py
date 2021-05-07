@@ -88,7 +88,12 @@ class HomeView(BaseView):
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
         self.notifications_unread_badge = Button(self.driver, accessibility_id="notifications-unread-badge")
-
+        self.notifications_select_button = Button(self.driver, translation_id="select")
+        self.notifications_reject_and_delete_button = Button(self.driver, accessibility_id="reject-and-delete"
+                                                                                           "-activity-center")
+        self.notifications_accept_and_add_button = Button(self.driver, accessibility_id="accept-and-add-activity-center")
+        self.notifications_select_all = Button(self.driver, xpath="(//android.widget.CheckBox["
+                                                                  "@content-desc='checkbox'])[1]")
         # Options on long tap
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")
         self.delete_chat_button = Button(self.driver, accessibility_id="delete-chat-button")
@@ -103,7 +108,8 @@ class HomeView(BaseView):
         # Sync using mobile data bottom sheet
         self.continue_syncing_button = Button(self.driver, accessibility_id="mobile-network-continue-syncing")
         self.stop_syncing_button = Button(self.driver, accessibility_id="mobile-network-stop-syncing")
-        self.remember_my_choice_checkbox = Button(self.driver, xpath="//*[@content-desc='remember-choice']//*[@content-desc='checkbox']")
+        self.remember_my_choice_checkbox = Button(self.driver, xpath="//*[@content-desc='remember-choice']"
+                                                                     "//*[@content-desc='checkbox']")
 
         # Connection status bottom sheet
         self.connected_to_n_peers_text = Text(self.driver, accessibility_id="connected-to-n-peers")

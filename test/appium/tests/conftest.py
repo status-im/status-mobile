@@ -271,7 +271,7 @@ def pytest_runtest_setup(item):
         pass
     run_testrail_ids = item.config.getoption("run_testrail_ids")
     if run_testrail_ids:
-        if str(testrail_id) not in run_testrail_ids:
+        if str(testrail_id) not in list(run_testrail_ids.split(",")):
             pytest.skip("test requires testrail case id %s" % testrail_id)
     test_suite_data.set_current_test(item.name, testrail_case_id=get_testrail_case_id(item))
     test_suite_data.current_test.create_new_testrun()
