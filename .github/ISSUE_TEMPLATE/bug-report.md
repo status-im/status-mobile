@@ -11,7 +11,7 @@ assignees: ''
 
 
 ## Problem 
-[comment]: # A problem description.
+[comment]: # (A problem description)
 
 
 #### Expected behavior
@@ -31,5 +31,5 @@ assignees: ''
 - Operating System: Android, iOS
 
 
-[comment]: # Please, add logs/notes if necessary
+[comment]: # (Please, add logs/notes if necessary)
 
