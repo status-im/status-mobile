@@ -29,6 +29,16 @@
   [{:keys [db] :as cofx} checked?]
   {:db (assoc-in db [:multiaccounts/key-storage :move-keystore-checked?] checked?)})
 
+(fx/defn navigate-back
+  {:events [::navigate-back]}
+  [{:keys [db] :as cofx}]
+  (fx/merge
+   cofx
+   {:db (-> db
+            (dissoc :recovered-account?)
+            (update :keycard dissoc :from-key-storage-and-migration? :creating-backup?))}
+   (navigation/navigate-back)))
+
 (fx/defn enter-seed-pressed
   "User is logged out and probably wants to move multiaccount to Keycard. Navigate to enter seed phrase screen"
   {:events [::enter-seed-pressed]}

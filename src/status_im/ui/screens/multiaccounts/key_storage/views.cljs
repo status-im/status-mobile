@@ -18,9 +18,10 @@
             [status-im.ui.screens.multiaccounts.key-storage.styles :as styles]
             [status-im.utils.security]))
 
-(defn local-topbar [subtitle]
-  [topbar/topbar {:title   (i18n/label :t/key-managment)
-                  :subtitle subtitle}])
+(defn local-topbar [subtitle action]
+  [topbar/topbar (merge {:title   (i18n/label :t/key-managment)
+                         :subtitle subtitle}
+                        (when action {:navigation {:on-press #(re-frame/dispatch [action])}}))])
 
 (defonce accordian-data
   [{:id    :type
@@ -106,7 +107,7 @@
     [{:keys [seed-word-count seed-shape-invalid?]} [:multiaccounts/key-storage]
      {:keys [creating-backup?]} [:keycard]]
     [react/keyboard-avoiding-view {:flex 1}
-     [local-topbar (i18n/label :t/enter-seed-phrase)]
+     [local-topbar (i18n/label :t/enter-seed-phrase) ::multiaccounts.key-storage/navigate-back]
      [multiaccounts.views/seed-phrase-input
       {:on-change-event     [::multiaccounts.key-storage/seed-phrase-input-changed]
        :seed-word-count     seed-word-count
