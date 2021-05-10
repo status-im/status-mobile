@@ -122,26 +122,31 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(6202)
-    @marks.low
-    def test_emoji_messages_long_press(self):
+
+    @marks.testrail_id(6275)
+    @marks.medium
+    def test_receive_message_while_in_different_tab_and_emoji_messages_long_press(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
+        public_chat_name = home_1.get_random_chat_name()
+        chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
 
-        chat_name = home_1.get_random_chat_name()
-        chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
+        device_2.just_fyi("Switch to different tab out from chat")
+        device_2.dapp_tab_button.click()
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
         chat_1.chat_message_input.send_keys(emoji.emojize(emoji_name))
         chat_1.send_message_button.click()
 
+        device_1.just_fyi("Long press emoji message actions")
         chat_1.element_by_text_part(emoji_unicode).long_press_element()
         chat_1.element_by_text('Copy').click()
         chat_1.chat_message_input.paste_text_from_clipboard()
         if chat_1.chat_message_input.text != emoji_unicode:
             self.errors.append('Emoji message was not copied')
 
+        home_2.home_button.click(desired_view='chat')
         chat_element_2 = chat_2.element_by_text_part(emoji_unicode)
         if not chat_element_2.is_element_displayed(sec=10):
             self.errors.append('Message with emoji was not received in public chat by the recipient')
@@ -154,23 +159,8 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_element_1 = chat_1.chat_element_by_text(message_text)
         if not chat_element_1.is_element_displayed(sec=10) or chat_element_1.replied_message_text != emoji_unicode:
             self.errors.append('Reply message was not received by the sender')
+
         self.errors.verify_no_errors()
-
-    @marks.testrail_id(6275)
-    @marks.medium
-    def test_public_chat_messages_received_while_different_tab_opened(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-        public_chat_name = home_1.get_random_chat_name()
-        chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
-
-        device_1.dapp_tab_button.click()
-        message = 'hello'
-        chat_2.send_message(message)
-        home_1.home_button.click(desired_view='chat')
-        if not chat_1.chat_element_by_text(message).is_element_displayed():
-            self.drivers[0].fail("No message if it is received while another tab opened")
 
 
 class TestPublicChatSingleDevice(SingleDeviceTestCase):
