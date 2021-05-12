@@ -167,6 +167,11 @@ fdroid-nix-dir: ##@prepare Create /nix directory for F-Droid Vagrant builders
 
 fdroid-build-env: fdroid-max-watches fdroid-nix-dir ##@prepare Setup build environment for F-Droud build
 
+xcode-clean: SHELL := /bin/sh
+xcode-clean: XCODE_HOME := $(HOME)/Library/Developer/Xcode
+xcode-clean: ##@prepare Clean XCode derived data and archives
+	rm -fr $(XCODE_HOME)/DerivedData/StatusIm-* $(XCODE_HOME)/Archives/*/StatusIm*
+
 #----------------
 # Release builds
 #----------------
