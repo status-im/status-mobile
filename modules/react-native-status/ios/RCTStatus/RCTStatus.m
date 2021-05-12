@@ -321,6 +321,16 @@ RCT_EXPORT_METHOD(hashTypedData:(NSString *)data
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// hashTypedDataV4
+RCT_EXPORT_METHOD(hashTypedDataV4:(NSString *)data
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"hashTypedDataV4() method called");
+#endif
+    NSString *result = StatusgoHashTypedDataV4(data);
+    callback(@[result]);
+}
+
 //////////////////////////////////////////////////////////////////// sendTransactionWithSignature
 RCT_EXPORT_METHOD(sendTransactionWithSignature:(NSString *)txArgsJSON
                   signature:(NSString *)signature

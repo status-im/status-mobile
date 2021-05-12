@@ -229,6 +229,12 @@
   (log/debug "[native-module] hash-typed-data")
   (.hashTypedData ^js (status) data callback))
 
+(defn hash-typed-data-v4
+  "used for keycard"
+  [data callback]
+  (log/debug "[native-module] hash-typed-data-v4")
+  (.hashTypedDataV4 ^js (status) data callback))
+
 (defn send-transaction-with-signature
   "used for keycard"
   [rpcParams sig callback]

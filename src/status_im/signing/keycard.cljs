@@ -18,8 +18,10 @@
 
 (re-frame/reg-fx
  ::hash-typed-data
- (fn [{:keys [data on-completed]}]
-   (status/hash-typed-data data on-completed)))
+ (fn [{:keys [v4 data on-completed]}]
+   (if v4
+     (status/hash-typed-data-v4 data on-completed)
+     (status/hash-typed-data data on-completed))))
 
 (defn prepare-transaction
   [{:keys [gas gasPrice data nonce tx-obj]}]
@@ -38,10 +40,11 @@
       (assoc :nonce nonce))))
 
 (fx/defn hash-message
-  [_ {:keys [data typed? on-completed]}]
+  [_ {:keys [v4 data typed? on-completed]}]
   (if typed?
     {::hash-typed-data
      {:data         data
+      :v4           v4
       :on-completed
       (or on-completed
           #(re-frame/dispatch

@@ -918,6 +918,24 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
+    @ReactMethod
+    public void hashTypedDataV4(final String data, final Callback callback) {
+        Log.d(TAG, "hashTypedDataV4");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.hashTypedDataV4(data);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
 
     @ReactMethod
     public void sendTransactionWithSignature(final String txArgsJSON, final String signature, final Callback callback) {
