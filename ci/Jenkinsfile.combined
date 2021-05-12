@@ -97,7 +97,7 @@ pipeline {
       } }
     }
     stage('Run e2e') {
-      when { expression { btype == 'nightly' } }
+      when { expression { btype == 'nightly' && params.PUBLISH } }
       steps { script {
         e2eApk = utils.getEnv(apke2e, 'SAUCE_URL')
         build(
