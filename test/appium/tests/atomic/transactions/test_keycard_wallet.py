@@ -150,11 +150,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.network_api.wait_for_confirmation_of_transaction(sub_account_address, transaction_amount_1)
         wallet_view.find_transaction_in_history(amount=transaction_amount)
         wallet_view.find_transaction_in_history(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
-        #transactions_view = wallet_view.transaction_history_button.click()
 
         wallet_view.just_fyi("Check transactions on subaccount")
-        #transactions_view.transactions_table.find_transaction(amount=transaction_amount)
-        #transactions_view.transactions_table.find_transaction(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
 
         wallet_view.just_fyi("Verify total ETH on main wallet view")

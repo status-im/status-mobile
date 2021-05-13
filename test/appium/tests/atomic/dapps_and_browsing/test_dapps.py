@@ -6,37 +6,6 @@ from views.sign_in_view import SignInView
 
 class TestDApps(SingleDeviceTestCase):
 
-    @marks.testrail_id(5353)
-    @marks.critical
-    def test_filters_from_daap(self):
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.create_user()
-        status_test_dapp = home_view.open_status_test_dapp()
-        status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.transactions_button.click()
-        status_test_dapp.test_filters_button.scroll_and_click()
-        for element in status_test_dapp.element_by_text('eth_uninstallFilter'), status_test_dapp.ok_button:
-            if element.is_element_displayed(10):
-                self.driver.fail("'Test filters' button produced an error")
-
-    @marks.testrail_id(5397)
-    @marks.high
-    def test_request_public_key_status_test_daap(self):
-        user = basic_user
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(passphrase=user['passphrase'])
-        status_test_dapp = home_view.open_status_test_dapp(allow_all=False)
-        status_test_dapp.status_api_button.click_until_presence_of_element(status_test_dapp.request_contact_code_button)
-        status_test_dapp.request_contact_code_button.click_until_presence_of_element(status_test_dapp.deny_button)
-        status_test_dapp.deny_button.click()
-        if status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
-            self.driver.fail('Public key is returned but access was not allowed')
-        status_test_dapp.request_contact_code_button.click_until_presence_of_element(status_test_dapp.deny_button)
-        status_test_dapp.allow_button.click()
-        if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
-            self.driver.fail('Public key is not returned')
-
-
     @marks.testrail_id(6635)
     @marks.medium
     def test_webview_camera_permission(self):

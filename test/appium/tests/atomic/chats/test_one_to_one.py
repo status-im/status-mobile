@@ -396,13 +396,21 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_1 = profile_1.get_back_to_home_view()
         public_key_2 = home_2.get_public_key_and_username()
         home_2.home_button.click()
+        chat_1 = home_1.add_contact(public_key_2)
+
+        home_1.just_fyi("Check that can send emoji in 1-1 chat")
+        emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
+        chat_1.send_message(emoji.emojize(emoji_name))
+        chat_2 = home_2.get_chat(default_username_1).click()
+        for chat in chat_1, chat_2:
+            if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
+                self.errors.append('Message with emoji was not sent or received in 1-1 chat')
 
         home_1.just_fyi("Check that link can be opened from 1-1 chat")
-        chat_1 = home_1.add_contact(public_key_2)
         url_message = 'http://status.im'
         chat_1.send_message(url_message)
         chat_1.home_button.double_click()
-        chat_2 = home_2.get_chat(default_username_1).click()
         chat_2.element_starts_with_text(url_message, 'button').click()
         web_view = chat_2.open_in_status_button.click()
         try:
@@ -618,30 +626,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
         chat.chat_element_by_text(message_text[:-2]).wait_for_visibility_of_element(2)
 
-    @marks.testrail_id(5328)
-    @marks.critical
-    def test_send_emoji(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-
-        home.join_public_chat(home.get_random_chat_name())
-        chat = sign_in.get_chat_view()
-        emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
-        emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
-        chat.chat_message_input.send_keys(emoji.emojize(emoji_name))
-        chat.send_message_button.click()
-
-        if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
-            self.errors.append('Message with emoji was not sent in public chat')
-
-        chat.get_back_to_home_view()
-        home.add_contact(transaction_senders['O']['public_key'])
-        chat.chat_message_input.send_keys(emoji.emojize(emoji_name))
-        chat.send_message_button.click()
-
-        if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
-            self.errors.append('Message with emoji was not sent in 1-1 chat')
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(5783)
     @marks.critical

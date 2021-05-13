@@ -14,43 +14,19 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5308)
     @marks.critical
-    def test_send_eth_from_wallet_to_address(self):
+    def test_send_eth_from_wallet_to_address_incorrect_password(self):
         recipient = basic_user
         sender = transaction_senders['P']
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(sender['passphrase'], password=unique_password)
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        transaction_amount = wallet_view.get_unique_amount()
-        wallet_view.send_transaction(amount=transaction_amount,
-                                     sign_transaction=True,
-                                     recipient='0x%s' % recipient['address'],
-                                     sender_password=unique_password )
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(sender['passphrase'], password=unique_password)
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.accounts_status_account.click()
+        transaction_amount = wallet.get_unique_amount()
 
-        wallet_view.just_fyi('Check that transaction is appeared in transaction history')
-        wallet_view.find_transaction_in_history(amount=transaction_amount)
-
-        wallet_view.just_fyi('Check logcat for sensitive data')
-        values_in_logcat = wallet_view.find_values_in_logcat(password=unique_password)
-        if values_in_logcat:
-            self.driver.fail(values_in_logcat)
-
-
-    @marks.testrail_id(5408)
-    @marks.high
-    def test_transaction_wrong_password_wallet(self):
-        recipient = basic_user
-        sender = wallet_users['A']
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'])
-        home_view = sign_in_view.get_home_view()
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
+        wallet.just_fyi("Checking that can't send transaction with wrong password")
+        send_transaction = wallet.send_transaction_button.click()
         send_transaction.amount_edit_box.click()
-        transaction_amount = send_transaction.get_unique_amount()
         send_transaction.amount_edit_box.set_value(transaction_amount)
         send_transaction.set_recipient_address('0x%s' % recipient['address'])
         send_transaction.sign_transaction_button.click()
@@ -60,6 +36,20 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_button.click()
         if send_transaction.element_by_text_part('Transaction sent').is_element_displayed():
             self.driver.fail('Transaction was sent with a wrong password')
+
+        wallet.just_fyi("Fix password and sign transaction")
+        send_transaction.enter_password_input.clear()
+        send_transaction.enter_password_input.send_keys(unique_password)
+        send_transaction.sign_button.click()
+        wallet.ok_button.wait_and_click()
+
+        wallet.just_fyi('Check that transaction is appeared in transaction history')
+        wallet.find_transaction_in_history(amount=transaction_amount)
+
+        wallet.just_fyi('Check logcat for sensitive data')
+        values_in_logcat = wallet.find_values_in_logcat(password=unique_password)
+        if values_in_logcat:
+            self.driver.fail(values_in_logcat)
 
     @marks.testrail_id(6237)
     @marks.high
