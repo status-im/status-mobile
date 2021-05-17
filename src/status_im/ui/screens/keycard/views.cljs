@@ -320,6 +320,14 @@
                        :number-of-lines 1
                        :ellipsize-mode  :middle}
            name]]]
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:keycard-settings.ui/recovery-card-pressed])}
+         [react/view {:flex-direction  :row
+                      :align-items     :center
+                      :justify-content :center}
+          [react/text {:style {:text-align :center
+                               :margin-bottom  (if small-screen? 8 12)
+                               :color      colors/blue}}
+           (i18n/label :t/keycard-recover)]]]
         (cond
           (= :after-unblocking status)
           [access-is-reset

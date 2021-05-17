@@ -36,7 +36,7 @@
    cofx
    {:db (-> db
             (dissoc :recovered-account?)
-            (update :keycard dissoc :from-key-storage-and-migration? :creating-backup?))}
+            (update :keycard dissoc :from-key-storage-and-migration? :creating-backup? :factory-reset-card?))}
    (navigation/navigate-back)))
 
 (fx/defn enter-seed-pressed

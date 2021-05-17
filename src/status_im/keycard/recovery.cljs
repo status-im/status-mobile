@@ -2,6 +2,7 @@
   (:require [status-im.navigation :as navigation]
             [status-im.utils.datetime :as utils.datetime]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.fx :as fx]
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
@@ -197,12 +198,27 @@
                   (navigation/navigate-to-cofx (if platform/android?
                                                  :notifications-settings :welcome) nil))))))
 
+(fx/defn return-to-keycard-login
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (-> db
+                     (update-in [:keycard :pin] assoc :enter-step :login
+                                :status nil
+                                :login  [])
+                     (update :keycard dissoc :application-info))}
+            (navigation/navigate-reset {:index  0
+                                        :routes [{:name  :intro-stack
+                                                  :state {:routes [{:name :multiaccounts},
+                                                                   {:name :keycard-login-pin}]}}]})))
+
 (fx/defn on-backup-success
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:utils/show-popup   {:title   (i18n/label :t/keycard-backup-success-title)
                                   :content (i18n/label :t/keycard-backup-success-body)}}
-            (navigation/navigate-to-cofx :keycard-settings nil)))
+            (if (multiaccounts.model/logged-in? cofx)
+              (navigation/navigate-to-cofx :keycard-settings nil)
+              (return-to-keycard-login))))
 
 (fx/defn on-generate-and-load-key-success
   {:events       [:keycard.callback/on-generate-and-load-key-success]
