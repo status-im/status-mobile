@@ -1,8 +1,9 @@
-from tests import marks, pytest_config_global
+from tests import marks, pytest_config_global, test_dapp_name
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from tests.users import upgrade_users
+from tests.users import upgrade_users, transaction_recipients
 from views.sign_in_view import SignInView
 import views.upgrade_dbs.chats.data as chat_data
+import views.upgrade_dbs.dapps.data as dapp_data
 
 @marks.upgrade
 class TestUpgradeApplication(SingleDeviceTestCase):
@@ -114,6 +115,76 @@ class TestUpgradeApplication(SingleDeviceTestCase):
             self.errors.append("Reply is not present in message received in public chat after upgrade")
         if not public_chat.chat_element_by_text(messages['mention']).is_element_displayed():
             self.errors.append("Mention is not present in public chat after upgrade")
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(695804)
+    def test_dapps_browser_several_accounts_upgrade(self):
+        sign_in = SignInView(self.driver)
+        favourites = dapp_data.dapps['favourites']
+        home = sign_in.import_db(user=transaction_recipients['K'], import_db_folder_name='dapps')
+        home.upgrade_app()
+        sign_in.sign_in()
+        dapps = home.dapp_tab_button.click()
+
+        sign_in.just_fyi('Check Dapps favourites')
+        for key in favourites:
+            if not dapps.element_by_text(key).is_element_displayed():
+                self.errors.append('Name of bookmark "%s" is not shown in favourites!' % key)
+            if not dapps.element_by_text(favourites[key]).is_element_displayed():
+                self.errors.append('"%s" of bookmark is not shown in favourites!' % favourites[key])
+
+        sign_in.just_fyi('Check dapps are still in history')
+        browsing = sign_in.get_base_web_view()
+        browsing.open_tabs_button.click()
+        visited = dapp_data.dapps['history']['visited']
+        for key in visited:
+            if not dapps.element_by_text(key).is_element_displayed():
+                self.errors.append('Name of tab "%s" is not shown in browser history!' % key)
+            if not dapps.element_by_text(visited[key]).is_element_displayed():
+                self.errors.append('"%s" of tab is not shown in browser history!' % visited[key])
+        if dapps.element_by_text(dapp_data.dapps['history']['deleted']).is_element_displayed():
+            self.errors.append('Closed tab is shown in browser!')
+
+        sign_in.just_fyi('Check browser history is kept')
+        github = dapp_data.dapps['browsed_page']
+        dapps.element_by_text(github['name']).click()
+        browsing.wait_for_d_aap_to_load()
+        browsing.browser_previous_page_button.click()
+        browsing.wait_for_d_aap_to_load()
+        if not dapps.element_by_text(github['previous_text']).is_element_displayed():
+            self.errors.append('Previous page is not opened!')
+
+        sign_in.just_fyi('Check permissions for dapp')
+        profile = dapps.profile_button.click()
+        profile.privacy_and_security_button.click()
+        profile.dapp_permissions_button.click()
+        if profile.element_by_text_part( dapp_data.dapps['permissions']['deleted']).is_element_displayed():
+            self.errors.append('Deleted permissions reappear after upgrade!')
+        profile.element_by_text(test_dapp_name).click()
+        permissions = dapp_data.dapps['permissions']['added'][test_dapp_name]
+        for text in permissions:
+            if not profile.element_by_text(text).is_element_displayed():
+                self.errors.append('%s is deleted after upgrade from %s permissions' % (text, test_dapp_name))
+
+        sign_in.just_fyi('Check that balance is preserved')
+        accounts = dapp_data.wallets
+        wallet = profile.wallet_button.click()
+        for asset in ('ETH', 'ADI', 'STT'):
+            wallet.wait_balance_is_changed(asset=asset)
+
+        sign_in.just_fyi('Check accounts inside multiaccount')
+        if not wallet.element_by_text(accounts['generated']['address']).is_element_displayed():
+            self.errors.append('Address of generated account is not shown')
+        generated = wallet.get_account_by_name(accounts['generated']['name'])
+        if not generated.color_matches('multi_account_color.png'):
+            self.errors.append('Colour of generated account does not match expected after upgrade')
+
+        wallet.get_account_by_name(accounts['default']['name']).swipe_left_on_element()
+        if not wallet.element_by_text(dapp_data.wallets['watch-only']['name']).is_element_displayed():
+            self.errors.append('Watch-only account is not shown')
+        if not wallet.element_by_text(accounts['watch-only']['address']).is_element_displayed():
+            self.errors.append('Address of watch-only account is not shown')
 
         self.errors.verify_no_errors()
 
