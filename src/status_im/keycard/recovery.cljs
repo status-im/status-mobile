@@ -193,10 +193,7 @@
                   :chat-key             whisper-private-key}
                  encryption-public-key
                  {})
-                (if (= flow :import)
-                  (navigation/navigate-replace :keycard-recovery-success nil)
-                  (navigation/navigate-to-cofx (if platform/android?
-                                                 :notifications-settings :welcome) nil))))))
+                (navigation/navigate-to-cofx :notifications-onboarding nil)))))
 
 (fx/defn return-to-keycard-login
   [{:keys [db] :as cofx}]

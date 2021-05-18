@@ -275,6 +275,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard_view.pair_code_input.set_value(pair_code)
         sign_in.pair_to_this_device_button.click()
         keycard_view.enter_default_pin()
+        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
+        sign_in.lets_go_button.click_until_absense_of_element(sign_in.lets_go_button)
         sign_in.home_button.wait_for_visibility_of_element(30)
 
         sign_in.just_fyi('Check assets after pairing keycard for recovered multiaccount')

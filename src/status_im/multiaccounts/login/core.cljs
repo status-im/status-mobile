@@ -140,13 +140,7 @@
 
 (fx/defn finish-keycard-setup
   [{:keys [db] :as cofx}]
-  (let [flow (get-in db [:keycard :flow])]
-    (when flow
-      (fx/merge cofx
-                {:db (update db :keycard dissoc :flow)}
-                (if (= :import flow)
-                  (navigation/navigate-to-cofx :intro-stack {:screen :keycard-recovery-success})
-                  (navigation/navigate-to-cofx :notifications-onboarding nil))))))
+  {:db (update db :keycard dissoc :flow)})
 
 (fx/defn  initialize-dapp-permissions
   {:events [::initialize-dapp-permissions]}
