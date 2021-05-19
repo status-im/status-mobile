@@ -50,33 +50,27 @@
             (common/listen-to-hardware-back-button)
             (navigation/navigate-replace :keycard-recovery-pin nil)))
 
-(fx/defn load-recovery-pin-screen-with-pairings
-  [{:keys [db] :as cofx}]
+(fx/defn load-pairing
+  [{:keys [db]}]
   (let [instance-uid (get-in db [:keycard :application-info :instance-uid])
-        {:keys [pairing paired-on]} (get-in db [:keycard :pairings (keyword instance-uid)])]
-    (fx/merge cofx
-              {:db (-> db
-                       (assoc-in [:keycard :secrets :pairing] pairing)
-                       (assoc-in [:keycard :secrets :paired-on] paired-on))}
-              (load-recovery-pin-screen))))
+        pairing-data (or (get-in db [:keycard :pairings (keyword instance-uid)])
+                         (get-in db [:keycard :pairings instance-uid]))]
+    {:db (update-in db [:keycard :secrets] merge pairing-data)}))
 
 (fx/defn proceed-setup-with-initialized-card
-  [{:keys [db] :as cofx} flow instance-uid]
+  [{:keys [db] :as cofx} flow instance-uid paired?]
   (log/debug "[keycard] proceed-setup-with-initialized-card"
              "instance-uid" instance-uid)
   (if (= flow :import)
     (navigation/navigate-to-cofx cofx :keycard-recovery-no-key nil)
-    (let [pairing-data (get-in db [:keycard :pairings (keyword instance-uid)])
-          paired? (get-in db [:keycard :application-info :paired?])]
-      (if paired?
-        (fx/merge cofx
-                  {:db (update-in db [:keycard :secrets] merge pairing-data)}
-                  (common/listen-to-hardware-back-button)
-                  (when (= flow :create)
-                    (mnemonic/set-mnemonic))
-                  (when (= flow :recovery)
-                    (onboarding/proceed-with-generating-key)))
-        (recovery/load-pair-screen cofx)))))
+    (if paired?
+      (fx/merge cofx
+                (common/listen-to-hardware-back-button)
+                (when (= flow :create)
+                  (mnemonic/set-mnemonic))
+                (when (= flow :recovery)
+                  (onboarding/proceed-with-generating-key)))
+      (recovery/load-pair-screen cofx))))
 
 (fx/defn navigate-to-keycard-settings
   {:events [:profile.ui/keycard-settings-button-pressed]}
@@ -524,9 +518,12 @@
               (set-setup-step card-state)
               (common/hide-connection-sheet)
 
+              (when paired?
+                (load-pairing))
+
               (when (and flow
                          (= card-state :init))
-                (proceed-setup-with-initialized-card flow instance-uid))
+                (proceed-setup-with-initialized-card flow instance-uid paired?))
 
               (when (= card-state :pre-init)
                 (if (= flow :import)
@@ -542,7 +539,7 @@
                 (if (common/find-multiaccount-by-key-uid db key-uid)
                   (multiaccounts.recover/show-existing-multiaccount-alert key-uid)
                   (if paired?
-                    (load-recovery-pin-screen-with-pairings)
+                    (load-recovery-pin-screen)
                     (recovery/load-pair-screen))))
 
               (when (= card-state :blank)
