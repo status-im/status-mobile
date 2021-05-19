@@ -4,6 +4,7 @@ from tests.users import upgrade_users, transaction_recipients
 from views.sign_in_view import SignInView
 import views.upgrade_dbs.chats.data as chat_data
 import views.upgrade_dbs.dapps.data as dapp_data
+import views.upgrade_dbs.pairing.data as sync_data
 
 @marks.upgrade
 class TestUpgradeApplication(SingleDeviceTestCase):
@@ -243,6 +244,89 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         device_2_chat.send_message(response)
         if not device_1_chat.chat_element_by_text(response).is_element_displayed():
             self.errors.append("Message sent from previous release is not shown on upgraded app!")
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(695805)
+    def test_devices_sync_contact_management_upgrade(self):
+        self.create_drivers(2)
+        user = transaction_recipients['K']
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+
+        device_1.just_fyi("Import db, upgrade")
+        home_1 = device_1.import_db(user=user, import_db_folder_name='pairing/main')
+        home_2 = device_2.import_db(user=user, import_db_folder_name='pairing/secondary')
+        for device in (device_1, device_2):
+            device.upgrade_app()
+            device.sign_in()
+
+        device_1.just_fyi("Contacts: check blocked and removed contacts, contacts with ENS")
+        if home_1.element_by_text(sync_data.chats['deleted']).is_element_displayed():
+            self.error.append("Removed public chat reappears after upgrade!")
+        profile_1 = home_1.profile_button.click()
+        profile_1.contacts_button.click()
+        synced = sync_data.contacts['synced']
+        for username in list(synced.values()):
+            if not profile_1.element_by_text(username).is_element_displayed():
+                self.error.append("'%s' is not shown in contacts list after upgrade!" % username)
+        if profile_1.element_by_text_part(sync_data.contacts['removed']).is_element_displayed():
+            self.error.append("Removed user is shown in contacts list after upgrade!")
+        profile_1.blocked_users_button.click()
+        if not profile_1.element_by_text_part(sync_data.contacts['blocked']).is_element_displayed():
+            self.error.append("Blocked user is not shown in contacts list after upgrade!")
+
+        device_2.just_fyi("Pairing: check synced public chats on secondary device")
+        for chat in sync_data.chats['synced_public']:
+            if not home_2.element_by_text(chat).is_element_displayed():
+                self.error.append("Synced public chat '%s' is not shown on secondary device after upgrade!" % chat)
+
+        device_1.just_fyi("Pairing: check that can send messages to chats and they will appear on secondary device")
+        main_1_1, secondary_1_1, group = synced['ens'], synced['username_ens'], sync_data.chats['group']
+        message = 'Device pairing check'
+        device_1.home_button.click()
+        chat_1 = home_1.get_chat(main_1_1).click()
+        chat_1.send_message(message)
+        home_2.get_chat(secondary_1_1).wait_for_visibility_of_element()
+        chat_2 = home_2.get_chat(secondary_1_1).click()
+        if not chat_2.chat_element_by_text(message).is_element_displayed():
+            self.error.append("Message in 1-1 chat does not appear on device 2 after sending from main device after upgrade")
+        [chat.home_button.click() for chat in (chat_1, chat_2)]
+        chat_1 = home_1.get_chat(group).click()
+        chat_1.send_message(message)
+        home_2.get_chat(group).wait_for_visibility_of_element()
+        chat_2 = home_2.get_chat(group).click()
+        if not chat_2.chat_element_by_text(message).is_element_displayed():
+            self.error.append("Message in group chat does not appear on device 2 after sending from main device after upgrade")
+        [chat.home_button.click() for chat in (chat_1, chat_2)]
+
+        device_1.just_fyi("Pairing: add public chat and check it will appear on secondary device")
+        public = sync_data.chats['added_public']
+        chat_1 = home_1.join_public_chat(public[1:])
+        chat_1.send_message(message)
+        home_2.get_chat(public).wait_for_visibility_of_element()
+        chat_2 = home_2.get_chat(public).click()
+        if not chat_2.chat_element_by_text(message).is_element_displayed():
+            self.error.append(
+                "Message in public chat does not appear on device 2 after sending from main device after upgrade")
+        [chat.home_button.click() for chat in (chat_1, chat_2)]
+
+        device_1.just_fyi("Pairing: add contact and check that it will appear on secondary device")
+        added = sync_data.contacts['added']
+        chat_1 = home_1.add_contact(added['public_key'], nickname=added['name'])
+        chat_1.send_message(message)
+        home_2.get_chat(added['name']).wait_for_visibility_of_element()
+        chat_2 = home_2.get_chat(added['name']).click()
+        if not chat_2.chat_element_by_text(message).is_element_displayed():
+            self.error.append(
+                "Message in new 1-1 chat does not appear on device 2 after sending from main device after upgrade")
+
+        device_2.just_fyi("Pairing: check that contacts/nicknames are synced")
+        synced_secondary = {synced['nickname'], synced['username_nickname'], synced['username_ens'], added['name'], added['username']}
+        profile_2 = chat_2.profile_button.click()
+        profile_2.contacts_button.click()
+        for username in synced_secondary:
+            if not profile_2.element_by_text(username).is_element_displayed():
+                self.error.append("'%s' is not shown in contacts list on synced device after upgrade!" % username)
 
         self.errors.verify_no_errors()
 
