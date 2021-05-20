@@ -107,7 +107,7 @@
          (wallet/set-max-block (get (first accounts) :address) 0)
 
          :else
-         (wallet/update-balances nil scan-all-tokens?))
+         (wallet/get-cached-balances scan-all-tokens?))
    (when-not (get db :wallet/new-account)
      (wallet/restart-wallet-service nil))
    (when-not (utils.mobile-sync/syncing-allowed? cofx)

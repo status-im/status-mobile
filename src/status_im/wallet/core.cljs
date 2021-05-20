@@ -51,6 +51,24 @@
 (defn assoc-error-message [db error-type err]
   (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))
 
+(re-frame/reg-fx
+ :wallet/get-cached-balances
+ (fn [{:keys [addresses on-success on-error]}]
+   (json-rpc/call
+    {:method     "wallet_getCachedBalances"
+     :params     [addresses]
+     :on-success on-success
+     :on-error   on-error})))
+
+(fx/defn get-cached-balances
+  [{:keys [db]}  scan-all-tokens?]
+  (let [addresses (map (comp string/lower-case :address)
+                       (get db :multiaccount/accounts))]
+    {:wallet/get-cached-balances
+     {:addresses  addresses
+      :on-success #(re-frame/dispatch [::set-cached-balances addresses % scan-all-tokens?])
+      :on-error   #(re-frame/dispatch [::on-get-cached-balance-fail % scan-all-tokens?])}}))
+
 (fx/defn on-update-balance-fail
   {:events [::update-balance-fail]}
   [{:keys [db]} err]
@@ -60,7 +78,7 @@
 (fx/defn on-update-token-balance-fail
   {:events [::update-token-balance-fail]}
   [{:keys [db]} err]
-  (log/debug "Unable to get tokens balances: " err)
+  (log/debug "on-update-token-balance-fail: " err)
   {:db (assoc-error-message db :balance-update :error-unable-to-get-token-balance)})
 
 (fx/defn open-transaction-details
@@ -257,6 +275,12 @@
                                                                  #{}))
           {}))))))
 
+(fx/defn on-get-cached-balance-fail
+  {:events [::on-get-cached-balance-fail]}
+  [{:keys [db] :as cofx} err scan-all-tokens?]
+  (log/warn "Can't fetch cached balances" err)
+  (update-balances cofx nil scan-all-tokens?))
+
 (defn- set-checked [tokens-id token-id checked?]
   (let [tokens-id (or tokens-id #{})]
     (if checked?
@@ -269,6 +293,16 @@
   {:db (assoc-in db
                  [:wallet :accounts (eip55/address->checksum address) :balance :ETH]
                  (money/bignumber balance))})
+
+(fx/defn set-cached-balances
+  {:events [::set-cached-balances]}
+  [cofx addresses balances scan-all-tokens?]
+  (apply fx/merge
+         cofx
+         (update-balances nil scan-all-tokens?)
+         (map (fn [{:keys [address balance]}]
+                (update-balance address balance))
+              balances)))
 
 (defn has-empty-balances? [db]
   (some #(nil? (get-in % [:balance :ETH]))

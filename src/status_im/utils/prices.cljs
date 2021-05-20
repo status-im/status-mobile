@@ -24,12 +24,13 @@
   ;;NOTE(this check is to allow value conversion for sidechains with native currencies listed on cryptocompare
   ;; under a symbol different than display symbol. Specific use case xDAI and POA.
   (if mainnet?
-    (into {} (for [[from entries] (:RAW (types/json->clj resp))]
-               {from (into {} (for [[to entry] entries]
-                                {to {:from     (name from)
-                                     :to       (name to)
-                                     :price    (:PRICE entry)
-                                     :last-day (:OPEN24HOUR entry)}}))}))
+    (when-let [RAW (:RAW (types/json->clj resp))]
+      (into {} (for [[from entries] RAW]
+                 {from (into {} (for [[to entry] entries]
+                                  {to {:from     (name from)
+                                       :to       (name to)
+                                       :price    (:PRICE entry)
+                                       :last-day (:OPEN24HOUR entry)}}))})))
     (into {} (for [[_ entries] (:RAW (types/json->clj resp))]
                {:ETH (into {} (for [[to entry] entries]
                                 {to {:from     "ETH"

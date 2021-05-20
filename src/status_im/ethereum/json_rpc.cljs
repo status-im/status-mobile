@@ -159,6 +159,7 @@
    "wallet_getTransfersByAddress" {}
    "wallet_watchTransaction" {}
    "wallet_checkRecentHistory" {}
+   "wallet_getCachedBalances" {}
    "wallet_storePendingTransaction" {}
    "wallet_deletePendingTransaction" {}
    "wallet_getPendingTransactions" {}

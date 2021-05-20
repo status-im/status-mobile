@@ -15,7 +15,6 @@
              :app-state                          "active"
              :wallet                              wallet.db/default-wallet
              :wallet/all-tokens                  {}
-             :prices                             {}
              :peers-count                        0
              :node-info                          {}
              :peers-summary                      []
