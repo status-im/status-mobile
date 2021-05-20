@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
-            [status-im.utils.config :as config]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
@@ -216,8 +215,9 @@
     (chat.utils/format-author contact-with-names opts)))
 
 (defview community-content [{:keys [community-id] :as message}]
-  (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]]
-    (when (and config/communities-enabled? community)
+  (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]
+            communities-enabled? [:communities/enabled?]]
+    (when (and communities-enabled? community)
       [react/view {:style (assoc (style/message-wrapper message)
                                  :margin-vertical 10
                                  :margin-left 8

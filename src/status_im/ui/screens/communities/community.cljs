@@ -17,7 +17,6 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.core :as utils]
             [status-im.ui.components.plus-button :as components.plus-button]
-            [status-im.utils.config :as config]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.chat.sheets :as sheets]))
 
@@ -109,7 +108,7 @@
                     true
                     name
                     (or color (rand-nth colors/chat-colors))])}]
-     (when (and config/communities-management-enabled? can-manage-users?)
+     (when can-manage-users?
        [quo/list-item
         {:theme               :accent
          :title               (i18n/label :t/export-key)

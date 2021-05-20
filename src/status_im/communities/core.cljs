@@ -5,6 +5,7 @@
    [clojure.string :as string]
    [clojure.set :as clojure.set]
    [taoensso.timbre :as log]
+   [status-im.async-storage.core :as async-storage]
    [status-im.utils.fx :as fx]
    [status-im.constants :as constants]
    [status-im.bottom-sheet.core :as bottom-sheet]
@@ -435,3 +436,9 @@
                      :js-response true
                      :on-success #(re-frame/dispatch [::request-to-join-declined community-id request-id %])
                      :on-error   #(log/error "failed to decline requests-to-join" community-id request-id)}]})
+
+(fx/defn switch-communities-enabled
+  {:events [:multiaccounts.ui/switch-communities-enabled]}
+  [{:keys [db]} enabled?]
+  {::async-storage/set! {:communities-enabled? enabled?}
+   :db (assoc db :communities/enabled? enabled?)})

@@ -17,8 +17,7 @@
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.stickers.views :as stickers]
-            [status-im.ui.screens.notifications-center.views :as notifications-center]
-            [status-im.utils.config :as config]))
+            [status-im.ui.screens.notifications-center.views :as notifications-center]))
 
 (defonce stack (navigation/create-stack))
 (defonce group-stack (navigation/create-stack))
@@ -69,19 +68,18 @@
       :insets    {:bottom true
                   :top    false}
       :component communities.import/view}]
-    (when config/communities-management-enabled?
-      [{:name      :community-edit
-        :insets    {:bottom true
-                    :top    false}
-        :component community.edit/edit}
-       {:name      :community-create
-        :insets    {:bottom true
-                    :top    false}
-        :component communities.create/view}
-       {:name      :community-membership
-        :insets    {:bottom true
-                    :top    false}
-        :component membership/membership}]))])
+    [{:name      :community-edit
+      :insets    {:bottom true
+                  :top    false}
+      :component community.edit/edit}
+     {:name      :community-create
+      :insets    {:bottom true
+                  :top    false}
+      :component communities.create/view}
+     {:name      :community-membership
+      :insets    {:bottom true
+                  :top    false}
+      :component membership/membership}])])
 
 (defn new-group-chat []
   [group-stack {:header-mode        :none

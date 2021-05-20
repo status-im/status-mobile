@@ -47,7 +47,7 @@
      :accessibility-label :join-public-chat-button
      :icon                :main-icons/public-chat
      :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-public-chat])}]
-   (when config/communities-enabled?
+   (when @(re-frame/subscribe [:communities/enabled?])
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/communities-alpha)

@@ -20,7 +20,6 @@
             [status-im.add-new.db :as db]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
-            [status-im.utils.config :as config]
             [cljs-bean.core :as bean]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.ui.components.invite.views :as invite]
@@ -85,7 +84,7 @@
      [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center}
       (for [chat (new-public-chat/featured-public-chats)]
         (new-public-chat/render-topic chat))]]
-    (when config/communities-enabled?
+    (when @(re-frame/subscribe [:communities/enabled?])
       [react/view
        [react/i18n-text {:style {:margin-horizontal 16
                                  :text-align        :center}

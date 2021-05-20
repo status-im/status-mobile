@@ -211,23 +211,22 @@
 
 ;; communities
 
+(reg-root-key-sub :raw-communities :communities)
 (reg-root-key-sub :communities/create :communities/create)
 (reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
 (reg-root-key-sub :communities/community-id-input :communities/community-id-input)
+(reg-root-key-sub :communities/enabled? :communities/enabled?)
 
 (reg-root-key-sub :activity.center/notifications :activity.center/notifications)
 (reg-root-key-sub :activity.center/notifications-count :activity.center/notifications-count)
 
 (re-frame/reg-sub
  :communities
- (fn [db]
-   (cond
-     config/communities-management-enabled?
-     (:communities db)
-     config/communities-enabled?
-    ;; If no management enabled, only return status-community
-     (select-keys (:communities db) [constants/status-community-id])
-     :else
+ :<- [:raw-communities]
+ :<- [:communities/enabled?]
+ (fn [[raw-communities communities-enabled?]]
+   (if communities-enabled?
+     raw-communities
      [])))
 
 (re-frame/reg-sub
@@ -249,13 +248,14 @@
 
 (re-frame/reg-sub
  :communities/communities
+ :<- [:communities/enabled?]
  :<- [:search/home-filter]
  :<- [:communities]
- (fn [[search-filter communities]]
+ (fn [[communities-enabled? search-filter communities]]
    (filterv
     (fn [{:keys [name joined id]}]
       (and joined
-           (or config/communities-management-enabled?
+           (or communities-enabled?
                (= id constants/status-community-id))
            (or (empty? search-filter)
                (string/includes? (string/lower-case (str name)) search-filter))))

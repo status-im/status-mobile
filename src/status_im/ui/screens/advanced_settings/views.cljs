@@ -11,6 +11,7 @@
 (defn- normal-mode-settings-data [{:keys [network-name
                                           current-log-level
                                           waku-bloom-filter-mode
+                                          communities-enabled?
                                           current-fleet
                                           webview-debug]}]
   [{:size                 :small
@@ -66,6 +67,15 @@
       #(re-frame/dispatch [:navigate-to :notifications-advanced-settings])
       :chevron             true})
    {:size                   :small
+    :title                   (i18n/label :t/communities-enabled)
+    :accessibility-label     :communities-enabled
+    :container-margin-bottom 8
+    :on-press
+    #(re-frame/dispatch
+      [:multiaccounts.ui/switch-communities-enabled (not communities-enabled?)])
+    :accessory               :switch
+    :active                  communities-enabled?}
+   {:size                   :small
     :title                   "Webview debug"
     :accessibility-label     :webview-debug-switch
     :container-margin-bottom 8
@@ -96,6 +106,7 @@
   (views/letsubs [{:keys [webview-debug]} [:multiaccount]
                   network-name             [:network-name]
                   waku-bloom-filter-mode   [:waku/bloom-filter-mode]
+                  communities-enabled?     [:communities/enabled?]
                   current-log-level        [:log-level/current-log-level]
                   current-fleet            [:fleets/current-fleet]]
     [react/view {:flex 1}
@@ -104,6 +115,7 @@
       {:data      (flat-list-data
                    {:network-name           network-name
                     :current-log-level      current-log-level
+                    :communities-enabled?   communities-enabled?
                     :current-fleet          current-fleet
                     :dev-mode?              false
                     :waku-bloom-filter-mode waku-bloom-filter-mode

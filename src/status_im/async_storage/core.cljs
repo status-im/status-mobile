@@ -27,13 +27,21 @@
       (swap! tmp-storage merge items)
       (debounced))))
 
-(defn- get-items [keys cb]
+(defn get-items [keys cb]
   (-> ^js async-storage
       (.multiGet (to-array (map key->string keys)))
       (.then (fn [^js data]
                (cb (->> (js->clj data)
                         (map (comp transit->clj second))
                         (zipmap keys)))))
+      (.catch (fn [error]
+                (cb nil)
+                (log/error "[async-storage]" error)))))
+
+(defn get-item [k cb]
+  (-> ^js async-storage
+      (.getItem (key->string k))
+      (.then cb)
       (.catch (fn [error]
                 (cb nil)
                 (log/error "[async-storage]" error)))))

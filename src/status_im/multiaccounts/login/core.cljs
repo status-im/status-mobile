@@ -3,6 +3,7 @@
             [status-im.anon-metrics.core :as anon-metrics]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.contact.core :as contact]
+            [status-im.utils.config :as config]
             [status-im.data-store.settings :as data-store.settings]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.transactions.core :as transactions]
@@ -36,6 +37,16 @@
             [status-im.utils.mobile-sync :as utils.mobile-sync]
             [status-im.async-storage.core :as async-storage]
             [status-im.notifications-center.core :as notifications-center]))
+
+(re-frame/reg-fx
+ ::initialize-communities-enabled
+ (fn []
+   (let [callback #(re-frame/dispatch [:multiaccounts.ui/switch-communities-enabled %])]
+     (if config/communities-enabled?
+       (callback true)
+       (async-storage/get-item
+        :communities-enabled?
+        callback)))))
 
 (re-frame/reg-fx
  ::login
@@ -238,6 +249,10 @@
    [{:method     (json-rpc/call-ext-method "getGroupChatInvitations")
      :on-success #(re-frame/dispatch [::initialize-invitations %])}]})
 
+(fx/defn initialize-communities-enabled
+  [cofx]
+  {::initialize-communities-enabled nil})
+
 (fx/defn get-settings-callback
   {:events [::get-settings-callback]}
   [{:keys [db] :as cofx} settings]
@@ -262,6 +277,7 @@
               (acquisition/login)
               (initialize-appearance)
               (transport/start-messenger)
+              (initialize-communities-enabled)
               (check-network-version network-id)
               (chat.loading/initialize-chats)
               (communities/fetch)

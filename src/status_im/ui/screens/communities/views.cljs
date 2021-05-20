@@ -3,7 +3,6 @@
    [quo.core :as quo]
    [status-im.i18n.i18n :as i18n]
    [status-im.utils.core :as utils]
-   [status-im.utils.config :as config]
    [status-im.constants :as constants]
    [status-im.communities.core :as communities]
    [status-im.utils.handlers :refer [>evt <sub]]
@@ -114,11 +113,12 @@
     :render-fn                      community-list-item}])
 
 (defn communities []
-  (let [communities (<sub [:communities/section-list])]
+  (let [communities (<sub [:communities/section-list])
+        communities-enabled? (<sub [:communities/enabled?])]
     [react/view {:flex 1}
      [topbar/topbar (cond-> {:title (i18n/label :t/communities)
                              :modal? true}
-                      config/communities-management-enabled?
+                      communities-enabled?
                       (assoc :right-accessories [{:icon                :main-icons/more
                                                   :accessibility-label :chat-menu-button
                                                   :on-press
@@ -127,7 +127,7 @@
                                                                       [communities-actions])
                                                            :height  256}])}]))]
      [communities-list communities]
-     (when config/communities-management-enabled?
+     (when communities-enabled?
        [toolbar/toolbar
         {:show-border? true
          :center       [quo/button {:on-press #(>evt [::communities/open-create-community])
@@ -162,4 +162,3 @@
                  :padding-horizontal 8
                  :padding-vertical   5}
      [quo/text {:color :link} name]]]])
-
