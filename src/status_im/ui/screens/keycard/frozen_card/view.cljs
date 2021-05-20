@@ -36,6 +36,10 @@
      [quo/button
       {:on-press #(re-frame/dispatch [::login/reset-pin])}
       (i18n/label :t/keycard-is-frozen-reset)]]
+    [react/view {:style {:margin-top 24}}
+     [quo/button
+      {:on-press #(re-frame/dispatch [:keycard-settings.ui/recovery-card-pressed false])}
+      (i18n/label :t/keycard-is-frozen-factory-reset)]]
     (when show-dismiss-button?
       [react/view {:margin-top 24}
        [quo/button

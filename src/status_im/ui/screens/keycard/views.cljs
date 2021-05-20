@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.keycard.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [clojure.string :as string]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.react-native.resources :as resources]
@@ -240,11 +241,11 @@
     [react/nested-text
      {:style {:color      colors/gray
               :text-align :center}}
-     (i18n/label :t/keycard-is-blocked-instructions)
-     [{} " "]
-     [{:style    {:color colors/blue}
-       :on-press #(.openURL ^js react/linking "https://status.im/faq/#keycard")}
-      (i18n/label :t/learn-more)]]]])
+     (i18n/label :t/keycard-is-blocked-instructions)]
+    [react/view {:style {:margin-top 24}}
+     [quo/button
+      {:on-press #(re-frame/dispatch [:keycard-settings.ui/recovery-card-pressed false])}
+      (i18n/label :t/keycard-is-frozen-factory-reset)]]]])
 
 (defview login-pin [{:keys [back-button-handler
                             hide-login-actions?
@@ -320,14 +321,14 @@
                        :number-of-lines 1
                        :ellipsize-mode  :middle}
            name]]]
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:keycard-settings.ui/recovery-card-pressed])}
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:keycard-settings.ui/recovery-card-pressed (boolean login-multiaccount)])}
          [react/view {:flex-direction  :row
                       :align-items     :center
                       :justify-content :center}
           [react/text {:style {:text-align :center
                                :margin-bottom  (if small-screen? 8 12)
                                :color      colors/blue}}
-           (i18n/label :t/keycard-recover)]]]
+           (string/lower-case (i18n/label (if login-multiaccount :t/keycard-recover :t/keycard-is-frozen-factory-reset)))]]]
         (cond
           (= :after-unblocking status)
           [access-is-reset

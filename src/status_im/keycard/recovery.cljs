@@ -209,12 +209,14 @@
                                                                    {:name :keycard-login-pin}]}}]})))
 
 (fx/defn on-backup-success
-  [{:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} backup-type]
   (fx/merge cofx
-            {:utils/show-popup   {:title   (i18n/label :t/keycard-backup-success-title)
-                                  :content (i18n/label :t/keycard-backup-success-body)}}
+            {:utils/show-popup   {:title   (i18n/label (if (= backup-type :recovery-card)
+                                                         :t/keycard-access-reset :t/keycard-backup-success-title))
+                                  :content (i18n/label (if (= backup-type :recovery-card)
+                                                         :t/keycard-can-use-with-new-passcode :t/keycard-backup-success-body))}}
             (if (multiaccounts.model/logged-in? cofx)
-              (navigation/navigate-to-cofx :keycard-settings nil)
+              (navigation/navigate-to-cofx :profile-stack {:screen :keycard-settings})
               (return-to-keycard-login))))
 
 (fx/defn on-generate-and-load-key-success
@@ -249,7 +251,7 @@
                        (update-in [:keycard :secrets] dissoc :mnemonic))}
               (common/remove-listener-to-hardware-back-button)
               (common/hide-connection-sheet)
-              (if backup? (on-backup-success) (create-keycard-multiaccount)))))
+              (if backup? (on-backup-success backup?) (create-keycard-multiaccount)))))
 
 (fx/defn on-generate-and-load-key-error
   {:events [:keycard.callback/on-generate-and-load-key-error]}

@@ -7,30 +7,38 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.navigation :as navigation]
+            [status-im.signing.core :as signing.core]
             [taoensso.timbre :as log]))
-
-(fx/defn recovery-card-pressed
-  {:events [:keycard-settings.ui/recovery-card-pressed]}
-  [{:keys [db] :as cofx} checked?]
-  (fx/merge cofx
-            {:db (assoc-in db [:keycard :factory-reset-card?] true)}
-            (utils/show-confirmation {:title               (i18n/label :t/keycard-recover-title)
-                                      :content             (i18n/label :t/keycard-recover-text)
-                                      :confirm-button-text (i18n/label :t/yes)
-                                      :cancel-button-text  (i18n/label :t/no)
-                                      :on-accept           #(re-frame/dispatch [:keycard-settings.ui/backup-card-pressed])
-                                      :on-cancel           #()})))
 
 (fx/defn backup-card-pressed
   {:events [:keycard-settings.ui/backup-card-pressed]}
-  [{:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} backup-type]
   (log/debug "[keycard] start backup")
   (fx/merge cofx
             {:db (-> db
-                     (assoc-in [:keycard :creating-backup?] true))}
+                     (assoc-in [:keycard :creating-backup?] backup-type))}
             (if (multiaccounts.model/logged-in? cofx)
               (navigation/navigate-to-cofx :seed-phrase nil)
               (navigation/navigate-to-cofx :key-storage-stack {:screen :seed-phrase}))))
+
+(fx/defn recovery-card-pressed
+  {:events [:keycard-settings.ui/recovery-card-pressed]}
+  [{:keys [db] :as cofx} show-warning]
+  (fx/merge cofx
+            {:db (-> db
+                     ;setting pin-retry-counter is a workaround for the way the PIN view decides if it should accept PUK or PIN
+                     (assoc-in [:keycard :application-info :pin-retry-counter] 3)
+                     (assoc-in [:keycard :factory-reset-card?] true)
+                     (dissoc :popover/popover))}
+            (signing.core/discard)
+            (if show-warning
+              (utils/show-confirmation {:title               (i18n/label :t/keycard-recover-title)
+                                        :content             (i18n/label :t/keycard-recover-text)
+                                        :confirm-button-text (i18n/label :t/yes)
+                                        :cancel-button-text  (i18n/label :t/no)
+                                        :on-accept           #(re-frame/dispatch [:keycard-settings.ui/backup-card-pressed :recovery-card])
+                                        :on-cancel           #()})
+              (backup-card-pressed :recovery-card))))
 
 (fx/defn start-keycard-backup
   {:events [::start-keycard-backup]}
