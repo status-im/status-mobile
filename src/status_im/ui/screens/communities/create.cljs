@@ -34,7 +34,9 @@
   (js/setTimeout
    (fn []
      (react/show-image-picker
-      #(>evt [::communities/create-field :image (.-path ^js %)])
+      #(do (>evt [::communities/create-field :image (.-path ^js %)])
+           (>evt [::communities/create-field :new-image (.-path ^js %)]))
+
       crop-opts))
    300))
 
@@ -43,11 +45,12 @@
   (js/setTimeout
    (fn []
      (react/show-image-picker-camera
-      #(>evt [::communities/create-field :image (.-path ^js %)])
+      #(do (>evt [::communities/create-field :image (.-path ^js %)])
+           (>evt [::communities/create-field :new-image (.-path ^js %)]))
       crop-opts))
    300))
 
-(defn bottom-sheet [has-picture]
+(defn bottom-sheet [has-picture editing?]
   (fn []
     [:<>
      [quo/list-item {:accessibility-label :take-photo
@@ -64,20 +67,21 @@
                      :on-press            #(do
                                              (>evt [:bottom-sheet/hide])
                                              (pick-pic))}]
-     (when has-picture
+     (when (and has-picture (not editing?))
        [quo/list-item {:accessibility-label :remove-photo
                        :icon                :main-icons/delete
                        :theme               :accent
                        :title               (i18n/label :t/community-image-remove)
                        :on-press            #(do
-                                               (>evt [:bottom-sheet/hide]))}])]))
+                                               (>evt [:bottom-sheet/hide])
+                                               (>evt [::communities/remove-field :image]))}])]))
 
 (defn photo-picker []
-  (let [{:keys [image]} (<sub [:communities/create])]
+  (let [{:keys [image editing?]} (<sub [:communities/create])]
     [rn/view {:style {:padding-top 16
                       :align-items :center}}
      [rn/touchable-opacity {:on-press #(>evt [:bottom-sheet/show-sheet
-                                              {:content (bottom-sheet (boolean image))}])}
+                                              {:content (bottom-sheet (boolean image) editing?)}])}
       [rn/view {:style {:width  128
                         :height 128}}
        [rn/view {:style {:flex             1
@@ -126,7 +130,7 @@
     (str (count value) "/" max-length)]])
 
 (defn form []
-  (let [{:keys [name description membership]} (<sub [:communities/create])]
+  (let [{:keys [name description membership editing?]} (<sub [:communities/create])]
     [rn/scroll-view {:keyboard-should-persist-taps :handled
                      :style                   {:flex 1}
                      :content-container-style {:padding-vertical 16}}
@@ -155,16 +159,16 @@
      [quo/list-header {:color :main}
       (i18n/label :t/community-thumbnail-image)]
      [photo-picker]
-     [:<>
-      [quo/separator {:style {:margin-vertical 10}}]
-      [quo/list-item {:title          (i18n/label :t/membership-button)
-                      :accessory-text (i18n/label (get-in memberships/options [membership :title] :t/membership-none))
-                      :accessory      :text
-                      :on-press       #(>evt [:navigate-to :community-membership])
-                      :chevron        true
-                      :size           :small}]
-      [quo/list-footer
-       (i18n/label (get-in memberships/options [membership :description] :t/membership-none-placeholder))]]]))
+     (when-not editing? [:<>
+                         [quo/separator {:style {:margin-vertical 10}}]
+                         [quo/list-item {:title          (i18n/label :t/membership-button)
+                                         :accessory-text (i18n/label (get-in memberships/options [membership :title] :t/membership-none))
+                                         :accessory      :text
+                                         :on-press       #(>evt [:navigate-to :community-membership])
+                                         :chevron        true
+                                         :size           :small}]
+                         [quo/list-footer
+                          (i18n/label (get-in memberships/options [membership :description] :t/membership-none-placeholder))]])]))
 
 (defn view []
   (let [{:keys [name description]} (<sub [:communities/create])]

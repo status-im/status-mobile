@@ -128,6 +128,7 @@
    "multiaccounts_storeIdentityImage" {}
    "multiaccounts_deleteIdentityImage" {}
    "wakuext_createCommunity" {}
+   "wakuext_editCommunity" {}
    "wakuext_createCommunityChat" {}
    "wakuext_inviteUsersToCommunity" {}
    "wakuext_shareCommunity" {}

@@ -67,8 +67,7 @@
                          :icon    :main-icons/notification}])
        (when (or show-members-count? notifications (and admin roles))
          [quo/separator {:style {:margin-vertical 8}}])
-       ;; Disable as not implemented yet
-       (when false
+       (when admin
          [quo/list-item {:theme    :accent
                          :icon     :main-icons/edit
                          :title    (i18n/label :t/edit-community)

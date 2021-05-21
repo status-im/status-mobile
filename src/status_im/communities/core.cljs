@@ -199,8 +199,7 @@
 (fx/defn create
   {:events [::create-confirmation-pressed]}
   [{:keys [db]}]
-  (let [{:keys [name description membership image]} (get db :communities/create)
-        my-public-key                         (get-in db [:multiaccount :public-key])]
+  (let [{:keys [name description membership image]} (get db :communities/create)]
     ;; If access is ENS only, we set the access to require approval and set the rule
     ;; of ens only
     (let [params (cond-> {:name name
@@ -227,18 +226,22 @@
 (fx/defn edit
   {:events [::edit-confirmation-pressed]}
   [{:keys [db]}]
-  (let [{:keys [name description membership]} (get db :communities/create)
-        my-public-key                         (get-in db [:multiaccount :public-key])]
-    (log/error "Edit community is not yet implemented")))
-    ;; {::json-rpc/call [{:method     "wakuext_editCommunity"
-    ;;                    :params     [{:identity    {:display_name name
-    ;;                                                :description  description}
-    ;;                                  :permissions {:access membership}}]
-    ;;                    :on-success #(re-frame/dispatch [::community-edited %])
-    ;;                    :on-error   #(do
-    ;;                                   (log/error "failed to create community" %)
-    ;;                                   (re-frame/dispatch [::failed-to-edit-community %]))}]}
-
+  (let [{:keys [id name description membership new-image color]} (get db :communities/create)]
+    {::json-rpc/call [{:method     "wakuext_editCommunity"
+                       :params     [{:communityID id
+                                     :name name
+                                     :description description
+                                     :color color
+                                     :image (string/replace-first (str new-image) #"file://" "")
+                                     :imageAx 0
+                                     :imageAy 0
+                                     :imageBx crop-size
+                                     :imageBy crop-size
+                                     :membership membership}]
+                       :on-success #(re-frame/dispatch [::community-edited %])
+                       :on-error   #(do
+                                      (log/error "failed to edit community" %)
+                                      (re-frame/dispatch [::failed-to-edit-community %]))}]}))
 
 (fx/defn create-channel
   {:events [::create-channel-confirmation-pressed]}
@@ -315,14 +318,16 @@
 (fx/defn open-edit-community
   {:events [::open-edit-community]}
   [{:keys [db] :as cofx} id]
-  (let [{:keys [identity permissions]}           (get-in db [:communities id :description])
-        {:keys [display-name description image]} identity
-        {:keys [access]}                         permissions]
+  (let [{:keys [name description images permissions color]} (get-in db [:communities id])
+        {:keys [access]}                                   permissions]
     (fx/merge cofx
-              {:db (assoc db :communities/create {:name        display-name
+              {:db (assoc db :communities/create {:id          id
+                                                  :name        name
                                                   :description description
-                                                  :image       image
-                                                  :membership  access})}
+                                                  :image       (get-in images [:large :uri])
+                                                  :membership  access
+                                                  :color       color
+                                                  :editing?    true})}
               (navigation/navigate-to :communities {:screen :community-edit}))))
 
 (fx/defn community-imported
@@ -350,6 +355,11 @@
   {:events [::create-field]}
   [{:keys [db]} field value]
   {:db (assoc-in db [:communities/create field] value)})
+
+(fx/defn remove-field
+  {:events [::remove-field]}
+  [{:keys [db]} field]
+  {:db (update-in db [:communities/create] dissoc field)})
 
 (fx/defn member-banned
   {:events [::member-banned]}
