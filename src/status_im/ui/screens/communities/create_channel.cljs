@@ -5,7 +5,6 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.communities.core :as communities]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.ui.screens.communities.create :as create]))
@@ -46,7 +45,6 @@
 (defn view []
   (let [{:keys [name description]} (<sub [:communities/create-channel])]
     [:<>
-     [topbar/topbar {:title (i18n/label :t/create-channel-title)}]
      [form]
      [toolbar/toolbar
       {:show-border? true

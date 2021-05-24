@@ -97,7 +97,7 @@
       {:title    (i18n/label :t/add-members)
        :icon     :main-icons/add-contact
        :theme    :accent
-       :on-press #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
+       :on-press #(re-frame/dispatch [:open-modal :add-participants-toggle-list])}])
    [chat-group-members-view chat-id admin? current-pk]])
 
 (defn hide-sheet-and-dispatch [event]
@@ -196,7 +196,7 @@
            :right-accessories (when (and admin? joined?)
                                 [{:icon                :icons/edit
                                   :accessibility-label :edit-button
-                                  :on-press            #(re-frame/dispatch [:navigate-to :edit-group-chat-name])}])
+                                  :on-press            #(re-frame/dispatch [:open-modal :edit-group-chat-name])}])
            :extended-header   (profile-header/extended-header
                                {:title         chat-name
                                 :color         color

@@ -42,9 +42,9 @@
 (defn invite []
   (let [user-pk           (reagent/atom "")
         contacts-selected (reagent/atom #{})]
-    (fn [route]
+    (fn []
       (let [contacts-data               (<sub [:contacts/active])
-            invite?                     (get-in route [:route :params :invite?])
+            {:keys [invite?]}           (<sub [:get-screen-params])
             {:keys [permissions
                     can-manage-users?]} (<sub [:communities/edited-community])
             selected                    @contacts-selected

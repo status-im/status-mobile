@@ -42,7 +42,8 @@
   (letsubs [{:keys [address color path type] :as account} [:multiaccount/current-account]
             new-account (reagent/atom nil)
             keycard? [:keycard-multiaccount?]]
-    [react/keyboard-avoiding-view {:flex 1}
+    [react/keyboard-avoiding-view {:style {:flex 1}
+                                   :ignore-offset true}
      [topbar/topbar
       (cond-> {:title (i18n/label :t/account-settings)}
         (and @new-account (not= "" (:name @new-account)))

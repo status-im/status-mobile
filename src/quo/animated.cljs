@@ -4,8 +4,8 @@
             [quo.react-native :as rn]
             [quo.gesture-handler :as gh]
             [oops.core :refer [oget ocall]]
-            ["react-native-reanimated" :default animated :refer (clockRunning Easing)]
-            ["react-native-redash" :as redash]
+            ["react-native-reanimated" :default animated :refer (clockRunning EasingNode)]
+            ["react-native-redash/lib/module/v1" :as redash]
             quo.react)
   (:require-macros [quo.react :refer [maybe-js-deps]]))
 
@@ -55,8 +55,8 @@
 (def start-clock (oget animated "startClock"))
 (def stop-clock (oget animated "stopClock"))
 (def clock-running clockRunning)
-(def bezier (.-bezier ^js Easing))
-(def linear (.-linear ^js Easing))
+(def bezier (.-bezier ^js EasingNode))
+(def linear (.-linear ^js EasingNode))
 
 (def easings {:linear      linear
               :ease-in     (bezier 0.42 0 1 1)
@@ -128,7 +128,7 @@
   (.block ^js animated (to-array opts)))
 
 (defn interpolate [anim-value config]
-  (.interpolate ^js animated anim-value (clj->js config)))
+  (.interpolateNode ^js animated anim-value (clj->js config)))
 
 (defn call* [args callback]
   (.call ^js animated (to-array args) callback))

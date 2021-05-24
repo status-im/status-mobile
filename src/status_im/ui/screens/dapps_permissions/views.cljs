@@ -33,17 +33,15 @@
 
 (views/defview dapps-permissions []
   (views/letsubs [permissions [:dapps/permissions]]
-    [react/view {:flex 1 :background-color colors/white}
-     [topbar/topbar {:title (i18n/label :t/dapps-permissions)}]
-     [list/flat-list
-      {:data      (vec (map prepare-items (vals permissions)))
-       :key-fn    (fn [_ i] (str i))
-       :render-fn quo/list-item}]]))
+    [list/flat-list
+     {:data      (vec (map prepare-items (vals permissions)))
+      :key-fn    (fn [_ i] (str i))
+      :render-fn quo/list-item}]))
 
 (views/defview manage []
   (views/letsubs [{:keys [dapp permissions]} [:get-screen-params]
                   {:keys [name]} [:dapps-account]]
-    [react/view {:flex 1 :background-color colors/white}
+    [:<>
      [topbar/topbar {:title dapp}]
      [list/flat-list
       {:data      (vec (map (prepare-items-manage name) permissions))

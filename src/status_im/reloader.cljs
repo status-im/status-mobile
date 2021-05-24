@@ -13,7 +13,10 @@
 (defonce label (reagent/atom ""))
 
 (defn reload []
+  (when @timeout (js/clearTimeout @timeout))
+  (reset! timeout (js/setTimeout #(reset! visible false) 500))
   (reset! warning? false)
+  (reset! visible true)
   (reset! label "reloading UI")
   (re-frame/clear-subscription-cache!)
   (swap! cnt inc))
@@ -45,12 +48,7 @@
         (build-competed)))
 
 (defn reload-view [_]
-  (fn [cnt]
-    (when @timeout (js/clearTimeout @timeout))
-    (when (not= @cnt-prev cnt)
-      (reset! cnt-prev cnt)
-      (reset! visible true)
-      (reset! timeout (js/setTimeout #(reset! visible false) 1000)))
+  (fn []
     (when @visible
       [react/view {:pointerEvents :none
                    :style         {:position        :absolute :top 0 :left 0 :right 0 :bottom 0

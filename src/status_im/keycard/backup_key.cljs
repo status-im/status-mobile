@@ -4,7 +4,6 @@
             [status-im.utils.utils :as utils]
             [status-im.i18n.i18n :as i18n]
             [status-im.ethereum.mnemonic :as mnemonic]
-            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.navigation :as navigation]
             [status-im.signing.core :as signing.core]
@@ -17,9 +16,7 @@
   (fx/merge cofx
             {:db (-> db
                      (assoc-in [:keycard :creating-backup?] backup-type))}
-            (if (multiaccounts.model/logged-in? cofx)
-              (navigation/navigate-to-cofx :seed-phrase nil)
-              (navigation/navigate-to-cofx :key-storage-stack {:screen :seed-phrase}))))
+            (navigation/navigate-to-cofx :seed-phrase nil)))
 
 (fx/defn recovery-card-pressed
   {:events [:keycard-settings.ui/recovery-card-pressed]}
@@ -49,6 +46,7 @@
                                                                 mnemonic/sanitize-passphrase)
                                                 :password nil
                                                 :success-event ::create-backup-card}})
+
 (fx/defn create-backup-card
   {:events [::create-backup-card]}
   [{:keys [db] :as cofx} root-data derived-data]
@@ -63,6 +61,4 @@
                       (assoc-in [:keycard :flow] :recovery)
                       (update :multiaccounts/key-storage dissoc :seed-phrase))
              :dismiss-keyboard nil}
-            (if (multiaccounts.model/logged-in? cofx)
-              (navigation/navigate-to-cofx :keycard-onboarding-intro nil)
-              (navigation/navigate-to-cofx :intro-stack {:screen :keycard-onboarding-intro}))))
+            (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))

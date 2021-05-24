@@ -80,6 +80,7 @@
 (reg-root-key-sub :connectivity/ui-status-properties :connectivity/ui-status-properties)
 (reg-root-key-sub :logged-in-since :logged-in-since)
 (reg-root-key-sub :link-previews-whitelist :link-previews-whitelist)
+(reg-root-key-sub :app-state :app-state)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -325,6 +326,13 @@
  (fn [db]
    (multiaccounts.model/logged-in? {:db db})))
 
+(re-frame/reg-sub
+ :hide-screen?
+ :<- [:app-state]
+ :<- [:multiaccount]
+ (fn [[state multiaccount]]
+   (and (= state "inactive") (:preview-privacy? multiaccount))))
+
 ;; Intro wizard
 (re-frame/reg-sub
  :intro-wizard
@@ -333,12 +341,6 @@
  (fn [[wizard-state {:keys [width height]}]]
    (assoc wizard-state
           :view-height height :view-width width)))
-
-(re-frame/reg-sub
- :intro-wizard/generate-key
- :<- [:intro-wizard]
- (fn [wizard-state]
-   (select-keys wizard-state [:processing? :view-height])))
 
 (re-frame/reg-sub
  :intro-wizard/choose-key
@@ -350,19 +352,7 @@
  :intro-wizard/select-key-storage
  :<- [:intro-wizard]
  (fn [wizard-state]
-   (merge (select-keys wizard-state [:selected-storage-type :view-height :recovering?])
-          (if (:recovering? wizard-state)
-            {:forward-action :multiaccounts.recover/select-storage-next-pressed}
-            {:forward-action :intro-wizard/step-forward-pressed}))))
-
-(re-frame/reg-sub
- :intro-wizard/create-code
- :<- [:intro-wizard]
- (fn [wizard-state]
-   (merge (select-keys wizard-state [:processing?])
-          (if (:recovering? wizard-state)
-            {:forward-action  :multiaccounts.recover/enter-password-next-pressed}
-            {:forward-action :intro-wizard/step-forward-pressed}))))
+   (select-keys wizard-state [:selected-storage-type :recovering?])))
 
 (re-frame/reg-sub
  :intro-wizard/enter-phrase

@@ -122,7 +122,7 @@
             {:db (assoc db
                         :group/selected-contacts #{}
                         :new-chat-name "")}
-            (navigation/navigate-to-cofx :create-group-chat nil)))
+            (navigation/navigate-to-cofx :contact-toggle-list nil)))
 
 (fx/defn name-verified
   {:events [:contacts/ens-name-verified]}

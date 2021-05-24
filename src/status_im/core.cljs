@@ -2,10 +2,9 @@
   (:require status-im.utils.db
             status-im.events
             status-im.subs
-            [status-im.ui.screens.views :as views]
+            status-im.navigation.core
             [re-frame.core :as re-frame]
             [re-frame.interop :as interop]
-            [reagent.core :as reagent]
             [reagent.impl.batching :as batching]
             [status-im.notifications.local :as notifications]
             [status-im.native-module.core :as status]
@@ -14,8 +13,12 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.snoopy :as snoopy]
             [status-im.utils.config :as config]
-            ["react-native-screens" :refer (enableScreens)]
-            ["react-native" :as rn :refer (DevSettings LogBox)]))
+            [status-im.utils.universal-links.core :as utils.universal-links]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.react :as react]
+            ["react-native" :refer (DevSettings LogBox)]
+            ["react-native-languages" :default react-native-languages]
+            ["react-native-shake" :as react-native-shake]))
 
 (set! interop/next-tick js/setTimeout)
 (set! batching/fake-raf #(js/setTimeout % 0))
@@ -24,12 +27,19 @@
 (defn init []
   (utils.logs/init-logs config/log-level)
   (error-handler/register-exception-handler!)
-  (enableScreens)
-  (re-frame/dispatch-sync [:init/app-started])
   (when platform/android?
     (status/set-soft-input-mode status/adjust-resize))
-  (.registerComponent ^js (.-AppRegistry rn) "StatusIm" #(reagent/reactify-component views/root))
   (notifications/listen-notifications)
+  (.addEventListener ^js react/app-state "change" #(re-frame/dispatch [:app-state-change %]))
+  (.addEventListener react-native-languages "change" (fn [^js event]
+                                                       (i18n/set-language (.-language event))))
+  (.addEventListener react-native-shake "ShakeEvent" #(re-frame/dispatch [:shake-event]))
+
+  (re-frame/dispatch-sync [:init/app-started])
+
+  (utils.universal-links/initialize)
+
+  ;;DEV
   (snoopy/subscribe!)
   (when (and js/goog.DEBUG platform/ios? DevSettings)
     ;;on Android this method doesn't work

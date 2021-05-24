@@ -105,7 +105,8 @@
   (letsubs
     [{:keys [seed-word-count seed-shape-invalid?]} [:multiaccounts/key-storage]
      {:keys [creating-backup?]} [:keycard]]
-    [react/keyboard-avoiding-view {:flex 1}
+    [react/keyboard-avoiding-view {:style {:flex 1}
+                                   :ignore-offset true}
      [local-topbar (i18n/label :t/enter-seed-phrase) ::multiaccounts.key-storage/navigate-back]
      [multiaccounts.views/seed-phrase-input
       {:on-change-event     [::multiaccounts.key-storage/seed-phrase-input-changed]

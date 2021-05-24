@@ -11,7 +11,8 @@
             ["react-native-safe-area-context" :as safe-area-context
              :refer (SafeAreaProvider SafeAreaInsetsContext)]
             ["@react-native-community/clipboard" :default Clipboard]
-            ["react-native-linear-gradient" :default LinearGradient])
+            ["react-native-linear-gradient" :default LinearGradient]
+            ["react-native-navigation" :refer (Navigation)])
   (:require-macros [status-im.utils.views :as views]))
 
 (def native-modules (.-NativeModules react-native))
@@ -21,8 +22,6 @@
 
 (def app-state (.-AppState react-native))
 (def view (reagent/adapt-react-class (.-View react-native)))
-
-(def status-bar-class (.-StatusBar react-native))
 
 (def scroll-view-class (reagent/adapt-react-class (.-ScrollView react-native)))
 (def keyboard-avoiding-view-class (reagent/adapt-react-class (.-KeyboardAvoidingView react-native)))
@@ -227,10 +226,20 @@
     (.then clipboard-contents #(clbk %))))
 
 ;; KeyboardAvoidingView
+(def navigation-const (atom nil))
+
+(.then (.constants Navigation)
+       (fn [^js consts]
+         (reset! navigation-const {:top-bar-height (.-topBarHeight consts)
+                                   :bottom-tabs-height (.-bottomTabsHeight consts)
+                                   :status-bar-height (.-statusBarHeight consts)})))
 
 (defn keyboard-avoiding-view [props & children]
   (into [keyboard-avoiding-view-class
-         (merge (when platform/ios? {:behavior :padding}) props)]
+         (merge (when platform/ios? {:behavior :padding})
+                (if (:ignore-offset props)
+                  props
+                  (update props :keyboardVerticalOffset + 44 (:status-bar-height @navigation-const))))]
         children))
 
 (defn scroll-view [props & children]

@@ -21,7 +21,6 @@
             [status-im.transport.core :as transport]
             [status-im.stickers.core :as stickers]
             [status-im.mobile-sync-settings.core :as mobile-network]
-            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.logging.core :as logging]
@@ -36,7 +35,8 @@
             [status-im.chat.models.link-preview :as link-preview]
             [status-im.utils.mobile-sync :as utils.mobile-sync]
             [status-im.async-storage.core :as async-storage]
-            [status-im.notifications-center.core :as notifications-center]))
+            [status-im.notifications-center.core :as notifications-center]
+            [status-im.navigation :as navigation]))
 
 (re-frame/reg-fx
  ::initialize-communities-enabled
@@ -72,9 +72,8 @@
   (reduce (fn [acc {:keys [chat type wallet] :as account}]
             (if chat
               acc
-              (let [account (cond->
-                             (update account :address
-                                     eip55/address->checksum)
+              (let [account (cond-> (update account :address
+                                            eip55/address->checksum)
                               type
                               (update :type keyword))]
                 ;; if the account is the default wallet we
@@ -316,7 +315,8 @@
                 {:method     "permissions_getDappPermissions"
                  :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}
                 {:method     "settings_getSettings"
-                 :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
+                 :on-success #(do (re-frame/dispatch [::get-settings-callback %])
+                                  (re-frame/dispatch [:init-root :chat-stack]))}]}
               (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))
@@ -329,10 +329,14 @@
         first-account?      (and creating?
                                  (empty? multiaccounts))]
     (fx/merge cofx
-              {:db                   (-> db
-                                         (dissoc :multiaccounts/login)
-                                         (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
-               :dispatch-later       [{:ms 2000 :dispatch [::initialize-wallet accounts nil nil (:recovered multiaccount) true]}]}
+              {:db             (-> db
+                                   (dissoc :multiaccounts/login)
+                                   (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
+               :init-root-fx   :onboarding-notification
+               :dispatch-later [{:ms 2000 :dispatch [::initialize-wallet
+                                                     accounts nil nil
+                                                     (or (get db :recovered-account?) (:recovered multiaccount))
+                                                     true]}]}
               (finish-keycard-setup)
               (transport/start-messenger)
               (chat.loading/initialize-chats)
@@ -398,17 +402,15 @@
 ;; the keychain (save-password), this is not very explicit and we should probably
 ;; make it clearer
 (fx/defn open-login
-  [{:keys [db] :as cofx} override-multiaccount]
-  (fx/merge cofx
-            {:db (-> db
-                     (update :multiaccounts/login
-                             merge
-                             override-multiaccount)
-                     (update :multiaccounts/login
-                             dissoc
-                             :error
-                             :password))}
-            (keychain/get-auth-method (:key-uid override-multiaccount))))
+  [{:keys [db]} override-multiaccount]
+  {:db (-> db
+           (update :multiaccounts/login
+                   merge
+                   override-multiaccount)
+           (update :multiaccounts/login
+                   dissoc
+                   :error
+                   :password))})
 
 (fx/defn open-login-callback
   {:events [:multiaccounts.login.callback/get-user-password-success]}
@@ -422,8 +424,8 @@
        cofx
        {:db (update-in db [:multiaccounts/login] assoc
                        :password password
-                       :save-password? true)}
-       (navigation/navigate-to-cofx :intro-stack {:screen :progress})
+                       :save-password? true)
+        :init-root-fx :progress}
        login)
       (fx/merge
        cofx
@@ -432,9 +434,9 @@
                   (assoc-in [:keycard :pin :enter-step] :login)
                   (assoc-in [:keycard :pin :status] nil)
                   (assoc-in [:keycard :pin :login] []))})
-       (if keycard-account?
-         (navigation/navigate-to-cofx :intro-stack {:screen :keycard-login-pin})
-         (navigation/navigate-to-cofx :intro-stack {:screen :login}))))))
+       #(if keycard-account?
+          {:init-root-with-component-fx [:multiaccounts-keycard :multiaccounts]}
+          {:init-root-fx :multiaccounts})))))
 
 (fx/defn get-credentials
   [{:keys [db] :as cofx} key-uid]
@@ -515,28 +517,27 @@
            (popover/show-popover {:view :disable-password-saving})))))))
 
 (fx/defn welcome-lets-go
-  {:events [::welcome-lets-go]}
+  {:events [:welcome-lets-go]}
   [cofx]
   (let [first-account? (get-in cofx [:db :multiaccount :multiaccounts/first-account])]
     (fx/merge cofx
+              {:init-root-fx :chat-stack}
               (when first-account?
                 (acquisition/create))
-              (if config/metrics-enabled?
-                (navigation/navigate-to :anon-metrics-opt-in {})
-                (navigation/navigate-reset {:index  0
-                                            :routes [{:name :tabs}]})))))
+              #(when config/metrics-enabled?
+                 {:dispatch [:navigate-to :anon-metrics-opt-in]}))))
 
 (fx/defn multiaccount-selected
   {:events [:multiaccounts.login.ui/multiaccount-selected]}
   [{:keys [db] :as cofx} key-uid]
   ;; We specifically pass a bunch of fields instead of the whole multiaccount
   ;; as we want store some fields in multiaccount that are not here
-  (let [multiaccount (get-in db [:multiaccounts/multiaccounts key-uid])]
+  (let [multiaccount (get-in db [:multiaccounts/multiaccounts key-uid])
+        keycard-multiaccount? (boolean (:keycard-pairing multiaccount))]
     (fx/merge
      cofx
-     {:db (-> db
-              (dissoc :intro-wizard :recovered-account?)
-              (update :keycard dissoc :application-info))}
+     {:db (update db :keycard dissoc :application-info)
+      :rnn-navigate-to-fx (if keycard-multiaccount? :keycard-login-pin :login)}
      (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
 
 (fx/defn hide-keycard-banner

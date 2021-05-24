@@ -8,8 +8,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
-            [status-im.ui.screens.pairing.styles :as styles]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.screens.pairing.styles :as styles]))
 
 (def syncing (reagent/atom false))
 (def installation-name (reagent/atom ""))
@@ -130,8 +129,7 @@
 
 (views/defview installations []
   (views/letsubs [installations [:pairing/installations]]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/devices)}]
+    [:<>
      [react/scroll-view
       (if (string/blank? (-> installations first :name))
         [edit-installation-name]

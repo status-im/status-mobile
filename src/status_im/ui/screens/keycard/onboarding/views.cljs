@@ -19,63 +19,60 @@
 (defview intro []
   (letsubs [flow [:keycard-flow]
             {:keys [from-key-storage-and-migration? factory-reset-card?]} [:keycard]]
-    [react/view styles/container
-     (when-not from-key-storage-and-migration?
-       [topbar/topbar])
-     [react/view {:flex            1
-                  :align-items     :center
-                  :margin-top      (when from-key-storage-and-migration? 80)}
-      [react/view {:align-items :center}
-       [react/view
-        [react/view {:align-items     :center
-                     :justify-content :center
-                     :margin-top      16}
-         [react/image {:source (resources/get-image :keycard)
-                       :style  {:width  120
-                                :height 95}}]]]
-       [react/view {:margin-top 16}
-        [react/text {:style {:typography :header}}
-         (i18n/label :t/keycard-onboarding-intro-header)]]
-       [react/view {:margin-top 16
-                    :width      311}
-        [react/text {:style {:font-size   15
-                             :line-height 22
-                             :color       colors/gray
-                             :text-align  :center}}
-         (i18n/label :t/keycard-onboarding-intro-text)]]
-       [react/view
-        [react/touchable-highlight {:on-press #(.openURL ^js react/linking
-                                                         constants/keycard-integration-link)}
-         [react/view {:flex-direction  :row
-                      :align-items     :center
-                      :justify-content :center}
-          [react/text {:style {:text-align :center
-                               :color      colors/blue}}
-           (i18n/label :t/learn-more-about-keycard)]
-          [icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
-                                                      :container-style {:margin-left 5}}]]]]]
+    [react/view {:flex            1
+                 :align-items     :center
+                 :margin-top      (when from-key-storage-and-migration? 80)}
+     [react/view {:align-items :center}
+      [react/view
+       [react/view {:align-items     :center
+                    :justify-content :center
+                    :margin-top      16}
+        [react/image {:source (resources/get-image :keycard)
+                      :style  {:width  120
+                               :height 95}}]]]
+      [react/view {:margin-top 16}
+       [react/text {:style {:typography :header}}
+        (i18n/label :t/keycard-onboarding-intro-header)]]
       [react/view {:margin-top 16
-                   :margin-left 24
-                   :margin-right 24}
-       [react/text {:style {:typography  :main-medium
+                   :width      311}
+       [react/text {:style {:font-size   15
                             :line-height 22
-                            :text-align  :left}}
-        (i18n/label :t/keycard-onboarding-pin-text)]
-       (when (not= flow :recovery)
-         [react/text {:style {:typography  :main-medium
-                              :margin-top  16
-                              :line-height 22
-                              :text-align  :left}}
-          (i18n/label :t/keycard-onboarding-mnemonic-text)])]
-      [react/view {:style {:flex-direction :row
-                           :margin-top     24}}
-       [checkbox/checkbox {:checked?        factory-reset-card?
-                           :style           {:margin-right 10}
-                           :on-value-change #(re-frame/dispatch [:keycard.onboarding.intro.ui/factory-reset-card-toggle %])}]
-       [react/text (i18n/label :t/keycard-factory-reset)]]
-      [react/view {:margin-top 40}
-       [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.intro.ui/begin-setup-pressed])}
-        (i18n/label :t/begin-set-up)]]]]))
+                            :color       colors/gray
+                            :text-align  :center}}
+        (i18n/label :t/keycard-onboarding-intro-text)]]
+      [react/view
+       [react/touchable-highlight {:on-press #(.openURL ^js react/linking
+                                                        constants/keycard-integration-link)}
+        [react/view {:flex-direction  :row
+                     :align-items     :center
+                     :justify-content :center}
+         [react/text {:style {:text-align :center
+                              :color      colors/blue}}
+          (i18n/label :t/learn-more-about-keycard)]
+         [icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
+                                                     :container-style {:margin-left 5}}]]]]]
+     [react/view {:margin-top 16
+                  :margin-left 24
+                  :margin-right 24}
+      [react/text {:style {:typography  :main-medium
+                           :line-height 22
+                           :text-align  :left}}
+       (i18n/label :t/keycard-onboarding-pin-text)]
+      (when (not= flow :recovery)
+        [react/text {:style {:typography  :main-medium
+                             :margin-top  16
+                             :line-height 22
+                             :text-align  :left}}
+         (i18n/label :t/keycard-onboarding-mnemonic-text)])]
+     [react/view {:style {:flex-direction :row
+                          :margin-top     24}}
+      [checkbox/checkbox {:checked?        factory-reset-card?
+                          :style           {:margin-right 10}
+                          :on-value-change #(re-frame/dispatch [:keycard.onboarding.intro.ui/factory-reset-card-toggle %])}]
+      [react/text (i18n/label :t/keycard-factory-reset)]]
+     [react/view {:margin-top 40}
+      [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.intro.ui/begin-setup-pressed])}
+       (i18n/label :t/begin-set-up)]]]))
 
 (defview puk-code []
   (letsubs [secrets [:keycard-secrets]
@@ -272,7 +269,8 @@
             input-word [:keycard-recovery-phrase-input-word]
             error [:keycard-recovery-phrase-confirm-error]]
     (let [{:keys [idx]} word]
-      [react/view styles/container
+      [react/keyboard-avoiding-view {:style styles/container
+                                     :ignore-offset true}
        [topbar/topbar
         {:navigation {:on-press            #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
                       :accessibility-label :cancel-keycard-setup

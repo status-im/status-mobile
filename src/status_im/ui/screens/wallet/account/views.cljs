@@ -25,15 +25,6 @@
 
 (def state (reagent/atom {:tab :assets}))
 
-(defn toolbar-view [title]
-  [topbar/topbar
-   {:title title
-    :right-accessories
-    [{:icon     :main-icons/more
-      :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                     {:content        sheets/account-settings
-                                      :content-height 60}])}]}])
-
 (defn button [label icon color handler]
   [react/touchable-highlight {:on-press handler :style {:flex 1}}
    [react/view {:flex 1 :align-items :center :justify-content :center}
@@ -218,8 +209,14 @@
     (let [anim-y (animation/create-value button-group-height)
           scroll-y (animation/create-value 0)]
       (anim-listener anim-y scroll-y)
-      [react/view {:flex 1 :background-color colors/white}
-       [toolbar-view name]
+      [:<>
+       [topbar/topbar
+        {:title name
+         :right-accessories
+         [{:icon     :main-icons/more
+           :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                          {:content        sheets/account-settings
+                                           :content-height 60}])}]}]
        [react/animated-scroll-view
         {:contentContainerStyle {:padding-bottom button-group-height}
          :on-scroll             (animation/event

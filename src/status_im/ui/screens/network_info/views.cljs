@@ -1,7 +1,5 @@
 (ns status-im.ui.screens.network-info.views
-  (:require [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.react :as react]
-            [status-im.i18n.i18n :as i18n]
+  (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -79,7 +77,4 @@
                  "PRESS TO REFRESH"))])])))
 
 (defn network-info []
-  [react/view {:flex 1}
-   [topbar/topbar
-    {:title (i18n/label :t/network-info)}]
-   [check-lag]])
+  [check-lag])

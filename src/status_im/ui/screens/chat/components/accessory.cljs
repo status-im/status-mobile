@@ -4,13 +4,12 @@
             [cljs-bean.core :as bean]
             [quo.design-system.colors :as colors]
             [status-im.ui.screens.chat.components.hooks :refer [use-keyboard-dimension]]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [quo.react :as react]
             [quo.platform :as platform]
             [quo.react-native :as rn]
+            [status-im.ui.components.tabbar.core :as tabbar]
             [quo.components.safe-area :refer [use-safe-area]]))
 
-(def tabbar-height tabs.styles/minimized-tabs-height)
 (def duration 250)
 
 (defn create-pan-responder [y pan-active]
@@ -52,8 +51,8 @@
 
             visible         (or has-panel (pos? keyboard-height))
             anim-visible    (animated/use-value visible)
-            kb-on-screen    (if platform/android? 0 (* -1 (- keyboard-height bottom tabbar-height)))
-            panel-on-screen (* -1 (- keyboard-max-height bottom tabbar-height))
+            kb-on-screen    (if platform/android? 0 (* -1 (- keyboard-height bottom (tabbar/get-height))))
+            panel-on-screen (* -1 (- keyboard-max-height bottom (tabbar/get-height)))
             max-delta       (min 0 (if has-panel panel-on-screen kb-on-screen))
             panel-height    (* -1 max-delta)
             end-position    (- keyboard-end-position (when has-panel keyboard-max-height))
@@ -117,7 +116,7 @@
              bar-height :height}              (rn/use-layout)
 
             visible         has-panel
-            panel-on-screen (* -1 (- keyboard-max-height bottom tabbar-height))
+            panel-on-screen (* -1 (- keyboard-max-height bottom (tabbar/get-height)))
             max-delta       (min 0 (if has-panel panel-on-screen 0))
             panel-height    (* -1 max-delta)
             on-update       (fn []

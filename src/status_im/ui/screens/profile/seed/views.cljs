@@ -139,7 +139,8 @@
 (defview backup-seed []
   (letsubs [current-multiaccount [:multiaccount]
             {:keys [step first-word second-word error word]} [:my-profile/recovery]]
-    [react/keyboard-avoiding-view {:style {:flex 1}}
+    [react/keyboard-avoiding-view {:style {:flex 1}
+                                   :ignore-offset true}
      [topbar/topbar {:title      (i18n/label :t/backup-recovery-phrase)
                      :subtitle   (i18n/label :t/step-i-of-n {:step (steps-numbers step) :number 3})
                      :navigation (if (= :finish step)

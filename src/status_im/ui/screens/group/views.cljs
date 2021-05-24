@@ -101,7 +101,8 @@
   (views/letsubs [contacts   [:selected-group-contacts]
                   group-name [:new-chat-name]]
     (let [group-name-empty? (not (spec/valid? :global/not-empty-string group-name))]
-      [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
+      [react/keyboard-avoiding-view  {:style styles/group-container
+                                      :ignore-offset true}
        [react/view {:flex 1}
         [topbar/topbar {:use-insets false
                         :title      (i18n/label :t/new-group-chat)
@@ -162,7 +163,8 @@
 (views/defview contact-toggle-list []
   (views/letsubs [contacts                [:contacts/active]
                   selected-contacts-count [:selected-contacts-count]]
-    [kb-presentation/keyboard-avoiding-view {:style styles/group-container}
+    [react/keyboard-avoiding-view {:style styles/group-container
+                                   :ignore-offset true}
      [topbar/topbar {:use-insets    false
                      :border-bottom false
                      :title         (i18n/label :t/new-group-chat)
@@ -217,9 +219,6 @@
   (views/letsubs [{:keys [name chat-id]} [:chats/current-chat]
                   new-group-chat-name (reagent/atom nil)]
     [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
-     [topbar/topbar
-      {:title  (i18n/label :t/edit-group)
-       :modal? true}]
      [react/scroll-view {:style {:padding 16
                                  :flex    1}}
       [quo/text-input

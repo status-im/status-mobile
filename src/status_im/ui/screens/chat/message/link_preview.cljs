@@ -59,7 +59,7 @@
                :style {:margin-top 2}}
      (i18n/label :t/once-enabled-share-metadata)]]
    [quo/separator]
-   [quo/button {:on-press #(re-frame/dispatch [:navigate-to :link-preview-settings])
+   [quo/button {:on-press #(re-frame/dispatch [:open-modal :link-preview-settings])
                 :type     :secondary}
     (i18n/label :enable)]
    [quo/separator]

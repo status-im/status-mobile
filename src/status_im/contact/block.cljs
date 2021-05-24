@@ -58,7 +58,7 @@
                                                  (re-frame/dispatch [:hide-popover])))
               ;; reset navigation to avoid going back to non existing one to one chat
               (if from-one-to-one-chat?
-                (navigation/navigate-to-cofx :home {})
+                (navigation/pop-to-root-tab :chat-stack)
                 (navigation/navigate-back)))))
 
 (fx/defn unblock-contact

@@ -1,7 +1,6 @@
-(ns status-im.ui.screens.intro.password
+(ns status-im.ui.screens.onboarding.password.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.i18n.i18n :as i18n]
             [status-im.constants :as const]
@@ -18,36 +17,31 @@
 (defn screen []
   (let [password    (reagent/atom nil)
         confirm     (reagent/atom nil)
+        processing? (reagent/atom nil)
         show-error  (reagent/atom nil)
         confirm-ref (atom nil)]
     (fn []
-      (let [{:keys [forward-action processing?]}
-            @(re-frame/subscribe [:intro-wizard/create-code])
-            valid-password (validate-password @password)
+      (let [valid-password (validate-password @password)
             valid-form     (confirm-password @password @confirm)
+            {:keys [recovering?]} @(re-frame/subscribe [:intro-wizard])
             on-submit      (fn []
-                             (when (not processing?)
+                             (when (not @processing?)
                                (if (and valid-password valid-form)
                                  (do (reset! show-error false)
-                                     (re-frame/dispatch [forward-action {:key-code @password}]))
+                                     (reset! processing? true)
+                                     (if recovering?
+                                       (re-frame/dispatch [:multiaccounts.recover/enter-password-next-pressed @password])
+                                       (re-frame/dispatch [:create-multiaccount @password])))
                                  (reset! show-error true))))]
         [rn/keyboard-avoiding-view {:flex 1}
-         [topbar/topbar
-          {:border-bottom false
-           :navigation
-           {:icon                :main-icons/back
-            :accessibility-label :back-button
-            :on-press            #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
          [rn/view {:style {:flex               1
                            :justify-content    :space-between
                            :padding-vertical   16
                            :padding-horizontal 16}}
-
-          [rn/view
-           [quo/text {:weight :bold
-                      :align  :center
-                      :size   :x-large}
-            (i18n/label :intro-wizard-title-alt4)]]
+          [quo/text {:weight :bold
+                     :align  :center
+                     :size   :x-large}
+           (i18n/label :intro-wizard-title-alt4)]
           [rn/view
            [rn/view {:style {:padding 16}}
             [quo/text-input {:secure-text-entry   true
@@ -84,14 +78,13 @@
                                                        (reset! show-error true)
 
                                                        :else (reset! show-error false)))}]]]
-          [rn/view
-           [quo/text {:color :secondary
-                      :align :center
-                      :size  :small}
-            (i18n/label :t/password-description)]]]
+          [quo/text {:color :secondary
+                     :align :center
+                     :size  :small}
+           (i18n/label :t/password-description)]]
          [toolbar/toolbar
           (merge {:show-border? true}
-                 (if processing?
+                 (if @processing?
                    {:center
                     [rn/view {:align-items     :center
                               :justify-content :center
@@ -108,7 +101,7 @@
                       :disabled            (or (nil? @confirm)
                                                (not valid-password)
                                                (not valid-form)
-                                               processing?)
+                                               @processing?)
                       :type                :secondary
                       :after               :main-icons/next}
                      (i18n/label :t/next)]}))]]))))

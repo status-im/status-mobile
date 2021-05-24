@@ -42,7 +42,7 @@
 (views/defview network-settings []
   (views/letsubs [current-network [:networks/current-network]
                   networks        [:get-networks]]
-    [react/view {:flex 1}
+    [:<>
      [topbar/topbar {:title       (i18n/label :t/network-settings)
                      :right-accessories
                      [{:icon    :main-icons/add

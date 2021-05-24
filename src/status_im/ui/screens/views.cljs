@@ -1,92 +1,126 @@
 (ns status-im.ui.screens.views
-  (:require [status-im.utils.universal-links.core :as utils.universal-links]
-            [re-frame.core :as re-frame]
-            [cljs-bean.core :refer [bean]]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.routing.core :as navigation]
+  (:require [status-im.ui.components.react :as react]
             [reagent.core :as reagent]
-            [status-im.ui.screens.routing.main :as routing]
-            [status-im.ui.screens.signing.views :as signing]
-            [status-im.ui.screens.popover.views :as popover]
-            [status-im.ui.screens.wallet.send.views :as wallet]
-            [status-im.ui.components.status-bar.view :as statusbar]
-            [status-im.ui.components.colors :as colors]
-            [status-im.keycard.test-menu :as keycard.test-menu]
-            [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
-            [status-im.utils.config :as config]
             [status-im.reloader :as reloader]
-            [status-im.i18n.i18n :as i18n]
-            ["react-native" :as rn]
-            ["react-native-languages" :default react-native-languages]
-            ["react-native-shake" :as react-native-shake]))
+            [status-im.ui.screens.screens :as screens]
+            [oops.core :refer [oget]]
+            [status-im.ui.screens.popover.views :as popover]
+            [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
+            [status-im.ui.screens.signing.views :as signing]
+            [status-im.ui.screens.wallet.send.views :as wallet.send.views]
+            [re-frame.core :as re-frame]
+            [status-im.ui.components.colors :as colors]
+            [status-im.utils.config :as config]
+            [status-im.keycard.test-menu :as keycard.test-menu]
+            [status-im.utils.platform :as platform]))
 
-(def splash-screen (-> rn .-NativeModules .-SplashScreen))
+(defn get-screens []
+  (reduce
+   (fn [acc screen]
+     (assoc acc (:name screen) screen))
+   {}
+   screens/screens))
 
-(defn on-languages-change [^js event]
-  (i18n/set-language (.-language event)))
+;;we need this for hot reload (for some reason it doesn't reload, so we have to call get-screens if debug true)
+(def screens (get-screens))
 
-(defn on-shake []
-  (re-frame/dispatch [:shake-event]))
+(def components
+  (reduce
+   (fn [acc {:keys [name component]}]
+     (assoc acc name component))
+   {}
+   (concat screens/components)))
 
-(defn app-state-change-handler [state]
-  (re-frame/dispatch [:app-state-change state]))
+(defn wrapped-screen-style [{:keys [insets style]} insets-obj]
+  (merge
+   {:flex 1
+    :background-color colors/white}
+   (when platform/android?
+     {:border-bottom-width 1
+      :border-bottom-color colors/gray-lighter})
+   style
+   (when (get insets :bottom)
+     {:padding-bottom (+ (oget insets-obj "bottom")
+                         (get style :padding-bottom)
+                         (get style :padding-vertical))})
+   (when (get insets :top true)
+     {:padding-top (+ (oget insets-obj "top")
+                      (get style :padding-top)
+                      (get style :padding-vertical))})))
 
-(def debug? ^boolean js/goog.DEBUG)
+(defn inactive []
+  (when @(re-frame/subscribe [:hide-screen?])
+    [react/view {:position :absolute :flex 1 :top 0 :bottom 0 :left 0 :right 0 :background-color colors/white
+                 :z-index 999999999999999999}]))
 
-;; Persist navigation state in dev mode
-(when debug?
-  (defonce state (atom nil))
-  (defn- persist-state! [state-obj]
-    (js/Promise.
-     (fn [resolve _]
-       (reset! state state-obj)
-       (resolve true)))))
+(defn screen [key]
+  (reagent.core/reactify-component
+   (fn []
+     ^{:key (str "root" key @reloader/cnt)}
+     [react/safe-area-provider
+      [react/safe-area-consumer
+       (fn [insets]
+         (reagent/as-element
+          [react/view {:style (wrapped-screen-style
+                               {:insets (get-in screens [(keyword key) :insets])}
+                               insets)}
+           [inactive]
+           [(get-in (if js/goog.DEBUG (get-screens) screens) [(keyword key) :component])]]))]
+      (when js/goog.DEBUG
+        [reloader/reload-view])
+      (when config/keycard-test-menu-enabled?
+        [keycard.test-menu/test-menu])])))
 
-(defn on-state-change [state]
-  (let [route-name (navigation/get-active-route-name (bean state))]
-    ;; NOTE(Ferossgp): Keycard did-load events backward compatibility
-    (re-frame/dispatch [:screens/on-will-focus route-name])
+(defn component [comp]
+  (reagent/reactify-component
+   (fn []
+     [react/view {:width 500 :height 44}
+      [comp]])))
 
-    ;; NOTE(Ferossgp): Both calls are for backward compatibility, should be reworked in future
-    (statusbar/set-status-bar route-name)
-    (re-frame/dispatch [:set :view-id route-name]))
-  (when debug?
-    (persist-state! state)))
+(def popover-comp
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "popover" @reloader/cnt)}
+     [react/safe-area-provider
+      [inactive]
+      [popover/popover]
+      (when js/goog.DEBUG
+        [reloader/reload-view])
+      (when config/keycard-test-menu-enabled?
+        [keycard.test-menu/test-menu])])))
 
-(defn root [_]
-  (reagent/create-class
-   {:component-did-mount
-    (fn [_]
-      (.addEventListener ^js react/app-state "change" app-state-change-handler)
-      (.addEventListener react-native-languages "change" on-languages-change)
-      (.addEventListener react-native-shake "ShakeEvent" on-shake)
-      (.hide ^js splash-screen)
-      (utils.universal-links/initialize))
-    :component-will-unmount
-    (fn []
-      (.removeEventListener ^js react/app-state "change" app-state-change-handler)
-      (.removeEventListener react-native-languages "change" on-languages-change)
-      (utils.universal-links/finalize))
-    :display-name   "root"
-    :reagent-render (fn []
-                      [react/safe-area-provider
-                       ^{:key (str @colors/theme @reloader/cnt)}
-                       [react/view {:flex             1
-                                    :background-color colors/black-persist}
-                        [navigation/navigation-container
-                         (merge {:ref               (fn [r]
-                                                      (navigation/set-navigator-ref r))
-                                 :onStateChange     on-state-change
-                                 :enableURLHandling false}
-                                (when debug?
-                                  {:enableURLHandling true
-                                   :initialState      @state}))
-                         [routing/main-nav-component]]
-                        [wallet/select-account]
-                        [signing/signing]
-                        [bottom-sheets/bottom-sheet]
-                        [popover/popover]
-                        (when debug?
-                          [reloader/reload-view @reloader/cnt])
-                        (when config/keycard-test-menu-enabled?
-                          [keycard.test-menu/test-menu])]])}))
+(def sheet-comp
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "seet" @reloader/cnt)}
+     [react/safe-area-provider
+      [inactive]
+      [bottom-sheets/bottom-sheet]
+      (when js/goog.DEBUG
+        [reloader/reload-view])
+      (when config/keycard-test-menu-enabled?
+        [keycard.test-menu/test-menu])])))
+
+(def signing-comp
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "signing-seet" @reloader/cnt)}
+     [react/safe-area-provider
+      [inactive]
+      [signing/signing]
+      (when js/goog.DEBUG
+        [reloader/reload-view])
+      (when config/keycard-test-menu-enabled?
+        [keycard.test-menu/test-menu])])))
+
+(def select-acc-comp
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "select-acc-sheet" @reloader/cnt)}
+     [react/safe-area-provider
+      [inactive]
+      [wallet.send.views/select-account]
+      (when js/goog.DEBUG
+        [reloader/reload-view])
+      (when config/keycard-test-menu-enabled?
+        [keycard.test-menu/test-menu])])))

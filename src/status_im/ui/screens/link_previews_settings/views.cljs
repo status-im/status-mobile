@@ -6,7 +6,6 @@
             [status-im.ui.components.list.views :as list]
             [quo.core :as quo]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.link-previews-settings.styles :as styles]
             [status-im.chat.models.link-preview :as link-preview]))
 
@@ -25,8 +24,7 @@
   (views/letsubs [link-previews-whitelist [:link-previews-whitelist]
                   link-previews-enabled-sites [:link-preview/enabled-sites]]
     (let [all-enabled (= (count link-previews-whitelist) (count link-previews-enabled-sites))]
-      [react/view {:flex 1}
-       [topbar/topbar {:title (i18n/label :t/chat-link-previews)}]
+      [:<>
        [react/image {:source      (resources/get-theme-image :unfurl)
                      :style       styles/link-preview-settings-image}]
        [quo/text {:style {:margin 16}}

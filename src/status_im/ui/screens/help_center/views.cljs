@@ -4,8 +4,6 @@
             [quo.core :as quo]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.constants :as constants]))
 
 (def data
@@ -38,9 +36,7 @@
     :chevron             true}])
 
 (defn help-center []
-  [react/view {:flex 1 :background-color colors/white}
-   [topbar/topbar {:title (i18n/label :t/need-help)}]
-   [list/flat-list
-    {:data      data
-     :key-fn    (fn [_ i] (str i))
-     :render-fn quo/list-item}]])
+  [list/flat-list
+   {:data      data
+    :key-fn    (fn [_ i] (str i))
+    :render-fn quo/list-item}])

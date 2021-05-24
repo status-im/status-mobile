@@ -5,40 +5,37 @@
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.react :as react])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview about-app []
   (views/letsubs [app-version  [:get-app-short-version]
                   node-version [:get-app-node-version]]
-    [react/view {:flex 1 :background-color colors/white}
-     [topbar/topbar {:title (i18n/label :t/about-app)}]
-     [react/scroll-view
+    [react/scroll-view
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/privacy-policy)
+       :accessibility-label :privacy-policy
+       :on-press
+       #(re-frame/dispatch
+         [:privacy-policy/privacy-policy-button-pressed])
+       :chevron             true}]
+     [copyable-text/copyable-text-view
+      {:copied-text app-version}
       [quo/list-item
        {:size                :small
-        :title               (i18n/label :t/privacy-policy)
-        :accessibility-label :privacy-policy
-        :on-press
-        #(re-frame/dispatch
-          [:privacy-policy/privacy-policy-button-pressed])
-        :chevron             true}]
-      [copyable-text/copyable-text-view
-       {:copied-text app-version}
-       [quo/list-item
-        {:size                :small
-         :accessibility-label :app-version
-         :title               (i18n/label :t/version)
-         :accessory           :text
-         :accessory-text      app-version}]]
-      [copyable-text/copyable-text-view
-       {:copied-text node-version}
-       [quo/list-item
-        {:size                :small
-         :accessibility-label :node-version
-         :title               (i18n/label :t/node-version)
-         :accessory          :text
-         :accessory-text      node-version}]]]]))
+        :accessibility-label :app-version
+        :title               (i18n/label :t/version)
+        :accessory           :text
+        :accessory-text      app-version}]]
+     [copyable-text/copyable-text-view
+      {:copied-text node-version}
+      [quo/list-item
+       {:size                :small
+        :accessibility-label :node-version
+        :title               (i18n/label :t/node-version)
+        :accessory          :text
+        :accessory-text      node-version}]]]))
 
 (views/defview learn-more-sheet []
   (views/letsubs [{:keys [title content]} [:bottom-sheet/options]]

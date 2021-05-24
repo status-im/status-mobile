@@ -79,7 +79,8 @@
   (log/info "universal-links: handling view profile" public-key)
   (cond
     (and public-key (new-chat.db/own-public-key? db public-key))
-    (navigation/navigate-to-cofx cofx :tabs {:screen :profile-stack})
+    {:navigate-change-tab-fx :profile
+     :pop-to-root-tab-fx :profile-stack}
 
     public-key
     (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key)
@@ -104,10 +105,8 @@
 (fx/defn handle-wallet-account [cofx {address :account}]
   (when-let [account (existing-account? cofx address)]
     (navigation/navigate-to-cofx cofx
-                                 :tabs
-                                 {:screen :wallet-stack
-                                  :params {:screen :wallet-account
-                                           :params account}})))
+                                 :wallet-account
+                                 account)))
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))

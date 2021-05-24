@@ -34,11 +34,10 @@
   [cofx]
   ;; we reset navigation so that navigate back doesn't return
   ;; into the registration flow
-  (navigation/navigate-reset cofx
-                             {:index  1
-                              :key    :profile-stack
-                              :routes [{:name :my-profile}
-                                       {:name :ens-confirmation}]}))
+  (navigation/set-stack-root cofx
+                             :profile-stack
+                             [:my-profile
+                              :ens-confirmation]))
 
 (fx/defn update-ens-tx-state-and-redirect
   {:events [:update-ens-tx-state-and-redirect]}
@@ -237,9 +236,8 @@
             {:db (dissoc db :ens/registration)}
             ;; we reset navigation so that navigate back doesn't return
             ;; into the registration flow
-            (navigation/navigate-reset {:index  1
-                                        :routes [{:name :my-profile}
-                                                 {:name :ens-main}]})))
+            (navigation/set-stack-root :profile-stack [:my-profile
+                                                       :ens-main])))
 
 (fx/defn switch-domain-type
   {:events [::switch-domain-type]}

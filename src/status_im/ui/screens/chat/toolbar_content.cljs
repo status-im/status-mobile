@@ -50,6 +50,3 @@
       (when (and group-chat (not invitation-admin) (not= chat-type constants/community-chat-type))
         [group-last-activity {:contacts   contacts
                               :public?    public?}])]]))
-
-(defn toolbar-content-view []
-  [toolbar-content-view-inner @(re-frame/subscribe [:chats/current-chat])])

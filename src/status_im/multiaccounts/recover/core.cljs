@@ -52,7 +52,7 @@
     (if error
       {:utils/show-popup {:title      (i18n/label :t/multiaccount-exists-title)
                           :content    (i18n/label :t/multiaccount-exists-title)
-                          :on-dismiss #(re-frame/dispatch [:navigate-to :multiaccounts])}}
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :multiaccounts])}}
       (let [{:keys [key-uid] :as multiaccount} (get-in db [:intro-wizard :root-key])
             keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
         (if keycard-multiaccount?
@@ -116,10 +116,10 @@
     :content             (i18n/label :t/multiaccount-exists-content)
     :confirm-button-text (i18n/label :t/unlock)
     :on-accept           #(do
-                            (re-frame/dispatch [:navigate-to :multiaccounts])
+                            (re-frame/dispatch [:pop-to-root-tab :multiaccounts])
                             (re-frame/dispatch
                              [:multiaccounts.login.ui/multiaccount-selected key-uid]))
-    :on-cancel           #(re-frame/dispatch [:navigate-to :multiaccounts])}})
+    :on-cancel           #(re-frame/dispatch [:pop-to-root-tab :multiaccounts])}})
 
 (fx/defn on-import-multiaccount-success
   {:events [::import-multiaccount-success]}
@@ -130,8 +130,7 @@
      {:db (update db :intro-wizard
                   assoc :root-key root-data
                   :derived derived-data
-                  :step :recovery-success
-                  :forward-action :multiaccounts.recover/re-encrypt-pressed)}
+                  :step :recovery-success)}
      (when (existing-account? multiaccounts key-uid)
        (show-existing-multiaccount-alert key-uid))
      (navigation/navigate-to-cofx :recover-multiaccount-success nil))))
@@ -148,7 +147,6 @@
                     :next-button-disabled?  true
                     :weak-password?         true
                     :encrypt-with-password? true
-                    :back-action            :intro-wizard/navigate-back
                     :forward-action         :multiaccounts.recover/enter-phrase-next-pressed}
                    :recovered-account? true)
             (update :keycard dissoc :flow))}
@@ -222,9 +220,8 @@
       ;;TODO: fix circular dependency to remove dispatch here
       {:dispatch [:recovery.ui/keycard-option-pressed]}
       (fx/merge cofx
-                {:db (update db :intro-wizard assoc :step :create-code
-                             :forward-action :multiaccounts.recover/enter-password-next-pressed)}
-                (navigation/navigate-to-cofx :recover-multiaccount-enter-password nil)))))
+                {:db (update db :intro-wizard assoc :step :create-code)}
+                (navigation/navigate-to-cofx :create-password nil)))))
 
 (fx/defn re-encrypt-pressed
   {:events [:multiaccounts.recover/re-encrypt-pressed]}
@@ -232,16 +229,15 @@
   (fx/merge cofx
             {:db (update db :intro-wizard
                          assoc :step :select-key-storage
-                         :forward-action :multiaccounts.recover/select-storage-next-pressed
                          :selected-storage-type :default)}
             (if (nfc/nfc-supported?)
-              (navigation/navigate-to-cofx :recover-multiaccount-select-storage nil)
+              (navigation/navigate-to-cofx :select-key-storage nil)
               (select-storage-next-pressed))))
 
 (fx/defn confirm-password-next-button-pressed
   {:events [:multiaccounts.recover/enter-password-next-pressed]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
-  [{:keys [db] :as cofx} {:keys [key-code]}]
+  [cofx key-code]
   (store-multiaccount cofx key-code))
 
 (fx/defn count-words

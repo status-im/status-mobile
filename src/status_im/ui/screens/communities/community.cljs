@@ -194,8 +194,8 @@
    [topbar/topbar {:title  (i18n/label :t/not-found)}]
    [blank-page (i18n/label :t/community-info-not-found)]])
 
-(defn community [route]
-  (let [{:keys [community-id]} (get-in route [:route :params])
+(defn community []
+  (let [{:keys [community-id]} (<sub [:get-screen-params])
         {:keys [id chats name images members permissions color joined can-request-access?
                 can-join? requested-to-join-at admin]
          :as   community}      (<sub [:communities/community community-id])]

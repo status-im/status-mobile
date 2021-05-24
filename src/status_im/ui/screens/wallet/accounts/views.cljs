@@ -152,8 +152,7 @@
          {:on-press #(re-frame/dispatch
                       (if frozen-card?
                         [::keycard.login/reset-pin]
-                        [:navigate-to :profile-stack {:screen :backup-seed
-                                                      :initial false}]))}
+                        [:navigate-to :backup-seed]))}
          [react/view {:flex-direction :row
                       :align-items    :center}
           [react/view {:width            14

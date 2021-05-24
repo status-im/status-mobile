@@ -24,6 +24,7 @@
             :View                     {}
             :RefreshControl           {}
             :FlatList                 {}
+            :SectionList              {}
             :Text                     {}
             :StatusBar                {}
             :ScrollView               {}
@@ -100,7 +101,6 @@
                                  :SafeAreaInsetsContext {:Consumer (fn [])}
                                  :SafeAreaView {}}))
 (def react-native-dark-mode #js {"eventEmitter" {} "initialMode" {}})
-(def react-native-navigation-bar-color  #js {"changeNavigationBarColor" #()})
 
 (def back-handler #js {:addEventListener identity
                        :removeEventListener identity})
@@ -113,6 +113,10 @@
                                   :useFocusEffect      identity
                                   :CommonActions       #js {}
                                   :StackActions        #js {}})
+
+(def react-native-navigation #js {:Navigation #js {:constants (fn [] #js {:then identity})
+                                                   :events identity}})
+
 (def react-navigation-stack #js {:createStackNavigator identity
                                  :TransitionPresets    #js {:ModalPresentationIOS #js {}}})
 (def react-navigation-bottom-tabs #js {:createBottomTabNavigator identity})
@@ -147,7 +151,7 @@
                                                      :event                   nil
                                                      :cond                    nil
                                                      :block                   nil
-                                                     :interpolate             nil
+                                                     :interpolateNode         nil
                                                      :call                    nil
                                                      :timing                  nil
                                                      :onChange                nil
@@ -156,7 +160,7 @@
                                                      :Text                    #js {}
                                                      :Extrapolate             #js {:CLAMP nil}
                                                      :Code                    #js {}}
-                                  :Easing       #js {:bezier identity
+                                  :EasingNode   #js {:bezier identity
                                                      :linear identity}
                                   :clockRunning nil})
 (def react-native-gesture-handler #js {:default                  #js {}
@@ -188,6 +192,9 @@
 (def react-native-device-info
   #js {:getInstallReferrer identity})
 
+(def react-native-camera-kit
+  #js {:CameraKitCamera #js {}})
+
 (def react-native-push-notification
   #js {:localNotification identity
        :requestPermission identity})
@@ -206,12 +213,11 @@
     "react-native-safe-area-context" safe-area-context
     "react-native-config" config
     "react-native-dark-mode" react-native-dark-mode
-    "react-native-navigation-bar-color" react-native-navigation-bar-color
     "react-native-iphone-x-helper" (clj->js {:getStatusBarHeight (fn [])
                                              :getBottomSpace (fn [])})
     "react-native-screens" (clj->js {})
     "react-native-reanimated" react-native-reanimated
-    "react-native-redash" react-native-redash
+    "react-native-redash/lib/module/v1" react-native-redash
     "react-native-fetch-polyfill" fetch
     "react-native-status-keycard" status-keycard
     "react-native-keychain" keychain
@@ -226,7 +232,9 @@
     "react-native-device-info" react-native-device-info
     "react-native-push-notification" react-native-push-notification
     "react-native-linear-gradient" react-native-gradien
+    "react-native-navigation" react-native-navigation
     "@react-native-community/push-notification-ios" push-notification-ios
+    "react-native-camera-kit" react-native-camera-kit
     "./fleets.js" default-fleets
     "./chats.js" default-chats
     "../translations/ar.json" (js/JSON.parse (slurp "./translations/ar.json"))

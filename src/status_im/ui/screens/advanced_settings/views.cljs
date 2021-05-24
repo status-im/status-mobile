@@ -4,9 +4,7 @@
             [quo.core :as quo]
             [status-im.utils.config :as config]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.list.views :as list])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- normal-mode-settings-data [{:keys [network-name
@@ -114,16 +112,14 @@
                   communities-enabled?     [:communities/enabled?]
                   current-log-level        [:log-level/current-log-level]
                   current-fleet            [:fleets/current-fleet]]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/advanced)}]
-     [list/flat-list
-      {:data      (flat-list-data
-                   {:network-name           network-name
-                    :current-log-level      current-log-level
-                    :communities-enabled?   communities-enabled?
-                    :current-fleet          current-fleet
-                    :dev-mode?              false
-                    :waku-bloom-filter-mode waku-bloom-filter-mode
-                    :webview-debug          webview-debug})
-       :key-fn    (fn [_ i] (str i))
-       :render-fn render-item}]]))
+    [list/flat-list
+     {:data      (flat-list-data
+                  {:network-name           network-name
+                   :current-log-level      current-log-level
+                   :communities-enabled?   communities-enabled?
+                   :current-fleet          current-fleet
+                   :dev-mode?              false
+                   :waku-bloom-filter-mode waku-bloom-filter-mode
+                   :webview-debug          webview-debug})
+      :key-fn    (fn [_ i] (str i))
+      :render-fn render-item}]))

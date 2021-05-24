@@ -1,49 +1,18 @@
 (ns status-im.multiaccounts.create.core
-  (:require [clojure.set :refer [map-invert]]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.data-store.settings :as data-store.settings]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.keycard.nfc :as nfc]
             [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
-            [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.ui.components.colors :as colors]
-            [status-im.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.security :as security]
             [status-im.utils.signing-phrase.core :as signing-phrase]
-            [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
-
-(def step-kw-to-num
-  {:generate-key         1
-   :choose-key           2
-   :select-key-storage   3
-   :create-code          4})
-
-(defn decrement-step [step]
-  (let [inverted  (map-invert step-kw-to-num)]
-    (if (and (= step :create-code)
-             (not (nfc/nfc-supported?)))
-      :choose-key
-      (inverted (dec (step-kw-to-num step))))))
-
-(defn inc-step [step]
-  (let [inverted (map-invert step-kw-to-num)]
-    (if (and (= step :choose-key)
-             (not (nfc/nfc-supported?)))
-      :create-code
-      (inverted (inc (step-kw-to-num step))))))
-
-;; multiaccounts create module
-(defn get-selected-multiaccount [{:keys [db]}]
-  (let [{:keys [selected-id multiaccounts]} (:intro-wizard db)]
-    (some #(when (= selected-id (:id %)) %) multiaccounts)))
+            [status-im.utils.types :as types]))
 
 (defn normalize-derived-data-keys [derived-data]
   (->> derived-data
@@ -62,131 +31,107 @@
     derived
     (update :derived normalize-derived-data-keys)))
 
+(re-frame/reg-cofx
+ ::get-signing-phrase
+ (fn [cofx _]
+   (assoc cofx :signing-phrase (signing-phrase/generate))))
+
+(re-frame/reg-fx
+ ::store-multiaccount
+ (fn [[id key-uid hashed-password callback]]
+   (status/multiaccount-store-derived
+    id
+    key-uid
+    [constants/path-wallet-root
+     constants/path-eip1581
+     constants/path-whisper
+     constants/path-default-wallet]
+    hashed-password
+    callback)))
+
 (fx/defn create-multiaccount
+  {:events [:create-multiaccount]}
   [{:keys [db]} key-code]
-  (let [{:keys [selected-id]} (:intro-wizard db)
-        key-uid (some
-                 (fn [{:keys [id key-uid]}]
-                   (when (= id selected-id)
-                     key-uid))
-                 (get-in db [:intro-wizard :multiaccounts]))
-        hashed-password (ethereum/sha3 (security/safe-unmask-data key-code))
-        callback (fn [result]
-                   (let [derived-data (normalize-derived-data-keys (types/json->clj result))
-                         public-key (get-in derived-data [constants/path-whisper-keyword :public-key])]
-                     (status/gfycat-identicon-async
-                      public-key
-                      (fn [name identicon]
-                        (let [derived-whisper (derived-data constants/path-whisper-keyword)
-                              derived-data-extended (assoc-in derived-data
-                                                              [constants/path-whisper-keyword]
-                                                              (merge derived-whisper {:name name :identicon identicon}))]
-                          (re-frame/dispatch [::store-multiaccount-success
-                                              key-code derived-data-extended]))))))]
-    {::store-multiaccount [selected-id key-uid hashed-password callback]}))
+  (let [{:keys [selected-id]} (:intro-wizard db)]
+    {::store-multiaccount
+     [selected-id
+      (some
+       (fn [{:keys [id key-uid]}]
+         (when (= id selected-id)
+           key-uid))
+       (get-in db [:intro-wizard :multiaccounts]))
+      (ethereum/sha3 (security/safe-unmask-data key-code))
+      (fn [result]
+        (let [derived-data (normalize-derived-data-keys (types/json->clj result))
+              public-key (get-in derived-data [constants/path-whisper-keyword :public-key])]
+          (status/gfycat-identicon-async
+           public-key
+           (fn [name identicon]
+             (let [derived-whisper (derived-data constants/path-whisper-keyword)
+                   derived-data-extended (assoc-in derived-data
+                                                   [constants/path-whisper-keyword]
+                                                   (merge derived-whisper {:name name :identicon identicon}))]
+               (re-frame/dispatch [::store-multiaccount-success key-code derived-data-extended]))))))]}))
+
+(re-frame/reg-fx
+ :multiaccount-generate-and-derive-addresses
+ (fn []
+   (status/multiaccount-generate-and-derive-addresses
+    5
+    12
+    [constants/path-whisper
+     constants/path-wallet-root
+     constants/path-default-wallet]
+    #(re-frame/dispatch [:multiaccount-generate-and-derive-addresses-success
+                         (mapv normalize-multiaccount-data-keys
+                               (types/json->clj %))]))))
+
+(fx/defn multiaccount-generate-and-derive-addresses-success
+  {:events [:multiaccount-generate-and-derive-addresses-success]}
+  [{:keys [db]} result]
+  {:db (update db :intro-wizard
+               (fn [data]
+                 (-> data
+                     (dissoc :processing?)
+                     (assoc :multiaccounts result
+                            :selected-storage-type :default
+                            :selected-id (-> result first :id)
+                            :step :choose-key))))
+   :rnn-navigate-to-fx :choose-name})
+
+(fx/defn generate-and-derive-addresses
+  {:events [:generate-and-derive-addresses]}
+  [{:keys [db]}]
+  {:db (assoc-in db [:intro-wizard :processing?] true)
+   :multiaccount-generate-and-derive-addresses nil})
 
 (fx/defn prepare-intro-wizard
-  [{:keys [db] :as cofx}]
-  {:db (assoc db :intro-wizard {:step :generate-key
-                                :back-action :intro-wizard/navigate-back
-                                :forward-action :intro-wizard/step-forward-pressed})})
+  [{:keys [db]}]
+  {:db (assoc db :intro-wizard {})})
 
-(fx/defn intro-wizard
-  {:events [:multiaccounts.create.ui/intro-wizard]}
-  [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (-> db
-                     (update :keycard dissoc :flow)
-                     (dissoc :restored-account?))}
-            (prepare-intro-wizard)
-            (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
+(fx/defn save-multiaccount-and-login-with-keycard
+  [_ args]
+  {:keycard/save-multiaccount-and-login args})
 
-(fx/defn get-new-key
-  {:events [:multiaccounts.create.ui/get-new-key]}
-  [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            (prepare-intro-wizard)
-            (bottom-sheet/hide-bottom-sheet)
-            (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
+(re-frame/reg-fx
+ ::save-account-and-login
+ (fn [[key-uid multiaccount-data hashed-password settings config accounts-data]]
+   (status/save-account-and-login
+    key-uid
+    multiaccount-data
+    hashed-password
+    settings
+    config
+    accounts-data)))
 
-(fx/defn remove-recovery-flag [{:keys [db]}]
-  {:db (dissoc db :recovered-account?)})
-
-(fx/defn dec-step
-  {:events [:intro-wizard/dec-step]}
-  [{:keys [db] :as cofx}]
-  (let  [step (get-in db [:intro-wizard :step])]
-    (fx/merge cofx
-              (when (= step :enter-phrase)
-                remove-recovery-flag)
-              (if (or (= step :enter-phrase)
-                      (= :generate-key step))
-                prepare-intro-wizard
-                (fn [_]
-                  {:db (assoc-in db [:intro-wizard :step] (decrement-step step))})))))
-
-(fx/defn intro-step-back
-  {:events [:intro-wizard/navigate-back]}
-  [{:keys [db] :as cofx} skip-alert?]
-  (let  [step (get-in db [:intro-wizard :step])]
-    (if (and (= step :choose-key) (not skip-alert?))
-      (utils/show-question
-       (i18n/label :t/are-you-sure-to-cancel)
-       (i18n/label :t/you-will-start-from-scratch)
-       #(re-frame/dispatch [:intro-wizard/navigate-back true]))
-      (fx/merge cofx
-                dec-step
-                navigation/navigate-back))))
-
-(fx/defn exit-wizard
-  [{:keys [db] :as cofx}]
-  (fx/merge
-   cofx
-   {:db (dissoc db :intro-wizard)}
-   (navigation/navigate-to-cofx :notifications-onboarding nil)))
-
-(fx/defn init-key-generation
-  [{:keys [db] :as cofx}]
-  {:db (assoc-in db [:intro-wizard :processing?] true)
-   :intro-wizard/start-onboarding nil})
-
-(fx/defn store-key-code [{:keys [db] :as cofx}]
-  (let [key-code  (get-in db [:intro-wizard :key-code])]
-    {:db (update db :intro-wizard
-                 assoc :stored-key-code key-code
-                 :key-code nil)}))
-
-(fx/defn intro-step-forward
-  {:events [:intro-wizard/step-forward-pressed]}
-  [{:keys [db] :as cofx} {:keys [skip? key-code] :as opts}]
-  (let [{:keys [step selected-storage-type processing?]} (:intro-wizard db)]
-    (log/debug "[multiaccount.create] intro-step-forward"
-               "step" step)
-    (cond (= step :generate-key)
-          (init-key-generation cofx)
-
-          (and (= step :create-code)
-               (not processing?))
-          (fx/merge cofx
-                    {:db (assoc-in db [:intro-wizard :processing?] true)}
-                    (create-multiaccount key-code))
-
-          (and  (= step :create-code)
-                (:multiaccounts/login db))
-          (exit-wizard cofx)
-
-          (and (= step :select-key-storage)
-               (= :advanced selected-storage-type))
-          {:dispatch [:keycard/start-onboarding-flow]}
-
-          :else (let [next-step (inc-step step)]
-                  (fx/merge cofx
-                            {:db (update db :intro-wizard
-                                         assoc :processing? false
-                                         :step next-step)}
-                            (when (= step :create-code)
-                              store-key-code)
-                            (navigation/navigate-to-cofx (->> next-step name (str "create-multiaccount-") keyword) nil))))))
+(fx/defn save-account-and-login
+  [_ key-uid multiaccount-data password settings node-config accounts-data]
+  {::save-account-and-login [key-uid
+                             (types/clj->json multiaccount-data)
+                             password
+                             (types/clj->json settings)
+                             node-config
+                             (types/clj->json accounts-data)]})
 
 (defn prepare-accounts-data
   [multiaccount]
@@ -206,19 +151,6 @@
       :identicon identicon
       :path       constants/path-whisper
       :chat       true})])
-
-(fx/defn save-multiaccount-and-login-with-keycard
-  [_ args]
-  {:keycard/save-multiaccount-and-login args})
-
-(fx/defn save-account-and-login
-  [_ key-uid multiaccount-data password settings node-config accounts-data]
-  {::save-account-and-login [key-uid
-                             (types/clj->json multiaccount-data)
-                             password
-                             (types/clj->json settings)
-                             node-config
-                             (types/clj->json accounts-data)]})
 
 (fx/defn on-multiaccount-created
   [{:keys [signing-phrase random-guid-generator db] :as cofx}
@@ -260,7 +192,7 @@
                   :installation-id       (random-guid-generator)
                   ;; default mailserver (history node) setting
                   :use-mailservers?      true
-                  :recovered             (or recovered (get-in db [:intro-wizard :recovering?]))}
+                  :recovered             recovered}
                  config/default-multiaccount)
           ;; The address from which we derive any chat
           ;; account/encryption keys
@@ -303,90 +235,28 @@
                  (ethereum/sha3 (security/safe-unmask-data password))
                  settings
                  (node/get-new-config db)
-                 accounts-data))
-              (when (:intro-wizard db)
-                (intro-step-forward {})))))
+                 accounts-data)))))
 
-(re-frame/reg-fx
- :intro-wizard/start-onboarding
- (fn []
-   (status/multiaccount-generate-and-derive-addresses
-    5
-    12
-    [constants/path-whisper
-     constants/path-wallet-root
-     constants/path-default-wallet]
-    #(re-frame/dispatch [:intro-wizard/on-keys-generated
-                         (mapv normalize-multiaccount-data-keys
-                               (types/json->clj %))]))))
-
-(fx/defn on-keys-generated
-  {:events [:intro-wizard/on-keys-generated]}
-  [{:keys [db] :as cofx} result]
-  (fx/merge
-   {:db (update db :intro-wizard
-                (fn [data]
-                  (-> data
-                      (dissoc :processing?)
-                      (assoc :multiaccounts result
-                             :selected-storage-type :default
-                             :selected-id (-> result first :id)
-                             :step :choose-key))))}
-   (navigation/navigate-to-cofx :create-multiaccount-choose-key nil)))
+(fx/defn store-multiaccount-success
+  {:events [::store-multiaccount-success]
+   :interceptors [(re-frame/inject-cofx :random-guid-generator)
+                  (re-frame/inject-cofx ::get-signing-phrase)]}
+  [{:keys [db] :as cofx} password derived]
+  (fx/merge cofx
+            {:db (dissoc db :intro-wizard)}
+            (on-multiaccount-created (assoc (let [{:keys [selected-id multiaccounts]} (:intro-wizard db)]
+                                              (some #(when (= selected-id (:id %)) %) multiaccounts))
+                                            :derived derived
+                                            :recovered (get-in db [:intro-wizard :recovering?]))
+                                     password
+                                     {:save-mnemonic? true})))
 
 (fx/defn on-key-selected
   {:events [:intro-wizard/on-key-selected]}
-  [{:keys [db] :as cofx} id]
+  [{:keys [db]} id]
   {:db (assoc-in db [:intro-wizard :selected-id] id)})
 
 (fx/defn on-key-storage-selected
   {:events [:intro-wizard/on-key-storage-selected]}
-  [{:keys [db] :as cofx} storage-type]
+  [{:keys [db]} storage-type]
   {:db (assoc-in db [:intro-wizard :selected-storage-type] storage-type)})
-
-(fx/defn on-learn-more-pressed
-  {:events [:intro-wizard/on-learn-more-pressed]}
-  [{:keys [db] :as cofx}]
-  {:db (assoc-in db [:intro-wizard :show-learn-more?] true)})
-
-(re-frame/reg-cofx
- ::get-signing-phrase
- (fn [cofx _]
-   (assoc cofx :signing-phrase (signing-phrase/generate))))
-
-(fx/defn create-multiaccount-success
-  {:events [::store-multiaccount-success]
-   :interceptors [(re-frame/inject-cofx :random-guid-generator)
-                  (re-frame/inject-cofx ::get-signing-phrase)]}
-  [cofx password derived]
-  (on-multiaccount-created cofx
-                           (assoc
-                            (get-selected-multiaccount cofx)
-                            :derived
-                            derived)
-                           password
-                           {:save-mnemonic? true}))
-
-(re-frame/reg-fx
- ::store-multiaccount
- (fn [[id key-uid hashed-password callback]]
-   (status/multiaccount-store-derived
-    id
-    key-uid
-    [constants/path-wallet-root
-     constants/path-eip1581
-     constants/path-whisper
-     constants/path-default-wallet]
-    hashed-password
-    callback)))
-
-(re-frame/reg-fx
- ::save-account-and-login
- (fn [[key-uid multiaccount-data hashed-password settings config accounts-data]]
-   (status/save-account-and-login
-    key-uid
-    multiaccount-data
-    hashed-password
-    settings
-    config
-    accounts-data)))

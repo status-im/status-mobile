@@ -37,7 +37,8 @@
                             (not (string/blank? name))
                             (empty? validation-errors))
           invalid-url? (contains? validation-errors :url)]
-      [react/keyboard-avoiding-view {:style {:flex 1}}
+      [react/keyboard-avoiding-view {:style {:flex 1}
+                                     :ignore-offset true}
        [topbar/topbar {:title (i18n/label (if id :t/mailserver-details :t/add-mailserver))}]
        [react/scroll-view {:keyboard-should-persist-taps :handled}
         [react/view styles/edit-mailserver-view

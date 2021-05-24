@@ -42,9 +42,9 @@
       :icon                [chat-icon/contact-icon-contacts-tab
                             (multiaccounts/displayed-photo member)]}]))
 
-(defn requests-to-join [route]
+(defn requests-to-join []
   (fn []
-    (let [{:keys [community-id]}     (get-in route [:route :params])
+    (let [{:keys [community-id]}     (<sub [:get-screen-params])
           requests (<sub [:communities/requests-to-join-for-community community-id])
           {:keys [can-manage-users?]}    (<sub [:communities/community community-id])]
       [:<>
@@ -56,9 +56,9 @@
                       :key-fn      :id
                       :render-fn   render-request}]])))
 
-(defn requests-to-join-container [route]
+(defn requests-to-join-container []
   (reagent/create-class
    {:display-name "community-requests-to-join-view"
     :component-did-mount (fn []
-                           (communities/fetch-requests-to-join! (get-in route [:route :params :community-id])))
+                           (communities/fetch-requests-to-join! (get (<sub [:get-screen-params]) :community-id)))
     :reagent-render requests-to-join}))

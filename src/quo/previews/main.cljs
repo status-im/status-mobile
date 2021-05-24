@@ -9,11 +9,10 @@
             [quo.previews.controls :as controls]
             [quo.react-native :as rn]
             [quo.core :as quo]
-            [reagent.core :as reagent]
             [quo.design-system.colors :as colors]
             [quo.theme :as theme]
-            [status-im.ui.screens.routing.core :as navigation]
-            [quo.previews.icons :as icons]))
+            [quo.previews.icons :as icons]
+            [re-frame.core :as re-frame]))
 
 (def screens [{:name      :texts
                :insets    {:top false}
@@ -75,39 +74,10 @@
    [rn/view
     (for [{:keys [name]} screens]
       ^{:key name}
-      [rn/touchable-opacity {:on-press #(navigation/navigate-to name nil)}
+      [rn/touchable-opacity {:on-press #(re-frame/dispatch [:navigate-to name])}
        [rn/view {:style {:padding-vertical 8}}
         [quo/text (str "Preview " name)]]])]])
 
-(defonce navigation-state (atom nil))
-
-(defn- persist-state! [state-obj]
-  (js/Promise.
-   (fn [resolve _]
-     (reset! navigation-state state-obj)
-     (resolve true))))
-
-(defn preview-stack []
-  (let [stack (navigation/create-stack)]
-    [stack {}
-     (into [{:name      :main
-             :insets    {:top false}
-             :component main-screen}]
-           screens)]))
-
-(defn preview-screens []
-  [navigation/navigation-container
-   {:ref             navigation/set-navigator-ref
-    :initial-state   @navigation-state
-    :on-state-change persist-state!}
-   [preview-stack]])
-
-
-
-;; TODO(Ferossgp): Add separate build when shadow-cljs will be integrated
-;; NOTE(Ferossgp): Separate app can be used to preview all available
-;; and possible state for components, and for UI testing based on screenshots
-
-
-(defn init []
-  (.registerComponent ^js rn/app-registry "StatusIm" #(reagent/reactify-component preview-screens)))
+(def main-screens [{:name      :quo-preview
+                    :insets    {:top false}
+                    :component main-screen}])

@@ -6,8 +6,8 @@
             [clojure.string :as string]
             [status-im.communities.core :as communities]))
 
-(defn view [route]
-  (let [chat-id (get-in route [:route :params :chat-id])
+(defn view []
+  (let [{:keys [chat-id]} (<sub [:get-screen-params])
         current-chat (<sub [:chat-by-id chat-id])
         {:keys [chat-name color description community-id]} current-chat
         {:keys [admin]} (<sub [:communities/community community-id])]

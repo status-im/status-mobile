@@ -2,7 +2,6 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.i18n.i18n :as i18n]))
 
 (def messages [{:title   :t/account-title
@@ -48,13 +47,10 @@
                       (map (fn [[k v]]
                              {:title k
                               :data  v})))]
-    [react/view {:flex             1
-                 :background-color colors/white}
-     [topbar/topbar {:title (i18n/label :t/glossary)}]
-     [list/section-list
-      {:contentContainerStyle       {:padding-horizontal 16
-                                     :padding-bottom     16}
-       :stickySectionHeadersEnabled true
-       :sections                    sections
-       :render-fn                   render-element
-       :render-section-header-fn    render-section-header}]]))
+    [list/section-list
+     {:contentContainerStyle       {:padding-horizontal 16
+                                    :padding-bottom     16}
+      :stickySectionHeadersEnabled true
+      :sections                    sections
+      :render-fn                   render-element
+      :render-section-header-fn    render-section-header}]))

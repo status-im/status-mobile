@@ -6,8 +6,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.stickers.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.utils.money :as money]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.utils.money :as money])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- thumbnail-icon [uri size]
@@ -59,7 +58,6 @@
   (letsubs [packs [:stickers/all-packs]]
     [react/view styles/screen
      [react/keyboard-avoiding-view {:flex 1}
-      [topbar/topbar {:title (i18n/label :t/sticker-market)}]
       (if (seq packs)
         [react/scroll-view {:keyboard-should-persist-taps :handled :style {:padding 16}}
          [react/view
@@ -71,13 +69,12 @@
 
 (def sticker-icon-size 60)
 
-(defview pack-main [modal?]
+(defview pack-main []
   (letsubs [{:keys [id name author price thumbnail
                     stickers installed owned pending]
              :as pack}
             [:stickers/get-current-pack]]
     [react/keyboard-avoiding-view {:flex 1}
-     [topbar/topbar {:modal? modal?}]
      (if pack
        [react/view {:flex 1}
         [react/view {:height 74 :align-items :center :flex-direction :row :padding-horizontal 16}
@@ -99,7 +96,4 @@
         [react/activity-indicator {:animating true}]])]))
 
 (defview pack []
-  [pack-main false])
-
-(defview pack-modal []
-  [pack-main true])
+  [pack-main])

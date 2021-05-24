@@ -11,7 +11,8 @@
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
             [status-im.bottom-sheet.core :as bottom-sheet]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.popover.core :as popover]))
 
 (def default-pin "000000")
 
@@ -168,12 +169,12 @@
 
 (defn keycard-sheet-content [on-cancel connected? params]
   (fn []
-    (keycard-sheet/connect-keycard
+    [keycard-sheet/connect-keycard
      {:on-cancel     #(re-frame/dispatch on-cancel)
       :connected?    connected?
       :params        params
       :on-connect    ::on-card-connected
-      :on-disconnect ::on-card-disconnected})))
+      :on-disconnect ::on-card-disconnected}]))
 
 (fx/defn show-connection-sheet-component
   [{:keys [db] :as cofx} {:keys [on-card-connected on-card-read handler]
@@ -376,7 +377,7 @@
      cofx
      {:db (assoc-in db [:keycard :pin :status] :frozen-card)}
      hide-connection-sheet)
-    {:db (assoc db :popover/popover {:view :frozen-card})}))
+    (popover/show-popover cofx {:view :frozen-card})))
 
 (fx/defn on-get-keys-error
   {:events [:keycard.callback/on-get-keys-error]}
@@ -541,8 +542,4 @@
 (fx/defn navigete-to-keycard-settings
   {:events [::navigate-to-keycard-settings]}
   [cofx]
-  (navigation/navigate-reset
-   cofx
-   {:index  1
-    :routes [{:name :my-profile}
-             {:name :keycard-settings}]}))
+  (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings]))

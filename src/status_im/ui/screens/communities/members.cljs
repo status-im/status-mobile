@@ -85,8 +85,8 @@
                      :title          (i18n/label :t/membership-requests)}]
      [quo/separator {:style {:margin-vertical 8}}]]))
 
-(defn members [route]
-  (let [{:keys [community-id]}      (get-in route [:route :params])
+(defn members []
+  (let [{:keys [community-id]}      (<sub [:get-screen-params])
         my-public-key               (<sub [:multiaccount/public-key])
         {:keys [members
                 permissions
@@ -108,9 +108,9 @@
                     :key-fn      identity
                     :render-fn   render-member}]]))
 
-(defn members-container [route]
+(defn members-container []
   (reagent/create-class
    {:display-name "community-members-view"
     :component-did-mount (fn []
-                           (communities/fetch-requests-to-join! (get-in route [:route :params :community-id])))
+                           (communities/fetch-requests-to-join! (get (<sub [:get-screen-params]) :community-id)))
     :reagent-render members}))

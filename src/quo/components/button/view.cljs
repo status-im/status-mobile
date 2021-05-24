@@ -68,7 +68,6 @@
         optional-haptic (fn []
                           (when haptic-feedback
                             (haptic/trigger haptic-type)))]
-
     [animation/pressable (merge {:bg-color            background-color
                                  :border-radius       border-radius
                                  :type                type

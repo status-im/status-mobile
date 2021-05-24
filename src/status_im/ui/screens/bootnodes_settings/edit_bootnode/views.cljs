@@ -28,7 +28,8 @@
           name         (get-in manage-bootnode [:name :value])
           is-valid?    (empty? validation-errors)
           invalid-url? (contains? validation-errors :url)]
-      [react/keyboard-avoiding-view {:flex 1}
+      [react/keyboard-avoiding-view {:style {:flex 1}
+                                     :ignore-offset true}
        [topbar/topbar {:title (i18n/label (if id :t/bootnode-details :t/add-bootnode))}]
        [react/scroll-view {:keyboard-should-persist-taps :handled}
         [react/view styles/edit-bootnode-view

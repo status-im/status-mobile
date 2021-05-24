@@ -20,8 +20,6 @@
     (let [initial-cofx {:db {:auth-method              keychain/auth-method-none
                              :supported-biometric-auth true}}
           {:keys [db]} (login/save-password initial-cofx true)]
-      (test/is (= :secure-with-biometric
-                  (get-in db [:popover/popover :view])))
       (test/is (= true (get-in db [:multiaccounts/login :save-password?])))
       (test/testing "enable biometric auth"
         (let [{:keys [db] :as res} (biometric/enable {:db db})]
@@ -46,30 +44,19 @@
                      "uncheck save password")
     (let [initial-cofx {:db {:auth-method              keychain/auth-method-none
                              :supported-biometric-auth true}}
-          {:keys [db]} (fx/merge
-                        initial-cofx
-                        (login/save-password true)
-                        (biometric/enable)
-                        (biometric/setup-done
-                         {:bioauth-success true
-                          :bioauth-message nil
-                          :bioauth-code    nil})
-                        (login/save-password false))]
+          {:keys [db]} (login/save-password (fx/merge
+                                             initial-cofx
+                                             (login/save-password true)
+                                             (biometric/enable)
+                                             (biometric/setup-done
+                                              {:bioauth-success true
+                                               :bioauth-message nil
+                                               :bioauth-code    nil}))
+                                            false)]
       (test/is (= true (get-in db [:multiaccounts/login :save-password?])))
       ;; case 2 from https://github.com/status-im/status-react/issues/9573
       (test/is (= keychain/auth-method-biometric-prepare (:auth-method db)))
       (test/testing "disable biometric"
         (let [{:keys [db]} (biometric/disable {:db db})]
           (test/is (= false (get-in db [:multiaccounts/login :save-password?])))
-          (test/is (= keychain/auth-method-none) (:auth-method db))))))
-  (test/testing (str "check save password, skip biometric auth"
-                     "uncheck save password, check again")
-    (let [initial-cofx {:db {:auth-method              keychain/auth-method-none
-                             :supported-biometric-auth true}}
-          {:keys [db]} (fx/merge
-                        initial-cofx
-                        (login/save-password true)
-                        (login/save-password false)
-                        (login/save-password false))]
-      ;; case 3 from https://github.com/status-im/status-react/issues/9573
-      (test/is (= :secure-with-biometric (get-in db [:popover/popover :view]))))))
+          (test/is (= keychain/auth-method-none) (:auth-method db)))))))

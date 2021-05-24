@@ -10,9 +10,9 @@
     [react/safe-area-consumer
      (fn [insets]
        (let [vertical-offset (+ (oget insets "top")
-                               ;; 10 is the margin-top for presentation modal
-                                10)]
+                               ;; 20 is the margin-top for presentation modal
+                                20)]
          (reagent/as-element
-          (into [react/keyboard-avoiding-view (merge props
-                                                     {:keyboard-vertical-offset vertical-offset})]
+          (into [react/keyboard-avoiding-view (update props :keyboardVerticalOffset
+                                                      + vertical-offset)]
                 children))))]))

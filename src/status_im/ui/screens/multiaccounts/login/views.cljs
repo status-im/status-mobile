@@ -13,7 +13,6 @@
             [quo.core :as quo]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -38,6 +37,10 @@
                :style     styles/login-badge-pubkey}
      (utils/get-shortened-address public-key)]]])
 
+(defn topbar-button []
+  (react/dismiss-keyboard!)
+  (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))
+
 (defview login []
   (letsubs [{:keys [error processing save-password?] :as multiaccount} [:multiaccounts/login]
             password-text-input (atom nil)
@@ -48,12 +51,6 @@
             keycard?                 [:keycard-multiaccount?]
             banner-hidden [:keycard/banner-hidden]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
-     [topbar/topbar {:border-bottom     false
-                     :right-accessories [{:icon                :more
-                                          :accessibility-label "sign-in-options"
-                                          :on-press #(do
-                                                       (react/dismiss-keyboard!)
-                                                       (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}]}]
      [react/scroll-view {:keyboardShouldPersistTaps :always
                          :style                     styles/login-view}
       [react/view styles/login-badge-container

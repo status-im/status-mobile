@@ -315,7 +315,7 @@
           :on-accept           #(do
                                   (reset! showing-connection-error-popup? false)
                                   (re-frame/dispatch [:mailserver.ui/dismiss-connection-error true])
-                                  (re-frame/dispatch [:navigate-to :profile-stack {:screen :offline-messaging-settings}]))
+                                  (re-frame/dispatch [:navigate-to :offline-messaging-settings]))
           :extra-options       [{:text    (i18n/label :t/mailserver-retry)
                                  :onPress #(do
                                              (reset! showing-connection-error-popup? false)

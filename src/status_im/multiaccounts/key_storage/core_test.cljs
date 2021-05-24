@@ -58,8 +58,7 @@
       (is (= :passed-derived-data (get-in res [:db :intro-wizard :derived])))
       (is (= :advanced (get-in res [:db :intro-wizard :selected-storage-type]))) ; :advanced storage type means Keycard
       (is (= :recovery (get-in res [:db :keycard :flow])))
-      (is (get-in res [:db :keycard :from-key-storage-and-migration?]))
-      (is (= {:intro-stack {:screen :keycard-onboarding-intro}} (get-in res [:db :navigation/screen-params]))))))
+      (is (get-in res [:db :keycard :from-key-storage-and-migration?])))))
 
 (comment
   (security/safe-unmask-data (security/mask-data nil)))

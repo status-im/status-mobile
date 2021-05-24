@@ -9,7 +9,6 @@
             [status-im.utils.security :as security]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
             [status-im.ui.screens.multiaccounts.sheets :as sheets]
@@ -36,15 +35,13 @@
                                                        :height 19}}]])
                   :chevron   true}])
 
+(defn topbar-button []
+  (re-frame/dispatch [:bottom-sheet/show-sheet
+                      {:content sheets/actions-sheet}]))
+
 (defview multiaccounts []
   (letsubs [multiaccounts [:multiaccounts/multiaccounts]]
-    [react/view styles/multiaccounts-view
-     [topbar/topbar {:navigation        :none
-                     :title             (i18n/label :t/your-keys)
-                     :right-accessories [{:icon                :more
-                                          :accessibility-label :your-keys-more-icon
-                                          :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                                    {:content sheets/actions-sheet}])}]}]
+    [:<>
      [react/view styles/multiaccounts-container
       [list/flat-list {:data                  (vals multiaccounts)
                        :contentContainerStyle styles/multiaccounts-list-container

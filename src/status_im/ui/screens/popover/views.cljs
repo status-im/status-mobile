@@ -96,8 +96,9 @@
         (when @current-popover
           (let [{:keys [view style]} @current-popover]
             [react/view {:position :absolute :top 0 :bottom 0 :left 0 :right 0}
-             [react/animated-view
-              {:style {:flex 1 :background-color colors/black-persist :opacity alpha-value}}]
+             (when platform/ios?
+               [react/animated-view
+                {:style {:flex 1 :background-color colors/black-persist :opacity alpha-value}}])
              [react/animated-view {:style
                                    {:position  :absolute
                                     :height    window-height

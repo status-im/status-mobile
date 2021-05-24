@@ -204,19 +204,21 @@
   (let [{:signing/keys [queue]} db
         {{:keys [gas gasPrice] :as tx-obj} :tx-obj {:keys [data typed? pinless?] :as message} :message :as tx} (last queue)
         keycard-multiaccount? (boolean (get-in db [:multiaccount :keycard-pairing]))
-        wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])
-        updated-db (if wallet-set-up-passed? db (assoc db :popover/popover {:view :signing-phrase}))]
+        wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])]
     (if message
       (fx/merge
        cofx
-       {:db (assoc updated-db
+       {:db (assoc db
                    :signing/queue (drop-last queue)
                    :signing/tx tx
                    :signing/sign {:type           (cond pinless? :pinless
                                                         keycard-multiaccount? :keycard
                                                         :else :password)
                                   :formatted-data (if typed? (types/json->clj data) (ethereum/hex->text data))
-                                  :keycard-step (when pinless? :connect)})}
+                                  :keycard-step (when pinless? :connect)})
+        :rnn-show-signing-sheet nil}
+       #(when-not wallet-set-up-passed?
+          {:dispatch-n [[:show-popover {:view :signing-phrase}]]})
        (when pinless?
          (keycard.card/start-nfc {:on-success #(re-frame/dispatch [:keycard.callback/start-nfc-success])
                                   :on-failure #(re-frame/dispatch [:keycard.callback/start-nfc-failure])})
@@ -225,10 +227,13 @@
                                         :on-completed #(re-frame/dispatch [:keycard/store-hash-and-sign-typed %])})))
       (fx/merge
        cofx
-       {:db               (assoc updated-db
+       {:db               (assoc db
                                  :signing/queue (drop-last queue)
-                                 :signing/tx (prepare-tx updated-db tx))
+                                 :signing/tx (prepare-tx db tx))
+        :rnn-show-signing-sheet nil
         :dismiss-keyboard nil}
+       #(when-not wallet-set-up-passed?
+          {:dispatch-n [[:show-popover {:view :signing-phrase}]]})
        (prices/update-prices)
        #(when-not gas
           {:db (assoc-in (:db %) [:signing/edit-fee :gas-loading?] true)

@@ -10,7 +10,8 @@
   {:db (assoc db
               :commands/select-account
               {:message message
-               :from (ethereum/get-default-account (:multiaccount/accounts db))})})
+               :from (ethereum/get-default-account (:multiaccount/accounts db))})
+   :rnn-show-select-acc-sheet nil})
 
 (fx/defn set-selected-account
   {:events [::set-selected-account]}
@@ -20,7 +21,7 @@
 
 (fx/defn handle-accept-request-address-for-transaction
   {:events [::accept-request-address-for-transaction]}
-  [{:keys [db] :as cofx} message-id address]
+  [{:keys [db]} message-id address]
   {:db (dissoc db :commands/select-account)
    ::json-rpc/call [{:method (json-rpc/call-ext-method "acceptRequestAddressForTransaction")
                      :params [message-id address]
@@ -29,7 +30,7 @@
 
 (fx/defn handle-decline-request-address-for-transaction
   {:events [::decline-request-address-for-transaction]}
-  [cofx message-id]
+  [_ message-id]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "declineRequestAddressForTransaction")
                      :params [message-id]
                      :js-response true

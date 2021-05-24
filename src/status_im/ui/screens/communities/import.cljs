@@ -5,14 +5,12 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.handlers :refer [>evt]]
             [status-im.communities.core :as communities]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.toolbar :as toolbar]))
 
 (defn view []
   (let [community-key (reagent/atom "")]
     (fn []
-      [rn/view {:style {:flex 1}}
-       [topbar/topbar {:title (i18n/label :t/import-community-title)}]
+      [:<>
        [rn/scroll-view {:style                   {:flex 1}
                         :content-container-style {:padding 16}}
         [rn/view {:style {:padding-bottom 16

@@ -453,4 +453,5 @@
      (when tx (select-keys tx [:from :contact :amount :token :approve? :message :cancel? :hash]))
      #(if (:message %)
         [message-sheet]
-        [sheet %])]))
+        [sheet %])
+     #(re-frame/dispatch [:hide-signing-sheet])]))

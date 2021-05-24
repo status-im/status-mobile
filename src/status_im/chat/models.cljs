@@ -182,12 +182,15 @@
 
 (fx/defn close-chat
   {:events [:close-chat]}
-  [{:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} target-chat-id]
   (let [chat-id (:current-chat-id db)]
-    (chat.state/reset-visible-item)
-    (fx/merge cofx
-              {:db (dissoc db :current-chat-id)}
-              (offload-messages chat-id))))
+    (if (:ignore-close-chat db)
+      {:db (dissoc db :ignore-close-chat)}
+      (when (= target-chat-id chat-id)
+        (chat.state/reset-visible-item)
+        (fx/merge cofx
+                  {:db (dissoc db :current-chat-id)}
+                  (offload-messages chat-id))))))
 
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"
@@ -197,7 +200,7 @@
             (deactivate-chat chat-id)
             (offload-messages chat-id)
             (when (not (= (:view-id db) :home))
-              (navigation/navigate-to-cofx :home {}))))
+              (navigation/pop-to-root-tab :chat-stack))))
 
 (fx/defn preload-chat-data
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
@@ -210,11 +213,11 @@
   {:events [:chat.ui/navigate-to-chat]}
   [{db :db :as cofx} chat-id]
   (fx/merge cofx
-            (close-chat)
+            (close-chat (:current-chat-id db))
             (fn [{:keys [db]}]
-              {:db (assoc db :current-chat-id chat-id)})
+              {:db (assoc db :current-chat-id chat-id :ignore-close-chat true)})
             (preload-chat-data chat-id)
-            (navigation/navigate-to-cofx  :chat-stack {:screen :chat})))
+            (navigation/navigate-to-cofx :chat nil)))
 
 (fx/defn handle-clear-history-response
   {:events [::history-cleared]}
@@ -287,7 +290,7 @@
         {:db (assoc-in db [:chats chat-id] chat)}))
    #(when navigate-to?
       {:dispatch-n [[:chat.ui/preload-chat-data chat-id]
-                    [:navigate-to :profile nil]]})))
+                    [:open-modal :profile]]})))
 
 (fx/defn start-profile-chat
   "Starts a new profile chat"
@@ -335,8 +338,7 @@
   {:events [:chat.ui/show-profile]}
   [{:keys [db] :as cofx} identity]
   (let [my-public-key (get-in db [:multiaccount :public-key])]
-    (if (= my-public-key identity)
-      (navigation/navigate-to-cofx cofx :profile-stack {:screen :my-profile})
+    (when (not= my-public-key identity)
       (fx/merge
        cofx
        {:db (assoc db :contacts/identity identity)}

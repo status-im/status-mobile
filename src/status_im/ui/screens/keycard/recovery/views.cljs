@@ -20,8 +20,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn intro []
-  [react/view styles/container
-   [topbar/topbar]
+  [:<>
    [react/view {:flex            1
                 :flex-direction  :column
                 :justify-content :space-between
@@ -108,51 +107,48 @@
   (letsubs [pair-code [:keycard-pair-code]
             error [:keycard-setup-error]
             {:keys [free-pairing-slots]} [:keycard-application-info]]
-    [react/view styles/container
-     [topbar/topbar {:title (i18n/label :t/step-i-of-n {:number 2
-                                                        :step   1})}]
-     [react/view {:flex            1
-                  :flex-direction  :column
-                  :justify-content :space-between
-                  :align-items     :center}
-      [react/view {:flex-direction :column
-                   :align-items    :center}
-       [react/view {:margin-top 16}
-        [react/text {:style {:typography :header
-                             :text-align :center}}
-         (i18n/label :t/enter-pair-code)]]
-       [react/view {:margin-top  16
-                    :width       "85%"
-                    :align-items :center}
-        [react/text {:style {:color      colors/gray
-                             :text-align :center}}
-         (i18n/label :t/enter-pair-code-description)]]
-       (when free-pairing-slots
-         [react/view {:align-items :center
-                      :margin-top  20}
-          [react/text {:style {:text-align :center
-                               :color      (if (> 3 free-pairing-slots) colors/red colors/gray)}}
-           (i18n/label :t/keycard-free-pairing-slots {:n free-pairing-slots})]])]
-      [react/view
-       [react/view {:padding         16
-                    :justify-content :center
-                    :margin-bottom   100}
-        [quo/text-input
-         {:on-change-text    #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-changed %])
-          :auto-focus        true
-          :on-submit-editing #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-submitted])
-          :placeholder       (i18n/label :t/pair-code-placeholder)
-          :monospace         true}]]
-       [react/view {:margin-top 5
-                    :width      250}
-        [tooltip/tooltip error]]]
-      [bottom-toolbar/toolbar
-       {:right
-        [quo/button {:on-press  #(re-frame/dispatch [:keycard.onboarding.pair.ui/next-pressed])
-                     :disabled  (empty? pair-code)
-                     :type      :secondary
-                     :after     :main-icon/next}
-         (i18n/label :t/pair-card)]}]]]))
+    [react/view {:flex            1
+                 :flex-direction  :column
+                 :justify-content :space-between
+                 :align-items     :center}
+     [react/view {:flex-direction :column
+                  :align-items    :center}
+      [react/view {:margin-top 16}
+       [react/text {:style {:typography :header
+                            :text-align :center}}
+        (i18n/label :t/enter-pair-code)]]
+      [react/view {:margin-top  16
+                   :width       "85%"
+                   :align-items :center}
+       [react/text {:style {:color      colors/gray
+                            :text-align :center}}
+        (i18n/label :t/enter-pair-code-description)]]
+      (when free-pairing-slots
+        [react/view {:align-items :center
+                     :margin-top  20}
+         [react/text {:style {:text-align :center
+                              :color      (if (> 3 free-pairing-slots) colors/red colors/gray)}}
+          (i18n/label :t/keycard-free-pairing-slots {:n free-pairing-slots})]])]
+     [react/view
+      [react/view {:padding         16
+                   :justify-content :center
+                   :margin-bottom   100}
+       [quo/text-input
+        {:on-change-text    #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-changed %])
+         :auto-focus        true
+         :on-submit-editing #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-submitted])
+         :placeholder       (i18n/label :t/pair-code-placeholder)
+         :monospace         true}]]
+      [react/view {:margin-top 5
+                   :width      250}
+       [tooltip/tooltip error]]]
+     [bottom-toolbar/toolbar
+      {:right
+       [quo/button {:on-press  #(re-frame/dispatch [:keycard.onboarding.pair.ui/next-pressed])
+                    :disabled  (empty? pair-code)
+                    :type      :secondary
+                    :after     :main-icon/next}
+        (i18n/label :t/pair-card)]}]]))
 
 (defview success []
   (letsubs [address [:keycard-multiaccount-wallet-address]

@@ -9,7 +9,6 @@
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.invite.style :as styles]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.invite.events :as invite.events]
             [status-im.ui.components.invite.utils :refer [transform-tokens]]
             [quo.react-native :as rn]
@@ -210,10 +209,7 @@
             account         (or @account* default-account)
             reward          @(re-frame/subscribe [::invite.events/default-reward])
             starter-pack    @(re-frame/subscribe [::invite.events/starter-pack])]
-        [rn/view {:flex 1}
-         [topbar/topbar {:modal?       true
-                         :show-border? true
-                         :title        (i18n/label :t/invite-friends)}]
+        [:<>
          [rn/scroll-view {:flex 1}
           [reward-item reward :t/invite-reward-you-description]
           [friend-reward-item starter-pack :t/invite-reward-friend-description]

@@ -137,7 +137,7 @@
           pack-contract (contracts/get-address db :status/sticker-pack)
           address  (ethereum/default-address db)]
       (fx/merge cofx
-                (navigation/navigate-to-cofx :stickers-pack-modal {:id id})
+                (navigation/open-modal :stickers-pack {:id id})
                 #(when (and contract-address (not pack))
                    {:stickers/pack-data-fx [contract-address id]
                     :stickers/owned-packs-fx [pack-contract address]})))))

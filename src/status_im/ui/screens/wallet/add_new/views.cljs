@@ -120,7 +120,8 @@
             status        [:keycard/pin-status]
             error-label   [:keycard/pin-error-label]
             retry-counter [:keycard/retry-counter]]
-    [react/keyboard-avoiding-view {:style {:flex 1}}
+    [react/keyboard-avoiding-view {:style {:flex 1}
+                                   :ignore-offset true}
      [topbar/topbar
       {:navigation :none
        :right-accessories
@@ -148,14 +149,16 @@
                      :padding-bottom          40
                      :flex 1}}
         [pin]])
-     window-height]))
+     window-height
+     #()]))
 
 (defview add-account []
   (letsubs [{:keys [type account] :as add-account} [:add-account]
             add-account-disabled? [:add-account-disabled?]
             entered-password      (reagent/atom "")
             keycard?              [:keycard-multiaccount?]]
-    [react/keyboard-avoiding-view {:style {:flex 1}}
+    [react/keyboard-avoiding-view {:style {:flex 1}
+                                   :ignore-offset true}
      [add-account-topbar type]
      [react/scroll-view {:keyboard-should-persist-taps :handled
                          :style                        {:flex 1}}

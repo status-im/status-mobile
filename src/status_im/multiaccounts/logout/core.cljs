@@ -16,7 +16,8 @@
   (let [key-uid              (get-in db [:multiaccount :key-uid])
         should-send-metrics? (get-in db [:multiaccount :anon-metrics/should-send?])]
     (fx/merge cofx
-              {::logout                              nil
+              {:init-root-fx :progress
+               ::logout                              nil
                ::multiaccounts/webview-debug-changed false
                ::disable-local-notifications         nil
                :keychain/clear-user-password         key-uid

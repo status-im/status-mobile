@@ -6,7 +6,6 @@
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.communities.core :as communities]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.utils.image :as utils.image]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
@@ -161,8 +160,7 @@
 
 (defn view []
   (let [{:keys [name description]} (<sub [:communities/create])]
-    [rn/view {:style {:flex 1}}
-     [topbar/topbar {:title (i18n/label :t/new-community-title)}]
+    [:<>
      [form]
      [toolbar/toolbar
       {:show-border? true

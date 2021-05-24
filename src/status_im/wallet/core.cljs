@@ -84,9 +84,7 @@
 (fx/defn open-transaction-details
   {:events [:wallet.ui/show-transaction-details]}
   [cofx hash address]
-  (navigation/navigate-to-cofx cofx :wallet-stack {:screen  :wallet-transaction-details
-                                                   :initial false
-                                                   :params  {:hash hash :address address}}))
+  (navigation/navigate-to-cofx cofx :wallet-transaction-details {:hash hash :address address}))
 
 (defn- validate-token-name!
   [{:keys [address symbol name]}]
@@ -446,7 +444,7 @@
                  :amount-text amount-text
                  :request? true
                  :from-chat? true})
-     :dispatch [:navigate-to :prepare-send-transaction]}))
+     :dispatch [:open-modal :prepare-send-transaction]}))
 
 (fx/defn set-and-validate-amount-request
   {:events [:wallet.request/set-and-validate-amount]}
@@ -490,7 +488,7 @@
                          :to contact
                          :symbol :ETH
                          :from-chat? true})
-             :dispatch [:navigate-to :prepare-send-transaction]}
+             :dispatch [:open-modal :prepare-send-transaction]}
       ens-verified
       (assoc ::resolve-address
              {:registry (get ens/ens-registries chain)
@@ -513,7 +511,7 @@
                  :symbol :ETH
                  :from-chat? true
                  :request-command? true})
-     :dispatch [:navigate-to :request-transaction]}))
+     :dispatch [:open-modal :request-transaction]}))
 
 (fx/defn prepare-transaction-from-wallet
   {:events [:wallet/prepare-transaction-from-wallet]}
@@ -523,7 +521,7 @@
                :to         nil
                :symbol     :ETH
                :from-chat? false})
-   :dispatch [:navigate-to :prepare-send-transaction]
+   :dispatch [:open-modal :prepare-send-transaction]
    :signing/update-gas-price {:success-event :wallet.send/update-gas-price-success}})
 
 (fx/defn cancel-transaction-command
@@ -577,7 +575,7 @@
             {:db (-> db
                      (assoc :wallet/recipient {}))}
             (bottom-sheet/hide-bottom-sheet)
-            (navigation/navigate-to-cofx :recipient nil)))
+            (navigation/open-modal :recipient nil)))
 
 (fx/defn show-delete-account-confirmation
   {:events [:wallet.settings/show-delete-account-confirmation]}
@@ -764,14 +762,14 @@
 
 (fx/defn wallet-will-focus
   {:events [::wallet-stack]}
-  [{:keys [db] :as cofx}]
+  [{:keys [db]}]
   (let [wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])
         sign-phrase-showed? (get db :wallet/sign-phrase-showed?)]
-    {:dispatch [:wallet.ui/pull-to-refresh] ;TODO temporary simple fix for v1
+    {:dispatch-n [[:wallet.ui/pull-to-refresh] ;TODO temporary simple fix for v1
+                  [:show-popover {:view [signing-phrase/signing-phrase]}]]
      :db       (if (or wallet-set-up-passed? sign-phrase-showed?)
                  db
-                 (assoc db :popover/popover {:view [signing-phrase/signing-phrase]}
-                        :wallet/sign-phrase-showed? true))}))
+                 (assoc db :wallet/sign-phrase-showed? true))}))
 
 (fx/defn wallet-wallet-add-custom-token
   {:events [:wallet/wallet-add-custom-token]}

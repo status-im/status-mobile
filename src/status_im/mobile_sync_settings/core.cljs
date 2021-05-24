@@ -109,8 +109,7 @@
   (fx/merge
    cofx
    (bottom-sheet/hide-bottom-sheet)
-   (navigation/navigate-to-cofx :profile-stack {:screen  :mobile-network-settings
-                                                :initial false})))
+   (navigation/navigate-to-cofx :mobile-network-settings nil)))
 
 (fx/defn mobile-network-show-offline-sheet
   {:events [:mobile-network/show-offline-sheet]}

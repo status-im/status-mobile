@@ -83,8 +83,7 @@
                                   :group-chat true}]
     [:<>
      [topbar/topbar
-      {:content    [toolbar-content/toolbar-content-view-inner chat-info]
-       :navigation {:on-press #(re-frame/dispatch [:navigate-to :home])}}]
+      {:content    [toolbar-content/toolbar-content-view-inner chat-info]}]
      [rn/scroll-view {:style                   {:flex 1}
                       :center-content          true
                       :content-container-style {:padding 16}}

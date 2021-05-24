@@ -90,7 +90,7 @@
     :accessibility-label :profile-nickname-item
     :accessory           :text
     :accessory-text      (or (:nickname names) (i18n/label :t/none))
-    :on-press            #(re-frame/dispatch [:navigate-to :nickname])
+    :on-press            #(re-frame/dispatch [:open-modal :nickname])
     :chevron             true}])
 
 (defn save-nickname [public-key nickname]

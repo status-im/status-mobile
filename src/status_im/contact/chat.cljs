@@ -9,7 +9,9 @@
   {:events       [:contact.ui/send-message-pressed]
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [cofx {:keys [public-key]}]
-  (chat/start-chat cofx public-key))
+  (fx/merge cofx
+            (navigation/pop-to-root-tab :chat-stack)
+            (chat/start-chat public-key)))
 
 (fx/defn contact-code-submitted
   {:events       [:contact.ui/contact-code-submitted]

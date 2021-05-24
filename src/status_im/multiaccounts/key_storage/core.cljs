@@ -19,10 +19,10 @@
   [cofx]
   (navigation/navigate-to-cofx
    cofx
-   :key-storage-stack
-   {:screen (if (multiaccounts.model/logged-in? cofx)
-              :actions-logged-in
-              :actions-not-logged-in)}))
+   (if (multiaccounts.model/logged-in? cofx)
+     :actions-logged-in
+     :actions-not-logged-in)
+   nil))
 
 (fx/defn move-keystore-checked
   {:events [::move-keystore-checked]}
@@ -46,7 +46,7 @@
   (fx/merge
    cofx
    {:db (assoc db :recovered-account? true)}
-   (navigation/navigate-to-cofx :key-storage-stack {:screen :seed-phrase})))
+   (navigation/navigate-to-cofx :seed-phrase nil)))
 
 (fx/defn seed-phrase-input-changed
   {:events [::seed-phrase-input-changed]}
@@ -180,7 +180,7 @@ We don't need to take the exact steps, just set the required state and redirect 
                       (assoc-in [:keycard :from-key-storage-and-migration?] true)
                       (dissoc :multiaccounts/key-storage))}
             (popover/hide-popover)
-            (navigation/navigate-to-cofx :intro-stack {:screen :keycard-onboarding-intro})))
+            (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
 
 (fx/defn handle-delete-multiaccount-error
   {:events [::delete-multiaccount-error]}
@@ -192,7 +192,7 @@ We don't need to take the exact steps, just set the required state and redirect 
   [cofx _]
   (fx/merge cofx
             (popover/hide-popover)
-            (navigation/navigate-to-cofx :intro-stack {:screen :multiaccounts})))
+            (navigation/navigate-to-cofx :multiaccounts nil)))
 
 (comment
   ;; check import mnemonic output

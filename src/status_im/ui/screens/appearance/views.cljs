@@ -2,7 +2,6 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.react-native.resources :as resources]
             [quo.core :as quo]
             [status-im.ui.components.colors :as colors]
@@ -15,7 +14,10 @@
 
 (defn button [label icon theme selected?]
   [react/touchable-highlight
-   {:on-press #(re-frame/dispatch [:multiaccounts.ui/appearance-switched theme])}
+   {:on-press #(do (re-frame/dispatch [:multiaccounts.ui/appearance-switched theme])
+                   (re-frame/dispatch [:init-root :chat-stack])
+                   (re-frame/dispatch [:navigate-change-tab :profile])
+                   (re-frame/dispatch [:navigate-to :appearance]))}
    [react/view (merge {:align-items :center :padding 8 :border-radius 20}
                       (when selected?
                         {:background-color colors/blue-light}))
@@ -25,8 +27,7 @@
 
 (views/defview appearance []
   (views/letsubs [{:keys [appearance profile-pictures-visibility]} [:multiaccount]]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/appearance)}]
+    [:<>
      [quo/list-header (i18n/label :t/preference)]
      [react/view {:flex-direction  :row :padding-horizontal 8
                   :justify-content :space-between :margin-vertical 16}
@@ -51,9 +52,7 @@
 
 (views/defview profile-pic []
   (views/letsubs [{:keys [profile-pictures-visibility]} [:multiaccount]]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/show-profile-pictures)}]
-     [react/view {:margin-top 8}
-      [radio-item constants/profile-pictures-visibility-everyone profile-pictures-visibility]
-      [radio-item constants/profile-pictures-visibility-contacts-only profile-pictures-visibility]
-      [radio-item constants/profile-pictures-visibility-none profile-pictures-visibility]]]))
+    [react/view {:margin-top 8}
+     [radio-item constants/profile-pictures-visibility-everyone profile-pictures-visibility]
+     [radio-item constants/profile-pictures-visibility-contacts-only profile-pictures-visibility]
+     [radio-item constants/profile-pictures-visibility-none profile-pictures-visibility]]))

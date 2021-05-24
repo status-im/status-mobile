@@ -42,7 +42,7 @@
                                           :title               (i18n/label :t/edit)
                                           :accessibility-label :edit-bookmark
                                           :icon                :main-icons/edit
-                                          :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-bookmark bookmark])}]
+                                          :on-press            #(hide-sheet-and-dispatch [:open-modal :new-bookmark bookmark])}]
                                         [quo/list-item
                                          {:theme               :negative
                                           :title               (i18n/label :t/delete)
@@ -112,7 +112,8 @@
                   dapps-account [:dapps-account]
                   url-text (atom nil)]
     (let [bookmarks (vals bookmarks)]
-      [react/keyboard-avoiding-view {:style {:flex 1}}
+      [react/keyboard-avoiding-view {:style {:flex 1}
+                                     :ignore-offset true}
        [quo/text-input {:on-change-text      #(reset! url-text %)
                         :on-submit-editing   #(re-frame/dispatch [:browser.ui/open-url @url-text])
                         :placeholder         (i18n/label :t/enter-url)

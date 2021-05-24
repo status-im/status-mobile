@@ -6,8 +6,7 @@
             [re-frame.core :as re-frame]
             status-im.mobile-sync-settings.core
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.ui.screens.mobile-network-settings.sheets :as sheets]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.screens.mobile-network-settings.sheets :as sheets]))
 
 (defn hide-sheet-and-dispatch [event]
   (re-frame/dispatch [:bottom-sheet/hide])
@@ -23,8 +22,7 @@
     [{:keys [syncing-on-mobile-network?
              remember-syncing-choice?]}
      [:multiaccount]]
-    [react/view {:style styles/container}
-     [topbar/topbar {:title (i18n/label :t/mobile-network-settings)}]
+    [:<>
      [react/view {:style styles/switch-container
                   :accessibility-label "mobile-network-use-mobile"}
       [profile.components/settings-switch-item

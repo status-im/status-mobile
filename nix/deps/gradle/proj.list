@@ -21,12 +21,11 @@ react-native-keychain
 react-native-languages
 react-native-linear-gradient
 react-native-mail
-react-native-navigation-bar-color
+react-native-navigation
 react-native-nfc-manager
 react-native-permissions
 react-native-reanimated
 react-native-safe-area-context
-react-native-screens
 react-native-shake
 react-native-splash-screen
 react-native-status

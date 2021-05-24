@@ -20,8 +20,7 @@
             [status-im.utils.money :as money]
             [quo.core :as quo]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]))
 
 (defn header [{:keys [label small-screen?]}]
   [react/view (styles/header small-screen?)
@@ -140,7 +139,8 @@
   (letsubs [data [:commands/select-account]]
     [bottom-panel/animated-bottom-panel
      data
-     select-account-sheet]))
+     select-account-sheet
+     #(re-frame/dispatch [:hide-select-acc-sheet])]))
 
 (views/defview request-transaction [_]
   (views/letsubs [{:keys [amount-error amount-text from token sign-enabled?] :as tx}
@@ -149,15 +149,7 @@
                   prices [:prices]
                   wallet-currency [:wallet/currency]]
     [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
-     [react/view {:flex 1}
-      [topbar/topbar
-       {:navigation    {:on-press
-                        #(do
-                           (re-frame/dispatch [:wallet/cancel-transaction-command])
-                           (re-frame/dispatch [:navigate-back]))}
-        :modal?        true
-        :border-bottom true
-        :title         (i18n/label :t/request-transaction)}]
+     [:<>
       [react/scroll-view {:style                        {:flex 1}
                           :keyboard-should-persist-taps :handled}
        [react/view {:style (styles/sheet)}
@@ -210,15 +202,7 @@
                   window-width [:dimensions/window-width]]
     (let [to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))]
       [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
-       [react/view {:flex 1}
-        [topbar/topbar
-         {:navigation    {:on-press
-                          #(do
-                             (re-frame/dispatch [:wallet/cancel-transaction-command])
-                             (re-frame/dispatch [:navigate-back]))}
-          :modal?        true
-          :border-bottom true
-          :title         (i18n/label :t/send-transaction)}]
+       [:<>
         [react/scroll-view {:style                        {:flex 1}
                             :keyboard-should-persist-taps :handled}
          [react/view {:style (styles/sheet)}
@@ -265,6 +249,7 @@
             :after               :main-icon/next
             :disabled            (not sign-enabled?)
             :on-press            #(do
+                                    (re-frame/dispatch [:navigate-back])
                                     (re-frame/dispatch
                                      [(cond
                                         request?
@@ -272,8 +257,8 @@
                                         from-chat?
                                         :wallet.ui/sign-transaction-button-clicked-from-chat
                                         :else
-                                        :wallet.ui/sign-transaction-button-clicked) tx])
-                                    (re-frame/dispatch [:navigate-back]))}
+                                        :wallet.ui/sign-transaction-button-clicked) tx]))}
+
            (if (and (not request?) from-chat? (not to-norm))
              (i18n/label :t/wallet-send)
              (i18n/label :t/next))]}]]])))

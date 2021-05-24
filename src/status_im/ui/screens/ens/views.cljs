@@ -79,9 +79,6 @@
       :main-icons/username)
     {:color colors/white-persist}]])
 
-(defn- toolbar []
-  [topbar/topbar {:title (i18n/label :t/ens-your-username)}])
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; SEARCH SCREEN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -207,7 +204,6 @@
   (views/letsubs [{:keys [state custom-domain? username]}
                   [:ens/search-screen]]
     [react/keyboard-avoiding-view {:flex 1}
-     [toolbar]
      [react/scroll-view {:style {:flex 1}
                          ;;NOTE required so that switching custom-domain
                          ;;works on first tap and persists keyboard
@@ -282,7 +278,6 @@
                     chain amount-label sufficient-funds?]}
             @(re-frame/subscribe [:ens/checkout-screen])]
         [react/keyboard-avoiding-view {:flex 1}
-         [toolbar]
          [react/scroll-view {:style {:flex 1}}
           [react/view {:style {:flex            1
                                :align-items     :center
@@ -381,7 +376,6 @@
 (views/defview confirmation []
   (views/letsubs [{:keys [state username]} [:ens/confirmation-screen]]
     [react/keyboard-avoiding-view {:flex 1}
-     [toolbar]
      [react/view {:style {:flex 1
                           :align-items :center
                           :justify-content :center}}
@@ -423,7 +417,6 @@
 (views/defview terms []
   (views/letsubs [{:keys [contract]} [:get-screen-params :ens-terms]]
     [react/scroll-view {:style {:flex 1}}
-     [topbar/topbar {:title (i18n/label :t/ens-terms-registration)}]
      [react/view {:style {:height 136 :background-color colors/gray-lighter :justify-content :center :align-items :center}}
       [react/text {:style {:text-align :center :typography :header :letter-spacing -0.275}}
        (i18n/label :t/ens-terms-header)]]
@@ -683,7 +676,6 @@
 (views/defview main []
   (views/letsubs [{:keys [names multiaccount show? registrations]} [:ens.main/screen]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [topbar/topbar {:title (i18n/label :t/ens-usernames)}]
      (if (or (seq names) registrations)
        [registered names multiaccount show? registrations]
        [welcome])]))

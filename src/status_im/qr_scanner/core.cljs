@@ -15,7 +15,7 @@
   [_ opts]
   {:request-permissions-fx
    {:permissions [:camera]
-    :on-allowed  #(re-frame/dispatch [:navigate-to :qr-scanner opts])
+    :on-allowed  #(re-frame/dispatch [:open-modal :qr-scanner opts])
     :on-denied   (fn []
                    (utils/set-timeout
                     #(utils/show-popup (i18n/label :t/error)
@@ -59,19 +59,19 @@
   (let [own (new-chat.db/own-public-key? db public-key)]
     (cond
       (and public-key own)
-      (navigation/navigate-to-cofx cofx :tabs {:screen :profile-stack
-                                               :params {:screen :my-profile}})
+      {:navigate-change-tab-fx :profile
+       :pop-to-root-tab-fx :profile-stack}
 
       (and public-key (not own))
       (fx/merge cofx
                 {:db (assoc db :contacts/identity public-key)
-                 :dispatch [:navigate-to :profile]}
+                 :dispatch [:open-modal :profile]}
                 (navigation/navigate-back))
 
       :else
       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                           :content    (i18n/label :t/ens-name-not-found)
-                          :on-dismiss #(re-frame/dispatch [:navigate-to :home])}})))
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}})))
 
 (fx/defn handle-eip681 [cofx data]
   (fx/merge cofx
@@ -89,7 +89,7 @@
     :browser      (handle-browse cofx data)
     :eip681       (handle-eip681 cofx data)
     {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
-                        :on-dismiss #(re-frame/dispatch [:navigate-to :home])}}))
+                        :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}}))
 
 (fx/defn on-scan
   {:events [::on-scan-success]}

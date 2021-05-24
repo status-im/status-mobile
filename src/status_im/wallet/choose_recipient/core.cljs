@@ -87,7 +87,7 @@
                        :to address :to-name (find-address-name db address))}
           (let [current-chain-id (get-in networks [current-network :config :NetworkId])]
             (merge {:db (fill-prepare-transaction-details db details all-tokens)
-                    :dispatch [:navigate-to :prepare-send-transaction]}
+                    :dispatch [:open-modal :prepare-send-transaction]}
                    (when (and chain-id (not= current-chain-id chain-id))
                      {:ui/show-error (i18n/label :t/wallet-invalid-chain-id
                                                  {:data uri :chain current-chain-id})})))))

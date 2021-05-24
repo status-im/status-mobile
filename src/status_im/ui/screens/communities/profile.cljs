@@ -14,8 +14,8 @@
             [quo.react-native :as rn]
             [clojure.string :as string]))
 
-(defn management [route]
-  (let [{:keys [community-id]}      (get-in route [:route :params])
+(defn management []
+  (let [{:keys [community-id]} (<sub [:get-screen-params])
         requests-to-join (<sub [:communities/requests-to-join-for-community community-id])
         community (<sub [:communities/community community-id])
         {:keys [color members permissions description name admin]} community
@@ -98,9 +98,9 @@
                          :title    (i18n/label :t/delete)
                          :on-press #(>evt [::communities/delete-community community-id])}])]]]))
 
-(defn management-container [route]
+(defn management-container []
   (reagent/create-class
    {:display-name "community-profile-view"
     :component-did-mount (fn []
-                           (communities/fetch-requests-to-join! (get-in route [:route :params :community-id])))
+                           (communities/fetch-requests-to-join! (get (<sub [:get-screen-params]) :community-id)))
     :reagent-render management}))

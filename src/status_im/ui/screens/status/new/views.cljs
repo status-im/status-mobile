@@ -2,7 +2,6 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.i18n.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.ui.components.toolbar :as toolbar]
@@ -57,11 +56,7 @@
     (fn []
       (let [{:keys [uri]} (first (vals @sending-image))]
         [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
-         [react/view {:flex 1}
-          [topbar/topbar
-           {:modal?        true
-            :border-bottom true
-            :title         (i18n/label :t/my-status)}]
+         [:<>
           [react/scroll-view {:style                        {:flex 1}
                               :ref                          #(reset! scroll %)
                               :on-layout                    #(reset! scroll-height

@@ -215,4 +215,4 @@
            :header                    [react/view {:height 8}]
            :footer                    [react/view {:height 68}]}]))
      [components.plus-button/plus-button
-      {:on-press #(re-frame/dispatch [:navigate-to :my-status])}]]))
+      {:on-press #(re-frame/dispatch [:open-modal :my-status])}]]))

@@ -7,7 +7,8 @@
             [cljs-bean.core :as bean]
             [quo.components.safe-area :as safe-area]
             [quo.components.bottom-sheet.style :as styles]
-            [quo.gesture-handler :as gesture-handler]))
+            [quo.gesture-handler :as gesture-handler]
+            [quo.design-system.colors :as colors]))
 
 (def opacity-coeff 0.8)
 (def close-duration 150)
@@ -183,7 +184,6 @@
     (reagent/as-element
      [modal {:visible                @visible
              :transparent            true
-             :status-bar-translucent true
              :presentation-style     :overFullScreen
              :hardware-accelerated   true
              :on-request-close       (fn []
@@ -195,7 +195,9 @@
        [gesture-handler/tap-gesture-handler (merge {:enabled backdrop-dismiss?}
                                                    tap-gesture-handler)
         [animated/view {:style (merge (styles/backdrop)
-                                      {:opacity opacity})}]]
+                                      (when platform/ios?
+                                        {:opacity          opacity
+                                         :background-color (:backdrop @colors/theme)}))}]]
        [animated/view {:style (merge (styles/content-container window-height)
                                      {:transform [{:translateY translate-y}
                                                   {:translateY (* window-height 2)}]})}

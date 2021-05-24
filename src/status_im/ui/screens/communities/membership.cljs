@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.communities.membership
   (:require [quo.react-native :as rn]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
             [status-im.i18n.i18n :as i18n]
@@ -36,7 +35,6 @@
 (defn membership []
   (let [{:keys [membership]} (<sub [:communities/create])]
     [:<>
-     [topbar/topbar {:title (i18n/label :t/membership-title)}]
      [rn/scroll-view {}
       (doall
        (for [[id o] options]

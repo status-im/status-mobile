@@ -87,7 +87,7 @@
                                         (i18n/label :t/use-valid-contact-code)
                                         :yourself
                                         (i18n/label :t/can-not-add-yourself))
-                          :on-dismiss #(re-frame/dispatch [:navigate-to :home])}})))
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}})))
 
 (fx/defn qr-code-scanned
   {:events [:contact/qr-code-scanned]}

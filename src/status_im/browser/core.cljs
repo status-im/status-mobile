@@ -321,8 +321,8 @@
       (fx/merge cofx
                 {:db (assoc db :browser/options
                             {:browser-id (:browser-id browser)})}
-                (navigation/navigate-to-cofx :browser-stack {:screen :browser
-                                                             :initial false})
+                (navigation/change-tab :browser)
+                (navigation/set-stack-root :browser-stack :browser)
                 (update-browser browser)
                 (resolve-url nil)))))
 
@@ -335,7 +335,7 @@
               {:db (assoc db :browser/options
                           {:browser-id browser-id})}
               (update-browser browser)
-              (navigation/navigate-to-cofx :browser nil)
+              (navigation/set-stack-root :browser-stack :browser)
               (resolve-url nil))))
 
 (fx/defn web3-error-callback
@@ -555,7 +555,7 @@
   {:events [:browser.ui/open-empty-tab]}
   [cofx]
   (debounce/clear :browser/navigation-state-changed)
-  (navigation/navigate-to-cofx cofx :empty-tab nil))
+  (navigation/set-stack-root cofx :browser-stack :empty-tab))
 
 (fx/defn url-input-pressed
   {:events [:browser.ui/url-input-pressed]}

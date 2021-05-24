@@ -17,7 +17,7 @@
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db db}
-            (navigation/navigate-to-cofx :multiaccounts nil)))
+            (navigation/pop-to-root-tab :multiaccounts-stack)))
 
 (fx/defn login-pin-more-icon-pressed
   {:events [:keycard.login.pin.ui/more-icon-pressed]}
@@ -50,10 +50,6 @@
             {:db (assoc-in db [:keycard :flow] :login)}
             (navigation/navigate-to-cofx :keycard-recovery-pair nil)))
 
-(fx/defn frozen-keycard-popup
-  [{:keys [db]}]
-  {:db (assoc db :popover/popover {:view :frozen-card})})
-
 (fx/defn reset-pin
   {:events [::reset-pin]}
   [{:keys [db] :as cofx}]
@@ -71,9 +67,7 @@
                          :error nil
                          :status nil))})
    (when-not (:multiaccounts/login db)
-     (navigation/navigate-to-cofx
-      :profile-stack
-      {:screen :keycard-pin}))))
+     (navigation/navigate-to-cofx :keycard-pin nil))))
 
 (fx/defn dismiss-frozen-keycard-popover
   {:events [::frozen-keycard-popover-dismissed]}
@@ -124,7 +118,7 @@
       (and (zero? pin-retry-counter)
            (or (nil? puk-retry-counter)
                (pos? puk-retry-counter)))
-      nil #_(frozen-keycard-popup cofx)
+      nil
 
       :else
       (common/get-keys-from-keycard cofx))))

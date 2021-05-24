@@ -3,7 +3,8 @@
             [reagent.core :as reagent]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.react :as react])
+            [status-im.ui.components.react :as react]
+            [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :as views]))
 
 (def back-listener (atom nil))
@@ -42,7 +43,7 @@
                                :duration        500
                                :useNativeDriver true})])))
 
-(defn bottom-panel [_ render window-height]
+(defn bottom-panel [_ render window-height on-close]
   (let [bottom-anim-value (anim/create-value window-height)
         alpha-value       (anim/create-value 0)
         clear-timeout     (atom nil)
@@ -90,17 +91,23 @@
                                         :else
                                         (do (reset! clear-timeout (js/setTimeout #(reset! current-obj nil) 600))
                                             (hide-panel-anim bottom-anim-value alpha-value (- window-height))))))
-      :reagent-render        (fn []
-                               (when @current-obj
-                                 [react/keyboard-avoiding-view {:style {:position :absolute :top 0 :bottom 0 :left 0 :right 0}}
-                                  [react/view {:flex 1}
-                                   [react/animated-view {:flex 1 :background-color colors/black-persist :opacity alpha-value}]
-                                   [react/animated-view {:style {:position  :absolute
-                                                                 :transform [{:translateY bottom-anim-value}]
-                                                                 :bottom    0 :left 0 :right 0}}
-                                    [react/view {:flex 1}
-                                     [render @current-obj]]]]]))})))
+      :reagent-render             (fn []
+                                    (if @current-obj
+                                      [react/keyboard-avoiding-view {:style {:position :absolute :top 0 :bottom 0 :left 0 :right 0}
+                                                                     :ignore-offset true}
 
-(views/defview animated-bottom-panel [val signing-view]
+                                       [react/view {:flex 1}
+                                        (when platform/ios?
+                                          [react/animated-view {:flex 1 :background-color colors/black-persist :opacity alpha-value}])
+                                        [react/animated-view {:style {:position  :absolute
+                                                                      :transform [{:translateY bottom-anim-value}]
+                                                                      :bottom    0 :left 0 :right 0}}
+                                         [react/view {:flex 1}
+                                          [render @current-obj]]]]]
+                                      ;;TODO this is not great, improve!
+                                      #(do (on-close)
+                                           nil)))})))
+
+(views/defview animated-bottom-panel [val signing-view on-close]
   (views/letsubs [{window-height :height} [:dimensions/window]]
-    [bottom-panel (when val (select-keys val [:from :contact :amount :token :approve? :message :cancel? :hash])) signing-view window-height]))
+    [bottom-panel (when val (select-keys val [:from :contact :amount :token :approve? :message :cancel? :hash])) signing-view window-height on-close]))

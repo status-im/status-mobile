@@ -6,7 +6,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.add-new.db :as db]
             [status-im.chat.models :as chat.models]
             [status-im.ui.components.icons.icons :as icons])
@@ -80,31 +79,28 @@
 (views/defview new-public-chat []
   (views/letsubs [topic [:public-group-topic]
                   error [:public-chat.new/topic-error-message]]
-    [react/view {:style {:flex 1}}
-     [topbar/topbar {:title  (i18n/label :t/new-public-group-chat)
-                     :modal? true}]
-     [react/scroll-view {:style {:flex 1}}
-      [react/view {:padding-horizontal 16}
-       [react/view {:align-items :center :padding-vertical 8}
-        [react/image {:source (:new-chat-header resources/ui)
-                      :style  {:width 160 :height 160}}]]
-       [react/text {:style {:text-align :center :margin-bottom 16 :line-height 22}}
-        (i18n/label :t/public-chat-description)]
-       [chat-name-input topic error]]
-      [react/view {:margin-top 32}
-       (for [[section chats] (chat.models/chats)]
-         ^{:key section}
-         [react/view
-          [react/view {:margin-right               16 :padding-left            16 :padding-vertical 3
-                       :border-bottom-width        1  :border-bottom-color     colors/gray-lighter
-                       :border-top-width           1  :border-top-color        colors/gray-lighter
-                       :border-right-width         1  :border-right-color      colors/gray-lighter
-                       :border-bottom-right-radius 14 :border-top-right-radius 14}
-           [quo/text {:weight :medium} section]]
-          [react/view {:flex-direction :row :flex-wrap :wrap :margin-vertical 8 :padding-horizontal 16}
-           (let [lang-topic (get-language-topic)
-                 chats      (if (and (= section-featured section) lang-topic)
-                              (conj chats lang-topic)
-                              chats)]
-             (for [chat chats]
-               (render-topic chat)))]])]]]))
+    [react/scroll-view {:style {:flex 1}}
+     [react/view {:padding-horizontal 16}
+      [react/view {:align-items :center :padding-vertical 8}
+       [react/image {:source (:new-chat-header resources/ui)
+                     :style  {:width 160 :height 160}}]]
+      [react/text {:style {:text-align :center :margin-bottom 16 :line-height 22}}
+       (i18n/label :t/public-chat-description)]
+      [chat-name-input topic error]]
+     [react/view {:margin-top 32}
+      (for [[section chats] (chat.models/chats)]
+        ^{:key section}
+        [react/view
+         [react/view {:margin-right               16 :padding-left            16 :padding-vertical 3
+                      :border-bottom-width        1  :border-bottom-color     colors/gray-lighter
+                      :border-top-width           1  :border-top-color        colors/gray-lighter
+                      :border-right-width         1  :border-right-color      colors/gray-lighter
+                      :border-bottom-right-radius 14 :border-top-right-radius 14}
+          [quo/text {:weight :medium} section]]
+         [react/view {:flex-direction :row :flex-wrap :wrap :margin-vertical 8 :padding-horizontal 16}
+          (let [lang-topic (get-language-topic)
+                chats      (if (and (= section-featured section) lang-topic)
+                             (conj chats lang-topic)
+                             chats)]
+            (for [chat chats]
+              (render-topic chat)))]])]]))

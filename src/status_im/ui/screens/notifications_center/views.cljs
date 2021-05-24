@@ -80,7 +80,8 @@
     :component-did-mount #(re-frame/dispatch [:get-activity-center-notifications])
     :reagent-render (fn []
                       (let [{:keys [notifications]} @(re-frame/subscribe [:activity.center/notifications])]
-                        [react/keyboard-avoiding-view {:style {:flex 1}}
+                        [react/keyboard-avoiding-view {:style {:flex 1}
+                                                       :ignore-offset true}
                          [topbar/topbar {:navigation {:on-press #(do
                                                                    (reset-state)
                                                                    (re-frame/dispatch [:close-notifications-center])

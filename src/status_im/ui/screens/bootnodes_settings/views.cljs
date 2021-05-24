@@ -23,7 +23,7 @@
 (views/defview bootnodes-settings []
   (views/letsubs [bootnodes-enabled [:custom-bootnodes/enabled?]
                   bootnodes         [:custom-bootnodes/network-bootnodes]]
-    [react/view {:flex 1}
+    [:<>
      [topbar/topbar {:title (i18n/label :t/bootnodes-settings)
                      :right-accessories
                      [{:icon                :main-icons/add

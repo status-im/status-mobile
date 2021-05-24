@@ -13,14 +13,16 @@
 (fx/defn navigate-chat-updated
   {:events [:navigate-chat-updated]}
   [cofx chat-id]
-  (if (get-in cofx [:db :chats chat-id :is-active])
-    (models.chat/navigate-to-chat cofx chat-id)))
+  (when (get-in cofx [:db :chats chat-id :is-active])
+    (fx/merge cofx
+              (navigation/pop-to-root-tab :chat-stack)
+              (models.chat/navigate-to-chat chat-id))))
 
 (fx/defn handle-chat-removed
   {:events [:chat-removed]}
   [_ response]
   {:dispatch-n [[:sanitize-messages-and-process-response response]
-                [:navigate-to :home]]})
+                [:pop-to-root-tab :chat-stack]]})
 
 (fx/defn handle-chat-update
   {:events [:chat-updated]}
@@ -106,7 +108,7 @@
   [cofx chat-id]
   (fx/merge cofx
             (models.chat/deactivate-chat chat-id)
-            (navigation/navigate-to-cofx :home {})))
+            (navigation/pop-to-root-tab :chat-stack)))
 
 (def not-blank?
   (complement string/blank?))

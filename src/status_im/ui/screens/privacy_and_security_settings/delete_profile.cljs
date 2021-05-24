@@ -4,7 +4,6 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.i18n.i18n :as i18n]
             [reagent.core :as reagent]
             [status-im.utils.security :as security]
@@ -34,72 +33,68 @@
             keep-keys-on-keycard? @(re-frame/subscribe [:delete-profile/keep-keys-on-keycard?])]
         (when (and @text-input-ref error (not @password))
           (.clear ^js @text-input-ref))
-        [react/view {:flex 1}
-         [topbar/topbar {:modal? true}]
-         [react/view
-          {:style {:flex            1
-                   :justify-content :space-between}}
-          [react/scroll-view {:style {:flex 1}}
-           [react/view {:style {:align-items :center}}
-            [quo/text {:weight :bold
-                       :size   :x-large}
-             (i18n/label :t/delete-profile)]]
-           [quo/list-item
-            {:title   (multiaccounts/displayed-name multiaccount)
-             :icon    [chat-icon.screen/contact-icon-contacts-tab
-                       (multiaccounts/displayed-photo multiaccount)]}]
-           (when keycard?
-             [react/view
-              [quo/list-header (i18n/label :t/actions)]
-              [quo/list-item {:title              (i18n/label :t/delete-keys-keycard)
-                              :accessory          :checkbox
-                              :active             (not keep-keys-on-keycard?)
-                              :on-press           #(re-frame/dispatch [::delete-profile/keep-keys-on-keycard (not keep-keys-on-keycard?)])}]
-              [quo/list-item {:title              (i18n/label :t/unpair-keycard)
-                              :subtitle           (i18n/label :t/unpair-keycard-warning)
-                              :subtitle-max-lines 4
-                              :disabled           true
-                              :active             true
-                              :accessory          :checkbox}]
-              [quo/list-item {:title              (i18n/label :t/reset-database)
-                              :subtitle           (i18n/label :t/reset-database-warning-keycard)
-                              :subtitle-max-lines 4
-                              :disabled           true
-                              :active             true
-                              :accessory          :checkbox}]])
-           (when-not keycard?
-             [quo/text {:style {:margin-horizontal 24}
-                        :align :center
-                        :color :negative}
-              (i18n/label :t/delete-profile-warning)])
-           (when-not keycard?
-             [quo/text-input
-              {:style             {:margin-horizontal 36
-                                   :margin-top        36}
-               :show-cancel       false
-               :secure-text-entry true
-               :return-key-type   :next
-               :on-submit-editing nil
-               :auto-focus        true
-               :on-change-text    #(reset! password (security/mask-data %))
-               :bottom-value      36
-               :get-ref           #(reset! text-input-ref %)
-               :error             (when (and error (not @password))
-                                    (if (= :wrong-password error)
-                                      (i18n/label :t/wrong-password)
-                                      (str error)))}])]
+        [react/keyboard-avoiding-view {:style {:flex 1}}
+         [react/scroll-view {:style {:flex 1}}
           [react/view {:style {:align-items :center}}
-           (when-not keycard?
-             [quo/separator])
-           (when (and keycard? (not keep-keys-on-keycard?))
-             [quo/text {:style {:margin-horizontal 24 :margin-bottom 16}
-                        :align :center
-                        :color :negative}
-              (i18n/label :t/delete-profile-warning)])
-           [react/view
-            {:style {:margin-vertical 8}}
-            [quo/button {:on-press            (if keycard? (on-delete-keycard-profile keep-keys-on-keycard?) (on-delete-profile password))
-                         :theme               :negative
-                         :accessibility-label :delete-profile-confirm
-                         :disabled (and (not keycard?) ((complement valid-password?) @password))}
-             (i18n/label :t/delete-profile)]]]]]))))
+           [quo/text {:weight :bold
+                      :size   :x-large}
+            (i18n/label :t/delete-profile)]]
+          [quo/list-item
+           {:title   (multiaccounts/displayed-name multiaccount)
+            :icon    [chat-icon.screen/contact-icon-contacts-tab
+                      (multiaccounts/displayed-photo multiaccount)]}]
+          (when keycard?
+            [react/view
+             [quo/list-header (i18n/label :t/actions)]
+             [quo/list-item {:title              (i18n/label :t/delete-keys-keycard)
+                             :accessory          :checkbox
+                             :active             (not keep-keys-on-keycard?)
+                             :on-press           #(re-frame/dispatch [::delete-profile/keep-keys-on-keycard (not keep-keys-on-keycard?)])}]
+             [quo/list-item {:title              (i18n/label :t/unpair-keycard)
+                             :subtitle           (i18n/label :t/unpair-keycard-warning)
+                             :subtitle-max-lines 4
+                             :disabled           true
+                             :active             true
+                             :accessory          :checkbox}]
+             [quo/list-item {:title              (i18n/label :t/reset-database)
+                             :subtitle           (i18n/label :t/reset-database-warning-keycard)
+                             :subtitle-max-lines 4
+                             :disabled           true
+                             :active             true
+                             :accessory          :checkbox}]])
+          (when-not keycard?
+            [quo/text {:style {:margin-horizontal 24}
+                       :align :center
+                       :color :negative}
+             (i18n/label :t/delete-profile-warning)])
+          (when-not keycard?
+            [quo/text-input
+             {:style             {:margin-horizontal 36
+                                  :margin-top        36}
+              :show-cancel       false
+              :secure-text-entry true
+              :return-key-type   :next
+              :on-submit-editing nil
+              :auto-focus        true
+              :on-change-text    #(reset! password (security/mask-data %))
+              :bottom-value      36
+              :get-ref           #(reset! text-input-ref %)
+              :error             (when (and error (not @password))
+                                   (if (= :wrong-password error)
+                                     (i18n/label :t/wrong-password)
+                                     (str error)))}])]
+         [react/view {:style {:align-items :center}}
+          (when-not keycard?
+            [quo/separator])
+          (when (and keycard? (not keep-keys-on-keycard?))
+            [quo/text {:style {:margin-horizontal 24 :margin-bottom 16}
+                       :align :center
+                       :color :negative}
+             (i18n/label :t/delete-profile-warning)])
+          [react/view
+           {:style {:margin-vertical 8}}
+           [quo/button {:on-press            (if keycard? (on-delete-keycard-profile keep-keys-on-keycard?) (on-delete-profile password))
+                        :theme               :negative
+                        :accessibility-label :delete-profile-confirm
+                        :disabled (and (not keycard?) ((complement valid-password?) @password))}
+            (i18n/label :t/delete-profile)]]]]))))

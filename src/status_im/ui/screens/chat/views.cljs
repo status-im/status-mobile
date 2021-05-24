@@ -8,7 +8,6 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.sheets :as sheets]
             [quo.animated :as animated]
             [quo.react-native :as rn]
             [status-im.ui.screens.chat.audio-message.views :as audio-message]
@@ -32,27 +31,7 @@
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
-            [quo.design-system.colors :as quo.colors]))
-
-(defn topbar []
-  ;;we don't use topbar component, because we want chat view as simple (fast) as possible
-  [react/view {:height 56 :border-bottom-width 1 :border-bottom-color (:ui-01 @quo.colors/theme)}
-   [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:navigate-back])
-                               :accessibility-label :back-button
-                               :style {:height 56 :width 40 :align-items :center :justify-content :center
-                                       :padding-left 16}}
-    [icons/icon :main-icons/arrow-left]]
-   [react/view {:flex 1 :left 52 :right 52 :top 0 :bottom 0 :position :absolute}
-    [toolbar-content/toolbar-content-view]]
-   [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                 {:content (fn []
-                                                                             [sheets/current-chat-actions])
-                                                                  :height  256}])
-                               :accessibility-label :chat-menu-button
-                               :style {:right 0 :top 0 :bottom 0 :position :absolute
-                                       :height 56 :width 40 :align-items :center :justify-content :center
-                                       :padding-right 16}}
-    [icons/icon :main-icons/more]]])
+            [status-im.ui.screens.chat.sheets :as sheets]))
 
 (defn invitation-requests [chat-id admins]
   (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])
@@ -320,8 +299,18 @@
        :inverted                     (when platform/ios? true)
        :style                        (when platform/android? {:scaleY -1})})]))
 
+(defn topbar-button []
+  (re-frame/dispatch [:bottom-sheet/show-sheet
+                      {:content (fn []
+                                  [sheets/current-chat-actions])
+                       :height  256}]))
+
+(defn topbar []
+  [toolbar-content/toolbar-content-view-inner @(re-frame/subscribe [:chats/current-chat])])
+
 (defn chat []
-  (let [bottom-space (reagent/atom 0)
+  (let [curr-chat-id (:chat-id @(re-frame/subscribe [:chats/current-chat-chat-view]))
+        bottom-space (reagent/atom 0)
         panel-space (reagent/atom 52)
         active-panel (reagent/atom nil)
         position-y (animated/value 0)
@@ -333,7 +322,8 @@
         set-active-panel (get-set-active-panel active-panel)
         on-close #(set-active-panel nil)]
     (reagent/create-class
-     {:component-will-unmount #(re-frame/dispatch-sync [:close-chat])
+     {:component-will-unmount #(re-frame/dispatch-sync [:close-chat curr-chat-id])
+      :component-did-mount (fn [] (js/setTimeout #(re-frame/dispatch [:set :ignore-close-chat false]) 200))
       :reagent-render
       (fn []
         (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as chat}
@@ -341,7 +331,6 @@
               @(re-frame/subscribe [:chats/current-chat-chat-view])
               max-bottom-space (max @bottom-space @panel-space)]
           [:<>
-           [topbar]
            [connectivity/loading-indicator]
            (when chat-id
              (if group-chat

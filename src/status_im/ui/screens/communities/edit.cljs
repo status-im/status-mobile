@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.communities.edit
-  (:require [status-im.ui.components.topbar :as topbar]
-            [quo.core :as quo]
+  (:require [quo.core :as quo]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.communities.create :as community.create]
             [status-im.utils.handlers :refer [>evt <sub]]
@@ -10,7 +9,6 @@
 (defn edit []
   (let [{:keys [name description]} (<sub [:communities/create])]
     [:<>
-     [topbar/topbar {:title (i18n/label :t/community-edit-title)}]
      [community.create/form]
      [toolbar/toolbar
       {:show-border? true

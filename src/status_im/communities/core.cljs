@@ -86,7 +86,7 @@
   [cofx response-js]
   (fx/merge cofx
             (handle-response cofx response-js)
-            (navigation/navigate-to-cofx :home {})))
+            (navigation/pop-to-root-tab :chat-stack)))
 
 (fx/defn joined
   {:events [::joined ::requested-to-join]}
@@ -305,7 +305,7 @@
   (fx/merge cofx
             (reset-community-id-input id)
             (bottom-sheet/hide-bottom-sheet)
-            (navigation/navigate-to :invite-people-community {:invite? true})))
+            (navigation/open-modal :invite-people-community {:invite? true})))
 
 (fx/defn share-community-pressed
   {:events [::share-community-pressed]}
@@ -313,7 +313,7 @@
   (fx/merge cofx
             (reset-community-id-input id)
             (bottom-sheet/hide-bottom-sheet)
-            (navigation/navigate-to :invite-people-community {})))
+            (navigation/open-modal :invite-people-community {})))
 
 (fx/defn create-channel-pressed
   {:events [::create-channel-pressed]}
@@ -367,7 +367,7 @@
                                                   :membership  access
                                                   :color       color
                                                   :editing?    true})}
-              (navigation/navigate-to :communities {:screen :community-edit}))))
+              (navigation/navigate-to :community-edit :nil))))
 
 (fx/defn community-imported
   {:events [::community-imported]}

@@ -128,13 +128,23 @@
             (navigation/navigate-to-cofx (if platform/android?
                                            :notifications-settings :welcome) nil)))
 
+(fx/defn intro-wizard
+  {:events [:multiaccounts.create.ui/intro-wizard]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (-> db
+                     (update :keycard dissoc :flow)
+                     (dissoc :restored-account?))}
+            (multiaccounts.create/prepare-intro-wizard)
+            (navigation/navigate-to-cofx :get-your-keys nil)))
+
 (fx/defn recovery-no-key
   {:events [:keycard.recovery.no-key.ui/generate-key-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db                           (assoc-in db [:keycard :flow] :create)
              :keycard/check-nfc-enabled nil}
-            (multiaccounts.create/intro-wizard)))
+            (intro-wizard)))
 
 (fx/defn create-keycard-multiaccount
   [{:keys [db] :as cofx}]
@@ -170,7 +180,8 @@
       (fx/merge cofx
                 {:db (-> db
                          (assoc-in [:keycard :setup-step] nil)
-                         (dissoc :intro-wizard))}
+                         (dissoc :intro-wizard))
+                 :init-root-fx :onboarding-notification}
                 (multiaccounts.create/on-multiaccount-created
                  {:recovered            (or recovered (get-in db [:intro-wizard :recovering?]))
                   :derived              {constants/path-wallet-root-keyword
@@ -192,8 +203,7 @@
                   :keycard-paired-on    paired-on
                   :chat-key             whisper-private-key}
                  encryption-public-key
-                 {})
-                (navigation/navigate-to-cofx :notifications-onboarding nil)))))
+                 {})))))
 
 (fx/defn return-to-keycard-login
   [{:keys [db] :as cofx}]
@@ -203,10 +213,8 @@
                                 :status nil
                                 :login  [])
                      (update :keycard dissoc :application-info))}
-            (navigation/navigate-reset {:index  0
-                                        :routes [{:name  :intro-stack
-                                                  :state {:routes [{:name :multiaccounts},
-                                                                   {:name :keycard-login-pin}]}}]})))
+            (navigation/set-stack-root :multiaccounts-stack [:multiaccounts
+                                                             :keycard-login-pin])))
 
 (fx/defn on-backup-success
   [{:keys [db] :as cofx} backup-type]
@@ -216,7 +224,7 @@
                                   :content (i18n/label (if (= backup-type :recovery-card)
                                                          :t/keycard-can-use-with-new-passcode :t/keycard-backup-success-body))}}
             (if (multiaccounts.model/logged-in? cofx)
-              (navigation/navigate-to-cofx :profile-stack {:screen :keycard-settings})
+              (navigation/navigate-to-cofx :keycard-settings nil)
               (return-to-keycard-login))))
 
 (fx/defn on-generate-and-load-key-success

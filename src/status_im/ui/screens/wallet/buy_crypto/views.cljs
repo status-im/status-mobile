@@ -21,7 +21,7 @@
   (re-frame/dispatch [:buy-crypto.ui/open-screen]))
 
 (defn render-on-ramp [{:keys [name fees logo-url description] :as on-ramp}]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :buy-crypto-website on-ramp])
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-modal :buy-crypto-website on-ramp])
                               :style {:flex 1}}
    [quo/list-item
     {:title          [react/view {:style {:flex 1}}
@@ -53,20 +53,20 @@
 
 (views/defview buy-crypto []
   (views/letsubs [on-ramps [:buy-crypto/on-ramps]]
-    [react/view {:flex 1}
-     [topbar/topbar {:border-bottom false
-                     :modal? true}]
-     [list/flat-list {:data               on-ramps
-                      :key-fn             :site-url
-                      :header             [buy-crypto-header]
-                      :render-fn          render-on-ramp}]]))
+    [list/flat-list {:data               on-ramps
+                     :key-fn             :site-url
+                     :header             [buy-crypto-header]
+                     :render-fn          render-on-ramp}]))
 
-(defn website [route]
+(defn website []
   (let [has-loaded? (reagent/atom false)
+        initialized? (reagent/atom false)
         {:keys [name
                 hostname
                 logo-url
-                site-url]} (get-in route [:route :params])]
+                site-url]} @(re-frame/subscribe [:get-screen-params])]
+    ;;it crashes on android , probably because of modal animation
+    (js/setTimeout #(reset! initialized? true) 500)
     (fn []
       ;; overflow hidden needed for the crash on android
       [react/view {:flex 1 :overflow :hidden}
@@ -82,7 +82,7 @@
        (when-not @has-loaded?
          [react/view {:style {:flex 1
                               :position :absolute
-                              :top 0
+                              :top 56
                               :left 0
                               :right 0
                               :z-index 1
@@ -98,18 +98,19 @@
            [quo/text {:align :center
                       :color :secondary}
             (i18n/label :t/buy-crypto-leaving)]]])
-       [components.webview/webview
-        {:onLoadEnd #(reset! has-loaded? true)
-         :ref #(reset! webview-ref %)
-         :on-permission-request #(browser.views/request-resources-access-for-page
-                                  (-> ^js % .-nativeEvent .-resources) site-url @webview-ref)
-         :java-script-enabled true
-         ;; This is to avoid crashes on android devices
-         ;; due to https://github.com/react-native-webview/react-native-webview/issues/1838
-         ;; We can't disable hardware acceleration as we need to use camera
-         :style {:opacity 0.99}
-         :local-storage-enabled true
-         :source {:uri site-url}}]])))
+       (when @initialized?
+         [components.webview/webview
+          {:onLoadEnd #(reset! has-loaded? true)
+           :ref #(reset! webview-ref %)
+           :on-permission-request #(browser.views/request-resources-access-for-page
+                                    (-> ^js % .-nativeEvent .-resources) site-url @webview-ref)
+           :java-script-enabled true
+           ;; This is to avoid crashes on android devices
+           ;; due to https://github.com/react-native-webview/react-native-webview/issues/1838
+           ;; We can't disable hardware acceleration as we need to use camera
+           :style {:opacity 0.99}
+           :local-storage-enabled true
+           :source {:uri site-url}}])])))
 
 (defn container []
   (reagent/create-class

@@ -54,7 +54,6 @@
                                                     (utils/truncate-str chat-name 30)]]]
                       :title-accessibility-label :chat-name-text
                       :subtitle                  (i18n/label :t/invite-public-chat-home)
-                      :on-press                  #(re-frame/dispatch [:navigate-to :tabs {:screen :chat-stack
-                                                                                          :params {:screen :referral-enclav}}])
+                      :on-press                  #(re-frame/dispatch [:navigate-to :chat])
                       :on-long-press             #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                                       {:content referral-sheet}])}])))
