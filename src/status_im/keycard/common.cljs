@@ -299,22 +299,9 @@
 (fx/defn navigate-to-enter-pin-screen
   {:events [:keycard/navigate-to-enter-pin-screen]}
   [{:keys [db] :as cofx}]
-  (let [key-uid               (get-in db [:keycard :application-info :key-uid])
-        multiaccount-key-uid  (get-in db [:multiaccount :key-uid])
-        keycard-multiaccount? (boolean (get-in db [:multiaccount :keycard-pairing]))]
-    ;; TODO(Ferossgp): If last oeperation was with wrong card,
-    ;; it does not mean that current operation will be with the same card.
-    ;; Because key-uid is stored from latest application-info read user can't
-    ;; start the new operation cause account key-uid is not equal to the one from old read
-    ;; Ideally application info should not be stored in db and only checked when need
-    ;; thus we can ensure that we have always the right card info and not outdated one.
-    (if (or (nil? keycard-multiaccount?)
-            (and key-uid
-                 (= key-uid multiaccount-key-uid)))
-      (fx/merge cofx
-                {:db (assoc-in db [:keycard :pin :current] [])}
-                (navigation/navigate-to-cofx :enter-pin-settings nil))
-      (unauthorized-operation cofx))))
+  (fx/merge cofx
+            {:db (assoc-in db [:keycard :pin :current] [])}
+            (navigation/navigate-to-cofx :enter-pin-settings nil)))
 
 (defn- tag-lost-exception? [code error]
   (or
