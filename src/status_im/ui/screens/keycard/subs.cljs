@@ -203,6 +203,5 @@
 (re-frame/reg-sub
  :keycard/frozen-card?
  (fn [db]
-   (let [{:keys [pin-retry-counter]}
-         (get-in db [:keycard :application-info])]
-     (zero? pin-retry-counter))))
+   (and (common/keycard-multiaccount? db)
+        (zero? (get-in db [:keycard :application-info :pin-retry-counter])))))

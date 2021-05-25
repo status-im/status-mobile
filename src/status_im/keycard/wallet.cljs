@@ -14,7 +14,8 @@
    {:db (-> db
             (assoc-in [:keycard :pin :enter-step] :export-key)
             (update-in [:keycard :pin] dissoc :export-key)
-            (assoc :keycard/new-account-sheet? true))}))
+            (assoc :keycard/new-account-sheet? true))
+    :dismiss-keyboard nil}))
 
 (fx/defn verify-pin-with-delay
   [cofx]
