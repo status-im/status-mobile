@@ -10,6 +10,9 @@
             (fn [cofx# [_# ~@argsyms]] (~name cofx# ~@argsyms))))
         events))
 
+(defn- fully-qualified-name [sym]
+  (str *ns* "/" (name sym)))
+
 (defmacro defn
   "Defines an fx producing function
   Takes the same arguments as the defn macro
@@ -50,6 +53,18 @@
          (clojure.core/defn ~(with-meta name m)
            ([~@argsyms] (fn [cofx#] (~(with-meta name m) cofx# ~@argsyms)))
            ([cofx# ~@args]
+            (when js/goog.DEBUG
+              (when (taoensso.timbre/level>=
+                     :trace
+                     (:level taoensso.timbre/*config*))
+                (println
+                 (clojure.string/join
+                  (concat
+                   (repeat
+                    (deref status-im.utils.handlers/handler-nesting-level)
+                    "│  ")
+                   ["├─"]))
+                 ~(str (clojure.core/name name) " " *ns*))))
             (if (and (map? cofx#)
                      (not (nil? (:db cofx#))))
               (let [res# (let [~cofx cofx#] ~@fdecl)]
@@ -61,9 +76,9 @@
                            m#
                            (when (and (map? k#)
                                       (contains? k# :db))
-                             (throw (js/Error. (str "fx/defn's result is used as fx producing function in " ~name))))
+                             (throw (js/Error. (str "fx/defn's result is used as fx producing function in " ~(fully-qualified-name name)))))
                            (get m# k# nil)))))
                 res#)
-              (throw (js/Error. (str "fx/defn expects a map of cofx as first argument got " cofx# " in function " ~name))))))
+              (throw (js/Error. (str "fx/defn expects a map of cofx as first argument got " cofx# " in function " ~(fully-qualified-name name)))))))
          ~@(register-events events interceptors (with-meta name m) argsyms))
       (throw (Exception. (str "fx/defn expects a vector of keyword as value for :events key in attr-map in function " name))))))

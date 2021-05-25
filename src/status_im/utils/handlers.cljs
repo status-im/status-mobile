@@ -36,12 +36,16 @@
   (let [[first _] (get-coeffect ctx :event)]
     first))
 
+(def handler-nesting-level (atom 0))
+
 (def debug-handlers-names
   "Interceptor which logs debug information to js/console for each event."
   (->interceptor
    :id     :debug-handlers-names
    :before (fn debug-handlers-names-before
              [context]
+             (when js/goog.DEBUG
+               (reset! handler-nesting-level 0))
              (log/debug "Handling re-frame event: " (pretty-print-event context))
              context)))
 

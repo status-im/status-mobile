@@ -2,7 +2,7 @@
   (:require-macros status-im.utils.fx)
   (:require [status-im.ethereum.json-rpc :as json-rpc]
             [taoensso.timbre :as log]
-            status-im.utils.handlers)
+            [status-im.utils.handlers :as handlers])
   (:refer-clojure :exclude [merge reduce]))
 
 (defn- update-db [cofx fx]
@@ -47,6 +47,8 @@
   :data-source/tx and effects are handled specially and their results
   (list of transactions) are compacted to one transactions list (for each effect). "
   [{:keys [db] :as cofx} & args]
+  (when js/goog.DEBUG
+    (swap! handlers/handler-nesting-level inc))
   (let [[first-arg & rest-args] args
         initial-fxs? (map? first-arg)
         fx-fns (if initial-fxs? rest-args args)]
