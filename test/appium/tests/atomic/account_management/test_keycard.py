@@ -94,6 +94,13 @@ class TestCreateAccount(SingleDeviceTestCase):
         if not sign_in.home_button.is_element_displayed(10):
             self.driver.fail('Keycard user is not logged in')
 
+        sign_in.just_fyi('Check that can add another wallet account and send transaction')
+        home.wallet_button.click()
+        wallet_view.add_account(account_name="another_keycard_account", keycard=True)
+        wallet_view.accounts_status_account.click()
+        transaction_amount_added = wallet_view.get_unique_amount()
+        wallet_view.send_transaction(amount=transaction_amount_added, recipient=transaction_senders['A']['address'], keycard=True, sign_transaction=True)
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6240)
@@ -322,6 +329,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard_view.pair_code_input.set_value(pair_code)
         sign_in.pair_to_this_device_button.click()
         keycard_view.enter_default_pin()
+        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
+        sign_in.lets_go_button.click_until_absense_of_element(sign_in.lets_go_button)
         sign_in.home_button.wait_for_visibility_of_element(30)
         wallet_view = sign_in.wallet_button.click()
         wallet_view.set_up_wallet()
