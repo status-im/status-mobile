@@ -17,7 +17,7 @@ function findPackage(line, regex) {
 # Gradle outputs dependencies in groups defined by configurations.
 # Those configurations are words followed by a dash and a description.
 # There's also a special 'classpath' configuration we want.
-/^(classpath|[a-zA-Z]+)( - .*)?$/ {
+/^(classpath|[a-zA-Z0-9]+)( - .*)?$/ {
     # Ignore configurations starting with 'test'
     if (tolower($1) ~ /^test/) {
         next
