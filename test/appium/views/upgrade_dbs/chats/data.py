@@ -9,7 +9,6 @@ chats = {
         }
     },
     '#before-upgrade':{
-        'preview': 'one more new',
         'preview_messages':{
             'status_im':    {'txt':'1) https://our.status.im/tag/news-and-announcements/',
                              'title': 'News & Announcements - Our Status',
@@ -27,15 +26,22 @@ chats = {
                              'title': 'status-im/status-react',
                              'subtitle': 'GitHub'}
         },
-        'quoted_text_messages': {
-            'MARKDOWN\ninline code\nbold text in asterics\nbold text in underscores\nitalic text in asteric\nitalic text in underscore',
-            'code blocks\n8\n9\n0',
-            'quoted 1\n2\n3\n4'
-        },
-        'messages':{'long': 'Папирус (др.-греч. πάπῡρος, лат. papyrus), или би́блиос (др.-греч. βιβλίος), также ха́рта',
-                    'tag': '#what-is-going-on',
-                    'reply': 'reply',
-                    'mention': 'All Whopping Dassierat be my friend'}
+    },
+    '#before-upgrade-2':{
+        'mention': 'Burlywood Vapid Zethuswasp be my friend',
+        'long': 'Папирус (др.-греч. πάπῡρος, лат. papyrus), или би́блиос (др.-греч. βιβλίος), также ха́рта',
+        'reply': 'reply',
+    },
+    '#before-upgrade-3':{
+            'tag': '#what-is-going-on',
+            'quoted': 'quoted 1',
+            'markdown_text_messages': [
+                'inline code',
+                'bold text in asterics',
+                'bold text in underscores',
+                'italic text in asteric',
+                'italic text in underscore',
+                'code blocks\n8\n9']
     },
     'Thoughtful Stupendous Graywolf': {
         'preview':'hey Thoughtful Stupendous Graywolf !',

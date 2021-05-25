@@ -1,10 +1,11 @@
-from tests import marks, pytest_config_global, test_dapp_name
+from tests import marks, pytest_config_global, test_dapp_name, staging_fleet, mailserver_hk, mailserver_ams, mailserver_gc
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from tests.users import upgrade_users, transaction_recipients
+from tests.users import upgrade_users, transaction_recipients, basic_user, ens_user
 from views.sign_in_view import SignInView
 import views.upgrade_dbs.chats.data as chat_data
 import views.upgrade_dbs.dapps.data as dapp_data
 import views.upgrade_dbs.pairing.data as sync_data
+import views.upgrade_dbs.group.data as group
 
 @marks.upgrade
 class TestUpgradeApplication(SingleDeviceTestCase):
@@ -23,7 +24,6 @@ class TestUpgradeApplication(SingleDeviceTestCase):
 
         profile.upgrade_app()
         home = sign_in.sign_in()
-
         home.profile_button.click()
         profile.about_button.click()
         new_version = profile.app_version_text.text
@@ -35,10 +35,11 @@ class TestUpgradeApplication(SingleDeviceTestCase):
 
         home.just_fyi("Check chat previews")
         for chat in chats.keys():
-            actual_chat_preview = home.get_chat(chat).chat_preview
-            expected_chat_preview = chats[chat]['preview']
-            if actual_chat_preview != expected_chat_preview:
-                self.errors.append('Expected preview for %s is "%s", in fact "%s"' % (chat, expected_chat_preview, actual_chat_preview))
+            if 'preview' in chats.keys():
+                actual_chat_preview = home.get_chat(chat).chat_preview
+                expected_chat_preview = chats[chat]['preview']
+                if actual_chat_preview != expected_chat_preview:
+                    self.errors.append('Expected preview for %s is "%s", in fact "%s"' % (chat, expected_chat_preview, actual_chat_preview))
 
         home.just_fyi("Check unread indicator")
         if home.home_button.counter.text != '1':
@@ -64,9 +65,10 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         if unread_one_to_one.new_messages_counter.text == '1':
             self.errors.append('New messages counter is shown on chat element after opening chat')
 
-        home.just_fyi("**Check public chat**")
+        home.just_fyi("Checking previews in public chat")
         pub_chat_data = chats[unread_public_name]
-        public_chat = home.get_chat(unread_public_name).click()
+        home.element_by_text(unread_public_name).click()
+        public_chat = home.get_chat_view()
         public_chat.scroll_to_start_of_history()
         for key in pub_chat_data['preview_messages']:
             home.just_fyi("Checking %s preview case in public chat" % key)
@@ -83,38 +85,41 @@ class TestUpgradeApplication(SingleDeviceTestCase):
                       self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
         home.home_button.click()
 
-        home.just_fyi("Checking markdown messages in public chat")
-        home.get_chat(unread_public_name).click()
-        messages = list(pub_chat_data['quoted_text_messages'])
-        public_chat.element_by_text(messages[0]).scroll_to_element(10, 'up')
+        home.just_fyi("Checking markdown messages")
+        markdown_name = '#before-upgrade-3'
+        pub_chat_data = chats[markdown_name]
+        public_chat = home.get_chat(markdown_name).click()
+        messages = pub_chat_data['markdown_text_messages']
+        public_chat.element_starts_with_text(messages[0]).scroll_to_element(10, 'up')
         for i in range(len(messages)):
-            if not public_chat.element_by_text(messages[i]).is_element_displayed():
+            if not public_chat.chat_element_by_text(messages[i]).is_element_displayed():
                 self.errors.append("Markdown message '%s' does not match expected" % messages[i])
+        public_chat.element_starts_with_text('quoted').scroll_to_element()
+        public_chat.home_button.click()
 
-        home.just_fyi("Checking that have uncollapse on long message")
-        messages = pub_chat_data['messages']
-        public_chat.element_starts_with_text(messages['long']).scroll_to_element()
-        public_chat.element_by_text_part(messages['tag']).scroll_to_element()
-        if not public_chat.chat_element_by_text(messages['long']).uncollapse:
-            self.errors.append("No uncollapse icon on long message is shown!")
-
-        home.just_fyi("Checking reaction, tag message and sticker")
-        tag_message = public_chat.chat_element_by_text(messages['tag'])
-        if tag_message.emojis_below_message(emoji='love', own=True) !=1:
-            self.errors.append("Emojis are not displayed below tag message!")
-        public_chat.sticker_message.scroll_to_element()
-        public_chat.element_starts_with_text(messages['tag']).click()
-        public_chat.history_start_icon.wait_for_visibility_of_element(20)
-        if not public_chat.user_name_text.text == messages['tag']:
+        home.just_fyi("Checking reactions, sticker, tag messages")
+        public_chat = home.get_chat(markdown_name).click()
+        tag_message = public_chat.chat_element_by_text(pub_chat_data['tag'])
+        if tag_message.emojis_below_message(emoji='love', own=True) != 1:
+            self.errors.append("Reactions are not displayed below tag message!")
+        if not public_chat.sticker_message.is_element_displayed():
+            self.errors.append("No sticker message is shown!")
+        public_chat.element_starts_with_text(pub_chat_data['tag']).click()
+        if not public_chat.user_name_text.text == pub_chat_data['tag']:
             self.errors.append('Could not redirect a user to a public chat tapping the tag message after upgrade')
         home.home_button.click()
 
-        home.just_fyi("Checking reply and mention message")
-        public_chat = home.get_chat(unread_public_name).click()
-        public_replied_message = public_chat.chat_element_by_text(messages['reply'])
-        if messages['long'] not in public_replied_message.replied_message_text:
+        home.just_fyi("Checking long messages, reply and mention")
+        long_name = '#before-upgrade-2'
+        public_chat = home.get_chat(long_name).click()
+        pub_chat_data = chats[long_name]
+        public_chat.element_starts_with_text(pub_chat_data['long']).scroll_to_element()
+        if not public_chat.chat_element_by_text(pub_chat_data['long']).uncollapse:
+            self.errors.append("No uncollapse icon on long message is shown!")
+        public_replied_message = public_chat.chat_element_by_text(pub_chat_data['reply'])
+        if pub_chat_data['long'] not in public_replied_message.replied_message_text:
             self.errors.append("Reply is not present in message received in public chat after upgrade")
-        if not public_chat.chat_element_by_text(messages['mention']).is_element_displayed():
+        if not public_chat.chat_element_by_text(pub_chat_data['mention']).is_element_displayed():
             self.errors.append("Mention is not present in public chat after upgrade")
 
         self.errors.verify_no_errors()
@@ -189,6 +194,45 @@ class TestUpgradeApplication(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(695810)
+    def test_keycard_upgrade(self):
+        user = basic_user
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(passphrase=user['passphrase'], keycard=True)
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.wait_balance_is_changed(asset='ADI', scan_tokens=True)
+        home.upgrade_app()
+
+        home.just_fyi('Check that can login with restored from mnemonic keycard account')
+        sign_in.sign_in(keycard=True)
+        home.wallet_button.click()
+        for asset in ['ETH', 'ADI', 'STT']:
+            if wallet.get_asset_amount_by_name(asset) == 0:
+                self.errors.append('Asset %s was not restored' % asset)
+
+        home.just_fyi('Check that can sign transaction in STT from wallet')
+        wallet.accounts_status_account.click()
+        transaction_amount = wallet.get_unique_amount()
+        wallet.send_transaction(amount=transaction_amount, asset_name='STT',
+                                     sign_transaction=True,
+                                     keycard=True,
+                                     recipient=transaction_recipients['I']['address'])
+        self.network_api.find_transaction_by_unique_amount(user['address'], transaction_amount, token=True)
+
+        wallet.just_fyi('Check that transaction is appeared in transaction history')
+        wallet.find_transaction_in_history(amount=transaction_amount, asset='STT')
+
+        home.just_fyi('Check that can sign transaction in Dapp')
+        status_test_dapp = home.open_status_test_dapp()
+        status_test_dapp.wait_for_d_aap_to_load()
+        status_test_dapp.transactions_button.click()
+        status_test_dapp.send_two_tx_in_batch_button.scroll_to_element()
+        send_transaction = status_test_dapp.send_two_tx_in_batch_button.click()
+        send_transaction.sign_transaction(keycard=True)
+        send_transaction.sign_transaction(keycard=True)
+        self.errors.verify_no_errors()
+
 @marks.upgrade
 class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
 
@@ -209,6 +253,8 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         device_1.just_fyi("**Check messages in 1-1 chat**")
         command_username = 'Royal Defensive Solenodon'
         messages = chat_data.chats[command_username]['messages']
+        home.swipe_up()
+        home.swipe_up()
         chat = home.get_chat(command_username).click()
         if chat.add_to_contacts.is_element_displayed():
             self.errors.append('User is deleted from contacts after upgrade')
@@ -228,12 +274,11 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
             if not message.transaction_status != commnad_messages[key]['status']:
                 self.errors.append('%s case transaction status is not equal expected after upgrade' % key)
             if key == 'outgoing_STT_sign':
+                chat.swipe_up()
                 if not message.sign_and_send.is_element_displayed():
                      self.errors.append('No "sign and send" option is shown for %s' % key)
         chat.home_button.click()
 
-        #TODO: blocked until resolving importing unread messages to Activity centre
-        # device_1.just_fyi("Check messages in Activity centre")
         device_2.just_fyi("Create upgraded and non-upgraded app can exchange messages")
         message, response = "message after upgrade", "response"
         device_1_chat = home.add_contact(device_2_public_key)
@@ -330,3 +375,175 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(695811)
+    def test_devices_group_chats_upgrade(self):
+        self.create_drivers(2)
+        admin, member = ens_user, transaction_recipients['J']
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+
+        device_1.just_fyi("Import db, upgrade")
+        home_1 = device_1.import_db(user=admin, import_db_folder_name='group/admin')
+        home_2 = device_2.import_db(user=member, import_db_folder_name='group/member')
+        for device in (device_1, device_2):
+            device.upgrade_app()
+            device.sign_in()
+
+        home_1.just_fyi("Check that all group chats are preserved after upgrade")
+        names = [sub["name"] for sub in (group.main, group.empty_invite, group.make_admin, group.to_join, group.to_remove)]
+        for home in home_1, home_2:
+            for name in names:
+                if not home.get_chat(name).is_element_displayed():
+                    self.errors.append("%s is not shown on device %s" % (name, home.driver.number))
+        if  home_2.element_by_text(group.to_delete['name']).is_element_displayed():
+            self.errors.append("Deleted group chat reappeared after upgrade")
+
+        home_1.just_fyi("Check messages in main group chat and resolved ENS")
+        chat_name, messages = group.main["name"], group.main["messages"]
+        [chat_1, chat_2]= [home.get_chat(chat_name).click() for home in (home_1, home_2)]
+        for chat in [chat_1, chat_2]:
+            if not chat.chat_element_by_text(messages["text"]).is_element_displayed():
+                self.errors.append("Text message in group chat is not shown after upgrade")
+            reply_message = chat.chat_element_by_text(messages['reply'])
+            if messages['text'] not in reply_message.replied_message_text:
+                self.errors.append("Reply is not present in message received in group chat after upgrade")
+        if not chat_2.chat_element_by_text(messages['invite']).uncollapse:
+            self.errors.append("No uncollapse icon on long message is shown!")
+        resolved_ens = '@%s' % admin['ens']
+        chat_2.chat_element_by_text(messages['text']).username.scroll_to_element(direction='up')
+        if chat_2.chat_element_by_text(messages['text']).username.text != resolved_ens:
+            self.errors.append("ENS is not resolved in group chat")
+        [chat.home_button.click() for chat in [chat_1, chat_2]]
+
+        home_1.just_fyi("Check that can join group chat after upgrade")
+        chat_name = group.to_join['name']
+        invite_message = chat_1.invite_system_message(resolved_ens, member['username'])
+        [chat_1, chat_2] = [home.get_chat(chat_name).click() for home in (home_1, home_2)]
+        if not chat_2.chat_element_by_text(invite_message).is_element_displayed():
+            self.errors.append("System message is not shown after upgrade")
+        chat_2.join_chat_button.click()
+        joined_system_message = chat_1.join_system_message(member['username'])
+        if not chat_1.chat_element_by_text(joined_system_message).is_element_displayed(30):
+            self.errors.append("System message is not shown after user was joined")
+        [chat.home_button.double_click() for chat in [chat_1, chat_2]]
+
+        home_2.just_fyi("Check that removed member can't send messages")
+        chat_name = group.to_remove['name']
+        [chat_1, chat_2] = [home.get_chat(chat_name).click() for home in (home_1, home_2)]
+        if chat_2.chat_message_input.is_element_displayed():
+            self.errors.append("Message input is available for removed member")
+        [chat.home_button.double_click() for chat in [chat_1, chat_2]]
+
+        home_1.just_fyi("Check both users remain admins, audio and images in chat")
+        chat_name = group.make_admin['name']
+        [chat_1, chat_2] = [home.get_chat(chat_name).click() for home in (home_1, home_2)]
+        for chat in [chat_1, chat_2]:
+            if not chat.image_chat_item.is_element_displayed():
+                self.errors.append("Image in group chat is not shown after upgrade")
+            if not chat.audio_message_in_chat_timer.is_element_displayed():
+                self.errors.append('Timer is not shown for audiomessage in group chat')
+        chat_1.chat_options.click()
+        chat_1.group_info.click()
+        admins = chat_1.element_by_text('Admin').find_elements()
+        if len(admins) != 2:
+            self.errors.append('Not 2 admins in group chat')
+        [chat.home_button.double_click()for chat in [chat_1, chat_2]]
+
+        home_1.just_fyi("Check that can see invite and pending membership request after upgrade")
+        chat_name = group.empty_invite['name']
+        home_1.swipe_up()
+        [chat_1, chat_2] = [home.get_chat(chat_name).click() for home in (home_1, home_2)]
+        for text in group.empty_invite['texts']:
+            if not chat_2.element_by_text(text).is_element_displayed():
+                self.errors.append("%s is not shown upon invite after upgrade" % text)
+        if not chat_1.group_membership_request_button.is_element_displayed():
+            self.errors.append("No pending membership requests are shown for Admin")
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(695812)
+    def test_devices_activity_centre_profile_settings_upgrade(self):
+        self.create_drivers(2)
+        user = ens_user
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+
+        device_1.just_fyi("Import db")
+        home_1 = device_1.import_db(user=user, import_db_folder_name='group/admin')
+        home_2 = device_2.create_user()
+        profile_2 = home_2.profile_button.click()
+        public_key_2, username_2 = profile_2.get_public_key_and_username(return_username=True)
+
+
+        device_1.just_fyi("Activity centre: send message to 1-1 and invite member to group chat")
+        chat_1 = home_1.add_contact(public_key_2, add_in_contacts=False)
+        message = home_1.get_random_message()
+        chat_1.send_message(message)
+
+        device_2.just_fyi("Set profile photo")
+        profile_2.edit_profile_picture(file_name='sauce_logo.png')
+        device_1.just_fyi('Upgrading apps')
+        for device in (device_1, device_2):
+            device.upgrade_app()
+            device.sign_in()
+
+        device_1.just_fyi("Check status")
+        timeline = home_1.status_button.click()
+        statuses = group.timeline
+        for element in timeline.element_by_text(statuses['text']), timeline.image_chat_item, timeline.element_by_text(statuses['link']):
+            if not element.is_element_displayed():
+                self.errors.append("Status is not shown after upgrade!")
+        timeline.element_by_text(statuses['link']).click()
+        if not device_1.element_by_text(statuses['resolved_username']).is_element_displayed():
+            self.errors.append("Deep link with ahother user profile couldn't be opened")
+        device_1.click_system_back_button()
+
+        device_1.just_fyi("Check profile settings")
+        profile_1 = device_1.profile_button.click()
+        profile_1.element_by_translation_id("ens-your-your-name").click()
+        for ens in user['ens'], user['ens_another_domain']:
+            if not profile_1.element_by_text(ens).is_element_displayed():
+                self.errors.append("ENS name %s is not shown after upgrade" % ens)
+        profile_1.profile_button.click()
+        profile_1.privacy_and_security_button.click()
+
+        if not profile_1.accept_new_chats_from_contacts_only.is_element_displayed():
+            self.errors.append("Accept contacts from setting is not preserved after upgrade!")
+        profile_1.profile_button.click()
+        profile_1.appearance_button.click()
+        if not profile_1.show_profile_pictures_of.is_element_image_similar_to_template('block_dark.png'):
+            self.errors.append('Dark mode is not applied!')
+        if not profile_1.element_by_translation_id("everyone").is_element_displayed():
+            self.errors.append("Show profile picture setting is not preserved after upgrade!")
+        profile_1.profile_button.click()
+        profile_1.sync_settings_button.click()
+        profile_1.mail_server_button.click()
+        mailservers = ['%s.%s' % (i, staging_fleet) for i in (mailserver_gc, mailserver_ams, mailserver_hk)]
+        profile_1.swipe_up()
+        for node in mailservers:
+            if not profile_1.element_by_text(node).is_element_displayed():
+                self.errors.append("Seems auto selection is on after upgrade, as %s is shown" % node)
+        profile_1.profile_button.click()
+        profile_1.advanced_button.click()
+        if not profile_1.element_by_text(group.profile['log_level']).is_element_displayed():
+            self.errors.append("Log level setting is not preserved after upgrade!")
+        profile_1.home_button.click()
+
+        device_2.just_fyi("Check activity centre and profile photo")
+        home_2.profile_button.click()
+        if not profile_2.profile_picture.is_element_image_similar_to_template('sauce_logo_profile.png'):
+            self.errors.append('Profile picture was not shown after upgrade')
+        profile_2.home_button.click()
+        if not home_2.notifications_unread_badge.is_element_displayed():
+            self.errors.append("Notifications badge in Activity centre is gone after upgrade")
+
+        device_2.just_fyi("Send message after upgrade and check that profile photo is visible")
+        home_1.get_chat(username_2).click()
+        message = chat_1.get_random_message()
+        chat_1.add_to_contacts.click()
+        chat_1.send_message(message)
+        chat_1.home_button.click()
+        chat_2 = home_2.get_chat('@%s' % user['ens']).click()
+        chat_2.send_message(message)
+        if not home_1.get_chat(username_2).chat_image.is_element_image_similar_to_template('dark_sauce_logo.png'):
+            self.errors.append('User profile picture was not updated on Chats view')
+
+        self.errors.verify_no_errors()
