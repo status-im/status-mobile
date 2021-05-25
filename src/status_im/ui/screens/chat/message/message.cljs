@@ -342,7 +342,7 @@
                    (get content :parsed-text)))
       :label    (i18n/label :t/sharing-copy-to-clipboard)}])))
 
-(defn collapsible-text-message [_ _]
+(defn collapsible-text-message [{:keys [mentioned]} _]
   (let [collapsed?   (reagent/atom false)
         collapsible? (reagent/atom false)]
     (fn [{:keys [content outgoing current-public-key public?] :as message} on-long-press modal]
@@ -377,16 +377,17 @@
              [message-timestamp message true])
            (when (and @collapsible? (not modal))
              (if @collapsed?
-               [react/touchable-highlight
-                {:on-press #(swap! collapsed? not)
-                 :style    {:position :absolute :bottom 0 :left 0 :right 0 :height 72}}
-                [react/linear-gradient {:colors [(str colors/blue-light "00") colors/blue-light]
-                                        :start  {:x 0 :y 0} :end {:x 0 :y 0.9}}
-                 [react/view {:height         72 :align-self :center :justify-content :flex-end
-                              :padding-bottom 10}
-                  [react/view (style/collapse-button)
-                   [icons/icon :main-icons/dropdown
-                    {:color colors/white}]]]]]
+               (let [color (if mentioned colors/mentioned-background colors/blue-light)]
+                 [react/touchable-highlight
+                  {:on-press #(swap! collapsed? not)
+                   :style    {:position :absolute :bottom 0 :left 0 :right 0 :height 72}}
+                  [react/linear-gradient {:colors [(str color "00") color]
+                                          :start  {:x 0 :y 0} :end {:x 0 :y 0.9}}
+                   [react/view {:height         72 :align-self :center :justify-content :flex-end
+                                :padding-bottom 10}
+                    [react/view (style/collapse-button)
+                     [icons/icon :main-icons/dropdown
+                      {:color colors/white}]]]]])
                [react/touchable-highlight {:on-press #(swap! collapsed? not)
                                            :style    {:align-self :center :margin 5}}
                 [react/view (style/collapse-button)

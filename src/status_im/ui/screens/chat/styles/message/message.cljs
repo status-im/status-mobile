@@ -115,7 +115,7 @@
    :shadow-offset  {:width 0 :height 4}})
 
 (defn message-view
-  [{:keys [content-type outgoing group-chat last-in-group?]}]
+  [{:keys [content-type outgoing group-chat last-in-group? mentioned]}]
   (merge
    {:border-top-left-radius     16
     :border-top-right-radius    16
@@ -136,6 +136,9 @@
    (cond
      (= content-type constants/content-type-system-text) nil
      outgoing                                            {:background-color colors/blue}
+     mentioned                                           {:background-color colors/mentioned-background
+                                                          :border-color colors/mentioned-border
+                                                          :border-width 1}
      :else                                               {:background-color colors/blue-light})
 
    (when (= content-type constants/content-type-emoji)

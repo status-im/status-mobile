@@ -9,21 +9,25 @@
         b   (js/parseInt (subs hex 4 6) 16)]
     (str "rgba(" r "," g "," b "," opacity ")")))
 
-(def dark {:white        "#141414"
-           :black        "#ffffff"
-           :gray-lighter "#252528"
-           :blue         "#6177E5"
-           :gray         "#838C91"
-           :blue-light   "#23252F"
-           :red          "#FC5F5F"})
+(def dark {:white                "#141414"
+           :black                "#ffffff"
+           :gray-lighter         "#252528"
+           :mentioned-background "#2a4046"
+           :mentioned-border     "#2a4046"
+           :blue                 "#6177E5"
+           :gray                 "#838C91"
+           :blue-light           "#23252F"
+           :red                  "#FC5F5F"})
 
-(def light {:white        "#ffffff"
-            :black        "#000000"
-            :gray-lighter "#eef2f5"
-            :blue         "#4360df"
-            :gray         "#939ba1"
-            :blue-light   "#ECEFFC"
-            :red          "#ff2d55"})
+(def light {:white                "#ffffff"
+            :black                "#000000"
+            :gray-lighter         "#eef2f5"
+            :blue                 "#4360df"
+            :gray                 "#939ba1"
+            :mentioned-background "#def6fc"
+            :mentioned-border     "#b8ecf9"
+            :blue-light           "#ECEFFC"
+            :red                  "#ff2d55"})
 
 (def themes {:dark dark :light light})
 
@@ -35,6 +39,9 @@
 (def white-transparent-persist (alpha white 0.4))
 (def white-transparent-70 (alpha white 0.7))
 (def white-transparent-70-persist (alpha white 0.7))
+
+(def mentioned-background (:mentioned-background light))
+(def mentioned-border (:mentioned-border light))
 
 (def red-light "#ffe5ea")                                   ;; error tooltip TODO (andrey) should be white, but shadow needed
 
@@ -116,6 +123,8 @@
       (set! blue-light (:blue-light colors))
       (set! red (:red colors))
       (set! text black)
+      (set! mentioned-background (:mentioned-background colors))
+      (set! mentioned-border (:mentioned-border colors))
       (set! white-transparent-10 (alpha white 0.1))
       (set! white-transparent (alpha white 0.4))
       (set! white-transparent-70 (alpha white 0.7))
