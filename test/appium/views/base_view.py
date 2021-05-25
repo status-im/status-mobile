@@ -233,6 +233,8 @@ class BaseView(object):
         self.cancel_button = Button(self.driver, translation_id="cancel", uppercase=True)
         self.search_input = EditBox(self.driver, accessibility_id="search-input")
         self.share_button = Button(self.driver, accessibility_id="share-my-contact-code-button")
+        self.qr_code_image = Button(self.driver, accessibility_id="qr-code-image")
+
 
         # external browser
         self.open_in_status_button = OpenInStatusButton(self.driver)

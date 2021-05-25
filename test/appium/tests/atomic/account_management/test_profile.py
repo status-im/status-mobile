@@ -255,6 +255,16 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat_view.back_button.click()
         if profile.element_by_text(user_to_remove).is_element_displayed():
             self.errors.append('Removed user is still shown in contact view')
+
+        home.just_fyi('Relogin and open profile view of the contact removed from Contact list to ensure there is no crash')
+        profile.profile_button.click()
+        profile.relogin()
+        one_to_one_chat = home.add_contact(public_key=ens_user['ens_another_domain'], add_in_contacts=False)
+        one_to_one_chat.chat_options.click()
+        profile = one_to_one_chat.view_profile_button.click()
+        if profile.remove_from_contacts.is_element_displayed():
+            self.errors.append('User still added in contact after relogin')
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5431)

@@ -101,8 +101,6 @@ class WalletView(BaseView):
         self.all_assets_symbols = Button(self.driver, xpath="//*[@content-desc='checkbox']/../android.widget.TextView[2]")
         self.currency_item_text = Text(self.driver, xpath="//*[@content-desc='currency-item']//android.widget.TextView")
 
-
-        self.qr_code_image = Button(self.driver, accessibility_id="qr-code-image")
         self.address_text = Text(self.driver, accessibility_id="address-text")
 
         self.sign_in_phrase = SignInPhraseText(self.driver)

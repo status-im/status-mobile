@@ -9,7 +9,7 @@ from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
 from views.sign_in_view import SignInView
-from  views.send_transaction_view import SendTransactionView
+from views.send_transaction_view import SendTransactionView
 
 
 class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
@@ -36,7 +36,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.send_message(message_no_pn)
         device_2.open_notification_bar()
         if device_2.element_by_text_part(message_no_pn).is_element_displayed():
-           self.errors.append("Push notification with text was received for new message in activity centre")
+            self.errors.append("Push notification with text was received for new message in activity centre")
         device_2.get_app_from_background()
         device_2.home_button.click()
         device_2_home.get_chat(default_username_1).click()
@@ -54,7 +54,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2.open_notification_bar()
         if not (device_2.element_by_text_part(message).is_element_displayed()
                 and device_2.element_by_text_part(default_username_1).is_element_displayed()):
-           device_2.driver.fail("Push notification with text was not received")
+            device_2.driver.fail("Push notification with text was not received")
         chat_view_device_2 = device_2.click_upon_push_notification_by_text(message)
 
         device_2.just_fyi("Send emoji message to Device 1 while it's on backround")
@@ -69,7 +69,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_view_device_1 = device_1.click_upon_push_notification_by_text(emoji_unicode)
         device_1.just_fyi("Check Device 1 is actually on chat")
         if not (chat_view_device_1.element_by_text_part(message).is_element_displayed()
-            and chat_view_device_1.element_by_text_part(emoji_unicode).is_element_displayed()):
+                and chat_view_device_1.element_by_text_part(emoji_unicode).is_element_displayed()):
             device_1.driver.fail("Failed to open chat view after tap on PN")
 
         device_1.just_fyi("Checks there are no PN after message was seen")
@@ -93,7 +93,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_1.connection_offline_icon.wait_and_click(20)
         for element in home_1.not_connected_to_node_text, home_1.not_connected_to_peers_text:
             if not element.is_element_displayed():
-                self.errors.append('Element "%s" is not shown in Connection status screen if device is offline' % element.locator)
+                self.errors.append(
+                    'Element "%s" is not shown in Connection status screen if device is offline' % element.locator)
         home_1.click_system_back_button()
 
         profile_2 = home_2.profile_button.click()
@@ -118,7 +119,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_1.just_fyi('checking offline fetching for another message, check delivered stutus for first message')
         chat_2.toggle_airplane_mode()
         if chat_2.chat_element_by_text(message_1).status != 'delivered':
-            self.errors.append('Message status is not delivered, it is %s!' % chat_2.chat_element_by_text(message_1).status)
+            self.errors.append(
+                'Message status is not delivered, it is %s!' % chat_2.chat_element_by_text(message_1).status)
         home_1.toggle_airplane_mode()
         message_2 = 'one more message'
         chat_2.send_message(message_2)
@@ -131,7 +133,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     @marks.high
     def test_send_non_english_message_to_newly_added_contact_on_different_networks(self):
         self.create_drivers(2)
-        device_1_home, device_2_home = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
+        device_1_home, device_2_home = SignInView(self.drivers[0]).create_user(), SignInView(
+            self.drivers[1]).create_user()
         profile_1 = device_1_home.profile_button.click()
         profile_1.switch_network()
 
@@ -167,7 +170,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             chat.verify_message_is_under_today_text(timestamp_message, self.errors)
             timestamp = chat.chat_element_by_text(timestamp_message).timestamp_message.text
             if timestamp not in sent_time_variants:
-                self.errors.append("Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time_variants.join(","), timestamp))
+                self.errors.append(
+                    "Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time_variants.join(","), timestamp))
 
         device_2_home.just_fyi("Add user to contact and verify his default username")
         device_2_chat.add_to_contacts.click()
@@ -253,7 +257,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device2_one_to_one_chat.element_by_text('View Details').click()
         if not device2_one_to_one_chat.profile_add_to_contacts.is_element_displayed():
             self.errors.append('No navigate to user profile after tapping View Details on sticker message')
-
 
         self.errors.verify_no_errors()
 
@@ -433,12 +436,13 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('Device 1: URL was not opened from 1-1 chat')
         home_1.home_button.click(desired_view='chat')
 
-        preview_urls = {'github_pr':{'url':'https://github.com/status-im/status-react/pull/11707',
-                                     'txt':'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-react',
-                                     'subtitle' : 'GitHub'},
-                         'yotube':{'url':'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
-                                   'txt':'Status & Keycard – Hardware-Enforced Security',
-                                   'subtitle': 'YouTube'}}
+        preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-react/pull/11707',
+                                      'txt': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-react',
+                                      'subtitle': 'GitHub'},
+                        'yotube': {
+                            'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
+                            'txt': 'Status & Keycard – Hardware-Enforced Security',
+                            'subtitle': 'YouTube'}}
 
         home_1.just_fyi("Check enabling and sending first gif")
         giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
@@ -455,9 +459,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             chat_2.send_message(data['url'])
             message = chat_1.get_preview_message_by_text(data['url'])
             if message.preview_title.text != data['txt']:
-                 self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
+                self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
             if message.preview_subtitle.text != data['subtitle']:
-                 self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
+                self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
 
         home_2.just_fyi("Check if after do not ask again previews are not shown and no enable button appear")
         if chat_2.element_by_translation_id("enable").is_element_displayed():
@@ -480,12 +484,11 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_2_chat = device_2_home.add_contact(device_1_public_key)
 
-        message, message_2= 'test message', 'test message2'
+        message, message_2 = 'test message', 'test message2'
         device_2_chat.send_message(message)
         chat_element = device_1_home.get_chat(default_username_2)
         device_1.dapp_tab_button.click()
         device_2_chat.send_message(message_2)
-
 
         if device_1_home.home_button.counter.text != '1':
             self.errors.append('New messages counter is not shown on Home button')
@@ -522,12 +525,12 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat = device_1_home.get_chat(default_username_2).click()
 
         markdown = {
-            'bold text in asterics' : '**',
-            'bold text in underscores' : '__',
+            'bold text in asterics': '**',
+            'bold text in underscores': '__',
             'italic text in asteric': '*',
-            'italic text in underscore' : '_',
-            'inline code' : '`',
-            'code blocks' : '```',
+            'italic text in underscore': '_',
+            'inline code': '`',
+            'code blocks': '```',
             # 'quote reply (one row)' : '>',
         }
 
@@ -573,9 +576,9 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         home.join_public_chat(''.join(random.choice(string.ascii_lowercase) for _ in range(7)))
         chat = sign_in.get_chat_view()
         message_text = {'text_message': 'mmmeowesage_text'}
-        formatted_message = {'message_with_link':'https://status.im',
-                             #TODO: blocked with 11161
-                             #'message_with_tag': '#successishere'
+        formatted_message = {'message_with_link': 'https://status.im',
+                             # TODO: blocked with 11161
+                             # 'message_with_tag': '#successishere'
                              }
         message_input = chat.chat_message_input
         message_input.send_keys(message_text['text_message'])
@@ -589,17 +592,17 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         message_input.clear()
 
         for message in formatted_message:
-           message_input.send_keys(formatted_message[message])
-           chat.send_message_button.click()
+            message_input.send_keys(formatted_message[message])
+            chat.send_message_button.click()
 
-           message_bubble = chat.chat_element_by_text(formatted_message[message])
-           message_bubble.timestamp_message.long_press_element()
-           chat.element_by_text('Copy').click()
+            message_bubble = chat.chat_element_by_text(formatted_message[message])
+            message_bubble.timestamp_message.long_press_element()
+            chat.element_by_text('Copy').click()
 
-           message_input.paste_text_from_clipboard()
-           if message_input.text != formatted_message[message]:
-               self.errors.append('Message %s text was not copied in a public chat' % formatted_message[message])
-           message_input.clear()
+            message_input.paste_text_from_clipboard()
+            if message_input.text != formatted_message[message]:
+                self.errors.append('Message %s text was not copied in a public chat' % formatted_message[message])
+            message_input.clear()
 
         self.errors.verify_no_errors()
 
@@ -625,7 +628,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.send_message_button.click()
 
         chat.chat_element_by_text(message_text[:-2]).wait_for_visibility_of_element(2)
-
 
     @marks.testrail_id(5783)
     @marks.critical
@@ -685,7 +687,20 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.select_mention_from_suggestion_list(russian_nickname + ' @' + ens)
         chat.chat_element_by_text('%s hey!' % russian_nickname).click()
         if not chat.profile_block_contact.is_element_displayed():
-            self.errors.append('No redirect to user profile after tapping on message with mention (nickname) in 1-1 chat')
+            self.errors.append(
+                'No redirect to user profile after tapping on message with mention (nickname) in 1-1 chat')
+
+        home.just_fyi('My_profile button at Start new chat view opens own QR code with public key pop-up')
+        chat.back_button.click()
+        home.home_button.double_click()
+        home.plus_button.click()
+        home.start_new_chat_button.click()
+        home.my_profile_on_start_new_chat_button.click()
+        account = home.get_profile_view()
+        if not (account.public_key_text.is_element_displayed() and account.share_button.is_element_displayed()
+                and account.qr_code_image.is_element_displayed()):
+            self.errors.append('No self profile pop-up data displayed after My_profile button tap')
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6298)
@@ -713,11 +728,11 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 'url': 'https://join.status.im/u/%s' % basic_user['public_key'],
                 'error': "That's you"
             },
-            'other_user_profile_key_deep_link':{
+            'other_user_profile_key_deep_link': {
                 'url': 'https://join.status.im/u/%s' % ens_user['public_key'],
                 'username': ens_user['username']
             },
-            'other_user_profile_key_deep_link_invalid':{
+            'other_user_profile_key_deep_link_invalid': {
                 'url': 'https://join.status.im/u/%sinvalid' % ens_user['public_key'],
                 'error': 'Please enter or scan a valid chat key'
             },
@@ -739,8 +754,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 'username': ens_user['username']
             },
             'other_user_profile_key_invalid': {
-                    'url': '%s123' % ens_user['public_key'],
-                    'error': 'Please enter or scan a valid chat key'
+                'url': '%s123' % ens_user['public_key'],
+                'error': 'Please enter or scan a valid chat key'
             },
         }
 
@@ -760,7 +775,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 chat_view.ok_button.click()
             if url_data[key].get('username'):
                 if not chat_view.chat_message_input.is_element_displayed():
-                    self.errors.append('In "%s" case chat input is not found after scanning, so no redirect to 1-1' % key)
+                    self.errors.append(
+                        'In "%s" case chat input is not found after scanning, so no redirect to 1-1' % key)
                 if not chat_view.element_by_text(url_data[key]['username']).is_element_displayed():
                     self.errors.append('In "%s" case "%s" not found after scanning' % (key, url_data[key]['username']))
                 chat_view.back_button.click()
@@ -820,10 +836,10 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             },
             'dapp_deep_link': {
                 'url': 'https://join.status.im/b/simpledapp.eth',
-             },
+            },
             'dapp_deep_link_https': {
                 'url': 'https://join.status.im/b/https://simpledapp.eth',
-             },
+            },
             'public_chat_deep_link': {
                 'url': 'https://join.status.im/baga-ma-2020',
                 'chat_name': 'baga-ma-2020'

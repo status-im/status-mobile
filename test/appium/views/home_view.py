@@ -84,6 +84,7 @@ class HomeView(BaseView):
         self.universal_qr_scanner_button = Button(self.driver, accessibility_id="universal-qr-scanner")
         self.invite_friends_button = Button(self.driver, accessibility_id="invite-friends-button")
         self.stop_status_service_button = Button(self.driver, accessibility_id="STOP")
+        self.my_profile_on_start_new_chat_button = Button(self.driver, xpath="//*[@content-desc='current-account-photo']")
 
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
