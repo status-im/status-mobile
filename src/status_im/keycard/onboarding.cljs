@@ -237,9 +237,7 @@
                                                     (assoc-in [:keycard :card-state] :init)
                                                     (assoc-in [:keycard :setup-step] :secret-keys)
                                                     (update-in [:keycard :secrets] merge secrets'))}
-              (common/hide-connection-sheet)
-              (common/listen-to-hardware-back-button)
-              (navigation/navigate-replace :keycard-onboarding-puk-code nil))))
+              (load-pairing-screen))))
 
 (fx/defn on-install-applet-and-init-card-error
   {:events [:keycard.callback/on-install-applet-and-init-card-error

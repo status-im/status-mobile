@@ -56,10 +56,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard.connect_card_button.click()
         keycard.enter_default_pin()
         keycard.enter_default_pin()
-        keycard.next_button.scroll_to_element()
-        keycard.next_button.wait_for_visibility_of_element(20)
-        keycard.next_button.click()
-        keycard.yes_button.click()
         sign_in.maybe_later_button.wait_and_click(30)
         sign_in.lets_go_button.wait_and_click(30)
 
@@ -157,21 +153,10 @@ class TestCreateAccount(SingleDeviceTestCase):
             self.driver.fail('No Dangerous operation popup is shown on canceling operation from PIN code stage')
         keycard_flow.yes_button.click()
 
-        sign_in.just_fyi('Cancel on Pair code stage: initialized')
-        keycard_flow.begin_setup_button.click()
-        keycard_flow.enter_default_pin()
-        keycard_flow.enter_default_pin()
-        keycard_flow.wait_for_element_starts_with_text('Write codes down')
-        pair_code = keycard_flow.pair_code_text.text
-        keycard_flow.cancel_button.click()
-        if not keycard_flow.element_by_translation_id("keycard-cancel-setup-title").is_element_displayed():
-            self.driver.fail('No Dangerous operation popup is shown on canceling operation from Pair code stage')
-        keycard_flow.yes_button.click()
-
         sign_in.just_fyi('Cancel from Confirm seed phrase: initialized + 1 pairing slot is used')
         keycard_flow.begin_setup_button.click()
-        keycard_flow.pair_code_input.set_value(pair_code)
-        keycard_flow.pair_to_this_device_button.click()
+        keycard_flow.enter_default_pin()
+        keycard_flow.enter_default_pin()
         seed_phrase = keycard_flow.get_seed_phrase()
         keycard_flow.confirm_button.click()
         keycard_flow.yes_button.click()
@@ -233,23 +218,9 @@ class TestCreateAccount(SingleDeviceTestCase):
             self.driver.fail('No Dangerous operation popup is shown on canceling operation from PIN code stage')
         keycard_flow.yes_button.click()
 
-        sign_in.just_fyi('Cancel on Pair code stage: initialized')
-        keycard_flow.begin_setup_button.click()
-        keycard_flow.enter_default_pin()
-        keycard_flow.enter_default_pin()
-        keycard_flow.wait_for_element_starts_with_text('Write codes down')
-        pair_code = keycard_flow.pair_code_text.text
-        keycard_flow.cancel_button.click()
-        if not keycard_flow.element_by_translation_id("keycard-cancel-setup-title").is_element_displayed():
-            self.driver.fail('No Dangerous operation popup is shown on canceling operation from Pair code stage')
-        keycard_flow.yes_button.click()
-
         sign_in.just_fyi('Finish setup and relogin')
         keycard_flow.begin_setup_button.click()
-        if not keycard_flow.element_by_text_part('5 free pairing slots').is_element_displayed():
-            self.errors.append('Number of free pairing slots is not shown or wrong')
-        keycard_flow.pair_code_input.set_value(pair_code)
-        keycard_flow.pair_to_this_device_button.click()
+        keycard_flow.enter_default_pin()
         keycard_flow.enter_default_pin()
         for element in sign_in.maybe_later_button, sign_in.lets_go_button:
             element.wait_for_visibility_of_element(30)

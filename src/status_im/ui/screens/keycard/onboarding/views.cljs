@@ -23,13 +23,13 @@
      (when-not from-key-storage-and-migration?
        [topbar/topbar])
      [react/view {:flex            1
-                  :justify-content :space-between
                   :align-items     :center
                   :margin-top      (when from-key-storage-and-migration? 80)}
       [react/view {:align-items :center}
        [react/view
         [react/view {:align-items     :center
-                     :justify-content :center}
+                     :justify-content :center
+                     :margin-top      16}
          [react/image {:source (resources/get-image :keycard)
                        :style  {:width  120
                                 :height 95}}]]]
@@ -54,45 +54,26 @@
            (i18n/label :t/learn-more-about-keycard)]
           [icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
                                                       :container-style {:margin-left 5}}]]]]]
-      [react/view {:width "80%"}
-       (for [[number header text] [["1"
-                                    (i18n/label :t/keycard-onboarding-start-step1)
-                                    (i18n/label :t/keycard-onboarding-start-step1-text)]
-                                   ["2"
-                                    (i18n/label :t/keycard-onboarding-start-step2)
-                                    (i18n/label :t/keycard-onboarding-start-step2-text)]
-                                   (when (not= flow :recovery)
-                                     ["3"
-                                      (i18n/label :t/keycard-onboarding-start-step3)
-                                      (i18n/label :t/keycard-onboarding-start-step3-text)])]]
-         (when number
-           ^{:key number} [react/view {:flex-direction :row
-                                       :margin-top     15}
-                           [react/view {:border-width    1
-                                        :border-radius   20
-                                        :border-color    colors/black-transparent
-                                        :align-items     :center
-                                        :justify-content :center
-                                        :width           40
-                                        :height          40}
-                            [react/text {:style {:typography :title}}
-                             number]]
-                           [react/view {:align-items     :flex-start
-                                        :justify-content :flex-start
-                                        :margin-left     11}
-                            [react/view
-                             [react/text {:style {:typography :main-medium}}
-                              header]]
-                            [react/view
-                             [react/text {:style {:color         colors/gray
-                                                  :padding-right 35}}
-                              text]]]]))]
-      [react/view {:style {:flex-direction :row}}
+      [react/view {:margin-top 16
+                   :margin-left 24
+                   :margin-right 24}
+       [react/text {:style {:typography  :main-medium
+                            :line-height 22
+                            :text-align  :left}}
+        (i18n/label :t/keycard-onboarding-pin-text)]
+       (when (not= flow :recovery)
+         [react/text {:style {:typography  :main-medium
+                              :margin-top  16
+                              :line-height 22
+                              :text-align  :left}}
+          (i18n/label :t/keycard-onboarding-mnemonic-text)])]
+      [react/view {:style {:flex-direction :row
+                           :margin-top     24}}
        [checkbox/checkbox {:checked?        factory-reset-card?
                            :style           {:margin-right 10}
                            :on-value-change #(re-frame/dispatch [:keycard.onboarding.intro.ui/factory-reset-card-toggle %])}]
        [react/text (i18n/label :t/keycard-factory-reset)]]
-      [react/view {:margin-bottom 40}
+      [react/view {:margin-top 40}
        [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.intro.ui/begin-setup-pressed])}
         (i18n/label :t/begin-set-up)]]]]))
 

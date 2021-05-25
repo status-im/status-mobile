@@ -67,7 +67,3 @@ class KeycardView(BaseView):
         self.connect_card_button.click()
         self.enter_default_pin()
         self.enter_default_pin()
-        self.next_button.scroll_to_element()
-        self.next_button.wait_for_visibility_of_element(20)
-        self.next_button.click()
-        self.yes_button.click()
