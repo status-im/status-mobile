@@ -85,6 +85,7 @@
             [status-im.ui.screens.mobile-network-settings.view
              :as
              mobile-network-settings]
+            [status-im.ui.screens.reset-password.views :as reset-password]
             [status-im.ui.screens.network.edit-network.views :as edit-network]
             [status-im.ui.screens.network.views :as network]
             [status-im.ui.screens.network.network-details.views :as network-details]
@@ -221,7 +222,7 @@
             :component profile.group-chat/group-chat-invite}
 
            {:name      :stickers
-            :options {:topBar {:title {:text (i18n/label :t/sticker-market)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/sticker-market)}}}
             :component stickers/packs}
 
            {:name      :stickers-pack
@@ -233,40 +234,40 @@
             :component notifications-center/center}
            ;; Community
            {:name      :community
-            ;TODO custom
+            ;;TODO custom
             :options   {:topBar {:visible false}}
             :component community/community}
            {:name      :community-management
             :insets    {:top false}
-            ;TODO animated-header
+            ;;TODO animated-header
             :options   {:topBar {:visible false}}
             :component community.profile/management-container}
            {:name      :community-members
-            ;TODO custom subtitle
+            ;;TODO custom subtitle
             :options   {:topBar {:visible false}}
             :component members/members-container}
            {:name      :community-requests-to-join
-            ;TODO custom subtitle
+            ;;TODO custom subtitle
             :options   {:topBar {:visible false}}
             :component requests-to-join/requests-to-join-container}
            {:name      :create-community-channel
-            ;TODO custom
+            ;;TODO custom
             :options   {:topBar {:visible false}}
             :component create-channel/view}
-           {:name :community-channel-details
-            ;TODO custom
+           {:name      :community-channel-details
+            ;;TODO custom
             :options   {:topBar {:visible false}}
             :component communities.channel-details/view}
            {:name      :edit-community-channel
             :insets    {:bottom true}
             :component edit-channel/view}
            {:name      :contact-toggle-list
-            ;TODO custom subtitle
+            ;;TODO custom subtitle
             :options   {:topBar {:visible false}}
             :component group-chat/contact-toggle-list}
            {:name      :new-group
             :options   {:topBar {:visible false}}
-            ;TODO custom subtitle
+            ;;TODO custom subtitle
             :component group-chat/new-group}
            {:name      :referral-enclav
             ;;TODO custom content
@@ -277,16 +278,16 @@
             :options   {:topBar {:visible false}}
             :component communities/communities}
            {:name      :community-import
-            :options {:topBar {:title {:text (i18n/label :t/import-community-title)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/import-community-title)}}}
             :component communities.import/view}
            {:name      :community-edit
-            :options {:topBar {:title {:text (i18n/label :t/community-edit-title)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/community-edit-title)}}}
             :component community.edit/edit}
            {:name      :community-create
-            :options {:topBar {:title {:text (i18n/label :t/new-community-title)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/new-community-title)}}}
             :component communities.create/view}
            {:name      :community-membership
-            :options {:topBar {:title {:text (i18n/label :t/membership-title)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/membership-title)}}}
             :component membership/membership}
 
            ;;BROWSER
@@ -340,14 +341,14 @@
             :component wallet-settings/manage-assets}
            {:name      :wallet-add-custom-token
             :on-focus  [:wallet/wallet-add-custom-token]
-            :options {:topBar {:title {:text (i18n/label :t/add-custom-token)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/add-custom-token)}}}
             :component custom-tokens/add-custom-token}
            {:name      :wallet-custom-token-details
             ;;TODO dynamic title
             :options   {:topBar {:visible false}}
             :component custom-tokens/custom-token-details}
            {:name      :currency-settings
-            :options {:topBar {:title {:text (i18n/label :t/main-currency)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/main-currency)}}}
             :component currency-settings/currency-settings}
 
            ;;MY STATUS
@@ -363,36 +364,36 @@
             :insets    {:top false}
             :component profile.user/my-profile}
            {:name      :contacts-list
-            :options {:topBar {:title {:text (i18n/label :t/contacts)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/contacts)}}}
             :component contacts-list/contacts-list}
            {:name      :ens-main
-            :options {:topBar {:title {:text (i18n/label :t/ens-usernames)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/ens-usernames)}}}
             :component ens/main}
            {:name      :ens-search
-            :options {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
             :component ens/search}
            {:name      :ens-checkout
-            :options {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
             :component ens/checkout}
            {:name      :ens-confirmation
-            :options {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
             :component ens/confirmation}
            {:name      :ens-terms
-            :options {:topBar {:title {:text (i18n/label :t/ens-terms-registration)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/ens-terms-registration)}}}
             :component ens/terms}
            {:name      :ens-name-details
             ;;TODO dynamic title
             :options   {:topBar {:visible false}}
             :component ens/name-details}
            {:name      :blocked-users-list
-            :options {:topBar {:title {:text (i18n/label :t/blocked-users)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/blocked-users)}}}
             :component contacts-list/blocked-users-list}
            {:name      :bootnodes-settings
             ;;TODO dynamic title
             :options   {:topBar {:visible false}}
             :component bootnodes-settings/bootnodes-settings}
            {:name      :installations
-            :options {:topBar {:title {:text (i18n/label :t/devices)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/devices)}}}
             :component pairing/installations}
            {:name      :edit-bootnode
             ;;TODO dynamic title
@@ -407,43 +408,43 @@
             :options   {:topBar {:visible false}}
             :component edit-mailserver/edit-mailserver}
            {:name      :dapps-permissions
-            :options {:topBar {:title {:text (i18n/label :t/dapps-permissions)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/dapps-permissions)}}}
             :component dapps-permissions/dapps-permissions}
            {:name      :link-previews-settings
-            :options {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}}
             :component link-previews-settings/link-previews-settings}
            {:name      :privacy-and-security
-            :options {:topBar {:title {:text (i18n/label :t/privacy-and-security)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/privacy-and-security)}}}
             :component privacy-and-security/privacy-and-security}
            {:name      :messages-from-contacts-only
-            :options {:topBar {:title {:text (i18n/label :t/accept-new-chats-from)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/accept-new-chats-from)}}}
             :component messages-from-contacts-only/messages-from-contacts-only}
            {:name      :appearance
-            :options {:topBar {:title {:text (i18n/label :t/appearance)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/appearance)}}}
             :component appearance/appearance}
            {:name      :appearance-profile-pic
-            :options {:topBar {:title {:text (i18n/label :t/show-profile-pictures)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/show-profile-pictures)}}}
             :component appearance/profile-pic}
            {:name      :notifications
-            :options {:topBar {:title {:text (i18n/label :t/notification-settings)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/notification-settings)}}}
             :component notifications-settings/notifications-settings}
            {:name      :notifications-servers
-            :options {:topBar {:title {:text (i18n/label :t/notification-servers)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/notification-servers)}}}
             :component notifications-settings/notifications-servers}
            {:name      :sync-settings
-            :options {:topBar {:title {:text (i18n/label :t/sync-settings)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/sync-settings)}}}
             :component sync-settings/sync-settings}
            {:name      :advanced-settings
-            :options {:topBar {:title {:text (i18n/label :t/advanced)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/advanced)}}}
             :component advanced-settings/advanced-settings}
            {:name      :help-center
-            :options {:topBar {:title {:text (i18n/label :t/need-help)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/need-help)}}}
             :component help-center/help-center}
            {:name      :glossary
-            :options {:topBar {:title {:text (i18n/label :t/glossary)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/glossary)}}}
             :component glossary/glossary}
            {:name      :about-app
-            :options {:topBar {:title {:text (i18n/label :t/about-app)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/about-app)}}}
             :component about-app/about-app}
            {:name      :manage-dapps-permissions
             ;;TODO dynamic title
@@ -454,41 +455,44 @@
             :options   {:topBar {:visible false}}
             :component network/network-settings}
            {:name      :network-details
-            :options {:topBar {:title {:text (i18n/label :t/network-details)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/network-details)}}}
             :component network-details/network-details}
            {:name      :network-info
-            :options {:topBar {:title {:text (i18n/label :t/network-info)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/network-info)}}}
             :component network-info/network-info}
            {:name      :rpc-usage-info
-            :options {:topBar {:title {:text (i18n/label :t/rpc-usage-info)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/rpc-usage-info)}}}
             :component rpc-usage-info/usage-info}
            {:name      :edit-network
-            :options {:topBar {:title {:text (i18n/label :t/add-network)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/add-network)}}}
             :component edit-network/edit-network}
            {:name      :log-level-settings
-            :options {:topBar {:title {:text (i18n/label :t/log-level-settings)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/log-level-settings)}}}
             :component log-level-settings/log-level-settings}
            {:name      :fleet-settings
-            :options {:topBar {:title {:text (i18n/label :t/fleet-settings)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/fleet-settings)}}}
             :component fleet-settings/fleet-settings}
            {:name      :mobile-network-settings
-            :options {:topBar {:title {:text (i18n/label :t/mobile-network-settings)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/mobile-network-settings)}}}
             :component mobile-network-settings/mobile-network-settings}
            {:name      :backup-seed
             ;;TODO dynamic navigation
             :options   {:topBar {:visible false}}
             :component profile.seed/backup-seed}
-           {:name       :delete-profile
-            :insets     {:bottom true}
-            :component  delete-profile/delete-profile}
+           {:name      :reset-password
+            :options   {:topBar {:title {:text (i18n/label :t/reset-password)}}}
+            :component reset-password/reset-password}
+           {:name      :delete-profile
+            :insets    {:bottom true}
+            :component delete-profile/delete-profile}
            {:name      :default-sync-period-settings
-            :options {:topBar {:title {:text (i18n/label :t/default-sync-period)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/default-sync-period)}}}
             :component default-sync-period-settings/default-sync-period-settings}
            {:name      :anonymous-metrics-settings
             :component anonymous-metrics-settings/settings}
-           {:name :anon-metrics-learn-more
+           {:name      :anon-metrics-learn-more
             :component anonymous-metrics-settings/learn-more}
-           {:name :anon-metrics-view-data
+           {:name      :anon-metrics-view-data
             :component anonymous-metrics-settings/view-data}
            {:name         :anon-metrics-opt-in
             :back-handler :noop
@@ -506,12 +510,12 @@
            ;[Chat] New Public chat
            {:name      :new-public-chat
             :insets    {:bottom true}
-            :options {:topBar {:title {:text (i18n/label :t/new-public-group-chat)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/new-public-group-chat)}}}
             :component new-public-chat/new-public-chat}
 
            ;[Chat] Link preview settings
            {:name      :link-preview-settings
-            :options {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}}
             :component link-previews-settings/link-previews-settings}
 
            ;[Chat] Edit nickname
@@ -524,7 +528,7 @@
            ;[Group chat] Edit group chat name
            {:name      :edit-group-chat-name
             :insets    {:bottom true}
-            :options {:topBar {:title {:text (i18n/label :t/edit-group)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/edit-group)}}}
             :component group-chat/edit-group-chat-name}
 
            ;[Group chat] Add participants
@@ -552,7 +556,7 @@
            ;Refferal invite
            {:name      :referral-invite
             :insets    {:bottom true}
-            :options {:topBar {:title {:text (i18n/label :t/invite-friends)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/invite-friends)}}}
             :component invite/referral-invite}
 
            ;[Wallet] Recipient
@@ -565,7 +569,7 @@
            ;[Wallet] New favourite
            {:name      :new-favourite
             :insets    {:bottom true}
-            :options {:topBar {:title {:text (i18n/label :t/new-favourite)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/new-favourite)}}}
             :component recipient/new-favourite}
 
            ;QR Scanner
@@ -581,7 +585,7 @@
            ;;TODO WHY MODAL?
            ;[Profile] Notifications settings
            {:name      :notifications-settings
-            :options   {:topBar {:title {:text (i18n/label :t/notification-settings)}}
+            :options   {:topBar             {:title {:text (i18n/label :t/notification-settings)}}
                         :popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
                                              :popStackOnPress     false}}
@@ -591,7 +595,7 @@
            ;;TODO WHY MODAL?
            ;[Profile] Notifications Advanced settings
            {:name      :notifications-advanced-settings
-            :options   {:topBar {:title {:text (i18n/label :t/notification-settings)}}
+            :options   {:topBar             {:title {:text (i18n/label :t/notification-settings)}}
                         :popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
                                              :popStackOnPress     false}}
@@ -602,19 +606,19 @@
            {:name        :prepare-send-transaction
             :insets      {:bottom true}
             :on-dissmiss [:wallet/cancel-transaction-command]
-            :options     {:topBar {:title {:text (i18n/label :t/send-transaction)}}
-                          :swipeToDismiss false
+            :options     {:topBar             {:title {:text (i18n/label :t/send-transaction)}}
+                          :swipeToDismiss     false
                           :hardwareBackButton {:dismissModalOnPress false}}
             :component   wallet/prepare-send-transaction}
 
            ;[Wallet] Request Transaction
-           {:name      :request-transaction
-            :insets    {:bottom true}
+           {:name        :request-transaction
+            :insets      {:bottom true}
             :on-dissmiss [:wallet/cancel-transaction-command]
-            :options     {:topBar {:title {:text (i18n/label :t/request-transaction)}}
-                          :swipeToDismiss false
+            :options     {:topBar             {:title {:text (i18n/label :t/request-transaction)}}
+                          :swipeToDismiss     false
                           :hardwareBackButton {:dismissModalOnPress false}}
-            :component wallet/request-transaction}
+            :component   wallet/request-transaction}
 
            ;[Wallet] Buy crypto
            {:name      :buy-crypto
@@ -631,7 +635,7 @@
            ;My Status
            {:name      :my-status
             :insets    {:bottom true}
-            :options {:topBar {:title {:text (i18n/label :t/my-status)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/my-status)}}}
             :component status.new/my-status}
 
            ;[Browser] New bookmark
@@ -650,12 +654,12 @@
 
            ;KEYCARD
            {:name         :keycard-onboarding-intro
-            :insets    {:bottom true}
+            :insets       {:bottom true}
             :back-handler keycard.core/onboarding-intro-back-handler
             :component    keycard.onboarding/intro}
            {:name      :keycard-onboarding-puk-code
             :insets    {:bottom true}
-            :options   {:topBar {:visible false}
+            :options   {:topBar             {:visible false}
                         :popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
                                              :popStackOnPress     false}}
@@ -663,7 +667,7 @@
             :component keycard.onboarding/puk-code}
            {:name      :keycard-onboarding-pin
             :insets    {:bottom true}
-            :options   {:topBar {:visible false}
+            :options   {:topBar             {:visible false}
                         :popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
                                              :popStackOnPress     false}}
@@ -671,7 +675,7 @@
             :component keycard.onboarding/pin}
            {:name      :keycard-recovery-pair
             :insets    {:bottom true}
-            :options   {:topBar {:title {:text (i18n/label :t/step-i-of-n {:number 2 :step 1})}}
+            :options   {:topBar             {:title {:text (i18n/label :t/step-i-of-n {:number 2 :step 1})}}
                         :popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
                                              :popStackOnPress     false}}
@@ -698,21 +702,21 @@
             :component keycard/not-keycard}
            {:name      :keycard-onboarding-recovery-phrase
             :insets    {:bottom true}
-            :options   {:topBar {:visible false}
+            :options   {:topBar             {:visible false}
                         :popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
                                              :popStackOnPress     false}}
             :component keycard.onboarding/recovery-phrase}
            {:name      :keycard-onboarding-recovery-phrase-confirm-word1
             :insets    {:bottom true}
-            :options   {:topBar {:visible false}
+            :options   {:topBar             {:visible false}
                         :popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
                                              :popStackOnPress     false}}
             :component keycard.onboarding/recovery-phrase-confirm-word}
            {:name      :keycard-onboarding-recovery-phrase-confirm-word2
             :insets    {:bottom true}
-            :options   {:topBar {:visible false}
+            :options   {:topBar             {:visible false}
                         :popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
                                              :popStackOnPress     false}}
@@ -722,14 +726,14 @@
             :component keycard.recovery/intro}
            {:name      :keycard-recovery-success
             :insets    {:bottom true}
-            :options   {:topBar {:visible false}
+            :options   {:topBar             {:visible false}
                         :popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
                                              :popStackOnPress     false}}
             :component keycard.recovery/success}
            {:name      :keycard-recovery-no-key
             :insets    {:bottom true}
-            :options   {:topBar {:visible false}
+            :options   {:topBar             {:visible false}
                         :popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
                                              :popStackOnPress     false}}
@@ -752,11 +756,11 @@
             :component keycard/unpaired}
            {:name      :keycard-settings
             :insets    {:bottom true}
-            :options {:topBar {:title {:text (i18n/label :t/status-keycard)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/status-keycard)}}}
             :component keycard.settings/keycard-settings}
            {:name      :reset-card
             :insets    {:bottom true}
-            :options {:topBar {:title {:text (i18n/label :t/reset-card)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/reset-card)}}}
             :component keycard.settings/reset-card}
            {:name      :keycard-pin
             :insets    {:bottom true}

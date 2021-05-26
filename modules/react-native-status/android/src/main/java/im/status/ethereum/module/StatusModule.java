@@ -1481,5 +1481,23 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         });
     }
+
+    @ReactMethod
+    public void reEncryptDbAndKeyStore(final String keyUID, final String password, final String newPassword, final Callback callback) {
+        Log.d(TAG, "reEncryptDbAndKeyStore");
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+		// changes db password and re-encrypts keystore
+                String result = Statusgo.changeDatabasePassword(keyUID, password, newPassword);
+                callback.invoke(result);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+
 }
 

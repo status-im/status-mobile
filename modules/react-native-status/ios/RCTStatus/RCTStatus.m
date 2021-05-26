@@ -583,11 +583,24 @@ RCT_EXPORT_METHOD(verify:(NSString *)address
 #endif
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-                     lastObject];
+		      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
+		      lastObject];
     NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
 
     NSString *result = StatusgoVerifyAccountPassword(absKeystoreUrl.path, address, password);
+    callback(@[result]);
+}
+
+//////////////////////////////////////////////////////////////////// changeDatabasePassword
+RCT_EXPORT_METHOD(reEncryptDbAndKeystore:(NSString *)keyUID
+                  currentPassword:(NSString *)currentPassword
+                  newPassword:(NSString *)newPassword
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"reEncryptDbAndKeystore() method called");
+#endif
+    // changes password and re-encrypts keystore
+    NSString *result = StatusgoChangeDatabasePassword(keyUID, currentPassword, newPassword);
     callback(@[result]);
 }
 
