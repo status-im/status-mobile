@@ -16,8 +16,7 @@
             [status-im.utils.config :as config]
             [status-im.reloader :as reloader]
             [status-im.i18n.i18n :as i18n]
-            [status-im.notifications.local :as local]
-            ["react-native-background-fetch" :default background-fetch]
+            [status-im.wallet.background-check :as background-check]
             ["react-native" :as rn]
             ["react-native-languages" :default react-native-languages]
             ["react-native-shake" :as react-native-shake]))
@@ -55,32 +54,11 @@
   (when debug?
     (persist-state! state)))
 
-(defn on-event [task-id]
-  (local/local-push-ios
-   {:title "ON EVENT"
-    :message (str task-id)})
-  (.finish ^js background-fetch task-id))
-
-(defn on-timeout [task-id]
-  (local/local-push-ios
-   {:title "ON TIMEOUT"
-    :message (str task-id)})
-  (.finish ^js background-fetch task-id))
-
 (defn root [_]
   (reagent/create-class
    {:component-did-mount
     (fn [_]
-      (.catch
-       (.then
-        (.configure ^js background-fetch
-                    #js {:minimumFetchInterval 20}
-                    on-event
-                    on-timeout)
-        (fn [status]
-          (local/local-push-ios
-           {:title   "START FETCHING"
-            :message (str status)}))))
+      (background-check/start-background-fetch)
       (.addEventListener ^js react/app-state "change" app-state-change-handler)
       (.addEventListener react-native-languages "change" on-languages-change)
       (.addEventListener react-native-shake "ShakeEvent" on-shake)
