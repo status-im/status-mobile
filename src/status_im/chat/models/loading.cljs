@@ -47,7 +47,9 @@
 (fx/defn handle-mark-all-read-successful
   {:events [::mark-all-read-successful]}
   [{:keys [db]} chat-id]
-  {:db (assoc-in db [:chats chat-id :unviewed-messages-count] 0)})
+  {:db (update-in db [:chats chat-id] assoc
+                  :unviewed-messages-count 0
+                  :unviewed-mentions-count 0)})
 
 (fx/defn handle-mark-all-read
   {:events [:chat.ui/mark-all-read-pressed :chat/mark-all-as-read]}

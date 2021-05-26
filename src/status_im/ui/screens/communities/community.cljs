@@ -124,7 +124,9 @@
 
 (defn community-chat-item [{:keys [chat-id] :as home-item}]
   [inner-item/home-list-item
-   home-item
+   ;; We want communities to behave as public chats when it comes to
+   ;; unread indicator
+   (assoc home-item :public? true)
    {:on-press      (fn []
                      (re-frame/dispatch [:dismiss-keyboard])
                      (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])

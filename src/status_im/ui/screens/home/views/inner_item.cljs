@@ -115,12 +115,20 @@
    (fn [timestamp]
      (string/upper-case (time/to-short-str timestamp)))))
 
-(defn unviewed-indicator [{:keys [unviewed-messages-count public?]}]
+(defn unviewed-indicator [{:keys [unviewed-mentions-count
+                                  unviewed-messages-count
+                                  public?]}]
   (when (pos? unviewed-messages-count)
     [react/view {:position :absolute :right 16 :bottom 12}
-     (if public?
+     (cond
+       (and public? (not (pos? unviewed-mentions-count)))
        [react/view {:style               styles/public-unread
                     :accessibility-label :unviewed-messages-public}]
+
+       (and public? (pos? unviewed-mentions-count))
+       [badge/message-counter unviewed-mentions-count]
+
+       :else
        [badge/message-counter unviewed-messages-count])]))
 
 (defn icon-style []

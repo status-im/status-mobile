@@ -6,16 +6,6 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
-(defn type->rpc [{:keys [chat-type public? group-chat profile-public-key timeline?] :as chat}]
-  (if chat-type
-    (assoc chat :chatType chat-type)
-    (assoc chat :chatType (cond
-                            profile-public-key constants/profile-chat-type
-                            timeline? constants/timeline-chat-type
-                            public? constants/public-chat-type
-                            group-chat constants/private-group-chat-type
-                            :else constants/one-to-one-chat-type))))
-
 (defn rpc->type [{:keys [chatType name] :as chat}]
   (cond
     (or (= constants/public-chat-type chatType)
@@ -33,15 +23,6 @@
                                                           :public? false
                                                           :group-chat true)
     :else (assoc chat :public? false :group-chat false)))
-
-(defn- marshal-members [{:keys [admins contacts members-joined chat-type] :as chat}]
-  (cond-> chat
-    (= chat-type constants/private-group-chat-type)
-    (assoc :members (map #(hash-map :id %
-                                    :admin (boolean (admins %))
-                                    :joined (boolean (members-joined %))) contacts))
-    :always
-    (dissoc :admins :contacts :members-joined)))
 
 (defn- unmarshal-members [{:keys [members chatType] :as chat}]
   (cond
@@ -68,26 +49,6 @@
            :admins #{}
            :members-joined #{})))
 
-(defn- ->rpc [chat]
-  (-> chat
-      marshal-members
-      (update :last-message messages/->rpc)
-      type->rpc
-      (clojure.set/rename-keys {:chat-id :id
-                                :membership-update-events :membershipUpdateEvents
-                                :synced-from :syncedFrom
-                                :synced-to :syncedTo
-                                :unviewed-messages-count :unviewedMessagesCount
-                                :last-message :lastMessage
-                                :community-id :communityId
-                                :deleted-at-clock-value :deletedAtClockValue
-                                :is-active :active
-                                :last-clock-value :lastClockValue
-                                :profile-public-key :profile})
-      (dissoc :public? :group-chat :messages
-              :chat-type
-              :contacts :admins :members-joined)))
-
 (defn <-rpc [chat]
   (-> chat
       rpc->type
@@ -100,6 +61,7 @@
                                 :deletedAtClockValue :deleted-at-clock-value
                                 :chatType :chat-type
                                 :unviewedMessagesCount :unviewed-messages-count
+                                :unviewedMentionsCount :unviewed-mentions-count
                                 :lastMessage :last-message
                                 :active :is-active
                                 :lastClockValue :last-clock-value

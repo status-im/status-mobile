@@ -12,6 +12,7 @@
    public-key
    {:keys [chat-id
            unviewed-messages-count
+           unviewed-mentions-count
            last-message]}]
   (let [removed-messages-ids (keep
                               (fn [[message-id {:keys [from]}]]
@@ -25,6 +26,7 @@
                (update-in [:chats chat-id]
                           assoc
                           :unviewed-messages-count unviewed-messages-count
+                          :unviewed-mentions-count unviewed-mentions-count
                           :last-message last-message))]
     {:db (assoc-in db [:message-lists chat-id]
                    (message-list/add-many nil (vals (get-in db [:messages chat-id]))))}))

@@ -49,8 +49,10 @@
                   (process-next response-js sync-handler)
                   (models.chat/ensure-chats (map #(-> %
                                                       (data-store.chats/<-rpc)
-                                                      ;;TODO why here?
-                                                      (dissoc :unviewed-messages-count))
+                                                      ;; We dissoc this fields as they are handled by status-react and
+                                                      ;; not status-go, as there might be requests in-flight that change
+                                                      ;; this value
+                                                      (dissoc :unviewed-messages-count :unviewed-mentions-count))
                                                  (types/js->clj chats)))))
 
       (seq messages)
@@ -118,9 +120,15 @@
   (let [chat-id (.-localChatId message-js)
         message-type (.-messageType message-js)
         from (.-from message-js)
+        mentioned (.-mentioned message-js)
+        profile (models.chat/profile-chat? {:db db} chat-id)
         new (.-new message-js)
         current (= current-chat-id chat-id)
-        profile (models.chat/profile-chat? {:db db} chat-id)
+        should-update-unviewed? (and (not current)
+                                     new
+                                     (not profile)
+                                     (not (= message-type constants/message-type-private-group-system-message))
+                                     (not (= from (multiaccounts.model/current-public-key {:db db}))))
         tx-hash (and (.-commandParameters message-js) (.-commandParameters.transactionHash message-js))]
     (cond-> acc
       current
@@ -130,12 +138,12 @@
       (update :statuses conj message-js)
 
       ;;update counter
-      (and (not current)
-           new
-           (not profile)
-           (not (= message-type constants/message-type-private-group-system-message))
-           (not (= from (multiaccounts.model/current-public-key {:db db}))))
+      should-update-unviewed?
       (update-in [:db :chats chat-id :unviewed-messages-count] inc)
+
+      (and should-update-unviewed?
+           mentioned)
+      (update-in [:db :chats chat-id :unviewed-mentions-count] inc)
 
       ;;conj incoming transaction for :watch-tx
       (not (string/blank? tx-hash))

@@ -10,6 +10,9 @@
   [{:keys [db]} {:keys [chat-id _]}]
   (let [{:keys [loaded-unviewed-messages-ids unviewed-messages-count]}
         (get-in db [:chats chat-id])]
+    ;; We currently only use this for private group chats and one-to-ones
+    ;; but this method would have to be changed if we showed unviewed-mentions-count
+    ;; in one to ones and private group chats as well
     {:db (update-in db [:chats chat-id] assoc
                     :unviewed-messages-count (subtract-seen-messages
                                               unviewed-messages-count

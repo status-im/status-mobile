@@ -143,6 +143,7 @@
                         (update-in [:chats chat-id] merge
                                    {:last-message              nil
                                     :unviewed-messages-count   0
+                                    :unviewed-mentions-count   0
                                     :deleted-at-clock-value    last-message-clock-value}))}))
 
 (fx/defn clear-history-handler

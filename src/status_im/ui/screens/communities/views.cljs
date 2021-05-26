@@ -11,6 +11,7 @@
    [status-im.ui.components.topbar :as topbar]
    [status-im.ui.components.colors :as colors]
    [status-im.ui.components.toolbar :as toolbar]
+   [status-im.ui.components.badge :as badge]
    [status-im.ui.components.react :as react]
    [status-im.ui.screens.communities.icon :as communities.icon]
    [quo.design-system.colors :as quo.colors]))
@@ -20,14 +21,19 @@
   (>evt event))
 
 (defn community-unviewed-count [id]
-  (when-not (zero? (<sub [:communities/unviewed-count id]))
-    [react/view {:style               {:background-color colors/blue
-                                       :border-radius    6
-                                       :margin-right     5
-                                       :margin-top       2
-                                       :width            12
-                                       :height           12}
-                 :accessibility-label :unviewed-messages-public}]))
+  (let [{:keys [unviewed-messages-count unviewed-mentions-count]} (<sub [:communities/unviewed-counts id])]
+    (cond
+      (pos? unviewed-mentions-count)
+      [badge/message-counter unviewed-mentions-count]
+
+      (pos? unviewed-messages-count)
+      [react/view {:style               {:background-color colors/blue
+                                         :border-radius    6
+                                         :margin-right     5
+                                         :margin-top       2
+                                         :width            12
+                                         :height           12}
+                   :accessibility-label :unviewed-messages-public}])))
 
 (defn community-home-list-item [{:keys [id name last?] :as community}]
   [react/touchable-opacity {:style    (merge {:height 64}
@@ -56,6 +62,7 @@
        name]]
      [react/view {:flex-direction  :row
                   :flex            1
+                  :margin-right    15
                   :justify-content :flex-end
                   :align-items     :center}
       [community-unviewed-count id]]]]])
