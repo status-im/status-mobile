@@ -1,11 +1,15 @@
 (ns status-im.data-store.settings
-  (:require [status-im.ethereum.eip55 :as eip55]))
+  (:require
+   [status-im.utils.config :as config]
+   [status-im.ethereum.eip55 :as eip55]))
 
 (defn rpc->networks [networks]
   (reduce (fn [acc {:keys [id] :as network}]
             (assoc acc id network))
           {}
-          networks))
+          (if (seq networks)
+            networks
+            config/default-networks)))
 
 (defn rpc->visible-tokens [visible-tokens]
   (reduce-kv (fn [acc chain visible-tokens]
@@ -36,6 +40,9 @@
       (update :dapps-address eip55/address->checksum)
       (update :address eip55/address->checksum)
       (update :networks/networks rpc->networks)
+      (update :networks/current-network #(if (seq %)
+                                           %
+                                           config/default-network))
       (update :wallet/visible-tokens rpc->visible-tokens)
       (update :pinned-mailservers rpc->pinned-mailservers)
       (update :stickers/packs-installed rpc->stickers-packs)
