@@ -1594,5 +1594,6 @@
     "wc-dispute": "Dispute resolution provisions",
     "status-is-open-source": "Status is open-source",
     "build-yourself": "To use the app without these Terms of Service, you can build your own version",
-    "accept-and-continue": "Accept and continue"
+    "accept-and-continue": "Accept and continue",
+    "empty-activity-center": "Your chat notifications\nwill appear here"
 }

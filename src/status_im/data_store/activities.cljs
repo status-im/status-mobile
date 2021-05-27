@@ -6,16 +6,24 @@
 
 (defn rpc->type [{:keys [type name] :as chat}]
   (cond
-    (= 2 type) (assoc chat
-                      :chat-type constants/private-group-chat-type
-                      :chat-name name
-                      :public? false
-                      :group-chat true)
-    (= 1 type) (assoc chat
-                      :chat-type constants/one-to-one-chat-type
-                      :chat-name name
-                      :public? false
-                      :group-chat false)))
+    (= constants/activity-center-notification-type-mention type)
+    (assoc chat
+           :chat-type constants/private-group-chat-type
+           :chat-name name)
+
+    (= constants/activity-center-notification-type-private-group-chat type)
+    (assoc chat
+           :chat-type constants/private-group-chat-type
+           :chat-name name
+           :public? false
+           :group-chat true)
+
+    (= constants/activity-center-notification-type-one-to-one-chat type)
+    (assoc chat
+           :chat-type constants/one-to-one-chat-type
+           :chat-name name
+           :public? false
+           :group-chat false)))
 
 (defn <-rpc [item]
   (-> item
@@ -24,4 +32,5 @@
                                 :chatId      :chat-id})
       (assoc :color (rand-nth colors/chat-colors))
       (update :last-message #(when % (messages/<-rpc %)))
+      (update :message #(when % (messages/<-rpc %)))
       (dissoc :chatId)))

@@ -1681,6 +1681,26 @@
        (filter (partial filter-recipient-favs
                         (string/lower-case search-filter))
                favs)))))
+
+;;ACTIVITY CENTER NOTIFICATIONS ========================================================================================
+
+(defn- group-notifications-by-date
+  [notifications]
+  (->> notifications
+       (group-by #(datetime/timestamp->date-key (:timestamp %)))
+       (sort-by key >)
+       (map (fn [[date-key notifications]]
+              (let [first-notification (first notifications)]
+                {:title (clojure.string/capitalize (datetime/day-relative (:timestamp first-notification)))
+                 :key   date-key
+                 :data  (sort-by :timestamp > notifications)})))))
+
+(re-frame/reg-sub
+ :activity.center/notifications-grouped-by-date
+ :<- [:activity.center/notifications]
+ (fn [{:keys [notifications]}]
+   (group-notifications-by-date (map #(assoc % :timestamp (or (:timestamp %) (:timestamp (or (:message %) (:last-message %))))) notifications))))
+
 ;;WALLET TRANSACTIONS ==================================================================================================
 
 (re-frame/reg-sub
