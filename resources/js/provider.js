@@ -83,7 +83,10 @@
                     qrCodeResponse(data, callback);
                 } else if (data.isAllowed) {
                     if (data.permission == 'web3') {
-                        window.statusAppcurrentAccountAddress = data.data[0];
+                        var selectedAddress = data.data[0]
+                        window.statusAppcurrentAccountAddress = selectedAddress;
+                        // Set deprecated metamask fields
+                        window.ethereum.selectedAddress = selectedAddress;
                         window.ethereum.emit("accountsChanged", data.data);
                     }
                     callback.resolve(data.data);
@@ -152,6 +155,9 @@
     EthereumProvider.prototype.isStatus = true;
     EthereumProvider.prototype.status = new StatusAPI();
     EthereumProvider.prototype.isConnected = function () { return true; };
+    // Set legacy metamask fields https://docs.metamask.io/guide/ethereum-provider.html#legacy-api
+    EthereumProvider.prototype.networkVersion = window.statusAppNetworkId;
+    EthereumProvider.prototype.chainId = "0x" + window.statusAppNetworkId.toString(16);
 
     EthereumProvider.prototype._events = {};
 
