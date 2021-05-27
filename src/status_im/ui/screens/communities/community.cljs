@@ -131,7 +131,8 @@
                      (re-frame/dispatch [:pop-to-root-tab :chat-stack])
                      (re-frame/dispatch [:dismiss-keyboard])
                      (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
-                     (re-frame/dispatch [:search/home-filter-changed nil]))
+                     (re-frame/dispatch [:search/home-filter-changed nil])
+                     (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
     :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                         {:content (fn []
                                                     [sheets/actions home-item])}])}])

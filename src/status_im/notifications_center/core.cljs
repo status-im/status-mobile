@@ -6,12 +6,15 @@
             [status-im.data-store.activities :as data-store.activities]))
 
 (fx/defn handle-activities [{:keys [db]} activities]
-  (if (= (:view-id db) :notifications-center)
-    {:db (-> db
-             (update-in [:activity.center/notifications :notifications] #(concat activities %)))
-     :dispatch [:mark-all-activity-center-notifications-as-read]}
-    {:db (-> db
-             (update :activity.center/notifications-count + (count activities)))}))
+  {:db (-> db
+           (update-in [:activity.center/notifications :notifications] #(concat activities %))
+           (update :activity.center/notifications-count + (count activities)))
+   :dispatch (cond
+               (= (:view-id db) :notifications-center)
+               [:mark-all-activity-center-notifications-as-read]
+
+               (= (:view-id db) :chat)
+               [:accept-all-activity-center-notifications-from-chat (:current-chat-id db)])})
 
 (fx/defn get-activity-center-notifications-count
   {:events [:get-activity-center-notifications-count]}
@@ -46,6 +49,22 @@
                      :js-response true
                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
                      :on-error   #()}]})
+
+(fx/defn accept-all-activity-center-notifications-from-chat
+  {:events [:accept-all-activity-center-notifications-from-chat]}
+  [{:keys [db]} chat-id]
+  (let [notifications (get-in db [:activity.center/notifications :notifications])
+        notifications-from-chat (filter #(= chat-id (:chat-id %)) notifications)
+        ids (map :id notifications-from-chat)]
+    {:db (-> db
+             (update-in [:activity.center/notifications :notifications]
+                        (fn [items] (remove #(get ids (:id %)) items)))
+             (update :activity.center/notifications-count - (count ids)))
+     ::json-rpc/call [{:method     (json-rpc/call-ext-method "acceptActivityCenterNotifications")
+                       :params     [ids]
+                       :js-response true
+                       :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                       :on-error   #()}]}))
 
 (fx/defn accept-activity-center-notification-and-open-chat
   {:events [:accept-activity-center-notification-and-open-chat]}
@@ -134,7 +153,3 @@
                       concat
                       (map data-store.activities/<-rpc notifications)))})
 
-(fx/defn close-center
-  {:events [:close-notifications-center]}
-  [cofx]
-  (clean-notifications cofx))

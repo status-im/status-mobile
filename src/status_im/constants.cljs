@@ -151,3 +151,7 @@
 (def ^:const privacy-policy-link "https://status.im/privacy-policy/")
 (def ^:const terms-of-service-link "https://status.im/terms-of-use")
 (def ^:const docs-link "https://status.im/docs/")
+
+(def ^:const activity-center-notification-type-one-to-one-chat 1)
+(def ^:const activity-center-notification-type-private-group-chat 2)
+(def ^:const activity-center-notification-type-mention 3)

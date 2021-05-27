@@ -3,39 +3,39 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.screens.home.views.inner-item :as inner-item]
             [re-frame.core :as re-frame]
             [quo.core :as quo]
             [status-im.ui.components.colors :as colors]
             [reagent.core :as reagent]
             [status-im.ui.components.toolbar :as toolbar]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.constants :as constants]
+            [status-im.ui.screens.notifications-center.views.notification :as notification]))
 
 (def selecting (reagent/atom nil))
 (def select-all (reagent/atom nil))
 (def selected-items (reagent/atom #{}))
 
-(defn render-fn [{:keys [id] :as home-item}]
+(defn render-fn [{:keys [id type] :as home-item}]
   (when id
     (let [selected (get @selected-items id)
           on-change (fn []
-                      (swap! selected-items #(if selected (disj % id) (conj % id))))]
+                      (when-not (= type constants/activity-center-notification-type-mention) (swap! selected-items #(if selected (disj % id) (conj % id)))))]
       [react/view {:flex-direction :row :flex 1 :align-items :center}
-       (when @selecting
+       (when (and @selecting (not (= type constants/activity-center-notification-type-mention)))
          [react/view {:padding-left 16}
           [quo/checkbox {:value     (or @select-all selected)
                          :disabled  @select-all
                          :on-change on-change}]])
        [react/view {:flex 1}
-        [inner-item/home-list-item
+        [notification/activity-text-item
          home-item
          {:on-press      (fn []
                            (if @selecting
                              (on-change)
                              (re-frame/dispatch [:accept-activity-center-notification-and-open-chat id])))
           :on-long-press #(do (reset! selecting true)
-                              (swap! selected-items conj id))}]]])))
-
+                              (when-not (= type constants/activity-center-notification-type-mention) (swap! selected-items conj id)))}]]])))
 (defn filter-item []
   [react/view {:padding-vertical 8 :border-bottom-width 1 :border-bottom-color colors/gray-lighter}
    [react/view {:align-items :center :justify-content :space-between :padding-horizontal 16 :flex-direction :row}
@@ -79,30 +79,42 @@
    {:display-name "activity-center"
     :component-did-mount #(re-frame/dispatch [:get-activity-center-notifications])
     :reagent-render (fn []
-                      (let [{:keys [notifications]} @(re-frame/subscribe [:activity.center/notifications])]
+                      (let [notifications @(re-frame/subscribe [:activity.center/notifications-grouped-by-date])]
                         [react/keyboard-avoiding-view {:style {:flex 1}
                                                        :ignore-offset true}
                          [topbar/topbar {:navigation {:on-press #(do
                                                                    (reset-state)
-                                                                   (re-frame/dispatch [:close-notifications-center])
                                                                    (re-frame/dispatch [:navigate-back]))}
                                          :title      (i18n/label :t/activity)}]
-                         [filter-item]
-                         [list/flat-list
-                          {:key-fn                       #(or (:chat-id %) (:id %))
-                           :on-end-reached               #(re-frame/dispatch [:load-more-activity-center-notifications])
-                           :keyboard-should-persist-taps :always
-                           :data                         notifications
-                           :render-fn                    render-fn}]
-                         (when (or @select-all (> (count @selected-items) 0))
-                           [toolbar/toolbar
-                            {:show-border? true
-                             :left         [quo/button {:type     :secondary
-                                                        :theme    :negative
-                                                        :accessibility-label :reject-and-delete-activity-center
-                                                        :on-press #(toolbar-action false)}
-                                            (i18n/label :t/reject-and-delete)]
-                             :right        [quo/button {:type     :secondary
-                                                        :accessibility-label :accept-and-add-activity-center
-                                                        :on-press #(toolbar-action true)}
-                                            (i18n/label :t/accept-and-add)]}])]))}))
+                         (if (= (count notifications) 0)
+                           [react/view {:style {:flex 1
+                                                :justify-content :center
+                                                :align-items :center}}
+                            [quo/text {:color :secondary
+                                       :size :large
+                                       :align :center}
+                             (i18n/label :t/empty-activity-center)]]
+                           [:<>
+                            [filter-item]
+                            [list/section-list
+                             {:key-fn                       #(str (:timestamp %) (or (:chat-id %) (:id %)))
+                              :on-end-reached               #(re-frame/dispatch [:load-more-activity-center-notifications])
+                              :keyboard-should-persist-taps :always
+                              :sections                     notifications
+                              :render-fn                    render-fn
+                              :stickySectionHeadersEnabled false
+                              :render-section-header-fn
+                              (fn [{:keys [title]}]
+                                [quo/list-header title])}]
+                            (when (or @select-all (> (count @selected-items) 0))
+                              [toolbar/toolbar
+                               {:show-border? true
+                                :left         [quo/button {:type     :secondary
+                                                           :theme    :negative
+                                                           :accessibility-label :reject-and-delete-activity-center
+                                                           :on-press #(toolbar-action false)}
+                                               (i18n/label :t/reject-and-delete)]
+                                :right        [quo/button {:type     :secondary
+                                                           :accessibility-label :accept-and-add-activity-center
+                                                           :on-press #(toolbar-action true)}
+                                               (i18n/label :t/accept-and-add)]}])])]))}))
