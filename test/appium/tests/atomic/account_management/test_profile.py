@@ -1131,9 +1131,11 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             if not element.is_element_displayed():
                 self.errors.append('Was not redirected to user profile after tapping on mention!')
 
-        home_1.just_fyi('check that PN is received and after tap you are redirected to public chat')
+        home_1.just_fyi('check that PN is received and after tap you are redirected to public chat, mention is highligted')
         home_1.open_notification_bar()
         home_1.element_by_text_part(username_2).click()
+        if home_1.element_starts_with_text(user_1['ens'] +'.stateofus.eth').is_element_differs_from_template('mentioned.png', 2):
+            self.errors.append('Mention is not highlighted!')
         chat_1.element_starts_with_text(user_1['ens'] +'.stateofus.eth','button').click()
         if not profile_1.contacts_button.is_element_displayed():
                 self.errors.append('Was not redirected to own profile after tapping on mention of myself from another user!')

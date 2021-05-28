@@ -1,16 +1,17 @@
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
-from tests.users import transaction_senders, basic_user
+from tests.users import transaction_senders, ens_user
 from views.sign_in_view import SignInView
 from views.chat_view import ChatView
 from time import sleep
+import random, emoji
 
 
 class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(3994)
     @marks.high
-    def test_create_new_group_chat_messaging_pn_delived(self):
+    def test_create_new_group_chat_messaging_pn_delivered(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         device_1_home, device_2_home = device_1.create_user(), device_2.create_user(enable_notifications=True)
@@ -404,6 +405,117 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_2.just_fyi('Check that you can navigate to renamed chat')
         device_2_chat.back_button.click()
         device_2_home.get_chat(new_chat_name).click()
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6327)
+    @marks.medium
+    def test_nicknames_ens_group_chats(self):
+        self.create_drivers(2)
+        home_1 = SignInView(self.drivers[0]).create_user()
+        home_2 = SignInView(self.drivers[1]).recover_access(ens_user['passphrase'])
+        profile_1, profile_2 = [home.profile_button.click() for home in (home_1, home_2)]
+        key_1, username_1 = profile_1.get_public_key_and_username(return_username=True)
+        ens, full_ens, username_2 = ens_user['ens'], '@%s' % ens_user['ens'], ens_user['username']
+        [profile.switch_network() for profile in (profile_1, profile_2)]
+
+        home_2.just_fyi('Set ENS')
+        profile_2 = home_2.profile_button.click()
+        dapp_view = profile_2.ens_usernames_button.click()
+        dapp_view.element_by_text('Get started').click()
+        dapp_view.ens_name_input.set_value(ens)
+        dapp_view.check_ens_name.click_until_presence_of_element(dapp_view.element_by_translation_id("ens-got-it"))
+        dapp_view.element_by_translation_id("ens-got-it").click()
+        home_2.home_button.click()
+
+        home_1.just_fyi('Set nickname, using emojis, special chars and cyrrilic chars without adding to contact')
+        emoji_message = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_message]
+        special_char, cyrrilic = '"£¢€¥~`•|√π¶∆×°™®©%$@', 'стат'
+        nickname_to_set = emoji.emojize(emoji_message) + special_char + cyrrilic
+        nickname_expected = emoji_unicode + special_char + cyrrilic
+        chat_1 = home_1.add_contact(ens, add_in_contacts=False, nickname=nickname_to_set)
+        if chat_1.user_name_text.text != nickname_expected:
+            self.errors.append('Expected special char nickname %s does not match actual %s' % (nickname_expected, chat_1.user_name_text.text))
+
+        home_1.just_fyi('Can remove nickname without adding to contact')
+        chat_1.chat_options.click()
+        chat_1.view_profile_button.click()
+        chat_1.profile_nickname_button.click()
+        chat_1.nickname_input_field.clear()
+        chat_1.element_by_text('Done').click()
+        chat_1.back_button.click()
+        if chat_1.user_name_text.text != full_ens:
+            self.errors.append('Nickname was not removed! real chat name is %s instead of %s' % (chat_1.user_name_text.text, full_ens))
+
+        home_1.just_fyi('Adding ENS user to contacts and start group chat with him')
+        group_name = 'ens_group'
+        chat_1.add_to_contacts.click()
+        chat_2 = home_2.add_contact(key_1)
+        chat_2.send_message("first")
+        chat_2.home_button.click()
+        chat_1.home_button.click()
+        chat_1 = home_1.create_group_chat([full_ens], group_name)
+        chat_2 = home_2.get_chat(group_name).click()
+        chat_2.join_chat_button.click()
+
+        home_1.just_fyi('Check ENS and in group chat and suggestions list')
+        chat_1.element_by_text_part(full_ens).wait_for_visibility_of_element(60)
+        chat_1.select_mention_from_suggestion_list(ens, typed_search_pattern=ens[:2])
+        if chat_1.chat_message_input.text != '@' + ens + ' ':
+            self.errors.append(
+                'ENS username is not resolved in chat input after selecting it in mention suggestions list!')
+        additional_text = 'and more'
+        chat_1.send_as_keyevent(additional_text)
+        chat_1.send_message_button.click()
+        message_text = '%s %s' % (full_ens, additional_text)
+        if not chat_1.chat_element_by_text(message_text).is_element_displayed():
+            self.errors.append("ENS name is not resolved on sent message")
+        chat_1 = home_1.get_chat_view()
+
+        home_1.just_fyi('Set nickname via group info and check that can mention by nickname /username in group chat')
+        nickname = 'funny_bunny'
+        device_2_options = chat_1.get_user_options(full_ens)
+        device_2_options.view_profile_button.click()
+        chat_1.set_nickname(nickname)
+        if not chat_1.element_by_text(nickname).is_element_displayed():
+            self.errors.append('Nickname is not shown in profile view after setting from froup info')
+        chat_1.back_button.click()
+        if not chat_1.element_by_text(nickname).is_element_displayed():
+            self.errors.append('Nickname is not shown in group info view after setting from froup info')
+        chat_1.back_button.click()
+        message_text = '%s %s' % (nickname, additional_text)
+        if not chat_1.chat_element_by_text(message_text).is_element_displayed():
+            self.errors.append("ENS name was not replaced with nickname on sent message")
+        chat_1.chat_message_input.send_keys('@')
+        if not chat_1.element_by_text('%s %s' %(nickname, full_ens)).is_element_displayed():
+            self.errors.append("ENS name with nickname is not shown in mention input after set")
+        if not chat_1.element_by_text(username_2).is_element_displayed():
+            self.errors.append("3-random name is not shown in mention input after set from group info")
+        chat_1.chat_message_input.clear()
+        chat_1.select_mention_from_suggestion_list('%s %s' %(nickname, full_ens), typed_search_pattern=username_2[:2])
+        if chat_1.chat_message_input.text != '@' + ens + ' ':
+            self.errors.append('ENS is not resolved in chat input after setting nickname in mention suggestions list (search by 3-random name)!')
+        chat_1.chat_message_input.clear()
+        chat_1.select_mention_from_suggestion_list('%s %s' % (nickname, full_ens), typed_search_pattern=nickname[:2])
+        if chat_1.chat_message_input.text != '@' + ens + ' ':
+            self.errors.append('ENS is not resolved in chat input after setting nickname in mention suggestions list (search by nickname)!')
+        chat_1.chat_message_input.clear()
+
+        home_1.just_fyi('Can delete nickname via group info and recheck received messages')
+        device_2_options = chat_1.get_user_options(full_ens)
+        device_2_options.view_profile_button.click()
+        chat_1.profile_nickname_button.click()
+        chat_1.nickname_input_field.clear()
+        chat_1.element_by_text('Done').click()
+        chat_1.back_button.click()
+        chat_1.back_button.click()
+        message_text = '%s %s' % (full_ens, additional_text)
+        if not chat_1.chat_element_by_text(message_text).is_element_displayed():
+            self.errors.append("ENS name is not resolved on sent message after removing nickname")
+        chat_1.chat_message_input.send_keys('@')
+        if chat_1.element_by_text_part(nickname).is_element_displayed():
+            self.errors.append("Nickname is shown in group chat after removing!")
 
         self.errors.verify_no_errors()
 

@@ -1,4 +1,6 @@
 import time
+import random
+import emoji
 
 from tests import marks
 from tests.users import basic_user, dummy_user, ens_user_ropsten, ens_user, ens_user_message_sender
@@ -836,6 +838,26 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         public_replied_message = chat_public_1.chat_element_by_text(message_from_receiver)
         if public_replied_message.replied_message_text != message_from_sender:
             self.errors.append("Reply is not present in message received in public chat")
+
+        device_1.just_fyi('Can reply to link')
+        link_message, reply = 'Test with link: https://status.im/', 'reply to link'
+        chat_public_1.send_message(link_message)
+        chat_public_2.quote_message(link_message[:10])
+        chat_public_2.send_message(reply)
+        public_replied_message = chat_public_1.chat_element_by_text(reply)
+        if public_replied_message.replied_message_text != link_message:
+            self.errors.append("Reply for '%s' not present in message received in public chat" % link_message)
+
+        device_1.just_fyi('Can reply to emoji message')
+        reply = 'reply to emoji'
+        emoji_message = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_message]
+        chat_public_1.send_message(emoji.emojize(emoji_message))
+        chat_public_2.quote_message(emoji.emojize(emoji_message))
+        chat_public_2.send_message(reply)
+        public_replied_message = chat_public_1.chat_element_by_text(reply)
+        if public_replied_message.replied_message_text != emoji_unicode:
+            self.errors.append("Reply for '%s' emoji not present in message received in public chat" % emoji_unicode)
 
         self.errors.verify_no_errors()
 

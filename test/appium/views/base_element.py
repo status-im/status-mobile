@@ -4,7 +4,7 @@ import os
 import time
 from timeit import timeit
 
-from PIL import Image, ImageChops
+from PIL import Image, ImageChops, ImageStat
 from appium.webdriver.common.mobileby import MobileBy
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
@@ -205,10 +205,22 @@ class BaseElement(object):
         screen = Image.open(BytesIO(base64.b64decode(self.find_element().screenshot_as_base64)))
         screen.save(full_path_to_file)
 
-    def is_element_image_equals_template(self, file_name: str = ''):
+    def is_element_image_equals_template(self, file_name: str = '',  diff: int = 0):
         if file_name:
             self.template = file_name
         return not ImageChops.difference(self.image, self.template).getbbox()
+
+    def is_element_differs_from_template(self, file_name: str = '', diff: int = 0):
+        if file_name:
+            self.template = file_name
+        result = False
+        difference = ImageChops.difference(self.image, self.template)
+        stat = ImageStat.Stat(difference)
+        diff_ratio = sum(stat.mean) / (len(stat.mean) * 255)
+        if diff_ratio*100 >  diff:
+            self.driver.info('Image differs from template to %s percents' % str(diff_ratio*100))
+            result = True
+        return result
 
     def is_element_image_similar_to_template(self, template_path: str = ''):
         image_template = os.sep.join(__file__.split(os.sep)[:-1]) + '/elements_templates/%s' % template_path

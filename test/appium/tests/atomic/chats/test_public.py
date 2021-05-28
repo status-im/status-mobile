@@ -64,10 +64,14 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         self.create_drivers(2)
         driver_2 = self.drivers[1]
         home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
+        profile_1 = home_1.profile_button.click()
+        username_1 = profile_1.default_username_text.text
+        profile_1.home_button.click()
 
         chat_name = home_1.get_random_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
-        home_1.get_back_to_home_view()
+        chat_1.send_message('пиу')
+        chat_1.home_button.click()
         message, message_2 = 'test message', 'test message2'
         chat_2.send_message(message)
 
@@ -77,6 +81,14 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_element = home_1.get_chat('#' + chat_name)
         if not chat_element.new_messages_public_chat.is_element_displayed():
             self.errors.append('New messages counter is not shown in public chat')
+
+        home_1.just_fyi("Check unread message counter when mentioned in public chat")
+        chat_2 = home_2.get_chat_view()
+        chat_2.select_mention_from_suggestion_list(username_1, username_1[:2])
+        chat_2.send_message_button.click()
+        if chat_element.new_messages_counter.text == '1':
+            self.errors.append('Counter is not shown for mention in public chat')
+
         chat_element.click()
         home_1.home_button.double_click()
 
