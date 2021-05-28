@@ -53,7 +53,7 @@ class TestBrowsing(SingleDeviceTestCase):
     def test_open_blocked_secure_not_secure_inlalid_offline_urls(self):
         home = SignInView(self.driver).create_user()
         dapp = home.dapp_tab_button.click()
-        for url in ('metamask.site', 'https://www.cryptokitties.domainname'):
+        for url in ('metamask.site', 'cryptokitties.domainname'):
             dapp.just_fyi('Checking blocked website %s' % url)
             dapp_detail = dapp.open_url(url)
             dapp_detail.element_by_translation_id('browsing-site-blocked-title')
@@ -61,7 +61,7 @@ class TestBrowsing(SingleDeviceTestCase):
                 self.errors.append("Refresh button is present in blocked site")
             dapp_detail.go_back_button.click()
             dapp_detail.open_tabs_button.click()
-            dapp.element_by_text("Browser").click()
+            dapp.element_by_text_part(url[:8]).click()
             dapp_detail.continue_anyway_button.click()
             if dapp_detail.element_by_text('This site is blocked').is_element_displayed():
                 self.errors.append("Failed to open Dapp after 'Continue anyway' tapped for %s" % url)

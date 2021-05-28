@@ -1068,6 +1068,17 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
                 chat_1.search_user_in_mention_suggestion_list(sender['username']).is_element_displayed()):
             self.errors.append('ENS-owner user is not available in mention suggestion list of Group chat')
 
+        device_1.just_fyi('Check there is no blocked user in mentions Group/Public chat ')
+        home_1.home_button.click()
+        public_1 = home_1.join_public_chat(chat_name)
+        public_1.chat_element_by_text(message).member_photo.click()
+        public_1.block_contact()
+        public_1.chat_message_input.send_keys('@')
+        if (chat_1.search_user_in_mention_suggestion_list(ens_nickname_value).is_element_displayed() or
+                chat_1.search_user_in_mention_suggestion_list(sender['username']).is_element_displayed()):
+            self.errors.append('Blcoked user is available in mention suggestion list')
+
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(695771)
