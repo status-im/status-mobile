@@ -33,6 +33,7 @@
 
 (def wizard-title
   {:margin-bottom 16
+   :typography    :header
    :text-align    :center})
 
 (def wizard-text

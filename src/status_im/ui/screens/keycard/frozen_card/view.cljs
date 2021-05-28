@@ -43,6 +43,6 @@
     (when show-dismiss-button?
       [react/view {:margin-top 24}
        [quo/button
-        {:on-press    #(re-frame/dispatch [::login/frozen-keycard-popover-dismissed])
-         :background? false}
+        {:on-press #(re-frame/dispatch [::login/frozen-keycard-popover-dismissed])
+         :type     :secondary}
         (i18n/label :t/dismiss)]])]])

@@ -157,7 +157,7 @@
    [icon-column props]
    [title-column props]])
 
-(defn right-side [{:keys [chevron active accessory accessory-text animated-accessory?]}]
+(defn right-side [{:keys [chevron active disabled accessory accessory-text animated-accessory?]}]
   (when (or chevron accessory)
     [rn/view {:style {:align-items     :center
                       :justify-content :flex-end
@@ -171,12 +171,12 @@
                       :flex-basis      80}}
      [rn/view {:style (:tiny spacing/padding-horizontal)}
       (case accessory
-        :radio    [controls/radio {:value active}]
+        :radio    [controls/radio {:value active :disabled disabled}]
         :checkbox [(if animated-accessory?
                      controls/animated-checkbox
                      controls/checkbox)
-                   {:value active}]
-        :switch   [controls/switch {:value active}]
+                   {:value active :disabled disabled}]
+        :switch   [controls/switch {:value active :disabled disabled}]
         :text     [text/text {:color           :secondary
                               :ellipsize-mode  :middle
                               :number-of-lines 1}
@@ -250,6 +250,7 @@
                    :right-side-present?       (or accessory chevron)}]
        [right-side {:chevron             chevron
                     :active              active
+                    :disabled            disabled
                     :on-press            on-press
                     :accessory-text      accessory-text
                     :animated-accessory? animated-accessory?

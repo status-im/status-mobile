@@ -267,10 +267,10 @@
       [react/view styles/container
        [topbar/topbar
         (merge
-         {:right-accessories [(when-not hide-login-actions?
-                                {:icon     :main-icons/more
-                                 :on-press #(re-frame/dispatch [:keycard.login.pin.ui/more-icon-pressed])})]
-          :title             (cond
+         (when-not hide-login-actions?
+           {:right-accessories [{:icon     :main-icons/more
+                                 :on-press #(re-frame/dispatch [:keycard.login.pin.ui/more-icon-pressed])}]})
+         {:title             (cond
                                (#{:reset :reset-confirmation} enter-step)
                                (i18n/label :t/keycard-reset-passcode)
 
@@ -351,7 +351,9 @@
             :save-password-checkbox? (not (contains?
                                            #{:reset :reset-confirmation :puk}
                                            enter-step))}])
-        (when-not hide-login-actions?
+        (if hide-login-actions?
+          [react/view {:flex-direction :row
+                       :height         32}]
           [toolbar/toolbar
            {:center [quo/button
                      {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
