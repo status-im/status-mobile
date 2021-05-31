@@ -13,4 +13,3 @@
              {})
             (node/prepare-new-config
              {:on-success #(re-frame/dispatch [:logout])})))
-

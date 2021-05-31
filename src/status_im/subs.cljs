@@ -445,8 +445,12 @@
 (re-frame/reg-sub
  :disconnected?
  :<- [:peers-count]
- (fn [peers-count]
-   (zero? peers-count)))
+ :<- [:waku/v2-flag]
+ (fn [peers-count wakuv2-flag]
+   ;; TODO Right now wakuv2 module in status-go
+   ;; does not report peer counts properly,
+   ;; so we always assume that we're connected
+   (if wakuv2-flag false (zero? peers-count))))
 
 (re-frame/reg-sub
  :offline?
@@ -633,6 +637,12 @@
  :<- [:multiaccount]
  (fn [multiaccount]
    (boolean (get multiaccount :waku-bloom-filter-mode))))
+
+(re-frame/reg-sub
+ :waku/v2-flag
+ :<- [:fleets/current-fleet]
+ (fn [fleet]
+   (string/starts-with? (name fleet) "wakuv2")))
 
 (re-frame/reg-sub
  :dapps-address

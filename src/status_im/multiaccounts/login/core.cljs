@@ -252,6 +252,16 @@
   [cofx]
   {::initialize-communities-enabled nil})
 
+(fx/defn get-node-config-callback
+  {:events [::get-node-config-callback]}
+  [{:keys [db] :as cofx} node-config]
+  {:db (assoc-in db [:multiaccount :wakuv2-config]
+                 (get (types/json->clj node-config) :WakuV2Config))})
+
+(fx/defn get-node-config
+  [_]
+  (status/get-node-config #(re-frame/dispatch [::get-node-config-callback %])))
+
 (fx/defn get-settings-callback
   {:events [::get-settings-callback]}
   [{:keys [db] :as cofx} settings]
@@ -279,6 +289,7 @@
               (initialize-communities-enabled)
               (check-network-version network-id)
               (chat.loading/initialize-chats)
+              (get-node-config)
               (communities/fetch)
               (contact/initialize-contacts)
               (stickers/init-stickers-packs)

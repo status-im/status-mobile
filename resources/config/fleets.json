@@ -72,9 +72,9 @@
                 "boot-01.gc-us-central1-a.eth.staging": "/ip4/35.238.97.234/tcp/30703/ethv4/16Uiu2HAm6G9sDMkrB4Xa5EH3Zx2dysCxFgBTSRzghic3Z9tRFRNE"
             },
             "whisper": {
-                "node-01.ac-cn-hongkong-c.eth.staging": "enode://00395686f5954662a3796e170b9e87bbaf68a050d57e9987b78a2292502dae44aae2b8803280a017ec9af9be0b3121db9d6b3693ab3a0451a866bcbedd58fdac@47.52.226.137:443",
+                "node-01.ac-cn-hongkong-c.eth.staging": "enode://088cf5a93c576fae52f6f075178467b8ff98bacf72f59e88efb16dfba5b30f80a4db78f8e3cb3d87f2f6521746ef4a8768465ef2896c6af24fd77a425e95b6dd@47.52.226.137:443",
                 "node-01.do-ams3.eth.staging": "enode://914c0b30f27bab30c1dfd31dad7652a46fda9370542aee1b062498b1345ee0913614b8b9e3e84622e84a7203c5858ae1d9819f63aece13ee668e4f6668063989@167.99.19.148:443",
-                "node-01.gc-us-central1-a.eth.staging": "enode://2d897c6e846949f9dcf10279f00e9b8325c18fe7fa52d658520ad7be9607c83008b42b06aefd97cfe1fdab571f33a2a9383ff97c5909ed51f63300834913237e@35.192.0.86:443"
+                "node-01.gc-us-central1-a.eth.staging": "enode://d3878441652f010326889f28360e69f2d09d06540f934fada0e17b374ce5319de64279aba3c44a5bf807d9967c6d705b3b4c6b03fa70763240e2ee6af01a539e@35.192.0.86:443"
             }
         },
         "eth.test": {
@@ -98,10 +98,34 @@
                 "node-01.do-ams3.eth.test": "enode://1d193635e015918fb85bbaf774863d12f65d70c6977506187ef04420d74ec06c9e8f0dcb57ea042f85df87433dab17a1260ed8dde1bdf9d6d5d2de4b7bf8e993@206.189.243.163:443",
                 "node-01.gc-us-central1-a.eth.test": "enode://f593a27731bc0f8eb088e2d39222c2d59dfb9bf0b3950d7a828d51e8ab9e08fffbd9916a82fd993c1a080c57c2bd70ed6c36f489a969de697aff93088dbee1a9@35.194.31.108:443"
             }
+        },
+        "wakuv2.prod": {
+            "waku": {
+                "node-01.ac-cn-hongkong-c.wakuv2.prod": "/ip4/8.210.222.231/tcp/30303/p2p/16Uiu2HAm4v86W3bmT1BiH6oSPzcsSr24iDQpSN5Qa992BCjjwgrD",
+                "node-01.do-ams3.wakuv2.prod": "/ip4/188.166.135.145/tcp/30303/p2p/16Uiu2HAmL5okWopX7NqZWBUKVqW8iUxCEmd5GMHLVPwCgzYzQv3e",
+                "node-01.gc-us-central1-a.wakuv2.prod": "/ip4/34.121.100.108/tcp/30303/p2p/16Uiu2HAmVkKntsECaYfefR1V2yCR79CegLATuTPE6B9TxgxBiiiA"
+            },
+            "waku-websocket": {
+                "node-01.ac-cn-hongkong-c.wakuv2.prod": "/dns4/node-01.ac-cn-hongkong-c.wakuv2.prod.statusim.net/tcp/443/wss/p2p/16Uiu2HAm4v86W3bmT1BiH6oSPzcsSr24iDQpSN5Qa992BCjjwgrD",
+                "node-01.do-ams3.wakuv2.prod": "/dns4/node-01.do-ams3.wakuv2.prod.statusim.net/tcp/443/wss/p2p/16Uiu2HAmL5okWopX7NqZWBUKVqW8iUxCEmd5GMHLVPwCgzYzQv3e",
+                "node-01.gc-us-central1-a.wakuv2.prod": "/dns4/node-01.gc-us-central1-a.wakuv2.prod.statusim.net/tcp/443/wss/p2p/16Uiu2HAmVkKntsECaYfefR1V2yCR79CegLATuTPE6B9TxgxBiiiA"
+            }
+        },
+        "wakuv2.test": {
+            "waku": {
+                "node-01.ac-cn-hongkong-c.wakuv2.test": "/ip4/47.242.210.73/tcp/30303/p2p/16Uiu2HAkvWiyFsgRhuJEb9JfjYxEkoHLgnUQmr1N5mKWnYjxYRVm",
+                "node-01.do-ams3.wakuv2.test": "/ip4/134.209.139.210/tcp/30303/p2p/16Uiu2HAmPLe7Mzm8TsYUubgCAW1aJoeFScxrLj8ppHFivPo97bUZ",
+                "node-01.gc-us-central1-a.wakuv2.test": "/ip4/104.154.239.128/tcp/30303/p2p/16Uiu2HAmJb2e28qLXxT5kZxVUUoJt72EMzNGXB47Rxx5hw3q4YjS"
+            },
+            "waku-websocket": {
+                "node-01.ac-cn-hongkong-c.wakuv2.test": "/dns4/node-01.ac-cn-hongkong-c.wakuv2.test.statusim.net/tcp/443/wss/p2p/16Uiu2HAkvWiyFsgRhuJEb9JfjYxEkoHLgnUQmr1N5mKWnYjxYRVm",
+                "node-01.do-ams3.wakuv2.test": "/dns4/node-01.do-ams3.wakuv2.test.statusim.net/tcp/443/wss/p2p/16Uiu2HAmPLe7Mzm8TsYUubgCAW1aJoeFScxrLj8ppHFivPo97bUZ",
+                "node-01.gc-us-central1-a.wakuv2.test": "/dns4/node-01.gc-us-central1-a.wakuv2.test.statusim.net/tcp/443/wss/p2p/16Uiu2HAmJb2e28qLXxT5kZxVUUoJt72EMzNGXB47Rxx5hw3q4YjS"
+            }
         }
     },
     "meta": {
-        "hostname": "bots-01.do-ams3.eth.staging",
-        "timestamp": "2020-02-17T16:44:07.570597"
+        "hostname": "node-01.do-ams3.proxy.misc",
+        "timestamp": "2021-06-07T00:00:09.836740"
     }
 }
