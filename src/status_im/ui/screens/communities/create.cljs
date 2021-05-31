@@ -10,7 +10,6 @@
             [status-im.utils.image :as utils.image]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.communities.membership :as memberships]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.debounce :as debounce]))
 
@@ -130,7 +129,7 @@
     (str (count value) "/" max-length)]])
 
 (defn form []
-  (let [{:keys [name description membership editing?]} (<sub [:communities/create])]
+  (let [{:keys [name description]} (<sub [:communities/create])]
     [rn/scroll-view {:keyboard-should-persist-taps :handled
                      :style                   {:flex 1}
                      :content-container-style {:padding-vertical 16}}
