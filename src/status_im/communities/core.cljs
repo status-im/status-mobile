@@ -199,21 +199,18 @@
 (fx/defn create
   {:events [::create-confirmation-pressed]}
   [{:keys [db]}]
-  (let [{:keys [name description membership image]} (get db :communities/create)]
+  (let [{:keys [name description image]} (get db :communities/create)]
     ;; If access is ENS only, we set the access to require approval and set the rule
     ;; of ens only
-    (let [params (cond-> {:name name
-                          :description description
-                          :membership (or membership constants/community-no-membership-access)
-                          :color (rand-nth colors/chat-colors)
-                          :image (string/replace-first (str image) #"file://" "")
-                          :imageAx 0
-                          :imageAy 0
-                          :imageBx crop-size
-                          :imageBy crop-size}
-                   (= membership constants/community-rule-ens-only)
-                   (assoc :membership constants/community-on-request-access
-                          :ens-only true))]
+    (let [params {:name name
+                  :description description
+                  :membership constants/community-on-request-access
+                  :color (rand-nth colors/chat-colors)
+                  :image (string/replace-first (str image) #"file://" "")
+                  :imageAx 0
+                  :imageAy 0
+                  :imageBx crop-size
+                  :imageBy crop-size}]
 
       {::json-rpc/call [{:method     "wakuext_createCommunity"
                          :params     [params]

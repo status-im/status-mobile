@@ -158,17 +158,7 @@
         :on-change-text #(>evt [::communities/create-field :description %])}]]
      [quo/list-header {:color :main}
       (i18n/label :t/community-thumbnail-image)]
-     [photo-picker]
-     (when-not editing? [:<>
-                         [quo/separator {:style {:margin-vertical 10}}]
-                         [quo/list-item {:title          (i18n/label :t/membership-button)
-                                         :accessory-text (i18n/label (get-in memberships/options [membership :title] :t/membership-none))
-                                         :accessory      :text
-                                         :on-press       #(>evt [:navigate-to :community-membership])
-                                         :chevron        true
-                                         :size           :small}]
-                         [quo/list-footer
-                          (i18n/label (get-in memberships/options [membership :description] :t/membership-none-placeholder))]])]))
+     [photo-picker]]))
 
 (defn view []
   (let [{:keys [name description]} (<sub [:communities/create])]
