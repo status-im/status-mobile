@@ -975,7 +975,7 @@
        (-> message-list-seq
            (chat.db/add-datemarks)
            (hydrate-messages messages)
-           (chat.db/collapse-gaps chat-id synced-from chat-type joined loading-messages?))))))
+           (chat.db/collapse-gaps chat-id synced-from (datetime/timestamp) chat-type joined loading-messages?))))))
 
 ;;we want to keep data unchanged so react doesn't change component when we leave screen
 (def memo-chat-messages-stream (atom nil))

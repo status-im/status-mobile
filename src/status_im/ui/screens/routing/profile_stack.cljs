@@ -25,6 +25,9 @@
             [status-im.ui.screens.mobile-network-settings.view
              :as
              mobile-network-settings]
+            [status-im.ui.screens.default-sync-period-settings.view
+             :as
+             default-sync-period-settings]
             [status-im.ui.screens.network.edit-network.views :as edit-network]
             [status-im.ui.screens.network.views :as network]
             [status-im.ui.screens.network.network-details.views :as network-details]
@@ -121,6 +124,8 @@
      :component fleet-settings/fleet-settings}
     {:name      :mobile-network-settings
      :component mobile-network-settings/mobile-network-settings}
+    {:name      :default-sync-period-settings
+     :component default-sync-period-settings/default-sync-period-settings}
     {:name      :backup-seed
      :component profile.seed/backup-seed}
     {:name       :delete-profile

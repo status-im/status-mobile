@@ -130,6 +130,14 @@
    :webview-allow-permission-requests? (boolean enabled?)
    {}))
 
+(fx/defn switch-default-sync-period
+  {:events [:multiaccounts.ui/default-sync-period-switched]}
+  [cofx value]
+  (multiaccounts.update/multiaccount-update
+   cofx
+   :default-sync-period value
+   {}))
+
 (fx/defn switch-preview-privacy-mode-flag
   [{:keys [db]}]
   (let [private? (get-in db [:multiaccount :preview-privacy?])]

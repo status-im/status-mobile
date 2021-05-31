@@ -1527,6 +1527,11 @@
     "activity": "Activity",
     "reject-and-delete": "Reject and delete",
     "accept-and-add": "Accept and add",
+    "one-day": "One day",
+    "three-days": "Three days",
+    "one-week": "One week",
+    "one-month": "One month",
     "my-profile": "My profile",
+    "default-sync-period": "Sync history for",
     "bip39-password-placeholder": "BIP39 password"
 }

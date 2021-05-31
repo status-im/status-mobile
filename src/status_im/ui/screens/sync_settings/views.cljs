@@ -3,12 +3,14 @@
   (:require [re-frame.core :as re-frame]
             [quo.core :as quo]
             [status-im.i18n.i18n :as i18n]
+            [status-im.constants :as constants]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]))
 
 (views/defview sync-settings []
   (views/letsubs [{:keys [syncing-on-mobile-network?
+                          default-sync-period
                           use-mailservers?]}          [:multiaccount]
                   current-mailserver-name             [:mailserver/current-name]]
     [react/view {:style {:flex 1 :background-color colors/white}}
@@ -25,6 +27,21 @@
                       :accessory-text      (if syncing-on-mobile-network?
                                              (i18n/label :t/mobile-network-use-mobile)
                                              (i18n/label :t/mobile-network-use-wifi))}]
+      [quo/list-item {:size                :small
+                      :title               (i18n/label :t/default-sync-period)
+                      :accessibility-label :default-sync-period-button
+                      :on-press            #(re-frame/dispatch [:navigate-to :default-sync-period-settings])
+                      :chevron             true
+                      :accessory           :text
+                      :accessory-text      (cond
+                                             (= default-sync-period constants/one-day)
+                                             (i18n/label :t/one-day)
+                                             (= default-sync-period constants/three-days)
+                                             (i18n/label :t/three-days)
+                                             (= default-sync-period constants/one-week)
+                                             (i18n/label :t/one-week)
+                                             (= default-sync-period constants/one-month)
+                                             (i18n/label :t/one-month))}]
       [quo/list-item {:size                :small
                       :accessibility-label :offline-messages-settings-button
                       :title               (i18n/label :t/history-nodes)
