@@ -61,7 +61,7 @@
   "collapse-gaps will take an array of messages and collapse any gap next to
   each other in a single gap.
   It will also append one last gap if the last message is a non-gap"
-  [messages chat-id synced-from]
+  [messages chat-id synced-from chat-type]
   (let [messages-with-gaps (reduce
                             (fn [acc {:keys [gap-parameters message-id] :as message}]
                               (let [last-element (peek acc)]
@@ -83,6 +83,8 @@
                             messages)]
     ;; If it's a gap or the chat is still syncing, do nothing
     (if (or (nil? synced-from)
+            (= constants/timeline-chat-type chat-type)
+            (= constants/profile-chat-type chat-type)
             (:gap-ids (peek messages-with-gaps)))
       messages-with-gaps
       (conj messages-with-gaps (last-gap chat-id synced-from)))))
