@@ -1258,6 +1258,27 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
+    @ReactMethod
+    public void getNodeConfig(final Callback callback) {
+        Log.d(TAG, "getNodeConfig");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String result = Statusgo.getNodeConfig();
+
+                callback.invoke(result);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+
 
     @ReactMethod
     public void chaosModeUpdate(final boolean on, final Callback callback) {

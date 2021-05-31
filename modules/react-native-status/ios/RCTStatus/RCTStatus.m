@@ -682,6 +682,18 @@ RCT_EXPORT_METHOD(extractGroupMembershipSignatures:(NSString *)content
 }
 
 ////////////////////////////////////////////////////////////////////
+#pragma mark - GetNodeConfig
+//////////////////////////////////////////////////////////////////// getNodeConfig
+RCT_EXPORT_METHOD(getNodeConfig:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"GetNodeConfig() method called");
+#endif
+    NSString *result = StatusgoGetNodeConfig();
+    callback(@[result]);
+}
+
+
+////////////////////////////////////////////////////////////////////
 #pragma mark - only android methods
 ////////////////////////////////////////////////////////////////////
 RCT_EXPORT_METHOD(setAdjustResize) {

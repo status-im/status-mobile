@@ -321,6 +321,10 @@
   (log/debug "[native-module] sign-group-membership")
   (.signGroupMembership ^js (status) content callback))
 
+(defn get-node-config [callback]
+  (log/debug "[native-module] get-node-config")
+  (.getNodeConfig ^js (status) callback))
+
 (defn update-mailservers
   [enodes on-result]
   (log/debug "[native-module] update-mailservers")
