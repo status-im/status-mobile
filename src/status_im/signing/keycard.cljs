@@ -3,6 +3,7 @@
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
+            [status-im.i18n.i18n :as i18n]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
@@ -62,10 +63,14 @@
   {:events [:signing.keycard.callback/hash-message-completed]}
   [{:keys [db]} data typed? result]
   (let [{:keys [result error]} (types/json->clj result)]
-    {:db (update db :keycard assoc
-                 :hash result
-                 :typed? typed?
-                 :data data)}))
+    (if error
+      {:dispatch         [:signing.ui/cancel-is-pressed]
+       :utils/show-popup {:title   (i18n/label :t/sign-request-failed)
+                          :content (:message error)}}
+      {:db (update db :keycard assoc
+                   :hash result
+                   :typed? typed?
+                   :data data)})))
 
 (fx/defn hash-transaction
   [{:keys [db]}]
