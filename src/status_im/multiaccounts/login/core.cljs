@@ -337,6 +337,7 @@
               (transport/start-messenger)
               (chat.loading/initialize-chats)
               (communities/fetch)
+              (initialize-communities-enabled)
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount)))))

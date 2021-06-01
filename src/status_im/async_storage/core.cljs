@@ -41,7 +41,11 @@
 (defn get-item [k cb]
   (-> ^js async-storage
       (.getItem (key->string k))
-      (.then cb)
+      (.then (fn [^js data]
+               (-> data
+                   js->clj
+                   transit->clj
+                   cb)))
       (.catch (fn [error]
                 (cb nil)
                 (log/error "[async-storage]" error)))))
