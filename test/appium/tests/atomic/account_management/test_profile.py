@@ -281,42 +281,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if not profile.element_by_text_part('custom_ropsten').is_element_displayed():
             self.driver.fail("Network custom_ropsten was not added!")
 
-    @marks.testrail_id(6239)
-    @marks.medium
-    def test_backup_recovery_phrase(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        if sign_in_view.profile_button.counter.text != '1':
-            self.errors.append('Profile button counter is not shown')
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.logout()
-        sign_in_view.sign_in()
-        if sign_in_view.profile_button.counter.text != '1':
-            self.errors.append('Profile button counter is not shown after re-login')
-        sign_in_view.profile_button.click()
-        profile_view.privacy_and_security_button.click()
-        profile_view.backup_recovery_phrase_button.click()
-        recovery_phrase = profile_view.backup_recovery_phrase()
-        if sign_in_view.profile_button.counter.is_element_displayed():
-            self.errors.append('Profile button counter is shown after recovery phrase backup')
-        profile_view.backup_recovery_phrase_button.click()
-        if not profile_view.backup_recovery_phrase_button.is_element_displayed():
-            self.driver.fail('Back up seed phrase option is available after seed phrase backed up!')
-        profile_view.back_button.click()
-        profile_view.logout()
-        sign_in_view.access_key_button.click()
-        sign_in_view.enter_seed_phrase_button.click()
-        sign_in_view.seedphrase_input.click()
-        sign_in_view.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
-        sign_in_view.next_button.click()
-        sign_in_view.element_by_translation_id(id="unlock", uppercase=True).click()
-        sign_in_view.password_input.set_value(common_password)
-        chats_view = sign_in_view.sign_in_button.click()
-        chats_view.plus_button.click()
-        if not chats_view.start_new_chat_button.is_element_displayed():
-            self.errors.append("Can't proceed using account after it's re-recover twice.")
-        self.errors.verify_no_errors()
-
     @marks.critical
     @marks.testrail_id(5419)
     @marks.flaky
