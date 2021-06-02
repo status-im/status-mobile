@@ -9,11 +9,17 @@
    [status-im.utils.fx :as fx]
    [status-im.constants :as constants]
    [status-im.bottom-sheet.core :as bottom-sheet]
+   [status-im.utils.universal-links.core :as universal-links]
    [status-im.ethereum.json-rpc :as json-rpc]
    [status-im.ui.components.colors :as colors]
    [status-im.navigation :as navigation]))
 
 (def crop-size 1000)
+
+(defn universal-link [community-id]
+  (str (:external universal-links/domains)
+       "/c/"
+       community-id))
 
 (def featured
   [{:name "Status"

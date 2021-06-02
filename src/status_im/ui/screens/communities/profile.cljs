@@ -4,6 +4,7 @@
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.i18n.i18n :as i18n]
             [reagent.core :as reagent]
+            [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.communities.core :as communities]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
@@ -47,6 +48,20 @@
           [quo/list-footer {:color :main}
            description]
           [quo/separator {:style {:margin-vertical 8}}]])
+       [:<>
+        (let [link (communities/universal-link community-id)]
+          [react/view {:padding-vertical 10
+                       :padding-horizontal 16}
+           [react/view {:margin-bottom 20}
+            [quo/text {:color :secondary} (i18n/label :t/community-link)]]
+           [copyable-text/copyable-text-view
+            {:copied-text link}
+            [react/view {:border-radius 16
+                         :padding-horizontal 16
+                         :padding-vertical 11
+                         :background-color colors/blue-light}
+             [quo/text {:color :link} (subs link 8)]]]])
+        [quo/separator {:style {:margin-vertical 8}}]]
        (when show-members-count?
          [quo/list-item {:chevron        true
                          :accessory
@@ -89,6 +104,3 @@
     :component-did-mount (fn []
                            (communities/fetch-requests-to-join! (get-in route [:route :params :community-id])))
     :reagent-render management}))
-
-
-

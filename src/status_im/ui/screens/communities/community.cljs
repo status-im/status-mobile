@@ -91,7 +91,7 @@
     [:<>
      [quo/list-item
       {:title    name
-       :subtitle (i18n/label :t/view-profile)
+       :subtitle (i18n/label :t/community-info)
        :on-press #(hide-sheet-and-dispatch [:navigate-to :community-management {:community-id id}])
        :chevron  true
        :icon     (cond
