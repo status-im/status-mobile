@@ -17,6 +17,7 @@
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.biometric.views :as biometric]
             [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.keycard.views :as keycard.views]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]))
 
 (defn hide-panel-anim
@@ -145,6 +146,9 @@
 
                    (= :frozen-card view)
                    [frozen-card/frozen-card]
+
+                   (= :blocked-card view)
+                   [keycard.views/blocked-card-popover]
 
                    (= :advertiser-invite view)
                    [advertiser.invite/accept-popover]

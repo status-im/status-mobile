@@ -213,9 +213,9 @@
   [frozen-card.view/frozen-card
    {:show-dismiss-button? false}])
 
-(defn blocked-card []
-  [react/view {:style {:flex        1
-                       :align-items :center}}
+(defn blocked-card [{:keys [show-dismiss-button?]}]
+  [react/view {:style (when-not show-dismiss-button?
+                        {:flex 1})}
    [react/view {:margin-top        24
                 :margin-horizontal 24
                 :align-items       :center}
@@ -245,7 +245,17 @@
     [react/view {:style {:margin-top 24}}
      [quo/button
       {:on-press #(re-frame/dispatch [:keycard-settings.ui/recovery-card-pressed false])}
-      (i18n/label :t/keycard-is-frozen-factory-reset)]]]])
+      (i18n/label :t/keycard-is-frozen-factory-reset)]]
+    (when show-dismiss-button?
+      [react/view {:margin-top    24
+                   :margin-bottom 24}
+       [quo/button
+        {:on-press #(re-frame/dispatch [::keycard.login/frozen-keycard-popover-dismissed])
+         :type     :secondary}
+        (i18n/label :t/dismiss)]])]])
+
+(defn blocked-card-popover []
+  [blocked-card {:show-dismiss-button? true}])
 
 (defview login-pin [{:keys [back-button-handler
                             hide-login-actions?

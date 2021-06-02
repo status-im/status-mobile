@@ -361,6 +361,14 @@
               (clear-on-card-read)
               (hide-connection-sheet))))
 
+(fx/defn blocked-keycard-popup
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (-> db
+                     (assoc-in [:keycard :pin :status] :blocked-card)
+                     (assoc :popover/popover {:view :blocked-card}))}
+            (hide-connection-sheet)))
+
 (fx/defn frozen-keycard-popup
   [{:keys [db] :as cofx}]
   (if (:multiaccounts/login db)
@@ -438,10 +446,7 @@
        (frozen-keycard-popup))
      (fn [{:keys [db] :as cofx}]
        (if (zero? puk-retry-counter)
-         (fx/merge
-          cofx
-          {:db (assoc-in db [:keycard :pin :status] :blocked-card)}
-          hide-connection-sheet)
+         (blocked-keycard-popup cofx)
          (when on-success'
            (dispatch-event cofx on-success')))))))
 (fx/defn on-get-application-info-error
