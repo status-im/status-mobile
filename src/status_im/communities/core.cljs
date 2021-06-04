@@ -248,13 +248,14 @@
 
 (fx/defn create-channel
   {:events [::create-channel-confirmation-pressed]}
-  [cofx community-channel-name community-channel-description]
-  (let [community-id (fetch-community-id-input cofx)]
+  [{:keys [db] :as cofx}]
+  (let [community-id (fetch-community-id-input cofx)
+        {:keys [name description]} (get db :communities/create-channel)]
     {::json-rpc/call [{:method     "wakuext_createCommunityChat"
                        :params     [community-id
-                                    {:identity    {:display_name community-channel-name
+                                    {:identity    {:display_name name
                                                    :color        (rand-nth colors/chat-colors)
-                                                   :description  community-channel-description}
+                                                   :description  description}
                                      :permissions {:access constants/community-channel-access-no-membership}}]
                        :js-response true
                        :on-success #(re-frame/dispatch [::community-channel-created %])
@@ -262,17 +263,41 @@
                                       (log/error "failed to create community channel" %)
                                       (re-frame/dispatch [::failed-to-create-community-channel %]))}]}))
 
+(def community-chat-id-length 68)
+
+(defn to-community-chat-id [chat-id]
+  (subs chat-id community-chat-id-length))
+
+(fx/defn edit-channel
+  {:events [::edit-channel-confirmation-pressed]}
+  [{:keys [db] :as cofx}]
+  (let [{:keys [name description color community-id]} (get db :communities/create-channel)
+        chat-id (to-community-chat-id (get db :current-chat-id))]
+    {::json-rpc/call [{:method     "wakuext_editCommunityChat"
+                       :params     [community-id
+                                    chat-id
+                                    {:identity    {:display_name name
+                                                   :description  description
+                                                   :color        color}
+                                     :permissions {:access constants/community-channel-access-no-membership}}]
+                       :js-response true
+                       :on-success #(re-frame/dispatch [::community-channel-edited %])
+                       :on-error   #(do
+                                      (log/error "failed to edit community channel" %)
+                                      (re-frame/dispatch [::failed-to-edit-community-channel %]))}]}))
+
 (defn require-membership? [permissions]
   (not= constants/community-no-membership-access (:access permissions)))
 
-(def community-id-length 68)
-
 (defn can-post? [community _ local-chat-id]
-  (let [chat-id (subs local-chat-id community-id-length)]
+  (let [chat-id (to-community-chat-id local-chat-id)]
     (get-in community [:chats chat-id :can-post?])))
 
 (fx/defn reset-community-id-input [{:keys [db]} id]
   {:db (assoc db :communities/community-id-input id)})
+
+(fx/defn reset-channel-info [{:keys [db]}]
+  {:db (assoc db :communities/create-channel {})})
 
 (fx/defn invite-people-pressed
   {:events [::invite-people-pressed]}
@@ -292,10 +317,21 @@
 
 (fx/defn create-channel-pressed
   {:events [::create-channel-pressed]}
-  [cofx id]
+  [{:keys [db] :as cofx} id]
   (fx/merge cofx
             (reset-community-id-input id)
-            (navigation/navigate-to :create-community-channel nil)))
+            (reset-channel-info)
+            (navigation/navigate-to :communities {:screen :create-community-channel})))
+
+(fx/defn edit-channel-pressed
+  {:events [::edit-channel-pressed]}
+  [{:keys [db] :as cofx} community-id chat-name description color]
+  (fx/merge cofx
+            {:db (assoc db :communities/create-channel {:name         chat-name
+                                                        :description  description
+                                                        :color        color
+                                                        :community-id community-id})}
+            (navigation/navigate-to :communities {:screen :edit-community-channel})))
 
 (fx/defn community-created
   {:events [::community-created]}
@@ -354,6 +390,13 @@
             (navigation/navigate-back)
             (handle-response response-js)))
 
+(fx/defn community-channel-edited
+  {:events [::community-channel-edited]}
+  [cofx response-js]
+  (fx/merge cofx
+            (navigation/navigate-back)
+            (handle-response response-js)))
+
 (fx/defn create-field
   {:events [::create-field]}
   [{:keys [db]} field value]
@@ -363,6 +406,11 @@
   {:events [::remove-field]}
   [{:keys [db]} field]
   {:db (update-in db [:communities/create] dissoc field)})
+
+(fx/defn create-channel-field
+  {:events [::create-channel-field]}
+  [{:keys [db]} field value]
+  {:db (assoc-in db [:communities/create-channel field] value)})
 
 (fx/defn member-banned
   {:events [::member-banned]}

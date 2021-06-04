@@ -9,8 +9,10 @@
             [status-im.ui.screens.communities.create :as communities.create]
             [status-im.ui.screens.communities.import :as communities.import]
             [status-im.ui.screens.communities.profile :as community.profile]
+            [status-im.ui.screens.communities.channel-details :as communities.channel-details]
             [status-im.ui.screens.communities.edit :as community.edit]
             [status-im.ui.screens.communities.create-channel :as create-channel]
+            [status-im.ui.screens.communities.edit-channel :as edit-channel]
             [status-im.ui.screens.communities.membership :as membership]
             [status-im.ui.screens.communities.members :as members]
             [status-im.ui.screens.communities.requests-to-join :as requests-to-join]
@@ -54,32 +56,40 @@
      :component members/members-container}
     {:name      :community-requests-to-join
      :component requests-to-join/requests-to-join-container}
-    {:name      :create-community-channel
-     :component create-channel/create-channel}]])
+    {:name :community-channel-details
+     :insets    {:top false}
+     :component communities.channel-details/view}]])
 
 (defn communities []
   [communities-stack {:header-mode :none}
-   (concat
-    [{:name      :communities
-      :insets    {:bottom true
-                  :top    false}
-      :component communities/communities}
-     {:name      :community-import
-      :insets    {:bottom true
-                  :top    false}
-      :component communities.import/view}]
-    [{:name      :community-edit
-      :insets    {:bottom true
-                  :top    false}
-      :component community.edit/edit}
-     {:name      :community-create
-      :insets    {:bottom true
-                  :top    false}
-      :component communities.create/view}
-     {:name      :community-membership
-      :insets    {:bottom true
-                  :top    false}
-      :component membership/membership}])])
+   [{:name      :communities
+     :insets    {:bottom true
+                 :top    false}
+     :component communities/communities}
+    {:name      :community-import
+     :insets    {:bottom true
+                 :top    false}
+     :component communities.import/view}
+    {:name      :community-edit
+     :insets    {:bottom true
+                 :top    false}
+     :component community.edit/edit}
+    {:name      :community-create
+     :insets    {:bottom true
+                 :top    false}
+     :component communities.create/view}
+    {:name      :community-membership
+     :insets    {:bottom true
+                 :top    false}
+     :component membership/membership}
+    {:name      :create-community-channel
+     :insets    {:bottom true
+                 :top    false}
+     :component create-channel/view}
+    {:name      :edit-community-channel
+     :insets    {:bottom true
+                 :top    false}
+     :component edit-channel/view}]])
 
 (defn new-group-chat []
   [group-stack {:header-mode        :none

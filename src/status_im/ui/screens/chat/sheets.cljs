@@ -83,10 +83,14 @@
   (fn [{:keys [chat-id group-chat chat-name color]}]
     [react/view
      [quo/list-item
-      {:theme    :accent
-       :title    chat-name
-       :icon     [chat-icon/chat-icon-view-chat-sheet
-                  chat-id group-chat chat-name color]}]
+      {:theme               :accent
+       :title               chat-name
+       :icon                [chat-icon/chat-icon-view-chat-sheet
+                             chat-id group-chat chat-name color]
+       :subtitle            (i18n/label :t/view-details)
+       :chevron             true
+       :accessibility-label :view-community-channel-details
+       :on-press            #(hide-sheet-and-dispatch [:navigate-to :community-channel-details {:chat-id chat-id}])}]
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/mark-all-read)

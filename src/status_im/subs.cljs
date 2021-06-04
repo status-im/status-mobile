@@ -213,6 +213,7 @@
 
 (reg-root-key-sub :raw-communities :communities)
 (reg-root-key-sub :communities/create :communities/create)
+(reg-root-key-sub :communities/create-channel :communities/create-channel)
 (reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
 (reg-root-key-sub :communities/community-id-input :communities/community-id-input)
 (reg-root-key-sub :communities/enabled? :communities/enabled?)
