@@ -160,7 +160,7 @@
         current-chat-id @(re-frame/subscribe [:chats/current-profile-chat])
         messages @(re-frame/subscribe [:chats/profile-messages-stream current-chat-id])
         no-messages? @(re-frame/subscribe [:chats/chat-no-messages? current-chat-id])
-        muted? (:muted @(re-frame/subscribe [:chats/chat public-key]))
+        muted? @(re-frame/subscribe [:chats/muted public-key])
         [first-name second-name] (multiaccounts/contact-two-names contact true)
         on-share #(re-frame/dispatch [:show-popover (merge
                                                      {:view    :share-chat-key
@@ -205,4 +205,3 @@
          :render-data               {:chat-id current-chat-id}
          :render-fn                 status.views/render-message
          :data                      messages}]])))
-
