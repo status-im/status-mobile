@@ -88,7 +88,7 @@ pipeline {
           case 'nightly':
             /* Create JSON file with newest build URLs */
             s3.updateBucketJSON(urls, 'latest.json');
-            build(job: 'misc/status.im', wait: false);
+            build(job: 'website/status.im', wait: false);
             break;
           case 'release':
             github.publishReleaseFiles(repo: 'status-react');
