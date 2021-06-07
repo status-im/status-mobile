@@ -71,7 +71,7 @@
       (dissoc :members)))
 
 (fx/defn fetch-chats-rpc [cofx {:keys [on-success]}]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "activeChats")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "chats")
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})

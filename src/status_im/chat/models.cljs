@@ -321,12 +321,6 @@
   (log/error "mute chat failed" chat-id error)
   {:db (assoc-in db [:chats chat-id :muted] (not muted?))})
 
-(fx/defn mute-chat-successful
-  {:events [::mute-chat-successful]}
-  [{:keys [db]} chat-id response]
-  (let [chat (chats-store/<-rpc (first (:chats response)))]
-    {:db (assoc-in db [:chats chat-id] chat)}))
-
 (fx/defn mute-chat
   {:events [::mute-chat-toggled]}
   [{:keys [db] :as cofx} chat-id muted?]
@@ -335,7 +329,7 @@
      ::json-rpc/call [{:method (json-rpc/call-ext-method method)
                        :params [chat-id]
                        :on-error #(re-frame/dispatch [::mute-chat-failed chat-id muted? %])
-                       :on-success #(re-frame/dispatch [::mute-chat-successful chat-id %])}]}))
+                       :on-success #(log/debug "muted chat successfully")}]}))
 
 (fx/defn show-profile
   {:events [:chat.ui/show-profile]}

@@ -781,6 +781,13 @@
    synced-from))
 
 (re-frame/reg-sub
+ :chats/muted
+ (fn [[_ chat-id] _]
+   (re-frame/subscribe [:chat-by-id chat-id]))
+ (fn [{:keys [muted]}]
+   muted))
+
+(re-frame/reg-sub
  :chats/chat-type
  (fn [[_ chat-id] _]
    (re-frame/subscribe [:chat-by-id chat-id]))
