@@ -165,7 +165,11 @@ fdroid-nix-dir: ##@prepare Create /nix directory for F-Droid Vagrant builders
 	mkdir -m 0755 /nix
 	chown vagrant /nix
 
-fdroid-build-env: fdroid-max-watches fdroid-nix-dir ##@prepare Setup build environment for F-Droud build
+fdroid-fix-tmp: SHELL := /bin/sh
+fdroid-fix-tmp: ##@prepare Fix /tmp permissions for Vagrant builder
+	chown -R vagrant /tmp
+
+fdroid-build-env: fdroid-max-watches fdroid-nix-dir fdroid-fix-tmp ##@prepare Setup build environment for F-Droud build
 
 xcode-clean: SHELL := /bin/sh
 xcode-clean: XCODE_HOME := $(HOME)/Library/Developer/Xcode
