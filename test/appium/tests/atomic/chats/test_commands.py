@@ -68,7 +68,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         time.sleep(20)
         send_bottom_sheet = sender_message.sign_and_send.click()
         send_bottom_sheet.next_button.click()
-        send_bottom_sheet.sign_transaction(default_gas_price=False)
+        send_bottom_sheet.sign_transaction()
         updated_timestamp_sender = sender_message.timestamp_message.text
         if updated_timestamp_sender == timestamp_sender:
             self.errors.append("Timestamp of message is not updated after signing transaction")
@@ -147,11 +147,11 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2_sender_message.transaction_status.wait_for_element_text(chat_2_sender_message.address_received)
         send_message = chat_2_sender_message.sign_and_send.click()
         send_message.next_button.click()
-        send_message.sign_transaction(default_gas_price=False)
+        send_message.sign_transaction()
 
         home_2.just_fyi('Check that transaction message is updated with new status after offline')
         chat_2.toggle_airplane_mode()
-        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=12, token=True)
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, token=True)
         chat_2.toggle_airplane_mode()
         [message.transaction_status.wait_for_element_text(message.confirmed, wait_time=60) for message in
          (chat_2_sender_message, chat_1_request_message)]
@@ -218,6 +218,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         device_1_sign_in.recover_access(passphrase=sender['passphrase'])
         device_2_sign_in.create_user()
         home_1, home_2 = device_1_sign_in.get_home_view(), device_2_sign_in.get_home_view()
+        wallet_1 = home_1.wallet_button.click()
+        wallet_1.set_up_wallet()
+        wallet_1.home_button.click()
         profile_2 = home_2.profile_button.click()
         device_2_username = profile_2.default_username_text.text
         profile_2.switch_network()
@@ -245,7 +248,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_message = chat_1_sender_message.sign_and_send.click()
         send_message.next_button.click()
         send_message.sign_transaction()
-        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15)
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
         chat_1_sender_message.transaction_status.wait_for_element_text(chat_1_sender_message.confirmed)
         wallet_2 = chat_2.wallet_button.click()
         wallet_2.set_up_wallet()
@@ -277,7 +280,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         from views.send_transaction_view import SendTransactionView
         send_transaction = SendTransactionView(self.driver)
         send_transaction.ok_got_it_button.click()
-        send_transaction.sign_transaction(default_gas_price=False)
+        send_transaction.sign_transaction()
         chat_sender_message = chat.get_outgoing_transaction()
-        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15)
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
         chat_sender_message.transaction_status.wait_for_element_text(chat_sender_message.confirmed)

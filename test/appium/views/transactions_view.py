@@ -1,4 +1,3 @@
-import time
 from selenium.common.exceptions import NoSuchElementException
 from views.base_element import BaseElement, Button, Text
 from views.base_view import BaseView
@@ -78,6 +77,7 @@ class TransactionTable(BaseElement):
     def transaction_by_index(self, index: int):
         self.driver.info('**Finding transaction by index %s**' % index)
         return self.TransactionElement.by_index(self.driver, index=index)
+
 
     def transaction_by_amount(self, amount: str, asset):
         self.driver.info('**Finding transaction by amount %s**' % amount)

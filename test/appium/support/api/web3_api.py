@@ -74,8 +74,7 @@ def balance_of_address(address):
         return w3.eth.getBalance(to_checksum_address(address))
 
 def transaction_status(hash):
-    return w3.eth.getTransaction(transaction_hash=hash)
-
+    return w3.eth.getTransaction(hash)
 
 def to_checksumed_address(address):
     return to_checksum_address(address)

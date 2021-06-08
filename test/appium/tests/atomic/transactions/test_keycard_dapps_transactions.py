@@ -98,9 +98,9 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         wallet.just_fyi("Checking deploy simple contract")
         send_transaction_view = status_test_dapp.deploy_contract_button.click()
-        send_transaction_view.sign_transaction(keycard=True, default_gas_price=False)
-        if not status_test_dapp.element_by_text('Contract deployed at: ').is_element_displayed(180):
-            self.errors.append('Contract was not created')
+        send_transaction_view.sign_transaction(keycard=True)
+        if not status_test_dapp.element_by_text('Contract deployed at: ').is_element_displayed(300):
+            self.driver.fail('Contract was not created or tx taking too long')
         for text in ['Call contract get function',
                      'Call contract set function', 'Call function 2 times in a row']:
             status_test_dapp.element_by_text(text).scroll_to_element()

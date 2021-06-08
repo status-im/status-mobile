@@ -696,6 +696,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_2.home_button.click(desired_view='home')
         if not home_2.get_chat(default_username_1).chat_image.is_element_image_similar_to_template('sauce_logo.png'):
             self.errors.append('User profile picture is not returned to default after user removed from Contacts')
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5432)
     @marks.medium

@@ -389,6 +389,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.just_fyi('Send transaction from added account and log out')
         transaction_amount_added = wallet_view.get_unique_amount()
         wallet_view.send_transaction(amount=transaction_amount_added, recipient=recipient, sign_transaction=True)
+        wallet_view.accounts_status_account.click()
         wallet_view.profile_button.click()
         profile_view.logout()
 

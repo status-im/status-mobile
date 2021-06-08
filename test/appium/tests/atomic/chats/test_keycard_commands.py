@@ -63,7 +63,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         time.sleep(20)
         send_message = sender_message.sign_and_send.click()
         send_message.next_button.click()
-        send_message.sign_transaction(keycard=True, default_gas_price=False)
+        send_message.sign_transaction(keycard=True)
         updated_timestamp_sender = sender_message.timestamp_message.text
         if updated_timestamp_sender == timestamp_sender:
             self.errors.append("Timestamp of message is not updated after signing transaction")
@@ -142,7 +142,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2_sender_message.transaction_status.wait_for_element_text(chat_2_sender_message.address_received)
         send_message = chat_2_sender_message.sign_and_send.click()
         send_message.next_button.click()
-        send_message.sign_transaction(keycard=True, default_gas_price=False)
+        send_message.sign_transaction(keycard=True)
 
         home_2.just_fyi('Check that transaction message is updated with new status after offline')
         chat_2.toggle_airplane_mode()
@@ -162,6 +162,10 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sender = transaction_senders['E']
         home = sign_in.recover_access(sender['passphrase'], keycard=True)
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.home_button.click()
+
         chat = home.add_contact(ens_user_ropsten['ens'])
         chat.commands_button.click()
         amount = chat.get_unique_amount()
@@ -175,5 +179,5 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         send_transaction = SendTransactionView(self.driver)
         send_transaction.sign_transaction(keycard=True)
         chat_sender_message = chat.get_outgoing_transaction()
-        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15)
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
         chat_sender_message.transaction_status.wait_for_element_text(chat_sender_message.confirmed)

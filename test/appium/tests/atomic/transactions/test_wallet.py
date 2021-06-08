@@ -78,7 +78,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
                                      sign_transaction=True)
         sign_in_view.toggle_airplane_mode()
-        self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, confirmations=6, token=True)
+        self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, token=True)
 
         sign_in_view.just_fyi('Change that balance is updated')
         sign_in_view.toggle_airplane_mode()
@@ -125,7 +125,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.send_transaction(amount=amount,
                                      recipient='0x%s' % recipient['address'],
                                      asset_name='ADI')
-        self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True, decimals=7)
+        transaction = wallet_view.find_transaction_in_history(amount=amount, asset='ADI', return_hash=True)
+        self.network_api.find_transaction_by_hash(transaction)
 
 
     @marks.testrail_id(5412)
@@ -250,7 +251,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.accounts_status_account.click()
         initial_balance = self.network_api.get_balance(status_account_address)
 
-        transaction_amount = '0.000%s' % str(random.randint(10000, 99999)) + '1'
+        transaction_amount = '0.003%s' % str(random.randint(10000, 99999)) + '1'
         wallet_view.send_transaction(account_name=account_name,
                                      amount=transaction_amount)
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
@@ -269,7 +270,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         wallet_view.just_fyi("Sending eth from new account to main account")
         updated_balance = self.network_api.get_balance(status_account_address)
-        transaction_amount_1 = round(float(transaction_amount) * 0.1, 12)
+        transaction_amount_1 = round(float(transaction_amount) * 0.2, 12)
         send_transaction = wallet_view.send_transaction(account_name=wallet_view.status_account_name,
                                                         amount=transaction_amount_1,
                                                         default_gas_price=True)
@@ -284,7 +285,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
 
         wallet_view.just_fyi("Verify total ETH on main wallet view")
-        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1, 3)
+        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1)
         self.network_api.verify_balance_is_updated((updated_balance + transaction_amount_1), status_account_address)
         send_transaction.back_button.click()
         balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000
@@ -701,7 +702,7 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi("Sending token amount to device who will use Set Max option for token")
         amount = '0.012345678912345678'
         wallet_view_serder.accounts_status_account.click()
-        wallet_view_serder.send_transaction(asset_name='STT', amount=amount, recipient=receiver['address'], default_gas_price=False)
+        wallet_view_serder.send_transaction(asset_name='STT', amount=amount, recipient=receiver['address'])
         wallet_view_receiver.wait_balance_is_changed(asset='STT', initial_balance=initial_balance, scan_tokens=True)
         wallet_view_receiver.accounts_status_account.click()
 
@@ -716,7 +717,7 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
         send_transaction_view.set_max_button.click()
         send_transaction_view.set_recipient_address(sender['address'])
         send_transaction_view.sign_transaction_button.click()
-        send_transaction_view.sign_transaction(default_gas_price=False)
+        send_transaction_view.sign_transaction()
         wallet_view_receiver.back_button.click()
         initial_balance = float(initial_balance) + float(amount)
         wallet_view_receiver.wait_balance_is_changed(asset='STT', initial_balance=str(initial_balance), scan_tokens=True)

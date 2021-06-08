@@ -455,6 +455,10 @@ class BaseView(object):
         from views.profile_view import ProfileView
         return ProfileView(self.driver)
 
+    def get_transaction_view(self):
+        from views.transactions_view import TransactionsView
+        return TransactionsView(self.driver)
+
     def get_wallet_view(self):
         from views.wallet_view import WalletView
         return WalletView(self.driver)

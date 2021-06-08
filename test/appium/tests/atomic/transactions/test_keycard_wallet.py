@@ -23,15 +23,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                                      sign_transaction=True,
                                      keycard=True,
                                      recipient='0x%s'%recipient['address'])
-        self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
         wallet_view.just_fyi('Check that transaction is appeared in transaction history')
-        wallet_view.find_transaction_in_history(amount=transaction_amount)
-
-        wallet_view.just_fyi('Check logcat for sensitive data')
-        values_in_logcat = wallet_view.find_values_in_logcat(pin=pin, puk=puk, password=pair_code)
-        if values_in_logcat:
-            self.driver.fail(values_in_logcat)
+        transaction = wallet_view.find_transaction_in_history(amount=transaction_amount, return_hash=True)
+        self.network_api.find_transaction_by_hash(transaction)
 
 
     @marks.testrail_id(6290)
@@ -50,7 +45,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.just_fyi('Go back to online and check that balance is updated')
         sign_in_view.toggle_airplane_mode()
         wallet_view.wait_balance_is_changed('ETH')
-        wallet_view.scan_tokens('STT')
+        wallet_view.wait_balance_is_changed('STT')
 
         sign_in_view.just_fyi('Send some tokens to other account')
         recipient = "0x" + basic_user['address']
@@ -61,7 +56,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
                                      sign_transaction=True, keycard=True)
         sign_in_view.toggle_airplane_mode()
-        self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, confirmations=6, token=True)
+        self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, token=True)
 
         sign_in_view.just_fyi('Change that balance is updated and transaction is appeared in history')
 
@@ -117,7 +112,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         wallet_view.just_fyi("Send transaction to new account")
         wallet_view.accounts_status_account.click()
-        transaction_amount = '0.002'
+        transaction_amount = '0.004'
         initial_balance = self.network_api.get_balance(status_account_address)
         send_transaction = wallet_view.send_transaction(account_name=account_name,
                                      amount=transaction_amount,
@@ -138,7 +133,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         wallet_view.just_fyi("Sending eth from new account to main account")
         updated_balance = self.network_api.get_balance(status_account_address)
-        transaction_amount_1 = round(float(transaction_amount) * 0.1, 11)
+        transaction_amount_1 = round(float(transaction_amount) * 0.2, 11)
         wallet_view.wait_balance_is_changed()
         wallet_view.get_account_by_name(account_name).click()
         send_transaction = wallet_view.send_transaction(account_name=wallet_view.status_account_name,
@@ -155,7 +150,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
 
         wallet_view.just_fyi("Verify total ETH on main wallet view")
-        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1, 3)
+        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1)
         self.network_api.verify_balance_is_updated((updated_balance + transaction_amount_1), status_account_address)
         send_transaction.back_button.click()
         balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000
@@ -181,6 +176,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.accounts_button.click()
         send_transaction.element_by_text(wallet_view.status_account_name).click()
         send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction(keycard=True)
+        send_transaction.sign_transaction(keycard=True, default_gas_price=True)
         wallet_view.element_by_text('Assets').click()
         wallet_view.wait_balance_is_equal_expected_amount(asset='ETH', expected_balance=0)

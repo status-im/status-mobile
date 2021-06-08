@@ -44,7 +44,8 @@ class AccountElementButton(SilentButton):
 
     def color_matches(self, expected_color_image_name: str):
         amount_text = Text(self.driver, xpath="%s//*[@content-desc='account-total-value']" % self.locator)
-        return amount_text.is_element_image_equals_template(expected_color_image_name)
+        amount_text.wait_for_element_text('0', 60)
+        return not amount_text.is_element_differs_from_template(expected_color_image_name)
 
 
 class SendTransactionButton(Button):
@@ -280,11 +281,10 @@ class WalletView(BaseView):
         if kwargs.get('sign_transaction', True):
             send_transaction_view.sign_transaction_button.click_until_presence_of_element(send_transaction_view.network_fee_button)
             send_transaction_view.sign_transaction(keycard=kwargs.get('keycard', False),
-                                                   default_gas_price=kwargs.get('default_gas_price', False),
                                                    sender_password=kwargs.get('sender_password', common_password))
         return send_transaction_view
 
-    def find_transaction_in_history(self, amount, asset='ETH', account_name=None):
+    def find_transaction_in_history(self, amount, asset='ETH', account_name=None, return_hash=False):
         if account_name == None:
             account_name = self.status_account_name
         self.driver.info('**Finding %s %s transaction for %s**' % (amount, asset, account_name))
@@ -292,7 +292,14 @@ class WalletView(BaseView):
             self.get_account_by_name(account_name).click()
             self.transaction_history_button.wait_for_element()
         transactions_view = self.transaction_history_button.click()
-        return transactions_view.transactions_table.find_transaction(amount=amount, asset=asset)
+        transaction_element = transactions_view.transactions_table.find_transaction(amount=amount, asset=asset)
+        result = transaction_element
+        if return_hash:
+            transaction_element.click()
+            from views.transactions_view import TransactionTable
+            result = TransactionTable.TransactionElement.TransactionDetailsView(self.driver).get_transaction_hash()
+        return result
+
 
     def set_currency(self, desired_currency='EUR'):
         self.driver.info("**Setting '%s' currency**" % desired_currency)

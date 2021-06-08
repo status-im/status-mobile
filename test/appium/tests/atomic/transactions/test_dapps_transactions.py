@@ -117,7 +117,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         home.just_fyi("Checking deploy simple contract")
         send_transaction = status_test_dapp.deploy_contract_button.click()
-        send_transaction.sign_transaction(default_gas_price=False)
+        send_transaction.sign_transaction(default_gas_price=True)
         if not status_test_dapp.element_by_text('Contract deployed at: ').is_element_displayed(180):
             self.errors.append('Contract was not created')
         for text in ['Call contract get function',

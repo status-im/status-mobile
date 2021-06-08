@@ -64,15 +64,12 @@ class NetworkApi(object):
         method = self.network_url + 'module=proxy&action=eth_blockNumber'
         return int(requests.request('GET', url=method).json()['result'], 0)
 
-    def find_transaction_by_hash(self, address: str, transaction_hash: str):
-        transactions = self.get_transactions(address=address)
-        for transaction in transactions:
-            if transaction['hash'] == transaction_hash:
-                logging.info('Transaction is found in Ropsten network')
-                return
-        pytest.fail('Transaction is not found in Ropsten network')
+    def find_transaction_by_hash(self,transaction_hash: str):
+        transaction = w3.transaction_status(transaction_hash)
+        if not transaction['blockHash']:
+            self.log("TX %s is still pending" %transaction_hash)
 
-    def find_transaction_by_unique_amount(self, address, amount, token=False, decimals=18, wait_time=600):
+    def find_transaction_by_unique_amount(self, address, amount, token=False, decimals=18, wait_time=300):
         additional_info = 'token transactions' if token else 'ETH transactions'
         counter = 0
         while True:
@@ -84,13 +81,14 @@ class NetworkApi(object):
                     'Transaction with amount %s is not found in list of %s, address is %s during %ss' %
                     (amount, additional_info, address, wait_time))
             else:
-                counter += 30
-                time.sleep(30)
+                self.log("Finding tx in %s, attempt #%s" % (additional_info, str(int(counter / 30)+1)))
                 try:
                     if token:
                         transactions = self.get_token_transactions(address)
                     else:
                         transactions = self.get_transactions(address)
+                    counter += 30
+                    time.sleep(30)
                 except JSONDecodeError as e:
                     self.log("No valid JSON response from Etherscan: %s " % str(e))
                     continue
@@ -101,16 +99,15 @@ class NetworkApi(object):
                 except TypeError as e:
                     self.log("Failed iterate transactions: " + str(e))
                     pytest.fail("No valid JSON response from Etherscan: %s " % str(e))
-                    # continue
 
-    def wait_for_confirmation_of_transaction(self, address, amount, confirmations=12, token=False):
+    def wait_for_confirmation_of_transaction(self, address, amount, confirmations=3, token=False):
         start_time = time.time()
         if token:
             token_info = "token transaction"
         else:
             token_info = "ETH transaction"
         self.log('Waiting %s %s for %s to have %s confirmations' % (amount, token_info, address, confirmations))
-        while round(time.time() - start_time, ndigits=2) < 900:  # should be < idleTimeout capability
+        while round(time.time() - start_time, ndigits=2) < 600:  # should be < idleTimeout capability
             transaction = self.find_transaction_by_unique_amount(address, amount, token)
             self.log(
                 'Expected amount of confirmations is %s, in fact %s' % (confirmations, transaction['confirmations']))
