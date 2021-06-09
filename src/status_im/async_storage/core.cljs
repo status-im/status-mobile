@@ -22,9 +22,9 @@
         debounced   (f/debounce (fn [callback]
                                   (doseq [[k v] @tmp-storage]
                                     (swap! tmp-storage dissoc k)
-                                    (set-item! k v)
-                                    (when callback
-                                      (callback))))
+                                    (set-item! k v))
+                                  (when callback
+                                    (callback)))
                                 debounce-ms)]
     (fn set-item
       ([items] (set-item items nil))
