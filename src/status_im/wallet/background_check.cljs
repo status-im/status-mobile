@@ -16,16 +16,11 @@
 (defn finish-task [id]
   (.finish ^js background-fetch id))
 
-(defn finish-with-timeout [id]
-  (js/setTimeout
-   (fn []
-     (finish-task id))
-   100))
+(re-frame/reg-fx ::finish-task finish-task)
 
-(re-frame/reg-fx ::finish-task finish-with-timeout)
-
-(fx/defn finish [{:keys [db]} message]
+(fx/defn finish
   {:events [::finish]}
+  [{:keys [db]} message]
   (let [task-id (get db :wallet/background-fetch-task-id)]
     {:db           (dissoc db :wallet/background-fetch-task-id)
      :local/local-pushes-ios [{:title   "FINISH"
@@ -57,12 +52,9 @@
 (fx/defn clean-async-storage
   {:events [::clean-async-storage]}
   [cofx]
-  (fx/merge
-   cofx
-   {::async/set!
-    {:rpc-url         nil
-     :cached-balances nil}}
-   (finish "clean-async-storage")))
+  {::async/set!
+   {:rpc-url         nil
+    :cached-balances nil}})
 
 (fx/defn perform-check
   {:events [::perform-check]}
@@ -147,25 +139,25 @@
 
 (fx/defn update-cache
   [_ cached-balances addresses latest]
-  (when (seq addresses)
-    (let [balances (mapv (fn [{:keys [address] :as cache}]
-                           (assoc cache
-                                  :balance (money/to-string
-                                            (get-in latest [address :balance]))
-                                  :nonce (money/to-string
-                                          (get-in latest [address :nonce]))))
-                         cached-balances)]
-      {:local/local-pushes-ios
-       [{:title   "UPDATE-CACHE"
-         :message (clojure.string/join
-                   "; "
-                   (mapv
-                    (fn [{:keys [address balance] :as cache}]
-                      (str address " " balance))
-                    balances))}]
+  (let [balances (mapv (fn [{:keys [address] :as cache}]
+                         (assoc cache
+                                :balance (money/to-string
+                                          (get-in latest [address :balance]))
+                                :nonce (money/to-string
+                                        (get-in latest [address :nonce]))))
+                       cached-balances)]
+    {:local/local-pushes-ios
+     [{:title   "UPDATE-CACHE"
+       :message (clojure.string/join
+                 "; "
+                 (mapv
+                  (fn [{:keys [address balance] :as cache}]
+                    (str address " " balance))
+                  balances))}]
 
-       ::async/set!
-       {:cached-balances balances}})))
+     ::async/set-with-callback!
+     {:data     {:cached-balances balances}
+      :callback #(re-frame/dispatch [::finish "successfully finished"])}}))
 
 (fx/defn notify
   [cofx addresses latest]
@@ -207,8 +199,7 @@
      {:local/local-pushes-ios [{:title   "TASK FINISHED"
                                 :message (str addresses-with-changes)}]}
      (update-cache cached-balances addresses-with-changes latest)
-     (notify addresses-with-changes latest)
-     (finish "successfully finished"))))
+     (notify addresses-with-changes latest))))
 
 (defn on-event [task-id]
   (re-frame.core/dispatch [::perform-check task-id]))

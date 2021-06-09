@@ -19,13 +19,18 @@
 (defn- set-item-factory
   []
   (let [tmp-storage (atom {})
-        debounced   (f/debounce (fn []
+        debounced   (f/debounce (fn [callback]
                                   (doseq [[k v] @tmp-storage]
                                     (swap! tmp-storage dissoc k)
-                                    (set-item! k v))) debounce-ms)]
-    (fn [items]
-      (swap! tmp-storage merge items)
-      (debounced))))
+                                    (set-item! k v)
+                                    (when callback
+                                      (callback))))
+                                debounce-ms)]
+    (fn set-item
+      ([items] (set-item items nil))
+      ([items callback]
+       (swap! tmp-storage merge items)
+       (debounced callback)))))
 
 (defn get-items [keys cb]
   (-> ^js async-storage
@@ -51,6 +56,12 @@
                 (log/error "[async-storage]" error)))))
 
 (re-frame/reg-fx ::set! (set-item-factory))
+
+(re-frame/reg-fx
+ ::set-with-callback!
+ (let [f (set-item-factory)]
+   (fn [{:keys [data callback]}]
+     (f data callback))))
 
 (re-frame/reg-fx
  ::get
