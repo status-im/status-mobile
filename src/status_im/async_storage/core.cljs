@@ -9,22 +9,32 @@
 
 (def key->string str)
 
-(defn- set-item! [key value]
-  (-> ^js async-storage
-      (.setItem (key->string key)
-                (clj->transit value))
-      (.catch (fn [error]
-                (log/error "[async-storage]" error)))))
+(defn- set-item! [promise key value]
+  (let [f
+        (fn []
+          (-> ^js async-storage
+              (.setItem (key->string key)
+                        (clj->transit value))
+              (.catch (fn [error]
+                        (log/error "[async-storage]" error)))))]
+    (if promise
+      (.then promise f)
+      (f))))
 
 (defn- set-item-factory
   []
   (let [tmp-storage (atom {})
         debounced   (f/debounce (fn [callback]
-                                  (doseq [[k v] @tmp-storage]
-                                    (swap! tmp-storage dissoc k)
-                                    (set-item! k v))
-                                  (when callback
-                                    (callback)))
+                                  (.then
+                                   (reduce
+                                    (fn [p [k v]]
+                                      (swap! tmp-storage dissoc k)
+                                      (set-item! p k v))
+                                    nil
+                                    @tmp-storage)
+                                   (fn []
+                                     (when callback
+                                       (callback)))))
                                 debounce-ms)]
     (fn set-item
       ([items] (set-item items nil))
