@@ -166,8 +166,8 @@ fdroid-nix-dir: ##@prepare Create /nix directory for F-Droid Vagrant builders
 	chown vagrant /nix
 
 fdroid-fix-tmp: SHELL := /bin/sh
-fdroid-fix-tmp: ##@prepare Fix /tmp permissions for Vagrant builder
-	chown -R vagrant /tmp
+fdroid-fix-tmp: ##@prepare Fix TMPDIR permissions so Vagrant user is the owner
+	chown -R vagrant "$(TMPDIR)"
 
 fdroid-build-env: fdroid-max-watches fdroid-nix-dir fdroid-fix-tmp ##@prepare Setup build environment for F-Droud build
 
