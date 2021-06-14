@@ -18,7 +18,7 @@ from views.base_element import Button, BaseElement, EditBox, Text
 
 class BackButton(Button):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="back-button")
+        super().__init__(driver, accessibility_id="Navigate Up")
 
     def click(self, times_to_click: int = 1):
         for _ in range(times_to_click):
@@ -58,7 +58,7 @@ class TabButton(Button):
 
 class HomeButton(TabButton):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="home-tab-button")
+        super().__init__(driver, xpath="//*[contains(@content-desc,'tab, 1 out of 5')]")
 
     def navigate(self):
         from views.home_view import HomeView
@@ -80,7 +80,7 @@ class HomeButton(TabButton):
 
 class DappTabButton(TabButton):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="dapp-tab-button")
+        super().__init__(driver, xpath="//*[contains(@content-desc,'tab, 2 out of 5')]")
 
     def navigate(self):
         from views.dapps_view import DappsView
@@ -101,7 +101,7 @@ class DappTabButton(TabButton):
 
 class WalletButton(TabButton):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="wallet-tab-button")
+        super().__init__(driver, xpath="//*[contains(@content-desc,'tab, 3 out of 5')]")
 
     def navigate(self):
         from views.wallet_view import WalletView
@@ -115,7 +115,7 @@ class WalletButton(TabButton):
 
 class ProfileButton(TabButton):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="profile-tab-button")
+        super().__init__(driver, xpath="//*[contains(@content-desc,'5 out of 5')]")
 
     def navigate(self):
         from views.profile_view import ProfileView
@@ -133,7 +133,7 @@ class ProfileButton(TabButton):
 
 class StatusButton(TabButton):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="status-tab-button")
+        super().__init__(driver, xpath="//*[contains(@content-desc,'tab, 4 out of 5')]")
 
     def navigate(self):
         from views.chat_view import ChatView
@@ -193,6 +193,14 @@ class AirplaneModeButton(Button):
         super(AirplaneModeButton, self).click()
         self.driver.press_keycode(4)
 
+class SignInPhraseText(Text):
+    def __init__(self, driver):
+        super().__init__(driver, translation_id="this-is-you-signing", suffix="//following-sibling::*[2]/android.widget.TextView")
+
+    @property
+    def list(self):
+        return self.text.split()
+
 
 class BaseView(object):
     def __init__(self, driver):
@@ -224,7 +232,9 @@ class BaseView(object):
         self.confirm_button = Button(self.driver, translation_id='confirm', uppercase=True)
 
         self.cross_icon = Button(self.driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[1]")
+        self.close_sticker_view_icon = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
         self.native_close_button = Button(self.driver, id="android:id/aerr_close")
+        self.close_button = Button(self.driver, accessibility_id="back-button")
         self.show_roots_button = Button(self.driver, accessibility_id="Show roots")
         self.get_started_button = Button(self.driver, translation_id="get-started")
         self.ok_got_it_button = Button(self.driver, translation_id="ok-got-it")
@@ -234,6 +244,8 @@ class BaseView(object):
         self.search_input = EditBox(self.driver, accessibility_id="search-input")
         self.share_button = Button(self.driver, accessibility_id="share-my-contact-code-button")
         self.qr_code_image = Button(self.driver, accessibility_id="qr-code-image")
+        self.sign_in_phrase = SignInPhraseText(self.driver)
+
 
 
         # external browser
@@ -242,7 +254,7 @@ class BaseView(object):
         self.apps_button = Button(self.driver, accessibility_id="Apps")
         self.status_app_icon = Button(self.driver, translation_id="status")
         self.airplane_mode_button = AirplaneModeButton(self.driver)
-        self.enter_qr_edit_box = EnterQRcodeEditBox(self.driver)
+        self.etest_nter_qr_edit_box = EnterQRcodeEditBox(self.driver)
 
         self.element_types = {
             'base': BaseElement,
@@ -596,6 +608,12 @@ class BaseView(object):
         self.driver.info('**Search for** `%s`' % keyword)
         self.search_input.click()
         self.search_input.send_keys(keyword)
+
+    def set_up_wallet_when_sending_tx(self):
+        self.driver.info("**Setting up wallet**")
+        phrase = self.sign_in_phrase.text
+        self.ok_got_it_button.click()
+        return phrase
 
     # Method-helper
     def write_page_source_to_file(self, full_path_to_file):

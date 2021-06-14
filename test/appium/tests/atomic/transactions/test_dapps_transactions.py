@@ -38,6 +38,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5342)
     @marks.critical
+    @marks.skip
     def test_sign_message_and_transactions_filters_from_daap(self):
         password = 'password_for_daap'
         home = SignInView(self.driver).recover_access(passphrase=transaction_senders['W']['passphrase'],

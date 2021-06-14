@@ -179,7 +179,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat.view_profile_button.click()
         if not device_2_chat.remove_from_contacts.is_element_displayed():
             self.errors.append("Remove from contacts in not shown after adding contact from 1-1 chat bar")
-        device_2_chat.back_button.click()
+        device_2_chat.close_button.click()
         device_2_chat.home_button.double_click()
         device_2_home.plus_button.click()
         device_2_contacts = device_2_home.start_new_chat_button.click()
@@ -198,6 +198,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5782)
     @marks.critical
+    @marks.skip
     def test_install_pack_and_send_sticker(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -252,7 +253,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('Stickerpack was not installed')
 
         device_2_home.just_fyi('check that can navigate to another user profile via long tap on sticker message')
-        device2_one_to_one_chat.cross_icon.click()
+        device2_one_to_one_chat.close_sticker_view_icon.click()
         device2_one_to_one_chat.chat_item.long_press_element()
         device2_one_to_one_chat.element_by_text('View Details').click()
         if not device2_one_to_one_chat.profile_add_to_contacts.is_element_displayed():
@@ -318,7 +319,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             element.scroll_to_element()
             if not element.is_element_displayed():
                 self.drivers[0].fail('Status of another user not shown when open another user profile')
-        device_2_chat.back_button.click()
+        device_2_chat.close_button.click()
 
         device_2_home.just_fyi('check options on long-press image for receiver')
         device_2_chat.image_chat_item.long_press_element()
@@ -389,6 +390,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5373)
     @marks.high
+    @marks.skip
     def test_send_and_open_links_with_previews(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -450,7 +452,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.element_by_translation_id("dont-ask").click()
         chat_1.element_by_translation_id("enable").wait_and_click()
         chat_1.element_by_translation_id("enable-all").wait_and_click()
-        chat_1.back_button.click()
+        chat_1.close_button.click()
         if not chat_1.get_preview_message_by_text(giphy_url).preview_image:
             self.errors.append("No preview is shown for %s" % giphy_url)
         for key in preview_urls:
@@ -655,6 +657,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
     @marks.testrail_id(5403)
     @marks.critical
+    @marks.skip
     def test_start_chat_with_ens_mention_in_one_to_one(self):
         home = SignInView(self.driver).create_user()
 

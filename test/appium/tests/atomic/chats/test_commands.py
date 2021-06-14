@@ -10,6 +10,7 @@ from views.sign_in_view import SignInView
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(6253)
     @marks.critical
+    @marks.skip
     def test_send_eth_in_1_1_chat_transaction_push(self):
         sender = transaction_senders['A']
         self.create_drivers(2)

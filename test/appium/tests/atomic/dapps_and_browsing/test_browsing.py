@@ -33,7 +33,8 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing.element_by_text_part('Свободный контент').wait_for_element(30)
 
         browsing.just_fyi("Check refresh button")
-        browsing.dapp_tab_button.double_click()
+        browsing.open_tabs_button.click()
+        browsing.empty_tab_button.click()
         url = 'app.uniswap.org'
         element_on_start_page = dapp.element_by_text('ETH')
         web_page = dapp.open_url(url)
@@ -50,6 +51,7 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(6210)
     @marks.high
+    @marks.skip
     def test_open_blocked_secure_not_secure_inlalid_offline_urls(self):
         home = SignInView(self.driver).create_user()
         dapp = home.dapp_tab_button.click()
@@ -65,7 +67,7 @@ class TestBrowsing(SingleDeviceTestCase):
             dapp_detail.continue_anyway_button.click()
             if dapp_detail.element_by_text('This site is blocked').is_element_displayed():
                 self.errors.append("Failed to open Dapp after 'Continue anyway' tapped for %s" % url)
-            home.dapp_tab_button.click()
+            home.tab.click()
 
         dapp.just_fyi('Checking connection is not secure warning')
         web_page = dapp.open_url('http://www.dvwa.co.uk')
@@ -99,6 +101,7 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5390)
     @marks.high
+    @marks.skip
     def test_delete_close_all_tabs(self):
         home_view = SignInView(self.driver).create_user()
         dapp_view = home_view.dapp_tab_button.click()
@@ -131,6 +134,7 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(6633)
     @marks.high
+    @marks.skip
     def test_browser_managing_bookmarks(self):
         home_view = SignInView(self.driver).create_user()
         dapp_view = home_view.dapp_tab_button.click()

@@ -106,7 +106,7 @@ class TestChatManagement(SingleDeviceTestCase):
         resolved_ens = '%s.stateofus.eth' % ens_user_ropsten['ens']
         if not chat.element_by_text(resolved_ens).is_element_displayed(10):
             self.errors.append('ENS name is not resolved after pasting chat key')
-        home.back_button.click()
+        home.close_button.click()
 
         home.just_fyi("Check that can paste public key from keyboard and start chat")
         home.join_public_chat(home.get_random_chat_name())
@@ -530,7 +530,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_1.send_message_button.click()
         chat_1.chat_element_by_text(username_2).click()
         chat_1.profile_send_message.wait_for_visibility_of_element(20)
-        chat_1.back_button.click()
+        chat_1.close_button.click()
         chat_2.driver.quit()
 
         device_1.just_fyi('Tap on userpic and check redirect to user profile')
@@ -550,7 +550,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi('Set nickname for user without adding him to contacts, check it in public chat')
         nickname = 'Name1'
         chat_1.set_nickname(nickname)
-        chat_1.back_button.click()
+        chat_1.close_button.click()
         expected_username = '%s %s' % (nickname, username_2)
         if chat_element.username.text != expected_username:
             self.errors.append('Username %s in public chat does not match expected %s' % (
@@ -561,7 +561,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_1.profile_add_to_contacts.click()
         if not chat_1.remove_from_contacts.is_element_displayed():
             self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
-        chat_1.back_button.click()
+        chat_1.close_button.click()
 
         home_2.just_fyi('check that can mention user with nickname in public chat')
         chat_1.select_mention_from_suggestion_list(username_in_list=nickname + ' ' + username_2,
@@ -580,7 +580,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         userprofile = profile_1.open_contact_from_profile(nickname)
         if not userprofile.remove_from_contacts.is_element_displayed():
             self.errors.append("'Add to contacts' is not changed to 'Remove from contacts' in profile contacts")
-        profile_1.get_back_to_home_view()
+        profile_1.close_button.click()
+        profile_1.home_button.double_click()
 
         device_1.just_fyi(
             'Check that user is added to contacts below "Start new chat" and you redirected to 1-1 on tap')
@@ -607,7 +608,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             self.errors.append("Nickname is changed after removing user from contacts")
 
         device_1.just_fyi('Check that user is removed from contact list in profile')
-        userprofile.back_button.click()
+        userprofile.close_button.click()
         if profile_1.element_by_text(nickname).is_element_displayed():
             self.errors.append('List of contacts in profile contains removed user')
         profile_1.home_button.click(desired_view='chat')

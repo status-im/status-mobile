@@ -14,15 +14,6 @@ class TransactionHistoryButton(Button):
         return TransactionsView(self.driver)
 
 
-class SignInPhraseText(Text):
-    def __init__(self, driver):
-        super().__init__(driver, translation_id="this-is-you-signing", suffix="//following-sibling::*[2]/android.widget.TextView")
-
-    @property
-    def list(self):
-        return self.text.split()
-
-
 class AssetCheckBox(SilentButton):
     def __init__(self, driver, asset_name):
         super().__init__(driver, xpath="//*[@text='%s']" % asset_name)
@@ -104,7 +95,6 @@ class WalletView(BaseView):
 
         self.address_text = Text(self.driver, accessibility_id="address-text")
 
-        self.sign_in_phrase = SignInPhraseText(self.driver)
         self.remind_me_later_button = Button(self.driver, translation_id="remind-me-later")
 
         self.total_amount_text = Text(self.driver, accessibility_id="total-amount-value-text")
@@ -187,6 +177,13 @@ class WalletView(BaseView):
         return ' '.join([element.text for element in self.sign_in_phrase.find_elements()])
 
     def set_up_wallet(self):
+        #self.driver.info("**Setting up wallet**")
+        #phrase = self.sign_in_phrase.text
+        #self.ok_got_it_button.click()
+        #return phrase
+        pass ## Temporary for easier edit of tests
+
+    def set_up_wallet_when_sending_tx(self):
         self.driver.info("**Setting up wallet**")
         phrase = self.sign_in_phrase.text
         self.ok_got_it_button.click()
@@ -279,7 +276,9 @@ class WalletView(BaseView):
         else:
             send_transaction_view.set_recipient_address(kwargs.get('recipient'))
         if kwargs.get('sign_transaction', True):
-            send_transaction_view.sign_transaction_button.click_until_presence_of_element(send_transaction_view.network_fee_button)
+            send_transaction_view.sign_transaction_button.click()
+            if self.sign_in_phrase.is_element_displayed():
+                self.set_up_wallet_when_sending_tx()
             send_transaction_view.sign_transaction(keycard=kwargs.get('keycard', False),
                                                    sender_password=kwargs.get('sender_password', common_password))
         return send_transaction_view

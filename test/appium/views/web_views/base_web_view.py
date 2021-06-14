@@ -27,7 +27,9 @@ class BaseWebView(BaseView):
         self.continue_anyway_button = Button(self.driver, translation_id="continue-anyway")
         self.open_tabs_button = Button(self.driver, accessibility_id="browser-open-tabs")
         self.close_all_button = Button(self.driver, accessibility_id="close-all")
+        self.empty_tab_button = Button(self.driver, accessibility_id="tab-itemEmpty tab")
         self.camera_image_in_dapp = BaseElement(self.driver, class_name="android.widget.Image")
+
 
         # bookmarks management
         self.add_remove_favorites_button = Button(self.driver, accessibility_id="add-remove-fav")

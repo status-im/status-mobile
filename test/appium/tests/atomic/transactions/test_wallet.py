@@ -196,7 +196,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                 self.errors.append('Transactions senders do not match!')
             if tx_to != expected_txs_list[tx_hash]['to']:
                 self.errors.append('Transactions recipients do not match!')
-            transactions_details.back_button.click()
+            transactions_details.close_button.click()
 
         self.errors.verify_no_errors()
 
@@ -455,7 +455,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         if token_view.decimals_input.text != decimals:
             self.errors.append('Decimals for custom token was not set')
         token_view.add_button.click()
-        token_view.back_button.click()
+        token_view.close_button.click()
         wallet_view.asset_by_name(symbol).scroll_to_element()
         if not wallet_view.asset_by_name(symbol).is_element_displayed():
             self.errors.append('Custom token is not shown on Wallet view')
@@ -472,6 +472,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6328)
     @marks.critical
+    @marks.skip
     def test_send_transaction_set_recipient_options(self):
         home = SignInView(self.driver).recover_access(wallet_users['D']['passphrase'])
         nickname = 'my_some_nickname'
@@ -488,7 +489,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         chat.chat_options.click()
         chat.view_profile_button.click_until_presence_of_element(chat.remove_from_contacts)
         chat.set_nickname(nickname)
-        chat.back_button.click()
+        chat.close_button.click()
         wallet = home.wallet_button.click()
         wallet.set_up_wallet()
         wallet.add_account(account_name=account_name)

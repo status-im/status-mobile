@@ -113,7 +113,7 @@ class SignInView(BaseView):
         self.access_key_button = AccessKeyButton(self.driver)
         self.generate_key_button = Button(self.driver, translation_id="generate-new-key")
         self.your_keys_more_icon = Button(self.driver, accessibility_id="your-keys-more-icon")
-        self.generate_new_key_button = Button(self.driver, accessibility_id="generate-a-new-key")
+        self.generate_new_key_button = Button(self.driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[2]")
         self.create_password_input = EditBox(self.driver,
                                              xpath="(//android.widget.EditText[@content-desc='password-input'])[1]")
         self.confirm_your_password_input = EditBox(self.driver,
@@ -135,7 +135,7 @@ class SignInView(BaseView):
         # restore from seed phrase
         self.seedphrase_input = EditBox(self.driver, xpath="//android.widget.EditText")
         self.enter_seed_phrase_button = Button(self.driver, accessibility_id="enter-seed-phrase-button")
-        self.reencrypt_your_key_button = Button(self.driver, translation_id="re-encrypt-key")
+        self.reencrypt_your_key_button = Button(self.driver, accessibility_id="onboarding-next-button")
 
         # migrate multiaccount
         self.options_button = Button(self.driver, accessibility_id="sign-in-options")

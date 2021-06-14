@@ -86,7 +86,7 @@ class ViewProfileButton(Button):
 
 class ChatOptionsButton(Button):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="chat-menu-button")
+        super().__init__(driver, xpath="(//android.widget.TextView[@content-desc='chat-name-text']/../..//android.widget.TextView)[last()]")
 
     def click(self):
         self.click_until_presence_of_element(ChatView(self.driver).clear_history_button)

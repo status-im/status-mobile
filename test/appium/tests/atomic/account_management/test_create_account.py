@@ -11,6 +11,7 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(5356)
     @marks.critical
+    @marks.skip
     def test_switch_users_special_char_password_and_add_new_account_logcat(self):
         sign_in = SignInView(self.driver)
 
@@ -132,6 +133,7 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(5363)
     @marks.high
+    @marks.skip
     def test_pass_phrase_validation(self):
         sign_in = SignInView(self.driver)
         sign_in.get_started_button.click_until_presence_of_element(sign_in.access_key_button)

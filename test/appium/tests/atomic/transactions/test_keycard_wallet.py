@@ -31,6 +31,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6290)
     @marks.high
+    @marks.skip
     def test_keycard_fetching_balance_after_offline(self):
         sender = wallet_users['A']
         sign_in_view = SignInView(self.driver)
@@ -66,6 +67,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6291)
     @marks.critical
+    @marks.skip
     def test_keycard_can_see_all_transactions_in_history(self):
         address = wallet_users['D']['address']
         passphrase = wallet_users['D']['passphrase']

@@ -117,6 +117,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5502)
     @marks.critical
+    @marks.skip
     def test_can_add_existing_ens(self):
         home = SignInView(self.driver).recover_access(ens_user['passphrase'])
         profile = home.profile_button.click()
@@ -157,7 +158,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.backup_recovery_phrase_button.click()
         profile_view.ok_continue_button.click()
         recovery_phrase = " ".join(profile_view.get_recovery_phrase().values())
-        profile_view.back_button.click()
+        profile_view.close_button.click()
         profile_view.back_button.click()
         public_key = profile_view.get_public_key_and_username()
         wallet_view = profile_view.wallet_button.click()
@@ -284,6 +285,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.critical
     @marks.testrail_id(5419)
     @marks.flaky
+    @marks.skip
     def test_logcat_backup_recovery_phrase(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -389,6 +391,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5738)
     @marks.high
+    @marks.skip
     def test_dapps_permissions(self):
         home = SignInView(self.driver).create_user()
         account_name = home.status_account_name
@@ -935,6 +938,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5762)
     @marks.high
+    @marks.skip
     def test_pair_devices_sync_one_to_one_contacts_nicknames_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -945,7 +949,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_profile.backup_recovery_phrase_button.click()
         device_1_profile.ok_continue_button.click()
         recovery_phrase = device_1_profile.get_recovery_phrase()
-        device_1_profile.back_button.click()
+        device_1_profile.close_button.click()
         device_1_profile.get_back_to_home_view()
         device_1_name = 'device_%s' % device_1.driver.number
         device_2_name = 'device_%s' % device_2.driver.number
@@ -969,7 +973,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_profile.open_contact_from_profile(basic_user['username'])
         nickname = 'my_basic_user'
         device_1_chat.set_nickname(nickname)
-        device_1_profile.back_button.click(2)
+        device_1_profile.close_button.double_click()
 
         device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
         device_2_profile.discover_and_advertise_device(device_2_name)
@@ -1007,7 +1011,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_profile.open_contact_from_profile(transaction_senders['A']['username'])
         nickname_after_sync = 'my_transaction sender'
         device_1_chat.set_nickname(nickname_after_sync)
-        device_1_profile.back_button.click()
+        device_1_profile.close_button.click()
         device_1.home_button.click(desired_view='chat')
         if not device_2_profile.element_by_text(nickname_after_sync).is_element_displayed(60):
             self.errors.append(
@@ -1035,6 +1039,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6226)
     @marks.critical
+    @marks.skip
     def test_ens_mentions_pn_and_nickname_in_public_and_1_1_chats(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]

@@ -8,6 +8,7 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(6645)
     @marks.critical
+    @marks.skip
     def test_restore_account_migrate_multiaccount_to_keycard(self):
         sign_in = SignInView(self.driver)
         seed = basic_user['passphrase']
@@ -259,7 +260,7 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         sign_in.just_fyi('Check assets after pairing keycard for recovered multiaccount')
         wallet_view = sign_in.wallet_button.click()
-        wallet_view.set_up_wallet()
+        # wallet_view.set_up_wallet()
         for asset in ['ETH', 'LXS']:
             if wallet_view.get_asset_amount_by_name(asset) == 0:
                 self.errors.append("%s value is not restored" % asset)
@@ -412,6 +413,7 @@ class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5689)
     @marks.critical
+    @marks.skip
     def test_keycard_create_login_resotore_unlock_same_seed(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])

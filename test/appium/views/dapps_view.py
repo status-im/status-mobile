@@ -41,7 +41,7 @@ class DappsView(BaseView):
 
         # Ens dapp
         self.ens_name_input = EditBox(self.driver, xpath="//android.widget.EditText")
-        self.check_ens_name = Button(self.driver, xpath="//android.widget.EditText//following-sibling::android.view.ViewGroup[1]")
+        self.check_ens_name = Button(self.driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[2]/../..")
 
         # Options on long press
         self.delete_bookmark_button = Button(self.driver, accessibility_id="delete-bookmark")
