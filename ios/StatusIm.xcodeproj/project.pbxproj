@@ -868,8 +868,8 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "x86_64 armv7 armv7s arm64";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = "armv7 armv7s x86_64 ";
+				VALID_ARCHS = "x86_64 arm64";
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 ";
 			};
 			name = Debug;
 		};
@@ -929,7 +929,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv7 armv7s arm64";
+				VALID_ARCHS = "arm64";
 			};
 			name = Release;
 		};
@@ -994,7 +994,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "arm64 armv7 armv7s";
+				VALID_ARCHS = "arm64";
 			};
 			name = Debug;
 		};
@@ -1052,7 +1052,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv7 armv7s arm64";
+				VALID_ARCHS = "arm64";
 			};
 			name = Release;
 		};
@@ -1134,8 +1134,8 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv7 armv7s arm64";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = "armv7 armv7s x86_64";
+				VALID_ARCHS = "arm64";
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64";
 			};
 			name = Debug;
 		};
@@ -1208,7 +1208,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "armv7 armv7s arm64";
+				VALID_ARCHS = "arm64";
 			};
 			name = Release;
 		};
