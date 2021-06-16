@@ -15,8 +15,8 @@
   [cofx chat-id]
   (when (get-in cofx [:db :chats chat-id :is-active])
     (fx/merge cofx
-              (navigation/pop-to-root-tab :chat-stack)
-              (models.chat/navigate-to-chat chat-id))))
+              {:dispatch-later [{:ms 1000 :dispatch [:chat.ui/navigate-to-chat chat-id]}]}
+              (navigation/pop-to-root-tab :chat-stack))))
 
 (fx/defn handle-chat-removed
   {:events [:chat-removed]}

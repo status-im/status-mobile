@@ -97,7 +97,7 @@
                             :selected-storage-type :default
                             :selected-id (-> result first :id)
                             :step :choose-key))))
-   :rnn-navigate-to-fx :choose-name})
+   :navigate-to-fx :choose-name})
 
 (fx/defn generate-and-derive-addresses
   {:events [:generate-and-derive-addresses]}

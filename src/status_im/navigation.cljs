@@ -15,7 +15,7 @@
   {:db
    (-> (assoc db :view-id go-to-view-id)
        (all-screens-params go-to-view-id screen-params))
-   :rnn-navigate-to-fx              go-to-view-id
+   :navigate-to-fx              go-to-view-id
    ;; simulate a navigate-to event so it can be captured be anon-metrics
    ::anon-metrics/transform-and-log {:coeffects {:event [:navigate-to go-to-view-id screen-params]}}})
 
@@ -27,12 +27,12 @@
 (fx/defn navigate-back
   {:events [:navigate-back]}
   [_]
-  {:rnn-navigate-back-fx nil})
+  {:navigate-back-fx nil})
 
 (fx/defn pop-to-root-tab
   {:events [:pop-to-root-tab]}
   [_ tab]
-  {:rnn-pop-to-root-tab-fx tab})
+  {:pop-to-root-tab-fx tab})
 
 (fx/defn set-stack-root
   {:events [:set-stack-root]}
@@ -42,7 +42,7 @@
 (fx/defn change-tab
   {:events [:navigate-change-tab]}
   [_ tab]
-  {:rnn-change-tab-fx tab})
+  {:change-tab-fx tab})
 
 (fx/defn navigate-replace
   {:events       [:navigate-replace]
@@ -71,30 +71,20 @@
   [_ root-id comp-id]
   {:init-root-with-component-fx [root-id comp-id]})
 
-(fx/defn rnn-navigate-to
-  {:events [:rnn-navigate-to]}
-  [_ key]
-  {:rnn-navigate-to-fx key})
-
-(fx/defn rnn-navigate-back
-  {:events [:rnn-navigate-back]}
-  [_]
-  {:rnn-navigate-back-fx nil})
-
 (fx/defn change-tab-count
   {:events [:change-tab-count]}
   [_ tab cnt]
-  {:rnn-change-tab-count-fx [tab cnt]})
+  {:change-tab-count-fx [tab cnt]})
 
 (fx/defn hide-signing-sheet
   {:events [:hide-signing-sheet]}
   [_]
-  {:rnn-hide-signing-sheet nil})
+  {:hide-signing-sheet nil})
 
 (fx/defn hide-select-acc-sheet
   {:events [:hide-select-acc-sheet]}
   [_]
-  {:rnn-hide-select-acc-sheet nil})
+  {:hide-select-acc-sheet nil})
 
 
 

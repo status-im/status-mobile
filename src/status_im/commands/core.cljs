@@ -11,7 +11,7 @@
               :commands/select-account
               {:message message
                :from (ethereum/get-default-account (:multiaccount/accounts db))})
-   :rnn-show-select-acc-sheet nil})
+   :show-select-acc-sheet nil})
 
 (fx/defn set-selected-account
   {:events [::set-selected-account]}

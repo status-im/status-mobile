@@ -522,7 +522,7 @@
 (re-frame/reg-fx
  :browser/show-browser-selection
  (fn [link]
-   (list-selection/browse link)))
+   (js/setTimeout #(list-selection/browse link) 500)))
 
 (re-frame/reg-fx
  :browser/show-web-browser-selection

@@ -216,7 +216,7 @@
                                                         :else :password)
                                   :formatted-data (if typed? (types/json->clj data) (ethereum/hex->text data))
                                   :keycard-step (when pinless? :connect)})
-        :rnn-show-signing-sheet nil}
+        :show-signing-sheet nil}
        #(when-not wallet-set-up-passed?
           {:dispatch-n [[:show-popover {:view :signing-phrase}]]})
        (when pinless?
@@ -230,7 +230,7 @@
        {:db               (assoc db
                                  :signing/queue (drop-last queue)
                                  :signing/tx (prepare-tx db tx))
-        :rnn-show-signing-sheet nil
+        :show-signing-sheet nil
         :dismiss-keyboard nil}
        #(when-not wallet-set-up-passed?
           {:dispatch-n [[:show-popover {:view :signing-phrase}]]})

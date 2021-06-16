@@ -195,7 +195,6 @@
 (reg-root-key-sub ::pagination-info :pagination-info)
 
 ;; keycard
-(reg-root-key-sub :keycard/new-account-sheet? :keycard/new-account-sheet?)
 (reg-root-key-sub :keycard/banner-hidden :keycard/banner-hidden)
 
 ;; delete profile

@@ -55,7 +55,6 @@
   [{:keys [db] :as cofx}]
   (fx/merge
    cofx
-   {:db (assoc db :keycard/new-account-sheet? false)}
    (signing.core/discard)
    (fn [{:keys [db]}]
      {:db (-> db
@@ -138,7 +137,8 @@
   {:events [:multiaccounts.login.callback/get-keycard-keys-success]}
   [{:keys [db] :as cofx} key-uid [encryption-public-key whisper-private-key :as creds]]
   (if (nil? creds)
-    (navigation/navigate-to-cofx cofx :keycard-login-pin nil)
+    (navigation/set-stack-root cofx :multiaccounts-stack [:multiaccounts
+                                                          :keycard-login-pin])
     (let [{:keys [identicon name]} (get-in db [:multiaccounts/multiaccounts key-uid])
           multiaccount-data        (types/clj->json {:name      name
                                                      :key-uid   key-uid

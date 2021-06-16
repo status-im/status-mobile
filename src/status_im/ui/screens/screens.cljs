@@ -537,6 +537,8 @@
 
            ;[Communities] Invite people
            {:name      :invite-people-community
+            ;;TODO dyn title
+            :options   {:topBar {:visible false}}
             :component communities.invite/invite
             :insets    {:bottom true}}
 

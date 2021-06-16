@@ -25,7 +25,6 @@
             [status-im.utils.mobile-sync :as mobile-network-utils]
             [status-im.utils.datetime :as datetime]
             status-im.wallet.recipient.core
-            [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
             [status-im.async-storage.core :as async-storage]
             [status-im.popover.core :as popover.core]
             [clojure.set :as clojure.set]))
@@ -765,8 +764,8 @@
   [{:keys [db]}]
   (let [wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])
         sign-phrase-showed? (get db :wallet/sign-phrase-showed?)]
-    {:dispatch-n [[:wallet.ui/pull-to-refresh] ;TODO temporary simple fix for v1
-                  [:show-popover {:view [signing-phrase/signing-phrase]}]]
+    {:dispatch-n [[:wallet.ui/pull-to-refresh]] ;TODO temporary simple fix for v1
+                  ;;[:show-popover {:view [signing-phrase/signing-phrase]}]]
      :db       (if (or wallet-set-up-passed? sign-phrase-showed?)
                  db
                  (assoc db :wallet/sign-phrase-showed? true))}))

@@ -15,8 +15,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.security :as security]
             [clojure.string :as string]
-            [quo.core :as quo]
-            [status-im.ui.components.bottom-panel.views :as bottom-panel]))
+            [quo.core :as quo]))
 
 (defn add-account-topbar [type]
   (let [title (case type
@@ -136,22 +135,6 @@
        :error-label       error-label
        :step              :export-key}]]))
 
-(defn pin-sheet []
-  (let [show-sheet? @(re-frame/subscribe [:keycard/new-account-sheet?])
-        {window-height :height} @(re-frame/subscribe [:dimensions/window])]
-    [bottom-panel/bottom-panel
-     show-sheet?
-     (fn [_]
-       [react/view {:style
-                    {:background-color        colors/white
-                     :border-top-right-radius 16
-                     :border-top-left-radius  16
-                     :padding-bottom          40
-                     :flex 1}}
-        [pin]])
-     window-height
-     #()]))
-
 (defview add-account []
   (letsubs [{:keys [type account] :as add-account} [:add-account]
             add-account-disabled? [:add-account-disabled?]
@@ -161,7 +144,7 @@
                                    :ignore-offset true}
      [add-account-topbar type]
      [react/scroll-view {:keyboard-should-persist-taps :handled
-                         :style                        {:flex 1}}
+                         :style                        {:flex 1 :padding-top 20}}
       (when (or (not keycard?)
                 (= type :watch))
         [settings add-account entered-password])
@@ -189,5 +172,4 @@
                (not keycard?)
                (not (spec/valid? ::multiaccounts.db/password
                                  @entered-password)))))}
-        (i18n/label :t/add-account)]}]
-     [pin-sheet]]))
+        (i18n/label :t/add-account)]}]]))

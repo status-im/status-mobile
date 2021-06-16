@@ -56,20 +56,19 @@
 (defn screen [key]
   (reagent.core/reactify-component
    (fn []
-     ^{:key (str "root" key @reloader/cnt)}
-     [react/safe-area-provider
-      [react/safe-area-consumer
-       (fn [insets]
-         (reagent/as-element
-          [react/view {:style (wrapped-screen-style
-                               {:insets (get-in screens [(keyword key) :insets])}
-                               insets)}
-           [inactive]
-           [(get-in (if js/goog.DEBUG (get-screens) screens) [(keyword key) :component])]]))]
-      (when js/goog.DEBUG
-        [reloader/reload-view])
-      (when config/keycard-test-menu-enabled?
-        [keycard.test-menu/test-menu])])))
+     (let [{:keys [component insets]} (get (if js/goog.DEBUG (get-screens) screens) (keyword key))]
+       ^{:key (str "root" key @reloader/cnt)}
+       [react/safe-area-provider
+        [react/safe-area-consumer
+         (fn [safe-insets]
+           (reagent/as-element
+            [react/view {:style (wrapped-screen-style
+                                 {:insets insets}
+                                 safe-insets)}
+             [inactive]
+             [component]]))]
+        (when js/goog.DEBUG
+          [reloader/reload-view])]))))
 
 (defn component [comp]
   (reagent/reactify-component
@@ -85,9 +84,7 @@
       [inactive]
       [popover/popover]
       (when js/goog.DEBUG
-        [reloader/reload-view])
-      (when config/keycard-test-menu-enabled?
-        [keycard.test-menu/test-menu])])))
+        [reloader/reload-view])])))
 
 (def sheet-comp
   (reagent/reactify-component
@@ -109,9 +106,7 @@
       [inactive]
       [signing/signing]
       (when js/goog.DEBUG
-        [reloader/reload-view])
-      (when config/keycard-test-menu-enabled?
-        [keycard.test-menu/test-menu])])))
+        [reloader/reload-view])])))
 
 (def select-acc-comp
   (reagent/reactify-component
@@ -121,6 +116,4 @@
       [inactive]
       [wallet.send.views/select-account]
       (when js/goog.DEBUG
-        [reloader/reload-view])
-      (when config/keycard-test-menu-enabled?
-        [keycard.test-menu/test-menu])])))
+        [reloader/reload-view])])))
