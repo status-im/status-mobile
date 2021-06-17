@@ -89,7 +89,7 @@
 
 (fx/defn handle-eip681 [cofx data]
   (fx/merge cofx
-            (choose-recipient/parse-eip681-uri-and-resolve-ens data)
+            (choose-recipient/parse-eip681-uri-and-resolve-ens data true)
             (navigation/navigate-to-cofx :wallet nil)))
 
 (fx/defn handle-referrer-url [_ {:keys [referrer]}]

@@ -140,6 +140,13 @@
       {:type  :browser
        :error :unsafe-link})))
 
+(defn match-browser-string [domain]
+  (if (security/safe-link? domain)
+    {:type :browser
+     :url  domain}
+    {:type  :browser
+     :error :unsafe-link}))
+
 ;; NOTE(Ferossgp): Better to handle eip681 also with router instead of regexp.
 (defn match-eip681 [uri]
   (if-let [message (eip681/parse-uri uri)]
@@ -217,6 +224,9 @@
 
       (ethereum/address? uri)
       (cb (address->eip681 uri))
+
+      (http/url? uri)
+      (cb (match-browser-string uri))
 
       :else
       (cb {:type :undefined
