@@ -74,16 +74,17 @@
             (:icon-04 @colors/theme)
             (:icon-02 @colors/theme))})
 
-(defn reply-container [image]
+(defn reply-container-image []
   {:border-top-left-radius     14
    :border-top-right-radius    14
    :border-bottom-right-radius 4
    :border-bottom-left-radius  14
    :margin                     2
    :flex-direction             :row
-   :background-color           (if image
-                                 (:ui-03 @colors/theme)
-                                 (:ui-02 @colors/theme))})
+   :background-color           (:ui-03 @colors/theme)})
+
+(defn reply-container []
+  {:flex-direction             :row})
 
 (defn reply-content []
   {:padding-vertical   6
@@ -91,7 +92,7 @@
    :flex               1})
 
 (defn close-button []
-  {:padding 4})
+  {:margin-top 3})
 
 (defn send-message-button []
   {:margin-vertical   4

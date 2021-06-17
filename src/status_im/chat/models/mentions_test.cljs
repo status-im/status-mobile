@@ -3,6 +3,60 @@
             [clojure.string :as string]
             [cljs.test :as test :include-macros true]))
 
+(def ->info-input
+  [[:text "H."]
+   [:mention
+    "@helpinghand.eth"]
+   [:text
+    " "]])
+(def ->info-expected
+  {:at-sign-idx 2
+   :mention-end 19
+   :new-text " "
+   :previous-text ""
+   :start 18
+   :end 18
+   :at-idxs [{:mention? true
+              :from 2
+              :to 17
+              :checked? true}]})
+
+(test/deftest test->info
+  (test/testing "->info base case"
+    (test/is (= ->info-expected (mentions/->info ->info-input)))))
+
+;; No mention
+(def mention-text-1 "parse-text")
+(def mention-text-result-1 [[:text "parse-text"]])
+
+;; Mention in the middle
+(def mention-text-2 "hey @0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073 he")
+(def mention-text-result-2 [[:text "hey "] [:mention "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073"] [:text " he"]])
+
+;; Mention at the beginning
+(def mention-text-3 "@0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073 he")
+(def mention-text-result-3 [[:mention "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073"] [:text " he"]])
+
+;; Mention at the end
+(def mention-text-4 "hey @0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073")
+(def mention-text-result-4 [[:text "hey "] [:mention "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073"]])
+
+;; Invalid mention
+(def mention-text-5 "invalid @0x04fBce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073")
+(def mention-text-result-5 [[:text "invalid @0x04fBce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073"]])
+
+(test/deftest test-to-input
+  (test/testing "only text"
+    (test/is (= mention-text-result-1 (mentions/->input-field mention-text-1))))
+  (test/testing "in the middle"
+    (test/is (= mention-text-result-2 (mentions/->input-field mention-text-2))))
+  (test/testing "at the beginning"
+    (test/is (= mention-text-result-3 (mentions/->input-field mention-text-3))))
+  (test/testing "at the end"
+    (test/is (= mention-text-result-4 (mentions/->input-field mention-text-4))))
+  (test/testing "invalid"
+    (test/is (= mention-text-result-5 (mentions/->input-field mention-text-5)))))
+
 (test/deftest test-replace-mentions
   (let [users {"User Number One"
                {:name       "User Number One"

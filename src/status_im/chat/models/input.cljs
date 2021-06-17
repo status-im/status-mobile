@@ -1,7 +1,10 @@
 (ns status-im.chat.models.input
   (:require [clojure.string :as string]
             [goog.object :as object]
+            [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
             [status-im.chat.constants :as chat.constants]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.chat.models :as chat]
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
@@ -112,8 +115,24 @@
               {:db (-> db
                        (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message]
                                  message)
+                       (assoc-in [:chat/inputs current-chat-id :metadata :editing-message] nil)
                        (update-in [:chat/inputs current-chat-id :metadata]
                                   dissoc :sending-image))})))
+
+(fx/defn edit-message
+  "Sets reference to previous chat message and focuses on input"
+  {:events [:chat.ui/edit-message]}
+  [{:keys [db] :as cofx} message]
+  (let [current-chat-id (:current-chat-id db)
+
+        text (get-in message [:content :text])]
+    {:dispatch [:chat.ui.input/set-chat-input-text text current-chat-id]
+     :db (-> db
+             (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
+                       message)
+             (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
+             (update-in [:chat/inputs current-chat-id :metadata]
+                        dissoc :sending-image))}))
 
 (fx/defn cancel-message-reply
   "Cancels stage message reply"
@@ -152,8 +171,20 @@
   (fx/merge cofx
             {:db (-> db
                      (assoc-in [:chat/inputs current-chat-id :metadata :sending-image] nil)
+                     (assoc-in [:chat/inputs current-chat-id :metadata :editing-message] nil)
                      (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil))}
             (set-chat-input-text nil current-chat-id)))
+
+(fx/defn cancel-message-edit
+  "Cancels stage message edit"
+  {:events [:chat.ui/cancel-message-edit]}
+  [{:keys [db] :as cofx}]
+  (let [current-chat-id (:current-chat-id db)]
+    (fx/merge cofx
+              {:set-input-text [current-chat-id ""]}
+              (clean-input current-chat-id)
+              (mentions/clear-mentions)
+              (mentions/clear-cursor))))
 
 (fx/defn send-messages [{:keys [db] :as cofx} input-text current-chat-id]
   (let [image-messages (build-image-messages cofx current-chat-id)
@@ -161,7 +192,7 @@
         messages (keep identity (conj image-messages text-message))]
     (when (seq messages)
       (fx/merge cofx
-                (clean-input cofx (:current-chat-id db))
+                (clean-input (:current-chat-id db))
                 (process-cooldown)
                 (chat.message/send-messages messages)))))
 
@@ -197,14 +228,28 @@
                                                :pack pack}
                                      :text    (i18n/label :t/update-to-see-sticker)})))
 
+(fx/defn send-edited-message [{:keys [db] :as cofx} text {:keys [message-id]}]
+  (fx/merge
+   cofx
+   {::json-rpc/call [{:method     "wakuext_editMessage"
+                      :params     [{:id message-id :text text}]
+                      :js-response true
+                      :on-error #(log/error "failed to edit message " %)
+                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
+   (clean-input (:current-chat-id db))
+   (process-cooldown)))
+
 (fx/defn send-current-message
   "Sends message from current chat input"
   {:events [:chat.ui/send-current-message]}
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
-  (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
+  (let [{:keys [input-text metadata]} (get-in db [:chat/inputs current-chat-id])
+        editing-message (:editing-message metadata)
         input-text-with-mentions (mentions/check-mentions cofx input-text)]
     (fx/merge cofx
-              (send-messages input-text-with-mentions current-chat-id)
+              (if editing-message
+                (send-edited-message input-text-with-mentions editing-message)
+                (send-messages input-text-with-mentions current-chat-id))
               (mentions/clear-mentions)
               (mentions/clear-cursor))))
 

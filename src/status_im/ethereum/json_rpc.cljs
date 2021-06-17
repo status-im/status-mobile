@@ -37,6 +37,7 @@
    "waku_markTrustedPeer" {}
    "wakuext_post" {}
    "wakuext_requestAllHistoricMessages" {}
+   "wakuext_editMessage" {}
    "wakuext_fillGaps" {}
    "wakuext_syncChatFromSyncedFrom" {}
    "wakuext_createPublicChat" {}

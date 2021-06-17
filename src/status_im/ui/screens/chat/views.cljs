@@ -7,6 +7,8 @@
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
+            [status-im.ui.screens.chat.components.reply :as reply]
+            [status-im.ui.screens.chat.components.edit :as edit]
             [status-im.ui.components.react :as react]
             [quo.animated :as animated]
             [quo.react-native :as rn]
@@ -348,14 +350,21 @@
               [invitation-bar chat-id]])
            [components/autocomplete-mentions text-input-ref max-bottom-space]
            (when show-input?
+             ;; NOTE: this only accepts two children
              [accessory/view {:y               position-y
                               :pan-state       pan-state
                               :has-panel       (boolean @active-panel)
                               :on-close        on-close
                               :on-update-inset on-update}
-              [components/chat-toolbar
-               {:chat-id          chat-id
-                :active-panel     @active-panel
-                :set-active-panel set-active-panel
-                :text-input-ref   text-input-ref}]
+              [react/view
+               [edit/edit-message-auto-focus-wrapper text-input-ref]
+               [reply/reply-message-auto-focus-wrapper text-input-ref]
+               ;; We set the key so we can force a re-render as
+               ;; it does not rely on ratom but just atoms
+               ^{:key (str @components/chat-input-key "chat-input")}
+               [components/chat-toolbar
+                {:chat-id          chat-id
+                 :active-panel     @active-panel
+                 :set-active-panel set-active-panel
+                 :text-input-ref   text-input-ref}]]
               [bottom-sheet @active-panel]])]))})))

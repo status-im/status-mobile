@@ -29,10 +29,12 @@
   (letsubs [contact-name [:contacts/contact-name-by-identity from]]
     contact-name))
 
+(def edited-at-text (str " ⌫ " (i18n/label :t/edited)))
+
 (defn message-timestamp
   ([message]
    [message-timestamp message false])
-  ([{:keys [timestamp-str outgoing content outgoing-status]} justify-timestamp?]
+  ([{:keys [timestamp-str outgoing content outgoing-status edited-at]} justify-timestamp?]
    [react/view (when justify-timestamp?
                  {:align-self                       :flex-end
                   :position                         :absolute
@@ -52,7 +54,9 @@
         :color               colors/white
         :accessibility-label (name outgoing-status)}])
     [react/text {:style (style/message-timestamp-text outgoing)}
-     timestamp-str]]))
+     (str
+      timestamp-str
+      (when edited-at edited-at-text))]]))
 
 (defview quoted-message
   [_ {:keys [from parsed-text image]} outgoing current-public-key public?]
@@ -161,10 +165,10 @@
 (defn render-parsed-text [message tree]
   (reduce (fn [acc e] (render-block message acc e)) [:<>] tree))
 
-(defn render-parsed-text-with-timestamp [{:keys [timestamp-str outgoing] :as message} tree]
+(defn render-parsed-text-with-timestamp [{:keys [timestamp-str outgoing edited-at] :as message} tree]
   (let [elements (render-parsed-text message tree)
         timestamp [react/text {:style (style/message-timestamp-placeholder)}
-                   (str (if outgoing "        " "  ") timestamp-str)]
+                   (str (if outgoing "        " "  ") timestamp-str (when edited-at edited-at-text))]
         last-element (peek elements)]
     ;; Using `nth` here as slightly faster than `first`, roughly 30%
     ;; It's worth considering pure js structures for this code path as
@@ -334,6 +338,9 @@
 (defn on-long-press-fn [on-long-press message content]
   (on-long-press
    (concat
+    (when (:outgoing message)
+      [{:on-press #(re-frame/dispatch [:chat.ui/edit-message message])
+        :label (i18n/label :t/edit)}])
     (when (:show-input? message)
       [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
         :label    (i18n/label :t/message-reply)}])

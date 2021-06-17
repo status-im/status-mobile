@@ -374,7 +374,7 @@
                                (< to+1 start)))
                              entry
 
-                             ;; starts before change intersects with it 
+                             ;; starts before change intersects with it
                              (and (< from start)
                                   (>= to+1 start))
                              {:from     from
@@ -516,8 +516,8 @@
         {:keys [new-text at-idxs start end] :as state}
         (get-in db [:chats/mentions chat-id :mentions])
         new-text (or new-text text)]
-    (log/debug "[mentions] calculate suggestions"
-               "state" state)
+    (log/info "[mentions] calculate suggestions"
+              "state" state)
     (if-not (seq at-idxs)
       {:db (-> db
                (assoc-in [:chats/mention-suggestions chat-id] nil)
@@ -646,3 +646,144 @@
          (update user :searchable-phrases (fnil concat []) new-words))))
    user
    [alias name nickname]))
+
+(defn is-valid-terminating-character? [c]
+  (case c
+    "\t"  true ; tab
+    "\n" true ; newline
+    "\f" true ; new page
+    "\r" true ; carriage return
+    " " true ; whitespace
+    "," true
+    "." true
+    ":" true
+    ";" true
+    false))
+
+(def hex-reg #"[0-9a-f]")
+
+(defn is-public-key-character? [c]
+  (.test hex-reg c))
+
+(def mention-length 133)
+
+(defn ->input-field
+  "->input-field takes a string with mentions in the @0xpk format
+  and retuns a list in the format
+  [{:type :text :text text} {:type :mention :text 0xpk}...]"
+  [text]
+  (let [{:keys [text
+                current-mention-length
+                current-text
+                current-mention]}
+        (reduce (fn [{:keys [text
+                             current-text
+                             current-mention
+                             current-mention-length]} character]
+                  (let [is-pk-character (is-public-key-character? character)
+                        is-termination-character (is-valid-terminating-character? character)]
+                    (cond
+                      ;; It's a valid mention.
+                      ;; Add any text that is before if present
+                      ;; and add the mention.
+                      ;; Set the text to the new termination character
+                      (and (= current-mention-length mention-length)
+                           is-termination-character)
+                      {:current-mention-length 0
+                       :current-mention ""
+                       :current-text character
+                       :text (cond-> text
+                               (seq current-text)
+                               (conj [:text current-text])
+                               :always
+                               (conj [:mention current-mention]))}
+
+
+                      ;; It's either a pk character, or the `x` in the pk
+                      ;; in this case add the text to the mention and continue
+
+
+                      (or
+                       (and is-pk-character
+                            (pos? current-mention-length))
+                       (and (= 2 current-mention-length)
+                            (= "x" character)))
+                      {:current-mention-length (inc current-mention-length)
+                       :current-text current-text
+                       :current-mention (str current-mention character)
+                       :text text}
+
+
+                      ;; The beginning of a mention, discard the @ sign
+                      ;; and start following a mention
+
+
+                      (= "@" character)
+                      {:current-mention-length 1
+                       :current-mention ""
+                       :current-text current-text
+                       :text text}
+
+                      ;; Not a mention character, but we were following a mention
+                      ;; discard everything up to know an count as text
+                      (and (not is-pk-character)
+                           (pos? current-mention-length))
+                      {:current-mention-length 0
+                       :current-text (str current-text "@" current-mention character)
+                       :current-mention ""
+                       :text text}
+
+                      ;; Just a normal text character
+                      :else
+                      {:current-mention-length 0
+                       :current-mention ""
+                       :current-text (str current-text character)
+                       :text text})))
+                {:current-mention-length 0
+                 :current-text ""
+                 :current-mention ""
+                 :text []}
+                text)]
+    ;; Process any remaining mention/text
+    (cond-> text
+      (seq current-text)
+      (conj [:text current-text])
+      (= current-mention-length mention-length)
+      (conj [:mention current-mention]))))
+
+(defn ->info
+  "->info convert a input-field representation of mentions to
+  a db based representation used to indicate where mentions are placed in the
+  input string"
+  [m]
+  (reduce (fn [{:keys [start end at-idxs at-sign-idx mention-end]} [t text]]
+            (if (= :mention t)
+              (let [new-mention {:checked? true
+                                 :mention? true
+                                 :from mention-end
+                                 :to (+ start (count text))}
+                    has-previous? (seq at-idxs)]
+                {:new-text (last text)
+                 :previous-text ""
+                 :start (+ start (count text))
+                 :end (+ end (count text))
+                 :at-idxs (cond-> at-idxs
+                            has-previous?
+                            (-> pop
+                                (conj  (assoc (peek at-idxs) :next-at-idx mention-end)))
+                            :always
+                            (conj new-mention))
+                 :at-sign-idx mention-end
+                 :mention-end (+ mention-end (count text))})
+              {:new-text (last text)
+               :previous-text ""
+               :start (+ start (count text))
+               :end (+ end (count text))
+               :at-idxs at-idxs
+               :at-sign-idx at-sign-idx
+               :mention-end (+ mention-end (count text))}))
+          {:start -1
+           :end -1
+           :at-idxs []
+           :mention-end 0}
+          m))

@@ -6,7 +6,9 @@
             [quo.components.text :as text]
             [quo.design-system.colors :as colors]
             [status-im.ui.screens.chat.components.style :as styles]
+            [status-im.utils.fx :as fx]
             [status-im.ui.screens.chat.components.reply :as reply]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.chat.constants :as chat.constants]
             [status-im.utils.utils :as utils.utils]
             [quo.components.animated.pressable :as pressable]
@@ -109,6 +111,13 @@
 
 (defonce input-texts (atom {}))
 (defonce mentions-enabled (reagent/atom {}))
+(defonce chat-input-key (reagent/atom 1))
+
+(defn force-text-input-update!
+  "force-text-input-update! forces the
+  input to re-render, necessary when we are setting value"
+  []
+  (swap! chat-input-key inc))
 
 (defn show-send [{:keys [actions-ref send-ref sticker-ref]}]
   (quo.react/set-native-props actions-ref #js {:width 0 :left -88})
@@ -165,6 +174,37 @@
     (when platform/ios?
       (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
+(re-frame/reg-fx
+ :set-input-text
+ (fn [[chat-id text]]
+   ;; We enable mentions
+   (swap! mentions-enabled assoc chat-id true)
+   (on-text-change text chat-id)
+   ;; We update the key so that we force a refresh of the text input, as those
+   ;; are not ratoms
+   (force-text-input-update!)))
+
+(fx/defn set-input-text
+  "Set input text for current-chat. Takes db and input text and cofx
+  as arguments and returns new fx. Always clear all validation messages."
+  {:events [:chat.ui.input/set-chat-input-text]}
+  [{:keys [db] :as cofx} text chat-id]
+  (let [text-with-mentions (mentions/->input-field text)
+        contacts (:contacts db)
+        hydrated-mentions (map (fn [[t mention :as e]]
+                                 (if (= t :mention)
+                                   [:mention (str "@" (multiaccounts/displayed-name
+                                                       (or (get contacts mention)
+                                                           {:public-key mention})))]
+                                   e)) text-with-mentions)
+        info (mentions/->info hydrated-mentions)]
+    {:set-input-text [chat-id text]
+     :db
+     (-> db
+         (assoc-in [:chats/cursor chat-id] (:mention-end info))
+         (assoc-in [:chat/inputs-with-mentions chat-id] hydrated-mentions)
+         (assoc-in [:chats/mentions chat-id :mentions] info))}))
+
 (defn on-text-input [mentionable-users chat-id args]
   (let [native-event (.-nativeEvent ^js args)
         text (.-text ^js native-event)
@@ -193,6 +233,7 @@
         timeout-id (atom nil)
         last-text-change (atom nil)
         mentions-enabled (get @mentions-enabled chat-id)]
+
     [rn/text-input
      {:style                    (styles/text-input)
       :ref                      (:text-input-ref refs)
@@ -281,21 +322,6 @@
 (defn on-chat-toolbar-layout [^js ev]
   (reset! chat-toolbar-height (-> ev .-nativeEvent .-layout .-height)))
 
-(defn focus-input-on-reply [reply had-reply text-input-ref]
-  ;;when we show reply we focus input
-  (when-not (= reply @had-reply)
-    (reset! had-reply reply)
-    (when reply
-      (js/setTimeout #(input-focus text-input-ref) 250))))
-
-(defn reply-message [text-input-ref]
-  (let [had-reply (atom nil)]
-    (fn []
-      (let [reply @(re-frame/subscribe [:chats/reply-message])]
-        (focus-input-on-reply reply had-reply text-input-ref)
-        (when reply
-          [reply/reply-message reply])))))
-
 (defn send-image []
   (let [sending-image @(re-frame/subscribe [:chats/sending-image])]
     (when (seq sending-image)
@@ -331,10 +357,9 @@
             show-send (or sending-image (seq (get @input-texts chat-id)))]
         [rn/view {:style     (styles/toolbar)
                   :on-layout on-chat-toolbar-layout}
-         ;;EXTENSIONS and IMAGE buttons
+           ;;EXTENSIONS and IMAGE buttons
          [actions extensions image show-send actions-ref active-panel set-active-panel]
          [rn/view {:style (styles/input-container)}
-          [reply-message text-input-ref]
           [send-image]
           [rn/view {:style styles/input-row}
            [text-input {:chat-id          chat-id
@@ -348,17 +373,18 @@
                                 (re-frame/dispatch [:chat.ui/send-current-message]))])]
 
            ;;STICKERS and AUDIO buttons
-           [rn/view {:style (merge {:flex-direction :row} (when show-send {:width 0 :right -100}))
-                     :ref   sticker-ref}
-            (when stickers
-              [touchable-stickers-icon {:panel               :stickers
-                                        :accessibility-label :show-stickers-icon
-                                        :active              active-panel
-                                        :input-focus         #(input-focus text-input-ref)
-                                        :set-active          set-active-panel}])
-            (when audio
-              [touchable-audio-icon {:panel               :audio
-                                     :accessibility-label :show-audio-message-icon
-                                     :active              active-panel
-                                     :input-focus         #(input-focus text-input-ref)
-                                     :set-active          set-active-panel}])]]]]))))
+           (when-not @(re-frame/subscribe [:chats/edit-message])
+             [rn/view {:style (merge {:flex-direction :row} (when show-send {:width 0 :right -100}))
+                       :ref   sticker-ref}
+              (when stickers
+                [touchable-stickers-icon {:panel               :stickers
+                                          :accessibility-label :show-stickers-icon
+                                          :active              active-panel
+                                          :input-focus         #(input-focus text-input-ref)
+                                          :set-active          set-active-panel}])
+              (when audio
+                [touchable-audio-icon {:panel               :audio
+                                       :accessibility-label :show-audio-message-icon
+                                       :active              active-panel
+                                       :input-focus         #(input-focus text-input-ref)
+                                       :set-active          set-active-panel}])])]]]))))
