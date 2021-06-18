@@ -112,8 +112,8 @@ class SignInView(BaseView):
         self.sign_in_button = SignInButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
         self.generate_key_button = Button(self.driver, translation_id="generate-new-key")
-        self.your_keys_more_icon = Button(self.driver, accessibility_id="your-keys-more-icon")
-        self.generate_new_key_button = Button(self.driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[2]")
+        self.your_keys_more_icon = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
+        self.generate_new_key_button = Button(self.driver, accessibility_id="generate-a-new-key")
         self.create_password_input = EditBox(self.driver,
                                              xpath="(//android.widget.EditText[@content-desc='password-input'])[1]")
         self.confirm_your_password_input = EditBox(self.driver,
@@ -138,7 +138,7 @@ class SignInView(BaseView):
         self.reencrypt_your_key_button = Button(self.driver, accessibility_id="onboarding-next-button")
 
         # migrate multiaccount
-        self.options_button = Button(self.driver, accessibility_id="sign-in-options")
+        self.options_button = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
         self.manage_keys_and_storage_button = Button(self.driver, accessibility_id="manage-keys-and-storage-button")
         self.multi_account_on_login_button = MultiAccountOnLoginButton(self.driver)
         self.move_keystore_file_option =  Button(self.driver, accessibility_id="move-keystore-file")

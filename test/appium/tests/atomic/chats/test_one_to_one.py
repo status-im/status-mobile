@@ -198,7 +198,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5782)
     @marks.critical
-    @marks.skip
     def test_install_pack_and_send_sticker(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -390,7 +389,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5373)
     @marks.high
-    @marks.skip
     def test_send_and_open_links_with_previews(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -452,7 +450,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.element_by_translation_id("dont-ask").click()
         chat_1.element_by_translation_id("enable").wait_and_click()
         chat_1.element_by_translation_id("enable-all").wait_and_click()
-        chat_1.close_button.click()
+        chat_1.close_modal_view_from_chat_button.click()
         if not chat_1.get_preview_message_by_text(giphy_url).preview_image:
             self.errors.append("No preview is shown for %s" % giphy_url)
         for key in preview_urls:
@@ -657,7 +655,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
     @marks.testrail_id(5403)
     @marks.critical
-    @marks.skip
     def test_start_chat_with_ens_mention_in_one_to_one(self):
         home = SignInView(self.driver).create_user()
 
@@ -668,7 +665,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         for element in (chat.profile_block_contact, chat.remove_from_contacts, chat.profile_send_message):
             if not element.is_element_displayed():
                 self.errors.append('Expected %s is not visible' % element.locator)
-        chat.get_back_to_home_view()
+        chat.close_button.click()
+        chat.home_button.click()
 
         home.just_fyi('Start new chat with ENS and check that ENS is resolved')
         ens = ens_user_ropsten['ens']
@@ -686,7 +684,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         home.just_fyi('Set nickname and mention user by nickname in 1-1 chat')
         russian_nickname = 'МОЙ дорогой ДРУх'
         chat.set_nickname(russian_nickname)
-        chat.back_button.click()
+        chat.close_button.click()
         chat.select_mention_from_suggestion_list(russian_nickname + ' @' + ens)
         chat.chat_element_by_text('%s hey!' % russian_nickname).click()
         if not chat.profile_block_contact.is_element_displayed():
@@ -694,7 +692,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 'No redirect to user profile after tapping on message with mention (nickname) in 1-1 chat')
 
         home.just_fyi('My_profile button at Start new chat view opens own QR code with public key pop-up')
-        chat.back_button.click()
+        chat.close_button.click()
         home.home_button.double_click()
         home.plus_button.click()
         home.start_new_chat_button.click()

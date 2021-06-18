@@ -73,7 +73,7 @@ class AccountColorButton(Button):
     def select_color_by_position(self, position: int):
         self.click()
         self.driver.find_element_by_xpath(
-            "((//android.widget.ScrollView)[last()]/*/*)[%s]" % str(position+1)).click()
+            "((//android.widget.ScrollView)[1]/*/*)[%s]" % str(position+1)).click()
 
 
 class WalletView(BaseView):
@@ -125,6 +125,7 @@ class WalletView(BaseView):
         self.add_account_generate_account_button = Button(self.driver, accessibility_id="add-account-add-account-button")
         self.status_account_total_usd_value = Text(self.driver, accessibility_id="account-total-value")
         self.scan_qr_button = Button(self.driver, accessibility_id="accounts-qr-code")
+        self.close_send_transaction_view_button = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
 
         # individual account settings
         self.account_settings_button = Button(self.driver, translation_id="account-settings")

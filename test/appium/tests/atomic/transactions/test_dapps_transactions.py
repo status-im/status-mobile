@@ -38,8 +38,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5342)
     @marks.critical
-    @marks.skip
-    def test_sign_message_and_transactions_filters_from_daap(self):
+    def test_sign_message_and_2tx_in_batch_and_transactions_filters_from_daap(self):
         password = 'password_for_daap'
         home = SignInView(self.driver).recover_access(passphrase=transaction_senders['W']['passphrase'],
                                                            password=password)
@@ -51,6 +50,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         wallet.just_fyi("Checking signing message")
         send_transaction = status_test_dapp.sign_message_button.click()
+        status_test_dapp.set_up_wallet_when_sending_tx()
         if not send_transaction.element_by_text("Test message").is_element_displayed():
             self.errors.append("No message shown when signing!")
         send_transaction.enter_password_input.send_keys(password)

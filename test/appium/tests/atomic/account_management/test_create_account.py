@@ -11,7 +11,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(5356)
     @marks.critical
-    @marks.skip
     def test_switch_users_special_char_password_and_add_new_account_logcat(self):
         sign_in = SignInView(self.driver)
 
@@ -44,9 +43,9 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.just_fyi('Create another multiaccount')
         if sign_in.ok_button.is_element_displayed():
             sign_in.ok_button.click()
+        sign_in.back_button.click()
         sign_in.your_keys_more_icon.click()
         sign_in.generate_new_key_button.click()
-        sign_in.generate_key_button.click()
         sign_in.next_button.click()
         sign_in.next_button.click()
         sign_in.create_password_input.set_value(common_password)
@@ -133,7 +132,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(5363)
     @marks.high
-    @marks.skip
     def test_pass_phrase_validation(self):
         sign_in = SignInView(self.driver)
         sign_in.get_started_button.click_until_presence_of_element(sign_in.access_key_button)
@@ -165,7 +163,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.just_fyi("check that seed phrase is required (can't be empty)")
         sign_in.enter_seed_phrase_button.click()
         sign_in.next_button.click()
-        if sign_in.reencrypt_your_key_button.is_element_displayed():
+        if sign_in.element_by_translation_id('keycard-recovery-success-header').is_element_displayed():
             self.errors.append("Possible to create account with empty seed phrase")
         for validation in validations:
             sign_in.just_fyi("Checking %s" % validation.get('case'))
@@ -195,7 +193,7 @@ class TestCreateAccount(SingleDeviceTestCase):
             sign_in.just_fyi('check that "Next" is disabled unless we use allowed count of words')
             if words_count != 12 or 15 or 18 or 21 or 24:
                 sign_in.next_button.click()
-                if sign_in.reencrypt_your_key_button.is_element_displayed():
+                if sign_in.element_by_translation_id('keycard-recovery-success-header').is_element_displayed():
                     self.errors.append("Possible to create account with wrong count (%s) of words" % words_count)
 
             sign_in.just_fyi('check behavior for popup "Custom seed phrase"')

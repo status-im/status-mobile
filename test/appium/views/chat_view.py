@@ -401,6 +401,7 @@ class ChatView(BaseView):
         self.view_profile_by_avatar_button = Button(self.driver, accessibility_id="member-photo")
         self.user_options = Button(self.driver, accessibility_id="options")
         self.open_in_status_button = OpenInStatusButton(self.driver)
+        self.close_modal_view_from_chat_button = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
 
         # Chat input
         self.chat_message_input = EditBox(self.driver, accessibility_id="chat-message-input")

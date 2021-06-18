@@ -10,7 +10,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(3998)
     @marks.high
-    @marks.skip
     def test_offline_add_new_group_chat_member(self):
         message_before_adding = 'message before adding new user'
         message_after_adding = 'message from new member'

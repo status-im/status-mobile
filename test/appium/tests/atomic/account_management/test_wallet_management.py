@@ -11,11 +11,19 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5335)
     @marks.high
-    @marks.skip
     def test_wallet_set_up(self):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(transaction_senders['A']['passphrase'])
         wallet = sign_in.wallet_button.click()
+
+        wallet.just_fyi("Initiating some transaction so the wallet signing phrase pop-up appears")
+        wallet.accounts_status_account.click()
+        send_transaction_view = wallet.send_transaction_button.click()
+        send_transaction_view.amount_edit_box.click()
+        send_transaction_view.amount_edit_box.set_value("0")
+        send_transaction_view.set_recipient_address("0x"+transaction_senders['A']['address'])
+        send_transaction_view.sign_transaction_button.click()
+
         texts = list(map(sign_in.get_translation_by_key,
                          ["this-is-you-signing", "three-words-description", "three-words-description-2"]))
         wallet.just_fyi('Check tests in set up wallet popup')
@@ -28,6 +36,8 @@ class TestWalletManagement(SingleDeviceTestCase):
 
         wallet.just_fyi('Check popup will reappear if tap on "Remind me later"')
         wallet.remind_me_later_button.click()
+        send_transaction_view.cancel_button.click()
+        wallet.wallet_button.click()
         wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.amount_edit_box.set_value('0')
@@ -81,7 +91,6 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5346)
     @marks.high
-    @marks.skip
     def test_collectible_from_wallet(self):
         passphrase = wallet_users['F']['passphrase']
         home = SignInView(self.driver).recover_access(passphrase=passphrase)
@@ -104,11 +113,13 @@ class TestWalletManagement(SingleDeviceTestCase):
         send_transaction.select_asset_button.click()
         if send_transaction.asset_by_name("CryptoKitties").is_element_displayed():
             self.errors.append('Collectibles can be sent from wallet')
-        wallet.close_button.double_click()
+        wallet.close_send_transaction_view_button.double_click()
 
         wallet.just_fyi('Check "Open in OpenSea"')
         wallet.element_by_translation_id("check-on-opensea").click()
-
+        web_view = wallet.get_webview_view()
+        web_view.wait_for_d_aap_to_load(10)
+        wallet.swipe_by_custom_coordinates(0.5,0.8,0.5,0.7)
         wallet.element_by_text('Sign In').wait_and_click(60)
         if not wallet.allow_button.is_element_displayed(40):
             self.errors.append('Can not sign in in OpenSea dapp')
@@ -181,7 +192,6 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(6224)
     @marks.critical
-    @marks.skip
     def test_add_account_to_multiaccount_instance_generate_new(self):
         home = SignInView(self.driver).create_user()
         wallet = home.wallet_button.click()
@@ -209,7 +219,6 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(6244)
     @marks.high
-    @marks.skip
     def test_add_and_delete_watch_only_account_to_multiaccount_instance(self):
         home = SignInView(self.driver).create_user()
         wallet = home.wallet_button.click()

@@ -472,7 +472,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6328)
     @marks.critical
-    @marks.skip
     def test_send_transaction_set_recipient_options(self):
         home = SignInView(self.driver).recover_access(wallet_users['D']['passphrase'])
         nickname = 'my_some_nickname'

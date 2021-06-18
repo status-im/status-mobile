@@ -20,6 +20,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.logout()
         if sign_in.ok_button.is_element_displayed():
             sign_in.ok_button.click()
+        sign_in.back_button.click()
         sign_in.your_keys_more_icon.click()
         sign_in.generate_new_key_button.click()
         sign_in.generate_key_button.click()
@@ -117,7 +118,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5502)
     @marks.critical
-    @marks.skip
     def test_can_add_existing_ens(self):
         home = SignInView(self.driver).recover_access(ens_user['passphrase'])
         profile = home.profile_button.click()
@@ -285,7 +285,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.critical
     @marks.testrail_id(5419)
     @marks.flaky
-    @marks.skip
     def test_logcat_backup_recovery_phrase(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -319,6 +318,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         home.just_fyi("Try to restore same account from seed phrase (should be possible only to unlock existing account)")
         profile.logout()
+        sign_in.back_button.click()
         sign_in.access_key_button.click()
         sign_in.enter_seed_phrase_button.click()
         sign_in.seedphrase_input.click()
@@ -391,14 +391,13 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5738)
     @marks.high
-    @marks.skip
     def test_dapps_permissions(self):
         home = SignInView(self.driver).create_user()
         account_name = home.status_account_name
 
         home.just_fyi('open Status Test Dapp, allow all and check permissions in Profile')
-        home.open_status_test_dapp()
-        home.dapp_tab_button.click()
+        web_view = home.open_status_test_dapp()
+        dapp_view = home.dapp_tab_button.click()
         profile = home.profile_button.click()
         profile.privacy_and_security_button.click()
         profile.dapp_permissions_button.click()
@@ -411,7 +410,11 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.just_fyi('revoke access and check that they are asked second time')
         profile.revoke_access_button.click()
         profile.back_button.click()
-        dapp_view = profile.dapp_tab_button.click()
+        profile.dapp_tab_button.click()
+
+        web_view.open_tabs_button.click()
+        web_view.empty_tab_button.click()
+
         dapp_view.open_url(test_dapp_url)
         if not dapp_view.element_by_text_part(account_name).is_element_displayed():
             self.errors.append('Wallet permission is not asked')
@@ -938,7 +941,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5762)
     @marks.high
-    @marks.skip
     def test_pair_devices_sync_one_to_one_contacts_nicknames_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -973,7 +975,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_profile.open_contact_from_profile(basic_user['username'])
         nickname = 'my_basic_user'
         device_1_chat.set_nickname(nickname)
-        device_1_profile.close_button.double_click()
+        device_1_profile.close_button.click()
+        device_1.back_button.click()
 
         device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
         device_2_profile.discover_and_advertise_device(device_2_name)
@@ -1039,7 +1042,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6226)
     @marks.critical
-    @marks.skip
     def test_ens_mentions_pn_and_nickname_in_public_and_1_1_chats(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]
@@ -1106,9 +1108,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_1.element_by_text_part(username_2).click()
         if home_1.element_starts_with_text(user_1['ens'] +'.stateofus.eth').is_element_differs_from_template('mentioned.png', 2):
             self.errors.append('Mention is not highlighted!')
-        chat_1.element_starts_with_text(user_1['ens'] +'.stateofus.eth','button').click()
-        if not profile_1.contacts_button.is_element_displayed():
-                self.errors.append('Was not redirected to own profile after tapping on mention of myself from another user!')
+
+        # Close Device1 driver session since it's not needed anymore
+        self.drivers[0].quit()
 
         home_2.just_fyi('check that ENS name is shown in 1-1 chat without adding user as contact in header, profile, options')
         chat_2_one_to_one = chat_2.profile_send_message.click()
@@ -1123,14 +1125,14 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         home_2.just_fyi('add user to contacts and check that ENS name is shown in contact')
         chat_2_one_to_one.profile_add_to_contacts.click()
-        chat_2.back_button.click()
+        chat_2.close_button.click()
         profile_2 = chat_2_one_to_one.profile_button.click()
         profile_2.open_contact_from_profile(ens_name)
 
         home_2.just_fyi('set nickname and recheck username in 1-1 header, profile, options, contacts')
         nickname = 'test user' + str(round(time()))
         chat_2.set_nickname(nickname)
-        profile_2.back_button.click()
+        profile_2.close_button.click()
         for name in (nickname, ens_name):
             if not profile_2.element_by_text(name).is_element_displayed():
                 self.errors.append('%s is not shown in contact list' % name)
@@ -1150,7 +1152,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('Nickname for user with ENS is not shown in public chat')
 
         self.errors.verify_no_errors()
-
 
     @marks.testrail_id(6228)
     @marks.high

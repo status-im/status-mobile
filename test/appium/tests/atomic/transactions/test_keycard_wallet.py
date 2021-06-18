@@ -31,7 +31,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6290)
     @marks.high
-    @marks.skip
     def test_keycard_fetching_balance_after_offline(self):
         sender = wallet_users['A']
         sign_in_view = SignInView(self.driver)
@@ -67,7 +66,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6291)
     @marks.critical
-    @marks.skip
     def test_keycard_can_see_all_transactions_in_history(self):
         address = wallet_users['D']['address']
         passphrase = wallet_users['D']['passphrase']
@@ -95,7 +93,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                 self.errors.append('Transactions senders do not match!')
             if tx_to != expected_txs_list[tx_hash]['to']:
                 self.errors.append('Transactions recipients do not match!')
-            transactions_details.back_button.click_until_presence_of_element(wallet_view.send_transaction_button)
+            transactions_details.close_button.click_until_presence_of_element(wallet_view.send_transaction_button)
 
         self.errors.verify_no_errors()
 

@@ -45,15 +45,15 @@ class TabButton(Button):
         class Counter(Text):
             def __init__(self, driver, parent_locator):
                 super().__init__(driver,
-                                 xpath="//*[@content-desc='%s']//android.view.ViewGroup/android.widget.TextView" % parent_locator)
+                                 xpath="%s/android.widget.TextView" % parent_locator)
         return Counter(self.driver, self.locator)
 
     @property
     def public_unread_messages(self):
         class PublicChatUnreadMessages(BaseElement):
-            def __init__(self, driver):
-                super().__init__(driver, accessibility_id="public-unread-badge")
-        return PublicChatUnreadMessages(self.driver)
+            def __init__(self, driver, parent_locator):
+                super().__init__(driver, xpath="%s/android.widget.TextView" % parent_locator)
+        return PublicChatUnreadMessages(self.driver, self.locator)
 
 
 class HomeButton(TabButton):
@@ -254,7 +254,7 @@ class BaseView(object):
         self.apps_button = Button(self.driver, accessibility_id="Apps")
         self.status_app_icon = Button(self.driver, translation_id="status")
         self.airplane_mode_button = AirplaneModeButton(self.driver)
-        self.etest_nter_qr_edit_box = EnterQRcodeEditBox(self.driver)
+        self.enter_qr_edit_box = EnterQRcodeEditBox(self.driver)
 
         self.element_types = {
             'base': BaseElement,
@@ -403,6 +403,12 @@ class BaseView(object):
         element = Button(self.driver, xpath="//*[starts-with(@text,'%s')]" % text)
         return element.wait_for_element(wait_time)
 
+    def swipe_by_custom_coordinates(self, x_start, y_start, x_end, y_end):
+        """Uses percentage values based on device width/height"""
+        self.driver.info("*Swiping based on custom coordinates relative to device height/width*")
+        size = self.driver.get_window_size()
+        self.driver.swipe(size["width"] * x_start, size["height"] * y_start, size["width"] * x_end, size["height"] * y_end)
+
     def swipe_up(self):
         self.driver.info("*Swiping up*")
         size = self.driver.get_window_size()
@@ -474,6 +480,10 @@ class BaseView(object):
     def get_wallet_view(self):
         from views.wallet_view import WalletView
         return WalletView(self.driver)
+
+    def get_webview_view(self):
+        from views.web_views.base_web_view import BaseWebView
+        return BaseWebView(self.driver)
 
     @staticmethod
     def get_unique_amount():
