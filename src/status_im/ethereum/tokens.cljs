@@ -755,6 +755,10 @@
                    {:address  "0x23b608675a2b2fb1890d3abbd85c5775c51691d5"
                     :symbol   :SOCKS
                     :name     "Unisocks Edition 0"
+                    :decimals 18}
+                   {:address  "0xEEF9f339514298C6A857EfCfC1A762aF84438dEE"
+                    :symbol   :HEZ
+                    :name     "Hermez Network Token"
                     :decimals 18}])
    :testnet
    (resolve-icons :testnet
