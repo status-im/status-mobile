@@ -128,7 +128,8 @@
     (str (count text) "/" max-length)]])
 
 (defn form []
-  (let [{:keys [name description]} (<sub [:communities/create])]
+  (let [{:keys [name description color]
+  :or {color "#D37EF4"}} (<sub [:communities/create])]
     [rn/scroll-view {:keyboard-should-persist-taps :handled
                      :style                   {:flex 1}
                      :content-container-style {:padding-vertical 16}}
@@ -156,7 +157,20 @@
         :on-change-text #(>evt [::communities/create-field :description %])}]]
      [quo/list-header {:color :main}
       (i18n/label :t/community-thumbnail-image)]
-     [photo-picker]]))
+     [photo-picker]
+     [rn/view {:style {:padding-bottom     16
+                       :padding-top        10
+                       :padding-horizontal 16}}
+      [quo/text {:style {:padding-bottom 10}} (i18n/label :t/community-color)]
+      [rn/view {:style {:height            44
+                        :border-radius    8
+                        :padding-horizontal 20
+                        :flex-direction   :row
+                        :justify-content :space-between
+                        :background-color color
+                        :align-items      :center}}
+        [quo/text {:style {:color (colors/get-color :text-05)}} color]
+        [icons/icon :main-icons/next {:color (colors/get-color :icon-05)}]]]]))
 
 (defn view []
   (let [{:keys [name description]} (<sub [:communities/create])]
