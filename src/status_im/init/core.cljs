@@ -57,6 +57,7 @@
                              (assoc :multiaccounts/logout? logout?)
                              (assoc :multiaccounts/loading false))
                :dispatch-n [[::initialize-view]
+                            [:get-opted-in-to-new-terms-of-service]
                             [::anon-metrics/fetch-opt-in-screen-displayed?]]})))
 
 (fx/defn start-app

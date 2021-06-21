@@ -126,6 +126,7 @@ class SignInView(BaseView):
         self.first_username_on_choose_chat_name = Text(self.driver,
                                                        xpath="//*[@content-desc='select-account-button-0']//android.widget.TextView[1]")
         self.get_keycard_banner = Button(self.driver, translation_id="get-a-keycard")
+        self.accept_tos_checkbox = Button(self.driver, xpath="//android.widget.CheckBox[@content-desc='checkbox']")
 
         #keycard recovery
         self.recover_with_keycard_button = Button(self.driver, accessibility_id="recover-with-keycard-button")
@@ -155,6 +156,7 @@ class SignInView(BaseView):
     def create_user(self, password=common_password, keycard=False, enable_notifications=False, second_user=False):
         self.driver.info("**Creating new multiaccount (password:%s, keycard:%s)**" % (password, str(keycard)))
         if not second_user:
+            self.accept_tos_checkbox.click()
             self.get_started_button.click()
         self.generate_key_button.click_until_presence_of_element(self.next_button)
         self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
@@ -177,8 +179,10 @@ class SignInView(BaseView):
         self.driver.info("**New multiaccount is created successfully!**")
         return self.get_home_view()
 
-    def recover_access(self, passphrase: str, password: str = common_password, keycard=False, enable_notifications=False):
+    def recover_access(self, passphrase: str, password: str = common_password, keycard=False, enable_notifications=False, second_user=False):
         self.driver.info("**Recover access(password:%s, keycard:%s)**" % (password, str(keycard)))
+        if not second_user:
+            self.accept_tos_checkbox.click()
         self.get_started_button.click_until_presence_of_element(self.access_key_button)
         self.access_key_button.click()
         self.enter_seed_phrase_button.click()

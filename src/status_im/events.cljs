@@ -37,7 +37,6 @@
             status-im.multiaccounts.logout.core
             status-im.multiaccounts.update.core
             status-im.pairing.core
-            status-im.privacy-policy.core
             status-im.signals.core
             status-im.stickers.core
             status-im.transport.core

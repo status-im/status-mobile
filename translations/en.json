@@ -1580,5 +1580,19 @@
     "password-reset-success": "Password reset",
     "new-password": "New password",
     "confirm-new-password": "Confirm new password",
-    "password-mismatch": "New password and confirmation does not match"
+    "password-mismatch": "New password and confirmation does not match",
+    "terms-of-service": "Terms of Use",
+    "accept-status-tos-prefix": "I accept Status",
+    "updates-to-tos": "Updates to Terms of Service",
+    "updates-to-tos-desc": "Before you continue, please review the Terms of Service and confirm you take full responsibility for how you use the app.",
+    "what-changed": "What changed",
+    "wc-new-tos-based-on-principles-prefix": "New Terms of Service designed based on our",
+    "principles": "Principles",
+    "wc-how-to-use-status-app": "How to use the Status app including privacy and security",
+    "wc-brand-guide": "Guidance on using branding such as trademarks and logos",
+    "wc-disclaimer": "Disclaimers (including third party providers), warranties, and legal releases",
+    "wc-dispute": "Dispute resolution provisions",
+    "status-is-open-source": "Status is open-source",
+    "build-yourself": "To use the app without these Terms of Service, you can build your own version",
+    "accept-and-continue": "Accept and continue"
 }

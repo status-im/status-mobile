@@ -168,4 +168,12 @@
                                            :id      :onboarding-notification
                                            :options (status-bar-options)}}]
                    :options  (merge (default-root)
+                                    {:topBar (assoc (topbar-options) :visible false)})}}}
+
+   ;; TERMS OF SERVICE
+   :tos
+   {:root {:stack {:children [{:component {:name    :force-accept-tos
+                                           :id      :force-accept-tos
+                                           :options (get-screen-options :force-accept-tos)}}]
+                   :options  (merge (default-root)
                                     {:topBar (assoc (topbar-options) :visible false)})}}}})

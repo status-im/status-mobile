@@ -92,6 +92,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.high
     def test_home_view(self):
         sign_in = SignInView(self.driver)
+        sign_in.accept_tos_checkbox.click()
         sign_in.get_started_button.click()
         sign_in.generate_key_button.click()
         from views.sign_in_view import MultiAccountButton
@@ -134,6 +135,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.high
     def test_pass_phrase_validation(self):
         sign_in = SignInView(self.driver)
+        sign_in.accept_tos_checkbox.click()
         sign_in.get_started_button.click_until_presence_of_element(sign_in.access_key_button)
         sign_in.access_key_button.click()
         validations = [

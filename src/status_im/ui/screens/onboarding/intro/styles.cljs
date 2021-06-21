@@ -41,18 +41,3 @@
 (def wizard-title
   {:margin-bottom 16
    :text-align    :center})
-
-(def buttons-container
-  {:align-items        :center
-   :padding-horizontal 32})
-
-(def bottom-button
-  {:padding-horizontal 24
-   :justify-content    :center
-   :align-items        :center
-   :flex-direction     :row})
-
-(def welcome-text-bottom-note
-  {:typography  :caption
-   :color       colors/gray
-   :text-align  :center})

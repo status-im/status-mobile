@@ -298,6 +298,26 @@
         keychain/auth-method-biometric
         keychain/auth-method-password))))
 
+(defn redirect-to-root
+  "Decides which root should be initialised depending on user and app state"
+  [db]
+  (let [tos-accepted?                    (get db :tos/accepted?)
+        metrics-opt-in-screen-displayed? (get db :anon-metrics/opt-in-screen-displayed?)]
+    ;; There is a race condition to show metrics opt-in and
+    ;; tos opt-in. Tos is more important and is displayed first.
+    ;; Metrics opt-in is diplayed the next time the user logs in
+    (cond
+      (not tos-accepted?)
+      (re-frame/dispatch [:init-root :tos])
+
+      ;; TODO <shivekkhurana>: This needs work post new navigation
+      (and tos-accepted?
+           (not metrics-opt-in-screen-displayed?)
+           config/metrics-enabled?)
+      (navigation/navigate-to :anon-metrics-opt-in {})
+
+      :else (re-frame/dispatch [:init-root :chat-stack]))))
+
 (fx/defn login-only-events
   [{:keys [db] :as cofx} key-uid password save-password?]
   (let [auth-method     (:auth-method db)
@@ -316,7 +336,7 @@
                  :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}
                 {:method     "settings_getSettings"
                  :on-success #(do (re-frame/dispatch [::get-settings-callback %])
-                                  (re-frame/dispatch [:init-root :chat-stack]))}]}
+                                  (redirect-to-root db))}]}
               (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))
@@ -324,15 +344,18 @@
 
 (fx/defn create-only-events
   [{:keys [db] :as cofx}]
-  (let [{:keys [multiaccount :multiaccounts/multiaccounts :multiaccount/accounts]} db
-        {:keys [creating?]} (:multiaccounts/login db)
-        first-account?      (and creating?
-                                 (empty? multiaccounts))]
+  (let [{:keys [multiaccount
+                :multiaccounts/multiaccounts
+                :multiaccount/accounts]} db
+        {:keys [creating?]}              (:multiaccounts/login db)
+        first-account?                   (and creating?
+                                              (empty? multiaccounts))
+        tos-accepted?                    (get db :tos/accepted?)]
     (fx/merge cofx
               {:db             (-> db
                                    (dissoc :multiaccounts/login)
+                                   (assoc :tos/next-root :onboarding-notification)
                                    (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
-               :init-root-fx   :onboarding-notification
                :dispatch-later [{:ms 2000 :dispatch [::initialize-wallet
                                                      accounts nil nil
                                                      (or (get db :recovered-account?) (:recovered multiaccount))
@@ -344,7 +367,12 @@
               (initialize-communities-enabled)
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
-              (logging/set-log-level (:log-level multiaccount)))))
+              (logging/set-log-level (:log-level multiaccount))
+              ;; if it's a first account, the ToS will be accepted at welcome carousel
+              ;; if not a first account, the ToS might have been accepted by other account logins
+              (if (or first-account? tos-accepted?)
+                (navigation/init-root :onboarding-notification)
+                (navigation/init-root :tos)))))
 
 (defn- keycard-setup? [cofx]
   (boolean (get-in cofx [:db :keycard :flow])))
@@ -354,14 +382,13 @@
   (let [{:keys [key-uid password save-password? creating?]}
         (:multiaccounts/login db)
 
-        multiaccounts            (:multiaccounts/multiaccounts db)
-        recovered-account?       (get db :recovered-account?)
-        login-only?              (not (or creating?
-                                          recovered-account?
-                                          (keycard-setup? cofx)))
-        nodes                    nil
-        should-send-metrics?     (get-in db [:multiaccount :anon-metrics/should-send?])
-        opt-in-screen-displayed? (get db :anon-metrics/opt-in-screen-displayed?)]
+        multiaccounts        (:multiaccounts/multiaccounts db)
+        recovered-account?   (get db :recovered-account?)
+        login-only?          (not (or creating?
+                                      recovered-account?
+                                      (keycard-setup? cofx)))
+        nodes                nil
+        should-send-metrics? (get-in db [:multiaccount :anon-metrics/should-send?])]
     (log/debug "[multiaccount] multiaccount-login-success"
                "login-only?" login-only?
                "recovered-account?" recovered-account?)
@@ -373,6 +400,10 @@
                                :card-read-in-progress?
                                :pin
                                :multiaccount)
+                       (assoc :tos-accept-next-root
+                              (if login-only?
+                                :chat-stack
+                                :onboarding-notification))
                        (assoc :logged-in-since now)
                        (assoc :view-id :home))
                ::json-rpc/call
@@ -389,11 +420,7 @@
                 (wallet/set-initial-blocks-range))
               (if login-only?
                 (login-only-events key-uid password save-password?)
-                (create-only-events))
-              (when (and login-only?
-                         (not opt-in-screen-displayed?)
-                         config/metrics-enabled?)
-                (navigation/navigate-to :anon-metrics-opt-in {})))))
+                (create-only-events)))))
 
 ;; FIXME(Ferossgp): We should not copy keys as we denormalize the database,
 ;; this create desync between actual accounts and the one on login causing broken state
@@ -524,8 +551,8 @@
               {:init-root-fx :chat-stack}
               (when first-account?
                 (acquisition/create))
-              #(when config/metrics-enabled?
-                 {:dispatch [:navigate-to :anon-metrics-opt-in]}))))
+              (when config/metrics-enabled?
+                {:dispatch [:navigate-to :anon-metrics-opt-in]}))))
 
 (fx/defn multiaccount-selected
   {:events [:multiaccounts.login.ui/multiaccount-selected]}
@@ -556,3 +583,21 @@
   [_]
   {::async-storage/get {:keys [:keycard-banner-hidden]
                         :cb   #(re-frame/dispatch [:get-keycard-banner-preference-cb %])}})
+
+(fx/defn get-opted-in-to-new-terms-of-service-cb
+  {:events [:get-opted-in-to-new-terms-of-service-cb]}
+  [{:keys [db]} {:keys [new-terms-of-service-accepted]}]
+  {:db (assoc db :tos/accepted? new-terms-of-service-accepted)})
+
+(fx/defn get-opted-in-to-new-terms-of-service
+  "New TOS sprint https://github.com/status-im/status-react/pull/12240"
+  {:events [:get-opted-in-to-new-terms-of-service]}
+  [{:keys [db]}]
+  {::async-storage/get {:keys [:new-terms-of-service-accepted]
+                        :cb   #(re-frame/dispatch [:get-opted-in-to-new-terms-of-service-cb %])}})
+
+(fx/defn hide-terms-of-services-opt-in-screen
+  {:events [:hide-terms-of-services-opt-in-screen]}
+  [{:keys [db]}]
+  {::async-storage/set! {:new-terms-of-service-accepted true}
+   :db                  (assoc db :tos/accepted? true)})

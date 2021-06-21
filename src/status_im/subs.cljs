@@ -196,6 +196,8 @@
 (reg-root-key-sub ::message-lists :message-lists)
 (reg-root-key-sub ::pagination-info :pagination-info)
 
+(reg-root-key-sub :tos-accept-next-root :tos-accept-next-root)
+
 ;; keycard
 (reg-root-key-sub :keycard/banner-hidden :keycard/banner-hidden)
 

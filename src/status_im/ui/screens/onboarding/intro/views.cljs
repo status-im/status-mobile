@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.onboarding.intro.views
   (:require [quo.animated :as animated]
+            [quo.react-native :as rn]
             [status-im.ui.screens.onboarding.intro.styles :as styles]
             [status-im.ui.components.react :as react]
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [quo.core :as quo]
+            [quo.design-system.typography :as typography]
             [re-frame.core :as re-frame]
-            [status-im.privacy-policy.core :as privacy-policy]
             [status-im.ui.components.colors :as colors]))
 
 (defonce index (reagent/atom 0))
@@ -134,25 +135,43 @@
        [dots-selector {:progress progress
                        :n        (count slides)}]])))
 
+(defonce tos-accepted (reagent/atom false))
+
 (defn intro []
   [react/view {:style styles/intro-view}
    [carousel [{:image (resources/get-theme-image :chat)
                :title :intro-title1
-               :text :intro-text1}
+               :text  :intro-text1}
               {:image (resources/get-theme-image :wallet)
                :title :intro-title2
-               :text :intro-text2}
+               :text  :intro-text2}
               {:image (resources/get-theme-image :browser)
                :title :intro-title3
-               :text :intro-text3}]
+               :text  :intro-text3}]
     @(re-frame/subscribe [:dimensions/window-width])]
-   [react/view styles/buttons-container
-    [react/view {:style (assoc styles/bottom-button :margin-bottom 16)}
-     [quo/button {:on-press #(re-frame/dispatch [:init-root :onboarding])}
+   [react/view {:style {:align-items :center}}
+    [react/view {:flex-direction  :row
+                 :justify-content :space-between
+                 :margin-top      36
+                 :margin-bottom   24}
+     [quo/checkbox {:value     @tos-accepted
+                    :on-change #(swap! tos-accepted not)}]
+     [rn/touchable-opacity {:on-press #(swap! tos-accepted not)}
+      [react/nested-text {:style {:margin-left 12}}
+       (i18n/label :t/accept-status-tos-prefix)
+       [{:style    (merge {:color colors/blue}
+                          typography/font-medium)
+         :on-press #(re-frame/dispatch [:open-modal :terms-of-service])}
+        " "
+        (i18n/label :t/terms-of-service)]]]]
+    [react/view {:style {:margin-bottom 24}}
+     [quo/button {:disabled (not @tos-accepted)
+                  :on-press #(do (re-frame/dispatch [:init-root :onboarding])
+                                 ;; clear atom state for next use
+                                 (reset! tos-accepted false)
+                                 (re-frame/dispatch [:hide-terms-of-services-opt-in-screen]))}
       (i18n/label :t/get-started)]]
-    [react/nested-text
-     {:style styles/welcome-text-bottom-note}
-     (i18n/label :t/intro-privacy-policy-note1)
-     [{:style    (assoc styles/welcome-text-bottom-note :color colors/blue)
-       :on-press privacy-policy/open-privacy-policy-link!}
-      (i18n/label :t/intro-privacy-policy-note2)]]]])
+    [react/text
+     {:style    {:color      colors/blue}
+      :on-press #(re-frame/dispatch [:open-modal :privacy-policy])}
+     (i18n/label :t/privacy-policy)]]])
