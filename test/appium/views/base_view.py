@@ -65,16 +65,19 @@ class HomeButton(TabButton):
         return HomeView(self.driver)
 
     def click(self, desired_view='home'):
-        element = None
-        from views.home_view import HomeView
         from views.chat_view import ChatView
+        from views.home_view import HomeView
         if desired_view == 'home':
+            ChatView(self.driver).get_back_to_home_view()
             element = HomeView(self.driver).plus_button
+            if not element.is_element_displayed():
+                self.click_until_presence_of_element(element)
         elif desired_view == 'chat':
             element = ChatView(self.driver).chat_message_input
+            self.click_until_presence_of_element(element)
         elif desired_view == 'other_user_profile':
             element = ChatView(self.driver).profile_nickname
-        self.click_until_presence_of_element(element)
+            self.click_until_presence_of_element(element)
         return self.navigate()
 
 
@@ -87,10 +90,8 @@ class DappTabButton(TabButton):
         return DappsView(self.driver)
 
     def click(self, desired_element_text=None):
-
-        from views.dapps_view import DappsView
         if desired_element_text is None:
-            self.click_until_presence_of_element(DappsView(self.driver).enter_url_editbox)
+            super().click()
         elif desired_element_text == 'webview':
             self.find_element().click()
         else:
@@ -508,15 +509,19 @@ class BaseView(object):
 
     def get_back_to_home_view(self, times_to_click_on_back_btn=3):
         counter = 0
-        while BackButton(self.driver).is_element_displayed(2):
+        while BackButton(self.driver).is_element_displayed(2) or self.close_button.is_element_displayed(2):
             try:
                 if counter >= times_to_click_on_back_btn:
                     break
-                self.back_button.click()
+                if BackButton(self.driver).is_element_displayed(2):
+                    self.back_button.click()
+                else:
+                    self.close_button.click()
                 counter += 1
             except (NoSuchElementException, TimeoutException):
                 continue
-        return self.home_button.click()
+        return self.get_home_view()
+
 
     def relogin(self, password=common_password):
         try:
@@ -624,6 +629,14 @@ class BaseView(object):
         phrase = self.sign_in_phrase.text
         self.ok_got_it_button.click()
         return phrase
+
+    def get_empty_dapp_tab(self):
+        from views.web_views.base_web_view import BaseWebView
+        web_view = BaseWebView(self.driver)
+        web_view.options_button.click()
+        if web_view.new_tab_button.is_element_displayed():
+            web_view.new_tab_button.click()
+        return web_view
 
     # Method-helper
     def write_page_source_to_file(self, full_path_to_file):

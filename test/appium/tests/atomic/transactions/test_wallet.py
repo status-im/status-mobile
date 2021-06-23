@@ -258,10 +258,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.network_api.verify_balance_is_updated(str(initial_balance), status_account_address)
 
         wallet_view.just_fyi("Verifying previously sent transaction in new account")
-        wallet_view.back_button.click()
+        wallet_view.close_button.click()
         wallet_view.get_account_by_name(account_name).click()
         wallet_view.send_transaction_button.click()
-        wallet_view.back_button.click()
+        wallet_view.close_send_transaction_view_button.click()
         balance_after_receiving_tx = float(wallet_view.get_asset_amount_by_name('ETH'))
         expected_balance = self.network_api.get_rounded_balance(balance_after_receiving_tx, transaction_amount)
         if balance_after_receiving_tx != expected_balance:
@@ -271,10 +271,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.just_fyi("Sending eth from new account to main account")
         updated_balance = self.network_api.get_balance(status_account_address)
         transaction_amount_1 = round(float(transaction_amount) * 0.2, 12)
-        send_transaction = wallet_view.send_transaction(account_name=wallet_view.status_account_name,
+        wallet_view.send_transaction(account_name=wallet_view.status_account_name,
                                                         amount=transaction_amount_1,
                                                         default_gas_price=True)
-        send_transaction.back_button.click()
+        wallet_view.close_button.click()
         sub_account_address = wallet_view.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
@@ -287,7 +287,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.just_fyi("Verify total ETH on main wallet view")
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1)
         self.network_api.verify_balance_is_updated((updated_balance + transaction_amount_1), status_account_address)
-        send_transaction.back_button.click()
+        wallet_view.close_button.click()
         balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000
         balance_of_status_account = float(self.network_api.get_balance(status_account_address)) / 1000000000000000000
         wallet_view.scan_tokens()
@@ -322,8 +322,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.account_color_button.select_color_by_position(1)
         wallet_view.apply_settings_button.click()
         wallet_view.element_by_text('This device').scroll_to_element()
-        wallet_view.back_button.click()
-        wallet_view.back_button.click()
+        wallet_view.close_button.click()
+        wallet_view.close_button.click()
         account_button = wallet_view.get_account_by_name(account_name)
         if not account_button.is_element_displayed():
             self.driver.fail('Account name was not changed')
@@ -338,8 +338,19 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(transaction_senders['C']['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         send_transaction_view = SendTransactionView(self.driver)
+
+        sign_in_view.just_fyi("Setting up wallet")
+        wallet_view.accounts_status_account.click_until_presence_of_element(wallet_view.send_transaction_button)
+        send_transaction = wallet_view.send_transaction_button.click()
+        send_transaction.set_recipient_address('0x%s' % basic_user['address'])
+        send_transaction.amount_edit_box.set_value("0")
+        send_transaction.confirm()
+        send_transaction.sign_transaction_button.click()
+        wallet_view.set_up_wallet_when_sending_tx()
+        wallet_view.cancel_button.click()
+        wallet_view.close_button.click()
+
         url_data = {
             'ens_for_receiver': {
                 'url': 'ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=nastya.stateofus.eth&uint256=1e-1',
@@ -426,8 +437,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                     if not wallet_view.element_by_text_part(error).is_element_displayed():
                         self.errors.append(
                             'Expected error %s is not shown' % error)
-                if send_transaction_view.back_button.is_element_displayed():
-                    send_transaction_view.back_button.wait_and_click()
+                if wallet_view.close_send_transaction_view_button.is_element_displayed():
+                    wallet_view.close_send_transaction_view_button.wait_and_click()
                 else:
                     wallet_view.cancel_button.wait_and_click()
 
@@ -617,7 +628,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.amount_edit_box.set_value(str(initial_amount_ADI) + '1')
         if not send_transaction.element_by_text(errors['send_transaction_screen']['insufficient_funds']).is_element_displayed():
             self.errors.append(warning % (errors['send_transaction_screen']['insufficient_funds'], screen))
-        send_transaction.back_button.click(2)
+        wallet_view.close_send_transaction_view_button.click()
+        wallet_view.close_button.click()
 
         screen = 'sending screen from wallet'
         sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'], screen))
@@ -718,6 +730,6 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
         send_transaction_view.set_recipient_address(sender['address'])
         send_transaction_view.sign_transaction_button.click()
         send_transaction_view.sign_transaction()
-        wallet_view_receiver.back_button.click()
+        wallet_view_receiver.close_button.click()
         initial_balance = float(initial_balance) + float(amount)
         wallet_view_receiver.wait_balance_is_changed(asset='STT', initial_balance=str(initial_balance), scan_tokens=True)

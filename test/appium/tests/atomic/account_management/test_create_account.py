@@ -255,8 +255,12 @@ class TestCreateAccount(SingleDeviceTestCase):
             address = wallet_view.get_wallet_address()
             if address != account:
                 self.errors.append('Restored wallet address "%s" does not match expected "%s"' % (address, account))
-            profile_view = home_view.profile_button.click()
-            profile_view.logout()
+            profile = home_view.profile_button.click()
+            profile.privacy_and_security_button.click()
+            profile.delete_my_profile_button.scroll_and_click()
+            profile.delete_my_profile_password_input.set_value(unique_password)
+            profile.delete_profile_button.click()
+            profile.ok_button.click()
         self.errors.verify_no_errors()
 
 

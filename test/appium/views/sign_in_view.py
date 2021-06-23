@@ -213,8 +213,9 @@ class SignInView(BaseView):
             from views.keycard_view import KeycardView
             keycard_view = KeycardView(self.driver)
             keycard_view.one_button.wait_for_visibility_of_element(10)
-            keycard_view.connect_selected_card_button.click()
             keycard_view.enter_default_pin()
+            if keycard_view.connect_selected_card_button.is_element_displayed():
+                keycard_view.connect_selected_card_button.click()
         else:
             self.password_input.set_value(password)
             self.sign_in_button.click()

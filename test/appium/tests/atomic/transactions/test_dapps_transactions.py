@@ -103,7 +103,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.allow_button.click()
         if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             self.errors.append('Public key is not returned')
-        status_test_dapp.dapp_tab_button.double_click()
+        status_test_dapp.get_empty_dapp_tab()
         wallet = home.wallet_button.click()
         wallet.set_up_wallet()
 

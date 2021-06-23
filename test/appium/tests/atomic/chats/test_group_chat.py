@@ -173,7 +173,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         group_info_view.get_user_from_group_info(device_2_username).click()
         if not device_1_chat.profile_block_contact.is_element_displayed():
             self.errors.append("Admin is not redirected to user profile on tapping member username from group info")
-        device_1_chat.back_button.click()
+        device_1_chat.close_button.click()
 
         device_1.just_fyi('Made admin another user and check system message')
         options = group_info_view.get_username_options(device_2_username).click()
@@ -264,7 +264,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.profile_nickname_button.click()
         chat_1.nickname_input_field.clear()
         chat_1.element_by_text('Done').click()
-        chat_1.back_button.click()
+        chat_1.close_button.click()
         if chat_1.user_name_text.text != full_ens:
             self.errors.append('Nickname was not removed! real chat name is %s instead of %s' % (chat_1.user_name_text.text, full_ens))
 
@@ -300,10 +300,10 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.set_nickname(nickname)
         if not chat_1.element_by_text(nickname).is_element_displayed():
             self.errors.append('Nickname is not shown in profile view after setting from froup info')
-        chat_1.back_button.click()
+        chat_1.close_button.click()
         if not chat_1.element_by_text(nickname).is_element_displayed():
             self.errors.append('Nickname is not shown in group info view after setting from froup info')
-        chat_1.back_button.click()
+        chat_1.close_button.click()
         message_text = '%s %s' % (nickname, additional_text)
         if not chat_1.chat_element_by_text(message_text).is_element_displayed():
             self.errors.append("ENS name was not replaced with nickname on sent message")
@@ -328,8 +328,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.profile_nickname_button.click()
         chat_1.nickname_input_field.clear()
         chat_1.element_by_text('Done').click()
-        chat_1.back_button.click()
-        chat_1.back_button.click()
+        chat_1.close_button.click()
+        chat_1.close_button.click()
         message_text = '%s %s' % (full_ens, additional_text)
         if not chat_1.chat_element_by_text(message_text).is_element_displayed():
             self.errors.append("ENS name is not resolved on sent message after removing nickname")
@@ -362,7 +362,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_2_options = device_1_chat.get_user_options(device_2_username)
         device_2_options.view_profile_button.click()
         device_2_options.block_contact()
-        device_2_options.back_button.click()
+        device_1_home.close_button.click()
         if device_1_chat.chat_element_by_text(message_before_block).is_element_displayed(10):
             self.errors.append('User was blocked, but past message are shown')
         message_after_block = 'message from device2 after block'
@@ -374,7 +374,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_2_options = device_1_chat.get_user_options(device_2_username)
         device_2_options.view_profile_button.click()
         device_2_options.unblock_contact_button.click()
-        device_2_options.back_button.click(2)
+        [device_2_options.close_button.click() for _ in range(2)]
         message_after_unblock = 'message from device2 after unblock'
         device_2_chat.send_message(message_after_unblock)
         if not device_1_chat.chat_element_by_text(message_after_unblock).is_element_displayed(20):
@@ -407,6 +407,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat = home.create_group_chat(usernames, 'some_group_chat')
 
         home.just_fyi('Verify that can not add more users via group info')
+        chat.get_back_to_home_view()
+        home.get_chat('some_group_chat').click()
         chat.chat_options.click()
         group_info_view = chat.group_info.click()
         if group_info_view.add_members.is_element_displayed():

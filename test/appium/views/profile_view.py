@@ -312,6 +312,7 @@ class ProfileView(BaseView):
         self.ropsten_chain_button.click()
         self.ropsten_chain_button.click()
         self.save_button.click()
+        self.element_by_text_part('custom_ropsten').scroll_to_element()
         self.element_by_text_part('custom_ropsten').click_until_presence_of_element(self.connect_button)
         self.connect_button.click()
         self.confirm_button.click()

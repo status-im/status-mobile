@@ -341,7 +341,8 @@ class TestChatManagement(SingleDeviceTestCase):
         send_transaction.deny_button.click()
         general_camera_error.wait_for_visibility_of_element(3)
         send_transaction.ok_button.click()
-        wallet.back_button.click_until_absense_of_element(wallet.back_button)
+        wallet.close_button.click()
+        wallet.close_send_transaction_view_button.click()
 
         home.just_fyi("Allow access to camera in universal qr code scanner and check it in other views")
         wallet.home_button.click()
@@ -383,8 +384,8 @@ class TestChatManagement(SingleDeviceTestCase):
         profile.open_contact_from_profile(dummy_user['username'])
         nickname = 'dummy_user'
         public_chat.set_nickname(nickname)
-        profile.home_button.click()
         public_chat.get_back_to_home_view()
+        public_chat.home_button.click()
 
         search_list = {
             basic_user['username']: basic_user['username'],
@@ -445,6 +446,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.chat_options.click()
         chat_view.view_profile_button.click()
         chat_view.block_contact()
+        chat_view.get_back_to_home_view()
 
         chat_view.just_fyi('Unblock user not added as contact from chat view')
         profile = home.profile_button.click()
@@ -454,7 +456,8 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.unblock_contact_button.click()
 
         profile.just_fyi('Navigating to contact list and check that user is not in list')
-        profile.back_button.click(2)
+        profile.close_button.click()
+        profile.back_button.click()
         if profile.element_by_text(basic_user["username"]).is_element_displayed():
             self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
 
@@ -514,7 +517,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
         public_key_2, username_2 = home_2.get_public_key_and_username(return_username=True)
-        home_2.get_back_to_home_view()
+        home_2.home_button.click()
         chat_name = 'testaddcontact'
 
         device_1.just_fyi('join same public chat')
@@ -677,9 +680,9 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_1, home_2 = device_1.create_user(enable_notifications=True), device_2.create_user()
         profile_1 = home_1.profile_button.click()
         device_2_public_key = home_2.get_public_key_and_username()
-        home_2.get_back_to_home_view()
+        home_2.home_button.click()
         default_username_1 = profile_1.default_username_text.text
-        profile_1.get_back_to_home_view()
+        profile_1.home_button.click()
 
         device_1.just_fyi('both devices joining the same public chat and send messages')
         chat_name = device_1.get_random_chat_name()
@@ -708,6 +711,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_1.chat_options.click()
         chat_1.view_profile_button.click()
         chat_1.block_contact()
+        chat_1.get_back_to_home_view()
+        chat_1.home_button.click()
 
         device_1.just_fyi('no 1-1, messages from blocked user are hidden in public chat')
         from views.home_view import ChatElement
@@ -1024,20 +1029,18 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_2.back_button.click()
         device_2.your_keys_more_icon.click()
         device_2.generate_new_key_button.click()
-        device_2.generate_key_button.click()
         device_2.create_user(second_user=True)
         home_2.join_public_chat(chat_name)
         newusermessage = 'Newusermessage2'
         chat_2.send_message(newusermessage)
         random_username = chat_1.chat_element_by_text(newusermessage).username.text
-
         chat_1.wait_ens_name_resolved_in_chat(message=message, username_value=username_value)
-        device_1.just_fyi('Set nickname for ENS user')
 
+        device_1.just_fyi('Set nickname for ENS user')
         chat_1.view_profile_long_press(message)
         nickname = 'nicknamefortestuser'
         chat_1.set_nickname(nickname)
-        chat_1.back_button.click()
+        chat_1.close_button.click()
         ens_nickname_value = nickname + " @" + sender['ens']
         chat_1.wait_ens_name_resolved_in_chat(message=message, username_value=ens_nickname_value)
 
@@ -1051,16 +1054,16 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('ENS-owner user is not available in mention suggestion list')
 
         device_1.just_fyi('Check there is no random user in different public chat')
-        chat_1.get_back_to_home_view(2)
+        chat_1.get_back_to_home_view()
         chat_1 = home_1.join_public_chat(chat_name + "2")
         chat_1.chat_message_input.send_keys('@')
         if chat_1.search_user_in_mention_suggestion_list(random_username).is_element_displayed():
             self.errors.append('Random user from public chat is in mention suggestion list another public chat')
 
         device_1.just_fyi('Check there is ENS+Nickname user in Group chat and no random user')
-        chat_1.get_back_to_home_view(2)
+        chat_1.get_back_to_home_view()
         home_1.add_contact(sender['public_key'])
-        chat_1.get_back_to_home_view(2)
+        chat_1.get_back_to_home_view()
         home_1.create_group_chat(user_names_to_add=[nickname])
         chat_1.chat_message_input.send_keys('@')
         if chat_1.search_user_in_mention_suggestion_list(random_username).is_element_displayed():
@@ -1078,7 +1081,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         if (chat_1.search_user_in_mention_suggestion_list(ens_nickname_value).is_element_displayed() or
                 chat_1.search_user_in_mention_suggestion_list(sender['username']).is_element_displayed()):
             self.errors.append('Blcoked user is available in mention suggestion list')
-
 
         self.errors.verify_no_errors()
 
