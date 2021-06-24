@@ -19,6 +19,7 @@
                           messages-from-contacts-only
                           webview-allow-permission-requests?]} [:multiaccount]
                   supported-biometric-auth [:supported-biometric-auth]
+                  keycard?                 [:keycard-multiaccount?]
                   auth-method              [:auth-method]]
     [react/scroll-view {:padding-vertical 8}
      [quo/list-header (i18n/label :t/security)]
@@ -69,7 +70,7 @@
                                                         :t/anyone))
                      :on-press            #(re-frame/dispatch [:navigate-to :messages-from-contacts-only])
                      :accessibility-label :accept-new-chats-from}]
-     (when config/reset-password-enabled?
+     (when (not keycard?)
        [quo/list-item {:size                :small
                        :title               (i18n/label :t/reset-password)
                        :chevron             true

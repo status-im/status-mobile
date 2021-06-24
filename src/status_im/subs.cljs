@@ -100,6 +100,7 @@
 (reg-root-key-sub :multiaccounts/key-storage :multiaccounts/key-storage)
 (reg-root-key-sub :multiaccount/reset-password-form-vals :multiaccount/reset-password-form-vals)
 (reg-root-key-sub :multiaccount/reset-password-errors :multiaccount/reset-password-errors)
+(reg-root-key-sub :multiaccount/resetting-password? :multiaccount/resetting-password?)
 
 ;;chat
 (reg-root-key-sub ::cooldown-enabled? :chat/cooldown-enabled?)
@@ -2707,10 +2708,12 @@
  :multiaccount/reset-password-form-vals-and-errors
  :<- [:multiaccount/reset-password-form-vals]
  :<- [:multiaccount/reset-password-errors]
- (fn [[form-vals errors]]
+ :<- [:multiaccount/resetting-password?]
+ (fn [[form-vals errors resetting?]]
    (let [{:keys [current-password new-password confirm-new-password]} form-vals]
-     {:form-vals form-vals
-      :errors    errors
+     {:form-vals  form-vals
+      :errors     errors
+      :resetting? resetting?
       :next-enabled?
       (and (pos? (count current-password))
            (pos? (count new-password))
