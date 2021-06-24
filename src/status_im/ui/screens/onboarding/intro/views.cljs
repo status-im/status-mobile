@@ -152,6 +152,7 @@
    [react/view {:style {:align-items :center}}
     [react/view {:flex-direction  :row
                  :justify-content :space-between
+                 :align-items     :center
                  :margin-top      36
                  :margin-bottom   24}
      [quo/checkbox {:value     @tos-accepted
@@ -159,9 +160,9 @@
      [rn/touchable-opacity {:on-press #(swap! tos-accepted not)}
       [react/nested-text {:style {:margin-left 12}}
        (i18n/label :t/accept-status-tos-prefix)
-       [{:style    (merge {:color colors/blue}
-                          typography/font-medium)
-         :on-press #(re-frame/dispatch [:open-modal :terms-of-service])
+       [{:style               (merge {:color colors/blue}
+                                     typography/font-medium)
+         :on-press            #(re-frame/dispatch [:open-modal :terms-of-service])
          :accessibility-label :terms-of-service-link}
         " "
         (i18n/label :t/terms-of-service)]]]]
@@ -173,7 +174,7 @@
                                  (re-frame/dispatch [:hide-terms-of-services-opt-in-screen]))}
       (i18n/label :t/get-started)]]
     [react/text
-     {:style    {:color      colors/blue}
-      :on-press #(re-frame/dispatch [:open-modal :privacy-policy])
+     {:style               {:color colors/blue}
+      :on-press            #(re-frame/dispatch [:open-modal :privacy-policy])
       :accessibility-label :privacy-policy-link}
      (i18n/label :t/privacy-policy)]]])

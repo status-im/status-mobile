@@ -1504,7 +1504,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void reEncryptDbAndKeyStore(final String keyUID, final String password, final String newPassword, final Callback callback) {
+    public void reEncryptDbAndKeystore(final String keyUID, final String password, final String newPassword, final Callback callback) {
         Log.d(TAG, "reEncryptDbAndKeyStore");
 
         Runnable r = new Runnable() {

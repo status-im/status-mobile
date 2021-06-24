@@ -4,6 +4,7 @@
             [status-im.utils.types :as types]
             [clojure.string :as string]
             [status-im.utils.security :as security]
+            [status-im.utils.keychain.core :as keychain]
             [status-im.popover.core :as popover]
             [status-im.native-module.core :as status]
             [status-im.ethereum.core :as ethereum]))
@@ -34,13 +35,19 @@
 (fx/defn password-reset-success
   {:events [::password-reset-success]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (dissoc
-                  db
-                  :multiaccount/reset-password-form-vals
-                  :multiaccount/reset-password-errors
-                  :multiaccount/reset-password-next-enabled?)}
-            (popover/show-popover {:view :password-reset-success})))
+  (let [{:keys [key-uid]} (:multiaccount db)
+        auth-method       (get db :auth-method keychain/auth-method-none)
+        new-password      (get-in db [:multiaccount/reset-password-form-vals :new-password])]
+    (fx/merge cofx
+              {:db (dissoc
+                    db
+                    :multiaccount/reset-password-form-vals
+                    :multiaccount/reset-password-errors
+                    :multiaccount/reset-password-next-enabled?
+                    :multiaccount/resetting-password?)}
+              ;; update password in keychain if biometrics are enabled
+              (when (= auth-method keychain/auth-method-biometric)
+                (keychain/save-user-password key-uid new-password)))))
 
 (defn change-db-password-cb [res]
   (let [{:keys [error]} (types/json->clj res)]
@@ -59,9 +66,14 @@
 
 (fx/defn handle-verification-success
   {:events [::handle-verification-success]}
-  [{:keys [db]} form-vals]
+  [{:keys [db] :as cofx} form-vals]
   (let [{:keys [key-uid name]} (:multiaccount db)]
-    {::change-db-password [key-uid form-vals]}))
+    (fx/merge cofx
+              {::change-db-password [key-uid form-vals]
+               :db (assoc db
+                          :multiaccount/resetting-password? true)}
+              (popover/show-popover {:view             :password-reset-popover
+                                     :prevent-closing? true}))))
 
 (defn handle-verification [form-vals result]
   (let [{:keys [error]} (types/json->clj result)]

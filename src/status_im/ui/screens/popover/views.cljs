@@ -171,8 +171,8 @@
                    (= :transfer-multiaccount-unknown-error view)
                    [multiaccounts.key-storage/unknown-error-popover]
 
-                   (= :password-reset-success view)
-                   [reset-password.views/reset-success-popover]
+                   (= :password-reset-popover view)
+                   [reset-password.views/reset-password-popover]
 
                    (= :pin-limit view)
                    [pinned-message/pin-limit-popover]
