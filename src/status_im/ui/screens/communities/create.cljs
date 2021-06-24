@@ -9,9 +9,13 @@
             [status-im.utils.image :as utils.image]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
+            [reagent.core :as reagent]
+            ["react-native-color-picker" :refer [ColorPicker]]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.debounce :as debounce]))
 
+(def color-picker (reagent/adapt-react-class ColorPicker))
+(def close-icon-size 40)
 (def max-name-length 30)
 (def max-description-length 140)
 
@@ -128,49 +132,71 @@
     (str (count text) "/" max-length)]])
 
 (defn form []
-  (let [{:keys [name description color]
-  :or {color "#D37EF4"}} (<sub [:communities/create])]
-    [rn/scroll-view {:keyboard-should-persist-taps :handled
-                     :style                   {:flex 1}
-                     :content-container-style {:padding-vertical 16}}
-     [rn/view {:style {:padding-bottom     16
-                       :padding-top        10
-                       :padding-horizontal 16}}
-      [countable-label {:label      (i18n/label :t/name-your-community)
-                        :text       name
-                        :max-length max-name-length}]
-      [quo/text-input
-       {:placeholder    (i18n/label :t/name-your-community-placeholder)
-        :default-value  name
-        :on-change-text #(>evt  [::communities/create-field :name %])
-        :auto-focus     true}]]
-     [rn/view {:style {:padding-bottom     16
-                       :padding-top        10
-                       :padding-horizontal 16}}
-      [countable-label {:label      (i18n/label :t/give-a-short-description-community)
-                        :text       description
-                        :max-length max-description-length}]
-      [quo/text-input
-       {:placeholder    (i18n/label :t/give-a-short-description-community)
-        :multiline      true
-        :default-value  description
-        :on-change-text #(>evt [::communities/create-field :description %])}]]
-     [quo/list-header {:color :main}
-      (i18n/label :t/community-thumbnail-image)]
-     [photo-picker]
-     [rn/view {:style {:padding-bottom     16
-                       :padding-top        10
-                       :padding-horizontal 16}}
-      [quo/text {:style {:padding-bottom 10}} (i18n/label :t/community-color)]
-      [rn/view {:style {:height            44
-                        :border-radius    8
-                        :padding-horizontal 20
-                        :flex-direction   :row
-                        :justify-content :space-between
-                        :background-color color
-                        :align-items      :center}}
-        [quo/text {:style {:color (colors/get-color :text-05)}} color]
-        [icons/icon :main-icons/next {:color (colors/get-color :icon-05)}]]]]))
+  (let [visible         (reagent/atom false)
+        community-color (reagent/atom "#D37EF4")]
+    (fn [{:keys [name description]}]
+      (let [on-close-color-picker    (fn [] (reset! visible false))
+            on-open-color-picker     (fn [] (reset! visible true))]
+        [:<>
+         [rn/scroll-view {:keyboard-should-persist-taps :handled
+                          :style                        {:flex 1}
+                          :content-container-style      {:padding-vertical 16}}
+            [rn/view {:style {:padding-bottom     16
+                              :padding-top        10
+                              :padding-horizontal 16}}
+                              [countable-label {:label      (i18n/label :t/name-your-community)
+                                                :text       name
+                                                :max-length max-name-length}]
+                              [quo/text-input {:placeholder     (i18n/label :t/name-your-community-placeholder)
+                                                :default-value   name
+                                                :on-change-text  #(>evt  [::communities/create-field :name %])
+                                                :auto-focus      true}]]
+            [rn/view {:style {:padding-bottom     16
+                              :padding-top        10
+                              :padding-horizontal 16}}
+                              [countable-label {:label      (i18n/label :t/give-a-short-description-community)
+                                                :text       description
+                                                :max-length max-description-length}]
+              [quo/text-input {:placeholder    (i18n/label :t/give-a-short-description-community)
+                                :multiline      true
+                                :default-value  description
+                                :on-change-text #(>evt [::communities/create-field :description %])}]]
+            [quo/list-header {:color :main} (i18n/label :t/community-thumbnail-image)]
+            [photo-picker]
+            [rn/view {:style {:padding-bottom     16
+                              :padding-top        10
+                              :padding-horizontal 16}}
+              [quo/text {:style {:padding-bottom 10}} (i18n/label :t/community-color)]
+              [rn/touchable-opacity {:on-press on-open-color-picker}
+                [rn/view {:style {:height 44
+                                  :border-radius 8
+                                  :padding-horizontal 20
+                                  :flex-direction   :row
+                                  :justify-content :space-between
+                                  :background-color @community-color
+                                  :align-items      :center}}
+                  [quo/text {:style {:font-weight :bold
+                                    :color (colors/get-color :text-05)
+                                    :text-transform :uppercase}} @community-color]
+                  [icons/icon :main-icons/next {:color (colors/get-color :icon-05)}]]]]]
+         (when @visible
+           [rn/modal {:on-request-close on-close-color-picker
+                      :transparent      false}
+              [rn/view  {:style {:margin-top 40
+                                 :margin-horizontal 20}}
+                [rn/touchable-opacity {
+                  :on-press       on-close-color-picker
+                  :style {:align-self :flex-end}}
+                  [icons/icon :main-icons/close {
+                    :color (colors/get-color :icon-04)
+                    :width close-icon-size
+                    :height close-icon-size }]]
+                [color-picker {
+                  :onColorSelected (fn [c]
+                                      (on-close-color-picker)
+                                      (reset! community-color c))
+                  :style {:height 400}}]
+              ]])]))))
 
 (defn view []
   (let [{:keys [name description]} (<sub [:communities/create])]
