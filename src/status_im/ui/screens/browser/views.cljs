@@ -22,7 +22,8 @@
             [status-im.ui.components.permissions :as components.permissions]
             [quo.core :as quo]
             [status-im.ui.screens.wallet.components.views :as components]
-            [status-im.ui.screens.browser.options.views :as options])
+            [status-im.ui.screens.browser.options.views :as options]
+            [status-im.qr-scanner.core :as qr-scanner])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn toolbar-content [url url-original secure? url-editing? unsafe?]
@@ -93,18 +94,23 @@
        :accessibility-label :browser-open-tabs}
       [icons/icon :main-icons/tabs]]
 
-     [react/touchable-highlight
-      {:on-press #(when-not empty-tab
-                    (re-frame/dispatch
+     (if empty-tab
+       [react/touchable-highlight
+        {:accessibility-label :universal-qr-scanner
+         :on-press            #(re-frame/dispatch
+                                [::qr-scanner/scan-code
+                                 {:handler ::qr-scanner/on-scan-success}])}
+        [icons/icon :main-icons/qr]]
+       [react/touchable-highlight
+        {:on-press #(re-frame/dispatch
                      [:bottom-sheet/show-sheet
                       {:content (options/browser-options
                                  url
                                  dapps-account
                                  empty-tab
-                                 name)}]))
-       :style               (when empty-tab styles/disabled-button)
-       :accessibility-label :browser-options}
-      [icons/icon :main-icons/more]]]))
+                                 name)}])
+         :accessibility-label :browser-options}
+        [icons/icon :main-icons/more]])]))
 
 (def resources-to-permissions-map {"android.webkit.resource.VIDEO_CAPTURE" :camera
                                    "android.webkit.resource.AUDIO_CAPTURE" :record-audio})

@@ -16,7 +16,7 @@
         keyboard          (react/state {:height       0
                                         :duration     min-duration
                                         :end-position height
-                                        :max-height   (+ bottom default-kb-height)})]
+                                        :max-height   (+ (if platform/ios? bottom 0) default-kb-height)})]
     (react/effect!
      (fn []
        (letfn [(dimensions-change [evt]

@@ -76,7 +76,8 @@
 (fx/defn handle-eip681 [cofx data]
   (fx/merge cofx
             {:dispatch [:wallet/parse-eip681-uri-and-resolve-ens data]}
-            (navigation/navigate-to-cofx :tabs {:screen :wallet})))
+            (navigation/change-tab :wallet)
+            (navigation/pop-to-root-tab :wallet-stack)))
 
 (fx/defn match-scan
   {:events [::match-scanned-value]}
@@ -88,7 +89,8 @@
     :contact      (handle-view-profile cofx data)
     :browser      (handle-browse cofx data)
     :eip681       (handle-eip681 cofx data)
-    {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
+    {:dispatch [:navigate-back]
+     :utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                         :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}}))
 
 (fx/defn on-scan

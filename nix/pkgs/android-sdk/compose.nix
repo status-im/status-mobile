@@ -7,16 +7,16 @@
 
 androidenv.composeAndroidPackages {
   toolsVersion = "26.1.1";
-  platformToolsVersion = "30.0.5";
+  platformToolsVersion = "31.0.2";
   buildToolsVersions = [ "30.0.3" ];
   includeEmulator = false;
   includeSources = false;
   platformVersions = [ "29" ];
   includeSystemImages = false;
   systemImageTypes = [ "default" ];
-  cmakeVersions = [ "3.10.2" ];
+  cmakeVersions = [ "3.18.1" ];
   includeNDK = true;
-  ndkVersion = "21.3.6528147";
+  ndkVersion = "22.1.7171670";
   useGoogleAPIs = false;
   useGoogleTVAddOns = false;
   includeExtras = [

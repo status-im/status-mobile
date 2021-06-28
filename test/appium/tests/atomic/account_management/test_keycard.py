@@ -8,7 +8,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(6645)
     @marks.critical
-    @marks.skip
     def test_restore_account_migrate_multiaccount_to_keycard(self):
         sign_in = SignInView(self.driver)
         seed = basic_user['passphrase']
@@ -17,6 +16,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         profile.logout()
 
         home.just_fyi("Checking keycard banner and starting migrate multiaccount to keycard")
+        sign_in.back_button.click()
         sign_in.multi_account_on_login_button.wait_for_visibility_of_element(30)
         sign_in.get_multiaccount_by_position(1).click()
         if not sign_in.get_keycard_banner.is_element_displayed():
@@ -86,7 +86,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         if sign_in.get_keycard_banner.is_element_displayed():
             self.errors.append("Get a keycard banner is shown on migrated keycard multiaccount")
         keycard.one_button.wait_for_visibility_of_element(10)
-        keycard.connect_selected_card_button.click()
         keycard.enter_default_pin()
         if not sign_in.home_button.is_element_displayed(10):
             self.driver.fail('Keycard user is not logged in')
@@ -363,9 +362,9 @@ class TestCreateAccount(SingleDeviceTestCase):
         profile_view.logout()
 
         sign_in.just_fyi('Create new multiaccount')
+        sign_in.close_button.click()
         sign_in.your_keys_more_icon.click()
         sign_in.generate_new_key_button.click()
-        sign_in.generate_key_button.click()
         sign_in.next_button.click()
         sign_in.next_button.click()
         sign_in.create_password_input.set_value(common_password)
@@ -390,14 +389,13 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.just_fyi('Send transaction from added account and log out')
         transaction_amount_added = wallet_view.get_unique_amount()
         wallet_view.send_transaction(amount=transaction_amount_added, recipient=recipient, sign_transaction=True)
-        wallet_view.accounts_status_account.click()
         wallet_view.profile_button.click()
         profile_view.logout()
 
         sign_in.just_fyi('Login to keycard account and send another transaction')
+        sign_in.back_button.click()
         sign_in.sign_in(position=2, keycard=True)
         sign_in.wallet_button.click()
-        wallet_view.set_up_wallet()
         wallet_view.wait_balance_is_changed('ETH')
         wallet_view.accounts_status_account.click()
         transaction_amount_keycard = wallet_view.get_unique_amount()
@@ -413,7 +411,6 @@ class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5689)
     @marks.critical
-    @marks.skip
     def test_keycard_create_login_resotore_unlock_same_seed(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -449,7 +446,6 @@ class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
         device_1.multi_account_on_login_button.click()
         if not keycard_flow.element_by_text_part(default_username).is_element_displayed():
             self.errors.append("%s is not found on keycard login screen!" % default_username)
-        keycard_flow.connect_selected_card_button.click()
         keycard_flow.enter_default_pin()
         if not device_1.home_button.is_element_displayed(10):
             self.errors.append('Keycard user is not logged in')
@@ -476,7 +472,6 @@ class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
         device_1.seedphrase_input.set_value(seed_phrase)
         device_1.next_button.click()
         device_1.element_by_translation_id(id="unlock", uppercase=True).click()
-        keycard_flow.connect_selected_card_button.click()
         keycard_flow.enter_default_pin()
         device_1_home = device_1.home_button.click()
         device_1_home.plus_button.click()

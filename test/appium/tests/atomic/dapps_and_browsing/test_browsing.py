@@ -51,7 +51,6 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(6210)
     @marks.high
-    @marks.skip
     def test_open_blocked_secure_not_secure_inlalid_offline_urls(self):
         home = SignInView(self.driver).create_user()
         dapp = home.dapp_tab_button.click()
@@ -67,28 +66,33 @@ class TestBrowsing(SingleDeviceTestCase):
             dapp_detail.continue_anyway_button.click()
             if dapp_detail.element_by_text('This site is blocked').is_element_displayed():
                 self.errors.append("Failed to open Dapp after 'Continue anyway' tapped for %s" % url)
-            home.tab.click()
+            dapp_detail.open_tabs_button.click()
+            dapp_detail.empty_tab_button.click()
 
         dapp.just_fyi('Checking connection is not secure warning')
         web_page = dapp.open_url('http://www.dvwa.co.uk')
         web_page.url_edit_box_lock_icon.click_until_presence_of_element(web_page.element_by_translation_id("browser-not-secure"))
-        home.dapp_tab_button.click()
+        dapp_detail.open_tabs_button.click()
+        dapp_detail.empty_tab_button.click()
 
         for url in ('https://www.bbc.com', 'https://instant.airswap.io'):
             dapp.just_fyi('Checking connection is secure for %s' % url)
             web_page = dapp.open_url(url)
             web_page.wait_for_d_aap_to_load()
             web_page.url_edit_box_lock_icon.click_until_presence_of_element(web_page.element_by_translation_id("browser-secure"))
-            home.dapp_tab_button.click()
+            dapp_detail.open_tabs_button.click()
+            dapp_detail.empty_tab_button.click()
 
         dapp.just_fyi('Checking opening invalid link')
-        home.dapp_tab_button.double_click()
+        # home.dapp_tab_button.double_click()
         browsing_view = dapp.open_url('invalid.takoe')
         browsing_view.element_by_translation_id("web-view-error").wait_for_element(20)
         browsing_view.dapp_tab_button.double_click()
 
         dapp.just_fyi('Checking offline state')
         home.toggle_airplane_mode()
+        dapp_detail.open_tabs_button.click()
+        dapp_detail.empty_tab_button.click()
         browsing_view = dapp.open_url('status.im')
         offline_texts = ['Unable to load page', 'ERR_INTERNET_DISCONNECTED']
         for text in offline_texts:
@@ -101,7 +105,6 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5390)
     @marks.high
-    @marks.skip
     def test_delete_close_all_tabs(self):
         home_view = SignInView(self.driver).create_user()
         dapp_view = home_view.dapp_tab_button.click()
@@ -112,7 +115,8 @@ class TestBrowsing(SingleDeviceTestCase):
         }
         for url in urls:
             browsing_view = dapp_view.open_url(url)
-            browsing_view.dapp_tab_button.double_click()
+            browsing_view.open_tabs_button.click()
+            browsing_view.empty_tab_button.click()
         home_view.just_fyi('Close one tab, relogin and check that it is not reappearing')
         browsing_view.remove_tab(name=urls['bbc.com'])
         home_view.relogin()
@@ -134,7 +138,6 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(6633)
     @marks.high
-    @marks.skip
     def test_browser_managing_bookmarks(self):
         home_view = SignInView(self.driver).create_user()
         dapp_view = home_view.dapp_tab_button.click()
@@ -150,7 +153,8 @@ class TestBrowsing(SingleDeviceTestCase):
         custom_name = 'Custom BBC'
         dapp_view.open_url('bbc.com')
         browsing_view.add_to_bookmarks(custom_name)
-        browsing_view.dapp_tab_button.click()
+        browsing_view.open_tabs_button.click()
+        browsing_view.empty_tab_button.click()
         if not browsing_view.element_by_text(custom_name).is_element_displayed():
             self.driver.fail("Bookmark with custom name is not added!")
 

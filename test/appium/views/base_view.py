@@ -45,15 +45,15 @@ class TabButton(Button):
         class Counter(Text):
             def __init__(self, driver, parent_locator):
                 super().__init__(driver,
-                                 xpath="//*[@content-desc='%s']//android.view.ViewGroup/android.widget.TextView" % parent_locator)
+                                 xpath="%s/android.widget.TextView" % parent_locator)
         return Counter(self.driver, self.locator)
 
     @property
     def public_unread_messages(self):
         class PublicChatUnreadMessages(BaseElement):
-            def __init__(self, driver):
-                super().__init__(driver, accessibility_id="public-unread-badge")
-        return PublicChatUnreadMessages(self.driver)
+            def __init__(self, driver, parent_locator):
+                super().__init__(driver, xpath="%s/android.widget.TextView" % parent_locator)
+        return PublicChatUnreadMessages(self.driver, self.locator)
 
 
 class HomeButton(TabButton):
@@ -65,16 +65,19 @@ class HomeButton(TabButton):
         return HomeView(self.driver)
 
     def click(self, desired_view='home'):
-        element = None
-        from views.home_view import HomeView
         from views.chat_view import ChatView
+        from views.home_view import HomeView
         if desired_view == 'home':
+            ChatView(self.driver).get_back_to_home_view()
             element = HomeView(self.driver).plus_button
+            if not element.is_element_displayed():
+                self.click_until_presence_of_element(element)
         elif desired_view == 'chat':
             element = ChatView(self.driver).chat_message_input
+            self.click_until_presence_of_element(element)
         elif desired_view == 'other_user_profile':
             element = ChatView(self.driver).profile_nickname
-        self.click_until_presence_of_element(element)
+            self.click_until_presence_of_element(element)
         return self.navigate()
 
 
@@ -87,10 +90,8 @@ class DappTabButton(TabButton):
         return DappsView(self.driver)
 
     def click(self, desired_element_text=None):
-
-        from views.dapps_view import DappsView
         if desired_element_text is None:
-            self.click_until_presence_of_element(DappsView(self.driver).enter_url_editbox)
+            super().click()
         elif desired_element_text == 'webview':
             self.find_element().click()
         else:
@@ -254,7 +255,7 @@ class BaseView(object):
         self.apps_button = Button(self.driver, accessibility_id="Apps")
         self.status_app_icon = Button(self.driver, translation_id="status")
         self.airplane_mode_button = AirplaneModeButton(self.driver)
-        self.etest_nter_qr_edit_box = EnterQRcodeEditBox(self.driver)
+        self.enter_qr_edit_box = EnterQRcodeEditBox(self.driver)
 
         self.element_types = {
             'base': BaseElement,
@@ -403,6 +404,12 @@ class BaseView(object):
         element = Button(self.driver, xpath="//*[starts-with(@text,'%s')]" % text)
         return element.wait_for_element(wait_time)
 
+    def swipe_by_custom_coordinates(self, x_start, y_start, x_end, y_end):
+        """Uses percentage values based on device width/height"""
+        self.driver.info("*Swiping based on custom coordinates relative to device height/width*")
+        size = self.driver.get_window_size()
+        self.driver.swipe(size["width"] * x_start, size["height"] * y_start, size["width"] * x_end, size["height"] * y_end)
+
     def swipe_up(self):
         self.driver.info("*Swiping up*")
         size = self.driver.get_window_size()
@@ -475,6 +482,10 @@ class BaseView(object):
         from views.wallet_view import WalletView
         return WalletView(self.driver)
 
+    def get_webview_view(self):
+        from views.web_views.base_web_view import BaseWebView
+        return BaseWebView(self.driver)
+
     @staticmethod
     def get_unique_amount():
         return '0.00%s' % datetime.now().strftime('%-d%-H%-M%-S').strip('0')
@@ -498,15 +509,19 @@ class BaseView(object):
 
     def get_back_to_home_view(self, times_to_click_on_back_btn=3):
         counter = 0
-        while BackButton(self.driver).is_element_displayed(2):
+        while BackButton(self.driver).is_element_displayed(2) or self.close_button.is_element_displayed(2):
             try:
                 if counter >= times_to_click_on_back_btn:
                     break
-                self.back_button.click()
+                if BackButton(self.driver).is_element_displayed(2):
+                    self.back_button.click()
+                else:
+                    self.close_button.click()
                 counter += 1
             except (NoSuchElementException, TimeoutException):
                 continue
-        return self.home_button.click()
+        return self.get_home_view()
+
 
     def relogin(self, password=common_password):
         try:
@@ -614,6 +629,14 @@ class BaseView(object):
         phrase = self.sign_in_phrase.text
         self.ok_got_it_button.click()
         return phrase
+
+    def get_empty_dapp_tab(self):
+        from views.web_views.base_web_view import BaseWebView
+        web_view = BaseWebView(self.driver)
+        web_view.options_button.click()
+        if web_view.new_tab_button.is_element_displayed():
+            web_view.new_tab_button.click()
+        return web_view
 
     # Method-helper
     def write_page_source_to_file(self, full_path_to_file):

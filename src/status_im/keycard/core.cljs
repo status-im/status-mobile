@@ -105,6 +105,13 @@
   (let [enter-step (get-in db [:keycard :pin :enter-step])]
     {:db (assoc-in db [:keycard :pin enter-step] [])}))
 
+(defn login-pin-screen-did-load
+  [{:keys [db]}]
+  (let [enter-step (get-in db [:keycard :pin :enter-step])]
+    {:db (-> db
+             (assoc-in  [:keycard :pin enter-step] [])
+             (dissoc :intro-wizard :recovered-account?))}))
+
 (defn multiaccounts-screen-did-load
   [{:keys [db]}]
   {:db (assoc-in db [:keycard :setup-step] nil)})
@@ -240,9 +247,9 @@
                   (common/hide-connection-sheet)
                   (when (and (not setup?)
                              (not on-verified-failure))
-                    (if exporting?
-                      (navigation/navigate-back)
-                      (navigation/navigate-to-cofx :enter-pin-settings nil)))
+                    (when exporting?
+                      (navigation/navigate-back)))
+                      ;(navigation/navigate-to-cofx :enter-pin-settings nil)))
                   (when (zero? pin-retries) (common/frozen-keycard-popup))
                   (when on-verified-failure
                     (fn [_] {:utils/dispatch-later

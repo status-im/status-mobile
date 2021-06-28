@@ -1570,5 +1570,12 @@
     "no-thanks": "No thanks",
     "help-improve-status": "Help improve Status",
     "thank-you": "Thank you",
-    "count-metrics-collected": "{{count}} metrics collected"
+    "count-metrics-collected": "{{count}} metrics collected",
+    "bip39-password-placeholder": "BIP39 password",
+    "current-password": "Current password",
+    "reset-password": "Reset password",
+    "password-reset-success": "Password reset",
+    "new-password": "New password",
+    "confirm-new-password": "Confirm new password",
+    "password-mismatch": "New password and confirmation does not match"
 }

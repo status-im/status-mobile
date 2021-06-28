@@ -25,7 +25,7 @@
                                 (utils/show-question
                                  (i18n/label :t/are-you-sure-to-cancel)
                                  (i18n/label :t/you-will-start-from-scratch)
-                                 #(re-frame/dispatch [:rnn-navigate-back])))}}]
+                                 #(re-frame/dispatch [:navigate-back])))}}]
      [ui/title-with-description :t/intro-wizard-title2 :t/intro-wizard-text2]
      [ui/learn-more :t/about-names-title :t/about-names-content]
      [react/view {:style {:flex            1
@@ -52,7 +52,7 @@
                            :icon                [react/image {:source      {:uri (identicon/identicon public-key)}
                                                               :resize-mode :cover
                                                               :style       styles/multiaccount-image}]}]))]]
-     [ui/next-button #(dispatch-and-chill [:rnn-navigate-to :select-key-storage] 300) false]]))
+     [ui/next-button #(dispatch-and-chill [:navigate-to :select-key-storage] 300) false]]))
 
 (defn get-your-keys-image []
   (let [dimensions (reagent/atom {})]

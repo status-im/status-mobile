@@ -34,7 +34,8 @@
     [{:icon                :qr
       :accessibility-label :scan-contact-code-button
       :on-press            #(re-frame/dispatch [:wallet.send/qr-scanner
-                                                {:handler :wallet.send/qr-scanner-result}])}]}])
+                                                {:ignore-url true
+                                                 :handler :wallet.send/qr-scanner-result}])}]}])
 
 (defonce search-active? (reagent/atom false))
 

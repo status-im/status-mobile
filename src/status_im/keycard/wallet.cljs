@@ -4,7 +4,9 @@
             [status-im.keycard.common :as common]
             [status-im.constants :as constants]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.utils.hex :as utils.hex]))
+            [status-im.utils.hex :as utils.hex]
+            [status-im.ui.screens.wallet.add-new.views :as add-new.views]
+            [status-im.bottom-sheet.core :as bottom-sheet]))
 
 (fx/defn show-pin-sheet
   {:events [:keycard/new-account-pin-sheet]}
@@ -13,9 +15,9 @@
    cofx
    {:db (-> db
             (assoc-in [:keycard :pin :enter-step] :export-key)
-            (update-in [:keycard :pin] dissoc :export-key)
-            (assoc :keycard/new-account-sheet? true))
-    :dismiss-keyboard nil}))
+            (update-in [:keycard :pin] dissoc :export-key))
+    :dismiss-keyboard nil}
+   (bottom-sheet/show-bottom-sheet {:view {:content add-new.views/pin}})))
 
 (fx/defn verify-pin-with-delay
   [cofx]
@@ -26,8 +28,8 @@
 
 (fx/defn hide-pin-sheet
   {:events [:keycard/new-account-pin-sheet-hide]}
-  [{:keys [db]}]
-  {:db (assoc db :keycard/new-account-sheet? false)})
+  [cofx]
+  (bottom-sheet/hide-bottom-sheet cofx))
 
 (fx/defn generate-new-keycard-account
   {:events [:wallet.accounts/generate-new-keycard-account]}

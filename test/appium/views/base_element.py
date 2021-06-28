@@ -331,7 +331,7 @@ class Button(BaseElement):
 
     def click_until_presence_of_element(self, desired_element, attempts=4):
         counter = 0
-        self.driver.info('*Click until %s by %s:*`%s` *is presented*' % (self.name, self.by, self.locator))
+        self.driver.info('*Click until %s by %s:*`%s` *will be presented*' % (desired_element.name, desired_element.by, desired_element.locator))
         while not desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.find_element().click()

@@ -67,7 +67,7 @@ class SignWithKeycardButton(Button):
 
     def click(self):
         from views.keycard_view import KeycardView
-        self.click_until_presence_of_element(KeycardView(self.driver).one_button)
+        self.click_until_presence_of_element(KeycardView(self.driver).two_button)
         return self.navigate()
 
 

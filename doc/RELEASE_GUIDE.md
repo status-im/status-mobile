@@ -63,9 +63,11 @@ If cherry-picking not practical for some reason (i.e develop has diverged signif
 other workflows are possible.
 
 To change status-go, a similar workflow applies.
-First checkout the tag used in `status-go-version.json`.
+First checkout the tag used in `status-go-version.json` of release branch.
 
-Create a branch on status-go named: `release/vx.y.z+hotfix.w` where
+`git checkout v0.62.3`
+
+Create a branch on status-go named: `release/vx.y.z+hotfix.w` where (make sure branch name is not the same as the tag)
 
 `x` is the `MAJOR` version
 `y` is the `MINOR` version
@@ -81,11 +83,13 @@ Once the branch is ready to use and tested successfully, tag the branch:
 
 `git tag v0.62.3+hotfix.2` 
 
-and push the tag to origin:
-
+Push the branch and then the tag to origin:
+`git push --set-upstream origin release/v0.62.3+hotfix.2`
 `git push origin v0.62.3+hotfix.2`
 
-Once that's done, update the status-react branch with the new tag:
+Switch to status-react release branch, and cherry pick the commit you need.
+
+Once that's done, update the status-react release branch with the new tag:
 
 `make shell`
 

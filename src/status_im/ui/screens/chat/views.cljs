@@ -323,7 +323,7 @@
         on-close #(set-active-panel nil)]
     (reagent/create-class
      {:component-will-unmount #(re-frame/dispatch-sync [:close-chat curr-chat-id])
-      :component-did-mount (fn [] (js/setTimeout #(re-frame/dispatch [:set :ignore-close-chat false]) 200))
+      :component-did-mount (fn [] (js/setTimeout #(re-frame/dispatch [:set :ignore-close-chat false]) 1000))
       :reagent-render
       (fn []
         (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as chat}

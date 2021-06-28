@@ -3,15 +3,22 @@
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 source "${GIT_ROOT}/scripts/colors.sh"
 
-NIX_VERSION="2.3.6"
+NIX_VERSION="2.3.12"
 NIX_INSTALL_URL="https://nixos.org/releases/nix/nix-${NIX_VERSION}/install"
+NIX_INSTALL_SHA256="468a49a1cef293d59508bb3b62625dfcd99ec00334a14309f125cf8de513d5f1"
+NIX_INSTALL_PATH="/tmp/nix-install-${NIX_VERSION}"
 
 function install_nix() {
   # Don't break people's profiles
   export NIX_INSTALLER_NO_MODIFY_PROFILE=1
   # Fix for installing on MacOS Catalina
   export NIX_IGNORE_SYMLINK_STORE=1
-  bash <(curl "${NIX_INSTALL_URL}") --no-daemon
+  # Download installer and verify SHA256
+  curl -s "${NIX_INSTALL_URL}" -o "${NIX_INSTALL_PATH}"
+  echo "${NIX_INSTALL_SHA256}  ${NIX_INSTALL_PATH}" | sha256sum -c
+  chmod +x "${NIX_INSTALL_PATH}"
+  # Run the installer
+  "${NIX_INSTALL_PATH}" --no-daemon
   if [ $? -eq 0 ]; then
     echo -e "${GRN}The Nix package manager was successfully installed.${RST}"
   else

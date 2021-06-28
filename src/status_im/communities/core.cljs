@@ -321,7 +321,7 @@
   (fx/merge cofx
             (reset-community-id-input id)
             (reset-channel-info)
-            (navigation/navigate-to :communities {:screen :create-community-channel})))
+            (navigation/navigate-to :create-community-channel nil)))
 
 (fx/defn edit-channel-pressed
   {:events [::edit-channel-pressed]}
@@ -331,7 +331,7 @@
                                                         :description  description
                                                         :color        color
                                                         :community-id community-id})}
-            (navigation/navigate-to :communities {:screen :edit-community-channel})))
+            (navigation/navigate-to :edit-community-channel nil)))
 
 (fx/defn community-created
   {:events [::community-created]}
@@ -367,7 +367,7 @@
                                                   :membership  access
                                                   :color       color
                                                   :editing?    true})}
-              (navigation/navigate-to :community-edit :nil))))
+              (navigation/navigate-to :community-edit nil))))
 
 (fx/defn community-imported
   {:events [::community-imported]}

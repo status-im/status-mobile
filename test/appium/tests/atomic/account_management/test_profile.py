@@ -20,9 +20,9 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.logout()
         if sign_in.ok_button.is_element_displayed():
             sign_in.ok_button.click()
+        sign_in.back_button.click()
         sign_in.your_keys_more_icon.click()
         sign_in.generate_new_key_button.click()
-        sign_in.generate_key_button.click()
         sign_in.next_button.click()
         sign_in.next_button.click()
         sign_in.create_password_input.set_value(common_password)
@@ -117,7 +117,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5502)
     @marks.critical
-    @marks.skip
     def test_can_add_existing_ens(self):
         home = SignInView(self.driver).recover_access(ens_user['passphrase'])
         profile = home.profile_button.click()
@@ -230,7 +229,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         home.just_fyi('Add contact  and check that they appear in Contacts view')
         chat_view = home.get_chat_view()
         for key in users:
-            profile.plus_button.click()
+            profile.add_new_contact_button.click()
             home.just_fyi('Checking %s case' % key)
             if 'scanning' in key:
                 chat_view.scan_contact_code_button.click()
@@ -253,7 +252,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         user_to_remove = '@%s' % ens_user['ens_another_domain']
         profile.element_by_text(user_to_remove).click()
         chat_view.remove_from_contacts.click()
-        chat_view.back_button.click()
+        chat_view.close_button.click()
         if profile.element_by_text(user_to_remove).is_element_displayed():
             self.errors.append('Removed user is still shown in contact view')
 
@@ -285,7 +284,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.critical
     @marks.testrail_id(5419)
     @marks.flaky
-    @marks.skip
     def test_logcat_backup_recovery_phrase(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -319,6 +317,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         home.just_fyi("Try to restore same account from seed phrase (should be possible only to unlock existing account)")
         profile.logout()
+        sign_in.back_button.click()
         sign_in.access_key_button.click()
         sign_in.enter_seed_phrase_button.click()
         sign_in.seedphrase_input.click()
@@ -391,14 +390,13 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5738)
     @marks.high
-    @marks.skip
     def test_dapps_permissions(self):
         home = SignInView(self.driver).create_user()
         account_name = home.status_account_name
 
         home.just_fyi('open Status Test Dapp, allow all and check permissions in Profile')
-        home.open_status_test_dapp()
-        home.dapp_tab_button.click()
+        web_view = home.open_status_test_dapp()
+        dapp_view = home.dapp_tab_button.click()
         profile = home.profile_button.click()
         profile.privacy_and_security_button.click()
         profile.dapp_permissions_button.click()
@@ -411,7 +409,11 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.just_fyi('revoke access and check that they are asked second time')
         profile.revoke_access_button.click()
         profile.back_button.click()
-        dapp_view = profile.dapp_tab_button.click()
+        profile.dapp_tab_button.click()
+
+        web_view.open_tabs_button.click()
+        web_view.empty_tab_button.click()
+
         dapp_view.open_url(test_dapp_url)
         if not dapp_view.element_by_text_part(account_name).is_element_displayed():
             self.errors.append('Wallet permission is not asked')
@@ -488,10 +490,10 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
                 self.driver.fail("Couldn't connect to any history node")
 
         profile.just_fyi('check that history node is pinned')
-        profile.back_button.click()
+        profile.close_button.click()
         if not profile.element_by_text(h_node).is_element_displayed():
             self.errors.append('"%s" history node is not pinned' % h_node)
-        profile.get_back_to_home_view()
+        profile.home_button.click()
 
         profile.just_fyi('Relogin and check that settings are preserved')
         home.relogin()
@@ -649,7 +651,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_2.element_by_text(default_username_1).click()
         if not profile_2.profile_picture.is_element_image_similar_to_template('sauce_logo.png'):
             self.errors.append('Profile picture was not updated on user Profile view')
-        profile_2.back_button.click()
+        profile_2.close_button.click()
         one_to_one_chat_2.home_button.click(desired_view='home')
         if not home_2.get_chat(default_username_1).chat_image.is_element_image_similar_to_template('sauce_logo.png'):
             self.errors.append('User profile picture was not updated on Chats view')
@@ -685,7 +687,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         # Send message to User 2 so update of profile image picked up
         group_chat_1 = home_1.get_chat('new_group_chat').click()
         group_chat_1.send_message(group_chat_message)
-        one_to_one_chat_2.back_button.click()
+        one_to_one_chat_2.close_button.click()
         one_to_one_chat_2.home_button.click(desired_view='home')
         if home_2.get_chat(default_username_1).chat_image.is_element_image_similar_to_template('sauce_logo.png'):
             self.errors.append('User profile picture is not default to default after user removed from Contacts')
@@ -763,7 +765,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
         public_key = home_2.get_public_key_and_username()
-        home_2.get_back_to_home_view()
+        home_2.home_button.click()
 
         profile_1 = home_1.profile_button.click()
         username_1 = profile_1.default_username_text.text
@@ -775,6 +777,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.mail_server_auto_selection_button.click()
         profile_1.mail_server_by_name(mailserver).click()
         profile_1.confirm_button.click()
+
         profile_1.just_fyi('add custom mailserver (check address/name validation) and connect to it')
         profile_1.plus_button.click()
         server_name = 'test'
@@ -796,7 +799,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             profile_1.retry_to_connect_to_mailserver()
         profile_1.get_back_to_home_view()
         profile_1.home_button.click()
-
 
         profile_1.just_fyi('start chat with user2 and check that all messages are delivered')
         chat_1 = home_1.add_contact(public_key)
@@ -938,7 +940,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5762)
     @marks.high
-    @marks.skip
     def test_pair_devices_sync_one_to_one_contacts_nicknames_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -950,7 +951,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_profile.ok_continue_button.click()
         recovery_phrase = device_1_profile.get_recovery_phrase()
         device_1_profile.close_button.click()
-        device_1_profile.get_back_to_home_view()
+        device_1_profile.home_button.click()
         device_1_name = 'device_%s' % device_1.driver.number
         device_2_name = 'device_%s' % device_2.driver.number
         message_before_sync = 'sent before sync'
@@ -973,7 +974,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_profile.open_contact_from_profile(basic_user['username'])
         nickname = 'my_basic_user'
         device_1_chat.set_nickname(nickname)
-        device_1_profile.close_button.double_click()
+        device_1_profile.close_button.click()
+        device_1.back_button.click()
 
         device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
         device_2_profile.discover_and_advertise_device(device_2_name)
@@ -1039,7 +1041,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6226)
     @marks.critical
-    @marks.skip
     def test_ens_mentions_pn_and_nickname_in_public_and_1_1_chats(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]
@@ -1069,7 +1070,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         for text in ('10 SNT, deposit unlocked', user_1['address'].lower(), user_1['public_key'] ):
             if not profile_1.element_by_text_part(text).is_element_displayed(40):
                 self.errors.append('%s text is not shown' % text)
-        dapp_view_1.get_back_to_home_view()
         profile_1.home_button.click()
 
         home_2.just_fyi('joining same public chat, set ENS name and check it in chat from device2')
@@ -1106,9 +1106,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_1.element_by_text_part(username_2).click()
         if home_1.element_starts_with_text(user_1['ens'] +'.stateofus.eth').is_element_differs_from_template('mentioned.png', 2):
             self.errors.append('Mention is not highlighted!')
-        chat_1.element_starts_with_text(user_1['ens'] +'.stateofus.eth','button').click()
-        if not profile_1.contacts_button.is_element_displayed():
-                self.errors.append('Was not redirected to own profile after tapping on mention of myself from another user!')
+
+        # Close Device1 driver session since it's not needed anymore
+        self.drivers[0].quit()
 
         home_2.just_fyi('check that ENS name is shown in 1-1 chat without adding user as contact in header, profile, options')
         chat_2_one_to_one = chat_2.profile_send_message.click()
@@ -1123,14 +1123,14 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         home_2.just_fyi('add user to contacts and check that ENS name is shown in contact')
         chat_2_one_to_one.profile_add_to_contacts.click()
-        chat_2.back_button.click()
+        chat_2.close_button.click()
         profile_2 = chat_2_one_to_one.profile_button.click()
         profile_2.open_contact_from_profile(ens_name)
 
         home_2.just_fyi('set nickname and recheck username in 1-1 header, profile, options, contacts')
         nickname = 'test user' + str(round(time()))
         chat_2.set_nickname(nickname)
-        profile_2.back_button.click()
+        profile_2.close_button.click()
         for name in (nickname, ens_name):
             if not profile_2.element_by_text(name).is_element_displayed():
                 self.errors.append('%s is not shown in contact list' % name)
@@ -1150,7 +1150,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('Nickname for user with ENS is not shown in public chat')
 
         self.errors.verify_no_errors()
-
 
     @marks.testrail_id(6228)
     @marks.high
@@ -1276,7 +1275,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_profile.sync_all_button.wait_for_visibility_of_element(15)
 
         device_2.just_fyi('check that public chat and profile details are updated')
-        device_2_home = device_2_profile.get_back_to_home_view()
+        device_2_home = device_2_profile.home_button.click()
         if not device_2_home.element_by_text('#%s' % public_chat_before_sync_name).is_element_displayed():
             self.errors.append('Public chat "%s" doesn\'t appear after initial sync'
                                % public_chat_before_sync_name)
@@ -1287,7 +1286,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_2_profile.home_button.click()
 
         device_1.just_fyi('send message to group chat, and join to new public chat')
-        device_1_home = device_1_profile.get_back_to_home_view()
+        device_1_home = device_1_profile.home_button.click()
         device_1_public_chat = device_1_home.join_public_chat(public_chat_after_sync_name)
         device_1_public_chat.back_button.click()
         device_1_home.element_by_text(group_chat_name).click()

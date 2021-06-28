@@ -16,8 +16,7 @@
 
 let
   pkgs = import <nixpkgs> { };
-  lib = pkgs.stdenv.lib;
-  mkFilter = pkgs.callPackage ./mkFilter.nix { inherit lib; };
+  mkFilter = pkgs.callPackage ./mkFilter.nix { inherit (pkgs) lib; };
   absPath = "/ABS/PATH";
   filter = mkFilter {
     root = absPath;

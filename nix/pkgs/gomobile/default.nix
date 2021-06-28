@@ -1,10 +1,10 @@
-{ stdenv, utils, callPackage, fetchgit, buildGo114Package,
+{ stdenv, lib, utils, callPackage, fetchgit, buildGo114Package,
   ncurses5, zlib, makeWrapper, patchelf, androidPkgs, xcodeWrapper
 }:
 
 let
   inherit (stdenv) isDarwin;
-  inherit (stdenv.lib) optional optionalString strings;
+  inherit (lib) optional optionalString strings;
 in buildGo114Package rec {
   pname = "gomobile";
   version = "20200622-${strings.substring 0 7 rev}";
@@ -57,7 +57,7 @@ in buildGo114Package rec {
     url = "https://go.googlesource.com/mobile";
   };
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A tool for building and running mobile apps written in Go.";
     longDescription = "Gomobile is a tool for building and running mobile apps written in Go.";
     homepage = https://go.googlesource.com/mobile;

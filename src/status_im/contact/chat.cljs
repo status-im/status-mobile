@@ -10,8 +10,8 @@
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [cofx {:keys [public-key]}]
   (fx/merge cofx
-            (navigation/pop-to-root-tab :chat-stack)
-            (chat/start-chat public-key)))
+            {:dispatch-later [{:ms 1000 :dispatch [:chat.ui/start-chat public-key]}]}
+            (navigation/pop-to-root-tab :chat-stack)))
 
 (fx/defn contact-code-submitted
   {:events       [:contact.ui/contact-code-submitted]

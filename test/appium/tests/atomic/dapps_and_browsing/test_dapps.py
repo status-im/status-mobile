@@ -99,7 +99,6 @@ class TestDApps(SingleDeviceTestCase):
         sign_in_view.just_fyi('add permission to Status account')
         dapp_view.enter_url_editbox.click()
         status_test_dapp = home_view.open_status_test_dapp()
-
         sign_in_view.just_fyi('check that permissions from previous account was removed once you choose another')
         dapp_view.select_account_button.click()
         dapp_view.select_account_by_name(account_name).wait_for_element(30)
@@ -125,6 +124,7 @@ class TestDApps(SingleDeviceTestCase):
         profile_view.dapp_tab_button.click(desired_element_text='Accounts')
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
+        send_transaction_view.ok_got_it_button.click()
         address = send_transaction_view.get_formatted_recipient_address(address)
         if not send_transaction_view.element_by_text(address).is_element_displayed():
             self.errors.append("Wallet address %s in not shown in 'From' on Send Transaction screen" % address)

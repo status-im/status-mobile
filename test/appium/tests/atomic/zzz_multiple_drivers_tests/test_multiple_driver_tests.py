@@ -10,7 +10,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(3998)
     @marks.high
-    @marks.skip
     def test_offline_add_new_group_chat_member(self):
         message_before_adding = 'message before adding new user'
         message_after_adding = 'message from new member'
@@ -183,8 +182,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_profile.backup_recovery_phrase_button.click()
         device_1_profile.ok_continue_button.click()
         recovery_phrase = device_1_profile.get_recovery_phrase()
-        device_1_profile.back_button.click()
-        device_1_profile.get_back_to_home_view()
+        device_1_profile.close_button.click()
+        device_1_profile.home_button.click()
         device_3_home = device_3.create_user()
         device_3_chat_key, device_3_username = device_3_home.get_public_key_and_username(return_username=True)
         device_3.home_button.click()
@@ -192,7 +191,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi('Add contact, start group chat')
         nickname = 'my_tester'
         device_1_home.add_contact(device_3_chat_key,nickname=nickname)
-        device_1_home.back_button.click()
+        device_1_home.get_back_to_home_view()
         device_1_chat = device_1_home.create_group_chat([device_3_username], group_chat_name)
         device_3_chat = device_3_home.get_chat(group_chat_name).click()
         device_3_chat.join_chat_button.click()

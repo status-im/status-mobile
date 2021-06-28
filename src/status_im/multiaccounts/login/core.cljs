@@ -119,7 +119,7 @@
   (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
     {:db (-> db
              (assoc-in [:multiaccounts/login :processing] true)
-             (dissoc :intro-wizard)
+             (dissoc :intro-wizard :recovered-account?)
              (update :keycard dissoc :flow))
      ::login [key-uid
               (types/clj->json {:name       name
@@ -537,7 +537,7 @@
     (fx/merge
      cofx
      {:db (update db :keycard dissoc :application-info)
-      :rnn-navigate-to-fx (if keycard-multiaccount? :keycard-login-pin :login)}
+      :navigate-to-fx (if keycard-multiaccount? :keycard-login-pin :login)}
      (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
 
 (fx/defn hide-keycard-banner

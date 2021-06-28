@@ -1,3 +1,31 @@
+## 1.14
+
+### For iOS and Android
+### Features
+
+- Highlight posts that mention you ([details](https://github.com/status-im/status-react/pull/12146))
+- Remove PUK and Pairing Code screen from Keycard onboarding
+ [details](https://github.com/status-im/status-react/pull/12155))
+- Added unread messages count for messages with mentions in public chats ([details](https://github.com/status-im/status-react/pull/12152))
+- Sync history setting allowing to sync chat history up to 1 month ([details](https://github.com/status-im/status-react/pull/12166))
+
+
+### Improvements
+
+- "My profile" button for simplification of finding own public key ([details](https://github.com/status-im/status-react/pull/12044))
+- Factory reset option is available on account creation and recovery flows ([details](https://github.com/status-im/status-react/pull/12055))
+- Allow the creation of recovery/backup Keycard from the login interface ([details](https://github.com/status-im/status-react/pull/12115))
+- Reset blocked and/or frozen Keycards ([details](https://github.com/status-im/status-react/pull/12127))
+- Show cached balance ([details](https://github.com/status-im/status-react/pull/12134))
+
+
+### Bugfixes
+
+- Pending transactions are stored in the database and shown on history screen after re-login ([details](https://github.com/status-im/status-react/pull/12032))
+- Multiple fixes for keycard
+- Fixes for resolving ENS name from chat key ([details](https://github.com/status-im/status-react/pull/12100))
+
+
 ## 1.13
 
 ### For iOS and Android

@@ -10,7 +10,8 @@
             [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.qr-scanner.core :as qr-scanner]))
 
 (defn hide-sheet-and-dispatch [event]
   (re-frame/dispatch [:bottom-sheet/hide])
@@ -43,6 +44,15 @@
           fav? (get bookmarks url)
           connected? (some #{constants/dapp-permission-web3} (get-in permissions [(http/url-host url) :permissions]))]
       [react/view {:flex 1}
+       [quo/button {:style               {:align-self   :flex-end
+                                          :margin-right 15}
+                    :type                :icon
+                    :theme               :icon
+                    :accessibility-label :universal-qr-scanner
+                    :on-press            #(hide-sheet-and-dispatch
+                                           [::qr-scanner/scan-code
+                                            {:handler ::qr-scanner/on-scan-success}])}
+        :main-icons/qr]
        (when-not empty-tab
          [:<>
           [quo/list-item

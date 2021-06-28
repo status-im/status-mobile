@@ -98,6 +98,8 @@
 (reg-root-key-sub :multiaccount/accounts :multiaccount/accounts)
 (reg-root-key-sub :get-recover-multiaccount :multiaccounts/recover)
 (reg-root-key-sub :multiaccounts/key-storage :multiaccounts/key-storage)
+(reg-root-key-sub :multiaccount/reset-password-form-vals :multiaccount/reset-password-form-vals)
+(reg-root-key-sub :multiaccount/reset-password-errors :multiaccount/reset-password-errors)
 
 ;;chat
 (reg-root-key-sub ::cooldown-enabled? :chat/cooldown-enabled?)
@@ -195,7 +197,6 @@
 (reg-root-key-sub ::pagination-info :pagination-info)
 
 ;; keycard
-(reg-root-key-sub :keycard/new-account-sheet? :keycard/new-account-sheet?)
 (reg-root-key-sub :keycard/banner-hidden :keycard/banner-hidden)
 
 ;; delete profile
@@ -2615,3 +2616,20 @@
        (and
         (= network-type "cellular")
         syncing-on-mobile-network?))))
+
+;; RESET PASSWORD
+(re-frame/reg-sub
+ :multiaccount/reset-password-form-vals-and-errors
+ :<- [:multiaccount/reset-password-form-vals]
+ :<- [:multiaccount/reset-password-errors]
+ (fn [[form-vals errors]]
+   (let [{:keys [current-password new-password confirm-new-password]} form-vals]
+     {:form-vals form-vals
+      :errors    errors
+      :next-enabled?
+      (and (pos? (count current-password))
+           (pos? (count new-password))
+           (pos? (count confirm-new-password))
+           (>= (count new-password) 6)
+           (>= (count current-password) 6)
+           (= new-password confirm-new-password))})))

@@ -10,7 +10,9 @@
             [status-im.router.core :as router]
             [status-im.qr-scanner.core :as qr-scaner]
             [status-im.bottom-sheet.core :as bottom-sheet]
-            [status-im.navigation :as navigation]))
+            [status-im.navigation :as navigation]
+            [status-im.utils.http :as http]
+            [status-im.utils.universal-links.utils :as links]))
 
 ;; FIXME(Ferossgp): Should be part of QR scanner not wallet
 (fx/defn toggle-flashlight
@@ -102,7 +104,7 @@
 
 (fx/defn parse-eip681-uri-and-resolve-ens
   {:events [:wallet/parse-eip681-uri-and-resolve-ens]}
-  [{db :db :as cofx} {:keys [message uri paths ens-names error]}]
+  [{db :db :as cofx} {:keys [message uri paths ens-names error]} ignore-url]
   (if-not error
     ;; first we get a vector of ens-names to resolve and a vector of paths of
     ;; these names
@@ -122,11 +124,15 @@
                       (assoc-in message path address))
                     message
                     (map vector paths addresses)) uri]))}})
-    {:ui/show-error (i18n/label :t/wallet-invalid-address {:data uri})}))
+    (if (and (http/url? uri) (not ignore-url))
+      (if (links/universal-link? uri)
+        {:dispatch [:universal-links/handle-url uri]}
+        {:browser/show-browser-selection uri})
+      {:ui/show-error (i18n/label :t/wallet-invalid-address {:data uri})})))
 
 (fx/defn qr-scanner-result
   {:events [:wallet.send/qr-scanner-result]}
-  [cofx data _]
+  [cofx data {:keys [ignore-url]}]
   (fx/merge cofx
             (navigation/navigate-back)
-            (parse-eip681-uri-and-resolve-ens (router/match-eip681 data))))
+            (parse-eip681-uri-and-resolve-ens (router/match-eip681 data) ignore-url)))

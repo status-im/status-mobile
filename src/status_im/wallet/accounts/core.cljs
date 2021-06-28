@@ -299,7 +299,7 @@
                :db (-> db
                        (assoc :multiaccount/accounts new-accounts)
                        (update-in [:wallet :accounts] dissoc deleted-address))}
-              (navigation/navigate-to-cofx :wallet nil))))
+              (navigation/pop-to-root-tab :wallet-stack))))
 
 (fx/defn view-only-qr-scanner-result
   {:events [:wallet.add-new/qr-scanner-result]}

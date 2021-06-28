@@ -55,29 +55,27 @@ class TestDeepLinks(SingleDeviceTestCase):
         except NoSuchElementException:
             self.driver.fail("DApp '%s' is not opened!" % dapp_name)
 
-    @marks.testrail_id(5780)
-    @marks.medium
-    def test_open_own_user_profile_using_deep_link(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(passphrase=basic_user['passphrase'])
-        self.driver.close_app()
-        deep_link = 'status-im://u/%s' % basic_user['public_key']
-        sign_in_view.open_weblink_and_login(deep_link)
-        profile_view = sign_in_view.get_profile_view()
-        if profile_view.default_username_text.text != basic_user['username'] \
-                or not profile_view.contacts_button.is_element_displayed() \
-                or not profile_view.share_my_profile_button.is_element_displayed():
-            self.driver.fail("Own profile screen is not opened!")
 
     @marks.testrail_id(5781)
     @marks.medium
-    def test_deep_link_with_invalid_user_public_key(self):
+    def test_deep_link_with_invalid_user_public_key_own_profile_key(self):
         sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
+        sign_in_view.recover_access(passphrase=basic_user['passphrase'])
         self.driver.close_app()
+
+        sign_in_view.just_fyi('Check that no error when opening invalid deep link')
         deep_link = 'status-im://u/%s' % basic_user['public_key'][:-10]
         sign_in_view.open_weblink_and_login(deep_link)
         home_view = sign_in_view.get_home_view()
         home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
         if not home_view.start_new_chat_button.is_element_present():
-            self.driver.fail("Can't navigate to start new chat after app opened from deep link with invalid public key")
+            self.errors.append("Can't navigate to start new chat after app opened from deep link with invalid public key")
+        self.driver.close_app()
+
+        sign_in_view.just_fyi('Check that no error when opening invalid deep link')
+        deep_link = 'status-im://u/%s' % basic_user['public_key']
+        sign_in_view.open_weblink_and_login(deep_link)
+        home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
+        if not home_view.start_new_chat_button.is_element_present():
+            self.errors.append("Can't navigate to start new chat after app opened from deep link with own public key")
+        self.errors.verify_no_errors()

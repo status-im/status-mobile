@@ -126,6 +126,12 @@
         (string/replace host #"www." "")))
     (catch :default _ nil)))
 
+(defn url? [str]
+  (try
+    (when-let [host (.getDomain ^js (goog.Uri. str))]
+      (not (string/blank? host)))
+    (catch :default _ nil)))
+
 (defn parse-payload [o]
   (when o
     (try

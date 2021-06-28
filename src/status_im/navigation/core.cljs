@@ -5,12 +5,13 @@
    [status-im.ui.screens.views :as views]
    [status-im.utils.platform :as platform]
    [status-im.navigation.roots :as roots]
-   ["react-native-navigation" :refer (Navigation)]
-   ["react-native-gesture-handler" :refer (gestureHandlerRootHOC)]
    [status-im.ui.components.react :as react]
    [quo.components.text-input :as quo.text-input]
    [status-im.ui.components.icons.icons :as icons]
    [quo.design-system.colors :as quo.colors]
+   [status-im.utils.fx :as fx]
+   ["react-native-navigation" :refer (Navigation)]
+   ["react-native-gesture-handler" :refer (gestureHandlerRootHOC)]
    ["react-native" :as rn]))
 
 (def debug? ^boolean js/goog.DEBUG)
@@ -34,6 +35,14 @@
 (defonce rset-lazy-reg
   (.setLazyComponentRegistrator Navigation reg-comp))
 
+(defn dismiss-all-modals []
+  (when @curr-modal
+    (reset! curr-modal false)
+    (reset! dissmissing true)
+    (doseq [modal @modals]
+      (.dismissModal Navigation (name modal)))
+    (reset! modals [])))
+
 ;; PUSH SCREEN
 (defn navigate [comp]
   (let [{:keys [options]} (get views/screens comp)]
@@ -45,10 +54,7 @@
                                                  (roots/status-bar-options)
                                                  (roots/merge-top-bar (roots/topbar-options) options))}}))
     ;;if we push the screen from modal, we want to dismiss all modals
-    (when @curr-modal
-      (reset! curr-modal false)
-      (reset! modals [])
-      (.dismissAllModals Navigation))))
+    (dismiss-all-modals)))
 
 ;; OPEN MODAL
 (defn update-modal-topbar-options [options]
@@ -67,7 +73,6 @@
     (if @dissmissing
       (reset! dissmissing comp)
       (do
-        (println "SHOW MODAL" comp)
         (reset! curr-modal true)
         (swap! modals conj comp)
         (.showModal Navigation
@@ -84,7 +89,6 @@
 
 ;; DISSMISS MODAL
 (defn dissmissModal []
-  (println "dissmissModal" @modals)
   (reset! dissmissing true)
   (.dismissModal Navigation (name (last @modals))))
 
@@ -105,7 +109,6 @@
   (.registerModalDismissedListener
    (.events Navigation)
    (fn [_]
-     (println "DismissedListener" @dissmissing @modals)
      (if (> (count @modals) 1)
        (let [new-modals (butlast @modals)]
          (reset! modals (vec new-modals))
@@ -129,6 +132,7 @@
        (when-let [{:keys [on-focus]} (get views/screens view-id)]
          (when (and (not= view-id :bottom-sheet) (not= view-id :popover))
            (re-frame/dispatch [:set :view-id view-id])
+           (re-frame/dispatch [:screens/on-will-focus view-id])
            (when on-focus
              (re-frame/dispatch on-focus))
            (when-not @curr-modal
@@ -159,12 +163,23 @@
    (reset! root-id @root-comp-id)
    (.setRoot Navigation (clj->js (get (roots/roots) new-root-id)))))
 
+(fx/defn set-multiaccount-root
+  {:events [::set-multiaccount-root]}
+  [{:keys [db]}]
+  (let [key-uid          (get-in db [:multiaccounts/login :key-uid])
+        keycard-account? (boolean (get-in db [:multiaccounts/multiaccounts
+                                              key-uid
+                                              :keycard-pairing]))]
+    {:init-root-fx (if keycard-account? :multiaccounts-keycard :multiaccounts)}))
+
 (defonce rset-app-launched
   (.registerAppLaunchedListener (.events Navigation)
                                 (fn []
-                                  (when @root-id
-                                    (reset! root-comp-id @root-id)
-                                    (.setRoot Navigation (clj->js (get (roots/roots) @root-id))))
+                                  (if (or (= @root-id :multiaccounts) (= @root-id :multiaccounts-keycard))
+                                    (re-frame/dispatch-sync [::set-multiaccount-root])
+                                    (when @root-id
+                                      (reset! root-comp-id @root-id)
+                                      (.setRoot Navigation (clj->js (get (roots/roots) @root-id)))))
                                   (.hide ^js splash-screen))))
 
 (defn get-screen-component [comp]
@@ -199,14 +214,16 @@
                   :profile 4})
 
 (re-frame/reg-fx
- :rnn-change-tab-fx
+ :change-tab-fx
  (fn [tab]
    (reset! root-comp-id (get tab-root-ids (get tab-key-idx tab)))
-   (.mergeOptions Navigation "tabs-stack" (clj->js {:bottomTabs {:currentTabIndex (get tab-key-idx tab)}}))))
+   (.mergeOptions Navigation "tabs-stack" (clj->js {:bottomTabs {:currentTabIndex (get tab-key-idx tab)}}))
+   ;;when we change tab we want to dismiss all modals
+   (dismiss-all-modals)))
 
 ;issue on ios https://github.com/wix/react-native-navigation/issues/7146
 (re-frame/reg-fx
- :rnn-change-tab-count-fx
+ :change-tab-count-fx
  (fn [[tab cnt]]
    (.mergeOptions Navigation
                   (name (get tab-root-ids (get tab-key-idx tab)))
@@ -225,8 +242,9 @@
                                            {:dotIndicator {:visible false} :badge nil}))}))))
 
 (re-frame/reg-fx
- :rnn-pop-to-root-tab-fx
+ :pop-to-root-tab-fx
  (fn [comp]
+   (dismiss-all-modals)
    (.popToRoot Navigation (name comp))))
 
 (defonce register-bottom-tab-reg
@@ -240,7 +258,7 @@
 
 ;; OVERLAY (Popover and bottom sheets)
 (defn dissmiss-overlay [comp]
-  (.dismissOverlay Navigation comp))
+  (.catch (.dismissOverlay Navigation comp) #()))
 
 (defn show-overlay [comp]
   (dissmiss-overlay comp)
@@ -263,8 +281,8 @@
                       (fn [] (gestureHandlerRootHOC views/popover-comp))
                       (fn [] views/popover-comp)))
 
-(re-frame/reg-fx :rnn-show-popover (fn [] (show-overlay "popover")))
-(re-frame/reg-fx :rnn-hide-popover (fn [] (dissmiss-overlay "popover")))
+(re-frame/reg-fx :show-popover (fn [] (show-overlay "popover")))
+(re-frame/reg-fx :hide-popover (fn [] (dissmiss-overlay "popover")))
 
 ;; BOTTOM SHEETS
 (defonce bottom-sheet-reg
@@ -273,8 +291,8 @@
                       (fn [] (gestureHandlerRootHOC views/sheet-comp))
                       (fn [] views/sheet-comp)))
 
-(re-frame/reg-fx :rnn-show-bottom-sheet (fn [] (show-overlay "bottom-sheet")))
-(re-frame/reg-fx :rnn-hide-bottom-sheet (fn [] (dissmiss-overlay "bottom-sheet")))
+(re-frame/reg-fx :show-bottom-sheet (fn [] (show-overlay "bottom-sheet")))
+(re-frame/reg-fx :hide-bottom-sheet (fn [] (dissmiss-overlay "bottom-sheet")))
 
 ;; SIGNING
 
@@ -284,8 +302,8 @@
                       (fn [] (gestureHandlerRootHOC views/signing-comp))
                       (fn [] views/signing-comp)))
 
-(re-frame/reg-fx :rnn-show-signing-sheet (fn [] (show-overlay "signing-sheet")))
-(re-frame/reg-fx :rnn-hide-signing-sheet (fn [] (dissmiss-overlay "signing-sheet")))
+(re-frame/reg-fx :show-signing-sheet (fn [] (show-overlay "signing-sheet")))
+(re-frame/reg-fx :hide-signing-sheet (fn [] (dissmiss-overlay "signing-sheet")))
 
 ;; Select account
 ;; TODO why is this not a regular bottom sheet ?
@@ -296,20 +314,20 @@
                       (fn [] (gestureHandlerRootHOC views/select-acc-comp))
                       (fn [] views/select-acc-comp)))
 
-(re-frame/reg-fx :rnn-show-select-acc-sheet (fn [] (show-overlay "select-acc-sheet")))
-(re-frame/reg-fx :rnn-hide-select-acc-sheet (fn [] (dissmiss-overlay "select-acc-sheet")))
+(re-frame/reg-fx :show-select-acc-sheet (fn [] (show-overlay "select-acc-sheet")))
+(re-frame/reg-fx :hide-select-acc-sheet (fn [] (dissmiss-overlay "select-acc-sheet")))
 
 ;; NAVIGATION
 
 (re-frame/reg-fx
- :rnn-navigate-to-fx
+ :navigate-to-fx
  (fn [key]
    ;;TODO WHY #{:home} ? we need to review all navigations to root screens home, wallet profile etc
    (when-not (#{:home} key)
      (navigate key))))
 
 (re-frame/reg-fx
- :rnn-navigate-back-fx
+ :navigate-back-fx
  (fn []
    (if @curr-modal
      (dissmissModal)

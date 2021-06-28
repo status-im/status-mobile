@@ -60,7 +60,6 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5360)
     @marks.critical
-    @marks.skip
     def test_unread_messages_counter_public_chat(self):
         self.create_drivers(2)
         driver_2 = self.drivers[1]

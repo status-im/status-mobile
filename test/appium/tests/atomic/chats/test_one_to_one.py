@@ -26,7 +26,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         default_username_1 = profile_1.default_username_text.text
         profile_1.profile_notifications_button.click()
         profile_1.profile_notifications_toggle_button.click()
-        device_1_home = profile_1.get_back_to_home_view()
+        device_1_home = profile_1.home_button.click()
         device_2_public_key = device_2_home.get_public_key_and_username()
         message_no_pn, message = 'No PN', 'Text push notification'
 
@@ -99,7 +99,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         profile_2 = home_2.profile_button.click()
         username_2 = profile_2.default_username_text.text
-        profile_2.get_back_to_home_view()
+        profile_2.home_button.click()
         chat_2 = home_2.add_contact(public_key_1)
         message_1 = 'test message'
 
@@ -198,7 +198,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5782)
     @marks.critical
-    @marks.skip
     def test_install_pack_and_send_sticker(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -355,7 +354,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_1, home_2 = device_1.create_user(), device_2.create_user(enable_notifications=True)
         profile_1 = home_1.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
-        home_1 = profile_1.get_back_to_home_view()
+        home_1 = profile_1.home_button.click()
         public_key_2 = home_2.get_public_key_and_username()
         chat_1 = home_1.add_contact(public_key_2)
         chat_1.send_message('hey')
@@ -390,7 +389,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5373)
     @marks.high
-    @marks.skip
     def test_send_and_open_links_with_previews(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -398,7 +396,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_1, home_2 = device_1.create_user(), device_2.create_user()
         profile_1 = home_1.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
-        home_1 = profile_1.get_back_to_home_view()
+        home_1 = profile_1.home_button.click()
         public_key_2 = home_2.get_public_key_and_username()
         home_2.home_button.click()
         chat_1 = home_1.add_contact(public_key_2)
@@ -452,7 +450,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.element_by_translation_id("dont-ask").click()
         chat_1.element_by_translation_id("enable").wait_and_click()
         chat_1.element_by_translation_id("enable-all").wait_and_click()
-        chat_1.close_button.click()
+        chat_1.close_modal_view_from_chat_button.click()
         if not chat_1.get_preview_message_by_text(giphy_url).preview_image:
             self.errors.append("No preview is shown for %s" % giphy_url)
         for key in preview_urls:
@@ -480,7 +478,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
         profile_2 = device_2_home.profile_button.click()
         default_username_2 = profile_2.default_username_text.text
-        device_2_home = profile_2.get_back_to_home_view()
+        device_2_home = profile_2.home_button.click()
         device_1_public_key = device_1_home.get_public_key_and_username()
         device_1_home.home_button.click()
 
@@ -517,7 +515,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_home, device_2_home = sign_in_1.create_user(), sign_in_2.create_user()
         profile_2 = device_2_home.profile_button.click()
         default_username_2 = profile_2.default_username_text.text
-        device_2_home = profile_2.get_back_to_home_view()
+        device_2_home = profile_2.home_button.click()
         device_1_public_key = device_1_home.get_public_key_and_username()
         device_1_home.home_button.click()
 
@@ -657,7 +655,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
     @marks.testrail_id(5403)
     @marks.critical
-    @marks.skip
     def test_start_chat_with_ens_mention_in_one_to_one(self):
         home = SignInView(self.driver).create_user()
 
@@ -668,7 +665,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         for element in (chat.profile_block_contact, chat.remove_from_contacts, chat.profile_send_message):
             if not element.is_element_displayed():
                 self.errors.append('Expected %s is not visible' % element.locator)
-        chat.get_back_to_home_view()
+        chat.close_button.click()
+        chat.home_button.click()
 
         home.just_fyi('Start new chat with ENS and check that ENS is resolved')
         ens = ens_user_ropsten['ens']
@@ -686,7 +684,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         home.just_fyi('Set nickname and mention user by nickname in 1-1 chat')
         russian_nickname = 'МОЙ дорогой ДРУх'
         chat.set_nickname(russian_nickname)
-        chat.back_button.click()
+        chat.close_button.click()
         chat.select_mention_from_suggestion_list(russian_nickname + ' @' + ens)
         chat.chat_element_by_text('%s hey!' % russian_nickname).click()
         if not chat.profile_block_contact.is_element_displayed():
@@ -694,7 +692,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 'No redirect to user profile after tapping on message with mention (nickname) in 1-1 chat')
 
         home.just_fyi('My_profile button at Start new chat view opens own QR code with public key pop-up')
-        chat.back_button.click()
+        chat.close_button.click()
         home.home_button.double_click()
         home.plus_button.click()
         home.start_new_chat_button.click()
@@ -782,7 +780,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                         'In "%s" case chat input is not found after scanning, so no redirect to 1-1' % key)
                 if not chat_view.element_by_text(url_data[key]['username']).is_element_displayed():
                     self.errors.append('In "%s" case "%s" not found after scanning' % (key, url_data[key]['username']))
-                chat_view.back_button.click()
+                chat_view.get_back_to_home_view()
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6322)
@@ -811,17 +809,16 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             },
             'own_profile_key': {
                 'url': user['public_key'],
-                'username': user['username']
             },
             'other_user_profile_key': {
                 'url': ens_user['public_key'],
                 'username': ens_user['username']
             },
-            'validation_wrong_address_transaction': {
+            'wallet_validation_wrong_address_transaction': {
                 'url': 'ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e@3/transfer?address=blablabla&uint256=1e10',
                 'error': 'Invalid address',
             },
-            'eip_ens_for_receiver': {
+            'wallet_eip_ens_for_receiver': {
                 'url': 'ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=nastya.stateofus.eth&uint256=1e-1',
                 'data': {
                     'asset': 'STT',
@@ -829,7 +826,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                     'address': '0x58d8…F2ff',
                 },
             },
-            'eip_payment_link': {
+            'wallet_eip_payment_link': {
                 'url': 'ethereum:pay-0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=0x3d597789ea16054a084ac84ce87f50df9198f415&uint256=1e1',
                 'data': {
                     'amount': '10',
@@ -872,18 +869,21 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                         self.errors.append('In %s case block user button is not shown' % key)
                 if not chat_view.element_by_text(url_data[key]['username']).is_element_displayed():
                     self.errors.append('In %s case username not shown' % key)
-            if url_data[key].get('data'):
-                actual_data = send_transaction_view.get_values_from_send_transaction_bottom_sheet()
-                difference_in_data = url_data[key]['data'].items() - actual_data.items()
-                if difference_in_data:
-                    self.errors.append(
-                        'In %s case returned value does not match expected in %s' % (key, repr(difference_in_data)))
-                send_transaction_view.back_button.click()
+            if 'wallet' in key:
+                if url_data[key].get('data'):
+                    actual_data = send_transaction_view.get_values_from_send_transaction_bottom_sheet()
+                    difference_in_data = url_data[key]['data'].items() - actual_data.items()
+                    if difference_in_data:
+                        self.errors.append(
+                            'In %s case returned value does not match expected in %s' % (key, repr(difference_in_data)))
+                    wallet_view.close_send_transaction_view_button.click()
+                wallet_view.home_button.click()
             if 'dapp' in key:
                 home_view.open_in_status_button.click()
                 if not chat_view.allow_button.is_element_displayed():
                     self.errors.append('No allow button is shown in case of navigating to Status dapp!')
                 chat_view.dapp_tab_button.click()
+                chat_view.home_button.click()
             if 'public' in key:
                 if not chat_view.chat_message_input.is_element_displayed():
                     self.errors.append('No message input is shown in case of navigating to public chat via deep link!')

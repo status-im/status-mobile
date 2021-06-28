@@ -407,3 +407,11 @@
   (log/debug "[native-module] resetKeyboardInput")
   (when platform/android?
     (.resetKeyboardInputCursor ^js (status) input selection)))
+
+;; passwords are hashed
+(defn reset-password
+  [key-uid current-password# new-password# callback]
+  (log/debug "[native-module] change-database-password")
+  (init-keystore
+   key-uid
+   #(.reEncryptDbAndKeystore ^js (status) key-uid current-password# new-password# callback)))

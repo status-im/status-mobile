@@ -1,4 +1,4 @@
-{ stdenv, bundlerEnv, ruby, makeWrapper }:
+{ stdenv, lib, bundlerEnv, ruby, makeWrapper }:
 
 let
   fastlane = stdenv.mkDerivation rec {
@@ -28,7 +28,7 @@ let
       export FASTLANE_PLUGINFILE_PATH=$STATUS_REACT_HOME/fastlane/Pluginfile
     '';
 
-    meta = with stdenv.lib; {
+    meta = with lib; {
       description     = "A tool to automate building and releasing iOS and Android apps";
       longDescription = "fastlane is a tool for iOS and Android developers to automate tedious tasks like generating screenshots, dealing with provisioning profiles, and releasing your application.";
       homepage        = https://github.com/fastlane/fastlane;
