@@ -7,6 +7,7 @@
             [status-im.communities.core :as communities]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.utils.image :as utils.image]
+            [status-im.utils.colors :as utils.colors]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [reagent.core :as reagent]
@@ -24,6 +25,11 @@
        (not (str/blank? community-description))
        (<= (count community-name) max-name-length)
        (<= (count community-description) max-description-length)))
+
+(defn community-text-color [hex-color]
+  (if 
+    (< (utils.colors/color-brightness hex-color) 125)
+    colors/white colors/black))      
 
 (def crop-size 1000)
 (def crop-opts {:cropping             true
@@ -133,7 +139,8 @@
 
 (defn form []
   (let [visible         (reagent/atom false)
-        community-color (reagent/atom "#D37EF4")]
+        community-color (reagent/atom colors/black)
+        community-color-text (reagent/atom colors/white)]
     (fn [{:keys [name description]}]
       (let [on-close-color-picker    (fn [] (reset! visible false))
             on-open-color-picker     (fn [] (reset! visible true))]
@@ -176,9 +183,9 @@
                                   :background-color @community-color
                                   :align-items      :center}}
                   [quo/text {:style {:font-weight :bold
-                                    :color (colors/get-color :text-05)
+                                    :color @community-color-text
                                     :text-transform :uppercase}} @community-color]
-                  [icons/icon :main-icons/next {:color (colors/get-color :icon-05)}]]]]]
+                  [icons/icon :main-icons/next {:color @community-color-text}]]]]]
          (when @visible
            [rn/modal {:on-request-close on-close-color-picker
                       :transparent      false}
@@ -194,7 +201,8 @@
                 [color-picker {
                   :onColorSelected (fn [c]
                                       (on-close-color-picker)
-                                      (reset! community-color c))
+                                      (reset! community-color c)
+                                      (reset! community-color-text (community-text-color c)))
                   :style {:height 400}}]
               ]])]))))
 
