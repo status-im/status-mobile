@@ -83,22 +83,12 @@
              :keycard/check-nfc-enabled nil}
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
 
-(fx/defn cancel-confirm
-  {:events [::cancel-confirm]}
-  [{:keys [db] :as cofx}]
+(fx/defn cancel-pressed
+  {:events [::cancel-pressed]}
+  [cofx]
   (fx/merge cofx
             (common/cancel-sheet-confirm)
             (navigation/navigate-back)))
-
-(fx/defn cancel-pressed
-  {:events [::cancel-pressed]}
-  [_]
-  {:ui/show-confirmation {:title               (i18n/label :t/keycard-cancel-setup-title)
-                          :content             (i18n/label :t/keycard-cancel-setup-text)
-                          :confirm-button-text (i18n/label :t/yes)
-                          :cancel-button-text  (i18n/label :t/no)
-                          :on-accept           #(re-frame/dispatch [::cancel-confirm])
-                          :on-cancel           #()}})
 
 (fx/defn begin-setup-pressed
   {:events [:keycard.recovery.intro.ui/begin-recovery-pressed]}

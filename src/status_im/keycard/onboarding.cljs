@@ -315,19 +315,9 @@
   [{:keys [db] :as cofx}]
   {:db (update db :keycard dissoc :factory-reset-card?)})
 
-(fx/defn cancel-confirm
-  {:events [::cancel-confirm]}
+(fx/defn cancel-pressed
+  {:events [::cancel-pressed]}
   [cofx]
   (fx/merge cofx
             (navigation/navigate-back)
             (common/cancel-sheet-confirm)))
-
-(fx/defn cancel-pressed
-  {:events [::cancel-pressed]}
-  [_]
-  {:ui/show-confirmation {:title               (i18n/label :t/keycard-cancel-setup-title)
-                          :content             (i18n/label :t/keycard-cancel-setup-text)
-                          :confirm-button-text (i18n/label :t/yes)
-                          :cancel-button-text  (i18n/label :t/no)
-                          :on-accept           #(re-frame/dispatch [::cancel-confirm])
-                          :on-cancel           #()}})
