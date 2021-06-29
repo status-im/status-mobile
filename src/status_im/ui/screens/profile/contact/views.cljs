@@ -116,7 +116,8 @@
 (defn nickname-view [public-key {:keys [nickname ens-name three-words-name]}]
   (let [entered-nickname (reagent/atom nickname)]
     (fn []
-      [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
+      [kb-presentation/keyboard-avoiding-view {:style {:flex 1}
+                                               :ignore-offset true}
        [topbar/topbar {:title    (i18n/label :t/nickname)
                        :subtitle (or ens-name three-words-name)
                        :modal?   true}]
@@ -202,6 +203,7 @@
          :ref                       #(reset! status.views/messages-list-ref %)
          :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages current-chat-id])
          :on-scroll-to-index-failed #()                        ;;don't remove this
-         :render-data               {:chat-id current-chat-id}
+         :render-data               {:chat-id current-chat-id
+                                     :profile true}
          :render-fn                 status.views/render-message
          :data                      messages}]])))

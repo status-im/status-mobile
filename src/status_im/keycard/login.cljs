@@ -64,7 +64,8 @@
               (update-in [:keycard :pin] assoc
                          :enter-step :reset
                          :error nil
-                         :status nil))})
+                         :status nil))
+      :hide-popover nil})
    (when-not (:multiaccounts/login db)
      (navigation/navigate-to-cofx :keycard-pin nil))))
 
@@ -73,7 +74,8 @@
   [{:keys [db]}]
   {:db (-> db
            (dissoc :popover/popover)
-           (update :keycard dissoc :setup-step))})
+           (update :keycard dissoc :setup-step))
+   :hide-popover nil})
 
 (fx/defn login-with-keycard
   {:events [:keycard/login-with-keycard]}

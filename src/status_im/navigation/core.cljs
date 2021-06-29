@@ -105,6 +105,13 @@
          (when-let [handler (get-in views/screens [(keyword id) :right-handler])]
            (handler)))))))
 
+(defn set-view-id [view-id]
+  (when-let [{:keys [on-focus]} (get views/screens view-id)]
+    (re-frame/dispatch [:set :view-id view-id])
+    (re-frame/dispatch [:screens/on-will-focus view-id])
+    (when on-focus
+      (re-frame/dispatch on-focus))))
+
 (defonce register-modal-reg
   (.registerModalDismissedListener
    (.events Navigation)
@@ -112,11 +119,11 @@
      (if (> (count @modals) 1)
        (let [new-modals (butlast @modals)]
          (reset! modals (vec new-modals))
-         (re-frame/dispatch [:set :view-id (last new-modals)]))
+         (set-view-id (last new-modals)))
        (do
          (reset! modals [])
          (reset! curr-modal false)
-         (re-frame/dispatch [:set :view-id @pushed-screen-id])))
+         (set-view-id @pushed-screen-id)))
 
      (let [comp @dissmissing]
        (reset! dissmissing false)
@@ -129,12 +136,9 @@
    (.events Navigation)
    (fn [^js evn]
      (let [view-id (keyword (.-componentName evn))]
-       (when-let [{:keys [on-focus]} (get views/screens view-id)]
+       (when (get views/screens view-id)
          (when (and (not= view-id :bottom-sheet) (not= view-id :popover))
-           (re-frame/dispatch [:set :view-id view-id])
-           (re-frame/dispatch [:screens/on-will-focus view-id])
-           (when on-focus
-             (re-frame/dispatch on-focus))
+           (set-view-id view-id)
            (when-not @curr-modal
              (reset! pushed-screen-id view-id))))))))
 

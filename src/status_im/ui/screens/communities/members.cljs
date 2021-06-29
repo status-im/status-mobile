@@ -86,27 +86,28 @@
      [quo/separator {:style {:margin-vertical 8}}]]))
 
 (defn members []
-  (let [{:keys [community-id]}      (<sub [:get-screen-params])
-        my-public-key               (<sub [:multiaccount/public-key])
-        {:keys [members
-                permissions
-                can-manage-users?]} (<sub [:communities/community community-id])]
-    [:<>
-     [topbar/topbar {:title    (i18n/label :t/community-members-title)
+  (let [{:keys [community-id]} (<sub [:get-screen-params])]
+    (fn []
+      (let [my-public-key               (<sub [:multiaccount/public-key])
+            {:keys [members
+                    permissions
+                    can-manage-users?]} (<sub [:communities/community community-id])]
+        [:<>
+         [topbar/topbar {:title    (i18n/label :t/community-members-title)
 
-                     :subtitle (str (count members))}]
-     [header community-id]
-     (when (and can-manage-users? (= constants/community-on-request-access (:access permissions)))
-       [requests-to-join community-id])
-     [rn/flat-list {:data        (keys members)
-                    :render-data {:community-id community-id
-                                  :my-public-key my-public-key
-                                  :can-kick-users? (and can-manage-users?
-                                                        (not= (:access permissions)
-                                                              constants/community-no-membership-access))
-                                  :can-manage-users? can-manage-users?}
-                    :key-fn      identity
-                    :render-fn   render-member}]]))
+                         :subtitle (str (count members))}]
+         [header community-id]
+         (when (and can-manage-users? (= constants/community-on-request-access (:access permissions)))
+           [requests-to-join community-id])
+         [rn/flat-list {:data        (keys members)
+                        :render-data {:community-id community-id
+                                      :my-public-key my-public-key
+                                      :can-kick-users? (and can-manage-users?
+                                                            (not= (:access permissions)
+                                                                  constants/community-no-membership-access))
+                                      :can-manage-users? can-manage-users?}
+                        :key-fn      identity
+                        :render-fn   render-member}]]))))
 
 (defn members-container []
   (reagent/create-class

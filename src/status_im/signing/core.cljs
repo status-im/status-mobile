@@ -386,7 +386,8 @@
     (fx/merge cofx
               {:db (-> db
                        (assoc-in [:keycard :pin :status] nil)
-                       (dissoc :signing/tx :signing/sign))}
+                       (dissoc :signing/tx :signing/sign))
+               :hide-signing-sheet nil}
               (check-queue)
               (keycard.common/hide-connection-sheet)
               (keycard.common/clear-pin)

@@ -26,7 +26,8 @@
                      ;setting pin-retry-counter is a workaround for the way the PIN view decides if it should accept PUK or PIN
                      (assoc-in [:keycard :application-info :pin-retry-counter] 3)
                      (assoc-in [:keycard :factory-reset-card?] true)
-                     (dissoc :popover/popover))}
+                     (dissoc :popover/popover))
+             :hide-popover nil}
             (signing.core/discard)
             (if show-warning
               (utils/show-confirmation {:title               (i18n/label :t/keycard-recover-title)

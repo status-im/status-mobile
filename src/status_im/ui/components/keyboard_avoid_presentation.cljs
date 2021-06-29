@@ -14,5 +14,5 @@
                                 20)]
          (reagent/as-element
           (into [react/keyboard-avoiding-view (update props :keyboardVerticalOffset
-                                                      + vertical-offset)]
+                                                      + vertical-offset (if (:ignore-offset props) 44 0))]
                 children))))]))

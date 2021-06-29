@@ -43,18 +43,18 @@
                             (multiaccounts/displayed-photo member)]}]))
 
 (defn requests-to-join []
-  (fn []
-    (let [{:keys [community-id]}     (<sub [:get-screen-params])
-          requests (<sub [:communities/requests-to-join-for-community community-id])
-          {:keys [can-manage-users?]}    (<sub [:communities/community community-id])]
-      [:<>
-       [topbar/topbar {:title    (i18n/label :t/community-requests-to-join-title)
-                       :subtitle (str (count requests))}]
-       [rn/flat-list {:data        requests
-                      :render-data {:community-id community-id
-                                    :can-manage-users? can-manage-users?}
-                      :key-fn      :id
-                      :render-fn   render-request}]])))
+  (let [{:keys [community-id]} (<sub [:get-screen-params])]
+    (fn []
+      (let [requests (<sub [:communities/requests-to-join-for-community community-id])
+            {:keys [can-manage-users?]}    (<sub [:communities/community community-id])]
+        [:<>
+         [topbar/topbar {:title    (i18n/label :t/community-requests-to-join-title)
+                         :subtitle (str (count requests))}]
+         [rn/flat-list {:data        requests
+                        :render-data {:community-id community-id
+                                      :can-manage-users? can-manage-users?}
+                        :key-fn      :id
+                        :render-fn   render-request}]]))))
 
 (defn requests-to-join-container []
   (reagent/create-class

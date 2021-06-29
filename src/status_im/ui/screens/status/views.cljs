@@ -98,7 +98,7 @@
                                    :on-long-press #(on-long-press-fn on-long-press content true)}
         [message-content-image (:image content) false]]])))
 
-(defn message-item [account]
+(defn message-item [account profile]
   (fn [{:keys [content-type content from timestamp outgoing] :as message}
        {:keys [modal on-long-press close-modal]}]
     [react/view (merge {:padding-vertical   8
@@ -109,6 +109,7 @@
                          {:border-radius 16}))
      [react/touchable-highlight
       {:on-press #(do (when modal (close-modal))
+                      (when profile (re-frame/dispatch [:navigate-back]))
                       (re-frame/dispatch [:chat.ui/show-profile from]))}
       [react/view {:padding-top 2 :padding-right 8}
        (if outgoing
@@ -119,6 +120,7 @@
                    :justify-content :space-between}
        [react/touchable-highlight
         {:on-press #(do (when modal (close-modal))
+                        (when profile (re-frame/dispatch [:navigate-back]))
                         (re-frame/dispatch [:chat.ui/show-profile from]))}
         (if outgoing
           [message/message-my-name {:profile? true :you? false}]
@@ -133,7 +135,7 @@
           [message/render-parsed-text (assoc message :outgoing false) (:parsed-text content)]])
        [link-preview/link-preview-wrapper (:links content) outgoing true]]]]))
 
-(defn render-message [{:keys [type] :as message} idx _ {:keys [timeline account chat-id]}]
+(defn render-message [{:keys [type] :as message} idx _ {:keys [timeline account chat-id profile]}]
   (if (= type :datemark)
     nil
     (if (= type :gap)
@@ -165,7 +167,7 @@
                                                    :chat-id           chat-id
                                                    :emoji-id          emoji-id
                                                    :emoji-reaction-id emoji-reaction-id}]))
-           :render          (message-item account)}]]))))
+           :render          (message-item account profile)}]]))))
 
 (def state (reagent/atom {:tab :timeline}))
 
