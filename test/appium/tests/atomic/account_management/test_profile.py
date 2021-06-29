@@ -1195,7 +1195,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not device_2_home.mobile_connection_on_icon.is_element_displayed():
             self.errors.append('No mobile connection ON icon is shown')
         device_2_home.get_chat('#%s'% public_chat_name).click()
-        if not device_2_public.chat_element_by_text(public_chat_message).is_element_displayed(30):
+        if not device_2_public.chat_element_by_text(public_chat_message).is_element_displayed(90):
             self.errors.append("Chat history was not fetched with mobile data fetching ON")
 
         device_2_home.just_fyi('check redirect to sync settings by tappin "Sync" in connection status bottom sheet')

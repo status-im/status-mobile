@@ -336,7 +336,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_2_home.just_fyi('reply to image message')
         device_2_chat.reply_message_button.click()
-        if device_2_chat.quote_username_in_message_input.text != "↪ %s" % device_1_username:
+        if device_2_chat.quote_username_in_message_input.text != "↪ Replying to %s" % device_1_username:
             self.errors.append("Username is not displayed in reply quote snippet replying to image message")
         reply_to_message_from_receiver = "image reply"
         device_2_chat.send_message(reply_to_message_from_receiver)

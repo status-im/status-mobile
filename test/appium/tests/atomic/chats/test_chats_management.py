@@ -835,7 +835,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_public_1, chat_public_2 = home_1.get_chat_view(), home_2.get_chat_view()
         chat_public_1.send_message(message_from_sender)
         chat_public_2.quote_message(message_from_sender)
-        if chat_public_2.quote_username_in_message_input.text != ("↪ " + device_1_username):
+        if chat_public_2.quote_username_in_message_input.text != ("↪ Replying to " + device_1_username):
             self.errors.append(
                 " %s is not displayed in reply quote snippet replying to own message " % device_1_username)
 

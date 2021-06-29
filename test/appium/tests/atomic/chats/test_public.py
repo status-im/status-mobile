@@ -218,4 +218,30 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         if not home_view.element_by_text(tag_message).is_element_displayed():
             self.errors.append('Could not find the public chat in user chat list.')
 
+        times = {
+            "three-days" : '5 days',
+            "one-week" : '12 days',
+            "one-month" : ['43 days', '42 days', '41 days', '40 days'],
+        }
+
+        signin.just_fyi("Check that can fetch more history")
+        home_view.element_by_text(tag_message).click()
+        profile = home_view.profile_button.click()
+        profile.sync_settings_button.click()
+        profile.sync_history_for_button.click()
+        for period in times:
+            profile.just_fyi("Checking %s period" % period)
+            profile.element_by_translation_id(period).click()
+            profile.home_button.click(desired_view='chat')
+            chat.element_by_text_part(fetch_more).wait_and_click(120)
+            if period != "one-month":
+                if not profile.element_by_text_part(times[period]).is_element_displayed(30):
+                    self.errors.append("'Quiet here for %s' is not shown after fetching more history" % times[period])
+            else:
+                variants = times[period]
+                res = any(profile.element_by_text_part(variant).is_element_displayed(30) for variant in variants)
+                if not res:
+                    self.errors.append("History is not fetched for one month!" )
+            home_view.profile_button.click(desired_element_text=profile.get_translation_by_key("default-sync-period"))
+
         self.errors.verify_no_errors()

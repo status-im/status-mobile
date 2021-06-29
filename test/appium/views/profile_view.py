@@ -223,6 +223,8 @@ class ProfileView(BaseView):
                                       suffix="/following-sibling::android.widget.Switch[1]")
         self.ask_me_when_on_mobile_network = Button(self.driver, translation_id="mobile-network-ask-me",
                                                     suffix="/following-sibling::android.widget.Switch[1]")
+        ##Sync history data
+        self.sync_history_for_button = Button(self.driver, accessibility_id="default-sync-period-button")
         ## History nodes
         self.mail_server_button = Button(self.driver, accessibility_id="offline-messages-settings-button")
         self.mail_server_address_input = EditBox(self.driver, translation_id="mailserver-address",

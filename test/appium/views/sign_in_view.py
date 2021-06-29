@@ -206,8 +206,8 @@ class SignInView(BaseView):
 
     def sign_in(self, password=common_password, keycard=False, position=1):
         self.driver.info("**Sign in (password:%s, keycard:%s)**" % (password, str(keycard)))
-        self.multi_account_on_login_button.wait_for_visibility_of_element(30)
-        self.get_multiaccount_by_position(position).click()
+        if self.multi_account_on_login_button.is_element_displayed(30):
+            self.get_multiaccount_by_position(position).click()
 
         if keycard:
             from views.keycard_view import KeycardView
