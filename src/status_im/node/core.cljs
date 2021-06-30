@@ -19,10 +19,14 @@
 (defn- add-log-level [config log-level]
   (if (empty? log-level)
     (assoc config
-           :LogLevel "ERROR"
-           :LogEnabled false)
+           :MaxPeers 5
+           :MaxPendingPeers 5
+           :LogLevel "DEBUG"
+           :LogEnabled true)
     (assoc config
-           :LogLevel log-level
+           :MaxPeers 5
+           :MaxPendingPeers 5
+           :LogLevel "DEBUG"
            :LogEnabled true)))
 
 (defn get-network-genesis-hash-prefix

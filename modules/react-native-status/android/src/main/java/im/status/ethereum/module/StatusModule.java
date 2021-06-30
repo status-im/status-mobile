@@ -1281,26 +1281,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
 
     @ReactMethod
-    public void chaosModeUpdate(final boolean on, final Callback callback) {
-        Log.d(TAG, "chaosModeUpdate");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.chaosModeUpdate(on);
-
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
-    }
-
-    @ReactMethod
     public void deleteMultiaccount(final String keyUID, final Callback callback) {
         Log.d(TAG, "deleteMultiaccount");
         if (!checkAvailability()) {
@@ -1390,27 +1370,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                 Log.d(TAG, resIdenticon);
                 Log.d(TAG, resAlias);
                 callback.invoke(resAlias, resIdenticon);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
-    }
-
-    @ReactMethod
-    public void getNodesFromContract(final String rpcEndpoint, final String contractAddress, final Callback callback) {
-        Log.d(TAG, "getNodesFromContract");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.getNodesFromContract(rpcEndpoint, contractAddress);
-
-                Log.d(TAG, res);
-                callback.invoke(res);
             }
         };
 
