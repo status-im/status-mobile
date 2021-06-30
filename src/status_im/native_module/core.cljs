@@ -334,11 +334,6 @@
   (log/debug "[native-module] toggle-webview-debug" on)
   (.toggleWebviewDebug ^js (status) on))
 
-(defn get-nodes-from-contract
-  [rpc-endpoint contract-address on-result]
-  (log/debug "[native-module] get-nodes-from-contract")
-  (.getNodesFromContract ^js (status) rpc-endpoint contract-address on-result))
-
 (defn rooted-device? [callback]
   (log/debug "[native-module] rooted-device?")
   (cond
