@@ -29,7 +29,7 @@
 (defn memo-icon-fn
   ([name] (memo-icon-fn name nil))
   ([name {:keys [color resize-mode container-style
-                 accessibility-label width height]
+                 accessibility-label width height no-color]
           :or   {accessibility-label :icon}}]
    ^{:key name}
    [react/image {:style  (merge (cond-> {:width  (or width 24)
@@ -38,7 +38,7 @@
                                   resize-mode
                                   (assoc :resize-mode resize-mode)
 
-                                  :always
+                                  (not no-color)
                                   (assoc :tint-color (match-color color)))
                                 container-style)
                  :accessibility-label accessibility-label

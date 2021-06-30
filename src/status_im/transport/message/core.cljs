@@ -88,7 +88,7 @@
         (js-delete response-js "communities")
         (fx/merge cofx
                   (process-next response-js sync-handler)
-                  (models.communities/handle-communities (types/js->clj communities-clj))))
+                  (models.communities/handle-communities communities-clj)))
 
       (seq pin-messages)
       (let [pin-messages (types/js->clj pin-messages)]
@@ -102,13 +102,13 @@
         (js-delete response-js "removedChats")
         (fx/merge cofx
                   (process-next response-js sync-handler)
-                  (models.communities/handle-removed-chats (types/js->clj removed-chats-clj))))
+                  (models.communities/handle-removed-chats removed-chats-clj)))
 
       (seq requests-to-join-community)
-      (let [request (.pop requests-to-join-community)]
+      (let [request-js (types/js->clj (.pop requests-to-join-community))]
         (fx/merge cofx
                   (process-next response-js sync-handler)
-                  (models.communities/handle-request-to-join (types/js->clj request))))
+                  (models.communities/handle-request-to-join request-js)))
 
       (seq emoji-reactions)
       (let [reactions (types/js->clj emoji-reactions)]

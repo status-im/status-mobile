@@ -148,6 +148,11 @@
    "wakuext_communities" {}
    "wakuext_importCommunity" {}
    "wakuext_exportCommunity" {}
+   "wakuext_createCommunityCategory" {}
+   "wakuext_reorderCommunityCategories" {}
+   "wakuext_reorderCommunityChat" {}
+   "wakuext_editCommunityCategory" {}
+   "wakuext_deleteCommunityCategory" {}
    "wakuext_ensVerified" {}
    "wakuext_dismissActivityCenterNotifications" {}
    "wakuext_acceptActivityCenterNotifications" {}

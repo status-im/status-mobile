@@ -47,6 +47,14 @@
              {}
              chats))
 
+(defn <-categories-rpc [categ]
+  (reduce-kv (fn [acc k v]
+               (assoc acc
+                      (name k)
+                      v))
+             {}
+             categ))
+
 (defn <-rpc [c]
   (-> c
       (clojure.set/rename-keys {:canRequestAccess :can-request-access?
@@ -55,7 +63,8 @@
                                 :requestedToJoinAt :requested-to-join-at
                                 :isMember :is-member?})
       (update :members walk/stringify-keys)
-      (update :chats <-chats-rpc)))
+      (update :chats <-chats-rpc)
+      (update :categories <-categories-rpc)))
 
 (defn fetch-community-id-input [{:keys [db]}]
   (:communities/community-id-input db))
@@ -321,7 +330,7 @@
   (fx/merge cofx
             (reset-community-id-input id)
             (reset-channel-info)
-            (navigation/navigate-to :create-community-channel nil)))
+            (navigation/open-modal :create-community-channel {:community-id id})))
 
 (fx/defn edit-channel-pressed
   {:events [::edit-channel-pressed]}
@@ -331,7 +340,7 @@
                                                         :description  description
                                                         :color        color
                                                         :community-id community-id})}
-            (navigation/navigate-to :edit-community-channel nil)))
+            (navigation/open-modal :edit-community-channel nil)))
 
 (fx/defn community-created
   {:events [::community-created]}
@@ -503,3 +512,59 @@
   [{:keys [db]} enabled?]
   {::async-storage/set! {:communities-enabled? enabled?}
    :db (assoc db :communities/enabled? enabled?)})
+
+(fx/defn create-category
+  {:events [::create-category-confirmation-pressed]}
+  [_ community-id category-title chat-ids]
+  {::json-rpc/call [{:method     "wakuext_createCommunityCategory"
+                     :params     [{:communityId community-id
+                                   :categoryName category-title
+                                   :chatIds (map #(string/replace % community-id "") chat-ids)}]
+                     :js-response true
+                     :on-success #(do
+                                    (re-frame/dispatch [:navigate-back])
+                                    (re-frame/dispatch [:sanitize-messages-and-process-response %]))
+                     :on-error   #(log/error "failed to create community category" %)}]})
+
+(fx/defn remove-chat-from-category
+  {:events [:remove-chat-from-community-category]}
+  [{:keys [db]} community-id id categoryID]
+  (let [category (get-in db [:communities community-id :categories categoryID])
+        category-chats (map :id (filter #(and (= (:categoryID %) categoryID) (not= id (:id %)))
+                                        (vals (get-in db [:communities community-id :chats]))))]
+    {::json-rpc/call [{:method     "wakuext_editCommunityCategory"
+                       :params     [{:communityId community-id
+                                     :categoryId categoryID
+                                     :categoryName (:name category)
+                                     :chatIds category-chats}]
+                       :js-response true
+                       :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                       :on-error   #(log/error "failed to remove chat from community" %)}]}))
+
+(fx/defn delete-category
+  {:events [:delete-community-category]}
+  [_ community-id category-id]
+  {::json-rpc/call [{:method     "wakuext_deleteCommunityCategory"
+                     :params     [{:communityId community-id
+                                   :categoryId category-id}]
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                     :on-error   #(log/error "failed to delete community category" %)}]})
+
+(fx/defn change-category
+  {:events [::change-category-confirmation-pressed]}
+  [cofx community-id category-id {:keys [id position categoryID]}]
+  (if (not (string/blank? category-id))
+    {::json-rpc/call [{:method     "wakuext_reorderCommunityChat"
+                       :params     [{:communityId community-id
+                                     :categoryId category-id
+                                     :chatId id
+                                     :position position}]
+                       :js-response true
+                       :on-success #(do
+                                      (re-frame/dispatch [:navigate-back])
+                                      (re-frame/dispatch [:sanitize-messages-and-process-response %]))
+                       :on-error   #(log/error "failed to change community category" %)}]}
+    (fx/merge cofx
+              (navigation/navigate-back)
+              (remove-chat-from-category community-id id categoryID))))

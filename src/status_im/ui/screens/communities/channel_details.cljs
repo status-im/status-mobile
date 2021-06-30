@@ -11,25 +11,35 @@
     (fn []
       (let [current-chat (<sub [:chat-by-id chat-id])
             {:keys [chat-name color description community-id]} current-chat
+            category (<sub [:chats/category-by-chat-id community-id chat-id])
             {:keys [admin]} (<sub [:communities/community community-id])]
-        [:<>
-         [quo/animated-header {:left-accessories  [{:icon                :main-icons/arrow-left
-                                                    :accessibility-label :back-button
-                                                    :on-press            #(>evt [:navigate-back])}]
-                               :right-accessories (when admin [{:icon                :edit
-                                                                :accessibility-label :invite-button
-                                                                :on-press            #(>evt [::communities/edit-channel-pressed
-                                                                                             community-id
-                                                                                             chat-name
-                                                                                             description
-                                                                                             color])}])
-                               :extended-header   (profile-header/extended-header
-                                                   {:title    chat-name
-                                                    :color    color
-                                                    :subtitle (i18n/label :t/public-channel)})
-                               :use-insets        true}
-          (when-not (string/blank? description)
-            [:<>
-             [quo/list-footer {:color :main}
-              description]
-             [quo/separator {:style {:margin-vertical 8}}]])]]))))
+        [quo/animated-header {:left-accessories  [{:icon                :main-icons/arrow-left
+                                                   :accessibility-label :back-button
+                                                   :on-press            #(>evt [:navigate-back])}]
+                              :right-accessories (when admin [{:icon                :edit
+                                                               :accessibility-label :invite-button
+                                                               :on-press            #(>evt [::communities/edit-channel-pressed
+                                                                                            community-id
+                                                                                            chat-name
+                                                                                            description
+                                                                                            color])}])
+                              :extended-header   (profile-header/extended-header
+                                                  {:title    chat-name
+                                                   :color    color
+                                                   :subtitle (i18n/label :t/public-channel)})
+                              :use-insets        true}
+         (when-not (string/blank? description)
+           [:<>
+            [quo/list-footer {:color :main}
+             description]
+            [quo/separator {:style {:margin-vertical 8}}]
+            (when admin
+              [quo/list-item {:title          (i18n/label :t/category)
+                              :on-press       #(>evt [:open-modal :select-category {:chat current-chat
+                                                                                    :category category
+                                                                                    :community-id community-id}])
+                              :chevron        true
+                              :accessory      :text
+                              :accessory-text (if category
+                                                (:name category)
+                                                (i18n/label :t/none))}])])]))))

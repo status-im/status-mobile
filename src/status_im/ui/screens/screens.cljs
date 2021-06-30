@@ -106,7 +106,9 @@
             [status-im.ui.screens.anonymous-metrics-settings.views :as anonymous-metrics-settings]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.screens.chat.pinned-messages :as pin-messages]))
+            [status-im.ui.screens.chat.pinned-messages :as pin-messages]
+            [status-im.ui.screens.communities.create-category :as create-category]
+            [status-im.ui.screens.communities.select-category :as select-category]))
 
 (def components
   [{:name      :chat-toolbar
@@ -259,10 +261,25 @@
             :options   {:topBar {:visible false}}
             :component requests-to-join/requests-to-join-container}
            {:name      :create-community-channel
+            :insets    {:bottom true}
+            :options   {:topBar {:title {:text (i18n/label :t/create-channel-title)}}}
+            :component create-channel/view}
+           {:name      :create-community-category
+            :insets    {:bottom true}
+            :options   {:topBar {:title {:text (i18n/label :t/new-category)}}}
+            :component create-category/view}
+           {:name      :select-category
+            :insets    {:bottom true}
             ;;TODO custom
             :options   {:topBar {:visible false}}
-            :component create-channel/view}
+            :component select-category/view}
+           {:name      :community-edit-chats
+            ;;TODO custom
+            :insets    {:bottom true}
+            :options   {:topBar {:visible false}}
+            :component community/community-edit}
            {:name      :community-channel-details
+            :insets    {:top false}
             ;;TODO custom
             :options   {:topBar {:visible false}}
             :component communities.channel-details/view}

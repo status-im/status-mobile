@@ -18,19 +18,20 @@
   "Render collapsible section"
   [_props]
   (let [opened? (reagent/atom false)]
-    (fn [{:keys [title content icon]}]
+    (fn [{:keys [title content icon opened disabled]}]
       [react/view {:padding-vertical 8}
        (if (string? title)
          [quo/list-item
           {:title     title
            :icon      icon
            :on-press  #(swap! opened? not)
-           :accessory [drop-down-icon @opened?]}]
-         [react/touchable-opacity {:on-press #(swap! opened? not)}
+           :accessory [drop-down-icon (or @opened? opened)]}]
+         [react/touchable-opacity {:on-press #(swap! opened? not) :disabled disabled}
           [react/view {:flex-direction  :row
+                       :margin-right 14
                        :justify-content :space-between}
            title
-           [drop-down-icon @opened?]]])
-       (when @opened?
+           [drop-down-icon (or @opened? opened)]]])
+       (when (or @opened? opened)
          content)])))
 

@@ -160,7 +160,7 @@
 
 (defn view []
   (let [{:keys [name description]} (<sub [:communities/create])]
-    [:<>
+    [rn/keyboard-avoiding-view {:style {:flex 1}}
      [form]
      [toolbar/toolbar
       {:show-border? true

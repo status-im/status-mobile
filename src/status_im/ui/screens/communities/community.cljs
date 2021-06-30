@@ -18,7 +18,10 @@
             [status-im.utils.core :as utils]
             [status-im.ui.components.plus-button :as components.plus-button]
             [re-frame.core :as re-frame]
-            [status-im.ui.screens.chat.sheets :as sheets]))
+            [status-im.ui.screens.chat.sheets :as sheets]
+            [status-im.ui.components.accordion :as accordion]
+            [clojure.string :as string]
+            [status-im.ui.screens.communities.styles :as styles]))
 
 (def request-cooldown-ms (* 60 1000))
 
@@ -70,6 +73,12 @@
        :accessibility-label :community-create-channel
        :icon                :main-icons/channel
        :on-press            #(hide-sheet-and-dispatch [::communities/create-channel-pressed id])}]
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/create-category)
+       :accessibility-label :community-create-category
+       :icon                :main-icons/channel-category
+       :on-press            #(hide-sheet-and-dispatch [:open-modal :create-community-category {:community-id id}])}]
      [quo/separator]
      (when can-invite?
        [quo/list-item
@@ -109,12 +118,20 @@
                     name
                     (or color (rand-nth colors/chat-colors))])}]
      (when can-manage-users?
-       [quo/list-item
-        {:theme               :accent
-         :title               (i18n/label :t/export-key)
-         :accessibility-label :community-export-key
-         :icon                :main-icons/objects
-         :on-press            #(hide-sheet-and-dispatch [::communities/export-pressed id])}])]))
+       [:<>
+        [quo/list-item
+         {:theme               :accent
+          :title               (i18n/label :t/export-key)
+          :accessibility-label :community-export-key
+          :icon                :main-icons/objects
+          :on-press            #(hide-sheet-and-dispatch [::communities/export-pressed id])}]
+        [quo/separator]
+        [quo/list-item
+         {:theme               :accent
+          :title               (i18n/label :t/edit-chats)
+          :accessibility-label :community-edit-chats
+          :icon                :main-icons/edit
+          :on-press            #(hide-sheet-and-dispatch [:open-modal :community-edit-chats {:community-id id}])}]])]))
 
 (defn blank-page [text]
   [rn/view {:style {:padding 16 :flex 1 :flex-direction :row :align-items :center :justify-content :center}}
@@ -137,23 +154,49 @@
                                         {:content (fn []
                                                     [sheets/actions home-item])}])}])
 
-(defn community-chat-list [chats]
-  (if (empty? chats)
-    [blank-page (i18n/label :t/welcome-community-blank-message)]
-    [list/flat-list
-     {:key-fn                       :chat-id
-      :content-container-style      {:padding-vertical 8}
-      :keyboard-should-persist-taps :always
-      :data                         chats
-      :render-fn                    community-chat-item
-      :footer                       [rn/view {:height 68}]}]))
+(defn categories-accordion [community-id chats categories edit]
+  [rn/view {:padding-bottom 8}
+   (for [{:keys [name id]} (vals categories)]
+     ^{:key (str "cat" name id)}
+     [:<>
+      [accordion/section
+       {:opened   edit
+        :disabled edit
+        :title    [rn/view styles/category-item
+                   (if edit
+                     [rn/touchable-opacity {:on-press #(>evt [:delete-community-category community-id id])}
+                      [icons/icon :main-icons/delete-circle {:no-color true}]]
+                     [icons/icon :main-icons/channel-category {:color colors/gray}])
+                   [rn/text {:style {:font-size 17 :margin-left 10}} name]]
+        :content  [rn/view
+                   (for [chat (get chats id)]
+                     (if edit
+                       ^{:key (str "chat" chat id)}
+                       [rn/view styles/category-item
+                        [rn/touchable-opacity {:on-press #(>evt [:remove-chat-from-community-category
+                                                                 community-id
+                                                                 (string/replace (:chat-id chat) community-id "")
+                                                                 (:categoryID chat)])}
+                         [icons/icon :main-icons/delete-circle {:no-color true}]]
+                        [rn/view {:flex 1}
+                         [inner-item/home-list-item
+                          (assoc chat :public? true)]]]
+                       ^{:key (str "chat" chat id)}
+                       [community-chat-item chat]))]}]
+      [quo/separator]])])
 
-(defn community-channel-list [id]
-  (let [chats (<sub [:chats/by-community-id id])
-        chats (cond->> chats
-                (= id constants/status-community-id)
-                (map #(assoc % :color colors/blue)))]
-    [community-chat-list chats]))
+(defn community-chat-list [community-id categories edit]
+  (let [chats (<sub [:chats/categories-by-community-id community-id])]
+    (if (and (empty? categories) (empty? chats))
+      [blank-page (i18n/label :t/welcome-community-blank-message)]
+      [list/flat-list
+       {:key-fn                       :chat-id
+        :content-container-style      {:padding-bottom 8}
+        :keyboard-should-persist-taps :always
+        :data                         (get chats "")
+        :render-fn                    community-chat-item
+        :header                       [categories-accordion community-id chats categories edit]
+        :footer                       [rn/view {:height 68}]}])))
 
 (defn channel-preview-item [{:keys [id color name]}]
   (let [color (or color colors/default-community-color)]
@@ -196,11 +239,27 @@
    [topbar/topbar {:title  (i18n/label :t/not-found)}]
    [blank-page (i18n/label :t/community-info-not-found)]])
 
+(defn community-edit []
+  (let [{:keys [community-id]} (<sub [:get-screen-params])]
+    (fn []
+      (let [{:keys [id name images members permissions color categories]} (<sub [:communities/community community-id])]
+        [:<>
+         [topbar/topbar
+          {:modal?  true
+           :content [toolbar-content
+                     id
+                     name
+                     color
+                     images
+                     (not= (:access permissions) constants/community-no-membership-access)
+                     (count members)]}]
+         [community-chat-list id categories true]]))))
+
 (defn community []
   (let [{:keys [community-id]} (<sub [:get-screen-params])]
     (fn []
       (let [{:keys [id chats name images members permissions color joined can-request-access?
-                    can-join? requested-to-join-at admin]
+                    can-join? requested-to-join-at admin categories]
              :as   community}      (<sub [:communities/community community-id])]
         (if community
           [rn/view {:style {:flex 1}}
@@ -221,7 +280,7 @@
                                    {:content (fn []
                                                [community-actions community])}])}])}]
            (if joined
-             [community-channel-list id]
+             [community-chat-list id categories false]
              [community-channel-preview-list id chats])
            (when admin
              [components.plus-button/plus-button

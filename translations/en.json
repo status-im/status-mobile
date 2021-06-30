@@ -174,6 +174,7 @@
     "request-access": "Request access",
     "membership-request-pending": "Membership request pending",
     "create-community": "Create a community",
+    "create-category": "Create category",
     "edited": "Edited",
     "edit-community": "Edit community",
     "editing-message": "Editing message",
@@ -188,6 +189,8 @@
     "name-your-community-placeholder": "A catchy name",
     "give-a-short-description-community": "Give it a short description",
     "new-community-title": "New community",
+    "new-category": "New category",
+    "category-title": "Category title",
     "membership-title": "Membership requirement",
     "create-channel-title": "New channel",
     "edit-channel-title": "Edit channel",
@@ -1578,7 +1581,6 @@
     "help-improve-status": "Help improve Status",
     "thank-you": "Thank you",
     "count-metrics-collected": "{{count}} metrics collected",
-    "bip39-password-placeholder": "BIP39 password",
     "current-password": "Current password",
     "reset-password": "Reset password",
     "password-reset-success": "Password changed",
@@ -1638,5 +1640,8 @@
     "your-tip-limit": "Your tip limit",
     "your-price-limit": "Your price limit",
     "suggested-min-tip": "Suggested min. tip",
-    "suggested-price-limit": "Suggested price limit"
+    "suggested-price-limit": "Suggested price limit",
+    "include": "Include",
+    "category": "Category",
+    "edit-chats": "Edit chats"
 }

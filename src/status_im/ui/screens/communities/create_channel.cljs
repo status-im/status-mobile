@@ -7,7 +7,8 @@
             [status-im.communities.core :as communities]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.handlers :refer [>evt <sub]]
-            [status-im.ui.screens.communities.create :as create]))
+            [status-im.ui.screens.communities.create :as create]
+            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]))
 
 (defn valid? [channel-name channel-description]
   (and (not (str/blank? channel-name))
@@ -20,19 +21,15 @@
     [rn/scroll-view {:style                   {:flex 1}
                      :content-container-style {:padding-vertical 16}}
      [rn/view {:style {:padding-bottom     16
-                       :padding-top        10
-                       :padding-horizontal 16}}
-      [rn/view
-       [create/countable-label {:label      (i18n/label :t/name)
-                                :text       name
-                                :max-length create/max-name-length}]
+                       :padding-top        10}}
+      [rn/view {:padding-horizontal 16}
        [quo/text-input
         {:placeholder    (i18n/label :t/name-your-channel-placeholder)
          :on-change-text #(>evt  [::communities/create-channel-field :name %])
          :default-value  name
          :auto-focus     true}]]
       [quo/separator {:style {:margin-vertical 10}}]
-      [rn/view
+      [rn/view {:padding-horizontal 16}
        [create/countable-label {:label      (i18n/label :t/description)
                                 :text      description
                                 :max-length create/max-description-length}]
@@ -44,7 +41,7 @@
 
 (defn view []
   (let [{:keys [name description]} (<sub [:communities/create-channel])]
-    [:<>
+    [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
      [form]
      [toolbar/toolbar
       {:show-border? true

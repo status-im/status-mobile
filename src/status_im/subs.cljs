@@ -40,7 +40,8 @@
             [status-im.notifications.core :as notifications]
             [status-im.utils.currency :as currency]
             [status-im.signing.eip1559 :as eip1559]
-            [clojure.set :as clojure.set]))
+            [clojure.set :as clojure.set]
+            [status-im.ui.components.colors :as colors]))
 
 ;; TOP LEVEL ===========================================================================================================
 
@@ -264,6 +265,12 @@
  :<- [:communities]
  (fn [communities [_ id]]
    (get communities id)))
+
+(re-frame/reg-sub
+ :communities/community-chats
+ :<- [:communities]
+ (fn [communities [_ id]]
+   (get-in communities [id :chats])))
 
 (re-frame/reg-sub
  :communities/communities
@@ -760,6 +767,47 @@
                 (when (= (:community-id chat) community-id)
                   chat)))
         (sort-by :timestamp >))))
+
+(re-frame/reg-sub
+ :chats/with-empty-category-by-community-id
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:chats/by-community-id community-id])
+    (re-frame/subscribe [:communities/community-chats community-id])])
+ (fn [[chats comm-chats] [_ community-id]]
+   (filter #(string/blank? (get-in comm-chats [(string/replace (:chat-id %) community-id "") :categoryID])) chats)))
+
+(re-frame/reg-sub
+ :chats/categories-by-community-id
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:chats/by-community-id community-id])
+    (re-frame/subscribe [:communities/community-chats community-id])])
+ (fn [[chats comm-chats] [_ community-id]]
+   (let [chat-cat (into {} (map (fn [{:keys [id categoryID]}] {(str community-id id) categoryID}) (vals comm-chats)))]
+     (group-by :categoryID (map #(cond-> (assoc % :categoryID (chat-cat (:chat-id %)))
+                                   (= community-id constants/status-community-id)
+                                   (assoc :color colors/blue))
+                                chats)))))
+
+(re-frame/reg-sub
+ :chats/category-by-chat-id
+ (fn [[_ community-id _]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [chats categories]}] [_ community-id chat-id]]
+   (get categories (get-in chats [(string/replace chat-id community-id "") :categoryID]))))
+
+(re-frame/reg-sub
+ :chats/community-chat-by-id
+ (fn [[_ community-id _]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [chats]}] [_ community-id chat-id]]
+   (get chats (string/replace chat-id community-id ""))))
+
+(re-frame/reg-sub
+ :community/categories
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [categories]}] _]
+   categories))
 
 (re-frame/reg-sub
  :chats/current-chat-ui-props
