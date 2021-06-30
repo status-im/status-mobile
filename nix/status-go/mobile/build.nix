@@ -41,11 +41,10 @@ in buildGo114Package {
   preBuild = let
     NIX_GOWORKDIR = "$NIX_BUILD_TOP/go-build";
   in ''
-
     mkdir ${NIX_GOWORKDIR}
 
     export GO111MODULE=off
-    export GOPATH=${gomobile.out}:$GOPATH
+    export GOPATH=${gomobile}:$GOPATH
     export NIX_GOWORKDIR=${NIX_GOWORKDIR}
 
   '' + optionalString (platform == "android") ''
