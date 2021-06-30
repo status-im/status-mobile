@@ -19,9 +19,13 @@
 (defn- add-log-level [config log-level]
   (if (empty? log-level)
     (assoc config
+           :MaxPeers 20
+           :MaxPendingPeers 20
            :LogLevel "ERROR"
            :LogEnabled false)
     (assoc config
+           :MaxPeers 20
+           :MaxPendingPeers 20
            :LogLevel log-level
            :LogEnabled true)))
 

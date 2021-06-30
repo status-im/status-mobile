@@ -200,27 +200,6 @@ RCT_EXPORT_METHOD(addPeer:(NSString *)enode
 #endif
 }
 
-//////////////////////////////////////////////////////////////////// getNodesFromContract
-RCT_EXPORT_METHOD(getNodesFromContract:(NSString *)url
-                               address:(NSString *) address
-                              callback:(RCTResponseSenderBlock)callback) {
-  NSString* result = StatusgoGetNodesFromContract(url, address);
-  callback(@[result]);
-#if DEBUG
-  NSLog(@"GetNodesFromContract() method called");
-#endif
-}
-
-//////////////////////////////////////////////////////////////////// chaosModeUpdate
-RCT_EXPORT_METHOD(chaosModeUpdate:(BOOL)on
-                  callback:(RCTResponseSenderBlock)callback) {
-  NSString* result = StatusgoChaosModeUpdate(on);
-  callback(@[result]);
-#if DEBUG
-  NSLog(@"ChaosModeUpdate() method called");
-#endif
-}
-
 //////////////////////////////////////////////////////////////////// multiAccountImportPrivateKey
 RCT_EXPORT_METHOD(deleteMultiaccount:(NSString *)keyUID
                   callback:(RCTResponseSenderBlock)callback) {

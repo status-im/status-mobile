@@ -5,7 +5,7 @@
             [status-im.utils.money :as money]))
 
 (def activation-blocks
-  {"123" (money/bignumber 0)})
+  {"3" (money/bignumber 10499401)})
 
 (defonce activated? (atom {}))
 

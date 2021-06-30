@@ -162,7 +162,7 @@
                  :color        (quo-colors/get-color :text-02)}}
         (str (money/to-fixed fee-eth 6) " " fee-currency)]
        [quo/text
-        (money/to-fixed (money/mul fee-eth (money/bignumber price)) 2)
+        (money/to-fixed (money/mul fee-eth (money/bignumber (or price 0))) 2)
         " "
         fiat-currency]]]
      [react/text {:style {:color  (quo-colors/get-color :text-02)
@@ -218,7 +218,7 @@
         [(money/to-fixed fee-eth 6)
          fee-currency
          "•"
-         (money/to-fixed (money/mul fee-eth (money/bignumber price)) 2)
+         (money/to-fixed (money/mul fee-eth (money/bignumber (or price 0))) 2)
          fiat-currency])]
       [slider/animated-slider
        {:style {:margin-horizontal 5
