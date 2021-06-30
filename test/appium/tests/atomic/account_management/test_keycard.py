@@ -139,6 +139,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
 
         sign_in.just_fyi('Cancel on PIN code setup stage')
+        sign_in.accept_tos_checkbox.click()
         sign_in.get_started_button.click()
         sign_in.generate_key_button.click()
         username = sign_in.first_username_on_choose_chat_name.text
@@ -191,6 +192,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.flaky
     def test_keycard_interruption_access_key_onboarding_flow(self):
         sign_in = SignInView(self.driver)
+        sign_in.accept_tos_checkbox.click()
         sign_in.get_started_button.click()
 
         sign_in.access_key_button.click()

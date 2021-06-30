@@ -338,14 +338,14 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         no_link_found_error_msg = 'Could not find privacy policy link at'
         no_link_open_error_msg = 'Could not open our privacy policy from'
 
-        signin.just_fyi("Checking provacy policy from sign in and from profile")
+        signin.just_fyi("Checking privacy policy from sign in and from profile")
         if not signin.privacy_policy_link.is_element_displayed():
             self.driver.fail('%s Sign in view!' % no_link_found_error_msg)
         web_page = signin.privacy_policy_link.click()
         web_page.open_in_webview()
         if not web_page.policy_summary.is_element_displayed():
             self.errors.append('%s Sign in view!' % no_link_open_error_msg)
-        web_page.click_system_back_button()
+        web_page.close_privacy_policy_button.click()
         home = signin.create_user()
         profile = home.profile_button.click()
         profile.about_button.click()

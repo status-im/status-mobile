@@ -85,7 +85,7 @@ class KeycardKeyStorageButton(Button):
 
 class PrivacyPolicyLink(Button):
     def __init__(self, driver):
-        super(PrivacyPolicyLink, self).__init__(driver, xpath="//*[contains(@text, 'privacy policy')]")
+        super(PrivacyPolicyLink, self).__init__(driver, xpath="//*[contains(@text, 'Privacy policy')]")
 
     def click(self):
         element = self.find_element()

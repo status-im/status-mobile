@@ -15,7 +15,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         home_view = sign_in_view.recover_access(sender['passphrase'], keycard=True)
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        wallet_view.asset_by_name('STT').wait_for_element(30)
+        wallet_view.scan_tokens()
         initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()

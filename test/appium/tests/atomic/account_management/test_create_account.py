@@ -213,6 +213,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.medium
     def test_create_account_short_and_mismatch_password(self):
         sign_in = SignInView(self.driver)
+        sign_in.accept_tos_checkbox.click()
         sign_in.get_started_button.click()
         sign_in.generate_key_button.click()
         sign_in.next_button.click()
