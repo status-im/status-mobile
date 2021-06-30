@@ -1,20 +1,18 @@
-{ lib, buildGo114Package, fetchFromGitHub }:
+{ lib, buildGo114Module, fetchFromGitHub }:
 
 let
   inherit (lib) strings;
-in buildGo114Package rec {
+in buildGo114Module rec {
   pname = "go-maven-resolver";
-  version = strings.substring 0 7 rev;
-  owner = "status-im";
-  repo = pname;
-  rev = "v1.1.0";
-  sha256 = "15i8bkqv0m2pq8hzjy02a44z5xg67c8xcdaj6pc8p7w1m039n6qn";
-  goPackagePath = "github.com/${owner}/${repo}";
+  version = "v1.1.1";
 
-  goDeps = ./deps.nix;
+  vendorSha256 = "1p9pl33zpbw8zc85301mnp692lkr46ppm1q99wnqwynzi7x8hnkn";
 
-  src = fetchFromGitHub {
+  src = fetchFromGitHub rec {
     name = "${repo}-${version}-source";
-    inherit owner repo rev sha256;
+    owner = "status-im";
+    repo = pname;
+    rev = version;
+    sha256 = "0pjab7v4cq3w5z3h0g9bfahqfs4raqp8y9sxwsri4zgbvdllq11q";
   };
 }

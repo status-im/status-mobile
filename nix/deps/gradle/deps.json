@@ -3864,190 +3864,8 @@
   },
 
   {
-    "path": "com/facebook/fbjni/fbjni-java-only/0.0.3/fbjni-java-only-0.0.3",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "jar",
-    "pom": {
-      "sha1": "de3576b735ff4fb2c9b60701b7c346c905c48433",
-      "sha256": "1pra3yy7pig69a9dz508wxarl1g4m7rdhvyga22lh16szpvc5rsk"
-    },
-    "jar": {
-      "sha1": "c4540aecb99b9ec380acef6c10bb6f700de8ac2c",
-      "sha256": "1h0whgk0bj7zid7kdy4hwz5n3jxcz8wi5mycqwjsqsndvlyk3ip2"
-    }
-  },
-
-  {
-    "path": "com/facebook/flipper/flipper-fresco-plugin/0.54.0/flipper-fresco-plugin-0.54.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "aar",
-    "pom": {
-      "sha1": "78b6dd76ca355a13262d1b6fe97ea225d5b8c445",
-      "sha256": "0p5j7nix6q86xa3fiq0i2bnnb6qaszdl2yyq0w5c8yva86drvfrw"
-    },
-    "jar": {
-      "sha1": "36a4f4a3f4173cd4bdfe9a7f078e56fc93b63e64",
-      "sha256": "0kbv37kcj3lr3bikjfyfk48a0cq06n8jadbcyl7i6w7pr9lh7hlc"
-    }
-  },
-
-  {
-    "path": "com/facebook/flipper/flipper/0.54.0/flipper-0.54.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "aar",
-    "pom": {
-      "sha1": "f1e963be185c5c5d5a8416faf16af29fddeaf1ab",
-      "sha256": "023hmlkczyswy2bdl559rasw7w3fi8210qkspl2wdh70axq8qvjq"
-    },
-    "jar": {
-      "sha1": "55d7417b5db25a08ac19048a6d03a44770ef1f68",
-      "sha256": "0aifn1d43f9b2xvww0r3xn59hv4np3s84m737xd2rkhvl38hcr5p"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/drawee/2.2.0/drawee-2.2.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "aar",
-    "pom": {
-      "sha1": "e8748b720366d85dcd58ceb0c698c1b7a36674a2",
-      "sha256": "0rk86yr5i9qm4qrjkas6ncl6c9ra4cqfijkv0ws8xglcbyw7a9sl"
-    },
-    "jar": {
-      "sha1": "07d461727cf24956ca7e579e266d5ac88762c0a0",
-      "sha256": "1qnavxnh4xgybw8v9g344v3vzzmy1q7f8wn3i89icd44gmiba6wr"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/fbcore/2.2.0/fbcore-2.2.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "aar",
-    "pom": {
-      "sha1": "d9e14f467d0b22d767a20bef4f6fd721987ce367",
-      "sha256": "1j68icbcf9pqpja4baw8k39mk4a93i11qwnpswv0kkq3pb1czgib"
-    },
-    "jar": {
-      "sha1": "c827447f13d268ee8c67035cf197cec04d49cfe3",
-      "sha256": "0rrlkgwg3zmhzkrlycq85bmn7w3f6c5lfgabcvy2hfmi08s5zfsp"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/fresco/2.2.0/fresco-2.2.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "aar",
-    "pom": {
-      "sha1": "5026c7cd65322f9e1a426c3aaa14d46280239dbe",
-      "sha256": "13hbk3nv6djzl49429in59j8pjw4g9a8dcrpw3b07qvvh0qhg1kf"
-    },
-    "jar": {
-      "sha1": "a7504c680c2582757ca5eb01cf98cbb8503e73b1",
-      "sha256": "1554s3z3bfglb34kaj2pmmsni2c8mmdziplgpcl5mb59kxnlnjzg"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/imagepipeline-native/2.2.0/imagepipeline-native-2.2.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "aar",
-    "pom": {
-      "sha1": "720451ef7183730cc6e41e90fc2aebf082c2cd19",
-      "sha256": "0w64rgap40sbdz8nvrmgv37szh5ac9sq76cp0s40iy2pqiz2i064"
-    },
-    "jar": {
-      "sha1": "d67236389cdf4ac92b4bb754641b7aa854f5ba7a",
-      "sha256": "0b9hjbxzy73arvmzx8kfgzp9wpvxznvar5ikxibbzfmf2zzrrw31"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/imagepipeline/2.2.0/imagepipeline-2.2.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "aar",
-    "pom": {
-      "sha1": "626e49897e7b63b9ccc0f94ae4c244029aa82aec",
-      "sha256": "0ya5qc8y00w41nxdc7s8sx8rfx94jv44yfyfzgk984pnc780kg91"
-    },
-    "jar": {
-      "sha1": "d48b1ff6e6c4ebb8f0cfeb12db702dfad10ba04f",
-      "sha256": "10gavf6db3y8i2a1nhjq5apd6940hqz6dmg7rad882j17h6az91f"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/memory-type-java/2.2.0/memory-type-java-2.2.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "aar",
-    "pom": {
-      "sha1": "309f508be8421f790d2109bfa870f275048e4b9f",
-      "sha256": "04y6bnxq7qzzp7v65mbyx83al6sl3g8xfnq4y75rrpmzpmd1jhd2"
-    },
-    "jar": {
-      "sha1": "af16daca2b0af42730eca0ed02b85dfa6b100602",
-      "sha256": "1w7x5v79abxkcznj9qb11fb036qii4yyp0vp8ivg3n14b7xws83i"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/memory-type-native/2.2.0/memory-type-native-2.2.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "aar",
-    "pom": {
-      "sha1": "a4ca6c3169ccf3db11121b806c571c779c596d19",
-      "sha256": "0jbhgwqlf83fhyd2rf4w29aw72z20pwpiwab79i4qv9qn3bqmzz7"
-    },
-    "jar": {
-      "sha1": "63e9739053ada471f72af7bf2bc642f4a9a7d43b",
-      "sha256": "16qsxh2zi1vylnj3waz743zm5kvbwzrb61qngcincjzysz3jzn6x"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/nativeimagefilters/2.2.0/nativeimagefilters-2.2.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "aar",
-    "pom": {
-      "sha1": "79bb9b688df382eeb4f76b878f960eb7ee806275",
-      "sha256": "0c535nxpakg86yhf91ysppnnmjfcwrhf88jgqzn0g7nyz3fwvmv7"
-    },
-    "jar": {
-      "sha1": "6a0b2c43c7a757f23b0c670b2a3995bdc3e5b713",
-      "sha256": "0jm4jk6gb5j6b94ilkla5jpamjwxjv7pljnka337yh0b0hbq34ba"
-    }
-  },
-
-  {
-    "path": "com/facebook/fresco/stetho/2.2.0/stetho-2.2.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "aar",
-    "pom": {
-      "sha1": "c98731a6a9b6d7ae4f4516c3515c817931f95c46",
-      "sha256": "1jm22xa58vgrgl4pzy4bcbz9bm1nkhg7xf6x0dz915asqfcpgzsg"
-    },
-    "jar": {
-      "sha1": "4c4ee688f80216c4dca4c67afa130b283a8bf5a5",
-      "sha256": "06k888gr75z9lbx4dwjfr8fpbjwcjh9ikff9nv3yar8r24f8fszb"
-    }
-  },
-
-  {
-    "path": "com/facebook/yoga/proguard-annotations/1.14.1/proguard-annotations-1.14.1",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "jar",
-    "pom": {
-      "sha1": "59f786ef9485f034cfed3f0c9cd7bdee8155314b",
-      "sha256": "1c11zbpsmfyaklgjc5r401li1155jb89f9mx53hb84zp4zd28nqk"
-    },
-    "jar": {
-      "sha1": "3d015bb821875657ac8e4b808a223aae339defb2",
-      "sha256": "02czcs5blwl6l60ka82h5k355ib4szfrawg7s8dnba0jrdm8gs4z"
-    }
-  },
-
-  {
     "path": "com/github/status-im/function/0.0.1/function-0.0.1",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
+    "host": "https://jitpack.io",
     "type": "jar",
     "pom": {
       "sha1": "a8732bd3d863516447a2fa335ade1ae05c01fd4d",
@@ -4061,7 +3879,7 @@
 
   {
     "path": "com/github/status-im/status-keycard-java/android/3.0.4/android-3.0.4",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
+    "host": "https://jitpack.io",
     "type": "jar",
     "pom": {
       "sha1": "e6e1933d85ac05b51953effc21ab893679f5864b",
@@ -4075,7 +3893,7 @@
 
   {
     "path": "com/github/status-im/status-keycard-java/lib/3.0.4/lib-3.0.4",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
+    "host": "https://jitpack.io",
     "type": "jar",
     "pom": {
       "sha1": "718d3d286d53186552a84cee1a1283e0975da789",
@@ -4089,7 +3907,7 @@
 
   {
     "path": "com/github/wix-playground/ahbottomnavigation/3.3.0/ahbottomnavigation-3.3.0",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
+    "host": "https://jitpack.io",
     "type": "aar",
     "pom": {
       "sha1": "3bd510fdc1a32189fdd7dd78f023abbef70d9653",
@@ -4103,7 +3921,7 @@
 
   {
     "path": "com/github/wix-playground/reflow-animator/1.0.6/reflow-animator-1.0.6",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
+    "host": "https://jitpack.io",
     "type": "aar",
     "pom": {
       "sha1": "4fe3d33c764beebdc477d93a590f63dfa38a5f6b",
@@ -4117,7 +3935,7 @@
 
   {
     "path": "com/github/yalantis/ucrop/2.2.5-native/ucrop-2.2.5-native",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
+    "host": "https://jitpack.io",
     "type": "aar",
     "pom": {
       "sha1": "54e36a57a744bd8ac522da81284a6366bb6939a6",
@@ -4126,6 +3944,188 @@
     "jar": {
       "sha1": "34281fb5e7e7a2681b2482881fcfceba1a322b84",
       "sha256": "0nrm55pihyq1fy6iwi21abv7wdsjdz4g9dwsrn1a3dbppwwjbkr1"
+    }
+  },
+
+  {
+    "path": "com/facebook/fbjni/fbjni-java-only/0.0.3/fbjni-java-only-0.0.3",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "jar",
+    "pom": {
+      "sha1": "de3576b735ff4fb2c9b60701b7c346c905c48433",
+      "sha256": "1pra3yy7pig69a9dz508wxarl1g4m7rdhvyga22lh16szpvc5rsk"
+    },
+    "jar": {
+      "sha1": "c4540aecb99b9ec380acef6c10bb6f700de8ac2c",
+      "sha256": "1h0whgk0bj7zid7kdy4hwz5n3jxcz8wi5mycqwjsqsndvlyk3ip2"
+    }
+  },
+
+  {
+    "path": "com/facebook/flipper/flipper-fresco-plugin/0.54.0/flipper-fresco-plugin-0.54.0",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "aar",
+    "pom": {
+      "sha1": "78b6dd76ca355a13262d1b6fe97ea225d5b8c445",
+      "sha256": "0p5j7nix6q86xa3fiq0i2bnnb6qaszdl2yyq0w5c8yva86drvfrw"
+    },
+    "jar": {
+      "sha1": "36a4f4a3f4173cd4bdfe9a7f078e56fc93b63e64",
+      "sha256": "0kbv37kcj3lr3bikjfyfk48a0cq06n8jadbcyl7i6w7pr9lh7hlc"
+    }
+  },
+
+  {
+    "path": "com/facebook/flipper/flipper/0.54.0/flipper-0.54.0",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "aar",
+    "pom": {
+      "sha1": "f1e963be185c5c5d5a8416faf16af29fddeaf1ab",
+      "sha256": "023hmlkczyswy2bdl559rasw7w3fi8210qkspl2wdh70axq8qvjq"
+    },
+    "jar": {
+      "sha1": "55d7417b5db25a08ac19048a6d03a44770ef1f68",
+      "sha256": "0aifn1d43f9b2xvww0r3xn59hv4np3s84m737xd2rkhvl38hcr5p"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/drawee/2.2.0/drawee-2.2.0",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "aar",
+    "pom": {
+      "sha1": "e8748b720366d85dcd58ceb0c698c1b7a36674a2",
+      "sha256": "0rk86yr5i9qm4qrjkas6ncl6c9ra4cqfijkv0ws8xglcbyw7a9sl"
+    },
+    "jar": {
+      "sha1": "07d461727cf24956ca7e579e266d5ac88762c0a0",
+      "sha256": "1qnavxnh4xgybw8v9g344v3vzzmy1q7f8wn3i89icd44gmiba6wr"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/fbcore/2.2.0/fbcore-2.2.0",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "aar",
+    "pom": {
+      "sha1": "d9e14f467d0b22d767a20bef4f6fd721987ce367",
+      "sha256": "1j68icbcf9pqpja4baw8k39mk4a93i11qwnpswv0kkq3pb1czgib"
+    },
+    "jar": {
+      "sha1": "c827447f13d268ee8c67035cf197cec04d49cfe3",
+      "sha256": "0rrlkgwg3zmhzkrlycq85bmn7w3f6c5lfgabcvy2hfmi08s5zfsp"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/fresco/2.2.0/fresco-2.2.0",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "aar",
+    "pom": {
+      "sha1": "5026c7cd65322f9e1a426c3aaa14d46280239dbe",
+      "sha256": "13hbk3nv6djzl49429in59j8pjw4g9a8dcrpw3b07qvvh0qhg1kf"
+    },
+    "jar": {
+      "sha1": "a7504c680c2582757ca5eb01cf98cbb8503e73b1",
+      "sha256": "1554s3z3bfglb34kaj2pmmsni2c8mmdziplgpcl5mb59kxnlnjzg"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/imagepipeline-native/2.2.0/imagepipeline-native-2.2.0",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "aar",
+    "pom": {
+      "sha1": "720451ef7183730cc6e41e90fc2aebf082c2cd19",
+      "sha256": "0w64rgap40sbdz8nvrmgv37szh5ac9sq76cp0s40iy2pqiz2i064"
+    },
+    "jar": {
+      "sha1": "d67236389cdf4ac92b4bb754641b7aa854f5ba7a",
+      "sha256": "0b9hjbxzy73arvmzx8kfgzp9wpvxznvar5ikxibbzfmf2zzrrw31"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/imagepipeline/2.2.0/imagepipeline-2.2.0",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "aar",
+    "pom": {
+      "sha1": "626e49897e7b63b9ccc0f94ae4c244029aa82aec",
+      "sha256": "0ya5qc8y00w41nxdc7s8sx8rfx94jv44yfyfzgk984pnc780kg91"
+    },
+    "jar": {
+      "sha1": "d48b1ff6e6c4ebb8f0cfeb12db702dfad10ba04f",
+      "sha256": "10gavf6db3y8i2a1nhjq5apd6940hqz6dmg7rad882j17h6az91f"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/memory-type-java/2.2.0/memory-type-java-2.2.0",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "aar",
+    "pom": {
+      "sha1": "309f508be8421f790d2109bfa870f275048e4b9f",
+      "sha256": "04y6bnxq7qzzp7v65mbyx83al6sl3g8xfnq4y75rrpmzpmd1jhd2"
+    },
+    "jar": {
+      "sha1": "af16daca2b0af42730eca0ed02b85dfa6b100602",
+      "sha256": "1w7x5v79abxkcznj9qb11fb036qii4yyp0vp8ivg3n14b7xws83i"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/memory-type-native/2.2.0/memory-type-native-2.2.0",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "aar",
+    "pom": {
+      "sha1": "a4ca6c3169ccf3db11121b806c571c779c596d19",
+      "sha256": "0jbhgwqlf83fhyd2rf4w29aw72z20pwpiwab79i4qv9qn3bqmzz7"
+    },
+    "jar": {
+      "sha1": "63e9739053ada471f72af7bf2bc642f4a9a7d43b",
+      "sha256": "16qsxh2zi1vylnj3waz743zm5kvbwzrb61qngcincjzysz3jzn6x"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/nativeimagefilters/2.2.0/nativeimagefilters-2.2.0",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "aar",
+    "pom": {
+      "sha1": "79bb9b688df382eeb4f76b878f960eb7ee806275",
+      "sha256": "0c535nxpakg86yhf91ysppnnmjfcwrhf88jgqzn0g7nyz3fwvmv7"
+    },
+    "jar": {
+      "sha1": "6a0b2c43c7a757f23b0c670b2a3995bdc3e5b713",
+      "sha256": "0jm4jk6gb5j6b94ilkla5jpamjwxjv7pljnka337yh0b0hbq34ba"
+    }
+  },
+
+  {
+    "path": "com/facebook/fresco/stetho/2.2.0/stetho-2.2.0",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "aar",
+    "pom": {
+      "sha1": "c98731a6a9b6d7ae4f4516c3515c817931f95c46",
+      "sha256": "1jm22xa58vgrgl4pzy4bcbz9bm1nkhg7xf6x0dz915asqfcpgzsg"
+    },
+    "jar": {
+      "sha1": "4c4ee688f80216c4dca4c67afa130b283a8bf5a5",
+      "sha256": "06k888gr75z9lbx4dwjfr8fpbjwcjh9ikff9nv3yar8r24f8fszb"
+    }
+  },
+
+  {
+    "path": "com/facebook/yoga/proguard-annotations/1.14.1/proguard-annotations-1.14.1",
+    "host": "https://plugins.gradle.org/m2",
+    "type": "jar",
+    "pom": {
+      "sha1": "59f786ef9485f034cfed3f0c9cd7bdee8155314b",
+      "sha256": "1c11zbpsmfyaklgjc5r401li1155jb89f9mx53hb84zp4zd28nqk"
+    },
+    "jar": {
+      "sha1": "3d015bb821875657ac8e4b808a223aae339defb2",
+      "sha256": "02czcs5blwl6l60ka82h5k355ib4szfrawg7s8dnba0jrdm8gs4z"
     }
   },
 
@@ -8426,16 +8426,16 @@
   },
 
   {
-    "path": "org/checkerframework/checker-qual/3.14.0/checker-qual-3.14.0",
+    "path": "org/checkerframework/checker-qual/3.15.0/checker-qual-3.15.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "7b9a3e56974ebd6cb8c5c1c55a0a31f1c34e2206",
-      "sha256": "0c76kkz1ishn5y1cavyhj5sdnwbnr89chv8fnnjz2nwgd53kgil1"
+      "sha1": "986c0e910ccba09f19962832debd31167040b7f7",
+      "sha256": "0ba9f7kwsc6847hh8qldmnvyrkll6gnr2hjxz741z9ap4518vj96"
     },
     "jar": {
-      "sha1": "882adb1b47ebba2a756d3b10f0eebba03d176482",
-      "sha256": "1dzda32y1ijg4cr2z2rdsqg9yknac9zbnydxgyvvcxc9hp7vj6lv"
+      "sha1": "365507b8eacc42fa8722fe9faffa84255f2ef721",
+      "sha256": "1phimih0ngf7gb6648imxpa2z506650g9q2mgcfxlvzqfs310x8n"
     }
   },
 
@@ -10404,16 +10404,16 @@
   },
 
   {
-    "path": "org/ow2/asm/asm-analysis/9.1/asm-analysis-9.1",
+    "path": "org/ow2/asm/asm-analysis/9.2/asm-analysis-9.2",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "e30004dc53274dc96d0b9c6a3ac06bdcf6d23d86",
-      "sha256": "0mkiyjq3mvfaayvrb7wpyq6wii68hr7gnwfza6liqhq33g0m8m5c"
+      "sha1": "467a33724d063fedc0a041e68af8fb17c06ebd94",
+      "sha256": "06sz2ixg6m7lmi7vwfpwjkv0nji3q1ss0lcwjx56qk61pyic2g3p"
     },
     "jar": {
-      "sha1": "4f61b83b81d8b659958f4bcc48907e93ecea55a0",
-      "sha256": "0d5yqddg5gwayvg4j31772ap0j3c0jc60r4ri9ddmgmqn50q1a41"
+      "sha1": "7487dd756daf96cab9986e44b9d7bcb796a61c10",
+      "sha256": "1i1kyirizs5sm2v0f06sdz86mbmyn61vjr9d9p8p5h1i2x9bx3w7"
     }
   },
 
@@ -10460,16 +10460,16 @@
   },
 
   {
-    "path": "org/ow2/asm/asm-commons/9.1/asm-commons-9.1",
+    "path": "org/ow2/asm/asm-commons/9.2/asm-commons-9.2",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "5914a98fed0e76a0ce92a75704cacaf2454ae90a",
-      "sha256": "0zqv32hxgws5hanbbi3vg0f7npybx9k04yidc479rzlagfr53xm0"
+      "sha1": "8ee5279931bc860b7dd3a764c67ac1a7cb2bc07c",
+      "sha256": "0w6005v4660bpbbl5pj3zidg0h3ji6s31pczjmr0wbraky1lx0h2"
     },
     "jar": {
-      "sha1": "8b971b182eb5cf100b9e8d4119152d83e00e0fdd",
-      "sha256": "0360f2s9csaljbpgbjl8qkgihbnqin8719mdk550qb613zf2djxg"
+      "sha1": "f4d7f0fc9054386f2893b602454d48e07d4fbead",
+      "sha256": "19p04mr14ahndba65v4krbvf4p5syf8wz0fp5i9bnf5270qyak5y"
     }
   },
 
@@ -10608,16 +10608,16 @@
   },
 
   {
-    "path": "org/ow2/asm/asm-tree/9.1/asm-tree-9.1",
+    "path": "org/ow2/asm/asm-tree/9.2/asm-tree-9.2",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "aeef4f505fe557517394dc29e404fba6ba98c428",
-      "sha256": "0k5ra36zylih3bx4bv9bclbd5w2k2ba0xmy7h47lcdf00y90v85n"
+      "sha1": "2e168ad097e0b56f1aa6695a80982b8f455b1ba8",
+      "sha256": "0y63b8i72lnbcn3w4yhxm3cbscbjdi13rc2jyhcxy3ajlnz3w7zn"
     },
     "jar": {
-      "sha1": "c333f2a855069cb8eb17a40a3eb8b1b67755d0eb",
-      "sha256": "0wsa9dq9rgzpp1cjsvx01gzshxm7nkn9rc05c9jdg5cmksjay07x"
+      "sha1": "d96c99a30f5e1a19b0e609dbb19a44d8518ac01e",
+      "sha256": "04g0zb7v65iz4k2m2grdpbv8jjryrzkkw7ww23yfp94i6399pgxa"
     }
   },
 
@@ -10720,16 +10720,16 @@
   },
 
   {
-    "path": "org/ow2/asm/asm/9.1/asm-9.1",
+    "path": "org/ow2/asm/asm/9.2/asm-9.2",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "927153d04a920d5f06a9a4aefd5f6be60726117d",
-      "sha256": "13fyrv9l97fkiygij71pbf9gapj0m5z69i6zrf41fawgsq6sk0y6"
+      "sha1": "b24408a1c2214bc57380faf45b37bd67be7732b5",
+      "sha256": "1x0dlpwdd36xbqwwxp25nsy42hl9dx320h30zphipw2b48djmcfz"
     },
     "jar": {
-      "sha1": "a99500cf6eea30535eeac6be73899d048f8d12a8",
-      "sha256": "18pbdf9z11m9jjh31z3ska2xxm27jiiv8j3wrc5zyj5bbx2xx96d"
+      "sha1": "81a03f76019c67362299c40e0ba13405f5467bff",
+      "sha256": "1xa7kccwmcqcdw1xly6n2frzhk56m8ma9v7h764g73ckf56zxm5r"
     }
   },
 
