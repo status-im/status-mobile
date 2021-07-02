@@ -1,19 +1,19 @@
 (ns status-im.ui.screens.communities.create
-  (:require [quo.react-native :as rn]
-            [status-im.i18n.i18n :as i18n]
+  (:require [clojure.string :as str]
             [quo.core :as quo]
-            [clojure.string :as str]
-            [status-im.utils.handlers :refer [>evt <sub]]
-            [status-im.communities.core :as communities]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.utils.image :as utils.image]
-            [status-im.utils.colors :as utils.colors]
             [quo.design-system.colors :as colors]
-            [status-im.ui.components.react :as react]
-            [reagent.core :as reagent]
+            [quo.react-native :as rn]
             ["react-native-color-picker" :refer [ColorPicker]]
+            [reagent.core :as reagent]
+            [status-im.communities.core :as communities]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.utils.debounce :as debounce]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.utils.colors :as utils.colors]
+            [status-im.utils.debounce :as debounce]
+            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.utils.image :as utils.image]))
 
 (def color-picker (reagent/adapt-react-class ColorPicker))
 (def close-icon-size 40)
@@ -27,9 +27,9 @@
        (<= (count community-description) max-description-length)))
 
 (defn community-text-color [hex-color]
-  (if 
-    (< (utils.colors/color-brightness hex-color) 125)
-    colors/white colors/black))      
+  (if
+   (< (utils.colors/color-brightness hex-color) 125)
+    colors/white colors/black))
 
 (def crop-size 1000)
 (def crop-opts {:cropping             true
@@ -142,69 +142,63 @@
         community-color (reagent/atom colors/black)
         community-color-text (reagent/atom colors/white)]
     (fn [{:keys [name description]}]
-      (let [on-close-color-picker    (fn [] (reset! visible false))
-            on-open-color-picker     (fn [] (reset! visible true))]
-        [:<>
-         [rn/scroll-view {:keyboard-should-persist-taps :handled
-                          :style                        {:flex 1}
-                          :content-container-style      {:padding-vertical 16}}
-            [rn/view {:style {:padding-bottom     16
-                              :padding-top        10
-                              :padding-horizontal 16}}
-                              [countable-label {:label      (i18n/label :t/name-your-community)
-                                                :text       name
-                                                :max-length max-name-length}]
-                              [quo/text-input {:placeholder     (i18n/label :t/name-your-community-placeholder)
-                                                :default-value   name
-                                                :on-change-text  #(>evt  [::communities/create-field :name %])
-                                                :auto-focus      true}]]
-            [rn/view {:style {:padding-bottom     16
-                              :padding-top        10
-                              :padding-horizontal 16}}
-                              [countable-label {:label      (i18n/label :t/give-a-short-description-community)
-                                                :text       description
-                                                :max-length max-description-length}]
-              [quo/text-input {:placeholder    (i18n/label :t/give-a-short-description-community)
-                                :multiline      true
-                                :default-value  description
-                                :on-change-text #(>evt [::communities/create-field :description %])}]]
-            [quo/list-header {:color :main} (i18n/label :t/community-thumbnail-image)]
-            [photo-picker]
-            [rn/view {:style {:padding-bottom     16
-                              :padding-top        10
-                              :padding-horizontal 16}}
-              [quo/text {:style {:padding-bottom 10}} (i18n/label :t/community-color)]
-              [rn/touchable-opacity {:on-press on-open-color-picker}
-                [rn/view {:style {:height 44
-                                  :border-radius 8
-                                  :padding-horizontal 20
-                                  :flex-direction   :row
-                                  :justify-content :space-between
-                                  :background-color @community-color
-                                  :align-items      :center}}
-                  [quo/text {:style {:font-weight :bold
-                                    :color @community-color-text
-                                    :text-transform :uppercase}} @community-color]
-                  [icons/icon :main-icons/next {:color @community-color-text}]]]]]
-         (when @visible
-           [rn/modal {:on-request-close on-close-color-picker
-                      :transparent      false}
-              [rn/view  {:style {:margin-top 40
-                                 :margin-horizontal 20}}
-                [rn/touchable-opacity {
-                  :on-press       on-close-color-picker
-                  :style {:align-self :flex-end}}
-                  [icons/icon :main-icons/close {
-                    :color (colors/get-color :icon-04)
-                    :width close-icon-size
-                    :height close-icon-size }]]
-                [color-picker {
-                  :onColorSelected (fn [c]
-                                      (on-close-color-picker)
-                                      (reset! community-color c)
-                                      (reset! community-color-text (community-text-color c)))
-                  :style {:height 400}}]
-              ]])]))))
+      [:<>
+       [rn/scroll-view {:keyboard-should-persist-taps :handled
+                        :style                        {:flex 1}
+                        :content-container-style      {:padding-vertical 16}}
+        [rn/view {:style {:padding-bottom     16
+                          :padding-top        10
+                          :padding-horizontal 16}}
+         [countable-label {:label      (i18n/label :t/name-your-community)
+                           :text       name
+                           :max-length max-name-length}]
+         [quo/text-input {:placeholder     (i18n/label :t/name-your-community-placeholder)
+                          :default-value   name
+                          :on-change-text  #(>evt  [::communities/create-field :name %])
+                          :auto-focus      true}]]
+        [rn/view {:style {:padding-bottom     16
+                          :padding-top        10
+                          :padding-horizontal 16}}
+         [countable-label {:label      (i18n/label :t/give-a-short-description-community)
+                           :text       description
+                           :max-length max-description-length}]
+         [quo/text-input {:placeholder    (i18n/label :t/give-a-short-description-community)
+                          :multiline      true
+                          :default-value  description
+                          :on-change-text #(>evt [::communities/create-field :description %])}]]
+        [quo/list-header {:color :main} (i18n/label :t/community-thumbnail-image)]
+        [photo-picker]
+        [rn/view {:style {:padding-bottom     16
+                          :padding-top        10
+                          :padding-horizontal 16}}
+         [quo/text {:style {:padding-bottom 10}} (i18n/label :t/community-color)]
+         [rn/touchable-opacity {:on-press #(reset! visible true)}
+          [rn/view {:style {:height 44
+                            :border-radius 8
+                            :padding-horizontal 20
+                            :flex-direction   :row
+                            :justify-content :space-between
+                            :background-color @community-color
+                            :align-items      :center}}
+           [quo/text {:style {:font-weight :bold
+                              :color @community-color-text
+                              :text-transform :uppercase}} @community-color]
+           [icons/icon :main-icons/next {:color @community-color-text}]]]]]
+       (when @visible
+         [rn/modal {:on-request-close #(reset! visible false)
+                    :transparent      false}
+          [rn/view  {:style {:margin-top 40
+                             :margin-horizontal 20}}
+           [rn/touchable-opacity {:on-press       #(reset! visible false)
+                                  :style {:align-self :flex-end}}
+            [icons/icon :main-icons/close {:color (colors/get-color :icon-04)
+                                           :width close-icon-size
+                                           :height close-icon-size}]]
+           [color-picker {:onColorSelected (fn [c]
+                                             (reset! visible false)
+                                             (reset! community-color c)
+                                             (reset! community-color-text (community-text-color c)))
+                          :style {:height 400}}]]])])))
 
 (defn view []
   (let [{:keys [name description]} (<sub [:communities/create])]
