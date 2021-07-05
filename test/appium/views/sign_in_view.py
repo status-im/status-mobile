@@ -85,15 +85,30 @@ class KeycardKeyStorageButton(Button):
 
 class PrivacyPolicyLink(Button):
     def __init__(self, driver):
-        super(PrivacyPolicyLink, self).__init__(driver, xpath="//*[contains(@text, 'Privacy policy')]")
+        super(PrivacyPolicyLink, self).__init__(driver, accessibility_id="privacy-policy-link")
 
     def click(self):
-        element = self.find_element()
-        location = element.location
-        size = element.size
-        x = int(location['x'] + size['width'] * 0.9)
-        y = int(location['y'] + size['height'] * 0.8)
-        TouchAction(self.driver).tap(None, x, y).perform()
+        self.driver.info('Click on link %s' % self.name)
+        self.click_until_absense_of_element(TermsOfUseLink(self.driver))
+        return self.navigate()
+
+    def navigate(self):
+        from views.web_views.base_web_view import BaseWebView
+        return BaseWebView(self.driver)
+
+
+class TermsOfUseLink(Button):
+    def __init__(self, driver):
+        super(TermsOfUseLink, self).__init__(driver, xpath="//*[contains(@text, 'Terms of Use')]")
+
+    def click(self):
+        counter = 0
+        while PrivacyPolicyLink(self.driver).is_element_present(1) and counter <= 5:
+            try:
+                self.click_inside_element_by_coordinate(times_to_click=2)
+                counter += 1
+            except (NoSuchElementException):
+                return self.navigate()
         self.driver.info('Click on link %s' % self.name)
         return self.navigate()
 
@@ -121,6 +136,7 @@ class SignInView(BaseView):
         self.enable_notifications_button = Button(self.driver, accessibility_id="enable-notifications")
         self.maybe_later_button = Button(self.driver, accessibility_id="maybe-later")
         self.privacy_policy_link = PrivacyPolicyLink(self.driver)
+        self.terms_of_use_link = TermsOfUseLink(self.driver)
         self.lets_go_button = Button(self.driver, accessibility_id="lets-go-button")
         self.keycard_storage_button = KeycardKeyStorageButton(self.driver)
         self.first_username_on_choose_chat_name = Text(self.driver,

@@ -161,7 +161,8 @@
        (i18n/label :t/accept-status-tos-prefix)
        [{:style    (merge {:color colors/blue}
                           typography/font-medium)
-         :on-press #(re-frame/dispatch [:open-modal :terms-of-service])}
+         :on-press #(re-frame/dispatch [:open-modal :terms-of-service])
+         :accessibility-label :terms-of-service-link}
         " "
         (i18n/label :t/terms-of-service)]]]]
     [react/view {:style {:margin-bottom 24}}
@@ -173,5 +174,6 @@
       (i18n/label :t/get-started)]]
     [react/text
      {:style    {:color      colors/blue}
-      :on-press #(re-frame/dispatch [:open-modal :privacy-policy])}
+      :on-press #(re-frame/dispatch [:open-modal :privacy-policy])
+      :accessibility-label :privacy-policy-link}
      (i18n/label :t/privacy-policy)]]])

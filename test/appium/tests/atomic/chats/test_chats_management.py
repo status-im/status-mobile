@@ -846,7 +846,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             self.errors.append("Reply is not present in message received in public chat")
 
         device_1.just_fyi('Can reply to link')
-        link_message, reply = 'Test with link: https://status.im/', 'reply to link'
+        link_message, reply = 'Test with link: https://status.im/ here should be nothing unusual.' \
+                              ' Just a regular reply.', 'reply to link'
         chat_public_1.send_message(link_message)
         chat_public_2.quote_message(link_message[:10])
         chat_public_2.send_message(reply)

@@ -151,6 +151,15 @@ class PrivacyPolicyButton(Button):
         return BaseWebView(self.driver)
 
 
+class TermsOfUseButton(Button):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="terms-of-service")
+
+    def navigate(self):
+        from views.web_views.base_web_view import BaseWebView
+        return BaseWebView(self.driver)
+
+
 class ProfilePictureElement(Button):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="chat-icon")
@@ -275,6 +284,7 @@ class ProfileView(BaseView):
         #About
         self.about_button = AboutButton(self.driver)
         self.privacy_policy_button = PrivacyPolicyButton(self.driver)
+        self.terms_of_use_button = TermsOfUseButton(self.driver)
         self.app_version_text = Text(self.driver, xpath="//*[@content-desc='app-version']//android.widget.TextView[2]")
         self.node_version_text = Text(self.driver,
                                       xpath="//*[@content-desc='node-version']//android.widget.TextView[2]")
