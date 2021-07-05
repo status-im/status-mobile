@@ -786,13 +786,9 @@
             :component keycard.settings/reset-pin}
            {:name      :enter-pin-settings
             :insets    {:bottom true}
-            ;;TODO dynamic title
-            :options   {:topBar {:visible false}}
             :component keycard.pin/enter-pin}
            {:name      :change-pairing-code
             :insets    {:bottom true}
-            ;;TODO dynamic title
-            :options   {:topBar {:visible false}}
             :component keycard.pairing/change-pairing-code}
 
            ;;KEYSTORAGE

@@ -39,7 +39,7 @@
             {:db (-> db
                      (assoc-in [:keycard :pin :enter-step] :original)
                      (assoc-in [:keycard :pin :status] nil))}
-            (navigation/navigate-to-cofx :enter-pin-settings nil)))
+            (navigation/navigate-replace :enter-pin-settings nil)))
 
 (fx/defn proceed-to-change-puk
   {:events [:keycard/proceed-to-change-puk]}
@@ -48,12 +48,12 @@
             {:db (-> db
                      (assoc-in [:keycard :pin :enter-step] :puk-original)
                      (assoc-in [:keycard :pin :status] nil))}
-            (navigation/navigate-to-cofx :enter-pin-settings nil)))
+            (navigation/navigate-replace :enter-pin-settings nil)))
 
 (fx/defn proceed-to-change-pairing
   {:events [:keycard/proceed-to-change-pairing]}
   [{:keys [db] :as cofx}]
-  (navigation/navigate-to-cofx cofx :change-pairing-code nil))
+  (navigation/navigate-replace cofx :change-pairing-code nil))
 
 (fx/defn discard-pin-change
   {:events [::on-cancel]}
@@ -63,7 +63,7 @@
             (common/hide-connection-sheet)
             (if (get-in db [:keycard :pin :puk-restore?])
               (navigation/navigate-to-cofx :multiaccounts nil)
-              (navigation/navigate-to-cofx :keycard-settings nil))))
+              (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings]))))
 
 (fx/defn change-pin
   {:events [:keycard/change-pin]}
@@ -151,7 +151,7 @@
               (common/hide-connection-sheet)
               (if puk-restore?
                 (navigation/navigate-to-cofx :multiaccounts nil)
-                (navigation/navigate-to-cofx :keycard-settings nil))
+                (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings]))
               (when (:multiaccounts/login db)
                 (common/get-keys-from-keycard)))))
 
@@ -166,7 +166,7 @@
              :utils/show-popup {:title   ""
                                 :content (i18n/label :t/puk-changed)}}
             (common/hide-connection-sheet)
-            (navigation/navigate-to-cofx :keycard-settings nil)))
+            (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])))
 
 (fx/defn on-change-pairing-success
   {:events [:keycard.callback/on-change-pairing-success]}
@@ -178,7 +178,7 @@
              :utils/show-popup {:title   ""
                                 :content (i18n/label :t/pairing-changed)}}
             (common/hide-connection-sheet)
-            (navigation/navigate-to-cofx :keycard-settings nil)))
+            (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])))
 
 (fx/defn on-change-pin-error
   {:events [:keycard.callback/on-change-pin-error]}
