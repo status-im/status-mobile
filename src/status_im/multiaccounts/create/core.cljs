@@ -102,7 +102,9 @@
 (fx/defn generate-and-derive-addresses
   {:events [:generate-and-derive-addresses]}
   [{:keys [db]}]
-  {:db (assoc-in db [:intro-wizard :processing?] true)
+  {:db (-> db
+           (update :intro-wizard #(-> % (assoc :processing? true) (dissoc :recovering?)))
+           (dissoc :recovered-account?))
    :multiaccount-generate-and-derive-addresses nil})
 
 (fx/defn prepare-intro-wizard
