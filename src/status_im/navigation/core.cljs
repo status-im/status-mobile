@@ -146,11 +146,12 @@
 (defonce screen-disappear-reg
   (.registerComponentDidDisappearListener
    (.events Navigation)
-   (fn [_]
-     (doseq [[_ {:keys [ref value]}] @quo.text-input/text-input-refs]
-       (.setNativeProps ^js ref (clj->js {:text value})))
-     (doseq [[^js text-input default-value] @react/text-input-refs]
-       (.setNativeProps text-input (clj->js {:text default-value}))))))
+   (fn [^js evn]
+     (when-not (#{"popover" "bottom-sheet" "signing-sheet"} (.-componentName evn))
+       (doseq [[_ {:keys [ref value]}] @quo.text-input/text-input-refs]
+         (.setNativeProps ^js ref (clj->js {:text value})))
+       (doseq [[^js text-input default-value] @react/text-input-refs]
+         (.setNativeProps text-input (clj->js {:text default-value})))))))
 
 ;; SET ROOT
 (re-frame/reg-fx
@@ -326,9 +327,7 @@
 (re-frame/reg-fx
  :navigate-to-fx
  (fn [key]
-   ;;TODO WHY #{:home} ? we need to review all navigations to root screens home, wallet profile etc
-   (when-not (#{:home} key)
-     (navigate key))))
+   (navigate key)))
 
 (re-frame/reg-fx
  :navigate-back-fx

@@ -295,7 +295,7 @@
             {:utils/show-popup {:title   ""
                                 :content (i18n/label :t/keycard-unauthorized-operation)}}
             (clear-on-card-connected)
-            (navigation/navigate-to-cofx :keycard-settings nil)))
+            (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])))
 
 (fx/defn navigate-to-enter-pin-screen
   {:events [:keycard/navigate-to-enter-pin-screen]}

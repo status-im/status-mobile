@@ -7,8 +7,7 @@
             [status-im.ui.components.colors :as colors]
             [quo.core :as quo]
             [status-im.constants :as constants]
-            [status-im.ui.screens.keycard.views :as keycard.views]
-            [status-im.keycard.common :as keycard.common]))
+            [status-im.ui.screens.keycard.views :as keycard.views]))
 
 (defn- activity-indicator [loading?]
   (when loading?
@@ -112,6 +111,6 @@
 (defn reset-pin []
   [keycard.views/login-pin
    {:back-button-handler
-    ::keycard.common/navigate-to-keycard-settings
+    :navigate-back
     :hide-login-actions? true
     :default-enter-step :reset}])
