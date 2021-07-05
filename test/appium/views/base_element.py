@@ -259,6 +259,14 @@ class BaseElement(object):
 
         return timeit(wrapper, number=1)
 
+    def click_inside_element_by_coordinate(self, rel_x=0.8, rel_y=0.8, times_to_click=1):
+        element = self.find_element()
+        location = element.location
+        size = element.size
+        x = int(location['x'] + size['width'] * rel_x)
+        y = int(location['y'] + size['height'] * rel_y)
+        [self.driver.tap([(x, y)], 150) for _ in range(times_to_click)]
+
     @staticmethod
     def get_translation_by_key(key):
         return transl[key]

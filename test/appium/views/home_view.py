@@ -71,6 +71,11 @@ class ChatElement(SilentButton):
 
         return ChatImage(self.driver)
 
+class ChatElementInAC(SilentButton):
+    def __init__(self, driver, username_part):
+        self.username = username_part
+        super().__init__(driver, xpath="//*[@content-desc='chat-name-or-sender-text'][starts-with(@text,'%s')]/.." % username_part)
+
 
 class HomeView(BaseView):
     def __init__(self, driver):
@@ -135,8 +140,9 @@ class HomeView(BaseView):
         chat_element = ChatElement(self.driver, username[:25])
         if not chat_element.is_element_displayed():
             self.notifications_unread_badge.wait_and_click(30)
-            chat_element.wait_for_element(20)
-            chat_element.click()
+            chat_in_ac = ChatElementInAC(self.driver, username[:25])
+            chat_in_ac.wait_for_element(20)
+            chat_in_ac.click()
             self.home_button.double_click()
         return chat_element
 

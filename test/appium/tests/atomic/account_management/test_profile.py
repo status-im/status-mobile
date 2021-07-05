@@ -333,25 +333,46 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5453)
     @marks.medium
-    def test_privacy_policy_node_version_need_help_in_profile(self):
+    @marks.flaky
+    def test_privacy_policy_terms_of_use_node_version_need_help_in_profile(self):
         signin = SignInView(self.driver)
         no_link_found_error_msg = 'Could not find privacy policy link at'
         no_link_open_error_msg = 'Could not open our privacy policy from'
+        no_link_tos_error_msg = 'Could not open Terms of Use from'
 
-        signin.just_fyi("Checking privacy policy from sign in and from profile")
-        if not signin.privacy_policy_link.is_element_displayed():
+        signin.just_fyi("Checking privacy policy from sign in")
+        if not signin.privacy_policy_link.is_element_present():
             self.driver.fail('%s Sign in view!' % no_link_found_error_msg)
         web_page = signin.privacy_policy_link.click()
         web_page.open_in_webview()
         if not web_page.policy_summary.is_element_displayed():
             self.errors.append('%s Sign in view!' % no_link_open_error_msg)
         web_page.close_privacy_policy_button.click()
+
+        signin.just_fyi("Checking Terms of Use from sign")
+        if not signin.terms_of_use_link.is_element_displayed():
+            self.driver.fail("No Terms of Use link on Sign in view!")
+        web_page = signin.terms_of_use_link.click()
+        web_page.open_in_webview()
+        web_page.wait_for_d_aap_to_load()
+        web_page.swipe_by_custom_coordinates(0.5,0.8,0.5,0.4)
+        if not web_page.terms_of_use_summary.is_element_displayed():
+            self.errors.append('%s Sign in view!' % no_link_tos_error_msg)
+        web_page.close_privacy_policy_button.click()
+
         home = signin.create_user()
         profile = home.profile_button.click()
         profile.about_button.click()
         profile.privacy_policy_button.click()
         if not web_page.policy_summary.is_element_displayed():
             self.errors.append('%s Profile about view!' % no_link_open_error_msg)
+        web_page.click_system_back_button()
+
+        profile.terms_of_use_button.click()
+        web_page.wait_for_d_aap_to_load()
+        web_page.swipe_by_custom_coordinates(0.5,0.8,0.5,0.4)
+        if not web_page.terms_of_use_summary.is_element_displayed():
+            self.errors.append('%s Profile about view!' % no_link_tos_error_msg)
         web_page.click_system_back_button()
 
         signin.just_fyi("Checking that version match expected format and can be copied")
@@ -384,7 +405,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("Mail client is not opened when submitting bug")
         profile.click_system_back_button()
         profile.request_a_feature_button.click()
-        if  not profile.element_by_text("#support").is_element_displayed():
+        if not profile.element_by_text("#support").is_element_displayed():
             self.errors.append("Support channel is not suggested for requesting a feature")
         self.errors.verify_no_errors()
 
