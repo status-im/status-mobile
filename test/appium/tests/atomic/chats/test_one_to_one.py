@@ -196,6 +196,60 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         #     self.errors.append("Updated profile picture is not shown in one-to-one chat")
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(695843)
+    @marks.high
+    def test_edit_message_in_one_to_one_and_public_chats(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
+
+        device_2.just_fyi("Create public chat on Device1, send message and edit it then")
+        public_key_1, username_1 = device_1_home.get_public_key_and_username(return_username=True)
+        public_key_2, username_2 = device_2_home.get_public_key_and_username(return_username=True)
+        device_1_home.home_button.click()
+        device_2_home.home_button.click()
+        chat_name = device_1_home.get_random_chat_name()
+        device_1_home.join_public_chat(chat_name)
+        device_1_public_chat = device_1_home.get_chat_view()
+        message_before_edit = "Message BEFORE edit 1"
+        message_after_edit = "Message AFTER edit 2"
+        device_1_public_chat.send_message(message_before_edit)
+        device_1_public_chat.edit_message_in_chat(message_before_edit, message_after_edit)
+        if not device_1_public_chat.element_by_text_part("⌫ Edited").is_element_displayed():
+            self.errors.append('No mark in message bubble about this message was edited')
+
+        device_2.just_fyi("Device 1 sends text message and edits it in 1-1 chat. Device2 checks edited message is shown")
+        device_2_chat = device_2_home.add_contact(public_key_1)
+        message_before_edit_1_1 = "Message before edit 1-1"
+        message_after_edit_1_1 = "AFTER"
+        device_2_chat.send_message(message_before_edit_1_1)
+        device_1_home.home_button.click()
+
+        device_1_one_to_one_chat_element = device_1_home.get_chat(username_2)
+        device_2_chat.edit_message_in_chat(message_before_edit_1_1, message_after_edit_1_1)
+        device_2_home.home_button.click()
+        if not device_1_home.element_by_text_part(message_after_edit_1_1).is_element_present():
+            self.errors.append('UNedited message version displayed on preview')
+        device_1_one_to_one_chat_element.click()
+        if not device_1_home.element_by_text_part(message_after_edit_1_1).is_element_present():
+            self.errors.append('No edited message in 1-1 chat displayed')
+        if not device_1_home.element_by_text_part("⌫ Edited").is_element_present():
+            self.errors.append('No mark in message bubble about this message was edited on receiver side')
+
+        device_2.just_fyi("Verify Device1 can not edit received message from Device2")
+        device_1_home.element_by_text_part(message_after_edit_1_1).long_press_element()
+        if device_1_home.element_by_translation_id("edit").is_element_present():
+            self.errors.append('Option to edit someone else message available!')
+
+        device_2_home.home_button.click()
+        device_2_public_chat = device_2_home.join_public_chat(chat_name)
+        if not device_2_public_chat.element_by_text_part("⌫ Edited").is_element_displayed():
+            self.errors.append('No mark in message bubble about this message was edited')
+        if not device_2_public_chat.element_by_text_part(message_after_edit).is_element_displayed():
+            self.errors.append('Message is not edited.')
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(5782)
     @marks.critical
     def test_install_pack_and_send_sticker(self):
@@ -786,7 +840,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
     @marks.testrail_id(6322)
     @marks.medium
     def test_can_scan_different_links_with_universal_qr_scanner(self):
-        user = transaction_senders['C']
+        user = transaction_senders['L']
         home_view = SignInView(self.driver).recover_access(user['passphrase'])
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
