@@ -603,6 +603,14 @@ class ChatView(BaseView):
         self.chat_message_input.send_keys(message)
         self.send_message_button.click()
 
+    def edit_message_in_chat(self, message_to_edit, message_to_update):
+        self.driver.info("**Looking for message '%s' to edit it**" % message_to_edit)
+        self.element_by_text_part(message_to_edit).long_press_element()
+        self.element_by_translation_id("edit").click()
+        self.chat_message_input.clear()
+        self.chat_message_input.send_keys(message_to_update)
+        self.send_message_button.click()
+
     def copy_message_text(self, message_text):
         self.driver.info("**Copying '%s' message via long press**" % message_text)
         self.element_by_text_part(message_text).long_press_element()

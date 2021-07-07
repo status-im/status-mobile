@@ -99,7 +99,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(6263)
     @marks.critical
     def test_request_and_receive_stt_in_1_1_chat_offline(self):
-        sender = transaction_senders['C']
+        sender = transaction_senders['L']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         asset_name = 'STT'
