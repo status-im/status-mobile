@@ -358,14 +358,7 @@ class ProfileView(BaseView):
         self.profile_picture.template = file_name
         if update_by == "Gallery":
             self.select_from_gallery_button.click()
-            if self.allow_button.is_element_displayed(sec=5):
-                self.allow_button.click()
-            image_full_content = self.get_image_in_storage_by_name(file_name)
-            if not image_full_content.is_element_displayed(2):
-                self.show_roots_button.click()
-                for element_text in 'Images', 'DCIM':
-                    self.element_by_text(element_text).click()
-            image_full_content.click()
+            self.select_photo_from_gallery(file_name)
         else:
             ## take by Photo
             self.take_photo()
@@ -385,6 +378,17 @@ class ProfileView(BaseView):
         if self.element_by_text("NEXT").is_element_displayed(sec=5):
             self.element_by_text("NEXT").click()
         self.shutter_button.click()
+
+    def select_photo_from_gallery(self, file_name: str):
+        if self.allow_button.is_element_displayed(sec=5):
+            self.allow_button.click()
+        image_full_content = self.get_image_in_storage_by_name(file_name)
+        if not image_full_content.is_element_displayed(2):
+            self.show_roots_button.click()
+            for element_text in 'Images', 'DCIM':
+                self.element_by_text(element_text).click()
+        image_full_content.click()
+
 
     def logout(self):
         self.driver.info("**Logging out**")

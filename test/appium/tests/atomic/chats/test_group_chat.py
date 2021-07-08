@@ -2,7 +2,6 @@ from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from tests.users import transaction_senders, ens_user
 from views.sign_in_view import SignInView
-from time import sleep
 import random, emoji
 
 

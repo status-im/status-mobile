@@ -14,18 +14,28 @@ class ChatButton(Button):
 
 
 class ChatElement(SilentButton):
-    def __init__(self, driver, username_part):
+    def __init__(self, driver, username_part, community):
         self.username = username_part
+        self.community = community
         super().__init__(driver, xpath="//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % username_part)
 
     def navigate(self):
-        from views.chat_view import ChatView
-        return ChatView(self.driver)
+        if self.community:
+            from views.chat_view import CommunityView
+            return CommunityView(self.driver)
+        else:
+            from views.chat_view import ChatView
+            return ChatView(self.driver)
 
     def click(self):
-        from views.chat_view import ChatView
-        desired_element = ChatView(self.driver).chat_message_input
+        if self.community:
+            from views.chat_view import CommunityView
+            desired_element = CommunityView(self.driver).community_options_button
+        else:
+            from views.chat_view import ChatView
+            desired_element = ChatView(self.driver).chat_message_input
         self.click_until_presence_of_element(desired_element=desired_element)
+
         return self.navigate()
 
     def find_element(self):
@@ -90,6 +100,7 @@ class HomeView(BaseView):
         self.invite_friends_button = Button(self.driver, accessibility_id="invite-friends-button")
         self.stop_status_service_button = Button(self.driver, accessibility_id="STOP")
         self.my_profile_on_start_new_chat_button = Button(self.driver, xpath="//*[@content-desc='current-account-photo']")
+        self.communities_button = ChatButton(self.driver, accessibility_id="communities-button")
 
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
@@ -135,9 +146,9 @@ class HomeView(BaseView):
             except TimeoutException:
                 break
 
-    def get_chat(self, username):
+    def get_chat(self, username, community=False):
         self.driver.info("**Looking for chat '%s'**" % username)
-        chat_element = ChatElement(self.driver, username[:25])
+        chat_element = ChatElement(self.driver, username[:25], community=community)
         if not chat_element.is_element_displayed():
             self.notifications_unread_badge.wait_and_click(30)
             chat_in_ac = ChatElementInAC(self.driver, username[:25])
@@ -189,6 +200,25 @@ class HomeView(BaseView):
         chat_view.create_button.click()
         self.driver.info("**Group chat %s is created successfully!**" % group_chat_name)
         return chat_view
+
+    def create_community(self, name: str, description="some_description", users_to_add=[],
+                         set_image=False, file_name='sauce_logo.png'):
+        self.plus_button.click()
+        chat_view = self.communities_button.click()
+        chat_view.create_community_button.click()
+        chat_view.community_name_edit_box.set_value(name)
+        chat_view.community_description_edit_box.set_value(description)
+        if set_image:
+            from views.profile_view import ProfileView
+            set_picture_view = ProfileView(self.driver)
+            set_picture_view.element_by_translation_id("community-thumbnail-upload").click()
+            set_picture_view.element_by_translation_id("community-image-pick").click()
+            set_picture_view.select_photo_from_gallery(file_name)
+            set_picture_view.crop_photo_button.click()
+
+        chat_view.confirm_create_in_community_button.click()
+        return chat_view.get_community_by_name(name)
+
 
     def join_public_chat(self, chat_name: str):
         self.driver.info("**Creating public chat %s**" % chat_name)
