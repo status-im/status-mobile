@@ -90,6 +90,7 @@
     :accessibility-label :profile-nickname-item
     :accessory           :text
     :accessory-text      pin-count
+    :disabled            (zero? pin-count)
     :on-press            #(re-frame/dispatch [:contact.ui/pinned-messages-pressed public-key])
     :chevron             true}])
 

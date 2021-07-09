@@ -13,9 +13,8 @@
             [status-im.ui.screens.chat.views :as chat]
             [status-im.ui.components.list.views :as list]))
 
-(defn pins-topbar []
-  (let [{:keys [group-chat chat-id chat-name]}
-        @(re-frame/subscribe [:chats/current-chat])
+(defn pins-topbar [chat]
+  (let [{:keys [group-chat chat-id chat-name]} chat
         pinned-messages @(re-frame/subscribe [:chats/pinned chat-id])
         [first-name _] (when-not group-chat @(re-frame.core/subscribe [:contacts/contact-two-names-by-identity chat-id]))]
     [topbar/topbar {:show-border? true
@@ -78,18 +77,20 @@
                                    :padding-bottom 16}})])))
 
 (defn pinned-messages []
-  (let [bottom-space (reagent/atom 0)
-        panel-space (reagent/atom 52)
-        active-panel (reagent/atom nil)
-        position-y (animated/value 0)
-        pan-state (animated/value 0)
-        text-input-ref (quo.react/create-ref)
-        pan-responder (accessory/create-pan-responder position-y pan-state)
-        space-keeper (get-space-keeper-ios bottom-space panel-space active-panel text-input-ref)
-        chat @(re-frame/subscribe [:chats/current-chat-chat-view])]
-    [:<>
-     [pins-topbar]
-     [connectivity/loading-indicator]
-     [pinned-messages-view {:chat          chat
-                            :pan-responder pan-responder
-                            :space-keeper  space-keeper}]]))
+  (let [{:keys [chat-id]} @(re-frame/subscribe [:get-screen-params])]
+    (fn []
+      (let [bottom-space (reagent/atom 0)
+            panel-space (reagent/atom 52)
+            active-panel (reagent/atom nil)
+            position-y (animated/value 0)
+            pan-state (animated/value 0)
+            text-input-ref (quo.react/create-ref)
+            pan-responder (accessory/create-pan-responder position-y pan-state)
+            space-keeper (get-space-keeper-ios bottom-space panel-space active-panel text-input-ref)
+            chat @(re-frame/subscribe [:chat-by-id chat-id])]
+        [:<>
+         [pins-topbar chat]
+         [connectivity/loading-indicator]
+         [pinned-messages-view {:chat          chat
+                                :pan-responder pan-responder
+                                :space-keeper  space-keeper}]]))))
