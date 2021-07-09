@@ -1753,7 +1753,11 @@
  :activity.center/notifications-grouped-by-date
  :<- [:activity.center/notifications]
  (fn [{:keys [notifications]}]
-   (group-notifications-by-date (map #(assoc % :timestamp (or (:timestamp %) (:timestamp (or (:message %) (:last-message %))))) notifications))))
+   (let [supported-notifications (filter (fn [{:keys [type]}]
+                                           (or (= constants/activity-center-notification-type-mention type)
+                                               (= constants/activity-center-notification-type-one-to-one-chat type)
+                                               (= constants/activity-center-notification-type-private-group-chat type))) notifications)]
+     (group-notifications-by-date (map #(assoc % :timestamp (or (:timestamp %) (:timestamp (or (:message %) (:last-message %))))) supported-notifications)))))
 
 ;;WALLET TRANSACTIONS ==================================================================================================
 
