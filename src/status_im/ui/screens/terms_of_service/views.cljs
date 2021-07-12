@@ -17,7 +17,7 @@
    (i18n/label :t/wc-new-tos-based-on-principles-prefix)
    [{:style    (merge {:color colors/blue}
                       typography/font-medium)
-     :on-press #(re-frame/dispatch [:open-modal :terms-of-service])}
+     :on-press #(re-frame/dispatch [:open-modal :principles])}
     " "
     (i18n/label :t/principles)]])
 

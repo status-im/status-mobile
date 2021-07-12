@@ -5,7 +5,7 @@
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.webview :refer [webview]]
-            [status-im.constants :refer [privacy-policy-link terms-of-service-link]]
+            [status-im.constants :refer [privacy-policy-link principles-link terms-of-service-link]]
             [quo.core :as quo]
             [status-im.ui.components.react :as react])
   (:require-macros [status-im.utils.views :as views]))
@@ -65,4 +65,9 @@
 (views/defview tos []
   [webview
    {:source              {:uri terms-of-service-link}
+    :java-script-enabled true}])
+
+(views/defview principles []
+  [webview
+   {:source              {:uri principles-link}
     :java-script-enabled true}])
