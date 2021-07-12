@@ -37,7 +37,7 @@
 
 (defn contact-item [title contact]
   [copyable-text/copyable-text-view
-   {:copied-text (displayed-name contact)}
+   {:copied-text (:address contact)}
    [quo/list-item
     {:title              title
      :title-prefix-width 45
