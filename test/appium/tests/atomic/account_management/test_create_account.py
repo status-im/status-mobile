@@ -96,7 +96,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         if sign_in.generate_key_button.is_element_displayed():
             self.errors.append("Agree with ToS is not mandatory to proceed onboarding!")
         sign_in.accept_tos_checkbox.click()
-        sign_in.get_started_button.click()
+        sign_in.get_started_button.click_until_presence_of_element(sign_in.generate_key_button)
+        sign_in.generate_key_button.click()
         from views.sign_in_view import MultiAccountButton
         account_button = sign_in.get_multiaccount_by_position(position=random.randint(1, 4), element_class=MultiAccountButton)
         username = account_button.username.text

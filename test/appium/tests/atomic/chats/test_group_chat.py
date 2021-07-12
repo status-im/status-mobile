@@ -55,7 +55,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_2.just_fyi('Join to group chat, check system messages and send messages to group chat, check message status is delivered')
         device_2_chat.join_chat_button.click()
         for chat in (device_1_chat, device_2_chat):
-            if not chat.chat_element_by_text(join_system_message).is_element_displayed():
+            if not chat.chat_element_by_text(join_system_message).is_element_displayed(30):
                 self.drivers[0].fail('System message after joining group chat is not shown')
         device_2_chat.home_button.click(desired_view="home")
         message_1 = "Message from device: %s" % device_1_chat.driver.number

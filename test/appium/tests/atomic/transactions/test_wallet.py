@@ -119,7 +119,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.recover_access(sender['passphrase'])
         home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+        wallet_view.wait_balance_is_changed(asset='ADI', scan_tokens=True)
         wallet_view.accounts_status_account.click()
         amount = '0.000%s' % str(random.randint(100, 999)) + '1'
         wallet_view.send_transaction(amount=amount,
@@ -137,6 +137,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
+        [wallet_view.wait_balance_is_changed(asset) for asset in ['ETH', 'STT']]
         eth_value = wallet_view.get_asset_amount_by_name('ETH')
         stt_value = wallet_view.get_asset_amount_by_name('STT')
         if eth_value == 0 or stt_value == 0:
@@ -338,6 +339,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(transaction_senders['C']['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.wait_balance_is_changed()
         send_transaction_view = SendTransactionView(self.driver)
 
         sign_in_view.just_fyi("Setting up wallet")

@@ -32,7 +32,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(6290)
     @marks.high
     def test_keycard_fetching_balance_after_offline(self):
-        sender = wallet_users['A']
+        sender = transaction_senders['F']
         sign_in_view = SignInView(self.driver)
 
         sign_in_view.just_fyi('Restore account with funds offline')

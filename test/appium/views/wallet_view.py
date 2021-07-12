@@ -160,13 +160,12 @@ class WalletView(BaseView):
                 self.wallet_button.double_click()
                 counter += 10
                 time.sleep(10)
-                if scan_tokens:
-                    self.scan_tokens()
                 self.driver.info('*Waiting %ss for %s updated balance*' % (counter,asset))
             elif not self.asset_by_name(asset).is_element_present(10):
+                if scan_tokens:
+                    self.scan_tokens()
                 counter += 10
                 time.sleep(10)
-                self.swipe_up()
                 self.driver.info('*Waiting %s seconds for %s to display asset*' % (counter, asset))
             else:
                 self.driver.info('**Balance is updated!**')

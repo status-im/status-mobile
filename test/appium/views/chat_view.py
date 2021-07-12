@@ -259,11 +259,15 @@ class GroupChatInfoView(BaseView):
         return UsernameOptions(self.driver, username)
 
     def user_admin(self, username: str):
-        return Button(self.driver,
+        admin = Button(self.driver,
                       xpath="//*[@text='%s']/..//*[@text='%s']" % (username, self.get_translation_by_key("group-chat-admin")))
+        admin.scroll_to_element()
+        return admin
 
     def get_user_from_group_info(self, username: str):
-        return Text(self.driver, xpath="//*[@text='%s']" % username)
+        user = Text(self.driver, xpath="//*[@text='%s']" % username)
+        user.scroll_to_element()
+        return user
 
 
 class PreviewMessage(ChatElementByText):

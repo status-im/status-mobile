@@ -333,37 +333,25 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5453)
     @marks.medium
-    @marks.flaky
+    # @marks.flaky
     def test_privacy_policy_terms_of_use_node_version_need_help_in_profile(self):
         signin = SignInView(self.driver)
         no_link_found_error_msg = 'Could not find privacy policy link at'
         no_link_open_error_msg = 'Could not open our privacy policy from'
         no_link_tos_error_msg = 'Could not open Terms of Use from'
 
-        signin.just_fyi("Checking privacy policy from sign in")
+        signin.just_fyi("Checking privacy policy and TOS links")
         if not signin.privacy_policy_link.is_element_present():
-            self.driver.fail('%s Sign in view!' % no_link_found_error_msg)
-        web_page = signin.privacy_policy_link.click()
-        web_page.open_in_webview()
-        if not web_page.policy_summary.is_element_displayed():
-            self.errors.append('%s Sign in view!' % no_link_open_error_msg)
-        web_page.close_privacy_policy_button.click()
-
-        signin.just_fyi("Checking Terms of Use from sign")
+            self.errors.append('%s Sign in view!' % no_link_found_error_msg)
         if not signin.terms_of_use_link.is_element_displayed():
             self.driver.fail("No Terms of Use link on Sign in view!")
-        web_page = signin.terms_of_use_link.click()
-        web_page.open_in_webview()
-        web_page.wait_for_d_aap_to_load()
-        web_page.swipe_by_custom_coordinates(0.5,0.8,0.5,0.4)
-        if not web_page.terms_of_use_summary.is_element_displayed():
-            self.errors.append('%s Sign in view!' % no_link_tos_error_msg)
-        web_page.close_privacy_policy_button.click()
 
         home = signin.create_user()
         profile = home.profile_button.click()
         profile.about_button.click()
         profile.privacy_policy_button.click()
+        from views.web_views.base_web_view import BaseWebView
+        web_page = BaseWebView(self.driver)
         if not web_page.policy_summary.is_element_displayed():
             self.errors.append('%s Profile about view!' % no_link_open_error_msg)
         web_page.click_system_back_button()
@@ -896,26 +884,27 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         public_chat_1 = home_1.join_public_chat(public_chat_name)
         public_chat_1.relogin()
 
-        profile_1.just_fyi('check that still connected to custom mailserver after relogin')
-        home_1.profile_button.click()
-        profile_1.sync_settings_button.click()
-        if not profile_1.element_by_text(server_name).is_element_displayed():
-            self.drivers[0].fail("Not connected to custom mailserver after re-login")
-
-        profile_1.just_fyi('check that can RETRY to connect')
-        profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(60)
-        public_chat_1.element_by_translation_id(id='mailserver-retry', uppercase=True).wait_and_click(60)
-
-        profile_1.just_fyi('check that can pick another mailserver and receive messages')
-        profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(60)
-        profile_1.element_by_translation_id(id='mailserver-pick-another', uppercase=True).wait_and_click(120)
-        mailserver = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
-        profile_1.element_by_text(mailserver).click()
-        profile_1.confirm_button.click()
-        profile_1.home_button.click()
-        home_1.get_chat('#%s' % public_chat_name).click()
-        if not public_chat_1.chat_element_by_text(message).is_element_displayed(60):
-            self.errors.append("Chat history wasn't fetched")
+        # TODO: blocked due to 11786
+        # profile_1.just_fyi('check that still connected to custom mailserver after relogin')
+        # home_1.profile_button.click()
+        # profile_1.sync_settings_button.click()
+        # if not profile_1.element_by_text(server_name).is_element_displayed():
+        #     self.drivers[0].fail("Not connected to custom mailserver after re-login")
+        #
+        # profile_1.just_fyi('check that can RETRY to connect')
+        # profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(60)
+        # public_chat_1.element_by_translation_id(id='mailserver-retry', uppercase=True).wait_and_click(60)
+        #
+        # profile_1.just_fyi('check that can pick another mailserver and receive messages')
+        # profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(60)
+        # profile_1.element_by_translation_id(id='mailserver-pick-another', uppercase=True).wait_and_click(120)
+        # mailserver = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
+        # profile_1.element_by_text(mailserver).click()
+        # profile_1.confirm_button.click()
+        # profile_1.home_button.click()
+        # home_1.get_chat('#%s' % public_chat_name).click()
+        # if not public_chat_1.chat_element_by_text(message).is_element_displayed(60):
+        #     self.errors.append("Chat history wasn't fetched")
 
         self.errors.verify_no_errors()
 
