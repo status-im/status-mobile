@@ -215,7 +215,7 @@
 
            ;Pinned messages
            {:name      :chat-pinned-messages
-            ;TODO custom subtitle
+                                        ;TODO custom subtitle
             :options   {:topBar {:visible false}}
             :component pin-messages/pinned-messages}
 
@@ -455,11 +455,14 @@
             :options   {:topBar {:title {:text (i18n/label :t/about-app)}}}
             :component about-app/about-app}
            {:name      :privacy-policy
-            :options {:topBar {:title {:text (i18n/label :t/privacy-policy)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/privacy-policy)}}}
             :component about-app/privacy-policy}
            {:name      :terms-of-service
-            :options {:topBar {:title {:text (i18n/label :t/terms-of-service)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/terms-of-service)}}}
             :component about-app/tos}
+           {:name      :principles
+            :options   {:topBar {:title {:text (i18n/label :t/principles)}}}
+            :component about-app/principles}
            {:name      :force-accept-tos
             :options   {:topBar {:visible false}}
             :component terms-of-service/force-accept-tos}
