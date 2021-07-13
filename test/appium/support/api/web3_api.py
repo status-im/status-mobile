@@ -73,8 +73,10 @@ def balance_of_address(address):
     else:
         return w3.eth.getBalance(to_checksum_address(address))
 
+
 def transaction_status(hash):
     return w3.eth.getTransaction(hash)
+
 
 def to_checksumed_address(address):
     return to_checksum_address(address)
@@ -82,6 +84,10 @@ def to_checksumed_address(address):
 
 def current_gas_price():
     return str(w3.eth.gasPrice / 1000000000)
+
+
+def current_block_number():
+    return w3.eth.blockNumber
 
 
 def sign_transaction(tx_data, pk):

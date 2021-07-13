@@ -16,6 +16,7 @@ class NetworkApi(object):
         self.network_url = 'http://api-%s.etherscan.io/api?' % tests.pytest_config_global['network']
         self.faucet_url = 'https://faucet-ropsten.status.im/donate'
         self.faucet_backup_address = w3.account_address
+        self.start_block_number = self.get_start_block_number()
         self.headers = {
         'User-Agent':"Mozilla\\5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit\\537.36 (KHTML, like Gecko) Chrome\\7"
                      "7.0.3865.90 Safari\\537.36", }
@@ -27,7 +28,7 @@ class NetworkApi(object):
         logging.info(text)
 
     def get_transactions(self, address: str) -> List[dict]:
-        method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
+        method = self.network_url + 'module=account&action=txlist&address=0x%s&startblock=%s&endblock=99999999&sort=desc&apikey=%s' % (address, self.start_block_number, self.api_key)
         try:
             transactions_response = requests.request('GET', url=method, headers=self.headers).json()
             if transactions_response:
@@ -39,7 +40,7 @@ class NetworkApi(object):
             pass
 
     def get_token_transactions(self, address: str) -> List[dict]:
-        method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
+        method = self.network_url + 'module=account&action=tokentx&address=0x%s&startblock=%s&endblock=99999999&sort=desc&apikey=%s' % (address, self.start_block_number, self.api_key)
         try:
             transactions_response = requests.request('GET', url=method, headers=self.headers).json()
             if transactions_response:
@@ -60,9 +61,10 @@ class NetworkApi(object):
         self.log('Balance is %s Gwei' % balance)
         return int(balance)
 
-    def get_latest_block_number(self) -> int:
-        method = self.network_url + 'module=proxy&action=eth_blockNumber'
-        return int(requests.request('GET', url=method).json()['result'], 0)
+    def get_start_block_number(self) -> str:
+        current_block = w3.current_block_number()
+        start_from = int(current_block) - 5000
+        return str(start_from)
 
     def find_transaction_by_hash(self,transaction_hash: str):
         transaction = w3.transaction_status(transaction_hash)
