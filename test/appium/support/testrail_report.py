@@ -85,7 +85,6 @@ class TestrailReport(BaseTestReport):
         test_cases['critical'] = 734
         test_cases['high'] = 735
         test_cases['medium'] = 736
-        test_cases['low'] = 737
         test_cases['upgrade'] = 881
         case_ids = list()
         for arg in argv:
