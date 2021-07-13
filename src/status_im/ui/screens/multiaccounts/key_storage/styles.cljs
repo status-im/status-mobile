@@ -24,3 +24,11 @@
   {:color       colors/gray
    :text-align  :center
    :line-height 22})
+
+(def header
+  {:flex-direction  :row
+   :align-items     :center
+   :justify-content :space-between
+   :padding-top     16
+   :padding-left    16
+   :margin-bottom   11})

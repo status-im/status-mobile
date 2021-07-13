@@ -55,7 +55,7 @@
 ;; Component to render Key and Storage management screen
 (defview actions-base [{:keys [next-title next-event]}]
   (letsubs [{:keys [name] :as multiaccount} [:multiaccounts/login]
-            {:keys [move-keystore-checked?]} [:multiaccounts/key-storage]]
+            {:keys [move-keystore-checked? reset-db-checked?]} [:multiaccounts/key-storage]]
     [react/view {:flex 1}
      [local-topbar (i18n/label :t/choose-actions)]
      [accordion/section {:title   name
@@ -77,8 +77,8 @@
        [quo/list-item {:title              (i18n/label :t/reset-database)
                        :subtitle           (i18n/label :t/reset-database-warning)
                        :subtitle-max-lines 4
-                       :disabled           true
-                       :active             move-keystore-checked?
+                       :active             reset-db-checked?
+                       :on-press           #(re-frame/dispatch [::multiaccounts.key-storage/reset-db-checked (not reset-db-checked?)])
                        :accessory          :checkbox}]]
       (when (and next-title next-event)
         [toolbar/toolbar {:show-border? true
@@ -195,8 +195,36 @@
                         :right        [quo/button
                                        {:type     :secondary
                                         :disabled (not keycard-storage-selected?)
-                                        :on-press #(re-frame/dispatch [::multiaccounts.key-storage/show-transfer-warning-popup])}
+                                        :on-press #(re-frame/dispatch [::multiaccounts.key-storage/storage-selected])}
                                        (i18n/label :t/confirm)]}]]]))
+
+(defview migrate-account-password-view []
+  (letsubs [{:keys [migration-password-error migration-password-valid?]} [:keycard]]
+    [react/view {:flex 1}
+     [react/view styles/header
+      [react/text {:style {:typography :title-bold}} (i18n/label :t/enter-password)]
+      [react/view {:padding-horizontal 24}
+       [quo/button {:type :secondary
+                    :on-press #(re-frame/dispatch [::multiaccounts.key-storage/skip-password-pressed])}
+        (i18n/label :t/skip)]]]
+     [quo/separator]
+     [react/view {:padding-horizontal 16 :padding-vertical 12}
+      [react/text {:style {:margin-top 6 :margin-bottom 12 :color colors/gray}} (i18n/label :t/enter-password-migration-prompt)]
+      [quo/text-input
+       {:secure-text-entry   true
+        :placeholder         (i18n/label :t/current-password)
+        :on-change-text      #(re-frame/dispatch [::multiaccounts.key-storage/password-changed (status-im.utils.security/mask-data %)])
+        :accessibility-label :enter-password-input
+        :auto-capitalize     :none
+        :error               migration-password-error
+        :show-cancel         false}]]
+     [react/view {:padding-horizontal 16 :padding-vertical 12}
+      [quo/button {:on-press #(re-frame/dispatch [::multiaccounts.key-storage/verify-password])
+                   :disabled (not migration-password-valid?)}
+       (i18n/label :t/confirm)]]]))
+
+(def migrate-account-password
+  {:content migrate-account-password-view})
 
 (defview seed-key-uid-mismatch-popover []
   (letsubs [{:keys [name]} [:multiaccounts/login]

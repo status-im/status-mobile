@@ -570,6 +570,17 @@ RCT_EXPORT_METHOD(verify:(NSString *)address
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// verifyDatabasePassword
+RCT_EXPORT_METHOD(verifyDatabasePassword:(NSString *)keyUID
+                  password:(NSString *)password
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"VerifyDatabasePassword() method called");
+#endif
+    NSString *result = StatusgoVerifyDatabasePassword(keyUID, password);
+    callback(@[result]);
+}
+
 //////////////////////////////////////////////////////////////////// changeDatabasePassword
 RCT_EXPORT_METHOD(reEncryptDbAndKeystore:(NSString *)keyUID
                   currentPassword:(NSString *)currentPassword
@@ -580,6 +591,21 @@ RCT_EXPORT_METHOD(reEncryptDbAndKeystore:(NSString *)keyUID
 #endif
     // changes password and re-encrypts keystore
     NSString *result = StatusgoChangeDatabasePassword(keyUID, currentPassword, newPassword);
+    callback(@[result]);
+}
+
+//////////////////////////////////////////////////////////////////// convertToKeycardAccount
+RCT_EXPORT_METHOD(convertToKeycardAccount:(NSString *)keyUID
+                  accountData:(NSString *)accountData
+                  settings:(NSString *)settings
+                  currentPassword:(NSString *)currentPassword
+                  newPassword:(NSString *)newPassword
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"convertToKeycardAccount() method called");
+#endif
+    NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
+    NSString *result = StatusgoConvertToKeycardAccount(multiaccountKeystoreDir.path, accountData, settings, currentPassword, newPassword);
     callback(@[result]);
 }
 

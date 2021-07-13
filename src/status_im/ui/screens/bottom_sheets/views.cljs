@@ -3,6 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.keycard.views :as keycard]
+            [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [quo.core :as quo]))
@@ -33,7 +34,10 @@
           (merge about-app/learn-more)
 
           (= view :recover-sheet)
-          (merge recover.views/bottom-sheet))]
+          (merge recover.views/bottom-sheet)
+
+          (= view :migrate-account-password)
+          (merge key-storage/migrate-account-password))]
     [quo/bottom-sheet opts
      (when content
        [content])]))

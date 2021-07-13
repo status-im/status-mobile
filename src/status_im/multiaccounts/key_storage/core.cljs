@@ -10,8 +10,11 @@
             [status-im.popover.core :as popover]
             [status-im.utils.fx :as fx]
             [status-im.utils.security :as security]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.i18n.i18n :as i18n]
             [status-im.utils.types :as types]
-            [status-im.keycard.backup-key :as keycard.backup]))
+            [status-im.keycard.backup-key :as keycard.backup]
+            [status-im.bottom-sheet.core :as bottom-sheet]))
 
 (fx/defn key-and-storage-management-pressed
   "This event can be dispatched before login and from profile and needs to redirect accordingly"
@@ -28,6 +31,11 @@
   {:events [::move-keystore-checked]}
   [{:keys [db] :as cofx} checked?]
   {:db (assoc-in db [:multiaccounts/key-storage :move-keystore-checked?] checked?)})
+
+(fx/defn reset-db-checked
+  {:events [::reset-db-checked]}
+  [{:keys [db] :as cofx} checked?]
+  {:db (assoc-in db [:multiaccounts/key-storage :reset-db-checked?] checked?)})
 
 (fx/defn navigate-back
   {:events [::navigate-back]}
@@ -120,11 +128,6 @@
   [{:keys [db]} selected?]
   {:db (assoc-in db [:multiaccounts/key-storage :keycard-storage-selected?] selected?)})
 
-(fx/defn warning-popup
-  {:events [::show-transfer-warning-popup]}
-  [cofx]
-  (popover/show-popover cofx {:view :transfer-multiaccount-to-keycard-warning}))
-
 (re-frame/reg-fx
  ::delete-multiaccount
  (fn [{:keys [key-uid on-success on-error]}]
@@ -158,12 +161,53 @@ The exact events dispatched for this flow if consumed from the UI are:
 
 We don't need to take the exact steps, just set the required state and redirect to correct screen
 "
-(fx/defn handle-delete-multiaccount-success
+(fx/defn import-multiaccount
   {:events [::delete-multiaccount-success]}
-  [{:keys [db] :as cofx} _]
-  {::multiaccounts.recover/import-multiaccount {:passphrase (get-in db [:multiaccounts/key-storage :seed-phrase])
+  [{:keys [db] :as cofx}]
+  {:dispatch [:bottom-sheet/hide]
+   ::multiaccounts.recover/import-multiaccount {:passphrase (get-in db [:multiaccounts/key-storage :seed-phrase])
                                                 :password nil
                                                 :success-event ::import-multiaccount-success}})
+
+(fx/defn storage-selected
+  {:events [::storage-selected]}
+  [{:keys [db] :as cofx}]
+  (if (get-in db [:multiaccounts/key-storage :reset-db-checked?])
+    (popover/show-popover cofx {:view :transfer-multiaccount-to-keycard-warning})
+    (bottom-sheet/show-bottom-sheet cofx {:view :migrate-account-password})))
+
+(fx/defn skip-password-pressed
+  {:events [::skip-password-pressed]}
+  [cofx]
+  (popover/show-popover cofx {:view :transfer-multiaccount-to-keycard-warning}))
+
+(fx/defn password-changed
+  {:events [::password-changed]}
+  [{db :db} password]
+  (let [unmasked-pass (security/safe-unmask-data password)]
+    {:db (update db :keycard assoc
+                 :migration-password         password
+                 :migration-password-error   nil
+                 :migration-password-valid? (and unmasked-pass (> (count unmasked-pass) 5)))}))
+
+(fx/defn verify-password-result
+  {:events [::verify-password-result]}
+  [{:keys [db] :as cofx} result]
+  (let [{:keys [error]} (types/json->clj result)]
+    (if (string/blank? error)
+      (fx/merge
+       cofx
+       {:db (update db :keycard dissoc :migration-password-error :migration-password-valid?)}
+       (import-multiaccount))
+      {:db (assoc-in db [:keycard :migration-password-error] (i18n/label :t/wrong-password))})))
+
+(fx/defn verify-password
+  {:events [::verify-password]}
+  [{:keys [db] :as cofx}]
+  (native-module/verify-database-password
+   (get-in db [:multiaccounts/login :key-uid])
+   (ethereum/sha3 (security/safe-unmask-data (get-in db [:keycard :migration-password])))
+   #(re-frame/dispatch [::verify-password-result %])))
 
 (fx/defn handle-multiaccount-import
   {:events [::import-multiaccount-success]}
@@ -178,6 +222,7 @@ We don't need to take the exact steps, just set the required state and redirect 
                               :selected-storage-type :advanced)
                       (assoc-in [:keycard :flow] :recovery)
                       (assoc-in [:keycard :from-key-storage-and-migration?] true)
+                      (assoc-in [:keycard :converting-account?] (not (get-in db [:multiaccounts/key-storage :reset-db-checked?])))
                       (dissoc :multiaccounts/key-storage))}
             (popover/hide-popover)
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))

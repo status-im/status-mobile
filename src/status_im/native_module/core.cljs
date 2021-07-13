@@ -192,6 +192,12 @@
   (log/debug "[native-module] verify")
   (.verify ^js (status) address hashed-password callback))
 
+(defn verify-database-password
+  "NOTE: beware, the password has to be sha3 hashed"
+  [key-uid hashed-password callback]
+  (log/debug "[native-module] verify-database-password")
+  (.verifyDatabasePassword ^js (status) key-uid hashed-password callback))
+
 (defn login-with-keycard
   [{:keys [key-uid multiaccount-data password chat-key]}]
   (log/debug "[native-module] login-with-keycard")
@@ -414,3 +420,14 @@
   (init-keystore
    key-uid
    #(.reEncryptDbAndKeystore ^js (status) key-uid current-password# new-password# callback)))
+
+(defn convert-to-keycard-account
+  [{:keys [key-uid] :as multiaccount-data} settings current-password# new-password callback]
+  (log/debug "[native-module] convert-to-keycard-account")
+  (.convertToKeycardAccount ^js (status)
+                            key-uid
+                            (types/clj->json multiaccount-data)
+                            (types/clj->json settings)
+                            current-password#
+                            new-password
+                            callback))

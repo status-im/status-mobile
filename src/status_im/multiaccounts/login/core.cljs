@@ -337,12 +337,15 @@
 (fx/defn login-only-events
   [{:keys [db] :as cofx} key-uid password save-password?]
   (let [auth-method     (:auth-method db)
-        new-auth-method (get-new-auth-method auth-method save-password?)]
+        new-auth-method (get-new-auth-method auth-method save-password?)
+        from-migration? (get-in db [:keycard :from-key-storage-and-migration?])]
     (log/debug "[login] login-only-events"
                "auth-method" auth-method
                "new-auth-method" new-auth-method)
     (fx/merge cofx
-              {:db (assoc db :chats/loading? true)
+              {:db (-> db
+                       (assoc :chats/loading? true)
+                       (update :keycard dissoc :from-key-storage-and-migration?))
                ::json-rpc/call
                [{:method     "browsers_getBrowsers"
                  :on-success #(re-frame/dispatch [::initialize-browsers %])}
@@ -354,6 +357,8 @@
                  :on-success #(do (re-frame/dispatch [::get-settings-callback %])
                                   (redirect-to-root db))}]}
               (notifications/load-notification-preferences)
+              (when from-migration?
+                (utils/show-popup (i18n/label :t/migration-successful) (i18n/label :t/migration-successful-text)))
               (when save-password?
                 (keychain/save-user-password key-uid password))
               (keychain/save-auth-method key-uid (or new-auth-method auth-method keychain/auth-method-none)))))

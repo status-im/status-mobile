@@ -528,6 +528,22 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
+    @ReactMethod
+    public void verifyDatabasePassword(final String keyUID, final String password, final Callback callback) {
+        Log.d(TAG, "verifyDatabasePassword");
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String result = Statusgo.verifyDatabasePassword(keyUID, password);
+
+                callback.invoke(result);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
     public String getKeyStorePath(String keyUID) {
         final String commonKeydir = pathCombine(this.getNoBackupDirectory(), "/keystore");
         final String keydir = pathCombine(commonKeydir, keyUID);
@@ -1478,6 +1494,20 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
+    @ReactMethod
+    public void convertToKeycardAccount(final String keyUID, final String accountData, final String options, final String password, final String newPassword, final Callback callback) {
+        Log.d(TAG, "convertToKeycardAccount");
 
+        final String keyStoreDir = this.getKeyStorePath(keyUID);
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String result = Statusgo.convertToKeycardAccount(keyStoreDir, accountData, options, password, newPassword);
+                callback.invoke(result);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
 }
 
