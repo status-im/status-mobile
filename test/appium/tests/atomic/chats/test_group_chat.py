@@ -298,10 +298,9 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_2_options.view_profile_button.click()
         chat_1.set_nickname(nickname)
         if not chat_1.element_by_text(nickname).is_element_displayed():
-            self.errors.append('Nickname is not shown in profile view after setting from froup info')
+            self.errors.append('Nickname is not shown in profile view after setting from group info')
         chat_1.close_button.click()
-        if not chat_1.element_by_text(nickname).is_element_displayed():
-            self.errors.append('Nickname is not shown in group info view after setting from froup info')
+        chat_1.element_by_text(nickname).scroll_to_element()
         chat_1.close_button.click()
         message_text = '%s %s' % (nickname, additional_text)
         if not chat_1.chat_element_by_text(message_text).is_element_displayed():

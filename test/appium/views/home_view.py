@@ -14,7 +14,7 @@ class ChatButton(Button):
 
 
 class ChatElement(SilentButton):
-    def __init__(self, driver, username_part, community):
+    def __init__(self, driver, username_part, community=False):
         self.username = username_part
         self.community = community
         super().__init__(driver, xpath="//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % username_part)

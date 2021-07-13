@@ -7,6 +7,7 @@ class TestCommunitiesMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(695842)
     @marks.medium
+    @marks.flaky
     def test_creating_community_accept_membership(self):
         self.create_drivers(2)
         home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()

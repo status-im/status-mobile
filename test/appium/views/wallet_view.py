@@ -152,6 +152,8 @@ class WalletView(BaseView):
             if counter >= wait_time:
                 self.driver.fail('Balance %s %s is not changed during %s seconds!' % (asset, initial_balance,wait_time))
             elif self.asset_by_name(asset).is_element_present() and self.get_asset_amount_by_name(asset) == initial_balance:
+                if scan_tokens:
+                    self.scan_tokens()
                 if not self.transaction_history_button.is_element_displayed():
                     self.wallet_account_by_name(self.status_account_name).click()
                 if (counter/60).is_integer():
@@ -164,6 +166,7 @@ class WalletView(BaseView):
             elif not self.asset_by_name(asset).is_element_present(10):
                 if scan_tokens:
                     self.scan_tokens()
+                self.swipe_up()
                 counter += 10
                 time.sleep(10)
                 self.driver.info('*Waiting %s seconds for %s to display asset*' % (counter, asset))
