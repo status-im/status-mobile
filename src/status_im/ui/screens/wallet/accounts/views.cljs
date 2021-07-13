@@ -222,7 +222,8 @@
      [quo/animated-header
       {:extended-header   total-value
        :use-insets        true
-       :refresh-control   (refresh-control (and @updates-counter refreshing-history?))
+       :refresh-control   (refresh-control
+                           (and @updates-counter refreshing-history?))
        :right-accessories [{:on-press            #(re-frame/dispatch
                                                    [::qr-scanner/scan-code
                                                     {:handler :wallet.send/qr-scanner-result}])

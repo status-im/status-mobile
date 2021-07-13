@@ -180,7 +180,8 @@
 
 (views/defview account []
   (views/letsubs [{:keys [name address] :as account} [:multiaccount/current-account]
-                  fetching-error [:wallet/fetching-error]]
+                  fetching-error [:wallet/fetching-error]
+                  refreshing-history? [:wallet/refreshing-history?]]
     (let [anim-y (animation/create-value button-group-height)
           scroll-y (animation/create-value 0)]
       (anim-listener anim-y scroll-y)
@@ -201,7 +202,7 @@
          :refreshControl        (accounts/refresh-control
                                  (and
                                   @accounts/updates-counter
-                                  @(re-frame/subscribe [:wallet/refreshing-history?])))}
+                                  refreshing-history?))}
         (when fetching-error
           [react/view {:style {:flex 1
                                :align-items :center
