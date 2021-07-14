@@ -18,11 +18,13 @@
             [status-im.ui.components.react :as react]
             ["react-native" :refer (DevSettings LogBox)]
             ["react-native-languages" :default react-native-languages]
-            ["react-native-shake" :as react-native-shake]))
+            ["react-native-shake" :as react-native-shake]
+            [re-frisk.core :as re-frisk]))
 
 (set! interop/next-tick js/setTimeout)
 (set! batching/fake-raf #(js/setTimeout % 0))
 (.ignoreAllLogs LogBox)
+(re-frisk/enable)
 
 (defn init []
   (utils.logs/init-logs config/log-level)

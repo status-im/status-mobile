@@ -62,6 +62,8 @@
                                         :warnings-as-errors false
                                         :infer-externs :auto
                                         :static-fns true
+                                        :closure-defines
+                                        {re-frame.trace/trace-enabled? true}
                                         :fn-invoke-direct true
                                         :optimizations :advanced
                                         :js-options {:js-provider :closure}}}}
