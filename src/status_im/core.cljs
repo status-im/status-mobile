@@ -19,7 +19,7 @@
             ["react-native" :refer (DevSettings LogBox)]
             ["react-native-languages" :default react-native-languages]
             ["react-native-shake" :as react-native-shake]
-            [re-frisk.core :as re-frisk]))
+            [re-frisk-remote.core :as re-frisk]))
 
 (set! interop/next-tick js/setTimeout)
 (set! batching/fake-raf #(js/setTimeout % 0))
