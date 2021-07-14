@@ -56,14 +56,10 @@
            :chunks {:fleets status-im.fleet.default-fleet/default-fleets
                     :chats status-im.chat.default-chats/default-chats}
            :release {:closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
-                     :compiler-options {:output-feature-set :es6
-                                        ;;disable for android build as there
-                                        ;;is an intermittent warning with deftype
-                                        :warnings-as-errors false
-                                        :infer-externs false
-                                        :closure-defines
-                                        {re-frame.trace/trace-enabled? true}
-                                        :js-options {:js-provider :closure}}}}
+                     :compiler-options {:output-feature-set :es5
+                                        :closure-defines {re-frame.trace/trace-enabled? true}
+                                        :source-map false
+                                        :infer-externs true}}}
           ;; the tests are ran with node, react-native dependencies are mocked
           ;; by using node --require override.js, which uses the node-library
           ;; produced by the target :mocks below and redefines node require
