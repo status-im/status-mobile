@@ -32,7 +32,7 @@ class TestCommunitiesMultipleDevices(MultipleDeviceTestCase):
         home_2.just_fyi("Tapping on community link and request membership")
         pub_2 = home_2.join_public_chat(pub_chat_name)
         # TODO: due to #12271
-        pub_2.element_by_text(community_name).wait_for_element(180)
+        pub_2.element_by_text(community_name).wait_for_element(300)
         community_message_2 = pub_2.get_community_link_preview_by_text(community_link_text)
         if community_message_2.community_description != community_description:
             self.errors.append("Community description '%s' does not match expected" % community_message_2.community_description)
@@ -48,6 +48,7 @@ class TestCommunitiesMultipleDevices(MultipleDeviceTestCase):
         community_1 = home_1.get_chat(community_name, community=True).click()
         community_1.community_options_button.click()
         community_1.community_info_button.click()
+        community_1.community_membership_request_value.wait_for_element(60)
         if community_1.community_membership_request_value.text != '1':
             self.drivers[0].fail("Membership request value '%s' is not equal expected" % community_1.community_membership_request_value)
 

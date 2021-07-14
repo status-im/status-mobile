@@ -202,6 +202,12 @@ class ProfileView(BaseView):
         self.privacy_and_security_button = Button(self.driver, accessibility_id="privacy-and-security-settings-button")
         self.accept_new_chats_from = Button(self.driver, accessibility_id="accept-new-chats-from")
         self.accept_new_chats_from_contacts_only = Button(self.driver, translation_id="contacts")
+        self.reset_password_button = Button(self.driver, accessibility_id="reset-password")
+        self.current_password_edit_box = EditBox(self.driver, accessibility_id="current-password")
+        self.new_password_edit_box = EditBox(self.driver, accessibility_id="new-password")
+        self.confirm_new_password_edit_box = EditBox(self.driver, accessibility_id="confirm-new-password")
+        self.current_password_wrong_text = Text(self.driver, accessibility_id="current-password-error")
+
         # Appearance
         self.appearance_button = Button(self.driver, accessibility_id="appearance-settings-button")
         self.show_profile_pictures_of = Button(self.driver, accessibility_id="show-profile-pictures")

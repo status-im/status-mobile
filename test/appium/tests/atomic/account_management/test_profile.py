@@ -147,6 +147,44 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(695850)
+    @marks.medium
+    def test_can_reset_password(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        new_password = basic_user['special_chars_password']
+        profile = home.profile_button.click()
+        profile.privacy_and_security_button.click()
+
+        profile.just_fyi("Check that can not reset password when entering wrong current password")
+        profile.reset_password_button.click()
+        profile.current_password_edit_box.send_keys(common_password + '1')
+        profile.new_password_edit_box.set_value(new_password)
+        profile.confirm_new_password_edit_box.set_value(new_password)
+        profile.next_button.click()
+        if not profile.current_password_wrong_text.is_element_displayed():
+            self.errors.append("Validation error for wrong current password is not shown")
+
+        profile.just_fyi("Check that can not procced if did not confirm new password")
+        profile.current_password_edit_box.clear()
+        profile.current_password_edit_box.set_value(common_password)
+        profile.new_password_edit_box.set_value(new_password)
+        profile.confirm_new_password_edit_box.set_value(new_password+'1')
+        profile.next_button.click()
+
+        profile.just_fyi("Delete last symbol and check that can reset password")
+        profile.confirm_new_password_edit_box.delete_last_symbols(1)
+        profile.next_button.click()
+        profile.element_by_translation_id("password-reset-success").wait_for_element(30)
+        profile.element_by_translation_id("okay").click()
+
+        profile.just_fyi("Login with new password")
+        sign_in.sign_in(password=new_password)
+        if not sign_in.home_button.is_element_displayed():
+            self.errors.append("Could not sign in with new password after reset")
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(6296)
     @marks.high
     def test_recover_account_from_new_user_seedphrase(self):

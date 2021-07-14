@@ -934,7 +934,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 wallet_view.home_button.click()
             if 'dapp' in key:
                 home_view.open_in_status_button.click()
-                if not chat_view.allow_button.is_element_displayed():
+                if not (chat_view.allow_button.is_element_displayed() or chat_view.element_by_text("Can't find web3 library").is_element_displayed()):
                     self.errors.append('No allow button is shown in case of navigating to Status dapp!')
                 chat_view.dapp_tab_button.click()
                 chat_view.home_button.click()

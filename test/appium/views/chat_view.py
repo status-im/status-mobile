@@ -621,11 +621,11 @@ class ChatView(BaseView):
         return IncomingTransaction(self.driver, account, transaction_value)
 
     def get_preview_message_by_text(self, text=None) -> object:
-        self.driver.info('**Getting preview message for link:%s**' % text)
+        self.driver.info('**Getting preview message for link:** %s' % text)
         return PreviewMessage(self.driver, text)
 
     def get_community_link_preview_by_text(self, text=None) -> object:
-        self.driver.info('**Getting community preview message for link:%s**' % text)
+        self.driver.info('**Getting community preview message for link:** %s' % text)
         return CommunityLinkPreviewMessage(self.driver, text)
 
     def delete_chat(self):
