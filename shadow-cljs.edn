@@ -59,7 +59,6 @@
                      :compiler-options {:output-feature-set :es5
                                         :closure-defines {re-frame.trace/trace-enabled? true}
                                         :source-map false
-                                        :optimizations :simple
                                         :infer-externs true}}}
           ;; the tests are ran with node, react-native dependencies are mocked
           ;; by using node --require override.js, which uses the node-library
