@@ -60,12 +60,9 @@
                                         ;;disable for android build as there
                                         ;;is an intermittent warning with deftype
                                         :warnings-as-errors false
-                                        :infer-externs :auto
-                                        :static-fns true
+                                        :infer-externs false
                                         :closure-defines
                                         {re-frame.trace/trace-enabled? true}
-                                        :fn-invoke-direct true
-                                        :optimizations :advanced
                                         :js-options {:js-provider :closure}}}}
           ;; the tests are ran with node, react-native dependencies are mocked
           ;; by using node --require override.js, which uses the node-library
