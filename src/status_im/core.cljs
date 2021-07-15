@@ -24,9 +24,10 @@
 (set! interop/next-tick js/setTimeout)
 (set! batching/fake-raf #(js/setTimeout % 0))
 (.ignoreAllLogs LogBox)
-(re-frisk/enable {:host "http://192.168.0.50:4567"})
+
 
 (defn init []
+
   (utils.logs/init-logs config/log-level)
   (error-handler/register-exception-handler!)
   (when platform/android?
@@ -43,6 +44,7 @@
 
   ;;DEV
   (snoopy/subscribe!)
+  (re-frisk/enable {:host "http://192.168.0.50:4567"})
   (when (and js/goog.DEBUG platform/ios? DevSettings)
     ;;on Android this method doesn't work
     (when-let [nm (.-_nativeModule DevSettings)]
