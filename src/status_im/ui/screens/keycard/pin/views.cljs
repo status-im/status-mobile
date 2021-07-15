@@ -18,7 +18,8 @@
 (defn numpad-button [n step enabled? small-screen?]
   [react/touchable-highlight
    {:on-press #(when enabled?
-                 (re-frame/dispatch [:keycard.ui/pin-numpad-button-pressed n step]))}
+                 (re-frame/dispatch [:keycard.ui/pin-numpad-button-pressed n step]))
+    :accessibility-label (str "numpad-button-" n)}
    [react/view (styles/numpad-button small-screen?)
     [react/text {:style styles/numpad-button-text}
      n]]])

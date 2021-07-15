@@ -999,7 +999,7 @@
     "pairing-changed": "Pairing code has been changed",
     "pin-code": "6-digit passcode",
     "pin-mismatch": "Wrong passcode",
-    "pin-retries-left": "{{number}} attemps left",
+    "pin-retries-left": "{{number}} attempts left",
     "pin-one-attempt-blocked-before": "Be careful, you have only",
     "pin-one-attempt-frozen-before": "Be careful, you have only",
     "pin-one-attempt": " one attempt ",

@@ -401,6 +401,55 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(695841)
+    @marks.medium
+    def test_keycard_settings_pin_puk_pairing(self):
+        sign_in = SignInView(self.driver)
+        seed = basic_user['passphrase']
+        home = sign_in.recover_access(passphrase=seed, keycard=True)
+        profile = home.profile_button.click()
+
+        home.just_fyi("Checking changing PIN")
+        profile.keycard_button.scroll_and_click()
+        keycard = profile.change_pin_button.click()
+        keycard.enter_another_pin()
+        keycard.wait_for_element_starts_with_text('2 attempts left', 30)
+        keycard.enter_default_pin()
+        if not keycard.element_by_translation_id("new-pin-description").is_element_displayed():
+            self.driver.fail("Screen for setting new pin is not shown!")
+        [keycard.enter_another_pin() for _ in range(2)]
+        if not keycard.element_by_translation_id("pin-changed").is_element_displayed():
+            self.driver.fail("Popup about successful setting new PIN is not shown!")
+        keycard.ok_button.click()
+
+        home.just_fyi("Checking changing PUK with new PIN")
+        profile.change_puk_button.click()
+        keycard.enter_another_pin()
+        if not keycard.element_by_translation_id("new-puk-description").is_element_displayed():
+            self.driver.fail("Screen for setting new puk is not shown!")
+        [keycard.one_button.click()  for _ in range(12)]
+        if not keycard.element_by_translation_id("repeat-puk").is_element_displayed():
+            self.driver.fail("Confirmation screen for setting new puk is not shown!")
+        [keycard.one_button.click() for _ in range(12)]
+        if not keycard.element_by_translation_id("puk-changed").is_element_displayed():
+            self.driver.fail("Popup about successful setting new PUK is not shown!")
+        keycard.ok_button.click()
+
+        home.just_fyi("Checking setting pairing with new PIN")
+        profile.change_pairing_code_button.click()
+        keycard.enter_another_pin()
+        sign_in.create_password_input.set_value(common_password)
+        sign_in.confirm_your_password_input.set_value(common_password+"1")
+        if not keycard.element_by_translation_id("pairing-code_error1").is_element_displayed():
+            self.errors.append("No error is shown when pairing codes don't match")
+        sign_in.confirm_your_password_input.delete_last_symbols(1)
+        sign_in.element_by_translation_id("change-pairing").click()
+        if not keycard.element_by_translation_id("pairing-changed").is_element_displayed():
+            self.driver.fail("Popup about successful setting new pairing is not shown!")
+        keycard.ok_button.click()
+
+        self.errors.verify_no_errors()
+
 class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5689)

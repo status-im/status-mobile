@@ -16,8 +16,8 @@ class KeycardView(BaseView):
         self.connect_pairing_card_button = Button(self.driver, accessibility_id="connect-pairing-card")
 
         # Keyboard
-        self.one_button = SilentButton(self.driver, xpath="//*[@text='1']")
-        self.two_button = SilentButton(self.driver, xpath="//*[@text='2']")
+        self.one_button = SilentButton(self.driver, accessibility_id="numpad-button-1")
+        self.two_button = SilentButton(self.driver, accessibility_id="numpad-button-2")
 
         # Backup seed phrase
         self.confirm_seed_phrase_edit_box = EditBox(self.driver, accessibility_id="enter-word")

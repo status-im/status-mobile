@@ -164,6 +164,17 @@ class ProfilePictureElement(Button):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="chat-icon")
 
+class KeycardButton(Button):
+
+    def navigate(self):
+        from views.keycard_view import KeycardView
+        return KeycardView(self.driver)
+
+    def click(self):
+        self.scroll_to_element().click()
+        return self.navigate()
+
+
 
 class ProfileView(BaseView):
 
@@ -258,6 +269,14 @@ class ProfileView(BaseView):
                                                     uppercase=True)
         self.advertise_device_button = Button(self.driver, accessibility_id="advertise-device")
         self.sync_all_button = Button(self.driver, translation_id="sync-all-devices")
+
+        #Keycard
+        self.keycard_button =  Button(self.driver, accessibility_id="keycard-button")
+        self.change_pin_button = KeycardButton(self.driver, translation_id="change-pin")
+        self.change_puk_button = KeycardButton(self.driver, translation_id="change-puk")
+        self.change_pairing_code_button = KeycardButton(self.driver, translation_id="change-pairing")
+        self.create_keycard_backup_button = Button(self.driver, translation_id="keycard-backup")
+
 
         # Advanced
         self.advanced_button = AdvancedButton(self.driver)
