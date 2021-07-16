@@ -5,6 +5,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
+            [status-im.async-storage.core :as async-storage]
             [taoensso.timbre :as log]
             [status-im.constants :as constants]
             [status-im.contact.block :as contact.block]))
@@ -27,13 +28,6 @@
   (cond-> (contact.db/public-key->contact contacts public-key)
     (= public-key (:public-key multiaccount))
     (assoc :name (:name multiaccount))))
-
-(defn- own-info
-  [db]
-  (let [{:keys [name preferred-name identicon address]} (:multiaccount db)]
-    {:name          (or preferred-name name)
-     :profile-image identicon
-     :address       address}))
 
 (fx/defn ensure-contacts
   [{:keys [db]} contacts chats]
@@ -66,6 +60,13 @@
      (when (> (count events) 1)
        {:dispatch-n events}))))
 
+(defn- own-info
+  [db]
+  (let [{:keys [name preferred-name identicon address]} (:multiaccount db)]
+    {:name          (or preferred-name name)
+     :profile-image identicon
+     :address       address}))
+
 (fx/defn send-contact-request
   {:events [::send-contact-request]}
   [{:keys [db] :as cofx} public-key]
@@ -92,11 +93,32 @@
   "Remove a contact from current account's contact list"
   {:events [:contact.ui/remove-contact-pressed]}
   [{:keys [db]} {:keys [public-key]}]
-  {:db (assoc-in db [:contacts/contacts public-key :added] false)
+  {:db (-> db
+           (assoc-in [:contacts/contacts public-key :added] false)
+           (assoc-in [:contacts/contacts public-key :contact-request-state] constants/contact-request-state-none))
    ::json-rpc/call [{:method "wakuext_removeContact"
                      :params [public-key]
+                     :on-success #(log/debug "contact removed successfully")}
+                    {:method "wakuext_retractContactRequest"
+                     :params [{:contactId public-key}]
                      :on-success #(log/debug "contact removed successfully")}]
    :dispatch [:offload-messages constants/timeline-chat-id]})
+
+(fx/defn accept-contact-request
+  {:events [:contact-requests.ui/accept-request]}
+  [{:keys [db]} id]
+  {::json-rpc/call [{:method "wakuext_acceptContactRequest"
+                     :params [{:id id}]
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
+
+(fx/defn decline-contact-request
+  {:events [:contact-requests.ui/decline-request]}
+  [{:keys [db]} id]
+  {::json-rpc/call [{:method "wakuext_dismissContactRequest"
+                     :params [{:id id}]
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
 (fx/defn initialize-contacts [cofx]
   (contacts-store/fetch-contacts-rpc cofx #(re-frame/dispatch [::contacts-loaded %])))
@@ -119,3 +141,9 @@
              nickname
              #(re-frame/dispatch [:sanitize-messages-and-process-response %]))
             (navigation/navigate-back)))
+
+(fx/defn switch-mutual-contact-requests-enabled
+  {:events [:multiaccounts.ui/switch-mutual-contact-requests-enabled]}
+  [{:keys [db]} enabled?]
+  {::async-storage/set! {:mutual-contact-requests-enabled? enabled?}
+   :db (assoc db :mutual-contact-requests/enabled? enabled?)})

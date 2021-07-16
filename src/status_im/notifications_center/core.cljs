@@ -1,23 +1,38 @@
 (ns status-im.notifications-center.core
   (:require [status-im.utils.fx :as fx]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.constants :as constants]
             [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
             [status-im.data-store.activities :as data-store.activities]))
 
+(def non-dismissable-notifications
+  #{constants/activity-center-notification-type-contact-request
+    constants/activity-center-notification-type-contact-request-retracted})
+
 (fx/defn handle-activities [{:keys [db]} activities]
   (let [{:keys [unread-count notifications]}
         (reduce (fn [acc {:keys [read dismissed accepted] :as notification}]
-                  (as-> acc a
-                    (if read
-                      (update a :unread-count dec)
-                      (update a :unread-count inc))
+                  (let [index-existing (->> (map-indexed vector (:notifications acc))
+                                            (filter (fn [[idx {:keys [id]}]] (= id (:id notification))))
+                                            first
+                                            first)]
+                    (as-> acc a
+                      (if read
+                        (update a :unread-count dec)
+                        (update a :unread-count inc))
 
-                    (if (or dismissed accepted)
-                      (update a :notifications (fn [items] (remove #(= (:id notification) (:id %)) items)))
-                      (update a :notifications conj notification))))
+                      (if index-existing
+                        (if (or dismissed accepted)
+                          ;; Remove at specific location
+                          (assoc a :notifications
+                                 (into (subvec (:notifications a) 0 index-existing) (subvec (:notifications a) (inc index-existing))))
+                          ;; Replace element
+                          (do
+                            (assoc-in a [:notifications index-existing] notification)))
+                        (update a :notifications conj notification)))))
                 {:unread-count (get db :activity.center/notifications-count 0)
-                 :notifications (get-in db [:activity.center/notifications :notifications])}
+                 :notifications (into [] (get-in db [:activity.center/notifications :notifications]))}
                 activities)]
     (merge
      {:db (-> db
@@ -69,14 +84,21 @@
   {:events [:accept-all-activity-center-notifications-from-chat]}
   [{:keys [db]} chat-id]
   (let [notifications (get-in db [:activity.center/notifications :notifications])
-        notifications-from-chat (filter #(= chat-id (:chat-id %)) notifications)
+        notifications-from-chat (filter #(and
+                                          (= chat-id (:chat-id %))
+                                          (not (contains? non-dismissable-notifications (:type %))))
+                                        notifications)
         notifications-from-chat-not-read (filter #(and (= chat-id (:chat-id %))
-                                                       (not (:read %))) notifications)
-        ids (map :id notifications-from-chat)]
+                                                       (not (:read %)))
+                                                 notifications)
+        ids (into #{} (map :id notifications-from-chat))]
     (when (seq ids)
       {:db (-> db
                (update-in [:activity.center/notifications :notifications]
-                          (fn [items] (filter #(not (= chat-id (:chat-id %))) items)))
+                          (fn [items]
+                            (filter
+                             #(not (contains? ids (:id %)))
+                             items)))
                (update :activity.center/notifications-count - (min (db :activity.center/notifications-count) (count notifications-from-chat-not-read))))
        ::json-rpc/call [{:method     "wakuext_acceptActivityCenterNotifications"
                          :params     [ids]
@@ -170,4 +192,3 @@
            (update-in [:activity.center/notifications :notifications]
                       concat
                       (map data-store.activities/<-rpc notifications)))})
-

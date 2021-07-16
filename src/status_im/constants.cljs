@@ -13,6 +13,13 @@
 (def ^:const content-type-audio 8)
 (def ^:const content-type-community 9)
 (def ^:const content-type-gap 10)
+(def ^:const content-type-contact-request 11) ;; TODO: temp, will be removed
+
+(def ^:const contact-request-state-none 0)
+(def ^:const contact-request-state-mutual 1)
+(def ^:const contact-request-state-sent 2)
+(def ^:const contact-request-state-received 3)
+(def ^:const contact-request-state-dismissed 4)
 
 (def ^:const emoji-reaction-love 1)
 (def ^:const emoji-reaction-thumbs-up  2)
@@ -27,6 +34,10 @@
 (def ^:const profile-chat-type 4)
 (def ^:const timeline-chat-type 5)
 (def ^:const community-chat-type 6)
+
+(def ^:const contact-request-message-state-pending 1)
+(def ^:const contact-request-message-state-accepted 2)
+(def ^:const contact-request-message-state-declined 3)
 
 (def request-to-join-pending-state 1)
 
@@ -161,6 +172,8 @@
 (def ^:const activity-center-notification-type-private-group-chat 2)
 (def ^:const activity-center-notification-type-mention 3)
 (def ^:const activity-center-notification-type-reply 4)
+(def ^:const activity-center-notification-type-contact-request 5)
+(def ^:const activity-center-notification-type-contact-request-retracted 6)
 
 (def ^:const visibility-status-unknown 0)
 (def ^:const visibility-status-automatic 1)

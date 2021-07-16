@@ -94,6 +94,13 @@
     :wallet-connect-enabled?
     #(re-frame/dispatch [:multiaccounts.ui/switch-wallet-connect-enabled %]))))
 
+(re-frame/reg-fx
+ ::initialize-mutual-contact-requests
+ (fn []
+   (async-storage/get-item
+    :mutual-contact-requests-enabled?
+    #(re-frame/dispatch [:multiaccounts.ui/switch-mutual-contact-requests-enabled %]))))
+
 (defn rpc->accounts [accounts]
   (reduce (fn [acc {:keys [chat type wallet] :as account}]
             (if chat
@@ -359,6 +366,10 @@
   [cofx]
   {::initialize-wallet-connect nil})
 
+(fx/defn initialize-mutual-contact-requests
+  [cofx]
+  {::initialize-mutual-contact-requests nil})
+
 (fx/defn get-node-config-callback
   {:events [::get-node-config-callback]}
   [{:keys [db] :as cofx} node-config-json]
@@ -393,6 +404,7 @@
               (initialize-appearance)
               (initialize-communities-enabled)
               (initialize-wallet-connect)
+              (initialize-mutual-contact-requests)
               (get-node-config)
               (communities/fetch)
               (logging/set-log-level (:log-level multiaccount))

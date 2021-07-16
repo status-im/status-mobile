@@ -264,6 +264,9 @@
 (reg-root-key-sub :wallet-connect/sessions :wallet-connect/sessions)
 (reg-root-key-sub :wallet-connect-legacy/sessions :wallet-connect-legacy/sessions)
 (reg-root-key-sub :wallet-connect/session-managed :wallet-connect/session-managed)
+(reg-root-key-sub :contact-requests/pending :contact-requests/pending)
+
+(reg-root-key-sub :mutual-contact-requests/enabled? :mutual-contact-requests/enabled?)
 
 (re-frame/reg-sub
  :communities
@@ -942,6 +945,13 @@
    (get ui-props prop)))
 
 (re-frame/reg-sub
+ :chats/current-chat-contact
+ :<- [:contacts/contacts]
+ :<- [:chats/current-chat-id]
+ (fn [[contacts current-chat-id]]
+   (get contacts current-chat-id)))
+
+(re-frame/reg-sub
  :chats/home-list-chats
  :<- [::chats]
  :<- [:chats-home-list]
@@ -1033,7 +1043,10 @@
  :<- [:multiaccount/public-key]
  :<- [:communities/current-community]
  :<- [:contacts/blocked-set]
- (fn [[{:keys [group-chat chat-id] :as current-chat} my-public-key community blocked-users-set]]
+ :<- [:contacts/contacts]
+ :<- [:chat/inputs]
+ :<- [:mutual-contact-requests/enabled?]
+ (fn [[{:keys [group-chat chat-id] :as current-chat} my-public-key community blocked-users-set contacts inputs mutual-contact-requests-enabled?]]
    (when current-chat
      (cond-> current-chat
        (chat.models/public-chat? current-chat)
@@ -1049,7 +1062,15 @@
        (assoc :show-input? true)
 
        (not group-chat)
-       (assoc :show-input? (not (contains? blocked-users-set chat-id)))))))
+       (assoc :show-input?
+              (and
+               (or
+                (not mutual-contact-requests-enabled?)
+                (get-in inputs [chat-id :metadata :sending-contact-request])
+                (and mutual-contact-requests-enabled?
+                     (= constants/contact-request-state-mutual
+                        (get-in contacts [chat-id :contact-request-state]))))
+               (not (contains? blocked-users-set chat-id))))))))
 
 (re-frame/reg-sub
  :chats/current-chat-chat-view
@@ -1301,6 +1322,12 @@
    (:editing-message metadata)))
 
 (re-frame/reg-sub
+ :chats/sending-contact-request
+ :<- [:chats/current-chat-inputs]
+ (fn [{:keys [metadata]}]
+   (:sending-contact-request metadata)))
+
+(re-frame/reg-sub
  :chats/sending-image
  :<- [:chats/current-chat-inputs]
  (fn [{:keys [metadata]}]
@@ -1321,22 +1348,27 @@
  :<- [:current-chat/metadata]
  :<- [:chats/reply-message]
  :<- [:chats/edit-message]
- (fn [[{:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit]]
+ :<- [:chats/sending-contact-request]
+ (fn [[{:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit sending-contact-request]]
    (let [sending-image (seq sending-image)]
      {:send          (not processing)
       :stickers      (and (or config/stickers-test-enabled? mainnet?)
                           (not sending-image)
+                          (not sending-contact-request)
                           (not reply))
       :image         (and (not reply)
                           (not edit)
+                          (not sending-contact-request)
                           (not public?))
       :extensions    (and one-to-one-chat?
                           (or config/commands-enabled? mainnet?)
                           (not edit)
+                          (not sending-contact-request)
                           (not reply))
       :audio         (and (not sending-image)
                           (not reply)
                           (not edit)
+                          (not sending-contact-request)
                           (not public?))
       :sending-image sending-image})))
 
@@ -1896,6 +1928,8 @@
          (filter (fn [{:keys [type last-message]}]
                    (or (and (= constants/activity-center-notification-type-one-to-one-chat type)
                             (not (nil? last-message)))
+                       (= constants/activity-center-notification-type-contact-request type)
+                       (= constants/activity-center-notification-type-contact-request-retracted type)
                        (= constants/activity-center-notification-type-private-group-chat type)
                        (= constants/activity-center-notification-type-reply type)
                        (= constants/activity-center-notification-type-mention type)))

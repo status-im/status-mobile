@@ -11,14 +11,15 @@
    :align-items      :flex-end
    :flex-direction   :row})
 
-(defn input-container []
+(defn input-container [contact-request]
   {:background-color           (:ui-01 @colors/theme)
    :flex                       1
-   :border-top-left-radius     16
-   :border-top-right-radius    16
-   :border-bottom-right-radius 4
-   :border-bottom-left-radius  16
-   :margin-horizontal          8})
+   :height                     (when contact-request 44)
+   :border-top-left-radius     (if contact-request 8 16)
+   :border-top-right-radius    (if contact-request 8 16)
+   :border-bottom-right-radius (if contact-request 8 4)
+   :border-bottom-left-radius  (if contact-request 8 16)
+   :margin-horizontal          (when contact-request 8)})
 
 (def input-row
   {:flex-direction :row
@@ -34,7 +35,7 @@
          (when platform/ios?
            {:padding-top 2})))
 
-(defn text-input []
+(defn text-input [contact-request]
   (merge typography/font-regular
          typography/base
          {:flex               1
@@ -46,8 +47,8 @@
           :padding-horizontal 12}
          (if platform/android?
            {:padding-vertical 2}
-           {:padding-top    2
-            :padding-bottom 6})))
+           {:padding-top    (if contact-request 10 2)
+            :padding-bottom (if contact-request 5 6)})))
 
 (defn actions-wrapper [show-send]
   (merge
@@ -91,6 +92,11 @@
    :padding-horizontal 10
    :flex               1})
 
+(defn contact-request-content []
+  {:flex               1
+   :flex-direction     :row
+   :justify-content    :space-between})
+
 (defn close-button []
   {:margin-top 3})
 
@@ -98,11 +104,11 @@
   {:margin-vertical   4
    :margin-horizontal 5})
 
-(defn send-message-container []
+(defn send-message-container [contact-request]
   {:background-color (:interactive-01 @colors/theme)
    :width            26
-   :height           26
-   :border-radius    13
+   :height           (if contact-request 44 26)
+   :border-radius    (if contact-request 22 13)
    :justify-content  :center
    :align-items      :center})
 

@@ -435,3 +435,32 @@
    :border-bottom-left-radius  10
    :border-bottom-right-radius 10
    :border-color               colors/gray-lighter})
+
+(defn contact-request-status-label [state]
+  {:width              136
+   :border-radius      8
+   :flex               1
+   :justify-content    :center
+   :align-items        :center
+   :background-color   (when (= :retry state)
+                         colors/blue-light)
+   :border-width       1
+   :border-color       (case state
+                         constants/contact-request-message-state-accepted colors/green-transparent-10
+                         constants/contact-request-message-state-declined colors/red-light
+                         constants/contact-request-message-state-pending colors/gray-lighter)
+   :padding-vertical   10
+   :padding-horizontal 16})
+
+(defn content-type-contact-request [outgoing]
+  {:width           168
+   :min-height      224.71
+   :border-radius   8
+   :border-width    1
+   :border-color    colors/gray-lighter
+   :align-items     :center
+   :padding-bottom  10
+   :margin-vertical 4
+   :align-self      (if outgoing :flex-end :flex-start)
+   :margin-right    (if outgoing 8 0)
+   :margin-left     (if outgoing 0 8)})

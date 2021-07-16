@@ -5,13 +5,18 @@
             [taoensso.timbre :as log]))
 
 (defn <-rpc [contact]
-  (clojure.set/rename-keys contact {:id :public-key
-                                    :ensVerifiedAt :ens-verified-at
-                                    :ensVerified :ens-verified
-                                    :ensVerificationRetries :ens-verification-retries
-                                    :lastENSClockValue :last-ens-clock-value
-                                    :lastUpdated :last-updated
-                                    :localNickname :nickname}))
+  (-> contact
+      (clojure.set/rename-keys {:id :public-key
+                                :ensVerifiedAt :ens-verified-at
+                                :ensVerified :ens-verified
+                                :ensVerificationRetries :ens-verification-retries
+                                :hasAddedUs :has-added-us
+                                :contactRequestState :contact-request-state
+                                :lastENSClockValue :last-ens-clock-value
+                                :lastUpdated :last-updated
+                                :localNickname :nickname})
+      (assoc :mutual? (and (:added contact)
+                           (:hasAddedUs contact)))))
 
 (fx/defn fetch-contacts-rpc
   [_ on-success]

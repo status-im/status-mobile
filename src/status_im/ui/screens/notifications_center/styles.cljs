@@ -62,9 +62,9 @@
 (def notification-content-container
   {:flex 1})
 
-(def photo-container
+(defn photo-container [has-header?]
   {:position :absolute
-   :top      12
+   :top      (if has-header? 37 12)
    :left     16})
 
 (defn title-text [title-text-width]

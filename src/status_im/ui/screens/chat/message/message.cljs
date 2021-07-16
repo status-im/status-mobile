@@ -621,6 +621,49 @@
                 [message.audio/message-content message] [message-status message]]]]]
             reaction-picker])))
 
+(defn contact-request-status-pending []
+  [react/view {:style {:flex-direction :row}}
+   [quo/text {:style  {:margin-right 5.27}
+              :weight :medium
+              :color :secondary}
+    (i18n/label :t/contact-request-pending)]
+   [react/activity-indicator {:animating true
+                              :size      :small
+                              :color     colors/gray}]])
+
+(defn contact-request-status-accepted []
+  [quo/text {:style  {:color colors/green}
+             :weight :medium}
+   (i18n/label :t/contact-request-accepted)])
+
+(defn contact-request-status-declined []
+  [quo/text {:style  {:color colors/red}
+             :weight :medium}
+   (i18n/label :t/contact-request-declined)])
+
+(defn contact-request-status-label [state]
+  [react/view {:style (style/contact-request-status-label state)}
+   (case state
+     constants/contact-request-message-state-pending  [contact-request-status-pending]
+     constants/contact-request-message-state-accepted [contact-request-status-accepted]
+     constants/contact-request-message-state-declined [contact-request-status-declined])])
+
+(defmethod ->message constants/content-type-contact-request
+  [{:keys [outgoing] :as message} _]
+  [react/view {:style (style/content-type-contact-request outgoing)}
+   [react/image {:source (resources/get-image :hand-wave)
+                 :style  {:width 112
+                          :height 97}}]
+   [quo/text {:style {:margin-top 6}
+              :weight :bold
+              :size   :large}
+    (i18n/label :t/contact-request)]
+   [react/view {:style {:padding-horizontal 16}}
+    [quo/text {:style {:margin-top 2
+                       :margin-bottom 14}}
+     (get-in message [:content :text])]]
+   [contact-request-status-label (:contact-request-state message)]])
+
 (defmethod ->message :default [message]
   [message-content-wrapper message
    [unknown-content-type message]])

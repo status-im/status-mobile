@@ -10,6 +10,7 @@
                  :lastUpdated 1}
         expected-contact {:public-key "pk"
                           :address "address"
+                          :mutual? nil
                           :name "name"
                           :identicon "identicon"
                           :last-updated 1}]

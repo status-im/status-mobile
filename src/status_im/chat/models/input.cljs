@@ -143,6 +143,20 @@
                      :on-error    #(log/error "failed to delete message message " %)
                      :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
+(fx/defn show-contact-request-input
+  "Sets reference to previous chat message and focuses on input"
+  {:events [:chat.ui/send-contact-request]}
+  [{:keys [db] :as cofx}]
+  (let [current-chat-id (:current-chat-id db)]
+    {:db (-> db
+             (assoc-in [:chat/inputs current-chat-id :metadata :sending-contact-request]
+                       current-chat-id)
+             (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message]
+                       nil)
+             (assoc-in [:chat/inputs current-chat-id :metadata :editing-message] nil)
+             (update-in [:chat/inputs current-chat-id :metadata]
+                        dissoc :sending-image))}))
+
 (fx/defn cancel-message-reply
   "Cancels stage message reply"
   {:events [:chat.ui/cancel-message-reply]}
@@ -179,6 +193,7 @@
 (fx/defn clean-input [{:keys [db] :as cofx} current-chat-id]
   (fx/merge cofx
             {:db (-> db
+                     (assoc-in [:chat/inputs current-chat-id :metadata :sending-contact-request] nil)
                      (assoc-in [:chat/inputs current-chat-id :metadata :sending-image] nil)
                      (assoc-in [:chat/inputs current-chat-id :metadata :editing-message] nil)
                      (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil))}
@@ -261,6 +276,34 @@
                 (send-messages input-text-with-mentions current-chat-id))
               (mentions/clear-mentions)
               (mentions/clear-cursor))))
+
+(fx/defn send-contact-request
+  {:events [:contacts/send-contact-request]}
+  [{:keys [db] :as cofx} public-key message]
+  (fx/merge cofx
+            {::json-rpc/call [{:method "wakuext_sendContactRequest"
+                               :js-response true
+                               :params [{:id public-key :message message}]
+                               :on-error #(log/warn "failed to send a contact request" %)
+
+                               :on-success #(re-frame/dispatch [:transport/message-sent %])}]}
+
+            (mentions/clear-mentions)
+            (mentions/clear-cursor)
+            (clean-input (:current-chat-id db))
+            (process-cooldown)))
+
+(fx/defn cancel-contact-request
+  "Cancels contact request"
+  {:events [:chat.ui/cancel-contact-request]}
+  [{:keys [db] :as cofx}]
+  (let [current-chat-id (:current-chat-id db)]
+    (fx/merge cofx
+              {:db (assoc-in db [:chat/inputs current-chat-id :metadata :sending-contact-request] nil)}
+              (mentions/clear-mentions)
+              (mentions/clear-cursor)
+              (clean-input (:current-chat-id db))
+              (process-cooldown))))
 
 (fx/defn chat-send-sticker
   {:events [:chat/send-sticker]}
