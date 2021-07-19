@@ -122,7 +122,7 @@
       (str
        (i18n/label :t/empty-chat-description-one-to-one)
        contact-name)])
-   (when-not contact-added?
+   (when-not (and contact-added? no-messages?)
      [contact-request chat-id])])
 
 (defn chat-intro-one-to-one [{:keys [chat-id chat-type] :as opts}]
@@ -407,7 +407,7 @@
                               :on-update-inset on-update}
               [invitation-bar chat-id]])
            [components/autocomplete-mentions text-input-ref max-bottom-space]
-           (when (and needs-contact-request? show-input?)
+           (when show-input?
              ;; NOTE: this only accepts two children
              [accessory/view {:y               position-y
                               :pan-state       pan-state
