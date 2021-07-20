@@ -4,6 +4,7 @@ from views.base_element import Button, Text, BaseElement, SilentButton
 from views.base_view import BaseView
 from tests import test_dapp_url
 
+
 class ChatButton(Button):
     def __init__(self, driver, **kwargs):
         super().__init__(driver, **kwargs)
@@ -11,7 +12,6 @@ class ChatButton(Button):
     def navigate(self):
         from views.chat_view import ChatView
         return ChatView(self.driver)
-
 
 class ChatElement(SilentButton):
     def __init__(self, driver, username_part, community=False):

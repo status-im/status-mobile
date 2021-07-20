@@ -226,6 +226,13 @@ class ChatElementByText(Text):
                     return 0
         return int(EmojisNumber(self.driver, self.locator).text)
 
+    @property
+    def pinned_by_label(self):
+        class PinnedByLabelText(Text):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator,
+                                 xpath="/../..//android.view.ViewGroup[@content-desc='pinned-by']")
+        return PinnedByLabelText(self.driver, self.locator)
 
 class UsernameOptions(Button):
     def __init__(self, driver, username):
@@ -336,7 +343,7 @@ class CommunityView(HomeView):
 class PreviewMessage(ChatElementByText):
     def __init__(self, driver, text:str):
         super().__init__(driver, text=text)
-        self.locator+="/android.view.ViewGroup/android.view.ViewGroup"
+        self.locator += "/android.view.ViewGroup/android.view.ViewGroup"
 
     @staticmethod
     def return_element_or_empty(obj):
@@ -486,6 +493,36 @@ class IncomingTransaction(TransactionMessage):
         return AcceptAndShareAddress(self.driver, self.locator)
 
 
+class PinnedMessagesOnProfileButton(Button):
+    def __init__(self, driver):
+        super().__init__(driver, xpath="//*[@content-desc='pinned-messages-item']")
+
+    @property
+    def count(self):
+        class PinnedMessageCounter(Text):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="/android.widget.TextView[2]")
+
+        return PinnedMessageCounter(self.driver, self.locator).text
+
+
+class UnpinMessagePopUp(BaseElement):
+    def __init__(self, driver):
+        #self.message_text = message_text
+        super().__init__(driver, translation_id="pin-limit-reached", suffix='/..')
+
+    def click_unpin_message_button(self):
+        class UnpinMessageButton(Button):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="//android.widget.TextView[starts-with(@text,'Unpin')]")
+        return UnpinMessageButton(self.driver, self.locator).click()
+
+    def message_text(self, text):
+        element = Text(self.driver, prefix=self.locator,
+                       xpath="//android.widget.TextView[contains(@text,'%s')]" % text)
+        return element
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super().__init__(driver)
@@ -523,6 +560,7 @@ class ChatView(BaseView):
 
         # General chat view
         self.history_start_icon = Button(self.driver, accessibility_id="history-chat")
+        self.unpin_message_popup = UnpinMessagePopUp(self.driver)
 
         #Stickers
         self.show_stickers_button = Button(self.driver, accessibility_id="show-stickers-icon")
@@ -589,6 +627,7 @@ class ChatView(BaseView):
         self.profile_nickname = Text(self.driver,
                                      xpath="//*[@content-desc='profile-nickname-item']/android.widget.TextView[2]")
         self.profile_nickname_button = Button(self.driver, accessibility_id="profile-nickname-item")
+        self.pinned_messages_button = PinnedMessagesOnProfileButton(self.driver)
         self.nickname_input_field = EditBox(self.driver, accessibility_id="nickname-input")
         self.remove_from_contacts = Button(self.driver, accessibility_id="Remove from contacts-item-button")
 
@@ -722,6 +761,11 @@ class ChatView(BaseView):
         self.driver.info("**Sending message '%s'**" % message)
         self.chat_message_input.send_keys(message)
         self.send_message_button.click()
+
+    def pin_message(self, message, action="pin"):
+        self.driver.info("**Looking for message '%s' pin**" % message)
+        self.element_by_text_part(message).long_press_element()
+        self.element_by_translation_id(action).click()
 
     def edit_message_in_chat(self, message_to_edit, message_to_update):
         self.driver.info("**Looking for message '%s' to edit it**" % message_to_edit)

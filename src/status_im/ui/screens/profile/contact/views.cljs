@@ -87,7 +87,7 @@
   [quo/list-item
    {:title               (i18n/label :t/pinned-messages)
     :size                :small
-    :accessibility-label :profile-nickname-item
+    :accessibility-label :pinned-messages-item
     :accessory           :text
     :accessory-text      pin-count
     :disabled            (zero? pin-count)

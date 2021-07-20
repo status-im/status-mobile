@@ -441,6 +441,112 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(695847)
+    @marks.medium
+    def test_can_pin_messages_in_ono_to_one_and_group_chats(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        public_key_1, username_1 = home_1.get_public_key_and_username(return_username=True)
+        public_key_2, username_2 = home_2.get_public_key_and_username(return_username=True)
+        home_1.home_button.click()
+        chat_1 = home_1.add_contact(public_key_2)
+
+        home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
+        message_1,message_2,message_3,message_4 = "Message1","Message2","Message3","Message4",
+        chat_1.send_message(message_1)
+        chat_1.send_message(message_2)
+        chat_1.pin_message(message_1)
+        if not chat_1.chat_element_by_text(message_1).pinned_by_label.is_element_present():
+            self.drivers[0].fail("Message is not pinned!")
+
+        home_1.just_fyi("Check that Device2 can pin Device1 message in 1-1 chat and two pinned "
+                        "messages are in Device1 profile")
+        home_2.home_button.click()
+        chat_2 = home_2.get_chat(username_1).click()
+        chat_2.pin_message(message_2)
+        chat_2.chat_options.click()
+        chat_2.view_profile_button.click()
+        if not chat_2.pinned_messages_button.count == "2":
+            self.drivers[0].fail("Pinned message count is not 2 as expected!")
+
+        home_1.just_fyi("Check pinned message are visible in Pinned panel for both users")
+        chat_1.chat_options.click()
+        chat_1.view_profile_button.click()
+        chat_1.pinned_messages_button.click()
+        if not (chat_1.chat_element_by_text(message_1).pinned_by_label.is_element_present() and
+        chat_1.chat_element_by_text(message_2).pinned_by_label.is_element_present() and
+        chat_1.chat_element_by_text(message_1).is_element_present() and
+        chat_1.chat_element_by_text(message_2).is_element_present()):
+            self.drivers[0].fail("Something missed on Pinned messaged on Device 1!")
+        chat_2.pinned_messages_button.click()
+        if not (chat_1.chat_element_by_text(message_1).pinned_by_label.is_element_present() and
+        chat_2.chat_element_by_text(message_2).pinned_by_label.is_element_present() and
+        chat_2.chat_element_by_text(message_1).is_element_present() and
+        chat_2.chat_element_by_text(message_2).is_element_present()):
+            self.drivers[0].fail("Something missed on Pinned messaged on Device 2!")
+        chat_1.close_button.click()
+
+        home_1.just_fyi("Check that Device1 can not pin more than 3 messages and 'Unpin' dialog appears"
+                        "messages are in Device1 profile")
+        chat_1.send_message(message_3)
+        chat_1.send_message(message_4)
+        chat_1.pin_message(message_3)
+        chat_1.pin_message(message_4)
+        if not chat_1.unpin_message_popup.is_element_present():
+            self.drivers[0].fail("No 'Unpin' dialog appears when pining 4th message")
+
+        home_1.just_fyi("Unpin one message so that another could be pinned")
+        chat_1.unpin_message_popup.message_text(message_1).click()
+        chat_1.unpin_message_popup.click_unpin_message_button()
+
+        if chat_1.unpin_message_popup.is_element_present():
+            self.drivers[0].fail("Unpin message pop up keep staying after Unpin button pressed")
+        if chat_1.chat_element_by_text(message_1).pinned_by_label.is_element_present():
+            self.drivers[0].fail("Message is not unpinned!")
+        if not chat_1.chat_element_by_text(message_4).pinned_by_label.is_element_present():
+            self.drivers[0].fail("Message is not pinned!")
+
+        home_1.just_fyi("Unpin another message and check it's unpinned for another user")
+        chat_2.close_button.click()
+        chat_2.pin_message(message_4, action="unpin")
+        chat_1.chat_element_by_text(message_4).pinned_by_label.wait_for_invisibility_of_element()
+        if chat_1.chat_element_by_text(message_4).pinned_by_label.is_element_present():
+            self.drivers[0].fail("Message_4 is not unpinned!")
+
+        home_1.just_fyi("Create group chat and pin message there. It's pinned for both members.")
+        chat_2.home_button.click()
+        chat_1.home_button.click()
+        group_chat_name = "GroupChat"
+        group_chat_1 = home_1.create_group_chat(user_names_to_add=[username_2], group_chat_name=group_chat_name)
+        home_2.get_chat(group_chat_name).click()
+        group_chat_2 = home_2.get_chat_view()
+        group_chat_2.join_chat_button.click()
+        group_chat_1.send_message(message_1)
+        group_chat_1.pin_message(message_1)
+        if not (group_chat_1.chat_element_by_text(message_1).pinned_by_label.is_element_present() and
+                group_chat_2.chat_element_by_text(message_1).pinned_by_label.is_element_present()):
+            self.errors.append("Message is not pinned in group chat!")
+
+        home_1.just_fyi("Check that non admin user can not unpin messages")
+        group_chat_2.chat_element_by_text(message_1).long_press_element()
+        if group_chat_2.element_by_translation_id("unpin").is_element_present():
+            self.errors.append("Unpin option is available for non-admin user")
+
+        home_1.just_fyi("Grant another user with admin rights and check he can unpin message now")
+        group_chat_1.chat_options.click()
+        group_info_view = group_chat_1.group_info.click()
+        options = group_info_view.get_username_options(username_2).click()
+        options.make_admin_button.click()
+        group_chat_2.click_system_back_button()
+        group_chat_2.pin_message(message_1, action="unpin")
+        if (group_chat_1.chat_element_by_text(message_1).pinned_by_label.is_element_present() and
+                group_chat_2.chat_element_by_text(message_1).pinned_by_label.is_element_present()):
+            self.errors.append("Message failed be unpinned by user who granted admin permissions!")
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(5373)
     @marks.high
     def test_send_and_open_links_with_previews(self):
