@@ -175,8 +175,7 @@
       (fx/merge cofx
                 {:db (-> db
                          (assoc-in [:keycard :setup-step] nil)
-                         (dissoc :intro-wizard))
-                 :init-root-fx :onboarding-notification}
+                         (dissoc :intro-wizard))}
                 (multiaccounts.create/on-multiaccount-created
                  {:recovered            (or recovered (get-in db [:intro-wizard :recovering?]))
                   :derived              {constants/path-wallet-root-keyword

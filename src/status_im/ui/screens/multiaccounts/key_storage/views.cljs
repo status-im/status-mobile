@@ -78,6 +78,7 @@
                        :subtitle           (i18n/label :t/reset-database-warning)
                        :subtitle-max-lines 4
                        :active             reset-db-checked?
+                       :disabled           (not move-keystore-checked?)
                        :on-press           #(re-frame/dispatch [::multiaccounts.key-storage/reset-db-checked (not reset-db-checked?)])
                        :accessory          :checkbox}]]
       (when (and next-title next-event)

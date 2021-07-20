@@ -143,7 +143,8 @@
   {:events [::delete-multiaccount-and-init-keycard-onboarding]}
   [{:keys [db] :as cofx}]
   (let [{:keys [key-uid]} (-> db :multiaccounts/login)]
-    {::delete-multiaccount {:key-uid key-uid
+    {:db (assoc-in db [:multiaccounts/key-storage :reset-db-checked?] true)
+     ::delete-multiaccount {:key-uid key-uid
                             :on-error #(re-frame/dispatch [::delete-multiaccount-error %])
                             :on-success #(re-frame/dispatch [::delete-multiaccount-success])}}))
 
