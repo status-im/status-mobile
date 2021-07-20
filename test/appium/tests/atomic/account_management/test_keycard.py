@@ -8,6 +8,8 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(6645)
     @marks.critical
+    @marks.skip
+    # TODO: blocked due to 12322
     def test_restore_account_migrate_multiaccount_to_keycard(self):
         sign_in = SignInView(self.driver)
         seed = basic_user['passphrase']
@@ -31,6 +33,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         if sign_in.seedphrase_input.is_element_displayed():
             self.driver.fail("Proceeded to seedphrase input without confirmed Actions")
         sign_in.move_keystore_file_option.click()
+        sign_in.reset_database_checkbox.click()
         sign_in.enter_seed_phrase_next_button.click()
         sign_in.seedphrase_input.set_value(transaction_senders['A']['passphrase'])
         sign_in.choose_storage_button.click()
@@ -447,6 +450,70 @@ class TestCreateAccount(SingleDeviceTestCase):
         if not keycard.element_by_translation_id("pairing-changed").is_element_displayed():
             self.driver.fail("Popup about successful setting new pairing is not shown!")
         keycard.ok_button.click()
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(695851)
+    @marks.medium
+    def test_keycard_frozen_card_flows(self):
+        # TODO: should be renewed after fix 12324
+        sign_in = SignInView(self.driver)
+        seed = basic_user['passphrase']
+        home = sign_in.recover_access(passphrase=seed, keycard=True)
+        profile = home.profile_button.click()
+        profile.keycard_button.scroll_and_click()
+
+        home.just_fyi('Set new PUK')
+        keycard = profile.change_puk_button.click()
+        keycard.enter_default_pin()
+        [keycard.enter_default_puk() for _ in range (2)]
+        keycard.ok_button.click()
+
+        home.just_fyi("Checking reset with PUK when logged in")
+        keycard = profile.change_pin_button.click()
+        keycard.enter_another_pin()
+        keycard.wait_for_element_starts_with_text('2 attempts left', 30)
+        keycard.enter_another_pin()
+        keycard.element_by_text_part('one attempt').wait_for_element(30)
+        keycard.enter_another_pin()
+        if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed():
+            self.driver.fail("No popup about frozen keycard is shown!")
+
+        # home.element_by_translation_id("keycard-is-frozen-factory-reset").click()
+        # sign_in.seedphrase_input.set_value(transaction_senders['A']['passphrase'])
+        # sign_in.next_button.click()
+        # if not home.element_by_translation_id("seed-key-uid-mismatch").is_element_displayed():
+        #     self.driver.fail("No popup about mismatch in seed phrase is shown!")
+        # home.element_by_translation_id("try-again").click()
+        # sign_in.seedphrase_input.clear()
+        home.element_by_translation_id("keycard-is-frozen-reset").click()
+        keycard.enter_another_pin()
+        home.element_by_text_part('2/2').wait_for_element(20)
+        keycard.enter_another_pin()
+        home.element_by_translation_id("enter-puk-code").click()
+        keycard.enter_default_puk()
+        home.element_by_translation_id("keycard-access-reset").wait_for_element(20)
+        home.profile_button.double_click()
+        profile.logout()
+
+
+        home.just_fyi("Checking reset with PUK when logged out")
+        keycard.enter_another_pin()
+        keycard.wait_for_element_starts_with_text('2 attempts left', 30)
+        keycard.enter_another_pin()
+        keycard.element_by_text_part('one attempt').wait_for_element(30)
+        keycard.enter_another_pin()
+        if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed():
+            self.driver.fail("No popup about frozen keycard is shown!")
+        home.element_by_translation_id("keycard-is-frozen-reset").click()
+        keycard.enter_another_pin()
+        home.element_by_text_part('2/2').wait_for_element(20)
+        keycard.enter_another_pin()
+        home.element_by_translation_id("enter-puk-code").click()
+        keycard.enter_default_puk()
+        home.element_by_translation_id("keycard-access-reset").wait_for_element(20)
+        home.element_by_translation_id("open").click()
+
 
         self.errors.verify_no_errors()
 

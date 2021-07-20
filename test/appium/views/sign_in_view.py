@@ -159,6 +159,7 @@ class SignInView(BaseView):
         self.manage_keys_and_storage_button = Button(self.driver, accessibility_id="manage-keys-and-storage-button")
         self.multi_account_on_login_button = MultiAccountOnLoginButton(self.driver)
         self.move_keystore_file_option =  Button(self.driver, accessibility_id="move-keystore-file")
+        self.reset_database_checkbox = Button(self.driver, translation_id="reset-database")
         self.move_and_reset_button = MoveAndResetButton(self.driver)
         self.choose_storage_button = Button(self.driver, translation_id="choose-storage")
         self.enter_seed_phrase_next_button = Button(self.driver, translation_id="enter-seed-phrase")
