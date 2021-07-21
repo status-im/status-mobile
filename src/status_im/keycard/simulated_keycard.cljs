@@ -19,7 +19,6 @@
 
 (def initial-state
   {:card-connected?  false
-   :nfc-started? false
    :application-info {:initialized? false}})
 
 (defonce state (atom initial-state))
@@ -68,7 +67,7 @@
     (callback)))
 
 (defn reset-state []
-  (reset! state initial-state))
+  (swap! state assoc :application-info {:initialized? false}))
 
 (defn- later [f]
   (when f
@@ -260,12 +259,13 @@
        #(on-success response)))))
 
 (defn unblock-pin
-  [{:keys [puk on-success on-failure]}]
+  [{:keys [puk new-pin on-success on-failure]}]
   (if (= puk (get @state :puk))
     (do
       (swap! state update :application-info assoc
              :pin-retry-counter 3
              :puk-retry-counter 5)
+      (swap! state assoc :pin new-pin)
       (later #(on-success true)))
     (do
       (swap! state update-in
@@ -469,7 +469,7 @@
     (get-application-info args))
   (keycard/factory-reset [this args]
     (log/debug "simulated card factory-reset")
-    (get-application-info args))
+    (factory-reset args))
   (keycard/install-applet [this args]
     (log/debug "simulated card install-applet")
     (install-applet args))
