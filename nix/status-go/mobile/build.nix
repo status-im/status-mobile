@@ -46,10 +46,9 @@ in buildGo116Package {
     export GO111MODULE=off
     export GOPATH=${gomobile}:$GOPATH
     export NIX_GOWORKDIR=${NIX_GOWORKDIR}
-
   '' + optionalString (platform == "android") ''
-    export ANDROID_HOME=${androidPkgs}
-    export ANDROID_NDK_HOME=${androidPkgs}/ndk-bundle
+    export ANDROID_SDK_ROOT="${androidPkgs.sdk}"
+    export ANDROID_NDK_HOME="${androidPkgs.ndk}"
     export PATH="${makeBinPath [ openjdk ]}:$PATH"
   '';
 

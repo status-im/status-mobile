@@ -40,8 +40,8 @@ buildGo116Module {
     wrapProgram $out/bin/gomobile \
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ zlib ]}" \
       --prefix PATH : "${androidPkgs}/bin" \
-      --set ANDROID_NDK_HOME "${androidPkgs}/ndk-bundle" \
-      --set ANDROID_HOME "${androidPkgs}"
+      --set ANDROID_NDK_ROOT "${androidPkgs.ndk}" \
+      --set ANDROID_HOME "${androidPkgs.sdk}"
   '';
 
   meta = with lib; {
