@@ -35,6 +35,7 @@
     "react-native": "0.63.4",
     "react-native-background-timer": "^2.1.1",
     "react-native-camera-kit": "^8.0.4",
+    "react-native-color-wheel": "git+https://github.com/netbeast/react-native-color-wheel.git#master",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git#v1.4.2-status",
     "react-native-dark-mode": "^0.2.2",
     "react-native-device-info": "^7.4.0",

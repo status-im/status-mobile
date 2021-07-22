@@ -10,7 +10,8 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.utils.debounce :as debounce]))
+            [status-im.utils.debounce :as debounce]
+            [reagent.core :as reagent]))
 
 (def max-name-length 30)
 (def max-description-length 140)
@@ -127,6 +128,28 @@
                        :secondary)}
     (str (count text) "/" max-length)]])
 
+(defn color-picker []
+  (let [{:keys [color]} (<sub [:communities/create])
+        community-color-text (if color colors/white (colors/get-color :text-02))]
+    [rn/view {:style {:padding-horizontal 16}}
+     [quo/text {:style {:padding-bottom 10
+                        :padding-top    10}}
+      (i18n/label :t/community-color)]
+     [rn/touchable-opacity {:on-press #(>evt [:open-modal :select-color])}
+      [rn/view {:style {:height           44
+                        :border-radius    8
+                        :padding-left     16
+                        :padding-right    10
+                        :flex-direction   :row
+                        :justify-content  :space-between
+                        :background-color (or color (colors/get-color :ui-01))
+                        :align-items      :center}}
+       [quo/text {:style {;:font-weight    :bold
+                          :color community-color-text}}
+                          ;:text-transform :uppercase}}
+        (or color "Pick a colour")]
+       [icons/icon :main-icons/next {:color community-color-text}]]]]))
+
 (defn form []
   (let [{:keys [name description]} (<sub [:communities/create])]
     [rn/scroll-view {:keyboard-should-persist-taps :handled
@@ -156,7 +179,8 @@
         :on-change-text #(>evt [::communities/create-field :description %])}]]
      [quo/list-header {:color :main}
       (i18n/label :t/community-thumbnail-image)]
-     [photo-picker]]))
+     [photo-picker]
+     [color-picker]]))
 
 (defn view []
   (let [{:keys [name description]} (<sub [:communities/create])]

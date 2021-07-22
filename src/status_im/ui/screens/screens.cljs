@@ -108,7 +108,8 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.chat.pinned-messages :as pin-messages]
             [status-im.ui.screens.communities.create-category :as create-category]
-            [status-im.ui.screens.communities.select-category :as select-category]))
+            [status-im.ui.screens.communities.select-category :as select-category]
+            [status-im.ui.screens.communities.select-color :as select-color]))
 
 (def components
   [{:name      :chat-toolbar
@@ -273,6 +274,10 @@
             ;;TODO custom
             :options   {:topBar {:visible false}}
             :component select-category/view}
+           {:name      :select-color
+            :options   {:topBar {:title {:text "Community colour"}}};(i18n/label :t/new-category)}}}
+            :insets    {:bottom true}
+            :component select-color/view}
            {:name      :community-edit-chats
             ;;TODO custom
             :insets    {:bottom true}
