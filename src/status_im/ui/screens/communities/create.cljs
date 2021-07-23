@@ -10,8 +10,7 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.utils.debounce :as debounce]
-            [reagent.core :as reagent]))
+            [status-im.utils.debounce :as debounce]))
 
 (def max-name-length 30)
 (def max-description-length 140)
@@ -135,7 +134,7 @@
      [quo/text {:style {:padding-bottom 10
                         :padding-top    10}}
       (i18n/label :t/community-color)]
-     [rn/touchable-opacity {:on-press #(>evt [:open-modal :select-color])}
+     [rn/touchable-opacity {:on-press #(>evt [:navigate-to :select-color])}
       [rn/view {:style {:height           44
                         :border-radius    8
                         :padding-left     16
