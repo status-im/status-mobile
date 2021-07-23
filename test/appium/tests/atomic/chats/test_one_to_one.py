@@ -666,6 +666,104 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('New messages counter is shown on chat element for already seen message')
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(6321)
+    @marks.medium
+    def test_push_notifications_reactions_for_messages_in_stickers_audio_image(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_1_home, device_2_home = device_1.create_user(enable_notifications=True), device_2.create_user()
+        device_1_public_key, default_username_1 = device_1_home.get_public_key_and_username(return_username=True)
+        device_2_public_key, default_username_2 = device_2_home.get_public_key_and_username(return_username=True)
+        device_1_home.home_button.click()
+        profile_2 = device_2_home.get_profile_view()
+        profile_2.switch_network()
+        device_2_chat = device_2_home.add_contact(device_1_public_key)
+
+        device_2_home.just_fyi('Install free sticker pack and use it in 1-1 chat')
+        device_2_chat.show_stickers_button.click()
+        device_2_chat.get_stickers.click()
+        device_2_chat.install_sticker_pack_by_name('Status Cat')
+        device_2_chat.back_button.click()
+        time.sleep(2)
+        device_2_chat.swipe_left()
+        device_1_chat = device_1_home.add_contact(device_2_public_key)
+
+        # methods with steps to use later in loop
+        def navigate_to_start_state_of_both_devices():
+            device_1_chat.put_app_to_background()
+            device_1.open_notification_bar()
+            device_2_chat.get_back_to_home_view(2)
+            device_2_home.get_chat_from_home_view(default_username_1).click()
+
+        def device_2_sends_sticker():
+            device_2_chat.just_fyi("Sending Sticker in chat")
+            device_2_chat.show_stickers_button.click()
+            device_2_chat.sticker_icon.click()
+
+        def device_2_sends_image():
+            device_2_chat.just_fyi("Sending Image in chat")
+            device_2_chat.show_images_button.click()
+            device_2_chat.allow_button.click()
+            device_2_chat.first_image_from_gallery.click()
+            device_2_chat.send_message_button.click()
+
+        def device_2_sends_audio():
+            device_2_chat.just_fyi("Sending Audio in chat")
+            device_2_chat.record_audio_message(message_length_in_seconds=3)
+            device_2_chat.send_message_button.click()
+
+        sending_list = {
+            "sticker": device_2_sends_sticker,
+            "image": device_2_sends_image,
+            "audio": device_2_sends_audio,
+        }
+
+
+        for key, value in sending_list.items():
+            navigate_to_start_state_of_both_devices()
+            sending_list[key]()
+            if not device_1.element_by_text_part(key.capitalize()).is_element_displayed(10):
+                self.errors.append("%s not appeared in Push Notification" % key.capitalize())
+                device_1.click_system_back_button()
+                device_1.get_app_from_background()
+            else:
+                device_1.element_by_text_part(key.capitalize()).click()
+            message = device_2_chat.chat_element_by_text(key)
+            device_1_chat.set_reaction(key)
+            if message.emojis_below_message(own=False) != 1:
+                self.errors.append("Counter of reaction is not set on %s for message receiver!" % key)
+            device_1_chat.set_reaction(key)
+            if message.emojis_below_message(own=False) == 1:
+                self.errors.append("Counter of reaction is not re-set on %s for message receiver!" % key)
+
+        device_2_chat.just_fyi("Sending Emoji/Tag/Links in chat")
+        ## TODO: add link and tag messages after #11168 is fixed
+        navigate_to_start_state_of_both_devices()
+
+        emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
+
+        device_2_chat.just_fyi("Sending Emoji in chat")
+        device_2_chat.chat_message_input.send_keys(emoji.emojize(emoji_name))
+        device_2_chat.send_message_button.click()
+
+        if not device_1.element_by_text_part(emoji_unicode).is_element_displayed(10):
+            self.errors.append("Emoji not appeared in Push Notification")
+            device_1.click_system_back_button()
+            device_1.get_app_from_background()
+        else:
+            device_1.element_by_text_part(emoji_unicode).click()
+
+        emoji_message = device_2_chat.chat_element_by_text(emoji_unicode)
+        device_1_chat.set_reaction(emoji_unicode, emoji_message=True)
+        if emoji_message.emojis_below_message(own=False) != 1:
+            self.errors.append("Counter of reaction is not set on Emoji for message receiver!")
+        device_1_chat.set_reaction(emoji_unicode, emoji_message=True)
+        if emoji_message.emojis_below_message(own=False) == 1:
+            self.errors.append("Counter of reaction is not re-set on Emoji for message receiver!")
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(5425)
     @marks.medium
     # TODO: should be completed with quoting after fix 9480
