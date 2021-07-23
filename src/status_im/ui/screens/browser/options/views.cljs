@@ -68,7 +68,7 @@
             :icon                (if fav? :main-icons/delete :main-icons/favourite)
             :on-press            #(hide-sheet-and-dispatch (if fav?
                                                              [:browser/delete-bookmark url]
-                                                             [:navigate-to :new-bookmark {:url url :name name :new true}]))}]
+                                                             [:open-modal :new-bookmark {:url url :name name :new true}]))}]
           [quo/list-item
            {:theme               :accent
             :title               (i18n/label :t/share)

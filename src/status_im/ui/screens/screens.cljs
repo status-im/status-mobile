@@ -387,6 +387,7 @@
 
            {:name      :my-profile
             :insets    {:top false}
+            :options   {:topBar {:visible false}}
             :component profile.user/my-profile}
            {:name      :contacts-list
             :options   {:topBar {:title {:text (i18n/label :t/contacts)}}}

@@ -246,7 +246,8 @@
   (views/letsubs [{:keys [address resolved-address searching]} [:wallet/recipient]
                   search-filter [:search/recipient-filter]]
     (let [disabled? (or searching (not resolved-address))]
-      [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
+      [kb-presentation/keyboard-avoiding-view {:style {:flex 1}
+                                               :ignore-offset true}
        [react/view {:flex 1}
         [recipient-topbar]
         [search-input-wrapper]
