@@ -11,14 +11,14 @@
    :align-items      :flex-end
    :flex-direction   :row})
 
-(defn input-container []
+(defn input-container [contact-request]
   {:background-color           (:ui-01 @colors/theme)
    :flex                       1
-   :border-top-left-radius     16
-   :border-top-right-radius    16
-   :border-bottom-right-radius 4
-   :border-bottom-left-radius  16
-   :margin-horizontal          8})
+   :border-top-left-radius     (if contact-request 8 16)
+   :border-top-right-radius    (if contact-request 8 16)
+   :border-bottom-right-radius (if contact-request 8 4)
+   :border-bottom-left-radius  (if contact-request 8 16)
+   :margin-horizontal          (when-not contact-request 8)})
 
 (def input-row
   {:flex-direction :row
@@ -34,7 +34,7 @@
          (when platform/ios?
            {:padding-top 2})))
 
-(defn text-input []
+(defn text-input [contact-request]
   (merge typography/font-regular
          typography/base
          {:flex               1
@@ -49,12 +49,12 @@
            {:padding-top    2
             :padding-bottom 6})))
 
-(defn actions-wrapper [show-send]
+(defn actions-wrapper [show-send contact-request]
   (merge
    (when show-send
      {:width 0 :left -88})
    {:flex-direction :row
-    :padding-left   4
+    :padding-left   (if contact-request 8 4)
     :min-height     34}))
 
 (defn touchable-icon []
@@ -91,6 +91,11 @@
    :padding-horizontal 10
    :flex               1})
 
+(defn contact-request-content []
+  {:flex               1
+   :flex-direction     :row
+   :justify-content    :space-between})
+
 (defn close-button []
   {:margin-top 3})
 
@@ -101,8 +106,8 @@
 (defn send-message-container []
   {:background-color (:interactive-01 @colors/theme)
    :width            26
-   :height           26
-   :border-radius    13
+   :height           44
+  ;;  :border-radius    8
    :justify-content  :center
    :align-items      :center})
 

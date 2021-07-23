@@ -9,6 +9,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.screens.chat.components.reply :as reply]
             [status-im.ui.screens.chat.components.edit :as edit]
+            [status-im.ui.screens.chat.components.contact-request :as contact-request]
             [status-im.ui.components.react :as react]
             [quo.animated :as animated]
             [quo.react-native :as rn]
@@ -61,29 +62,31 @@
       [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]]))
 
 (defn contact-request [public-key]
-  [react/view {:style {:width "100%"
-                       :justify-content :center
-                       :align-items :center
-                       :border-top-width 1
-                       :border-color colors/gray-transparent-10}}
-   [react/image {:source (resources/get-image :hand-wave)
-                 :style  {:width 112
-                          :height 96.71
-                          :margin-top 17}}]
-   [quo/text {:style {:margin-top 14}
-              :weight :bold
-              :size   :large}
-    (i18n/label :t/say-hi)]
-   [quo/text {:style {:margin-top 2
-                      :margin-bottom 14}}
-    (i18n/label :t/send-contact-request-message)]
-   [react/view {:style {:padding-horizontal 16
-                        :padding-bottom 8}}
-    [quo/button
-     {:style {:width "100%"}
-      :accessibility-label :contact-request--button
-      :on-press #(println "Contact request button pressed" public-key)}
-     (i18n/label :t/contact-request)]]])
+  (let [contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
+    [react/view {:style {:width "100%"
+                         :justify-content :center
+                         :align-items :center
+                         :border-top-width 1
+                         :border-color colors/gray-transparent-10}}
+     [react/image {:source (resources/get-image :hand-wave)
+                   :style  {:width 112
+                            :height 96.71
+                            :margin-top 17}}]
+     [quo/text {:style {:margin-top 14}
+                :weight :bold
+                :size   :large}
+      (i18n/label :t/say-hi)]
+     [quo/text {:style {:margin-top 2
+                        :margin-bottom 14}}
+      (i18n/label :t/send-contact-request-message)]
+     (when-not contact-request
+       [react/view {:style {:padding-horizontal 16
+                            :padding-bottom 8}}
+        [quo/button
+         {:style {:width "100%"}
+          :accessibility-label :contact-request--button
+          :on-press #(re-frame/dispatch [:chat.ui/send-contact-request])}
+         (i18n/label :t/contact-request)]])]))
 
 (defn chat-intro [{:keys [chat-id
                           chat-name
@@ -417,6 +420,7 @@
               [react/view
                [edit/edit-message-auto-focus-wrapper text-input-ref]
                [reply/reply-message-auto-focus-wrapper text-input-ref]
+               
                ;; We set the key so we can force a re-render as
                ;; it does not rely on ratom but just atoms
                ^{:key (str @components/chat-input-key "chat-input")}
@@ -424,5 +428,7 @@
                 {:chat-id          chat-id
                  :active-panel     @active-panel
                  :set-active-panel set-active-panel
-                 :text-input-ref   text-input-ref}]]
+                 :text-input-ref   text-input-ref}]
+               
+               [contact-request/contact-request-message-auto-focus-wrapper text-input-ref]]
               [bottom-sheet @active-panel]])]))})))

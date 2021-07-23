@@ -232,10 +232,11 @@
         mentionable-users @(re-frame/subscribe [:chats/mentionable-users])
         timeout-id (atom nil)
         last-text-change (atom nil)
-        mentions-enabled (get @mentions-enabled chat-id)]
+        mentions-enabled (get @mentions-enabled chat-id)
+        contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
 
     [rn/text-input
-     {:style                    (styles/text-input)
+     {:style                    (styles/text-input contact-request)
       :ref                      (:text-input-ref refs)
       :max-font-size-multiplier 1
       :accessibility-label      :chat-message-input
@@ -327,8 +328,8 @@
     (when (seq sending-image)
       [reply/send-image sending-image])))
 
-(defn actions [extensions image show-send actions-ref active-panel set-active-panel]
-  [rn/view {:style (styles/actions-wrapper show-send)
+(defn actions [extensions image show-send actions-ref active-panel set-active-panel contact-request]
+  [rn/view {:style (styles/actions-wrapper show-send contact-request)
             :ref   actions-ref}
    (when extensions
      [touchable-icon {:panel               :extensions
@@ -341,11 +342,12 @@
                       :active              active-panel
                       :set-active          set-active-panel}])])
 
-(defn chat-toolbar [new-contact?]
+(defn chat-toolbar []
   (let [actions-ref (quo.react/create-ref)
         send-ref (quo.react/create-ref)
         sticker-ref (quo.react/create-ref)
-        toolbar-options (re-frame/subscribe [:chats/chat-toolbar])]
+        toolbar-options (re-frame/subscribe [:chats/chat-toolbar])
+        contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
     (fn [{:keys [active-panel set-active-panel text-input-ref chat-id]}]
       (let [;we want to control components on native level, so instead of RN state we set native props via reference
             ;we don't react on input text in this view, @input-texts below is a regular atom
@@ -358,9 +360,9 @@
         [rn/view {:style     (styles/toolbar)
                   :on-layout on-chat-toolbar-layout}
            ;;EXTENSIONS and IMAGE buttons
-         [actions extensions image show-send actions-ref active-panel set-active-panel]
-         [rn/view {:style (styles/input-container)}
-          (when-not new-contact? [send-image])
+         [actions extensions image show-send actions-ref active-panel set-active-panel contact-request]
+         [rn/view {:style (styles/input-container contact-request)}
+          [send-image]
           [rn/view {:style styles/input-row}
            [text-input {:chat-id          chat-id
                         :sending-image    sending-image

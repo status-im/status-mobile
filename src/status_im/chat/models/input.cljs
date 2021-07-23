@@ -134,6 +134,21 @@
              (update-in [:chat/inputs current-chat-id :metadata]
                         dissoc :sending-image))}))
 
+(fx/defn send-contact-request
+  "Sets reference to previous chat message and focuses on input"
+  {:events [:chat.ui/send-contact-request]}
+  [{:keys [db] :as cofx}]
+  (let [current-chat-id (:current-chat-id db)]
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc-in [:chat/inputs current-chat-id :metadata :sending-contact-request]
+                                 current-chat-id)
+                       (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message]
+                                 nil)
+                       (assoc-in [:chat/inputs current-chat-id :metadata :editing-message] nil)
+                       (update-in [:chat/inputs current-chat-id :metadata]
+                                  dissoc :sending-image))})))
+
 (fx/defn cancel-message-reply
   "Cancels stage message reply"
   {:events [:chat.ui/cancel-message-reply]}

@@ -1137,6 +1137,12 @@
    (:editing-message metadata)))
 
 (re-frame/reg-sub
+ :chats/sending-contact-request
+ :<- [:chats/current-chat-inputs]
+ (fn [{:keys [metadata]}]
+   (:sending-contact-request metadata)))
+
+(re-frame/reg-sub
  :chats/sending-image
  :<- [:chats/current-chat-inputs]
  (fn [{:keys [metadata]}]
@@ -1158,24 +1164,29 @@
  :<- [:current-chat/metadata]
  :<- [:chats/reply-message]
  :<- [:chats/edit-message]
- (fn [[disconnected? {:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit]]
+ :<- [:chats/sending-contact-request]
+ (fn [[disconnected? {:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit sending-contact-request]]
    (let [sending-image (seq sending-image)]
-     {:send          (and (not (or processing disconnected?)))
-      :stickers      (and mainnet?
-                          (not sending-image)
-                          (not reply))
-      :image         (and (not reply)
-                          (not edit)
-                          (not public?))
-      :extensions    (and one-to-one-chat?
-                          (or config/commands-enabled? mainnet?)
-                          (not edit)
-                          (not reply))
-      :audio         (and (not sending-image)
-                          (not reply)
-                          (not edit)
-                          (not public?))
-      :sending-image sending-image})))
+     {:send                    (and (not (or processing disconnected?)))
+      :stickers                (and mainnet?
+                                    (not sending-image)
+                                    (not reply)
+                                    (not sending-contact-request))
+      :image                   (and (not reply)
+                                    (not edit)
+                                    (not public?)
+                                    (not sending-contact-request))
+      :extensions              (and one-to-one-chat?
+                                    (or config/commands-enabled? mainnet?)
+                                    (not edit)
+                                    (not reply)
+                                    (not sending-contact-request))
+      :audio                   (and (not sending-image)
+                                    (not reply)
+                                    (not edit)
+                                    (not public?)
+                                    (not sending-contact-request))
+      :sending-image           sending-image})))
 
 (re-frame/reg-sub
  :public-chat.new/topic-error-message
