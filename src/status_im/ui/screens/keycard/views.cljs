@@ -296,83 +296,84 @@
                                         :keycard.login.pin.ui/cancel-pressed)])}}
          (when (#{:reset :reset-confirmation} enter-step)
            {:subtitle (i18n/label :t/keycard-enter-new-passcode {:step (if (= :reset enter-step) 1 2)})}))]
-       [react/view {:flex            1
-                    :flex-direction  :column
-                    :justify-content :space-between
-                    :align-items     :center}
-        [react/view {:flex-direction  :column
-                     :justify-content :center
-                     :align-items     :center
-                     :height          140}
-         [react/view {:margin-horizontal 16
-                      :flex-direction    :column}
-          [react/view {:justify-content :center
-                       :align-items     :center
-                       :flex-direction  :row}
-           [react/view {:width           (if small-screen? 50 69)
-                        :height          (if small-screen? 50 69)
-                        :justify-content :center
-                        :align-items     :center}
-            [photo account small-screen?]
-            [react/view {:justify-content  :center
-                         :align-items      :center
-                         :width            (if small-screen? 18 24)
-                         :height           (if small-screen? 18 24)
-                         :border-radius    (if small-screen? 18 24)
-                         :position         :absolute
-                         :right            0
-                         :bottom           0
-                         :background-color colors/white
-                         :border-width     1
-                         :border-color     colors/black-transparent}
-             [react/image {:source (resources/get-image :keycard-key)
-                           :style  {:width  (if small-screen? 6 8)
-                                    :height (if small-screen? 11 14)}}]]]]
-          [react/text {:style           {:text-align  :center
-                                         :margin-top  (if small-screen? 8 12)
-                                         :color       colors/black
-                                         :font-weight "500"}
-                       :number-of-lines 1
-                       :ellipsize-mode  :middle}
-           name]]]
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:keycard-settings.ui/recovery-card-pressed (boolean login-multiaccount)])}
-         [react/view {:flex-direction  :row
+       [react/scroll-view {:style {:flex 1}}
+        [react/view {:flex            1
+                     :flex-direction  :column
+                     :justify-content :space-between
+                     :align-items     :center}
+         [react/view {:flex-direction  :column
+                      :justify-content :center
                       :align-items     :center
-                      :justify-content :center}
-          [react/text {:style {:text-align :center
-                               :margin-bottom  (if small-screen? 8 12)
-                               :color      colors/blue}}
-           (string/lower-case (i18n/label (if login-multiaccount :t/keycard-recover :t/keycard-is-frozen-factory-reset)))]]]
-        (cond
-          (= :after-unblocking status)
-          [access-is-reset
-           {:hide-login-actions? hide-login-actions?}]
+                      :height          140}
+          [react/view {:margin-horizontal 16
+                       :flex-direction    :column}
+           [react/view {:justify-content :center
+                        :align-items     :center
+                        :flex-direction  :row}
+            [react/view {:width           (if small-screen? 50 69)
+                         :height          (if small-screen? 50 69)
+                         :justify-content :center
+                         :align-items     :center}
+             [photo account small-screen?]
+             [react/view {:justify-content  :center
+                          :align-items      :center
+                          :width            (if small-screen? 18 24)
+                          :height           (if small-screen? 18 24)
+                          :border-radius    (if small-screen? 18 24)
+                          :position         :absolute
+                          :right            0
+                          :bottom           0
+                          :background-color colors/white
+                          :border-width     1
+                          :border-color     colors/black-transparent}
+              [react/image {:source (resources/get-image :keycard-key)
+                            :style  {:width  (if small-screen? 6 8)
+                                     :height (if small-screen? 11 14)}}]]]]
+           [react/text {:style           {:text-align  :center
+                                          :margin-top  (if small-screen? 8 12)
+                                          :color       colors/black
+                                          :font-weight "500"}
+                        :number-of-lines 1
+                        :ellipsize-mode  :middle}
+            name]]]
+         [react/touchable-highlight {:on-press #(re-frame/dispatch [:keycard-settings.ui/recovery-card-pressed (boolean login-multiaccount)])}
+          [react/view {:flex-direction  :row
+                       :align-items     :center
+                       :justify-content :center}
+           [react/text {:style {:text-align :center
+                                :margin-bottom  (if small-screen? 8 12)
+                                :color      colors/blue}}
+            (string/lower-case (i18n/label (if login-multiaccount :t/keycard-recover :t/keycard-is-frozen-factory-reset)))]]]
+         (cond
+           (= :after-unblocking status)
+           [access-is-reset
+            {:hide-login-actions? hide-login-actions?}]
 
-          (= :frozen-card status)
-          [frozen-card]
+           (= :frozen-card status)
+           [frozen-card]
 
-          (= :blocked-card status)
-          [blocked-card]
+           (= :blocked-card status)
+           [blocked-card]
 
-          :else
-          [pin.views/pin-view
-           {:pin                     pin
-            :retry-counter           retry-counter
-            :small-screen?           small-screen?
-            :status                  status
-            :error-label             error-label
-            :step                    enter-step
-            :save-password-checkbox? (not (contains?
-                                           #{:reset :reset-confirmation :puk}
-                                           enter-step))}])
-        (if hide-login-actions?
-          [react/view {:flex-direction :row
-                       :height         32}]
-          [toolbar/toolbar
-           {:center [quo/button
-                     {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
-                      :type     :secondary}
-                     (i18n/label :t/recover-key)]}])]])))
+           :else
+           [pin.views/pin-view
+            {:pin                     pin
+             :retry-counter           retry-counter
+             :small-screen?           small-screen?
+             :status                  status
+             :error-label             error-label
+             :step                    enter-step
+             :save-password-checkbox? (not (contains?
+                                            #{:reset :reset-confirmation :puk}
+                                            enter-step))}])
+         (if hide-login-actions?
+           [react/view {:flex-direction :row
+                        :height         32}]
+           [toolbar/toolbar
+            {:center [quo/button
+                      {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+                       :type     :secondary}
+                      (i18n/label :t/recover-key)]}])]]])))
 
 (fx/defn get-new-key
   {:events [:multiaccounts.create.ui/get-new-key]}
