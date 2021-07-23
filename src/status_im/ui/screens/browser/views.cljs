@@ -75,14 +75,12 @@
                                  :disabled            empty-tab
                                  :style               (when empty-tab styles/disabled-button)
                                  :accessibility-label :previous-page-button}
-      [react/view
-       [icons/icon :main-icons/arrow-left]]]
+      [icons/icon :main-icons/arrow-left {:color colors/black}]]
      [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/next-page-button-pressed])
                                  :disabled            (not can-go-forward?)
                                  :style               (when-not can-go-forward? styles/disabled-button)
                                  :accessibility-label :next-page-button}
-      [react/view
-       [icons/icon :main-icons/arrow-right]]]
+      [icons/icon :main-icons/arrow-right {:color colors/black}]]
      [react/touchable-highlight
       {:accessibility-label :select-account
        :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
@@ -92,7 +90,7 @@
      [react/touchable-highlight
       {:on-press #(re-frame/dispatch [:set-stack-root :browser-stack :browser-tabs])
        :accessibility-label :browser-open-tabs}
-      [icons/icon :main-icons/tabs]]
+      [icons/icon :main-icons/tabs {:color colors/black}]]
 
      (if empty-tab
        [react/touchable-highlight
@@ -100,7 +98,7 @@
          :on-press            #(re-frame/dispatch
                                 [::qr-scanner/scan-code
                                  {:handler ::qr-scanner/on-scan-success}])}
-        [icons/icon :main-icons/qr]]
+        [icons/icon :main-icons/qr {:color colors/black}]]
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch
                      [:bottom-sheet/show-sheet
@@ -110,7 +108,7 @@
                                  empty-tab
                                  name)}])
          :accessibility-label :browser-options}
-        [icons/icon :main-icons/more]])]))
+        [icons/icon :main-icons/more {:color colors/black}]])]))
 
 (def resources-to-permissions-map {"android.webkit.resource.VIDEO_CAPTURE" :camera
                                    "android.webkit.resource.AUDIO_CAPTURE" :record-audio})

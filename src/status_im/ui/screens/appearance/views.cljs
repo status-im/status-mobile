@@ -14,10 +14,11 @@
 
 (defn button [label icon theme selected?]
   [react/touchable-highlight
-   {:on-press #(do (re-frame/dispatch [:multiaccounts.ui/appearance-switched theme])
-                   (re-frame/dispatch [:init-root :chat-stack])
-                   (re-frame/dispatch [:navigate-change-tab :profile])
-                   (re-frame/dispatch [:navigate-to :appearance]))}
+   {:on-press (fn []
+                (re-frame/dispatch [:multiaccounts.ui/appearance-switched theme])
+                (re-frame/dispatch [:init-root :chat-stack])
+                (re-frame/dispatch [:navigate-change-tab :profile])
+                (js/setTimeout #(re-frame/dispatch [:navigate-to :appearance]) 1000))}
    [react/view (merge {:align-items :center :padding 8 :border-radius 20}
                       (when selected?
                         {:background-color colors/blue-light}))
