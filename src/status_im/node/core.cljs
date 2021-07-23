@@ -89,6 +89,7 @@
         current-fleet-key (current-fleet-key db)
         current-fleet (get-current-fleet db)
         wakuv2-enabled (boolean (:waku current-fleet))
+        wakuv2-nodes (into (vals (:waku current-fleet)) (vals (get wakuv2-config :CustomNodes)))
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
         {:keys [installation-id log-level
                 waku-bloom-filter-mode
@@ -112,8 +113,8 @@
                                  (into (pick-nodes 2
                                                    (vals (:whisper current-fleet)))
                                        (vals (:static current-fleet))))
-                             :WakuNodes (vals (:waku current-fleet))
-                             :WakuStoreNodes (vals (:waku current-fleet))
+                             :WakuNodes wakuv2-nodes
+                             :WakuStoreNodes wakuv2-nodes
                              :RendezvousNodes    (if wakuv2-enabled [] rendezvous-nodes)})
 
       :always

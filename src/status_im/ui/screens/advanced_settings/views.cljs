@@ -12,6 +12,7 @@
                                           waku-bloom-filter-mode
                                           communities-enabled?
                                           transactions-management-enabled?
+                                          wakuv2-flag
                                           current-fleet
                                           webview-debug]}]
   (keep
@@ -48,12 +49,19 @@
      :accessory           :text
      :accessory-text      current-fleet
      :chevron             true}
-    {:size                :small
-     :title               (i18n/label :t/bootnodes)
-     :accessibility-label :bootnodes-settings-button
-     :on-press
-     #(re-frame/dispatch [:navigate-to :bootnodes-settings])
-     :chevron             true}
+    (if wakuv2-flag
+      {:size                :small
+       :title               (i18n/label :t/wakuv2-settings)
+       :accessibility-label :wakuv2-settings-button
+       :on-press
+       #(re-frame/dispatch [:wakuv2.ui/enter-settings-pressed])
+       :chevron             true}
+      {:size                :small
+       :title               (i18n/label :t/bootnodes)
+       :accessibility-label :bootnodes-settings-button
+       :on-press
+       #(re-frame/dispatch [:navigate-to :bootnodes-settings])
+       :chevron             true})
     {:size                 :small
      :title                (i18n/label :t/rpc-usage-info)
      :accessibility-label  :rpc-usage-info
@@ -68,7 +76,7 @@
        :on-press
        #(re-frame/dispatch [:navigate-to :notifications-advanced-settings])
        :chevron             true})
-    ;; If it's enabled in the config, we don't show the option
+     ;; If it's enabled in the config, we don't show the option
     (when (not config/communities-enabled?)
       {:size                   :small
        :title                   (i18n/label :t/communities-enabled)
@@ -119,6 +127,7 @@
   (views/letsubs [{:keys [webview-debug]}          [:multiaccount]
                   network-name                     [:network-name]
                   waku-bloom-filter-mode           [:waku/bloom-filter-mode]
+                  wakuv2-flag                      [:waku/v2-flag]
                   communities-enabled?             [:communities/enabled?]
                   transactions-management-enabled? [:wallet/transactions-management-enabled?]
                   current-log-level                [:log-level/current-log-level]
@@ -131,6 +140,7 @@
                    :transactions-management-enabled? transactions-management-enabled?
                    :current-fleet                    current-fleet
                    :dev-mode?                        false
+                   :wakuv2-flag                      wakuv2-flag
                    :waku-bloom-filter-mode           waku-bloom-filter-mode
                    :webview-debug                    webview-debug})
       :key-fn    (fn [_ i] (str i))
