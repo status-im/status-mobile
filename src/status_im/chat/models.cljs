@@ -217,6 +217,8 @@
             (fn [{:keys [db]}]
               {:db (assoc db :current-chat-id chat-id :ignore-close-chat true)})
             (preload-chat-data chat-id)
+            (navigation/change-tab :chat)
+            (navigation/pop-to-root-tab :chat-stack)
             (navigation/navigate-to-cofx :chat nil)))
 
 (fx/defn handle-clear-history-response
