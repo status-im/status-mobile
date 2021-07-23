@@ -8,8 +8,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(6645)
     @marks.critical
-    @marks.skip
-    # TODO: blocked due to 12322
     def test_restore_account_migrate_multiaccount_to_keycard(self):
         sign_in = SignInView(self.driver)
         seed = basic_user['passphrase']
@@ -17,7 +15,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         profile = home.profile_button.click()
         profile.logout()
 
-        home.just_fyi("Checking keycard banner and starting migrate multiaccount to keycard")
+        home.just_fyi("Checking keycard banner and starting migrate multiaccount to keycard: no db saved")
         sign_in.back_button.click()
         sign_in.multi_account_on_login_button.wait_for_visibility_of_element(30)
         sign_in.get_multiaccount_by_position(1).click()
@@ -60,6 +58,9 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard.connect_card_button.click()
         keycard.enter_default_pin()
         keycard.enter_default_pin()
+        if not sign_in.element_by_translation_id("migration-successful").is_element_displayed(30):
+            self.driver.fail("No popup about successfull migration is shown!")
+        sign_in.ok_button.click()
         sign_in.maybe_later_button.wait_and_click(30)
         sign_in.lets_go_button.wait_and_click(30)
 
@@ -99,7 +100,38 @@ class TestCreateAccount(SingleDeviceTestCase):
         wallet_view.accounts_status_account.click()
         transaction_amount_added = wallet_view.get_unique_amount()
         wallet_view.send_transaction(amount=transaction_amount_added, recipient=transaction_senders['A']['address'], keycard=True, sign_transaction=True)
+        self.driver.reset()
+        home = sign_in.recover_access(passphrase=seed)
+        contact, nickname, message = transaction_senders['A'], 'my_friend', 'some message'
+        chat = home.add_contact(contact['public_key'], nickname=nickname)
+        chat.send_message(message)
+        profile = home.profile_button.click()
+        profile.logout()
 
+        home.just_fyi("Checking migration to keycard: db saved (1-1 chat, nickname, messages)")
+        sign_in.options_button.click()
+        sign_in.manage_keys_and_storage_button.click()
+        sign_in.move_keystore_file_option.click()
+        sign_in.enter_seed_phrase_next_button.click()
+        sign_in.seedphrase_input.set_value(seed)
+        sign_in.choose_storage_button.click()
+        sign_in.keycard_required_option.click()
+        sign_in.confirm_button.click()
+        sign_in.migration_password_input.set_value(common_password)
+        sign_in.confirm_button.click()
+        keycard.begin_setup_button.click()
+        keycard.connect_card_button.click()
+        keycard.enter_default_pin()
+        keycard.enter_default_pin()
+        if not sign_in.element_by_translation_id("migration-successful").is_element_displayed(30):
+            self.driver.fail("No popup about successfull migration is shown!")
+        sign_in.ok_button.click()
+        home.home_button.wait_for_element(30)
+        home.get_chat(nickname).click()
+        if chat.add_to_contacts.is_element_displayed():
+            self.errors.append("User was removed from contacts after migration to kk")
+        if not chat.chat_element_by_text(message).is_element_displayed():
+            self.errors.append("Message from 1-1 was removed from contacts after migration to kk")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6240)
@@ -451,12 +483,20 @@ class TestCreateAccount(SingleDeviceTestCase):
             self.driver.fail("Popup about successful setting new pairing is not shown!")
         keycard.ok_button.click()
 
+        home.just_fyi("Checking backing up keycard")
+        profile.create_keycard_backup_button.scroll_and_click()
+        sign_in.seedphrase_input.set_value(seed)
+        sign_in.next_button.click()
+        keycard.begin_setup_button.click()
+        keycard.enter_another_pin()
+        keycard.element_by_translation_id("keycard-backup-success-title").wait_for_element(30)
+        keycard.ok_button.click()
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(695851)
     @marks.medium
     def test_keycard_frozen_card_flows(self):
-        # TODO: should be renewed after fix 12324
         sign_in = SignInView(self.driver)
         seed = basic_user['passphrase']
         home = sign_in.recover_access(passphrase=seed, keycard=True)
@@ -478,14 +518,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard.enter_another_pin()
         if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed():
             self.driver.fail("No popup about frozen keycard is shown!")
-
-        # home.element_by_translation_id("keycard-is-frozen-factory-reset").click()
-        # sign_in.seedphrase_input.set_value(transaction_senders['A']['passphrase'])
-        # sign_in.next_button.click()
-        # if not home.element_by_translation_id("seed-key-uid-mismatch").is_element_displayed():
-        #     self.driver.fail("No popup about mismatch in seed phrase is shown!")
-        # home.element_by_translation_id("try-again").click()
-        # sign_in.seedphrase_input.clear()
         home.element_by_translation_id("keycard-is-frozen-reset").click()
         keycard.enter_another_pin()
         home.element_by_text_part('2/2').wait_for_element(20)
@@ -496,8 +528,92 @@ class TestCreateAccount(SingleDeviceTestCase):
         home.profile_button.double_click()
         profile.logout()
 
-
         home.just_fyi("Checking reset with PUK when logged out")
+        keycard.enter_default_pin()
+        keycard.wait_for_element_starts_with_text('2 attempts left', 30)
+        keycard.enter_default_pin()
+        keycard.element_by_text_part('one attempt').wait_for_element(30)
+        keycard.enter_default_pin()
+        if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed():
+            self.driver.fail("No popup about frozen keycard is shown!")
+        home.element_by_translation_id("keycard-is-frozen-reset").click()
+        keycard.enter_another_pin()
+        home.element_by_text_part('2/2').wait_for_element(20)
+        keycard.enter_another_pin()
+        home.element_by_translation_id("enter-puk-code").click()
+        keycard.enter_default_puk()
+        home.element_by_translation_id("keycard-access-reset").wait_for_element(20)
+        home.element_by_translation_id("open").click()
+
+        home.just_fyi("Checking reset with seed when logged in")
+        profile = home.profile_button.click()
+        profile.keycard_button.scroll_and_click()
+        profile.change_pin_button.click()
+        keycard.enter_default_pin()
+        keycard.wait_for_element_starts_with_text('2 attempts left', 30)
+        keycard.enter_default_pin()
+        keycard.element_by_text_part('one attempt').wait_for_element(30)
+        keycard.enter_default_pin()
+        if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed():
+            self.driver.fail("No popup about frozen keycard is shown!")
+        home.element_by_translation_id("dismiss").click()
+        profile.profile_button.double_click()
+        profile.keycard_button.scroll_and_click()
+        profile.change_pin_button.click()
+        if not home.element_by_translation_id("keycard-reset-passcode").is_element_displayed():
+            self.driver.fail("No reset card flow is shown for frozen card")
+        home.element_by_text('reset with mnemonic').click()
+        sign_in.seedphrase_input.set_value(transaction_senders['A']['passphrase'])
+        sign_in.next_button.click()
+        if not home.element_by_translation_id("seed-key-uid-mismatch").is_element_displayed():
+            self.driver.fail("No popup about mismatch in seed phrase is shown!")
+        home.element_by_translation_id("try-again").click()
+        sign_in.seedphrase_input.clear()
+        sign_in.seedphrase_input.set_value(seed)
+        sign_in.next_button.click()
+        keycard.begin_setup_button.click()
+        keycard.yes_button.click()
+        keycard.enter_default_pin()
+        home.element_by_translation_id("intro-wizard-title5").wait_for_element(20)
+        keycard.enter_default_pin()
+        home.element_by_translation_id("keycard-access-reset").wait_for_element(30)
+        home.ok_button.click()
+        profile.profile_button.double_click()
+        profile.logout()
+
+        home.just_fyi("Checking reset with seed when logged out")
+        keycard.enter_another_pin()
+        keycard.wait_for_element_starts_with_text('2 attempts left', 30)
+        keycard.enter_another_pin()
+        keycard.element_by_text_part('one attempt').wait_for_element(30)
+        keycard.enter_another_pin()
+        if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed():
+            self.driver.fail("No popup about frozen keycard is shown!")
+
+        sign_in.element_by_translation_id("keycard-is-frozen-factory-reset").click()
+        sign_in.seedphrase_input.set_value(seed)
+        sign_in.next_button.click()
+        keycard.begin_setup_button.click()
+        keycard.yes_button.click()
+        keycard.enter_default_pin()
+        home.element_by_translation_id("intro-wizard-title5").wait_for_element(20)
+        keycard.enter_default_pin()
+        home.element_by_translation_id("keycard-access-reset").wait_for_element(30)
+        home.ok_button.click()
+        keycard.enter_default_pin()
+        home.home_button.wait_for_element(30)
+
+    @marks.testrail_id(695852)
+    @marks.medium
+    def test_keycard_blocked_card_lost_or_frozen_flows(self):
+        sign_in = SignInView(self.driver)
+        seed = basic_user['passphrase']
+        home = sign_in.recover_access(passphrase=seed, keycard=True)
+        profile = home.profile_button.click()
+        profile.keycard_button.scroll_and_click()
+
+        home.just_fyi("Checking blocked card screen when entering 3 times invalid PIN + 5 times invalid PUK")
+        keycard = profile.change_pin_button.click()
         keycard.enter_another_pin()
         keycard.wait_for_element_starts_with_text('2 attempts left', 30)
         keycard.enter_another_pin()
@@ -510,18 +626,46 @@ class TestCreateAccount(SingleDeviceTestCase):
         home.element_by_text_part('2/2').wait_for_element(20)
         keycard.enter_another_pin()
         home.element_by_translation_id("enter-puk-code").click()
-        keycard.enter_default_puk()
-        home.element_by_translation_id("keycard-access-reset").wait_for_element(20)
-        home.element_by_translation_id("open").click()
 
+        for i in range(1,4):
+            keycard.enter_default_puk()
+            sign_in.wait_for_element_starts_with_text('%s attempts left' % str(5-i))
+            i+=1
+        keycard.enter_default_puk()
+        sign_in.element_by_text_part('one attempt').wait_for_element(30)
+        keycard.enter_default_puk()
+        keycard.element_by_translation_id("keycard-is-blocked-title").wait_for_element(30)
+        keycard.close_button.click()
+        if not keycard.element_by_translation_id("keycard-blocked").is_element_displayed():
+            self.errors.append("In keycard settings there is no info that card is blocked")
+        keycard.back_button.click()
+        profile.logout()
+
+        home.just_fyi("Check blocked card when user is logged out and use lost or frozen to restore access")
+        keycard.enter_another_pin()
+        keycard.element_by_translation_id("keycard-is-blocked-title").wait_for_element(30)
+        keycard.element_by_translation_id("keycard-recover").click()
+        keycard.yes_button.click()
+        sign_in.seedphrase_input.set_value(seed)
+        sign_in.next_button.click()
+        keycard.begin_setup_button.click()
+        keycard.yes_button.click()
+        keycard.enter_default_pin()
+        home.element_by_translation_id("intro-wizard-title5").wait_for_element(20)
+        keycard.enter_default_pin()
+        home.element_by_translation_id("keycard-access-reset").wait_for_element(30)
+        home.ok_button.click()
+        keycard.enter_default_pin()
+        home.home_button.wait_for_element(30)
 
         self.errors.verify_no_errors()
+
 
 class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5689)
     @marks.critical
-    def test_keycard_create_login_resotore_unlock_same_seed(self):
+    def test_keycard_create_login_restore_unlock_same_seed(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 

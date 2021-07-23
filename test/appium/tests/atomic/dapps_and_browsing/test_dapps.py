@@ -1,4 +1,4 @@
-from tests import marks, test_dapp_name
+from tests import marks, test_dapp_name, test_dapp_url
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import basic_user
 from views.sign_in_view import SignInView
@@ -110,7 +110,7 @@ class TestDApps(SingleDeviceTestCase):
             self.errors.append("Permissions for %s are not removed" % test_dapp_name)
 
         sign_in_view.just_fyi('check that can change account')
-        profile_view.dapp_tab_button.click(desired_element_text='Allow')
+        profile_view.dapp_tab_button.click()
         if not status_test_dapp.element_by_text_part(account_name).is_element_displayed():
             self.errors.append("No expected account %s is shown in authorize web3 popup for wallet" % account_name)
         status_test_dapp.allow_button.click()

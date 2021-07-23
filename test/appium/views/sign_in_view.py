@@ -124,6 +124,7 @@ class SignInView(BaseView):
         self.driver = driver
 
         self.password_input = EditBox(self.driver, accessibility_id="password-input")
+        self.migration_password_input = EditBox(self.driver, accessibility_id="enter-password-input")
         self.sign_in_button = SignInButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
         self.generate_key_button = Button(self.driver, translation_id="generate-new-key")

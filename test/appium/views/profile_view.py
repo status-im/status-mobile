@@ -275,7 +275,7 @@ class ProfileView(BaseView):
         self.change_pin_button = KeycardButton(self.driver, translation_id="change-pin")
         self.change_puk_button = KeycardButton(self.driver, translation_id="change-puk")
         self.change_pairing_code_button = KeycardButton(self.driver, translation_id="change-pairing")
-        self.create_keycard_backup_button = Button(self.driver, translation_id="keycard-backup")
+        self.create_keycard_backup_button = KeycardButton(self.driver, translation_id="keycard-backup")
 
 
         # Advanced
