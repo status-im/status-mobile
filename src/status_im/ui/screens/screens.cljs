@@ -66,6 +66,10 @@
              :as
              edit-bootnode]
             [status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
+            [status-im.ui.screens.wakuv2-settings.views :as wakuv2-settings]
+            [status-im.ui.screens.wakuv2-settings.edit-node.views
+             :as
+             edit-wakuv2-node]
             [status-im.ui.screens.pairing.views :as pairing]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views
              :as
@@ -420,6 +424,14 @@
            {:name      :blocked-users-list
             :options   {:topBar {:title {:text (i18n/label :t/blocked-users)}}}
             :component contacts-list/blocked-users-list}
+           {:name      :wakuv2-settings
+            ;;TODO dynamic title
+            :options   {:topBar {:visible false}}
+            :component wakuv2-settings/wakuv2-settings}
+           {:name      :edit-wakuv2-node
+            ;;TODO dynamic title
+            :options   {:topBar {:visible false}}
+            :component edit-wakuv2-node/edit-node}
            {:name      :bootnodes-settings
             ;;TODO dynamic title
             :options   {:topBar {:visible false}}
