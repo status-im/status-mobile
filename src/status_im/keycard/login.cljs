@@ -67,6 +67,8 @@
                          :status nil))
       :hide-popover nil})
    (when-not (:multiaccounts/login db)
+     (navigation/change-tab :profile))
+   (when-not (:multiaccounts/login db)
      (if (:popover/popover db)
        (navigation/navigate-replace :keycard-pin nil)
        (navigation/navigate-to-cofx :keycard-pin nil)))))

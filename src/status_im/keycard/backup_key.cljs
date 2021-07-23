@@ -16,6 +16,8 @@
   (fx/merge cofx
             {:db (-> db
                      (assoc-in [:keycard :creating-backup?] backup-type))}
+            (when-not (:multiaccounts/login db)
+              (navigation/change-tab :profile))
             (navigation/navigate-to-cofx :seed-phrase nil)))
 
 (fx/defn recovery-card-pressed
