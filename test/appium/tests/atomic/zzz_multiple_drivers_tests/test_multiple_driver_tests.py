@@ -102,8 +102,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         devices_chat[0].accept_group_invitation_button.click()
         devices_chat[0].accept_membership_for_group_chat_via_chat_view(devices_username[2], accept=False)
         devices_chat[0].click_system_back_button()
-        devices_chat[1].just_fyi('Member_1: join chat')
-        devices_chat[1].join_chat_button.click()
         devices_chat[2].just_fyi('Member_2: retry request')
         devices_chat[2].retry_group_invite_button.click()
         devices_chat[2].request_membership_for_group_chat(introduction_messages[0])
