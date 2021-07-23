@@ -64,8 +64,7 @@
 
       (and public-key (not own))
       (fx/merge cofx
-                {:db (assoc db :contacts/identity public-key)
-                 :dispatch [:open-modal :profile]}
+                {:dispatch [:chat.ui/show-profile public-key]}
                 (navigation/navigate-back))
 
       :else
