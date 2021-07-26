@@ -177,6 +177,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet.set_up_wallet()
         for asset in ('ETH', 'MDS', 'STT'):
             wallet.wait_balance_is_changed(asset)
+        wallet.accounts_status_account.scroll_to_element(direction='up')
         wallet.accounts_status_account.click()
         transaction = wallet.transaction_history_button.click()
         if not wallet.element_by_translation_id("transactions-history-empty").is_element_displayed():

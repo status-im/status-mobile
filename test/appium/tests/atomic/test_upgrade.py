@@ -55,7 +55,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         not_contact_chat = home.get_chat(not_contact).click()
         if not not_contact_chat.add_to_contacts.is_element_displayed():
             self.errors.append('Add to contacts is not shown in 1-1 chat')
-        images = not_contact_chat.image_chat_item.find_elements()
+        images = not_contact_chat.image_message_in_chat.find_elements()
         if len(images) != 2:
             self.errors.append('%s images are shown instead of 2' % str(len(images)))
         for message in chats[not_contact]['messages']:
@@ -437,7 +437,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         chat_name = group.make_admin['name']
         [chat_1, chat_2] = [home.get_chat(chat_name).click() for home in (home_1, home_2)]
         for chat in [chat_1, chat_2]:
-            if not chat.image_chat_item.is_element_displayed():
+            if not chat.image_message_in_chat.is_element_displayed():
                 self.errors.append("Image in group chat is not shown after upgrade")
             if not chat.audio_message_in_chat_timer.is_element_displayed():
                 self.errors.append('Timer is not shown for audiomessage in group chat')
@@ -488,7 +488,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         device_1.just_fyi("Check status")
         timeline = home_1.status_button.click()
         statuses = group.timeline
-        for element in timeline.element_by_text(statuses['text']), timeline.image_chat_item, timeline.element_by_text(statuses['link']):
+        for element in timeline.element_by_text(statuses['text']), timeline.image_message_in_chat, timeline.element_by_text(statuses['link']):
             if not element.is_element_displayed():
                 self.errors.append("Status is not shown after upgrade!")
         timeline.element_by_text(statuses['link']).click()

@@ -573,10 +573,9 @@ class ChatView(BaseView):
         self.show_images_button = Button(self.driver, accessibility_id="show-photo-icon")
         self.take_photo_button = Button(self.driver, accessibility_id="take-picture")
         self.image_from_gallery_button = Button(self.driver, accessibility_id="open-gallery")
-        self.image_message_in_chat = Button(self.driver, accessibility_id="image-message")
         self.first_image_from_gallery = Button(self.driver,
                                                xpath="//*[@content-desc='open-gallery']/following-sibling::android.view.ViewGroup[1]")
-        self.image_message_in_chat = Button(self.driver, accessibility_id="message-image")
+        self.image_message_in_chat = Button(self.driver, accessibility_id="image-message")
         self.save_image_button = Button(self.driver, translation_id="save")
         self.recent_image_in_gallery = Button(self.driver,
                                               xpath="//*[contains(@resource-id,'thumbnail')]")

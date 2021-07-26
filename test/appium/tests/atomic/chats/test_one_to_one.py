@@ -327,7 +327,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_status = 'Hey hey hey'
         timeline = device_1.status_button.click()
         timeline.set_new_status(device_1_status, image=True)
-        for element in timeline.element_by_text(device_1_status), timeline.image_chat_item:
+        for element in timeline.element_by_text(device_1_status), timeline.image_message_in_chat:
             if not element.is_element_displayed():
                 self.drivers[0].fail('Status is not set')
 
@@ -346,13 +346,13 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.set_value(image_description)
         device_1_chat.send_message_button.click()
         device_1_chat.chat_message_input.click()
-        for message in device_1_chat.image_chat_item, device_1_chat.chat_element_by_text(image_description):
+        for message in device_1_chat.image_message_in_chat, device_1_chat.chat_element_by_text(image_description):
             if not message.is_element_displayed():
                 self.errors.append('Image or description is not shown in chat after sending for sender')
         device_1_chat.show_images_button.click()
         device_1_chat.image_from_gallery_button.click()
         device_1_chat.click_system_back_button()
-        device_1_chat.image_chat_item.long_press_element()
+        device_1_chat.image_message_in_chat.long_press_element()
         for element in device_1_chat.reply_message_button, device_1_chat.save_image_button:
             if not element.is_element_displayed():
                 self.errors.append('Save and reply are not available on long-press on own image messages')
@@ -361,21 +361,21 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_2_home.just_fyi('check image, description and options for receiver')
         device_2_chat = device_2_home.get_chat(device_1_username).click()
-        for message in device_2_chat.image_chat_item, device_2_chat.chat_element_by_text(image_description):
+        for message in device_2_chat.image_message_in_chat, device_2_chat.chat_element_by_text(image_description):
             if not message.is_element_displayed():
                 self.errors.append('Image or description is not shown in chat after sending for receiver')
 
         device_2_home.just_fyi('View user profile and check status')
         device_2_chat.chat_options.click()
         timeline_device_1 = device_2_chat.view_profile_button.click()
-        for element in timeline_device_1.element_by_text(device_1_status), timeline_device_1.image_chat_item:
+        for element in timeline_device_1.element_by_text(device_1_status), timeline_device_1.image_message_in_chat:
             element.scroll_to_element()
             if not element.is_element_displayed():
                 self.drivers[0].fail('Status of another user not shown when open another user profile')
         device_2_chat.close_button.click()
 
         device_2_home.just_fyi('check options on long-press image for receiver')
-        device_2_chat.image_chat_item.long_press_element()
+        device_2_chat.image_message_in_chat.long_press_element()
         for element in (device_2_chat.reply_message_button, device_2_chat.save_image_button):
             if not element.is_element_displayed():
                 self.errors.append('Save and reply are not available on long-press on received image messages')

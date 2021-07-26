@@ -228,7 +228,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_chat.send_message_button.click()
         device_1_chat.chat_message_input.click()
         for chat in device_1_chat, device_2_chat, device_3_chat:
-            if not chat.image_chat_item.is_element_displayed(60):
+            if not chat.image_message_in_chat.is_element_displayed(60):
                 self.errors.append('Image is not shown in chat after sending for %s' % chat.driver.number)
         device_1.just_fyi('Send audio message to group chat and verify it on all devices')
         device_1_chat.record_audio_message(message_length_in_seconds=3)
