@@ -149,6 +149,13 @@
                        (update-in [:chat/inputs current-chat-id :metadata]
                                   dissoc :sending-image))})))
 
+(fx/defn cancel-contact-request
+  "Cancels contact request"
+  {:events [:chat.ui/cancel-contact-request]}
+  [{:keys [db]}]
+  (let [current-chat-id (:current-chat-id db)]
+    {:db (assoc-in db [:chat/inputs current-chat-id :metadata :sending-contact-request] nil)}))
+
 (fx/defn cancel-message-reply
   "Cancels stage message reply"
   {:events [:chat.ui/cancel-message-reply]}

@@ -3,6 +3,9 @@
 (def tiny {:font-size    10
            :line-height 14})
 
+(def x-small {:font-size 12
+            :line-height 16})
+
 (def small {:font-size   13
             :line-height 18})
 

@@ -55,7 +55,8 @@
       [quo/button {:type     :secondary
                    :weight          :medium
                    :number-of-lines 1
-                   :style           {:line-height 18}}
+                   :style           {:line-height 18}
+                   :on-press #(re-frame/dispatch [:chat.ui/cancel-contact-request])}
        "Cancel"]
       [quo/button {:type     :secondary
                    :weight          :medium

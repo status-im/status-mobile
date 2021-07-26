@@ -28,6 +28,7 @@
            :inherit           nil)
          (case (or size :base)
            :tiny     typography/tiny
+           :x-small  typography/x-small
            :small    typography/small
            :base     typography/base
            :large    typography/large

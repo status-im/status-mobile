@@ -73,13 +73,14 @@
       [icons/icon :main-icons/keyboard (styles/icon false)]
       [icons/icon :main-icons/speech (styles/icon false)])]])
 
-(defn send-button [on-send]
+(defn send-button [on-send contact-request]
   [rn/touchable-opacity {:on-press-in on-send}
    [rn/view {:style (styles/send-message-button)}
-    [icons/icon :main-icons/arrow-up
-     {:container-style     (styles/send-message-container)
-      :accessibility-label :send-message-button
-      :color               (styles/send-icon-color)}]]])
+    (when-not contact-request
+      [icons/icon :main-icons/arrow-up
+       {:container-style     (styles/send-message-container contact-request)
+        :accessibility-label :send-message-button
+        :color               (styles/send-icon-color)}])]])
 
 (defn on-selection-change [timeout-id last-text-change mentionable-users args]
   (let [selection (.-selection ^js (.-nativeEvent ^js args))
@@ -329,7 +330,7 @@
       [reply/send-image sending-image])))
 
 (defn actions [extensions image show-send actions-ref active-panel set-active-panel contact-request]
-  [rn/view {:style (styles/actions-wrapper show-send contact-request)
+  [rn/view {:style (styles/actions-wrapper (and (not contact-request) show-send))
             :ref   actions-ref}
    (when extensions
      [touchable-icon {:panel               :extensions
@@ -346,8 +347,7 @@
   (let [actions-ref (quo.react/create-ref)
         send-ref (quo.react/create-ref)
         sticker-ref (quo.react/create-ref)
-        toolbar-options (re-frame/subscribe [:chats/chat-toolbar])
-        contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
+        toolbar-options (re-frame/subscribe [:chats/chat-toolbar])]
     (fn [{:keys [active-panel set-active-panel text-input-ref chat-id]}]
       (let [;we want to control components on native level, so instead of RN state we set native props via reference
             ;we don't react on input text in this view, @input-texts below is a regular atom
@@ -356,7 +356,8 @@
                   :sticker-ref    sticker-ref
                   :text-input-ref text-input-ref}
             {:keys [send stickers image extensions audio sending-image]} @toolbar-options
-            show-send (or sending-image (seq (get @input-texts chat-id)))]
+            show-send (or sending-image (seq (get @input-texts chat-id)))
+            contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
         [rn/view {:style     (styles/toolbar)
                   :on-layout on-chat-toolbar-layout}
            ;;EXTENSIONS and IMAGE buttons
@@ -372,7 +373,8 @@
            [rn/view {:ref send-ref :style (when-not show-send {:width 0 :right -100})}
             (when send
               [send-button #(do (clear-input chat-id refs)
-                                (re-frame/dispatch [:chat.ui/send-current-message]))])]
+                                (re-frame/dispatch [:chat.ui/send-current-message]))
+               contact-request])]
 
            ;;STICKERS and AUDIO buttons
            (when-not @(re-frame/subscribe [:chats/edit-message])

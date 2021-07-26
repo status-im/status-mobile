@@ -14,11 +14,12 @@
 (defn input-container [contact-request]
   {:background-color           (:ui-01 @colors/theme)
    :flex                       1
+   :height (when contact-request 44)
    :border-top-left-radius     (if contact-request 8 16)
    :border-top-right-radius    (if contact-request 8 16)
    :border-bottom-right-radius (if contact-request 8 4)
    :border-bottom-left-radius  (if contact-request 8 16)
-   :margin-horizontal          (when-not contact-request 8)})
+   :margin-horizontal          (when contact-request 8)})
 
 (def input-row
   {:flex-direction :row
@@ -46,15 +47,15 @@
           :padding-horizontal 12}
          (if platform/android?
            {:padding-vertical 2}
-           {:padding-top    2
-            :padding-bottom 6})))
+           {:padding-top    (if contact-request 10 2)
+            :padding-bottom (if contact-request 5 6)})))
 
-(defn actions-wrapper [show-send contact-request]
+(defn actions-wrapper [show-send]
   (merge
    (when show-send
      {:width 0 :left -88})
    {:flex-direction :row
-    :padding-left   (if contact-request 8 4)
+    :padding-left   4
     :min-height     34}))
 
 (defn touchable-icon []
@@ -103,11 +104,11 @@
   {:margin-vertical   4
    :margin-horizontal 5})
 
-(defn send-message-container []
+(defn send-message-container [contact-request]
   {:background-color (:interactive-01 @colors/theme)
    :width            26
-   :height           44
-  ;;  :border-radius    8
+   :height           (if contact-request 44 26)
+   :border-radius    (if contact-request 22 13)
    :justify-content  :center
    :align-items      :center})
 

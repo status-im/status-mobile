@@ -227,13 +227,13 @@
       [react/animated-view {:style (styles/rec-outer-circle outer-scale)}]
       [react/animated-view {:style (styles/rec-inner-circle inner-scale inner-border-radius)}]]]))
 
-(defn- cancel-button [disabled? on-press]
+(defn- cancel-button [disabled? on-press contact-request]
   [pressable/pressable {:type     :scale
                         :disabled disabled?
                         :on-press on-press}
    [react/view {:style (input.style/send-message-button)}
     [icons/icon :main-icons/close
-     {:container-style     (merge (input.style/send-message-container) {:background-color colors/gray})
+     {:container-style     (merge (input.style/send-message-container contact-request) {:background-color colors/gray})
       :accessibility-label :cancel-message-button
       :color               colors/white-persist}]]])
 
@@ -272,13 +272,14 @@
                                (reset! on-background-cb nil))}
     (let [base-params {:rec-button-anim-value rec-button-anim-value
                        :ctrl-buttons-anim-value ctrl-buttons-anim-value
-                       :timer timer}]
+                       :timer timer}
+          contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
       [react/view {:style styles/container}
        [react/text {:style styles/timer
                     :accessibility-label :audio-message-recorded-time} @timer]
        [react/view {:style styles/buttons-container}
         [react/animated-view {:style {:opacity ctrl-buttons-anim-value}}
-         [cancel-button (:cancel-disabled? @state) #(stop-recording base-params)]]
+         [cancel-button (:cancel-disabled? @state) #(stop-recording base-params) contact-request]]
         [rec-button-view (merge base-params {:state state})]
         [react/animated-view {:style {:opacity ctrl-buttons-anim-value}}
          [input/send-button (fn [] (cond
