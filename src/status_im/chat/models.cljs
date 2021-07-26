@@ -211,14 +211,16 @@
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
   {:events [:chat.ui/navigate-to-chat]}
-  [{db :db :as cofx} chat-id]
+  [{db :db :as cofx} chat-id dont-reset?]
   (fx/merge cofx
             (close-chat (:current-chat-id db))
             (fn [{:keys [db]}]
               {:db (assoc db :current-chat-id chat-id :ignore-close-chat true)})
             (preload-chat-data chat-id)
-            (navigation/change-tab :chat)
-            (navigation/pop-to-root-tab :chat-stack)
+            #(when-not dont-reset?
+               (navigation/change-tab % :chat))
+            #(when-not dont-reset?
+               (navigation/pop-to-root-tab % :chat-stack))
             (navigation/navigate-to-cofx :chat nil)))
 
 (fx/defn handle-clear-history-response
@@ -279,7 +281,7 @@
   (if (or (new-public-chat.db/valid-topic? topic) profile-public-key)
     (if (active-chat? cofx topic)
       (when-not dont-navigate?
-        (navigate-to-chat cofx topic))
+        (navigate-to-chat cofx topic false))
       (create-public-chat-go
        cofx
        topic

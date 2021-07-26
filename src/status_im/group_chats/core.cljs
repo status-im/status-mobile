@@ -60,7 +60,7 @@
 (fx/defn create-from-link
   [cofx {:keys [chat-id invitation-admin chat-name]}]
   (if (get-in cofx [:db :chats chat-id :is-active])
-    (models.chat/navigate-to-chat cofx chat-id)
+    (models.chat/navigate-to-chat cofx chat-id false)
     {::json-rpc/call [{:method     (json-rpc/call-ext-method "createGroupChatFromInvitation")
                        :params     [chat-name chat-id invitation-admin]
                        :js-response true
