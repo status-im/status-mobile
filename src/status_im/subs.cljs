@@ -456,7 +456,7 @@
  :disconnected?
  :<- [:peers-count]
  :<- [:waku/v2-flag]
- (fn [peers-count wakuv2-flag]
+ (fn [[peers-count wakuv2-flag]]
    ;; TODO Right now wakuv2 module in status-go
    ;; does not report peer counts properly,
    ;; so we always assume that we're connected
