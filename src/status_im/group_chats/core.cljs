@@ -209,11 +209,12 @@
 
 (fx/defn ui-leave-chat-pressed
   {:events [:group-chats.ui/leave-chat-pressed]}
-  [_ chat-id]
-  {:ui/show-confirmation
-   {:title               (i18n/label :t/leave-confirmation)
-    :content             (i18n/label :t/leave-chat-confirmation)
-    :confirm-button-text (i18n/label :t/leave)
-    :on-accept           #(do
-                            (re-frame/dispatch [:bottom-sheet/hide])
-                            (re-frame/dispatch [:group-chats.ui/leave-chat-confirmed chat-id]))}})
+  [{:keys [db]} chat-id]
+  (let [chat-name (get-in db [:chats chat-id :name])]
+    {:ui/show-confirmation
+     {:title               (i18n/label :t/leave-confirmation {:chat-name chat-name})
+      :content             (i18n/label :t/leave-chat-confirmation)
+      :confirm-button-text (i18n/label :t/leave)
+      :on-accept           #(do
+                              (re-frame/dispatch [:bottom-sheet/hide])
+                              (re-frame/dispatch [:group-chats.ui/leave-chat-confirmed chat-id]))}}))

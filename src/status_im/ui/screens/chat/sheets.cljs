@@ -36,12 +36,6 @@
        :icon                :main-icons/check
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
      [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/clear-history)
-       :accessibility-label :clear-history-button
-       :icon                :main-icons/close
-       :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}]
-     [quo/list-item
       {:theme               :negative
        :title               (i18n/label :t/delete-chat)
        :accessibility-label :delete-chat-button
@@ -99,13 +93,7 @@
        :title               (i18n/label :t/mark-all-read)
        :accessibility-label :mark-all-read-button
        :icon                :main-icons/check
-       :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/clear-history)
-       :accessibility-label :clear-history-button
-       :icon                :main-icons/close
-       :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}]]))
+       :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]]))
 
 (defn group-chat-accents []
   (fn [{:keys [chat-id group-chat chat-name color invitation-admin]}]
@@ -135,12 +123,6 @@
            :accessibility-label :mark-all-read-button
            :icon                :main-icons/check
            :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
-         [quo/list-item
-          {:theme               :accent
-           :title               (i18n/label :t/clear-history)
-           :accessibility-label :clear-history-button
-           :icon                :main-icons/close
-           :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}]
          (when joined?
            [quo/list-item
             {:theme               :negative

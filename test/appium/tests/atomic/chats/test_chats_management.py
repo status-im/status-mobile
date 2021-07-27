@@ -130,33 +130,33 @@ class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5426)
     @marks.medium
-    def test_clear_history_via_options(self):
+    def test_public_clear_history_via_options_and_long_press(self):
         home = SignInView(self.driver).create_user()
-        chat = home.add_contact(basic_user['public_key'])
 
         home.just_fyi("Creating 3 types of chats")
-        one_to_one, public, group = basic_user['username'], '#public-clear-options', 'group'
+        public_options, public_long_press = '#public-clear-options', '#public-long-options'
         message = 'test message'
-        chat.home_button.double_click()
-        home.create_group_chat([basic_user['username']], group)
-        chat.home_button.double_click()
-        home.join_public_chat(public[1:])
-        chat.get_back_to_home_view()
-        for chat_name in one_to_one, public, group:
-            chat = home.get_chat(chat_name).click()
+        for pub_chat in [public_options[1:], public_long_press[1:]]:
+            chat = home.join_public_chat(pub_chat)
             [chat.send_message(message) for _ in range(2)]
-            chat.clear_history()
-            if chat.element_by_text(message).is_element_displayed():
-                self.errors.append('Messages in %s chat are still shown after clearing history' % chat_name)
-            chat.get_back_to_home_view()
+            home.home_button.double_click()
+
+        home.just_fyi('Clearing history via long press')
+        home.clear_chat_long_press(public_long_press)
+
+        home.just_fyi('Clearing history via options')
+        chat = home.get_chat(public_options).click()
+        chat.clear_history()
+        if chat.element_by_text(message).is_element_displayed():
+            self.errors.append('Messages in %s chat are still shown after clearing history via options' % public_options)
+
+        home.just_fyi("Recheck that history won't reappear after relogin")
         home.relogin()
-        for chat_name in one_to_one, public, group:
-            if home.element_by_text(message).is_element_displayed():
-                self.errors.append('Messages in %s chat are still shown in Preview after clearing history and relaunch' % chat_name)
+        for chat_name in public_options, public_long_press:
             chat = home.get_chat(chat_name).click()
-            if chat.element_by_text(message).is_element_displayed():
-                self.errors.append('Messages in %s chat are shown after clearing history and relauch' % chat_name)
-            chat.get_back_to_home_view()
+            if chat.chat_element_by_text(message).is_element_displayed():
+                self.errors.append('Messages in %s chat are shown after clearing history and relaunch' % chat_name)
+            chat.home_button.click()
 
         self.errors.verify_no_errors()
 
@@ -244,47 +244,6 @@ class TestChatManagement(SingleDeviceTestCase):
             if home.element_by_text_part('No search results. Do you mean').is_element_displayed():
                 self.errors.append('"No search results" is shown when searching for invalid value %s' % text)
             home.cancel_button.click()
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5386)
-    @marks.medium
-    def test_long_press_to_clear_chat_history(self):
-        home = SignInView(self.driver).create_user()
-        messages = [home.get_random_message() for _ in range(3)]
-
-        home.just_fyi("Creating 3 types of chats")
-        chat = home.add_contact(basic_user['public_key'])
-        one_to_one, public, group = basic_user['username'], '#public-clear-long-press', 'group'
-        chat.home_button.click()
-        home.create_group_chat([basic_user['username']], group)
-        chat.home_button.click()
-        home.join_public_chat(public[1:])
-        chat.home_button.click()
-
-        home.just_fyi("Clearing history for 3 types of chats and check it will not reappear after re-login")
-        i = 0
-        for chat_name in one_to_one, public, group:
-            message=messages[i]
-            chat = home.get_chat(chat_name).click()
-            chat.send_message(message)
-            if chat.element_by_text(message).is_element_displayed():
-                self.errors.append('Messages in %s chat are still shown after clearing history' % chat_name)
-            i += 1
-            home = chat.home_button.click()
-            home.clear_chat_long_press(chat_name)
-        home.relogin()
-        for message in messages:
-            if home.element_by_text(message).is_element_displayed():
-                self.errors.append('Message is still shown in Preview after clearing history and relaunch')
-        i = 0
-        for chat_name in one_to_one, public, group:
-            message=messages[i]
-            chat = home.get_chat(chat_name).click()
-            if chat.element_by_text(message).is_element_displayed():
-                self.errors.append('Messages in %s chat are shown after clearing history and relaunch' % chat_name)
-            i += 1
-            chat.home_button.click()
 
         self.errors.verify_no_errors()
 
