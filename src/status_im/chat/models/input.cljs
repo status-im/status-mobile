@@ -236,7 +236,7 @@
                       :js-response true
                       :on-error #(log/error "failed to edit message " %)
                       :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
-   (clean-input (:current-chat-id db))
+   (cancel-message-edit)
    (process-cooldown)))
 
 (fx/defn send-current-message
