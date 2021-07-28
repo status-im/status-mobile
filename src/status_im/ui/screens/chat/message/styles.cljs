@@ -35,11 +35,19 @@
    :padding-vertical   8
    :padding-horizontal 8})
 
-(defn quick-actions-row []
-  {:flex-direction   :row
+(defn quick-actions-container []
+  {:flex-direction   :column
    :justify-content  :space-evenly
    :border-top-width 1
    :border-top-color (:ui-01 @colors/theme)})
+
+(defn quick-actions-row []
+  {:flex-direction     :row
+   :padding-horizontal 16
+   :padding-vertical   12
+   :justify-content    :space-between
+   :border-top-width   1
+   :border-top-color   (:ui-01 @colors/theme)})
 
 (defn reaction-style [{:keys [outgoing own]}]
   (merge {:border-top-left-radius     10

@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.chat.message.reactions-picker
   (:require [cljs-bean.core :as bean]
             [status-im.ui.screens.chat.message.styles :as styles]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.constants :as constants]
             [reagent.core :as reagent]
             [quo.react-native :as rn]
@@ -18,6 +19,14 @@
 (def translate-x   27)
 (def translate-y   -24)
 
+(def id-icon
+  {"edit"   :main-icons/edit
+   "pin"    :main-icons/pin
+   "unpin"  :main-icons/pin
+   "copy"   :main-icons/copy
+   "reply"  :main-icons/reply
+   "delete" :main-icons/delete})
+
 (defn picker [{:keys [outgoing actions own-reactions on-close send-emoji timeline]}]
   [rn/view {:style (styles/container-style {:outgoing outgoing :timeline timeline})}
    [rn/view {:style (styles/reactions-picker-row)}
@@ -26,21 +35,25 @@
            :let          [active (own-reactions id)]]
        ^{:key id}
        [rn/touchable-opacity {:accessibility-label (str "pick-emoji-" id)
-                              :on-press             #(send-emoji id)}
+                              :on-press            #(send-emoji id)}
         [rn/view {:style (styles/reaction-button active)}
          [rn/image {:source resource
                     :style  {:height 32
                              :width  32}}]]]))]
    (when (seq actions)
-     [rn/view {:style (styles/quick-actions-row)}
+     [rn/view {:style (styles/quick-actions-container)}
       (for [action actions
-            :let   [{:keys [label on-press]} (bean/bean action)]]
-        ^{:key label}
+            :let   [{:keys [id label on-press]} (bean/bean action)]]
+        ^{:key id}
         [rn/touchable-opacity {:on-press (fn []
                                            (on-close)
                                            (js/setTimeout on-press animation-duration))}
-         [quo/button {:type :secondary}
-          label]])])])
+         [rn/view {:style (styles/quick-actions-row)}
+          [quo/text {:color  (if (= id "delete") :negative :link)
+                     :weight :medium} label]
+          ;; fallback to warning icon if id to icon mapping is not defined
+          [icons/icon (get id-icon id :main-icons/warning)
+           {:color (if (= id "delete") :red :blue)}]]])])])
 
 (def modal
   (reagent/adapt-react-class

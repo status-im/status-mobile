@@ -31,7 +31,7 @@
 (defn hide-message
   "Hide chat message, rebuild message-list"
   [{:keys [db]} chat-id message-id]
-  ;;TODO this is too expensive, probably we could mark message somehow and just hide it in the UI
+  ;; TODO this is too expensive, probably we could mark message somehow and just hide it in the UI
   (message-list/rebuild-message-list {:db (update-in db [:messages chat-id] dissoc message-id)} chat-id))
 
 (fx/defn add-senders-to-chat-users
@@ -194,3 +194,34 @@
 (fx/defn send-messages
   [cofx messages]
   (protocol/send-chat-messages cofx messages))
+
+(defn flip-args [f]
+  (fn [x y] (f y x)))
+
+(defn message-ids->message-id-chat-id-map
+  "Determine the chat ids of a seq of message-ids"
+  [db message-ids]
+  (->> db
+       :messages ; get messages map
+       seq ; convert it to seq
+       (map second) ; get values of messages map -> message-id : message-obj
+       (into {}) ; convert message-id : message-obj seq to map
+       ((flip-args select-keys) message-ids) ; select the message objects of the ids in question
+       vals ; keep only the values of required messages
+       (map #(select-keys % [:chat-id :message-id])))) ; return the chat-id and message-id of required messages
+
+(fx/defn handle-removed-messages
+  {:events [::handle-removed-messages]}
+  [{:keys [db]} removed-messages]
+  (let [mcids (message-ids->message-id-chat-id-map db removed-messages)]
+    {:db (reduce (fn [acc current]
+                   (update-in acc [:messages (:chat-id current)] dissoc (:message-id current)))
+                 db mcids)}))
+
+(comment
+  (handle-removed-messages
+   {:db {:messages {:c1 {:m1 {:chat-id :c1 :message-id :m1}
+                         :m2 {:chat-id :c1 :message-id :m2}}
+                    :c2 {:m3 {:chat-id :c2 :message-id :m3}
+                         :m4 {:chat-id :c2 :message-id :m4}}}}}
+   [:m1 :m3]))

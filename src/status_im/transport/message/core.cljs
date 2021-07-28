@@ -30,18 +30,19 @@
 (fx/defn process-response
   {:events [:process-response]}
   [{:keys [db] :as cofx} ^js response-js process-async]
-  (let [^js communities (.-communities response-js)
+  (let [^js communities                (.-communities response-js)
         ^js requests-to-join-community (.-requestsToJoinCommunity response-js)
-        ^js chats (.-chats response-js)
-        ^js contacts (.-contacts response-js)
-        ^js installations (.-installations response-js)
-        ^js messages (.-messages response-js)
-        ^js emoji-reactions (.-emojiReactions response-js)
-        ^js invitations (.-invitations response-js)
-        ^js removed-chats (.-removedChats response-js)
-        ^js activity-notifications (.-activityCenterNotifications response-js)
-        ^js pin-messages (.-pinMessages response-js)
-        sync-handler (when-not process-async process-response)]
+        ^js chats                      (.-chats response-js)
+        ^js contacts                   (.-contacts response-js)
+        ^js installations              (.-installations response-js)
+        ^js messages                   (.-messages response-js)
+        ^js emoji-reactions            (.-emojiReactions response-js)
+        ^js invitations                (.-invitations response-js)
+        ^js removed-chats              (.-removedChats response-js)
+        ^js activity-notifications     (.-activityCenterNotifications response-js)
+        ^js pin-messages               (.-pinMessages response-js)
+        ^js removed-messages           (.-removedMessages response-js)
+        sync-handler                   (when-not process-async process-response)]
 
     (cond
 
@@ -122,7 +123,14 @@
         (js-delete response-js "invitations")
         (fx/merge cofx
                   (process-next response-js sync-handler)
-                  (models.group/handle-invitations (map data-store.invitations/<-rpc invitations)))))))
+                  (models.group/handle-invitations (map data-store.invitations/<-rpc invitations))))
+
+      (seq removed-messages)
+      (let [removed-messages-clj (types/js->clj removed-messages)]
+        (js-delete response-js "removedMessages")
+        (fx/merge cofx
+                  (process-next response-js sync-handler)
+                  (models.message/handle-removed-messages removed-messages-clj))))))
 
 (defn group-by-and-update-unviewed-counts
   "group messages by current chat, profile updates, transactions and update unviewed counters in db for not curent chats"

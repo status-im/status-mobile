@@ -39,6 +39,7 @@
    "wakuext_post" {}
    "wakuext_requestAllHistoricMessages" {}
    "wakuext_editMessage" {}
+   "wakuext_deleteMessageAndSend" {}
    "wakuext_fillGaps" {}
    "wakuext_syncChatFromSyncedFrom" {}
    "wakuext_createPublicChat" {}
