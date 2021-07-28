@@ -388,6 +388,7 @@ class ProfileView(BaseView):
             ## take by Photo
             self.take_photo()
             self.click_system_back_button()
+            self.profile_picture.click()
             self.take_photo()
             self.accept_photo_button.click()
         self.crop_photo_button.click()
