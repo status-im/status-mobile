@@ -96,12 +96,6 @@
        :on-press            #(hide-sheet-and-dispatch [:navigate-to :community-channel-details {:chat-id chat-id}])}]
      [quo/list-item
       {:theme               :accent
-       :title               (i18n/label :t/pinned-messages)
-       :icon                :main-icons/pin
-       :accessory           :text
-       :on-press            #(hide-sheet-and-dispatch [:contact.ui/pinned-messages-pressed chat-id])}]
-     [quo/list-item
-      {:theme               :accent
        :title               (i18n/label :t/mark-all-read)
        :accessibility-label :mark-all-read-button
        :icon                :main-icons/check

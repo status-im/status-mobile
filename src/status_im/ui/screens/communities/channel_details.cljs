@@ -4,7 +4,8 @@
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.i18n.i18n :as i18n]
             [clojure.string :as string]
-            [status-im.communities.core :as communities]))
+            [status-im.communities.core :as communities]
+            [re-frame.core :as re-frame]))
 
 (defn view []
   (let [{:keys [chat-id]} (<sub [:get-screen-params])]
@@ -12,7 +13,8 @@
       (let [current-chat (<sub [:chat-by-id chat-id])
             {:keys [chat-name color description community-id]} current-chat
             category (<sub [:chats/category-by-chat-id community-id chat-id])
-            {:keys [admin]} (<sub [:communities/community community-id])]
+            {:keys [admin]} (<sub [:communities/community community-id])
+            pinned-messages (<sub [:chats/pinned chat-id])]
         [quo/animated-header {:left-accessories  [{:icon                :main-icons/arrow-left
                                                    :accessibility-label :back-button
                                                    :on-press            #(>evt [:navigate-back])}]
@@ -42,4 +44,10 @@
                               :accessory      :text
                               :accessory-text (if category
                                                 (:name category)
-                                                (i18n/label :t/none))}])])]))))
+                                                (i18n/label :t/none))}])
+            [quo/list-item
+             {:title               (i18n/label :t/pinned-messages)
+              :accessory           :text
+              :accessory-text      (count pinned-messages)
+              :chevron             true
+              :on-press            #(re-frame/dispatch [:contact.ui/pinned-messages-pressed chat-id])}]])]))))
