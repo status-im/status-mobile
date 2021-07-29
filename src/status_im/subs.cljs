@@ -1802,12 +1802,15 @@
 (re-frame/reg-sub
  :activity.center/notifications-grouped-by-date
  :<- [:activity.center/notifications]
- (fn [{:keys [notifications]}]
-   (let [supported-notifications (filter (fn [{:keys [type]}]
-                                           (or (= constants/activity-center-notification-type-mention type)
-                                               (= constants/activity-center-notification-type-one-to-one-chat type)
-                                               (= constants/activity-center-notification-type-private-group-chat type)
-                                               (= constants/activity-center-notification-type-reply type))) notifications)]
+ :<- [::chats]
+ (fn [[{:keys [notifications]} chats]]
+   (let [supported-notifications (filter (fn [{:keys [type chat-id]}]
+                                           (and
+                                            (or (= constants/activity-center-notification-type-mention type)
+                                                (= constants/activity-center-notification-type-one-to-one-chat type)
+                                                (= constants/activity-center-notification-type-private-group-chat type)
+                                                (= constants/activity-center-notification-type-reply type))
+                                            (get chats chat-id))) notifications)]
      (group-notifications-by-date (map #(assoc % :timestamp (or (:timestamp %) (:timestamp (or (:message %) (:last-message %))))) supported-notifications)))))
 
 ;;WALLET TRANSACTIONS ==================================================================================================
