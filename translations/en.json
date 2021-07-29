@@ -796,6 +796,7 @@
     "logout-app-content": "The account will be logged out. When you unlock it again, the selected network will be used",
     "logout-are-you-sure": "Are you sure you want\nto log out?",
     "logout-title": "Log out?",
+    "logout-key-management": "You need to log out to access key management.",
     "looking-for-cards": "Looking for cards...",
     "lost-connection": "Lost connection",
     "mailserver-address": "Status node address",

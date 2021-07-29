@@ -3,6 +3,7 @@
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [status-im.multiaccounts.reset-password.core :as reset-password]
+            [status-im.multiaccounts.key-storage.core :as key-storage]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
             [status-im.utils.config :as config]
@@ -95,6 +96,12 @@
                        :on-press           #(re-frame/dispatch
                                              [:multiaccounts.ui/webview-permission-requests-switched
                                               ((complement boolean) webview-allow-permission-requests?)])}])
+     (when (not keycard?)
+       [quo/list-item {:size                :small
+                       :title               (i18n/label :t/manage-keys-and-storage)
+                       :chevron             true
+                       :on-press            #(re-frame/dispatch [::key-storage/logout-and-goto-key-storage])
+                       :accessibility-label :key-managment}])
      [separator]
      [quo/list-item
       {:size                :small

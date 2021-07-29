@@ -5,6 +5,7 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.multiaccounts.logout.core :as multiaccounts.logout]
             [status-im.native-module.core :as native-module]
             [status-im.navigation :as navigation]
             [status-im.popover.core :as popover]
@@ -239,6 +240,23 @@ We don't need to take the exact steps, just set the required state and redirect 
   (fx/merge cofx
             (popover/hide-popover)
             (navigation/navigate-to-cofx :multiaccounts nil)))
+
+(fx/defn confirm-logout-and-goto-key-storage
+  {:events [::confirm-logout-and-goto-key-storage]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (assoc db :goto-key-storage? true)}
+            (multiaccounts.logout/logout)))
+
+(fx/defn logout-and-goto-key-storage
+  {:events [::logout-and-goto-key-storage]}
+  [_]
+  {:ui/show-confirmation
+   {:title               (i18n/label :t/logout-title)
+    :content             (i18n/label :t/logout-key-management)
+    :confirm-button-text (i18n/label :t/logout)
+    :on-accept           #(re-frame/dispatch [::confirm-logout-and-goto-key-storage])
+    :on-cancel           nil}})
 
 (comment
   ;; check import mnemonic output

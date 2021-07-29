@@ -465,7 +465,8 @@
   (let [key-uid          (get-in db [:multiaccounts/login :key-uid])
         keycard-account? (boolean (get-in db [:multiaccounts/multiaccounts
                                               key-uid
-                                              :keycard-pairing]))]
+                                              :keycard-pairing]))
+        goto-key-storage? (:goto-key-storage? db)]
     (if password
       (fx/merge
        cofx
@@ -476,14 +477,16 @@
        login)
       (fx/merge
        cofx
+       {:db (dissoc db :goto-key-storage?)}
        (when keycard-account?
          {:db (-> db
-                  (assoc-in [:keycard :pin :enter-step] :login)
                   (assoc-in [:keycard :pin :status] nil)
                   (assoc-in [:keycard :pin :login] []))})
        #(if keycard-account?
           {:init-root-with-component-fx [:multiaccounts-keycard :multiaccounts]}
-          {:init-root-fx :multiaccounts})))))
+          {:init-root-fx :multiaccounts})
+       #(when goto-key-storage?
+          (navigation/navigate-to-cofx % :actions-not-logged-in nil))))))
 
 (fx/defn get-credentials
   [{:keys [db] :as cofx} key-uid]
