@@ -6,6 +6,8 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.notifications-center.styles :as styles]
             [status-im.utils.handlers :refer [<sub]]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.contenthash :as contenthash]
             [status-im.constants :as constants]
@@ -117,16 +119,25 @@
         message (or message last-message)
         {:keys [community-id]} (<sub [:chat-by-id chat-id])
         {:keys [name]} @(re-frame/subscribe [:communities/community community-id])
+        contact (when message @(re-frame/subscribe [:contacts/contact-by-identity (message :from)]))
         sender (when message (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity (message :from)])))]
     [react/touchable-opacity (merge {:style (styles/notification-container read)} opts)
      [react/view {:style styles/notification-content-container}
-      [chat-icon.screen/chat-icon-view chat-id group-chat chat-name
-       {:container              styles/photo-container
-        :size                   40
-        :chat-icon              chat-icon.styles/chat-icon-chat-list
-        :default-chat-icon      (chat-icon.styles/default-chat-icon-chat-list color)
-        :default-chat-icon-text (chat-icon.styles/default-chat-icon-text 40)
-        :accessibility-label    :current-account-photo}]
+      (if (or
+           (= type constants/activity-center-notification-type-mention)
+           (= type constants/activity-center-notification-type-reply))
+        [react/view {:style styles/photo-container}
+         [photos/photo
+          (multiaccounts/displayed-photo contact)
+          {:size 40
+           :accessibility-label :current-account-photo}]]
+        [chat-icon.screen/chat-icon-view chat-id group-chat chat-name
+         {:container              styles/photo-container
+          :size                   40
+          :chat-icon              chat-icon.styles/chat-icon-chat-list
+          :default-chat-icon      (chat-icon.styles/default-chat-icon-chat-list color)
+          :default-chat-icon-text (chat-icon.styles/default-chat-icon-text 40)
+          :accessibility-label    :current-account-photo}])
       [quo/text {:weight              :medium
                  :color               (when muted :secondary)
                  :accessibility-label :chat-name-or-sender-text
