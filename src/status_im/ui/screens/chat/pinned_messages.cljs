@@ -11,7 +11,9 @@
             [quo.react :as quo.react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.views :as chat]
-            [status-im.ui.components.list.views :as list]))
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.screens.chat.message.message :as message]
+            [status-im.utils.datetime :as time]))
 
 (defn pins-topbar [chat]
   (let [{:keys [group-chat chat-id chat-name]} chat
@@ -51,16 +53,37 @@
 
 (def list-ref #(reset! messages-list-ref %))
 
+(def list-key-fn #(or (:message-id %) (:value %)))
+
+(defn render-fn [{:keys [outgoing whisper-timestamp] :as message}
+                 _
+                 _
+                 {:keys [group-chat public? current-public-key space-keeper show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
+  [react/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
+   [message/chat-message
+    (assoc message
+           :incoming-group (and group-chat (not outgoing))
+           :group-chat group-chat
+           :public? public?
+           :current-public-key current-public-key
+           :show-input? show-input?
+           :message-pin-enabled message-pin-enabled
+           :edit-enabled edit-enabled
+           :display-username? (not outgoing)
+           :pinned true
+           :timestamp-str (time/timestamp->time whisper-timestamp))
+    space-keeper]])
+
 (defn pinned-messages-view [{:keys [chat pan-responder space-keeper]}]
   (let [{:keys [group-chat chat-id public? community-id admins]} chat
-        pinned-messages @(re-frame/subscribe [:chats/raw-chat-pin-messages-stream chat-id])]
+        pinned-messages @(re-frame/subscribe [:chats/pinned-sorted-list chat-id])]
     (if (= (count pinned-messages) 0)
       [pinned-messages-empty]
       ;;do not use anonymous functions for handlers
       [list/flat-list
        (merge
         pan-responder
-        {:key-fn                  chat/list-key-fn
+        {:key-fn                  list-key-fn
          :ref                     list-ref
          :data                    (reverse pinned-messages)
          :render-data             (chat/get-render-data {:group-chat      group-chat
@@ -72,7 +95,7 @@
                                                          :show-input?     false
                                                          :edit-enabled    false
                                                          :in-pinned-view? true})
-         :render-fn               chat/render-fn
+         :render-fn               render-fn
          :content-container-style {:padding-top 16
                                    :padding-bottom 16}})])))
 

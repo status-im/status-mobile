@@ -44,10 +44,10 @@
 (def list-key-fn #(or (:message-id %) (:value %)))
 
 (defn pinned-messages-limit-list [chat-id]
-  (let [pinned-messages @(re-frame/subscribe [:chats/pinned chat-id])]
+  (let [pinned-messages @(re-frame/subscribe [:chats/pinned-sorted-list chat-id])]
     [list/flat-list
      {:key-fn                       list-key-fn
-      :data                         (reverse (vals pinned-messages))
+      :data                         (reverse pinned-messages)
       :render-data                  {:chat-id chat-id}
       :render-fn                    render-pin-fn
       :on-scroll-to-index-failed    identity

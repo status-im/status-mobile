@@ -993,6 +993,15 @@
    (get pin-messages chat-id {})))
 
 (re-frame/reg-sub
+ :chats/pinned-sorted-list
+ :<- [::pin-messages]
+ (fn [pin-messages [_ chat-id]]
+   (->>
+    (get pin-messages chat-id {})
+    vals
+    (sort-by :pinned-at <))))
+
+(re-frame/reg-sub
  :chats/message-reactions
  :<- [:multiaccount/public-key]
  :<- [::reactions]
