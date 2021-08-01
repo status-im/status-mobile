@@ -8,13 +8,15 @@
                                        PureNativeButton TouchableWithoutFeedback TouchableOpacity
                                        TouchableHighlight
                                        createNativeWrapper State NativeViewGestureHandler
-                                       FlatList ScrollView)]))
+                                       FlatList ScrollView Swipeable)]))
 
 (def flat-list-raw FlatList)
 
 (def flat-list (reagent/adapt-react-class FlatList))
 
 (def scroll-view (reagent/adapt-react-class ScrollView))
+
+(def swipeable-raw (reagent/adapt-react-class Swipeable))
 
 (def tap-gesture-handler
   (reagent/adapt-react-class TapGestureHandler))
@@ -56,3 +58,12 @@
              :end          (oget State "END")
              :failed       (oget State "FAILED")
              :undetermined (oget State "UNDETERMINED")})
+
+(defn swipeable
+  [{:keys [ref friction right-threshold right-actions]
+    :or {ref nil friction 1.5 right-threshold 45}}]
+  (let [this (reagent/current-component) children (reagent/children this)]
+    (into [swipeable-raw {:ref (fn [item] (reset! ref item))
+                          :friction friction
+                          :right-threshold right-threshold
+                          :render-right-actions right-actions}] children)))

@@ -13,7 +13,8 @@
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.core :as utils]
             [status-im.utils.datetime :as time]
-            [status-im.ui.components.chat-icon.styles :as chat-icon.styles]))
+            [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
+            [status-im.ui.components.swipeable.views :refer [swipe-to-delete]]))
 
 (defn mention-element [from]
   @(re-frame/subscribe [:contacts/contact-name-by-identity from]))
@@ -168,23 +169,24 @@
 
 (defn home-list-item [home-item opts]
   (let [{:keys [chat-id chat-name color group-chat public? timestamp last-message muted]} home-item]
-    [react/touchable-opacity (merge {:style {:height 64}} opts)
-     [:<>
-      [chat-item-icon muted (and group-chat (not public?)) (and group-chat public?)]
-      [chat-icon.screen/chat-icon-view chat-id group-chat chat-name
-       {:container              (assoc chat-icon.styles/container-chat-list
-                                       :top 12 :left 16 :position :absolute)
-        :size                   40
-        :chat-icon              chat-icon.styles/chat-icon-chat-list
-        :default-chat-icon      (chat-icon.styles/default-chat-icon-chat-list color)
-        :default-chat-icon-text (chat-icon.styles/default-chat-icon-text 40)}]
-      [chat-item-title chat-id muted group-chat chat-name]
-      [react/text {:style               styles/datetime-text
-                   :number-of-lines     1
-                   :accessibility-label :last-message-time-text}
-       ;;TODO (perf) move to event
-       (memo-timestamp (if (pos? (:whisper-timestamp last-message))
-                         (:whisper-timestamp last-message)
-                         timestamp))]
-      [message-content-text (select-keys last-message [:content :content-type :community-id])]
-      [unviewed-indicator home-item]]]))
+    [swipe-to-delete {:on-delete #(re-frame/dispatch [:home-list-swipe-to-delete-chat chat-id])}
+      [react/touchable-opacity (merge {:style {:height 64}} opts)
+      [:<>
+        [chat-item-icon muted (and group-chat (not public?)) (and group-chat public?)]
+        [chat-icon.screen/chat-icon-view chat-id group-chat chat-name
+        {:container              (assoc chat-icon.styles/container-chat-list
+                                        :top 12 :left 16 :position :absolute)
+          :size                   40
+          :chat-icon              chat-icon.styles/chat-icon-chat-list
+          :default-chat-icon      (chat-icon.styles/default-chat-icon-chat-list color)
+          :default-chat-icon-text (chat-icon.styles/default-chat-icon-text 40)}]
+        [chat-item-title chat-id muted group-chat chat-name]
+        [react/text {:style               styles/datetime-text
+                    :number-of-lines     1
+                    :accessibility-label :last-message-time-text}
+        ;;TODO (perf) move to event
+        (memo-timestamp (if (pos? (:whisper-timestamp last-message))
+                          (:whisper-timestamp last-message)
+                          timestamp))]
+        [message-content-text (select-keys last-message [:content :content-type :community-id])]
+        [unviewed-indicator home-item]]]]))

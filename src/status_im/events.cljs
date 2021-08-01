@@ -245,3 +245,9 @@
    cofx
    (navigation/open-modal :buy-crypto nil)
    (wallet/keep-watching-history)))
+
+(fx/defn swipe-to-delete-chat
+  {:events [:home-list-swipe-to-delete-chat]}
+  [{:keys [db] :as cofx} chat-id]
+  (let [chats (:chats db)]
+    {:db (update db :chats #(dissoc chats chat-id))}))
