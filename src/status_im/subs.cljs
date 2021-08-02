@@ -167,6 +167,7 @@
 (reg-root-key-sub :wallet/non-archival-node :wallet/non-archival-node)
 (reg-root-key-sub :wallet/latest-base-fee :wallet/latest-base-fee)
 (reg-root-key-sub :wallet/latest-priority-fee :wallet/latest-priority-fee)
+(reg-root-key-sub :wallet/transactions-management-enabled? :wallet/transactions-management-enabled?)
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)
 

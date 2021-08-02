@@ -962,3 +962,9 @@
       {:method     "wallet_deletePendingTransaction"
        :params     [hash]
        :on-success #(log/info "[wallet] pending transaction deleted" hash)}))))
+
+(fx/defn switch-transactions-management-enabled
+  {:events [:multiaccounts.ui/switch-transactions-management-enabled]}
+  [{:keys [db]} enabled?]
+  {::async-storage/set! {:transactions-management-enabled? enabled?}
+   :db (assoc db :wallet/transactions-management-enabled? enabled?)})

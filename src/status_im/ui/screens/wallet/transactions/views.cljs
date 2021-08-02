@@ -38,7 +38,7 @@
   [{:keys [label contact address contact-accessibility-label
            address-accessibility-label currency-text amount-text
            time-formatted on-touch-fn type hash]}
-   _ _ {:keys [keycard-account?]}]
+   _ _ {:keys [keycard-account? transactions-management-enabled?]}]
   [react/view
    [list/touchable-item on-touch-fn
     [react/view {:accessibility-label :transaction-item}
@@ -75,7 +75,7 @@
                        :style     {:margin-top 10}
                        :icon-opts (merge styles/forward
                                          {:accessibility-label :show-transaction-button})}]]]]
-   (when (and false ;;TODO temporary disable for 1.10
+   (when (and transactions-management-enabled?
               (not keycard-account?)
               (= type :pending))
      [react/view {:flex-direction :row :padding 16 :justify-content :space-between}
@@ -132,13 +132,14 @@
 
 (defn history-list
   [{:keys [transaction-history-sections total]} address]
-  (let [fetching-recent-history? @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
-        fetching-more-history?   @(re-frame/subscribe [:wallet/fetching-tx-history? address])
-        keycard-account?         @(re-frame/subscribe [:multiaccounts/keycard-account?])
-        custom-rpc-node?         @(re-frame/subscribe [:custom-rpc-node])
-        non-archival-rpc-node?   @(re-frame/subscribe [:wallet/non-archival-node])
-        all-fetched?             @(re-frame/subscribe [:wallet/tx-history-fetched? address])
-        syncing-allowed?         @(re-frame/subscribe [:mobile-network/syncing-allowed?])]
+  (let [fetching-recent-history?         @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
+        fetching-more-history?           @(re-frame/subscribe [:wallet/fetching-tx-history? address])
+        keycard-account?                 @(re-frame/subscribe [:multiaccounts/keycard-account?])
+        transactions-management-enabled? @(re-frame/subscribe [:wallet/transactions-management-enabled?])
+        custom-rpc-node?                 @(re-frame/subscribe [:custom-rpc-node])
+        non-archival-rpc-node?           @(re-frame/subscribe [:wallet/non-archival-node])
+        all-fetched?                     @(re-frame/subscribe [:wallet/tx-history-fetched? address])
+        syncing-allowed?                 @(re-frame/subscribe [:mobile-network/syncing-allowed?])]
     [react/view {:flex 1}
      [etherscan-link address]
      (cond non-archival-rpc-node?
@@ -155,7 +156,8 @@
      [list/section-list
       {:sections   transaction-history-sections
        :key-fn     :hash
-       :render-data {:keycard-account? keycard-account?}
+       :render-data {:keycard-account? keycard-account?
+                     :transactions-management-enabled? transactions-management-enabled?}
        :render-fn  render-transaction
        :empty-component
        [react/i18n-text {:style styles/empty-text

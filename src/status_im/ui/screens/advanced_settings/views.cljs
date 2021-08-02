@@ -11,6 +11,7 @@
                                           current-log-level
                                           waku-bloom-filter-mode
                                           communities-enabled?
+                                          transactions-management-enabled?
                                           current-fleet
                                           webview-debug]}]
   (keep
@@ -79,6 +80,15 @@
        :accessory               :switch
        :active                  communities-enabled?})
     {:size                   :small
+     :title                   (i18n/label :t/transactions-management-enabled)
+     :accessibility-label     :transactions-management-enabled
+     :container-margin-bottom 8
+     :on-press
+     #(re-frame/dispatch
+       [:multiaccounts.ui/switch-transactions-management-enabled (not transactions-management-enabled?)])
+     :accessory               :switch
+     :active                  transactions-management-enabled?}
+    {:size                   :small
      :title                   "Webview debug"
      :accessibility-label     :webview-debug-switch
      :container-margin-bottom 8
@@ -106,20 +116,22 @@
     [quo/list-item props]))
 
 (views/defview advanced-settings []
-  (views/letsubs [{:keys [webview-debug]} [:multiaccount]
-                  network-name             [:network-name]
-                  waku-bloom-filter-mode   [:waku/bloom-filter-mode]
-                  communities-enabled?     [:communities/enabled?]
-                  current-log-level        [:log-level/current-log-level]
-                  current-fleet            [:fleets/current-fleet]]
+  (views/letsubs [{:keys [webview-debug]}          [:multiaccount]
+                  network-name                     [:network-name]
+                  waku-bloom-filter-mode           [:waku/bloom-filter-mode]
+                  communities-enabled?             [:communities/enabled?]
+                  transactions-management-enabled? [:wallet/transactions-management-enabled?]
+                  current-log-level                [:log-level/current-log-level]
+                  current-fleet                    [:fleets/current-fleet]]
     [list/flat-list
      {:data      (flat-list-data
-                  {:network-name           network-name
-                   :current-log-level      current-log-level
-                   :communities-enabled?   communities-enabled?
-                   :current-fleet          current-fleet
-                   :dev-mode?              false
-                   :waku-bloom-filter-mode waku-bloom-filter-mode
-                   :webview-debug          webview-debug})
+                  {:network-name                     network-name
+                   :current-log-level                current-log-level
+                   :communities-enabled?             communities-enabled?
+                   :transactions-management-enabled? transactions-management-enabled?
+                   :current-fleet                    current-fleet
+                   :dev-mode?                        false
+                   :waku-bloom-filter-mode           waku-bloom-filter-mode
+                   :webview-debug                    webview-debug})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))

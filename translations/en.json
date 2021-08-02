@@ -1188,6 +1188,7 @@
     "transaction": "Transaction",
     "transaction-data": "Transaction data",
     "transaction-declined": "Transaction declined",
+    "transactions-management-enabled": "Transaction management (alpha)",
     "transaction-description": "Consider it complete after 12 confirmations on the network.",
     "transaction-details": "Transaction details",
     "transaction-failed": "Transaction failed",

@@ -50,6 +50,14 @@
         callback)))))
 
 (re-frame/reg-fx
+ ::initialize-transactions-management-enabled
+ (fn []
+   (let [callback #(re-frame/dispatch [:multiaccounts.ui/switch-transactions-management-enabled %])]
+     (async-storage/get-item
+      :transactions-management-enabled?
+      callback))))
+
+(re-frame/reg-fx
  ::login
  (fn [[key-uid account-data hashed-password]]
    (status/login key-uid account-data hashed-password)))
@@ -253,6 +261,10 @@
   [cofx]
   {::initialize-communities-enabled nil})
 
+(fx/defn initialize-transactions-management-enabled
+  [cofx]
+  {::initialize-transactions-management-enabled nil})
+
 (fx/defn get-node-config-callback
   {:events [::get-node-config-callback]}
   [{:keys [db] :as cofx} node-config]
@@ -292,6 +304,7 @@
               (initialize-appearance)
               (transport/start-messenger)
               (initialize-communities-enabled)
+              (initialize-transactions-management-enabled)
               (check-network-version network-id)
               (chat.loading/initialize-chats)
               (get-node-config)
