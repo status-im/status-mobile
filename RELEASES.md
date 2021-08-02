@@ -1,3 +1,24 @@
+## 1.15
+
+### For iOS and Android
+### Features
+- New improved native navigation, its very fast :dash: [[details](https://github.com/status-im/status-react/pull/12141)]
+- Pinned messages in chats :pushpin: [[details](https://github.com/status-im/status-react/issues/11699)]
+- Add support for ETH2x-FLI ERC20 token ⚫ [[details](https://github.com/status-im/status-react/issues/11885)]
+- Add support for HEZ ERC20 token ⚫ [[details](https://github.com/status-im/status-react/issues/12233)]
+- Show number of unread mentions in public and communities chats :bell: [[details](https://github.com/status-im/status-react/issues/12061)]
+- QR code scanner for browser :ticket: [[details](https://github.com/status-im/status-react/issues/12195)]
+- Edit messages after sending :pencil2: [[details](https://github.com/status-im/status-react/issues/12067)]
+- Allow password reset :abcd: [[details](https://github.com/status-im/status-react/pull/12245)]
+
+### Improvements
+- Native modals and tabs :house_with_garden: 
+- Improved time to show login screen :timer_clock: 
+- New, human friendly, terms of use :pencil: [[details](https://github.com/status-im/status-react/issues/12206)]
+
+### Bug Fixes
+- No contact request in Activity Center after 1-1 chat deleted of non-contact user :no_good: [[details](https://github.com/status-im/status-react/issues/12218)]
+
 ## 1.14
 
 ### For iOS and Android
