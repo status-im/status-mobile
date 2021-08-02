@@ -87,7 +87,9 @@
        :subtitle            (i18n/label :t/view-details)
        :chevron             true
        :accessibility-label :view-community-channel-details
-       :on-press            #(hide-sheet-and-dispatch [:navigate-to :community-channel-details {:chat-id chat-id}])}]
+       :on-press            #(do
+                               (hide-sheet-and-dispatch [:navigate-to :community-channel-details {:chat-id chat-id}])
+                               (re-frame/dispatch [::models.pin-message/load-pin-messages chat-id]))}]
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/mark-all-read)
