@@ -1,7 +1,7 @@
 #import "RCTStatus.h"
 #import "ReactNativeConfig.h"
-#import "React/RCTBridge.h"
-#import "React/RCTEventDispatcher.h"
+#import <React/RCTBridge+Private.h>
+#import <React/RCTUtils.h>
 #import "Statusgo.h"
 #import "SSZipArchive.h"
 
@@ -46,9 +46,12 @@
 }
 @end
 
-static RCTBridge *bridge;
-
 @implementation Status
+
+@synthesize bridge=_bridge;
+@synthesize methodQueue = _methodQueue;
+
+RCT_EXPORT_MODULE()
 
 - (instancetype)init {
     self = [super init];
@@ -60,14 +63,17 @@ static RCTBridge *bridge;
     return self;
 }
 
--(RCTBridge *)bridge
+- (void)setBridge:(RCTBridge *)bridge
 {
-    return bridge;
-}
+  _bridge = bridge;
+  _setBridgeOnMainQueue = RCTIsMainQueue();
 
--(void)setBridge:(RCTBridge *)newBridge
-{
-    bridge = newBridge;
+  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
+  if (!cxxBridge.runtime) {
+    return;
+  }
+
+  installStatus(*(facebook::jsi::Runtime *) cxxBridge.runtime);
 }
 
 - (void)handleSignal:(NSString *)signal
@@ -82,13 +88,11 @@ static RCTBridge *bridge;
 #if DEBUG
     NSLog(@"[handleSignal] Received an event from Status-Go: %@", signal);
 #endif
-    [bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
-                                            body:@{@"jsonEvent": signal}];
+    //[bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
+                                           // body:@{@"jsonEvent": signal}];
 
     return;
 }
-
-RCT_EXPORT_MODULE();
 
 ////////////////////////////////////////////////////////////////////
 #pragma mark - shouldMoveToInternalStorage
@@ -940,7 +944,7 @@ RCT_EXPORT_METHOD(deactivateKeepAwake)
 
 + (BOOL)requiresMainQueueSetup
 {
-    return NO;
+    return YES;
 }
 
 @end

@@ -8,7 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		206C9F3E1D474E910063E3E6 /* RCTStatus.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 206C9F3D1D474E910063E3E6 /* RCTStatus.h */; };
-		206C9F401D474E910063E3E6 /* RCTStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 206C9F3F1D474E910063E3E6 /* RCTStatus.m */; };
+		206C9F401D474E910063E3E6 /* RCTStatus.mm in Sources */ = {isa = PBXBuildFile; fileRef = 206C9F3F1D474E910063E3E6 /* RCTStatus.mm */; };
+		5549F8F026B8323900D56A99 /* JSIStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5549F8EE26B8323900D56A99 /* JSIStatus.cpp */; };
+		5549F8F426B832AB00D56A99 /* JSIStatus.hpp in Copy Files */ = {isa = PBXBuildFile; fileRef = 5549F8EF26B8323900D56A99 /* JSIStatus.hpp */; };
 		CE4E31B11D86951A0033ED64 /* Statusgo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B01D86951A0033ED64 /* Statusgo.framework */; };
 /* End PBXBuildFile section */
 
@@ -19,6 +21,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				5549F8F426B832AB00D56A99 /* JSIStatus.hpp in Copy Files */,
 				206C9F3E1D474E910063E3E6 /* RCTStatus.h in Copy Files */,
 			);
 			name = "Copy Files";
@@ -29,7 +32,9 @@
 /* Begin PBXFileReference section */
 		206C9F3A1D474E910063E3E6 /* libRCTStatus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTStatus.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		206C9F3D1D474E910063E3E6 /* RCTStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTStatus.h; sourceTree = "<group>"; };
-		206C9F3F1D474E910063E3E6 /* RCTStatus.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTStatus.m; sourceTree = "<group>"; };
+		206C9F3F1D474E910063E3E6 /* RCTStatus.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTStatus.mm; sourceTree = "<group>"; };
+		5549F8EE26B8323900D56A99 /* JSIStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JSIStatus.cpp; sourceTree = "<group>"; };
+		5549F8EF26B8323900D56A99 /* JSIStatus.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = JSIStatus.hpp; sourceTree = "<group>"; };
 		CE4E31B01D86951A0033ED64 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Statusgo.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -66,7 +71,9 @@
 			isa = PBXGroup;
 			children = (
 				206C9F3D1D474E910063E3E6 /* RCTStatus.h */,
-				206C9F3F1D474E910063E3E6 /* RCTStatus.m */,
+				206C9F3F1D474E910063E3E6 /* RCTStatus.mm */,
+				5549F8EE26B8323900D56A99 /* JSIStatus.cpp */,
+				5549F8EF26B8323900D56A99 /* JSIStatus.hpp */,
 			);
 			name = Status;
 			sourceTree = "<group>";
@@ -127,7 +134,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				206C9F401D474E910063E3E6 /* RCTStatus.m in Sources */,
+				5549F8F026B8323900D56A99 /* JSIStatus.cpp in Sources */,
+				206C9F401D474E910063E3E6 /* RCTStatus.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,6 +178,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_INPUT_FILETYPE = automatic;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -185,8 +194,9 @@
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../../ios/Pods/Headers/Public/SSZipArchive";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "arm64 arm64e armv7 armv7s x86_64";
 			};
 			name = Debug;
 		};
@@ -225,6 +235,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_INPUT_FILETYPE = automatic;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -235,11 +246,11 @@
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../../ios/Pods/Headers/Public/SSZipArchive";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "armv7 armv7s arm64";
-				"VALID_ARCHS[sdk=*]" = "armv7 armv7s arm64";
+				VALID_ARCHS = "armv7 armv7s arm64 x86_64";
+				"VALID_ARCHS[sdk=*]" = "armv7 armv7s arm64 x86_64";
 			};
 			name = Release;
 		};
@@ -252,15 +263,17 @@
 					"$(PROJECT_DIR)",
 				);
 				FRAMEWORK_VERSION = A;
+				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../../../node_modules/React/**",
 					"$(SRCROOT)/../../../../ios/Pods/Headers/Public/React-Core",
 					"$(SRCROOT)/../../../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../../../node_modules/react-native-config/ios/ReactNativeConfig",
+					"$(SRCROOT)/../../../../ios/Pods/Headers/Public/React-jsi/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"$(inherited)",
@@ -281,15 +294,17 @@
 					"$(PROJECT_DIR)",
 				);
 				FRAMEWORK_VERSION = A;
+				GCC_INPUT_FILETYPE = automatic;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../../../node_modules/React/**",
 					"$(SRCROOT)/../../../../ios/Pods/Headers/Public/React-Core",
 					"$(SRCROOT)/../../../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../../../node_modules/react-native-config/ios/ReactNativeConfig",
+					"$(SRCROOT)/../../../../ios/Pods/Headers/Public/React-jsi/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"$(inherited)",

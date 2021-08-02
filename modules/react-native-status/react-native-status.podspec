@@ -14,8 +14,12 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/status-im/react-native-status.git", :tag => "#{s.version}" }
 
 
-  s.source_files = "ios/**/*.{h,m,mm,swift}"
-
+  s.source_files = "ios/**/*.{h,m,mm,swift,cpp,hpp}"
+  s.library = 'c++'
+  s.xcconfig = {
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++11',
+    'CLANG_CXX_LIBRARY' => 'libc++'
+  }
 
   s.dependency "React"
   s.vendored_frameworks = "Statusgo.framework"

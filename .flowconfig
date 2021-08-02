@@ -27,9 +27,6 @@ node_modules/react-native/Libraries/react-native/React.js
 ; Ignore polyfills
 node_modules/react-native/Libraries/polyfills/.*
 
-; These should not be required directly
-; require from fbjs/lib instead: require('fbjs/lib/warning')
-node_modules/warning/.*
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
 [untyped]
@@ -47,6 +44,8 @@ esproposal.nullish_coalescing=enable
 
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable
+
+exact_by_default=true
 
 module.file_ext=.js
 module.file_ext=.json
@@ -94,4 +93,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 
 [version]
-^0.122.0
+^0.137.0

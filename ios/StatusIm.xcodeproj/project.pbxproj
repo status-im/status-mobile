@@ -330,6 +330,7 @@
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
 				AFAB37B70B6EB1B7D2E869AD /* [CP] Copy Pods Resources */,
+				5288F38B58953F0313781423 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -353,6 +354,7 @@
 				20B6B6891D92C42700CC5C6A /* Embed Frameworks */,
 				E3914A731DF919ED00EBB515 /* Run Script */,
 				291E1A8BC076990A77B59232 /* [CP] Copy Pods Resources */,
+				13C834011332D24715141071 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -375,6 +377,7 @@
 				3AAD2AD624A3A60E0075D594 /* Embed Frameworks */,
 				3AAD2AD724A3A60E0075D594 /* Run Script */,
 				3AAD2AD824A3A60E0075D594 /* [CP] Copy Pods Resources */,
+				5528FA79A0FF2CE4AD1449E0 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -522,6 +525,24 @@
 			shellPath = /bin/sh;
 			shellScript = "set -o errexit\nexport NODE_BINARY=\"node\"\nexport NODE_ARGS=\" --max-old-space-size=16384 \"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./react-native-xcode.log 2>&1";
 		};
+		13C834011332D24715141071 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm-frameworks.sh",
+				"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		291E1A8BC076990A77B59232 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -658,6 +679,42 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5288F38B58953F0313781423 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests-frameworks.sh",
+				"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5528FA79A0FF2CE4AD1449E0 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR-frameworks.sh",
+				"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		AFAB37B70B6EB1B7D2E869AD /* [CP] Copy Pods Resources */ = {
@@ -929,7 +986,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
@@ -994,7 +1051,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Debug;
 		};
@@ -1052,7 +1109,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
@@ -1098,6 +1155,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_INPUT_FILETYPE = automatic;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -1134,8 +1192,8 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "arm64";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64";
+				VALID_ARCHS = arm64;
+				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
 			};
 			name = Debug;
 		};
@@ -1178,6 +1236,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				EXCLUDED_ARCHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_INPUT_FILETYPE = automatic;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
@@ -1208,7 +1267,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
