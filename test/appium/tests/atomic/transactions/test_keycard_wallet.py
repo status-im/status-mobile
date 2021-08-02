@@ -34,13 +34,14 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     def test_keycard_fetching_balance_after_offline(self):
         sender = transaction_senders['F']
         sign_in = SignInView(self.driver)
+        sign_in.set_device_to_offline()
 
         sign_in.just_fyi('Restore account with funds offline')
-        sign_in.toggle_airplane_mode()
         home = sign_in.recover_access(sender['passphrase'], keycard=True)
 
         sign_in.just_fyi('Go back to online and check that balance is updated')
-        sign_in.toggle_airplane_mode()
+        sign_in.set_network_to_cellular_only()
+        home.continue_syncing_button.wait_and_click()
 
         home.connection_offline_icon.wait_for_invisibility_of_element(100)
         wallet = home.wallet_button.click()
@@ -55,11 +56,11 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         initial_amount_STT = wallet.get_asset_amount_by_name('STT')
         wallet.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
                                      sign_transaction=True, keycard=True)
-        sign_in.toggle_airplane_mode()
+        sign_in.set_device_to_offline()
         self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, token=True)
 
         sign_in.just_fyi('Change that balance is updated and transaction is appeared in history')
-        sign_in.toggle_airplane_mode()
+        sign_in.set_network_to_cellular_only()
         wallet.wait_balance_is_changed('STT', initial_amount_STT)
         wallet.find_transaction_in_history(amount=sending_amount, asset='STT')
 

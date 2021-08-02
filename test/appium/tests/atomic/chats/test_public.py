@@ -4,7 +4,8 @@ from dateutil import parser
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
-from datetime import datetime, timedelta
+from datetime import timedelta
+from time import sleep
 
 
 class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
@@ -120,8 +121,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
         home_1.get_back_to_home_view()
         message = 'test message'
-        chat_2.chat_message_input.send_keys(message)
-        chat_2.send_message_button.click()
+        chat_2.send_message(message)
 
         if not home_1.home_button.public_unread_messages.is_element_displayed():
             self.errors.append('New messages public chat badge is not shown on Home button')
@@ -180,6 +180,108 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(6342)
+    @marks.medium
+    def test_different_status_in_timeline(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
+        public_key_1, username_1 = profile_1.get_public_key_and_username(return_username=True)
+        emoji_message = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_message]
+
+        home_1.just_fyi('Set status in profile')
+        statuses = {
+            '*formatted text*':'formatted text',
+            'https://www.youtube.com/watch?v=JjPWmEh2KhA' : 'Status Town Hall',
+            emoji.emojize(emoji_message) : emoji_unicode,
+
+        }
+        timeline_1 = device_1.status_button.click()
+        for status in statuses.keys():
+            timeline_1.set_new_status(status)
+            sleep(60)
+
+        timeline_1.element_by_translation_id("enable").wait_and_click()
+        timeline_1.element_by_translation_id("enable-all").wait_and_click()
+        timeline_1.close_modal_view_from_chat_button.click()
+        for status in statuses:
+            expected_value = statuses[status]
+            if not timeline_1.element_by_text_part(expected_value).is_element_displayed():
+                self.errors.append("Expected value %s is not shown" % expected_value)
+        text_status = 'some text'
+        timeline_1.set_new_status(text_status)
+        for timestamp in ('Now', '1M', '2M'):
+            if not timeline_1.element_by_text(timestamp).is_element_displayed():
+                self.errors.append("Expected timestamp %s is not shown in timeline_1" % timestamp)
+
+        home_2.just_fyi('Check that can see user status without adding him as contact')
+        profile_2.home_button.click()
+        chat_2 = home_2.add_contact(public_key_1, add_in_contacts=False)
+        chat_2.chat_options.click()
+        chat_2.view_profile_button.click()
+        chat_2.chat_element_by_text(text_status).wait_for_element(30)
+        chat_2.element_by_translation_id("enable").scroll_and_click()
+        chat_2.element_by_translation_id("enable-all").wait_and_click()
+        chat_2.close_modal_view_from_chat_button.click()
+        for status in statuses:
+            chat_2.element_by_text_part(statuses['*formatted text*']).scroll_to_element()
+            expected_value = statuses[status]
+            if not chat_2.element_by_text_part(expected_value).is_element_displayed():
+                self.errors.append("Expected value %s is not shown in other user profile without adding to contacts" % expected_value)
+
+        home_2.just_fyi('Add device1 to contacts and check that status will be shown in timeline_1')
+        chat_2.close_button.click()
+        chat_2.add_to_contacts.click()
+        timeline_2 = chat_2.status_button.click()
+        for status in statuses:
+            expected_value = statuses[status]
+            if not timeline_2.element_by_text_part(expected_value).is_element_displayed():
+                self.errors.append("Expected value %s is not shown in timeline_1 after adding user to contacts" % expected_value)
+
+        profile_1.just_fyi('Checking message tag and reactions on statuses')
+        #TODO: no way to tap into tag message from timeline_1
+        # tag_status = '#public-chat-to-redirect-long-name'
+        # timeline_1.set_new_status(tag_status)
+        # #timeline_2 = profile_1.get_chat_view()
+        # public_chat_2 = home_2.get_chat_view()
+        #
+        # public_chat_2.element_by_text(tag_status).wait_and_click()
+        # public_chat_2.user_name_text.wait_for_element(30)
+        # if not public_chat_2.user_name_text.text == tag_status[1:]:
+        #     self.errors.append('Could not redirect a user to a public chat tapping the tag message from timeline_1')
+        # public_chat_2.back_button.click()
+
+        timeline_1.set_reaction(text_status)
+        status_with_reaction_1 = timeline_1.chat_element_by_text(text_status)
+        if status_with_reaction_1.emojis_below_message() != 1:
+            self.errors.append("Counter of reaction is not updated on your own status in timeline_1!")
+        device_2.home_button.double_click()
+        home_2.get_chat(username_1).click()
+        chat_2.chat_options.click()
+        chat_2.view_profile_button.click()
+        status_with_reaction_2 = chat_2.chat_element_by_text(text_status)
+        if status_with_reaction_2.emojis_below_message(own=False) != 1:
+            self.errors.append("Counter of reaction is not updated on status of another user in profile!")
+        profile_1.just_fyi("Remove reaction and check it is updated for both users")
+        timeline_1.set_reaction(text_status)
+        status_with_reaction_1 = timeline_1.chat_element_by_text(text_status)
+        if status_with_reaction_1.emojis_below_message() != 0:
+            self.errors.append("Counter of reaction is not updated after removing reaction on your own status in timeline_1!")
+        status_with_reaction_2 = chat_2.chat_element_by_text(text_status)
+        if status_with_reaction_2.emojis_below_message(own=False) != 0:
+            self.errors.append("Counter of reaction is not updated after removing on status of another user in profile!")
+
+        profile_1.just_fyi("Remove user from contacts and check there is no his status in timeline_1 anymore")
+        chat_2.remove_from_contacts.click()
+        chat_2.close_button.click()
+        chat_2.status_button.click()
+        if timeline_2.chat_element_by_text(text_status).is_element_displayed(10):
+            self.errors.append("Statuses of removed user are still shown in profile")
+
+        self.errors.verify_no_errors()
+
 
 class TestPublicChatSingleDevice(SingleDeviceTestCase):
 
@@ -218,7 +320,6 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         home_view = chat.get_back_to_home_view()
         if not home_view.element_by_text(tag_message).is_element_displayed():
             self.errors.append('Could not find the public chat in user chat list.')
-
         times = {
             "three-days" : '5 days',
             "one-week" : '12 days',

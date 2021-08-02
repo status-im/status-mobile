@@ -91,7 +91,7 @@ class ChatOptionsButton(Button):
         super().__init__(driver, xpath="(//android.widget.TextView[@content-desc='chat-name-text']/../..//android.widget.TextView)[last()]")
 
     def click(self):
-        self.click_until_presence_of_element(ChatView(self.driver).clear_history_button)
+        self.click_until_presence_of_element(HomeView(self.driver).mark_all_messages_as_read_button)
 
     def navigate(self):
         return ChatView(self.driver)

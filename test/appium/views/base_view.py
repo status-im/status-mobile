@@ -597,6 +597,14 @@ class BaseView(object):
         self.airplane_mode_button.click()
         self.close_native_device_dialog("MmsService")
 
+    def set_device_to_offline(self):
+        # setting network connection to data only and switching off wifi
+        self.driver.set_network_connection(2)
+        self.driver.toggle_wifi()
+
+    def set_network_to_cellular_only(self):
+        self.driver.set_network_connection(4)
+
     def toggle_mobile_data(self):
         self.driver.info("**Toggling mobile data**")
         self.driver.start_activity(app_package='com.android.settings', app_activity='.Settings')

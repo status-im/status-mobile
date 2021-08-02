@@ -55,37 +55,39 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.high
     def test_fetching_balance_after_offline(self):
         sender = wallet_users['E']
-        sign_in_view = SignInView(self.driver)
+        sign_in = SignInView(self.driver)
 
-        sign_in_view.just_fyi('Restore account with funds offline')
-        sign_in_view.toggle_airplane_mode()
-        sign_in_view.recover_access(sender['passphrase'])
-        home_view = sign_in_view.get_home_view()
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+        sign_in.just_fyi('Restore account with funds offline')
+        sign_in.set_device_to_offline()
+        sign_in.recover_access(sender['passphrase'])
+        home = sign_in.get_home_view()
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
 
-        sign_in_view.just_fyi('Go back to online and check that balance is updated')
-        sign_in_view.toggle_airplane_mode()
-        wallet_view.wait_balance_is_changed('ETH')
-        wallet_view.scan_tokens('STT')
-        initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
+        sign_in.just_fyi('Go back to online and check that balance is updated')
+        sign_in.set_network_to_cellular_only()
+        home.continue_syncing_button.wait_and_click()
+        home.connection_offline_icon.wait_for_invisibility_of_element(100)
+        wallet.wait_balance_is_changed('ETH')
+        wallet.scan_tokens('STT')
+        initial_amount_STT = wallet.get_asset_amount_by_name('STT')
 
-        sign_in_view.just_fyi('Send some tokens to other account')
+        sign_in.just_fyi('Send some tokens to other account')
         recipient = "0x" + basic_user['address']
-        sending_amount = wallet_view.get_unique_amount()
+        sending_amount = wallet.get_unique_amount()
         asset = 'STT'
-        wallet_view.accounts_status_account.click_until_presence_of_element(wallet_view.send_transaction_button)
-        wallet_view.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
+        wallet.accounts_status_account.click_until_presence_of_element(wallet.send_transaction_button)
+        wallet.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
                                      sign_transaction=True)
-        sign_in_view.toggle_airplane_mode()
+        sign_in.set_device_to_offline()
         self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, token=True)
 
-        sign_in_view.just_fyi('Change that balance is updated')
-        sign_in_view.toggle_airplane_mode()
+        sign_in.just_fyi('Change that balance is updated')
+        sign_in.set_network_to_cellular_only()
 
-        sign_in_view.just_fyi('Check that transaction is appeared in transaction history')
-        wallet_view.wait_balance_is_changed('STT', initial_amount_STT)
-        wallet_view.find_transaction_in_history(amount=sending_amount, asset='STT')
+        sign_in.just_fyi('Check that transaction is appeared in transaction history')
+        wallet.wait_balance_is_changed('STT', initial_amount_STT)
+        wallet.find_transaction_in_history(amount=sending_amount, asset='STT')
 
     @marks.testrail_id(5461)
     @marks.medium
