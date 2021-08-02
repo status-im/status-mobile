@@ -186,6 +186,7 @@
         :java-script-enabled                        true
         :bounces                                    false
         :local-storage-enabled                      true
+        :set-support-multiple-windows               false
         :render-error                               web-view-error
         :on-navigation-state-change                 #(do
                                                        (re-frame/dispatch [:set-in [:ens/registration :state] :searching])
