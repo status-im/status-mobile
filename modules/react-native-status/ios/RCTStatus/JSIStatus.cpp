@@ -12,11 +12,7 @@ void installStatus(jsi::Runtime& jsiRuntime){
 
 }
 
-
 void signalStatus(jsi::Runtime& jsiRuntime, string signal){
-    string strMytestString("hello world");
-        cout << strMytestString;
-    cout << signal;
-    //hwo to invoke JS function ?
-    //jsiRuntime.global().getFunction(jsiRuntime, "signalFunction").call(runtime, signal);
+    //it works without the signal parameter, but an error with the parameter
+    jsiRuntime.global().getPropertyAsFunction(jsiRuntime, "signalFunction").call(jsiRuntime, signal);
 }

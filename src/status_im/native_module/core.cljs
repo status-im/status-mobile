@@ -91,6 +91,12 @@
   (.addListener ^js react/device-event-emitter "gethEvent"
                 #(re-frame/dispatch [:signals/signal-received (.-jsonEvent ^js %)])))
 
+(defn signal-function [^js signal]
+  (println "SIGNAL!!!2!")
+  (re-frame/dispatch [:signals/signal-received signal]))
+
+(set! js/global.signalFunction signal-function)
+
 (defn multiaccount-load-account
   "NOTE: beware, the password has to be sha3 hashed
 
