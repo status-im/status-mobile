@@ -13,6 +13,6 @@ void installStatus(jsi::Runtime& jsiRuntime){
 }
 
 void signalStatus(jsi::Runtime& jsiRuntime, string signal){
-    //it works without the signal parameter, but an error with the parameter
+    cout << signal;
     jsiRuntime.global().getPropertyAsFunction(jsiRuntime, "signalFunction").call(jsiRuntime, signal);
 }
