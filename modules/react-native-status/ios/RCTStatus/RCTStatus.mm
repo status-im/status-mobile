@@ -91,6 +91,14 @@ RCT_EXPORT_MODULE()
     //[bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
                                            // body:@{@"jsonEvent": signal}];
 
+    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
+    if (!cxxBridge.runtime) {
+    
+      return;
+    }
+    
+    NSLog(@"[handleSignal] signalStatus");
+    signalStatus(*(facebook::jsi::Runtime *) cxxBridge.runtime, std::string([signal UTF8String]));
     return;
 }
 
