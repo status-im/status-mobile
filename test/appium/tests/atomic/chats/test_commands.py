@@ -199,6 +199,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         home_1.just_fyi('Decline transaction request and check that state is changed')
         request_amount = chat_1.get_unique_amount()
+        chat_1.commands_button.click()
         request_transaction = chat_1.request_command.click()
         request_transaction.amount_edit_box.set_value(request_amount)
         request_transaction.confirm()

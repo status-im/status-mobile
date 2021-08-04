@@ -17,6 +17,7 @@
             [status-im.utils.utils :as utils]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.anon-metrics.core :as anon-metrics]
+            [status-im.utils.universal-links.core :as universal-links]
             clojure.set
             status-im.currency.core
             status-im.navigation
@@ -144,6 +145,7 @@
                        (assoc :app-active-since now))}
               (mailserver/process-next-messages-request)
               (wallet/restart-wallet-service-after-background app-in-background-since)
+              (universal-links/process-stored-event)
               #(when requires-bio-auth
                  (biometric/authenticate % on-biometric-auth-result authentication-options)))))
 

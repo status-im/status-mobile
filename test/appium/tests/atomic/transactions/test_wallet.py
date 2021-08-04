@@ -53,6 +53,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6237)
     @marks.high
+    @marks.flaky
     def test_fetching_balance_after_offline(self):
         sender = wallet_users['E']
         sign_in = SignInView(self.driver)
@@ -61,13 +62,12 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in.set_device_to_offline()
         sign_in.recover_access(sender['passphrase'])
         home = sign_in.get_home_view()
-        wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
 
         sign_in.just_fyi('Go back to online and check that balance is updated')
         sign_in.set_network_to_cellular_only()
         home.continue_syncing_button.wait_and_click()
         home.connection_offline_icon.wait_for_invisibility_of_element(100)
+        wallet = home.wallet_button.click()
         wallet.wait_balance_is_changed('ETH')
         wallet.scan_tokens('STT')
         initial_amount_STT = wallet.get_asset_amount_by_name('STT')

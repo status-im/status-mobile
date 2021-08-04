@@ -152,8 +152,8 @@
   "Store url in the database if the user is not logged in, to be processed
   on login, otherwise just handle it"
   {:events [:universal-links/handle-url]}
-  [cofx url]
-  (if (multiaccounts.model/logged-in? cofx)
+  [{:keys [db] :as cofx} url]
+  (if (and (multiaccounts.model/logged-in? cofx) (= (:app-state db) "active"))
     (route-url cofx url)
     (store-url-for-later cofx url)))
 

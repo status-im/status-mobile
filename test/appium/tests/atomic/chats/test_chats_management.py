@@ -700,7 +700,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.open_notification_bar()
         if device_1.element_by_text_part(message_after_block_2).is_element_displayed():
             self.errors.append("Push notification is received from blocked user")
-        device_1.element_by_text_part("Background notification service").click()
+        device_1.element_by_text_part("Background service for notifications").click()
 
         if public_chat_after_block_1.chat_element_by_text(message_after_block_2).is_element_displayed():
             self.errors.append("Message from blocked user '%s' is received" % device_2.driver.number)

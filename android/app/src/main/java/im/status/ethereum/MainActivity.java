@@ -23,6 +23,9 @@ import android.provider.Settings;
 import android.os.Bundle;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import com.facebook.react.ReactFragmentActivity;
@@ -32,6 +35,7 @@ import org.devio.rn.splashscreen.SplashScreen;
 
 import java.util.Properties;
 import im.status.ethereum.module.StatusThreadPoolExecutor;
+import im.status.ethereum.MainApplication;
 
 public class MainActivity extends NavigationActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback{
@@ -95,6 +99,16 @@ public class MainActivity extends NavigationActivity
             intent.setData(Uri.parse("package:" + getPackageName()));
         }
         return intent;
+    }
+
+    private void tryToEmit(String eventName, WritableMap event) {
+        try {
+            ((MainApplication) getApplication()).getReactNativeHost()
+                                                .getReactInstanceManager()
+                                                .getCurrentReactContext()
+                                                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                                .emit("url", event);
+        } catch(Exception e) {/* we expect NPE on first start, which is OK because we have a fallback */}
     }
 
     @Override
@@ -167,6 +181,16 @@ public class MainActivity extends NavigationActivity
             @Override
             public void run() {
                 System.loadLibrary("status-logs");
+
+                // when app is started but the Activity has been destroyed, the deep linking url event is
+                // not emitted when coming back to foreground. This is a workaround. If the problem is
+                // resolved in react-native this code should be removed
+                if (getIntent().getData() != null) {
+                    WritableMap event = Arguments.createMap();
+                    event.putString("url", getIntent().getDataString());
+                    // on first start emit will (silently) fail, but the regular deep linking handler will work
+                    tryToEmit("url", event);
+                }
             }
         };
 
@@ -178,7 +202,7 @@ public class MainActivity extends NavigationActivity
         super.onDestroy();
     }
 
-    
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

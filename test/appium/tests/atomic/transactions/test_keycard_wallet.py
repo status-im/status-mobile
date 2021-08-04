@@ -31,6 +31,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6290)
     @marks.high
+    @marks.flaky
     def test_keycard_fetching_balance_after_offline(self):
         sender = transaction_senders['F']
         sign_in = SignInView(self.driver)
@@ -42,7 +43,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in.just_fyi('Go back to online and check that balance is updated')
         sign_in.set_network_to_cellular_only()
         home.continue_syncing_button.wait_and_click()
-
         home.connection_offline_icon.wait_for_invisibility_of_element(100)
         wallet = home.wallet_button.click()
         wallet.wait_balance_is_changed('ETH')
