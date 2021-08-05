@@ -19,6 +19,12 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -354,7 +360,14 @@ public class PushNotificationHelper {
                 }
             }
 
-            if (largeIconBitmap != null){
+            Bundle author = bundle.getBundle("notificationAuthor");
+
+            if (largeIconBitmap == null && author != null) {
+                String base64Image = author.getString("icon").split(",")[1];
+                byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                notification.setLargeIcon(getCircleBitmap(decodedByte));
+            } else if (largeIconBitmap != null){
               notification.setLargeIcon(largeIconBitmap);
             }
 
@@ -647,6 +660,29 @@ public class PushNotificationHelper {
         return false;
     }
 
+    private Bitmap getCircleBitmap(Bitmap bitmap) {
+        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(output);
+
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawOval(rectF, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        bitmap.recycle();
+
+        return output;
+    }
+    
     private Person getPerson(Bundle bundle) {
       String base64Image = bundle.getString("icon").split(",")[1];
       byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
@@ -654,7 +690,7 @@ public class PushNotificationHelper {
 
       String name = bundle.getString("name");
 
-      return new Person.Builder().setIcon(IconCompat.createWithBitmap(decodedByte)).setName(name).build();
+      return new Person.Builder().setIcon(IconCompat.createWithBitmap(getCircleBitmap(decodedByte))).setName(name).build();
     }
 
     private StatusMessage createMessage(Bundle data) {
