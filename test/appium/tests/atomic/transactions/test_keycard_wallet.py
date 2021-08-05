@@ -17,6 +17,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         home_view = sign_in_view.recover_access(sender['passphrase'], keycard=True)
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
+        wallet_view.wait_balance_is_changed()
         wallet_view.accounts_status_account.click()
         transaction_amount = wallet_view.get_unique_amount()
         wallet_view.send_transaction(amount=transaction_amount,

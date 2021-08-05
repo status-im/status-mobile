@@ -89,6 +89,7 @@ class SendTransactionView(BaseView):
         self.validation_error_element = Text(self.driver, xpath="//*[@content-desc='custom-gas-fee']/../android.view.ViewGroup//*[@content-desc='icon']")
 
         self.network_fee_button = Button(self.driver, accessibility_id="custom-gas-fee")
+        self.fee_slider = Button(self.driver, xpath="//android.widget.SeekBar")
         self.transaction_fee_button = Button(self.driver, accessibility_id="transaction-fee-button")
         self.transaction_fee_total_value = Text(self.driver, translation_id="wallet-transaction-total-fee", suffix="//following::android.widget.TextView[1]")
         self.gas_limit_input = EditBox(self.driver, prefix="(", translation_id="gas-limit", suffix="/..//android.widget.EditText)[1]")
@@ -139,10 +140,12 @@ class SendTransactionView(BaseView):
             self.set_up_wallet_when_sending_tx()
         if not default_gas_price:
             self.network_fee_button.click()
-            default_gas_price = self.gas_price_input.text
-            self.gas_price_input.clear()
-            self.gas_price_input.set_value(str(int(float(default_gas_price))+30))
-            self.update_fee_button.click()
+            self.fee_slider.click_inside_element_by_coordinate(0.99, times_to_click=2)
+            self.save_button.click()
+            #default_gas_price = self.gas_price_input.text
+            # self.gas_price_input.clear()
+            # self.gas_price_input.set_value(str(int(float(default_gas_price))+30))
+            # self.update_fee_button.click()
         if keycard:
             keycard_view = self.sign_with_keycard_button.click()
             keycard_view.enter_default_pin()
