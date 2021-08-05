@@ -20,7 +20,7 @@
   {:db (assoc app-db
               :network/type type
               :keycard/banner-hidden banner-hidden
-              :keycard (dissoc keycard :secrets)
+              :keycard (dissoc keycard :secrets :pin :application-info)
               :supported-biometric-auth supported-biometric-auth
               :app-active-since (or app-active-since now)
               :goto-key-storage? goto-key-storage?
