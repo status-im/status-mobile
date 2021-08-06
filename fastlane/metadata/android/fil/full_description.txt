@@ -1,0 +1,12 @@
+Ang Status ay isang pribado at ligtas na tool sa komunikasyon. Makipag-chat sa mga kaibigan, mag-imbak ng mga asset at galugarin ang hinaharap ng web nang hindi sinamantala para sa iyong data.
+
+Sa Status, ikaw lamang ang kumokontrol sa iyong impormasyon.
+
+Chat
+Tinatanggal ng Status ang mga sentralisadong third party sa iyong mga mensahe. Hindi lamang protektado ang iyong nilalaman, ngunit gayon din ang iyong metadata - para sa panghuli sa privacy.
+
+TRANSACT
+Mag-imbak ng mga digital na assets sa iyong Status wallet. Magpadala at humiling ng mga token mula sa mga kaibigan, o makipag-transaksyon sa mga desentralisadong aplikasyon.
+
+Siyasatin
+I-access ang mga aplikasyon na batay sa Ethereum sa web3. Maglaro ng mga laro, makipagpalitan ng mga digital assets at marami pa.
