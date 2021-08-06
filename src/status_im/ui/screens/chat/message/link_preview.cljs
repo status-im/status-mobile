@@ -123,7 +123,8 @@
      [quo/separator]
      [quo/button {:on-press #(re-frame/dispatch [:navigate-to
                                                  :community
-                                                 {:community-id (:id community)}])
+                                                 {:from-chat true
+                                                  :community-id (:id community)}])
                   :type     :secondary}
       (i18n/label :t/view)]]))
 
