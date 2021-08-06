@@ -4,7 +4,10 @@
             [quo.platform :as platform]
             ["react-native" :as rn]
             ["@react-native-community/hooks" :as hooks]
-            ["react-native-navigation" :refer (Navigation)]))
+            ["react-native-navigation" :refer (Navigation)]
+            ["react-native-swipe-list-view" :as swipe-list-view]))
+
+(def swipe-row (reagent/adapt-react-class (.-SwipeRow ^js swipe-list-view)))
 
 (def app-registry (.-AppRegistry rn))
 

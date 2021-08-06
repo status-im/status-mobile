@@ -13,7 +13,8 @@
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.core :as utils]
             [status-im.utils.datetime :as time]
-            [status-im.ui.components.chat-icon.styles :as chat-icon.styles]))
+            [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
+            [quo.react-native :as rn]))
 
 (defn mention-element [from]
   @(re-frame/subscribe [:contacts/contact-name-by-identity from]))
@@ -166,9 +167,26 @@
      ;; won't be applied correctly.
      (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))])
 
+(defn hidden-delete-button [chat-id]
+  [react/touchable-opacity {:on-press #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])}
+   [rn/view {:style {:width "100%", :height 64, :flexDirection "row", :justify-content "flex-end"}}
+   [rn/view {:style {:width 64, :height 64,  :background-color "rgba(255,0,0,0.7)", :justify-content "center", :alignItems "center"}}
+    [rn/view {:style {:width            40
+                      :height           40
+                      :align-items      :center
+                      :justify-content  :center
+                      :border-radius    20
+                      :background-color  "rgba(255,255,255,0.8)"}}
+      [icons/icon :main-icons/delete {:resize-mode     :contain
+                                      :width 25
+                                      :height 25
+                                      :color "rgba(255,0,0,1)"}]]]]])
+
 (defn home-list-item [home-item opts]
   (let [{:keys [chat-id chat-name color group-chat public? timestamp last-message muted]} home-item]
-    [react/touchable-opacity (merge {:style {:height 64}} opts)
+    [rn/swipe-row {:disableRightSwipe true, :rightOpenValue -64, :stopRightSwipe -64}
+     [hidden-delete-button chat-id]
+     [react/touchable-opacity (merge {:activeOpacity 1.0, :style {:height 64, :background-color colors/white}} opts)
      [:<>
       [chat-item-icon muted (and group-chat (not public?)) (and group-chat public?)]
       [chat-icon.screen/chat-icon-view chat-id group-chat chat-name
@@ -187,4 +205,5 @@
                          (:whisper-timestamp last-message)
                          timestamp))]
       [message-content-text (select-keys last-message [:content :content-type :community-id])]
-      [unviewed-indicator home-item]]]))
+      [unviewed-indicator home-item]]]
+     ]))

@@ -59,6 +59,7 @@
     "react-native-splash-screen": "^3.2.0",
     "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#v2.5.35",
     "react-native-svg": "^9.8.4",
+    "react-native-swipe-list-view": "^3.2.9",
     "react-native-touch-id": "^4.4.1",
     "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#v11.3.0-status",
     "tdigest": "^0.1.1",
