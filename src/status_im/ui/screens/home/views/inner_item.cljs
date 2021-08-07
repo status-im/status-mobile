@@ -170,13 +170,13 @@
 (defn hidden-delete-button [chat-id]
   [react/touchable-opacity {:on-press #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])}
    [rn/view {:style {:width "100%", :height 64, :flexDirection "row", :justify-content "flex-end"}}
-   [rn/view {:style {:width 64, :height 64,  :background-color "rgba(255,0,0,0.7)", :justify-content "center", :alignItems "center"}}
-    [rn/view {:style {:width            40
-                      :height           40
-                      :align-items      :center
-                      :justify-content  :center
-                      :border-radius    20
-                      :background-color  "rgba(255,255,255,0.8)"}}
+    [rn/view {:style {:width 64, :height 64,  :background-color "rgba(255,0,0,0.7)", :justify-content "center", :alignItems "center"}}
+     [rn/view {:style {:width            40
+                       :height           40
+                       :align-items      :center
+                       :justify-content  :center
+                       :border-radius    20
+                       :background-color  "rgba(255,255,255,0.8)"}}
       [icons/icon :main-icons/delete {:resize-mode     :contain
                                       :width 25
                                       :height 25
@@ -187,23 +187,22 @@
     [rn/swipe-row {:disableRightSwipe true, :rightOpenValue -64, :stopRightSwipe -64}
      [hidden-delete-button chat-id]
      [react/touchable-opacity (merge {:activeOpacity 1.0, :style {:height 64, :background-color colors/white}} opts)
-     [:<>
-      [chat-item-icon muted (and group-chat (not public?)) (and group-chat public?)]
-      [chat-icon.screen/chat-icon-view chat-id group-chat chat-name
-       {:container              (assoc chat-icon.styles/container-chat-list
-                                       :top 12 :left 16 :position :absolute)
-        :size                   40
-        :chat-icon              chat-icon.styles/chat-icon-chat-list
-        :default-chat-icon      (chat-icon.styles/default-chat-icon-chat-list color)
-        :default-chat-icon-text (chat-icon.styles/default-chat-icon-text 40)}]
-      [chat-item-title chat-id muted group-chat chat-name]
-      [react/text {:style               styles/datetime-text
-                   :number-of-lines     1
-                   :accessibility-label :last-message-time-text}
+      [:<>
+       [chat-item-icon muted (and group-chat (not public?)) (and group-chat public?)]
+       [chat-icon.screen/chat-icon-view chat-id group-chat chat-name
+        {:container              (assoc chat-icon.styles/container-chat-list
+                                        :top 12 :left 16 :position :absolute)
+         :size                   40
+         :chat-icon              chat-icon.styles/chat-icon-chat-list
+         :default-chat-icon      (chat-icon.styles/default-chat-icon-chat-list color)
+         :default-chat-icon-text (chat-icon.styles/default-chat-icon-text 40)}]
+       [chat-item-title chat-id muted group-chat chat-name]
+       [react/text {:style               styles/datetime-text
+                    :number-of-lines     1
+                    :accessibility-label :last-message-time-text}
        ;;TODO (perf) move to event
-       (memo-timestamp (if (pos? (:whisper-timestamp last-message))
-                         (:whisper-timestamp last-message)
-                         timestamp))]
-      [message-content-text (select-keys last-message [:content :content-type :community-id])]
-      [unviewed-indicator home-item]]]
-     ]))
+        (memo-timestamp (if (pos? (:whisper-timestamp last-message))
+                          (:whisper-timestamp last-message)
+                          timestamp))]
+       [message-content-text (select-keys last-message [:content :content-type :community-id])]
+       [unviewed-indicator home-item]]]]))
