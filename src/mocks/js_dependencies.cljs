@@ -201,6 +201,9 @@
 
 (def react-native-gradien #js {:default #js {}})
 
+(def react-native-swipe-list-view
+  #js {:SwipeRow #js {}})
+
 (def push-notification-ios #js {})
 
 ;; Update i18n_resources.cljs
@@ -235,6 +238,7 @@
     "react-native-navigation" react-native-navigation
     "@react-native-community/push-notification-ios" push-notification-ios
     "react-native-camera-kit" react-native-camera-kit
+    "react-native-swipe-list-view" react-native-swipe-list-view
     "./fleets.js" default-fleets
     "./chats.js" default-chats
     "../translations/ar.json" (js/JSON.parse (slurp "./translations/ar.json"))

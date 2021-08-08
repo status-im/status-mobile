@@ -144,6 +144,10 @@ used for keycard
 used for svg icons, mostly collectibles are using svg
 TODO: updating requires a pod update on iOS
 
+## "react-native-swipe-list-view": "^3.2.9"
+
+Used for make rows swipe-able and add hidden buttons.
+
 ## "react-native-touch-id": "^4.4.1"
 
 used for touch-id identification
