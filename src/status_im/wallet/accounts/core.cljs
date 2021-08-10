@@ -275,11 +275,12 @@
 
 (fx/defn save-account
   {:events [:wallet.accounts/save-account]}
-  [{:keys [db]} account {:keys [name color]}]
+  [{:keys [db]} account {:keys [name color hidden]}]
   (let [accounts (:multiaccount/accounts db)
         new-account  (cond-> account
                        name (assoc :name name)
-                       color (assoc :color color))
+                       color (assoc :color color)
+                       (not (nil? hidden)) (assoc :hidden hidden))
         new-accounts (replace {account new-account} accounts)]
     {::json-rpc/call [{:method     "accounts_saveAccounts"
                        :params     [[new-account]]

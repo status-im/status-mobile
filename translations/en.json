@@ -1298,6 +1298,7 @@
     "wallet-invalid-address-checksum": "Error in address: \n {{data}}",
     "wallet-invalid-chain-id": "Network does not match: \n {{data}} but current chain is {{chain}}",
     "wallet-manage-assets": "Manage assets",
+    "wallet-manage-accounts": "Manage accounts",
     "wallet-request": "Request",
     "wallet-send": "Send",
     "wallet-send-min-units": "Min 21000 units",
@@ -1645,5 +1646,6 @@
     "suggested-price-limit": "Suggested price limit",
     "include": "Include",
     "category": "Category",
-    "edit-chats": "Edit chats"
+    "edit-chats": "Edit chats",
+    "hide": "Hide"
 }

@@ -65,7 +65,7 @@
      (str desc)]]))
 
 (views/defview navigation [{:keys [url can-go-back? can-go-forward? dapps-account empty-tab browser-id name]}]
-  (views/letsubs [accounts [:accounts-without-watch-only]]
+  (views/letsubs [accounts [:visible-accounts-without-watch-only]]
     [react/view (styles/navbar)
      [react/touchable-highlight {:on-press            #(if can-go-back?
                                                          (re-frame/dispatch [:browser.ui/previous-page-button-pressed])

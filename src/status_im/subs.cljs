@@ -625,6 +625,12 @@
    (ethereum/get-default-account accounts)))
 
 (re-frame/reg-sub
+ :multiaccount/visible-accounts
+ :<- [:multiaccount/accounts]
+ (fn [accounts]
+   (remove :hidden accounts)))
+
+(re-frame/reg-sub
  :sign-in-enabled?
  :<- [:multiaccounts/login]
  (fn [{:keys [password]}]
@@ -710,13 +716,19 @@
  (fn [accounts]
    (filter #(not= (:type %) :watch) accounts)))
 
+(re-frame/reg-sub
+ :visible-accounts-without-watch-only
+ :<- [:multiaccount/accounts]
+ (fn [accounts]
+   (remove :hidden (filter #(not= (:type %) :watch) accounts))))
+
 (defn filter-recipient-accounts
   [search-filter {:keys [name]}]
   (string/includes? (string/lower-case (str name)) search-filter))
 
 (re-frame/reg-sub
  :accounts-for-recipient
- :<- [:multiaccount/accounts]
+ :<- [:multiaccount/visible-accounts]
  :<- [:wallet/prepare-transaction]
  :<- [:search/recipient-filter]
  (fn [[accounts {:keys [from]} search-filter]]
@@ -1551,8 +1563,10 @@
 (re-frame/reg-sub
  :balances
  :<- [:wallet]
- (fn [wallet]
-   (map :balance (vals (:accounts wallet)))))
+ :<- [:multiaccount/visible-accounts]
+ (fn [[wallet accounts]]
+   (let [accounts (map :address accounts)]
+     (map :balance (vals (select-keys (:accounts wallet) accounts))))))
 
 (re-frame/reg-sub
  :empty-balances?

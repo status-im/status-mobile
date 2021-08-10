@@ -10,7 +10,14 @@
 
 (defn accounts-options [mnemonic]
   (fn []
-    [react/view
+    [:<>
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/wallet-manage-accounts)
+       :icon                :main-icons/account
+       :accessibility-label :wallet-manage-accounts
+       :on-press            #(hide-sheet-and-dispatch
+                              [:navigate-to :manage-accounts])}]
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/wallet-manage-assets)
@@ -47,7 +54,7 @@
          :on-press            #(hide-sheet-and-dispatch
                                 [:navigate-to :backup-seed])}])]))
 
-(defn account-card-actions [account type]
+(defn account-card-actions [account type wallet]
   [react/view
    (when-not (= type :watch)
      [quo/list-item
@@ -63,7 +70,15 @@
      :icon                :main-icons/share
      :accessibility-label :share-account-button
      :on-press            #(hide-sheet-and-dispatch
-                            [:wallet/share-popover (:address account)])}]])
+                            [:wallet/share-popover (:address account)])}]
+   (when-not wallet
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/hide)
+       :icon                :main-icons/hide
+       :accessibility-label :hide-account-button
+       :on-press            #(hide-sheet-and-dispatch
+                              [:wallet.accounts/save-account account {:hidden true}])}])])
 
 (defn add-account []
   (let [keycard? @(re-frame/subscribe [:keycard-multiaccount?])]

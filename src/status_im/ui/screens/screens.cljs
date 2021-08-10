@@ -108,7 +108,8 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.chat.pinned-messages :as pin-messages]
             [status-im.ui.screens.communities.create-category :as create-category]
-            [status-im.ui.screens.communities.select-category :as select-category]))
+            [status-im.ui.screens.communities.select-category :as select-category]
+            [status-im.ui.screens.wallet.accounts-manage.views :as accounts-manage]))
 
 (def components
   [{:name      :chat-toolbar
@@ -375,6 +376,10 @@
            {:name      :currency-settings
             :options   {:topBar {:title {:text (i18n/label :t/main-currency)}}}
             :component currency-settings/currency-settings}
+
+           {:name      :manage-accounts
+            :options   {:topBar {:title {:text (i18n/label :t/wallet-manage-accounts)}}}
+            :component accounts-manage/manage}
 
            ;;MY STATUS
 

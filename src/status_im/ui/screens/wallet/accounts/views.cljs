@@ -17,7 +17,7 @@
             [status-im.keycard.login :as keycard.login])
   (:require-macros [status-im.utils.views :as views]))
 
-(views/defview account-card [{:keys [name color address type] :as account} keycard? card-width]
+(views/defview account-card [{:keys [name color address type wallet] :as account} keycard? card-width]
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:account-portfolio-value address]
                   prices-loading? [:prices-loading?]]
@@ -48,7 +48,7 @@
        [react/touchable-highlight
         {:style styles/card-icon-more
          :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                        {:content        (fn [] [sheets/account-card-actions account type])
+                                        {:content        (fn [] [sheets/account-card-actions account type wallet])
                                          :content-height 130}])}
         [icons/icon :main-icons/more {:color colors/white-persist}]]]]]))
 
@@ -107,7 +107,7 @@
      [dot {:selected (= selected i)}])])
 
 (views/defview accounts []
-  (views/letsubs [accounts [:multiaccount/accounts]
+  (views/letsubs [accounts [:multiaccount/visible-accounts]
                   keycard? [:keycard-multiaccount?]
                   window-width [:dimensions/window-width]
                   index (reagent/atom 0)]
