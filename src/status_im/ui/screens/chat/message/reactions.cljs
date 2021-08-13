@@ -63,7 +63,6 @@
                              (reset! visible true))]
         [:<>
          [rn/view {:ref         ref
-                   :style       {:opacity (if @visible 0 1)}
                    :collapsable false}
           [render message {:modal         false
                            :on-long-press (fn [act]

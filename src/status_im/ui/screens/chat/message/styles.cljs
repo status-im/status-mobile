@@ -122,6 +122,7 @@
    :border-bottom-right-radius (if timeline 16 (if outgoing 4 16))
    :border-width               1
    :border-color               components.colors/gray-lighter
+   :background-color           components.colors/white
    :margin-vertical            4})
 
 (def screen-width

@@ -416,14 +416,15 @@
                            message-height-px))]
         [react/touchable-highlight
          (when-not modal
-           {:on-press      (fn [_]
-                             (react/dismiss-keyboard!))
-            :on-long-press (fn []
-                             (if @collapsed?
-                               (do (reset! collapsed? false)
-                                   (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
-                               (on-long-press-fn on-long-press message content)))
-            :disabled       in-popover?})
+           {:on-press         (fn [_]
+                                (react/dismiss-keyboard!))
+            :delay-long-press 100
+            :on-long-press    (fn []
+                                (if @collapsed?
+                                  (do (reset! collapsed? false)
+                                      (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
+                                  (on-long-press-fn on-long-press message content)))
+            :disabled         in-popover?})
          [react/view {:style (style/message-view message)}
           [react/view {:style      (style/message-view-content)
                        :max-height max-height}
@@ -488,6 +489,7 @@
                                   {:disabled      in-popover?
                                    :on-press      (fn []
                                                     (react/dismiss-keyboard!))
+                                   :delay-long-press 100
                                    :on-long-press (fn []
                                                     (on-long-press
                                                      (concat
@@ -521,6 +523,7 @@
                                                           (when pack
                                                             (re-frame/dispatch [:stickers/open-sticker-pack pack]))
                                                           (react/dismiss-keyboard!))
+                                   :delay-long-press 100
                                    :on-long-press       (fn []
                                                           (on-long-press
                                                            (when-not outgoing
@@ -537,6 +540,7 @@
   [message-content-wrapper message
    [message-content-image message {:modal         modal
                                    :disabled      in-popover?
+                                   :delay-long-press 100
                                    :on-long-press (fn []
                                                     (on-long-press
                                                      [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
