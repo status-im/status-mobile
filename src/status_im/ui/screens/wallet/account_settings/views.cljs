@@ -9,7 +9,44 @@
             [status-im.ui.components.copyable-text :as copyable-text]
             [reagent.core :as reagent]
             [quo.core :as quo]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.utils.security :as security]))
+
+(defn not-valid-password? [password]
+  (< (count (security/safe-unmask-data password)) 6))
+
+(defn delete-account [_]
+  (let [password (reagent/atom nil)
+        text-input-ref (atom nil)
+        error (reagent/atom nil)]
+    (fn [account]
+      (when (and @text-input-ref error (not @password))
+        (.clear ^js @text-input-ref))
+      [react/view {:padding 20 :width 300}
+       [quo/text-input
+        {:style             {:margin-bottom 40}
+         :label             (i18n/label :t/password)
+         :show-cancel       false
+         :secure-text-entry true
+         :return-key-type   :next
+         :on-submit-editing nil
+         :auto-focus        true
+         :on-change-text    #(reset! password (security/mask-data %))
+         :get-ref           #(reset! text-input-ref %)
+         :error             (when (and @error (not @password))
+                              (if (= :wrong-password @error)
+                                (i18n/label :t/wrong-password)
+                                (str @error)))}]
+       [quo/button {:on-press            (fn []
+                                           (re-frame/dispatch [:wallet.accounts/delete-key
+                                                               account
+                                                               @password
+                                                               #(reset! error :wrong-password)])
+                                           (reset! password nil))
+                    :theme               :negative
+                    :accessibility-label :delete-account-confirm
+                    :disabled            (not-valid-password? @password)}
+        (i18n/label :t/delete)]])))
 
 (defview colors-popover [selected-color on-press]
   (letsubs [width [:dimensions/window-width]]
@@ -19,8 +56,8 @@
        (for [color colors/account-colors]
          ^{:key color}
          [react/touchable-highlight {:on-press #(on-press color)}
-          [react/view {:height          52      :background-color color :border-radius 8 :width (* 0.7 width)
-                       :justify-content :center :padding-left     12    :margin-bottom 16}
+          [react/view {:height          52 :background-color color :border-radius 8 :width (* 0.7 width)
+                       :justify-content :center :padding-left 12 :margin-bottom 16}
            [react/view {:height           32 :width 32 :border-radius 20 :align-items :center :justify-content :center
                         :background-color colors/black-transparent}
             (when (= selected-color color)
@@ -42,7 +79,7 @@
   (letsubs [{:keys [address color path type] :as account} [:multiaccount/current-account]
             new-account (reagent/atom nil)
             keycard? [:keycard-multiaccount?]]
-    [react/keyboard-avoiding-view {:style {:flex 1}
+    [react/keyboard-avoiding-view {:style         {:flex 1}
                                    :ignore-offset true}
      [topbar/topbar
       (cond-> {:title (i18n/label :t/account-settings)}
@@ -72,13 +109,13 @@
                                                     (swap! new-account assoc :color new-color)
                                                     (re-frame/dispatch [:hide-popover]))]
                                           :style {:max-height "60%"}}])}
-         [react/view {:height        52        :margin-top      12      :background-color (or (:color @new-account) color)
+         [react/view {:height        52 :margin-top 12 :background-color (or (:color @new-account) color)
                       :border-radius 8
-                      :align-items   :flex-end :justify-content :center :padding-right    12}
+                      :align-items   :flex-end :justify-content :center :padding-right 12}
           [icons/icon :main-icons/dropdown {:color colors/white}]]]
         [property (i18n/label :t/type)
          (case type
-           :watch       (i18n/label :t/watch-only)
+           :watch (i18n/label :t/watch-only)
            (:key :seed) (i18n/label :t/off-status-tree)
            (i18n/label :t/on-status-tree))]
         [property (i18n/label :t/wallet-address)
@@ -98,10 +135,12 @@
            (i18n/label (if keycard?
                          :t/keycard
                          :t/this-device))])]
-       (when (= type :watch)
+       (when (#{:key :seed :watch} type)
          [react/view
           [react/view {:margin-bottom 8 :margin-top 28 :height 1 :background-color colors/gray-lighter}]
           [quo/list-item
            {:theme    :negative
             :title    (i18n/label :t/delete-account)
-            :on-press #(re-frame/dispatch [:wallet.settings/show-delete-account-confirmation account])}]])]]]))
+            :on-press #(if (= :watch type)
+                         (re-frame/dispatch [:wallet.settings/show-delete-account-confirmation account])
+                         (re-frame/dispatch [:show-popover {:view [delete-account account]}]))}]])]]]))

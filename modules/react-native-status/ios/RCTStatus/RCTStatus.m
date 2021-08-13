@@ -204,10 +204,23 @@ RCT_EXPORT_METHOD(addPeer:(NSString *)enode
 RCT_EXPORT_METHOD(deleteMultiaccount:(NSString *)keyUID
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"MultiAccountImportPrivateKey() method called");
+    NSLog(@"DeleteMultiaccount() method called");
 #endif
     NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
     NSString *result = StatusgoDeleteMultiaccount(keyUID, multiaccountKeystoreDir.path);
+    callback(@[result]);
+}
+
+////////////////////////////////////verify//////////////////////////////// multiAccountImportPrivateKey
+RCT_EXPORT_METHOD(deleteImportedKey:(NSString *)keyUID
+                  address:(NSString *)address
+                  password:(NSString *)password
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"DeleteImportedKey() method called");
+#endif
+    NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
+    NSString *result = StatusgoDeleteImportedKey(address, password, multiaccountKeystoreDir.path);
     callback(@[result]);
 }
 

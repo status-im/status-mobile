@@ -140,6 +140,20 @@
           (on-error error)
           (on-success)))))))
 
+(re-frame/reg-fx
+ ::delete-imported-key
+ (fn [{:keys [key-uid address password on-success on-error]}]
+   (let [hashed-pass (ethereum/sha3 (security/safe-unmask-data password))]
+     (native-module/delete-imported-key
+      key-uid
+      (string/lower-case (subs address 2))
+      hashed-pass
+      (fn [result]
+        (let [{:keys [error]} (types/json->clj result)]
+          (if-not (string/blank? error)
+            (on-error error)
+            (on-success))))))))
+
 (fx/defn delete-multiaccount-and-init-keycard-onboarding
   {:events [::delete-multiaccount-and-init-keycard-onboarding]}
   [{:keys [db] :as cofx}]

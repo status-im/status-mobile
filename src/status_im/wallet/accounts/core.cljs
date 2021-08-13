@@ -24,7 +24,8 @@
             [status-im.ethereum.ens :as ens]
             [status-im.ens.core :as ens.core]
             [status-im.ethereum.resolver :as resolver]
-            [status-im.utils.mobile-sync :as utils.mobile-sync]))
+            [status-im.utils.mobile-sync :as utils.mobile-sync]
+            [status-im.multiaccounts.key-storage.core :as key-storage]))
 
 (fx/defn start-adding-new-account
   {:events [:wallet.accounts/start-adding-new-account]}
@@ -292,7 +293,7 @@
   [{:keys [db] :as cofx} account]
   (let [accounts (:multiaccount/accounts db)
         new-accounts (vec (remove #(= account %) accounts))
-        deleted-address (get-in account [:address])]
+        deleted-address (:address account)]
     (fx/merge cofx
               {::json-rpc/call [{:method     "accounts_deleteAccount"
                                  :params     [(:address account)]
@@ -301,6 +302,23 @@
                        (assoc :multiaccount/accounts new-accounts)
                        (update-in [:wallet :accounts] dissoc deleted-address))}
               (navigation/pop-to-root-tab :wallet-stack))))
+
+(fx/defn delete-account-key
+  {:events [:wallet.accounts/delete-key]}
+  [{:keys [db] :as cofx} account password on-error]
+  (let [deleted-address (:address account)
+        dapps-address (get-in cofx [:db :multiaccount :dapps-address])]
+    (if (= (string/lower-case dapps-address) (string/lower-case deleted-address))
+      {:utils/show-popup {:title   (i18n/label :t/warning)
+                          :content (i18n/label :t/account-is-used)}}
+      {::key-storage/delete-imported-key
+       {:key-uid    (get-in db [:multiaccount :key-uid])
+        :address    (:address account)
+        :password   password
+        :on-success #(do
+                       (re-frame/dispatch [:hide-popover])
+                       (re-frame/dispatch [:wallet.accounts/delete-account account]))
+        :on-error   on-error}})))
 
 (fx/defn view-only-qr-scanner-result
   {:events [:wallet.add-new/qr-scanner-result]}

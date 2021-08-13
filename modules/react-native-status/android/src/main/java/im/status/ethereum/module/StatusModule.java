@@ -1294,8 +1294,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
-
-
     @ReactMethod
     public void deleteMultiaccount(final String keyUID, final Callback callback) {
         Log.d(TAG, "deleteMultiaccount");
@@ -1309,6 +1307,27 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                 String res = Statusgo.deleteMultiaccount(keyUID, keyStoreDir);
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void deleteImportedKey(final String keyUID, final String address, final String password, final Callback callback) {
+        Log.d(TAG, "deleteImportedKey");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        final String keyStoreDir = this.getKeyStorePath(keyUID);
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.deleteImportedKey(address, password, keyStoreDir);
 
                 callback.invoke(res);
             }

@@ -1647,5 +1647,6 @@
     "include": "Include",
     "category": "Category",
     "edit-chats": "Edit chats",
-    "hide": "Hide"
+    "hide": "Hide",
+    "account-is-used": "The account is being used with Dapps in the browser."
 }

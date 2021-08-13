@@ -6,9 +6,7 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.keycard.common :as common]
-            [status-im.native-module.core :as native-module]
-            [status-im.utils.types :as types]
-            [clojure.string :as string]))
+            [status-im.multiaccounts.key-storage.core :as key-storage]))
 
 (fx/defn unpair-card-pressed
   {:events [:keycard-settings.ui/unpair-card-pressed]}
@@ -127,16 +125,12 @@
                :keycard/persist-pairings (dissoc pairings (keyword instance-uid))
                :utils/show-popup   {:title   (i18n/label (if keys-removed-from-card? :t/profile-deleted-title :t/database-reset-title))
                                     :content (i18n/label (if keys-removed-from-card? :t/profile-deleted-keycard :t/database-reset-content))
-                                    :on-dismiss #(re-frame/dispatch [:logout])}}
+                                    :on-dismiss #(re-frame/dispatch [:logout])}
+               ::key-storage/delete-multiaccount {:key-uid    key-uid
+                                                  :on-success #(log/debug "[keycard] remove account ok")
+                                                  :on-error   #(log/warn "[keycard] remove account: " %)}}
               (common/clear-on-card-connected)
-              (common/hide-connection-sheet)
-              (native-module/delete-multiaccount
-               key-uid
-               (fn [result]
-                 (let [{:keys [error]} (types/json->clj result)]
-                   (if-not (string/blank? error)
-                     (log/warn "[keycard] remove account: " error)
-                     (log/debug "[keycard] remove account ok"))))))))
+              (common/hide-connection-sheet))))
 
 (fx/defn on-remove-key-success
   {:events [:keycard.callback/on-remove-key-success]}
