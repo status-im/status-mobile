@@ -2,7 +2,7 @@ import time
 import random
 import emoji
 
-from tests import marks
+from tests import marks, background_service_message
 from tests.users import basic_user, dummy_user, ens_user_ropsten, ens_user, ens_user_message_sender
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -700,7 +700,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.open_notification_bar()
         if device_1.element_by_text_part(message_after_block_2).is_element_displayed():
             self.errors.append("Push notification is received from blocked user")
-        device_1.element_by_text_part("Background service for notifications").click()
+        device_1.element_by_text_part(background_service_message).click()
 
         if public_chat_after_block_1.chat_element_by_text(message_after_block_2).is_element_displayed():
             self.errors.append("Message from blocked user '%s' is received" % device_2.driver.number)
@@ -739,7 +739,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi("check that PNs are still enabled in profile after closing 'background notification centre' "
                           "message and relogin")
         device_1.open_notification_bar()
-        if not device_1.element_by_text_part("Background notification service").is_element_displayed():
+        if not device_1.element_by_text_part(background_service_message).is_element_displayed():
             self.errors.append("Background notification service is not started after relogin")
 
         self.errors.verify_no_errors()

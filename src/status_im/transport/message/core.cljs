@@ -176,22 +176,23 @@
   "before processing we want to filter and sort messages, so we can process first only messages which will be showed"
   {:events [:sanitize-messages-and-process-response]}
   [{:keys [db] :as cofx} ^js response-js process-async]
-  (let [current-chat-id (:current-chat-id db)
-        {:keys [db messages transactions chats statuses]}
-        (reduce group-by-and-update-unviewed-counts
-                {:db db :chats #{} :transactions #{} :statuses [] :messages []
-                 :current-chat-id current-chat-id}
-                (.-messages response-js))]
-    (sort-js-messages! response-js messages)
-    (fx/merge cofx
-              {:db db
-               :utils/dispatch-later (concat []
-                                             (when (seq statuses)
-                                               [{:ms 100 :dispatch [:process-statuses statuses]}])
-                                             (when (seq transactions)
-                                               (for [transaction-hash transactions]
-                                                 {:ms 100 :dispatch [:watch-tx transaction-hash]})))}
-              (process-response response-js process-async))))
+  (when response-js
+    (let [current-chat-id (:current-chat-id db)
+          {:keys [db messages transactions chats statuses]}
+          (reduce group-by-and-update-unviewed-counts
+                  {:db db :chats #{} :transactions #{} :statuses [] :messages []
+                   :current-chat-id current-chat-id}
+                  (.-messages response-js))]
+      (sort-js-messages! response-js messages)
+      (fx/merge cofx
+                {:db db
+                 :utils/dispatch-later (concat []
+                                               (when (seq statuses)
+                                                 [{:ms 100 :dispatch [:process-statuses statuses]}])
+                                               (when (seq transactions)
+                                                 (for [transaction-hash transactions]
+                                                   {:ms 100 :dispatch [:watch-tx transaction-hash]})))}
+                (process-response response-js process-async)))))
 
 (fx/defn remove-hash
   [{:keys [db]} envelope-hash]

@@ -88,8 +88,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_2.select_mention_from_suggestion_list(username_1, username_1[:2])
         chat_2.send_message_button.click()
         chat_element.new_messages_counter.wait_for_element(30)
-        if chat_element.new_messages_counter.text == '1':
-            self.errors.append('Counter is not shown for mention in public chat')
+        chat_element.new_messages_counter.wait_for_element_text("1", 60)
 
         chat_element.click()
         home_1.home_button.double_click()

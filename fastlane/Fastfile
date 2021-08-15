@@ -115,7 +115,7 @@ end
 #    if false - read list of devices from AppStoreConnect, and upgrade the provisioning profiles from it
 # `pr_build`:
 #    if true  - uses StatusImPR scheme and postfixed app id with `.pr` to build an app, which can be used in parallel with release
-#    if false - uses StatusIm scheme to build the release app
+#    if false - uses StatusIm scheme to build the release app 
 
 def build_ios_adhoc(readonly: false, pr_build: false)
   # PR builds should appear as a separate App on iOS
@@ -333,6 +333,24 @@ platform :android do
       track: 'alpha',
       apk_paths: APK_PATHS,
       json_key_data: ENV['GOOGLE_PLAY_JSON_KEY']
+    )
+  end
+
+  desc 'Upload metadata to Google Play.'
+  desc 'Metadata is always updated when builds are uploaded,'
+  desc 'but this action can update metadata without uploading a build.'
+  desc 'expects GOOGLE_PLAY_JSON_KEY environment variable'
+  lane :upload_metadata do
+    upload_to_play_store(
+      skip_upload_apk: true,
+      skip_upload_changelogs: true,
+      json_key_data: ENV['GOOGLE_PLAY_JSON_KEY'],
+      # These don't matter much as we're not uploading any new builds
+      # and indeed, we're skipping changelogs. This is just so that
+      # the library can find what it thinks it needs and continue with
+      # the work we actually want it to do.
+      track: 'production',
+      version_code: '2020042307'
     )
   end
 

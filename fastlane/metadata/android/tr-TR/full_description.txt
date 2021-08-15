@@ -1,0 +1,32 @@
+Status, gizli bir mesajlaşma uygulaması, güvenli kripto cüzdanı ve Ethereum Web3 DApp tarayıcısını tek bir güçlü iletişim aracında birleştirir. Arkadaşlarınızla ve büyüyen topluluklarla sohbet edin. Dijital varlıkları satın alın,saklayın ve takas edin. Verileriniz istismar edilmeden merkezi olmayan internette gezinin.
+
+Status, Ethereum için işletim sisteminizdir.
+
+GİZLİ MESAJLAŞMA UYGULAMASI
+İletişiminizde gereksiz aracılar olmadan gizli 1:1, özel grup ve genel sohbetler gönderin. Status, daha fazla gizlilik ve güvenli mesajlaşma için mesajlarınızdan merkezi tıkanma noktalarını kaldıran bir metin uygulamasıdır. Varsayılan olarak uçtan uca şifreleme ve gizlilik içeren şifreli bir mesajlaşma uygulaması, böylece siz ve hedeflenen alıcı dışında hiç kimse mesajlarınızı görüntüleyemez - Status bile.
+
+
+Sınırsız P2P ödemesi
+Status Messenger, kripto para cüzdanınızla sorunsuz bir şekilde çalışır, böylece sohbet penceresi aracılığıyla istediğiniz zaman dünyanın her yerinden insanlarla kripto para alışverişi yapabilirsiniz.
+
+
+GÜVENLİ ETHEREUM CÜZDAN
+Status kripto cüzdanı, ETH, SNT gibi ethereum varlıklarını, DAI gibi sabit paraları ve NFT'leri güvenli bir şekilde göndermenize, depolamanıza ve takas etmenize olanak tanır. Bu ethereum cüzdan uygulamasıyla kripto para biriminizin ve dijital varlıklarınızın kontrolünün güvenliğini ele alın. Status blok zinciri cüzdanı şu anda yalnızca ERC-20 ve ERC-721 varlıklarını desteklemektedir; Bitcoin'i desteklemez.
+
+DEFi'ye KATILIN
+Kripto paranızı en yeni merkezi olmayan finans uygulamaları ve Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber ve daha fazlası gibi merkezi olmayan borsalarla (DEX) çalıştırın.
+
+WEB3 DAPP TARAYICI
+Güvenli tarayıcı ile güvenli web'e göz atın ve büyüyen merkezi olmayan uygulamalardan oluşan ekosisteme erişin. Status, DeFi'den daha fazlasına erişim sağlar - SuperRare, Gitcoin, Dragonereum, Axie Infinity, Open Sea, CryptoKitties, Decentraland ve daha fazlası gibi en yeni pazarları, koleksiyonları, oyunları ve sosyal ağları keşfedin.
+
+TOPLULUĞUNUZA BAĞLANIN
+En sevdiğiniz toplulukları ve arkadaşlarınızı keşfedin, bağlantı kurun ve onlarla sohbet edin. Küçük bir arkadaş grubu, bir sanatçı topluluğu, kripto tüccarları veya bir sonraki büyük organizasyon - Status topluluklarıyla mesajlaşın ve iletişim kurun.
+
+SOSYAL AKIŞ
+Aklınızdakileri son teknoloji merkezi olmayan bir sosyal ağda kişilerinizle paylaşın
+
+
+
+
+GİZLİ HESAP OLUŞTURMA
+Anonim hesap oluşturun ve gizli kalın. Ücretsiz hesabınızı oluştururken, ASLA bir telefon numarası, e-posta adresi veya banka hesabı girmeniz gerekmeyecek. Cüzdan özel anahtarlarınız, yalnızca paranıza ve finansal işlemlerinize erişebilmeniz için yerel olarak oluşturulur ve saklanır.

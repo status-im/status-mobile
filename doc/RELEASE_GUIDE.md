@@ -104,3 +104,12 @@ The hotfix process is basically identical to the workflow of a bugfix:
 1) Add the changes on status-react
 2) Make sure you use a hotfix branch for status-go (unless we are happy to release from develop)
 3) Update the `VERSION` in status-react
+
+# PlayStore Metadata Updates
+This section is relevant only for the marketing team, no developer participation is required.
+
+You can update Play Store release metadata using `fastlane android upload_metadata`.
+
+But that requires credentials necessary for accessing Play Store API. The simpler way is to edit files contained within [`fastlane/metadata`](metadata) and run the following CI job:
+
+https://ci.status.im/job/status-react/job/tools/job/update-playstore-metadata/

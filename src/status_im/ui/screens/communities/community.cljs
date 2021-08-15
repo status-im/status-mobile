@@ -139,21 +139,21 @@
               :color :secondary}
     text]])
 
-(defn community-chat-item [{:keys [chat-id] :as home-item}]
+(defn community-chat-item [{:keys [chat-id] :as home-item} _ _ {:keys [from-chat]}]
   [inner-item/home-list-item
    ;; We want communities to behave as public chats when it comes to
    ;; unread indicator
    (assoc home-item :public? true)
    {:on-press      (fn []
                      (re-frame/dispatch [:dismiss-keyboard])
-                     (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id true])
+                     (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id (not from-chat)])
                      (re-frame/dispatch [:search/home-filter-changed nil])
                      (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
     :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                         {:content (fn []
                                                     [sheets/actions home-item])}])}])
 
-(defn categories-accordion [community-id chats categories edit]
+(defn categories-accordion [community-id chats categories edit data]
   [rn/view {:padding-bottom 8}
    (for [{:keys [name id]} (vals categories)]
      ^{:key (str "cat" name id)}
@@ -181,10 +181,10 @@
                          [inner-item/home-list-item
                           (assoc chat :public? true)]]]
                        ^{:key (str "chat" chat id)}
-                       [community-chat-item chat]))]}]
+                       [community-chat-item chat nil nil data]))]}]
       [quo/separator]])])
 
-(defn community-chat-list [community-id categories edit]
+(defn community-chat-list [community-id categories edit from-chat]
   (let [chats (<sub [:chats/categories-by-community-id community-id])]
     (if (and (empty? categories) (empty? chats))
       [blank-page (i18n/label :t/welcome-community-blank-message)]
@@ -193,8 +193,9 @@
         :content-container-style      {:padding-bottom 8}
         :keyboard-should-persist-taps :always
         :data                         (get chats "")
+        :render-data                  {:from-chat from-chat}
         :render-fn                    community-chat-item
-        :header                       [categories-accordion community-id chats categories edit]
+        :header                       [categories-accordion community-id chats categories edit {:from-chat from-chat}]
         :footer                       [rn/view {:height 68}]}])))
 
 (defn channel-preview-item [{:keys [id color name]}]
@@ -252,10 +253,10 @@
                      images
                      (not= (:access permissions) constants/community-no-membership-access)
                      (count members)]}]
-         [community-chat-list id categories true]]))))
+         [community-chat-list id categories true false]]))))
 
 (defn community []
-  (let [{:keys [community-id]} (<sub [:get-screen-params])]
+  (let [{:keys [community-id from-chat]} (<sub [:get-screen-params])]
     (fn []
       (let [{:keys [id chats name images members permissions color joined can-request-access?
                     can-join? requested-to-join-at admin categories]
@@ -279,7 +280,7 @@
                                    {:content (fn []
                                                [community-actions community])}])}])}]
            (if joined
-             [community-chat-list id categories false]
+             [community-chat-list id categories false from-chat]
              [community-channel-preview-list id chats])
            (when admin
              [components.plus-button/plus-button

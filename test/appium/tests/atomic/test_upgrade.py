@@ -80,9 +80,9 @@ class TestUpgradeApplication(SingleDeviceTestCase):
                 self.errors.append('Preview message is not shown for %s' % key)
             if 'title' in data:
                 if message.preview_title.text != data['title']:
-                      self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
+                      self.errors.append("Title '%s' does not match expected '%s'" % (message.preview_title.text, data['title']))
                 if message.preview_subtitle.text != data['subtitle']:
-                      self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
+                      self.errors.append("Subtitle '%s' does not match expected '%s'" % (message.preview_subtitle.text, data['subtitle']))
         home.home_button.click()
 
         home.just_fyi("Checking markdown messages")
@@ -109,22 +109,29 @@ class TestUpgradeApplication(SingleDeviceTestCase):
             self.errors.append('Could not redirect a user to a public chat tapping the tag message after upgrade')
         home.home_button.click()
 
-        home.just_fyi("Checking long messages, reply and mention")
-        long_name = '#before-upgrade-2'
-        public_chat = home.get_chat(long_name).click()
-        pub_chat_data = chats[long_name]
-        public_chat.element_starts_with_text(pub_chat_data['long']).scroll_to_element()
-        if not public_chat.chat_element_by_text(pub_chat_data['long']).uncollapse:
-            self.errors.append("No uncollapse icon on long message is shown!")
+        home.just_fyi("Checking reply to long messages and mentions")
+        mention = '#before-upgrade-2'
+        public_chat = home.get_chat(mention).click()
+        pub_chat_data = chats[mention]
         public_replied_message = public_chat.chat_element_by_text(pub_chat_data['reply'])
         if pub_chat_data['long'] not in public_replied_message.replied_message_text:
             self.errors.append("Reply is not present in message received in public chat after upgrade")
+        public_chat.element_starts_with_text(pub_chat_data['mention']).scroll_to_element()
         if not public_chat.chat_element_by_text(pub_chat_data['mention']).is_element_displayed():
             self.errors.append("Mention is not present in public chat after upgrade")
+        home.home_button.click()
+
+        home.just_fyi("Checking collapsable messages")
+        long_name = '#before-upgrade-4'
+        public_chat = home.get_chat(long_name).click()
+        pub_chat_data = chats[long_name]
+        if not public_chat.chat_element_by_text(pub_chat_data['long']).uncollapse:
+            self.errors.append("No uncollapse icon on long message is shown!")
 
         self.errors.verify_no_errors()
 
     @marks.testrail_id(695804)
+    @marks.flaky
     def test_dapps_browser_several_accounts_upgrade(self):
         sign_in = SignInView(self.driver)
         favourites = dapp_data.dapps['favourites']
@@ -293,6 +300,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(695805)
+    @marks.flaky
     def test_devices_sync_contact_management_upgrade(self):
         self.create_drivers(2)
         user = transaction_recipients['K']
@@ -376,6 +384,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(695811)
+    @marks.flaky
     def test_devices_group_chats_upgrade(self):
         self.create_drivers(2)
         admin, member = ens_user, transaction_recipients['J']
@@ -443,6 +452,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
                 self.errors.append('Timer is not shown for audiomessage in group chat')
         chat_1.chat_options.click()
         chat_1.group_info.click()
+        chat_1.element_by_text(ens_user['username']).scroll_to_element()
         admins = chat_1.element_by_text('Admin').find_elements()
         if len(admins) != 2:
             self.errors.append('Not 2 admins in group chat')

@@ -211,8 +211,8 @@ class HomeView(BaseView):
         if set_image:
             from views.profile_view import ProfileView
             set_picture_view = ProfileView(self.driver)
-            set_picture_view.element_by_translation_id("community-thumbnail-upload").click()
-            set_picture_view.element_by_translation_id("community-image-pick").click()
+            set_picture_view.element_by_translation_id("community-thumbnail-upload").scroll_and_click()
+            set_picture_view.element_by_translation_id("community-image-pick").scroll_and_click()
             set_picture_view.select_photo_from_gallery(file_name)
             set_picture_view.crop_photo_button.click()
 
