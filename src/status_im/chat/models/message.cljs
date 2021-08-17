@@ -216,7 +216,8 @@
   (let [mcids (message-ids->message-id-chat-id-map db removed-messages)]
     {:db (reduce (fn [acc current]
                    (update-in acc [:messages (:chat-id current)] dissoc (:message-id current)))
-                 db mcids)}))
+                 db mcids)
+     :dispatch [:get-activity-center-notifications]}))
 
 (comment
   (handle-removed-messages

@@ -1833,12 +1833,13 @@
  :<- [:activity.center/notifications]
  :<- [::chats]
  (fn [[{:keys [notifications]} chats]]
-   (let [supported-notifications (filter (fn [{:keys [type chat-id]}]
+   (let [supported-notifications (filter (fn [{:keys [type chat-id last-message]}]
                                            (and
-                                            (or (= constants/activity-center-notification-type-mention type)
-                                                (= constants/activity-center-notification-type-one-to-one-chat type)
+                                            (or (and (= constants/activity-center-notification-type-one-to-one-chat type)
+                                                     (not (nil? last-message)))
                                                 (= constants/activity-center-notification-type-private-group-chat type)
-                                                (= constants/activity-center-notification-type-reply type))
+                                                (= constants/activity-center-notification-type-reply type)
+                                                (= constants/activity-center-notification-type-mention type))
                                             (get chats chat-id))) notifications)]
      (group-notifications-by-date (map #(assoc % :timestamp (or (:timestamp %) (:timestamp (or (:message %) (:last-message %))))) supported-notifications)))))
 
