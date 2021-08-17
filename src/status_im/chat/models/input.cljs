@@ -142,7 +142,7 @@
                      :params      [message-id]
                      :js-response true
                      :on-error    #(log/error "failed to delete message message " %)
-                     :on-success  #(re-frame/dispatch [::chat.message/handle-removed-messages [message-id]])}]})
+                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
 (fx/defn cancel-message-reply
   "Cancels stage message reply"
