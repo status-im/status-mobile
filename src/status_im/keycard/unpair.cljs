@@ -21,16 +21,14 @@
 (fx/defn unpair-card-confirmed
   {:events [:keycard-settings.ui/unpair-card-confirmed]}
   [{:keys [db] :as cofx}]
-  (let [pin-retry-counter (get-in db [:keycard :application-info :pin-retry-counter])
-        enter-step (if (zero? pin-retry-counter) :puk :current)]
-    (fx/merge cofx
-              {:db (assoc-in db [:keycard :pin] {:enter-step  enter-step
-                                                 :current     []
-                                                 :puk         []
-                                                 :status      nil
-                                                 :error-label nil
-                                                 :on-verified :keycard/unpair})}
-              (common/navigate-to-enter-pin-screen))))
+  (fx/merge cofx
+            {:db (assoc-in db [:keycard :pin] {:enter-step  :current
+                                               :current     []
+                                               :puk         []
+                                               :status      nil
+                                               :error-label nil
+                                               :on-verified :keycard/unpair})}
+            (common/navigate-to-enter-pin-screen)))
 
 (fx/defn unpair
   {:events [:keycard/unpair]}

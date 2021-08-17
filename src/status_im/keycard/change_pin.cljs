@@ -5,32 +5,27 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.keycard.common :as common]
-            [status-im.utils.security :as security]
-            [status-im.keycard.login :as keycard.login]))
+            [status-im.utils.security :as security]))
 
 (fx/defn change-credentials-pressed
   {:events [:keycard-settings.ui/change-credentials-pressed]}
   [{:keys [db] :as cofx} changing]
-  (let [pin-retry-counter (get-in db [:keycard :application-info :pin-retry-counter])
-        enter-step (if (zero? pin-retry-counter) :puk :current)]
-    (if (= enter-step :puk)
-      (keycard.login/reset-pin cofx)
-      (fx/merge cofx
-                {:db
-                 (assoc-in db [:keycard :pin] {:enter-step       enter-step
-                                               :current          []
-                                               :puk              []
-                                               :original         []
-                                               :confirmation     []
-                                               :puk-original     []
-                                               :puk-confirmation []
-                                               :status           nil
-                                               :error-label      nil
-                                               :on-verified      (case changing
-                                                                   :pin     :keycard/proceed-to-change-pin
-                                                                   :puk     :keycard/proceed-to-change-puk
-                                                                   :pairing :keycard/proceed-to-change-pairing)})}
-                (common/navigate-to-enter-pin-screen)))))
+  (fx/merge cofx
+            {:db
+             (assoc-in db [:keycard :pin] {:enter-step       :current
+                                           :current          []
+                                           :puk              []
+                                           :original         []
+                                           :confirmation     []
+                                           :puk-original     []
+                                           :puk-confirmation []
+                                           :status           nil
+                                           :error-label      nil
+                                           :on-verified      (case changing
+                                                               :pin     :keycard/proceed-to-change-pin
+                                                               :puk     :keycard/proceed-to-change-puk
+                                                               :pairing :keycard/proceed-to-change-pairing)})}
+            (common/navigate-to-enter-pin-screen)))
 
 (fx/defn proceed-to-change-pin
   {:events [:keycard/proceed-to-change-pin]}

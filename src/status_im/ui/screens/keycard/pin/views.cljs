@@ -242,33 +242,29 @@
           ;; properly rewritten so that different instances of pin-view do not
           ;; mess with state unrelated to them.
           step (or step :current)]
-      (if (zero? pin-retry-counter)
-        [pin-view {:pin               pin
-                   :retry-counter     (when (< puk-retry-counter puk-retries) puk-retry-counter)
-                   :title-label       :t/enter-puk-code
-                   :description-label :t/enter-puk-code-description
-                   :step              step
-                   :status            status
-                   :error-label       error-label}]
-        [pin-view {:pin               pin
-                   :retry-counter     (when (< pin-retry-counter pin-retries) pin-retry-counter)
-                   :title-label       (case step
-                                        :current             :t/current-pin
-                                        :login               :t/current-pin
-                                        :import-multiaccount :t/current-pin
-                                        :original            :t/create-a-pin
-                                        :confirmation        :t/repeat-pin
-                                        :puk-original        :t/create-a-puk
-                                        :puk-confirmation    :t/repeat-puk
-                                        :t/current-pin)
-                   :description-label (case step
-                                        :current             :t/current-pin-description
-                                        :sign                :t/current-pin-description
-                                        :import-multiaccount :t/current-pin-description
-                                        :login               :t/login-pin-description
-                                        :puk-original        :t/new-puk-description
-                                        :puk-confirmation    :t/new-puk-description
-                                        :t/new-pin-description)
-                   :step              step
-                   :status            status
-                   :error-label       error-label}]))))
+      [pin-view {:pin               pin
+                 :retry-counter     (if (= step :puk)
+                                      (when (< puk-retry-counter puk-retries) puk-retry-counter)
+                                      (when (< pin-retry-counter pin-retries) pin-retry-counter))
+                 :title-label       (case step
+                                      :current             :t/current-pin
+                                      :login               :t/current-pin
+                                      :import-multiaccount :t/current-pin
+                                      :original            :t/create-a-pin
+                                      :confirmation        :t/repeat-pin
+                                      :puk                 :t/enter-puk-code
+                                      :puk-original        :t/create-a-puk
+                                      :puk-confirmation    :t/repeat-puk
+                                      :t/current-pin)
+                 :description-label (case step
+                                      :current             :t/current-pin-description
+                                      :sign                :t/current-pin-description
+                                      :import-multiaccount :t/current-pin-description
+                                      :login               :t/login-pin-description
+                                      :puk                 :t/enter-puk-code-description
+                                      :puk-original        :t/new-puk-description
+                                      :puk-confirmation    :t/new-puk-description
+                                      :t/new-pin-description)
+                 :step              step
+                 :status            status
+                 :error-label       error-label}])))
