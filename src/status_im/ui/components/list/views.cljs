@@ -3,9 +3,11 @@
             [status-im.ui.components.list.styles :as styles]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
-            ["react-native" :as react-native]))
+            ["react-native" :as react-native]
+            ["react-native-bidirectional-list" :refer [BidirectionalList]]))
 
-(def flat-list-class (reagent/adapt-react-class (.-FlatList react-native)))
+(def flat-list-class (reagent/adapt-react-class BidirectionalList))
+;(def flat-list-class (reagent/adapt-react-class (.-FlatList react-native)))
 (def section-list-class (reagent/adapt-react-class (.-SectionList react-native)))
 
 (def memo-wrap-render-fn

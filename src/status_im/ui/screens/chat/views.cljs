@@ -264,10 +264,12 @@
 ;;if they outside the viewarea, but we load more here because end is reached,so its slowdown UI because we
 ;;load and render 20 messages more, but we can't prevent this , because otherwise :on-end-reached will work wrong
 (defn list-on-end-reached []
-  (if @state/scrolling
-    (re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat])
-    (utils/set-timeout #(re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat])
-                       (if platform/low-device? 700 200))))
+  (js/Promise. (fn [resolve reject]
+                 (if @state/scrolling
+                   (re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat])
+                   (utils/set-timeout #(re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat])
+                                      (if platform/low-device? 700 200)))
+                 (resolve))))
 
 (defn get-render-data [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled in-pinned-view?]}]
   (let [current-public-key @(re-frame/subscribe [:multiaccount/public-key])

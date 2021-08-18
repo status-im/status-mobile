@@ -34,6 +34,7 @@
     "react-dom": "^16.4.2",
     "react-native": "0.63.4",
     "react-native-background-timer": "^2.1.1",
+    "react-native-bidirectional-list": "git+https://github.com/callstack-internal/react-native-bidirectional-list.git#main",
     "react-native-camera-kit": "^8.0.4",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git#v1.4.2-status",
     "react-native-dark-mode": "^0.2.2",
