@@ -227,8 +227,8 @@
                     :name     "Zeus Shield Coin"
                     :address  "0x7a41e0517a5eca4fdbc7fbeba4d4c47b9ff6dc63"
                     :decimals 18}
-                   {:symbol   :DATA
-                    :name     "Streamr DATAcoin"
+                   {:symbol   :XDATA
+                    :name     "Streamr (old)"
                     :address  "0x0cf0ee63788a0849fe5297f3407f701e122cc023"
                     :decimals 18}
                    {:symbol   :RCN
