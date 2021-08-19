@@ -405,7 +405,9 @@
     (when (and outgoing config/delete-message-enabled?)
       [{:on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
         :label    (i18n/label :t/delete)
-        :id       :delete}]))))
+        :id       :delete}])
+    [{:on-press #(re-frame/dispatch [:chat.ui/set-cursor message])
+      :label "Set cursor"}])))
 
 (defn collapsible-text-message [{:keys [mentioned]} _]
   (let [collapsed?   (reagent/atom false)

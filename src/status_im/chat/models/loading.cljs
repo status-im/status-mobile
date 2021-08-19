@@ -143,23 +143,44 @@
     (when (and
            (not (get-in db [:pagination-info chat-id :all-loaded?]))
            (not (get-in db [:pagination-info chat-id :loading-messages?])))
-      (let [cursor (get-in db [:pagination-info chat-id :cursor])]
+      (let [cursor (or (get-in db [:pagination-info chat-id :cursor])
+                       (get db :cursor))]
         (when (or first-request cursor)
           (merge
            {:db (assoc-in db [:pagination-info chat-id :loading-messages?] true)}
            {:utils/dispatch-later [{:ms 100 :dispatch [:load-more-reactions cursor chat-id]}
-                                   {:ms 100 :dispatch [::models.pin-message/load-pin-messages chat-id]}]}
+                                   {:ms 100 :dispatch [::models.pin-message/load-pin-messages chat-id]}
+                                   (when (and  first-request (get db :cursor))
+                                     {:ms 100 :dispatch [:chat.ui/load-more-messages2 chat-id 5]})]}
            (data-store.messages/messages-by-chat-id-rpc
             chat-id
             cursor
             constants/default-number-of-messages
+            0
             #(re-frame/dispatch [::messages-loaded chat-id session-id %])
             #(re-frame/dispatch [::failed-loading-messages chat-id session-id %]))))))))
+
+(fx/defn load-more-messages2
+  {:events [:chat.ui/load-more-messages2]}
+  [{:keys [db]} chat-id num cursor]
+  (when-let [session-id (get-in db [:pagination-info chat-id :messages-initialized?])]
+    (data-store.messages/messages-by-chat-id-rpc
+     chat-id
+     (or cursor (get db :cursor))
+     num
+     1
+     #(re-frame/dispatch [::messages-loaded chat-id session-id %])
+     #(re-frame/dispatch [::failed-loading-messages chat-id session-id %]))))
 
 (fx/defn load-more-messages-for-current-chat
   {:events [:chat.ui/load-more-messages-for-current-chat]}
   [{:keys [db] :as cofx}]
   (load-more-messages cofx (:current-chat-id db) false))
+
+(fx/defn load-more-messages-for-current-chat2
+  {:events [:chat.ui/load-more-messages-for-current-chat2]}
+  [{:keys [db] :as cofx} {:keys [clock-value]}]
+  (load-more-messages2 cofx (:current-chat-id db) constants/default-number-of-messages (clock-value->cursor clock-value)))
 
 (fx/defn load-messages
   [{:keys [db now] :as cofx} chat-id]

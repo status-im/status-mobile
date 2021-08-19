@@ -15,7 +15,8 @@
             ["emojilib" :as emojis]
             [status-im.chat.models.mentions :as mentions]
             [status-im.utils.utils :as utils]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]))
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.chat.models.loading :as chat.loading]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -143,6 +144,11 @@
                      :js-response true
                      :on-error    #(log/error "failed to delete message message " %)
                      :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
+
+(fx/defn set-cursor
+  {:events [:chat.ui/set-cursor]}
+  [{:keys [db]} {:keys [clock-value]}]
+  {:db (assoc db :cursor (chat.loading/clock-value->cursor clock-value))})
 
 (fx/defn cancel-message-reply
   "Cancels stage message reply"

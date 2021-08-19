@@ -58,10 +58,11 @@
 (defn messages-by-chat-id-rpc [chat-id
                                cursor
                                limit
+                               direction
                                on-success
                                on-failure]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "chatMessages")
-                     :params     [chat-id cursor limit]
+  {::json-rpc/call [{:method     (json-rpc/call-ext-method "messagesByChatID")
+                     :params     [{:chatId chat-id :cursor cursor :limit limit :direction direction}]
                      :on-success (fn [result]
                                    (on-success (update result :messages #(map <-rpc %))))
                      :on-failure on-failure}]})

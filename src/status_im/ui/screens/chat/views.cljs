@@ -271,6 +271,13 @@
                                       (if platform/low-device? 700 200)))
                  (resolve))))
 
+(defn list-on-start-reached [message]
+  (println "ONSTART" @state/scrolling)
+  (fn []
+    (js/Promise. (fn [resolve reject]
+                   (re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat2 message])
+                   (resolve)))))
+
 (defn get-render-data [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled in-pinned-view?]}]
   (let [current-public-key @(re-frame/subscribe [:multiaccount/public-key])
         community @(re-frame/subscribe [:communities/community community-id])
@@ -315,6 +322,7 @@
        :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               list-on-end-reached
+       :on-start-reached             (list-on-start-reached (first messages))
        :on-scroll-to-index-failed    identity              ;;don't remove this
        :content-container-style      {:padding-top (+ bottom-space 16)
                                       :padding-bottom 16}
