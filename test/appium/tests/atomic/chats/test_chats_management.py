@@ -286,7 +286,6 @@ class TestChatManagement(SingleDeviceTestCase):
 
         home.just_fyi("Denying access to camera in wallet view")
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
         wallet.scan_qr_button.click()
         wallet.deny_button.click()
         general_camera_error.wait_for_visibility_of_element(3)

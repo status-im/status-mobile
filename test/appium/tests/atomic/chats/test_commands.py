@@ -23,9 +23,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         recipient_public_key, recipient_username = home_2.get_public_key_and_username(return_username=True)
         wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
-        for wallet in (wallet_1, wallet_2):
-            wallet.set_up_wallet()
-            wallet.home_button.click()
+        [wallet.home_button.click() for wallet in (wallet_1, wallet_2)]
 
         chat_1 = home_1.add_contact(recipient_public_key)
         amount = chat_1.get_unique_amount()
@@ -109,12 +107,10 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1 = device_1.create_user()
         recipient_public_key, recipient_username = home_1.get_public_key_and_username(return_username=True)
         wallet_1 = home_1.wallet_button.click()
-        wallet_1.set_up_wallet()
         wallet_1.select_asset(asset_name)
         wallet_1.home_button.click()
         home_2 = device_2.recover_access(passphrase=sender['passphrase'])
         wallet_2 = home_2.wallet_button.click()
-        wallet_2.set_up_wallet()
         wallet_2.home_button.click()
 
         device_2.just_fyi('Add recipient to contact and send 1 message')
@@ -170,9 +166,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         profile_2 = home_2.profile_button.click()
         recipient_chat_key = profile_2.get_public_key_and_username()
         wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
-        for wallet in wallet_1, wallet_2:
-            wallet.set_up_wallet()
-            wallet.home_button.click()
+        [wallet.home_button.click() for wallet in (wallet_1, wallet_2)]
 
         chat_1 = home_1.add_contact(recipient_chat_key)
         amount = chat_1.get_unique_amount()
@@ -222,7 +216,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         device_2_sign_in.create_user()
         home_1, home_2 = device_1_sign_in.get_home_view(), device_2_sign_in.get_home_view()
         wallet_1 = home_1.wallet_button.click()
-        wallet_1.set_up_wallet()
         wallet_1.home_button.click()
         profile_2 = home_2.profile_button.click()
         device_2_username = profile_2.default_username_text.text
@@ -254,7 +247,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
         chat_1_sender_message.transaction_status.wait_for_element_text(chat_1_sender_message.confirmed)
         wallet_2 = chat_2.wallet_button.click()
-        wallet_2.set_up_wallet()
         wallet_2.accounts_status_account.click()
         wallet_2.swipe_down()
         wallet_2.home_button.click(desired_view="chat")

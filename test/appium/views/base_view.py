@@ -635,7 +635,7 @@ class BaseView(object):
     def set_up_wallet_when_sending_tx(self):
         self.driver.info("**Setting up wallet**")
         phrase = self.sign_in_phrase.text
-        self.ok_got_it_button.click()
+        self.ok_got_it_button.wait_and_click(20)
         return phrase
 
     def get_empty_dapp_tab(self):

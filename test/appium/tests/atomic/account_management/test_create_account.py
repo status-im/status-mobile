@@ -257,7 +257,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         for phrase, account in recovery_users.items():
             home_view = sign_in.recover_access(passphrase=phrase, password=unique_password)
             wallet_view = home_view.wallet_button.click()
-            wallet_view.set_up_wallet()
             address = wallet_view.get_wallet_address()
             if address != account:
                 self.errors.append('Restored wallet address "%s" does not match expected "%s"' % (address, account))

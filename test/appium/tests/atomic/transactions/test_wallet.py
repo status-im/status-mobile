@@ -20,7 +20,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home = sign_in.recover_access(sender['passphrase'], password=unique_password)
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
         wallet.accounts_status_account.click()
         transaction_amount = wallet.get_unique_amount()
 
@@ -98,7 +97,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.recover_access(sender['passphrase'])
         home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
         send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.amount_edit_box.click()
@@ -138,7 +136,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         [wallet_view.wait_balance_is_changed(asset) for asset in ['ETH', 'STT']]
         eth_value = wallet_view.get_asset_amount_by_name('ETH')
         stt_value = wallet_view.get_asset_amount_by_name('STT')
@@ -176,7 +173,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         home = sign_in.recover_access(passphrase=passphrase)
 
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
         for asset in ('ETH', 'MDS', 'STT'):
             wallet.wait_balance_is_changed(asset)
         wallet.swipe_up()
@@ -220,7 +216,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     def test_offline_can_login_cant_send_transaction(self):
         home = SignInView(self.driver).create_user()
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
         wallet.toggle_airplane_mode()
         wallet.accounts_status_account.click_until_presence_of_element(wallet.send_transaction_button)
         send_transaction = wallet.send_transaction_button.click()
@@ -244,7 +239,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         status_account_address = wallet_view.get_wallet_address()[2:]
         self.network_api.get_donate(status_account_address, external_faucet=True)
         wallet_view.wait_balance_is_changed()
@@ -309,7 +303,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         status_account_address = wallet_view.get_wallet_address()
         wallet_view.get_account_options_by_name().click()
 
@@ -459,7 +452,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(wallet_users['B']['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         wallet_view.multiaccount_more_options.click()
         wallet_view.manage_assets_button.click()
         token_view = wallet_view.add_custom_token_button.click()
@@ -506,7 +498,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         chat.set_nickname(nickname)
         chat.close_button.click()
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
         wallet.add_account(account_name=account_name)
         wallet.accounts_status_account.click()
         send_tr = wallet.send_transaction_button.click()
@@ -612,7 +603,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
 
         screen = 'send transaction screen from wallet'
@@ -707,9 +697,7 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
                                        device_2.recover_access(receiver['passphrase'])
 
         wallet_view_serder = device_1_home.wallet_button.click()
-        wallet_view_serder.set_up_wallet()
         wallet_view_receiver = device_2_home.wallet_button.click()
-        wallet_view_receiver.set_up_wallet()
 
         if wallet_view_receiver.asset_by_name('STT').is_element_present(10):
             initial_balance = wallet_view_receiver.get_asset_amount_by_name("STT")

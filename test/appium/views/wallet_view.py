@@ -87,6 +87,7 @@ class WalletView(BaseView):
         self.receive_transaction_button = ReceiveTransactionButton(self.driver)
         self.options_button = Button(self.driver, accessibility_id="options-menu-button")
         self.manage_assets_button = Button(self.driver, accessibility_id="wallet-manage-assets")
+        self.manage_accounts_button = Button(self.driver, accessibility_id="wallet-manage-accounts")
         self.scan_tokens_button = Button(self.driver, accessibility_id="wallet-scan-token")
         self.stt_check_box = Button(self.driver, xpath="//*[@text='STT']/../android.view.ViewGroup[@content-desc='checkbox']")
         self.all_assets_full_names = Text(self.driver, xpath="//*[@content-desc='checkbox']/../android.widget.TextView[1]")
@@ -126,10 +127,13 @@ class WalletView(BaseView):
         self.status_account_total_usd_value = Text(self.driver, accessibility_id="account-total-value")
         self.scan_qr_button = Button(self.driver, accessibility_id="accounts-qr-code")
         self.close_send_transaction_view_button = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
+        self.hide_account_button = Button(self.driver, accessibility_id="hide-account-button")
 
         # individual account settings
         self.account_settings_button = Button(self.driver, translation_id="account-settings")
         self.apply_settings_button = Button(self.driver, translation_id="apply")
+        self.password_delete_account_input = EditBox(self.driver, xpath='//*[@text="Password"]/following-sibling::*/android.widget.EditText')
+        self.delete_account_confirm_button = Button(self.driver, accessibility_id="delete-account-confirm")
 
     def wait_balance_is_equal_expected_amount(self, asset ='ETH', expected_balance=0.1, wait_time=300):
         counter = 0
@@ -179,12 +183,6 @@ class WalletView(BaseView):
     def get_sign_in_phrase(self):
         return ' '.join([element.text for element in self.sign_in_phrase.find_elements()])
 
-    def set_up_wallet(self):
-        #self.driver.info("**Setting up wallet**")
-        #phrase = self.sign_in_phrase.text
-        #self.ok_got_it_button.click()
-        #return phrase
-        pass ## Temporary for easier edit of tests
 
     def set_up_wallet_when_sending_tx(self):
         self.driver.info("**Setting up wallet**")
@@ -228,6 +226,20 @@ class WalletView(BaseView):
         account_name = self.status_account_name if not account_name else account_name
         self.driver.info("*Getting '%s'account options*" % account_name)
         return SilentButton(self.driver, xpath="(//*[@text='%s']/../..//*[@content-desc='icon'])[2]" % account_name)
+
+    def get_account_options_from_main_screen(self, account_name=''):
+        account_name = self.status_account_name if not account_name else account_name
+        self.driver.info("*Getting '%s'account options from main wallet screen*" % account_name)
+        return SilentButton(self.driver, xpath="//*[@content-desc='accountcard%s']//*[@content-desc='icon']" % account_name)
+
+    def hidden_account_by_name_button(self, account_name=''):
+        return SilentButton(self.driver,
+                            xpath="//*[@text='%s']/following-sibling::*[@content-desc='hide-icon']"% account_name)
+
+    def show_account_by_name_button(self, account_name=''):
+        return SilentButton(self.driver,
+                            xpath="//*[@text='%s']/following-sibling::*[@content-desc='show-icon']"% account_name)
+
 
     def select_asset(self, *args):
         self.driver.info("**Selecting asset(s)**")

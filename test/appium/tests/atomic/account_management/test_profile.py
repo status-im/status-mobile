@@ -91,7 +91,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         home.just_fyi("Copying wallet address")
         wallet = profile.wallet_button.click()
-        wallet.set_up_wallet()
         wallet.accounts_status_account.click()
         request = wallet.receive_transaction_button.click()
         address = wallet.address_text.text
@@ -199,14 +198,12 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.back_button.click()
         public_key = profile_view.get_public_key_and_username()
         wallet_view = profile_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         address = wallet_view.get_wallet_address()
         sign_in_view.profile_button.click()
         profile_view.logout()
         self.driver.reset()
         sign_in_view.recover_access(recovery_phrase)
         wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         if wallet_view.get_wallet_address() != address:
             self.driver.fail("Seed phrase displayed in new accounts for back up does not recover respective address")
         profile_view = wallet_view.profile_button.click()

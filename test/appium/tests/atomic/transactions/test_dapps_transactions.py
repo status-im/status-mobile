@@ -42,7 +42,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         home = SignInView(self.driver).recover_access(passphrase=transaction_senders['W']['passphrase'],
                                                            password=password)
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
+
         status_test_dapp = home.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
@@ -104,7 +104,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
             self.errors.append('Public key is not returned')
         status_test_dapp.get_empty_dapp_tab()
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
 
         home.just_fyi("Checking sign typed message")
         home.open_status_test_dapp(allow_all=True)

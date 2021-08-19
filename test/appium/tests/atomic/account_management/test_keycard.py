@@ -66,7 +66,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         sign_in.just_fyi('Check that after migrating account with assets is restored')
         wallet_view = sign_in.wallet_button.click()
-        wallet_view.set_up_wallet()
         for asset in ['ETH', 'ADI', 'STT']:
             if wallet_view.get_asset_amount_by_name(asset) == 0:
                 self.errors.append('Asset %s was not restored' % asset)
@@ -142,7 +141,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         sign_in.just_fyi('Check that after restoring account with assets is restored')
         wallet_view = sign_in.wallet_button.click()
-        wallet_view.set_up_wallet()
         for asset in ['ETH', 'ADI', 'STT']:
             if wallet_view.get_asset_amount_by_name(asset) == 0:
                 self.errors.append('Asset %s was not restored' % asset)
@@ -287,7 +285,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         sign_in.just_fyi('Check assets after pairing keycard for recovered multiaccount')
         wallet_view = sign_in.wallet_button.click()
-        # wallet_view.set_up_wallet()
         for asset in ['ETH', 'LXS']:
             if wallet_view.get_asset_amount_by_name(asset) == 0:
                 self.errors.append("%s value is not restored" % asset)
@@ -333,7 +330,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.lets_go_button.click_until_absense_of_element(sign_in.lets_go_button)
         sign_in.home_button.wait_for_visibility_of_element(30)
         wallet_view = sign_in.wallet_button.click()
-        wallet_view.set_up_wallet()
 
         sign_in.just_fyi('Relogin offline')
         self.driver.close_app()
@@ -405,7 +401,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         sign_in.just_fyi('Add to wallet seed phrase for restored multiaccount')
         wallet_view = sign_in.wallet_button.click()
-        wallet_view.set_up_wallet()
         wallet_view.add_account_button.click()
         wallet_view.enter_a_seed_phrase_button.click()
         wallet_view.enter_your_password_input.send_keys(common_password)
@@ -687,7 +682,6 @@ class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('Check that after creating keycard account balance is 0, not ...')
         wallet_1 = device_1.wallet_button.click()
-        wallet_1.set_up_wallet()
         wallet_address = wallet_1.get_wallet_address()
         wallet_1.wallet_button.double_click()
         if wallet_1.status_account_total_usd_value.text != '0':
@@ -707,7 +701,6 @@ class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
 
         device_2.just_fyi("Check username and wallet address on another device")
         wallet_2 = device_2.wallet_button.click()
-        wallet_2.set_up_wallet()
         wallet_address_2 = wallet_2.get_wallet_address()
         wallet_2.wallet_button.double_click()
         if wallet_address != wallet_address_2:

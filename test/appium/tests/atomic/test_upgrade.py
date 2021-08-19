@@ -207,7 +207,6 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home = sign_in.recover_access(passphrase=user['passphrase'], keycard=True)
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
         wallet.wait_balance_is_changed(asset='ADI', scan_tokens=True)
         home.upgrade_app()
 

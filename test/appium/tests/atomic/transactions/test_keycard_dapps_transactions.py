@@ -14,7 +14,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(sender['passphrase'], keycard=True)
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         wallet_view.scan_tokens()
         initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
         status_test_dapp = home_view.open_status_test_dapp()
@@ -41,7 +40,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         home = SignInView(self.driver).recover_access(passphrase=transaction_senders['Z']['passphrase'],
                                                       keycard=True)
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
+
         status_test_dapp = home.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
@@ -84,7 +83,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
         sender = transaction_senders['W']
         home = SignInView(self.driver).recover_access(sender['passphrase'], keycard=True)
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
         status_test_dapp = home.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click_until_presence_of_element(status_test_dapp.sign_typed_message_button)

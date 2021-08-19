@@ -66,7 +66,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         user = wallet_users['D']
         home = SignInView(self.driver).recover_access(user['passphrase'])
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
         wallet.accounts_status_account.click()
 
         wallet.just_fyi("Open transaction on etherscan")
@@ -97,7 +96,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         profile = home.profile_button.click()
         profile.switch_network()
         wallet = profile.wallet_button.click()
-        wallet.set_up_wallet()
         wallet.scan_tokens()
         wallet.accounts_status_account.click()
         wallet.collectibles_button.click()
@@ -131,7 +129,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
-        wallet.set_up_wallet()
         asset = "MDS"
 
         sign_in.just_fyi("Enabling 0 asset on wallet and check it is shown")
@@ -160,7 +157,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
-        wallet.set_up_wallet()
         if wallet.backup_recovery_phrase_warning_text.is_element_present():
             self.driver.fail("'Back up your seed phrase' warning is shown on Wallet while no funds are present")
         address = wallet.get_wallet_address()
@@ -181,7 +177,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         profile.switch_network('Rinkeby with upstream RPC')
         profile = home.profile_button.click()
         wallet = profile.wallet_button.click()
-        wallet.set_up_wallet()
         wallet.scan_tokens()
         wallet.accounts_status_account.click()
         wallet.collectibles_button.click()
@@ -195,7 +190,6 @@ class TestWalletManagement(SingleDeviceTestCase):
     def test_add_account_to_multiaccount_instance_generate_new(self):
         home = SignInView(self.driver).create_user()
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
         wallet.add_account_button.click()
         wallet.generate_an_account_button.click()
         wallet.add_account_generate_account_button.click()
@@ -216,13 +210,18 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('Account was not added')
         if not account_button.color_matches('multi_account_color.png'):
             self.driver.fail('Account color does not match expected')
+        wallet.get_account_by_name(account_name).click()
+        wallet.get_account_options_by_name(account_name).click()
+        wallet.account_settings_button.click()
+        wallet.swipe_up()
+        if wallet.delete_account_button.is_element_displayed(10):
+            self.driver.fail('Delete account option is shown on added account "On Status Tree"!')
 
     @marks.testrail_id(6244)
     @marks.high
     def test_add_and_delete_watch_only_account_to_multiaccount_instance(self):
         home = SignInView(self.driver).create_user()
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
 
         wallet.just_fyi('Add watch-only account')
         wallet.add_account_button.click()
@@ -270,21 +269,20 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
-        wallet.set_up_wallet()
 
         wallet.just_fyi('Add account from private key')
         wallet.add_account_button.click()
         wallet.enter_a_private_key_button.click()
         wallet.enter_your_password_input.send_keys(common_password)
         wallet.enter_a_private_key_input.set_value(wallet_users['C']['private_key'][0:9])
-        account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-        wallet.account_name_input.send_keys(account_name)
+        account_name_private = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        wallet.account_name_input.send_keys(account_name_private)
         wallet.add_account_generate_account_button.click()
-        if wallet.get_account_by_name(account_name).is_element_displayed():
+        if wallet.get_account_by_name(account_name_private).is_element_displayed():
             self.driver.fail('Account is added with wrong private key')
         wallet.enter_a_private_key_input.set_value(wallet_users['C']['private_key'])
         wallet.add_account_generate_account_button.click()
-        account_button = wallet.get_account_by_name(account_name)
+        account_button = wallet.get_account_by_name(account_name_private)
         if not account_button.is_element_displayed():
             self.driver.fail('Account from private key was not added')
 
@@ -294,7 +292,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         initial_STT = wallet.get_asset_amount_by_name('STT')
 
         wallet.just_fyi('Check individual account view (imported from private key), receive option')
-        wallet.get_account_by_name(account_name).scroll_and_click(direction="up")
+        wallet.get_account_by_name(account_name_private).scroll_and_click(direction="up")
         if not wallet.send_transaction_button.is_element_displayed():
             self.errors.append('Send button is not shown on account added with private key')
         wallet.receive_transaction_button.click()
@@ -308,18 +306,18 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.enter_a_seed_phrase_button.click()
         wallet.enter_your_password_input.send_keys(common_password)
         wallet.enter_seed_phrase_input.set_value('')
-        account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-        wallet.account_name_input.send_keys(account_name)
+        account_name_seed = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        wallet.account_name_input.send_keys(account_name_seed)
         wallet.add_account_generate_account_button.click()
-        if wallet.get_account_by_name(account_name).is_element_displayed():
+        if wallet.get_account_by_name(account_name_seed).is_element_displayed():
             self.driver.fail('Account is added without seed phrase')
         wallet.enter_seed_phrase_input.set_value(str(wallet_users['C']['passphrase']).upper())
         wallet.add_account_generate_account_button.click()
-        if wallet.get_account_by_name(account_name).is_element_displayed():
+        if wallet.get_account_by_name(account_name_seed).is_element_displayed():
             self.driver.fail('Same account was added twice')
         wallet.enter_seed_phrase_input.set_value(str(wallet_users['D']['passphrase']).upper())
         wallet.add_account_generate_account_button.click()
-        account_button = wallet.get_account_by_name(account_name)
+        account_button = wallet.get_account_by_name(account_name_seed)
         if not account_button.is_element_displayed():
             self.driver.fail('Account was not added')
 
@@ -328,12 +326,47 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.wait_balance_is_changed('MDS')
 
         wallet.just_fyi('Check account view and send option (imported from seed phrase)')
-        wallet.get_account_by_name(account_name).scroll_and_click(direction="up")
+        wallet.get_account_by_name(account_name_seed).scroll_and_click(direction="up")
         if not wallet.send_transaction_button.is_element_displayed():
             self.errors.append('Send button is not shown on account added with seed phrase')
         wallet.receive_transaction_button.click()
         if wallet.address_text.text[2:] != wallet_users['D']['address']:
             self.errors.append('Wrong address %s is shown in "Receive" popup ' % wallet.address_text.text)
+
+        wallet.just_fyi("Hide both accounts / unhide one")
+        wallet.wallet_button.double_click()
+        wallet.get_account_options_from_main_screen(account_name_private).click()
+        wallet.hide_account_button.click()
+        if wallet.get_account_by_name(account_name_private).is_element_displayed():
+            self.errors.append("Hidden %s is shown on main wallet view" % account_name_private)
+        wallet.multiaccount_more_options.click()
+        wallet.manage_accounts_button.click()
+        if not wallet.hidden_account_by_name_button(account_name_private).is_element_displayed():
+            self.errors.append("Hidden icon is not shown for hidden account")
+        if not wallet.show_account_by_name_button(account_name_seed).is_element_displayed():
+            self.errors.append("'Show icon' is not shown for not hidden account")
+        wallet.show_account_by_name_button(account_name_seed).click()
+        wallet.wallet_button.double_click()
+        if wallet.get_account_by_name(account_name_seed).is_element_displayed():
+            self.errors.append("Hidden %s is shown on main wallet view after hiding via 'Show icon'" % account_name_seed)
+        wallet.multiaccount_more_options.click()
+        wallet.manage_accounts_button.click()
+        wallet.hidden_account_by_name_button(account_name_seed).click()
+        wallet.wallet_button.double_click()
+        if not wallet.get_account_by_name(account_name_seed).is_element_displayed():
+            self.errors.append("Unhidden %s is shown on main wallet view after hiding via 'Show icon'" % account_name_seed)
+
+        wallet.just_fyi("Delete unhidden account in wallet")
+        wallet.get_account_by_name(account_name_seed).click()
+        wallet.get_account_options_by_name(account_name_seed).click()
+        wallet.account_settings_button.click()
+        wallet.delete_account_button.scroll_and_click()
+        wallet.password_delete_account_input.wait_for_element(30)
+        wallet.password_delete_account_input.set_value(common_password)
+        wallet.delete_account_confirm_button.click()
+        if  wallet.get_account_by_name(account_name_seed).is_element_displayed():
+            self.errors.append("Deleted %s is shown on main wallet view" % account_name_seed)
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6269)
@@ -350,7 +383,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet = home.wallet_button.click()
 
         home.just_fyi('Searching for asset by name and symbol')
-        wallet.set_up_wallet()
         wallet.multiaccount_more_options.click()
         wallet.manage_assets_button.click()
         for keyword in search_list_assets:

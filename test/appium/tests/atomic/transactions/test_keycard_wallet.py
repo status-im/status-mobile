@@ -16,7 +16,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(sender['passphrase'], keycard=True)
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
         transaction_amount = wallet_view.get_unique_amount()
         wallet_view.send_transaction(amount=transaction_amount,
@@ -76,7 +75,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         signin_view = SignInView(self.driver)
         home_view = signin_view.recover_access(passphrase=passphrase, keycard=True)
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
         transaction_view = wallet_view.transaction_history_button.click()
 
@@ -102,61 +100,73 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.medium
     def test_keycard_send_funds_between_accounts_in_multiaccount_instance(self):
         sign_in_view = SignInView(self.driver).create_user(keycard=True)
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        status_account_address = wallet_view.get_wallet_address()[2:]
+        wallet = sign_in_view.wallet_button.click()
+        status_account_address = wallet.get_wallet_address()[2:]
         self.network_api.get_donate(status_account_address, external_faucet=True)
-        wallet_view.wait_balance_is_changed()
+        wallet.wait_balance_is_changed()
         account_name = 'subaccount'
-        wallet_view.add_account(account_name, keycard=True)
+        wallet.add_account(account_name, keycard=True)
+        wallet.get_account_by_name(account_name).click()
+        wallet.get_account_options_by_name(account_name).click()
+        wallet.account_settings_button.click()
+        wallet.swipe_up()
 
-        wallet_view.just_fyi("Send transaction to new account")
-        wallet_view.accounts_status_account.wait_and_click()
+        wallet.just_fyi("Checking that delete account and importing account are not available on keycard")
+        if wallet.delete_account_button.is_element_displayed(10):
+            self.errors.append('Delete account option is shown on added account "On Status Tree"!')
+        wallet.wallet_button.double_click()
+        wallet.add_account_button.click()
+        if wallet.enter_a_seed_phrase_button.is_element_displayed():
+            self.errors.append('Importing account option is available on keycard!')
+        wallet.click_system_back_button()
+
+        wallet.just_fyi("Send transaction to new account")
+        wallet.accounts_status_account.wait_and_click()
         transaction_amount = '0.004'
         initial_balance = self.network_api.get_balance(status_account_address)
-        wallet_view.send_transaction(account_name=account_name,
+        wallet.send_transaction(account_name=account_name,
                                      amount=transaction_amount,
                                      keycard=True)
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
         self.network_api.verify_balance_is_updated(str(initial_balance), status_account_address)
 
-        wallet_view.just_fyi("Verifying previously sent transaction in new account")
-        wallet_view.close_button.click()
-        wallet_view.get_account_by_name(account_name).click()
-        wallet_view.send_transaction_button.click()
-        wallet_view.close_send_transaction_view_button.click()
-        balance_after_receiving_tx = float(wallet_view.get_asset_amount_by_name('ETH'))
+        wallet.just_fyi("Verifying previously sent transaction in new account")
+        wallet.close_button.click()
+        wallet.get_account_by_name(account_name).click()
+        wallet.send_transaction_button.click()
+        wallet.close_send_transaction_view_button.click()
+        balance_after_receiving_tx = float(wallet.get_asset_amount_by_name('ETH'))
         expected_balance = self.network_api.get_rounded_balance(balance_after_receiving_tx, transaction_amount)
         if balance_after_receiving_tx != expected_balance:
             self.driver.fail('New account balance %s does not match expected %s after receiving a transaction' % (
                 balance_after_receiving_tx, transaction_amount))
 
-        wallet_view.just_fyi("Sending eth from new account to main account")
+        wallet.just_fyi("Sending eth from new account to main account")
         updated_balance = self.network_api.get_balance(status_account_address)
         transaction_amount_1 = round(float(transaction_amount) * 0.2, 11)
-        wallet_view.wait_balance_is_changed()
-        wallet_view.get_account_by_name(account_name).click()
-        send_transaction = wallet_view.send_transaction(account_name=wallet_view.status_account_name,
+        wallet.wait_balance_is_changed()
+        wallet.get_account_by_name(account_name).click()
+        send_transaction = wallet.send_transaction(account_name=wallet.status_account_name,
                                                         amount=transaction_amount_1,
                                                         keycard=True,
                                                         default_gas_price=True)
-        wallet_view.close_button.click()
-        sub_account_address = wallet_view.get_wallet_address(account_name)[2:]
+        wallet.close_button.click()
+        sub_account_address = wallet.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(sub_account_address, transaction_amount_1)
-        wallet_view.find_transaction_in_history(amount=transaction_amount)
-        wallet_view.find_transaction_in_history(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
+        wallet.find_transaction_in_history(amount=transaction_amount)
+        wallet.find_transaction_in_history(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
 
-        wallet_view.just_fyi("Check transactions on subaccount")
+        wallet.just_fyi("Check transactions on subaccount")
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
 
-        wallet_view.just_fyi("Verify total ETH on main wallet view")
+        wallet.just_fyi("Verify total ETH on main wallet view")
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1)
         self.network_api.verify_balance_is_updated((updated_balance + transaction_amount_1), status_account_address)
-        wallet_view.close_button.click()
+        wallet.close_button.click()
         balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000
         balance_of_status_account = float(self.network_api.get_balance(status_account_address)) / 1000000000000000000
-        wallet_view.scan_tokens()
-        total_eth_from_two_accounts = float(wallet_view.get_asset_amount_by_name('ETH'))
+        wallet.scan_tokens()
+        total_eth_from_two_accounts = float(wallet.get_asset_amount_by_name('ETH'))
         expected_balance = self.network_api.get_rounded_balance(total_eth_from_two_accounts,
                                                                 (balance_of_status_account + balance_of_sub_account))
 
@@ -164,9 +174,9 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             self.driver.fail('Total wallet balance %s != of Status account (%s) + SubAccount (%s)' % (
                 total_eth_from_two_accounts, balance_of_status_account, balance_of_sub_account))
 
-        wallet_view.just_fyi("Check that can set max and send transaction with max amount from subaccount")
-        wallet_view.get_account_by_name(account_name).click()
-        wallet_view.send_transaction_button.click()
+        wallet.just_fyi("Check that can set max and send transaction with max amount from subaccount")
+        wallet.get_account_by_name(account_name).click()
+        wallet.send_transaction_button.click()
         send_transaction.set_max_button.click()
         set_amount = float(send_transaction.amount_edit_box.text)
         if set_amount == 0.0 or set_amount >= balance_of_sub_account:
@@ -174,8 +184,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
         send_transaction.accounts_button.click()
-        send_transaction.element_by_text(wallet_view.status_account_name).click()
+        send_transaction.element_by_text(wallet.status_account_name).click()
         send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction(keycard=True, default_gas_price=True)
-        wallet_view.element_by_text('Assets').click()
-        wallet_view.wait_balance_is_equal_expected_amount(asset='ETH', expected_balance=0)
+        wallet.element_by_text('Assets').click()
+        wallet.wait_balance_is_equal_expected_amount(asset='ETH', expected_balance=0)

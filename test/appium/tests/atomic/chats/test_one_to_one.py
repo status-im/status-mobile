@@ -1047,7 +1047,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         user = transaction_senders['L']
         home_view = SignInView(self.driver).recover_access(user['passphrase'])
         wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
         wallet_view.home_button.click()
         send_transaction_view = SendTransactionView(self.driver)
 

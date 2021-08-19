@@ -19,7 +19,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         recipient_public_key, recipient_username = home_2.get_public_key_and_username(return_username=True)
         wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
         for wallet in (wallet_1, wallet_2):
-            wallet.set_up_wallet()
             wallet.home_button.click()
 
         chat_1 = home_1.add_contact(recipient_public_key)
@@ -95,13 +94,11 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         amount = device_1.get_unique_amount()
         asset_name = 'STT'
         wallet_1 = home_1.wallet_button.click()
-        wallet_1.set_up_wallet()
         wallet_1.select_asset(asset_name)
         wallet_1.home_button.click()
 
         home_2 = device_2.recover_access(passphrase=sender['passphrase'], keycard=True, enable_notifications=True)
         wallet_2 = home_2.wallet_button.click()
-        wallet_2.set_up_wallet()
         wallet_2.home_button.click()
 
         device_2.just_fyi('Add recipient to contact and send 1 message')
@@ -166,7 +163,6 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         sender = transaction_senders['E']
         home = sign_in.recover_access(sender['passphrase'], keycard=True)
         wallet = home.wallet_button.click()
-        wallet.set_up_wallet()
         wallet.home_button.click()
 
         chat = home.add_contact(ens_user_ropsten['ens'])
