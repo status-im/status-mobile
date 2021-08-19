@@ -118,6 +118,13 @@ public class PushNotification extends ReactContextBaseJavaModule implements Acti
     }
 
     @ReactMethod
+    public void clearMessageNotifications(String conversationId) {
+        if (this.started) {
+            pushNotificationHelper.clearMessageNotifications(conversationId);
+        }
+    }
+
+    @ReactMethod
     public void enableNotifications() {
         this.started = true;
         this.pushNotificationHelper.start();

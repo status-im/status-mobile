@@ -10,6 +10,9 @@
 (defn present-local-notification [opts]
   (.presentLocalNotification ^js (pn-android) (clj->js opts)))
 
+(defn clear-message-notifications [chat-id]
+  (.clearMessageNotifications ^js (pn-android) chat-id))
+
 (defn create-channel [{:keys [channel-id channel-name]}]
   (.createChannel ^js (pn-android)
                   #js {:channelId   channel-id

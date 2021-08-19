@@ -119,13 +119,9 @@ public class PushNotificationHelper {
                         context.startActivity(getOpenAppIntent(deepLink));
                     }
                     if (groupId != null) {
-                      removeGroup(groupId);
-                      // clean up the group notifications when there is no
-                      // more unread chats
-                      if (messageGroups.size() == 0) {
-                          notificationManager.cancelAll();
-                      }}
+                        cleanGroup(groupId);
                     }
+                }
                 if (intent.getAction() == ACTION_TAP_STOP) {
                     stop();
                     System.exit(0);
@@ -188,6 +184,11 @@ public class PushNotificationHelper {
         } else {
             this.addStatusMessage(bundle);
         }
+    }
+
+    public void clearMessageNotifications(String conversationId) {
+        notificationManager.cancel(conversationId.hashCode());
+        cleanGroup(conversationId);
     }
 
     public void sendToNotificationCentreWithPicture(final Bundle bundle, Bitmap largeIconBitmap, Bitmap bigPictureBitmap) {
@@ -821,6 +822,13 @@ public class PushNotificationHelper {
 
     private void removeGroup(String groupId) {
         this.messageGroups.remove(groupId);
+    }
+
+    private void cleanGroup(String groupId) {
+        removeGroup(groupId);
+        if (messageGroups.size() == 0) {
+            notificationManager.cancelAll();
+        }
     }
 
     public void start() {

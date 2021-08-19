@@ -129,8 +129,8 @@
     {:db db
      :utils/dispatch-later
      (concat [{:ms 20 :dispatch [:process-response response-js]}]
-             (when-let [chat-id (:current-chat-id db)]
-               [{:ms 100 :dispatch [:chat/mark-all-as-read chat-id]}])
+             (when (and (:current-chat-id db) (= "active" (:app-state db)))
+               [{:ms 100 :dispatch [:chat/mark-all-as-read (:current-chat-id db)]}])
              (when (seq senders)
                [{:ms 100 :dispatch [:chat/add-senders-to-chat-users (vals senders)]}]))}))
 

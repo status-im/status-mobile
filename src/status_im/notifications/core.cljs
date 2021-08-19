@@ -86,6 +86,12 @@
      (pn-android/disable-notifications)
      (.abandonPermissions ^js pn-ios))))
 
+(re-frame/reg-fx
+ :clear-message-notifications
+ (fn [chat-id]
+   (when platform/android?
+     (pn-android/clear-message-notifications chat-id))))
+
 (fx/defn handle-enable-notifications-event
   {:events [::registered-for-push-notifications]}
   [cofx token]

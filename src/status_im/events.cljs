@@ -146,6 +146,8 @@
               (mailserver/process-next-messages-request)
               (wallet/restart-wallet-service-after-background app-in-background-since)
               (universal-links/process-stored-event)
+              #(when-let [chat-id (:current-chat-id db)]
+                 {:dispatch [:chat/mark-all-as-read chat-id]})
               #(when requires-bio-auth
                  (biometric/authenticate % on-biometric-auth-result authentication-options)))))
 

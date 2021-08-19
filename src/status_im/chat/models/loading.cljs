@@ -65,7 +65,8 @@
 (fx/defn handle-mark-all-read
   {:events [:chat.ui/mark-all-read-pressed :chat/mark-all-as-read]}
   [_ chat-id]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "markAllRead")
+  {:clear-message-notifications chat-id
+   ::json-rpc/call [{:method     (json-rpc/call-ext-method "markAllRead")
                      :params     [chat-id]
                      :on-success #(re-frame/dispatch [::mark-all-read-successful chat-id])}]})
 
