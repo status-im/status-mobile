@@ -89,12 +89,15 @@ class SendTransactionView(BaseView):
         self.validation_error_element = Text(self.driver, xpath="//*[@content-desc='custom-gas-fee']/../android.view.ViewGroup//*[@content-desc='icon']")
 
         self.network_fee_button = Button(self.driver, accessibility_id="custom-gas-fee")
+
+        ### Old tx interface
         self.transaction_fee_button = Button(self.driver, accessibility_id="transaction-fee-button")
         self.transaction_fee_total_value = Text(self.driver, translation_id="wallet-transaction-total-fee", suffix="//following::android.widget.TextView[1]")
         self.gas_limit_input = EditBox(self.driver, prefix="(", translation_id="gas-limit", suffix="/..//android.widget.EditText)[1]")
         self.gas_price_input = GasPriceInput(self.driver)
         self.total_fee_input = EditBox(self.driver, translation_id="wallet-transaction-total-fee", suffix="/following-sibling::android.widget.TextView")
         self.update_fee_button = UpdateFeeButton(self.driver)
+        #####
 
 
         self.sign_transaction_button = Button(self.driver, accessibility_id="send-transaction-bottom-sheet")
@@ -133,16 +136,13 @@ class SendTransactionView(BaseView):
         self.enter_recipient_address_input.click()
         self.done_button.click_until_absense_of_element(self.done_button)
 
-    def sign_transaction(self, sender_password: str = common_password, keycard=False, default_gas_price=False):
+    def sign_transaction(self, sender_password: str = common_password, keycard=False, default_gas_price=True):
         self.driver.info("**Signing transaction (keycard:%s, default gas price:%s)**" % (str(keycard), str(default_gas_price)))
         if self.sign_in_phrase.is_element_displayed(30):
             self.set_up_wallet_when_sending_tx()
         if not default_gas_price:
             self.network_fee_button.click()
-            default_gas_price = self.gas_price_input.text
-            self.gas_price_input.clear()
-            self.gas_price_input.set_value(str(int(float(default_gas_price))+30))
-            self.update_fee_button.click()
+            # to be updated with new fast/slow/normal fee
         if keycard:
             keycard_view = self.sign_with_keycard_button.click()
             keycard_view.enter_default_pin()
@@ -156,12 +156,6 @@ class SendTransactionView(BaseView):
         self.driver.info("**Transaction is signed!**")
         self.ok_button.click()
 
-    def get_transaction_fee_total(self):
-        self.driver.info("**Getting transaction fee**")
-        self.network_fee_button.click_until_presence_of_element(self.gas_limit_input)
-        fee_value = self.transaction_fee_total_value.text.split()[0]
-        self.update_fee_button.click()
-        return fee_value
 
     @staticmethod
     def get_formatted_recipient_address(address):

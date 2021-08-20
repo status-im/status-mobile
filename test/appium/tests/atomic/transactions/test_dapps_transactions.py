@@ -4,11 +4,12 @@ from tests.users import transaction_senders
 from views.sign_in_view import SignInView
 
 
-@marks.transaction
+
 class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5309)
     @marks.critical
+    @marks.transaction
     def test_request_stt_from_daap(self):
         sender = transaction_senders['K']
         home = SignInView(self.driver).recover_access(sender['passphrase'], unique_password)
@@ -37,6 +38,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5342)
     @marks.critical
+    @marks.transaction
     def test_sign_message_and_2tx_in_batch_and_transactions_filters_from_daap(self):
         password = 'password_for_daap'
         home = SignInView(self.driver).recover_access(passphrase=transaction_senders['W']['passphrase'],
@@ -87,7 +89,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5784)
     @marks.medium
-    def test_sign_typed_message_deply_simple_contract_request_pub_key_from_dapp(self):
+    @marks.transaction
+    def test_sign_typed_message_deploy_simple_contract_request_pub_key_from_dapp(self):
         user = transaction_senders['W']
         home = SignInView(self.driver).recover_access(passphrase=user['passphrase'])
 

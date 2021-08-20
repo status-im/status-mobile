@@ -5,17 +5,18 @@ from tests.users import transaction_senders, basic_user, wallet_users
 from views.sign_in_view import SignInView
 
 
-@marks.transaction
 class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6289)
     @marks.critical
+    @marks.transaction
     def test_keycard_send_eth_from_wallet_to_address(self):
         recipient = basic_user
         sender = transaction_senders['P']
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(sender['passphrase'], keycard=True)
         wallet_view = home_view.wallet_button.click()
+        wallet_view.wait_balance_is_changed()
         wallet_view.accounts_status_account.click()
         transaction_amount = wallet_view.get_unique_amount()
         wallet_view.send_transaction(amount=transaction_amount,
@@ -31,6 +32,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(6290)
     @marks.high
     @marks.flaky
+    @marks.transaction
     def test_keycard_fetching_balance_after_offline(self):
         sender = transaction_senders['F']
         sign_in = SignInView(self.driver)
@@ -42,7 +44,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in.just_fyi('Go back to online and check that balance is updated')
         sign_in.set_network_to_cellular_only()
         home.continue_syncing_button.wait_and_click()
-        home.connection_offline_icon.wait_for_invisibility_of_element(100)
+        home.connection_offline_icon.wait_for_invisibility_of_element(300)
         wallet = home.wallet_button.click()
         wallet.wait_balance_is_changed('ETH')
         wallet.wait_balance_is_changed('STT')
@@ -65,6 +67,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6291)
     @marks.critical
+    @marks.transaction
     def test_keycard_can_see_all_transactions_in_history(self):
         address = wallet_users['D']['address']
         passphrase = wallet_users['D']['passphrase']
@@ -98,7 +101,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(6292)
     @marks.transaction
     @marks.medium
-    def test_keycard_send_funds_between_accounts_in_multiaccount_instance(self):
+    def test_keycard_send_funds_between_accounts_set_max_in_multiaccount_instance(self):
         sign_in_view = SignInView(self.driver).create_user(keycard=True)
         wallet = sign_in_view.wallet_button.click()
         status_account_address = wallet.get_wallet_address()[2:]
