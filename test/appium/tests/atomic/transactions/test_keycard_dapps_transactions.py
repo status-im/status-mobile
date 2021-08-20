@@ -4,11 +4,11 @@ from tests.users import transaction_senders
 from views.sign_in_view import SignInView
 
 
-@marks.transaction
 class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(6249)
     @marks.critical
+    @marks.transaction
     def test_keycard_request_stt_from_daap(self):
         sender = transaction_senders['K']
         sign_in_view = SignInView(self.driver)
@@ -36,6 +36,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(6251)
     @marks.critical
+    @marks.transaction
     def test_keycard_sign_message_and_transactions_from_daap(self):
         home = SignInView(self.driver).recover_access(passphrase=transaction_senders['Z']['passphrase'],
                                                       keycard=True)
@@ -79,6 +80,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(6310)
     @marks.medium
+    @marks.transaction
     def test_keycard_sign_typed_message_deploy_simple_contract(self):
         sender = transaction_senders['W']
         home = SignInView(self.driver).recover_access(sender['passphrase'], keycard=True)

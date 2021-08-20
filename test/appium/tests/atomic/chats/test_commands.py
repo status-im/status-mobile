@@ -6,10 +6,10 @@ from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
-@marks.transaction
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(6253)
     @marks.critical
+    @marks.transaction
     def test_send_eth_in_1_1_chat_transaction_push(self):
         sender = transaction_senders['A']
         self.create_drivers(2)
@@ -96,6 +96,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(6263)
     @marks.critical
+    @marks.transaction
     def test_request_and_receive_stt_in_1_1_chat_offline(self):
         sender = transaction_senders['L']
         self.create_drivers(2)
@@ -157,6 +158,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(6265)
     @marks.critical
+    @marks.transaction
     def test_decline_transactions_in_1_1_chat_push_notification_changing_state(self):
         sender = transaction_senders['B']
         self.create_drivers(2)
@@ -208,6 +210,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(6257)
     @marks.medium
+    @marks.transaction
     def test_network_mismatch_for_send_request_in_1_1_chat(self):
         sender = transaction_senders['D']
         self.create_drivers(2)
@@ -254,11 +257,12 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append("Transaction is shown as confirmed on mainnet, but was sent on ropsten!")
         self.errors.verify_no_errors()
 
-@marks.transaction
+
 class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(6279)
     @marks.high
+    @marks.transaction
     def test_send_eth_to_ens_in_chat(self):
         sign_in = SignInView(self.driver)
         sender = transaction_senders['E']

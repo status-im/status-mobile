@@ -5,11 +5,11 @@ from tests.users import transaction_senders, transaction_recipients, ens_user_ro
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
-@marks.transaction
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(6293)
     @marks.critical
+    @marks.transaction
     def test_keycard_send_eth_in_1_1_chat(self):
         sender = transaction_senders['E']
         self.create_drivers(2)
@@ -83,6 +83,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(6294)
     @marks.medium
+    @marks.transaction
     def test_keycard_request_and_receive_stt_in_1_1_chat_offline_opened_from_push(self):
         sender = transaction_senders['D']
         self.create_drivers(2)
@@ -153,11 +154,12 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@marks.transaction
+
 class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(6295)
     @marks.medium
+    @marks.transaction
     def test_keycard_send_eth_to_ens(self):
         sign_in = SignInView(self.driver)
         sender = transaction_senders['E']
