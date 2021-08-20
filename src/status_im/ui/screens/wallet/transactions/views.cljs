@@ -243,6 +243,7 @@
            from from-wallet from-contact
            to to-wallet to-contact
            gas-limit gas-price-gwei gas-price-eth gas-used
+           fee-cap-gwei tip-cap-gwei
            cost nonce data]}]
   [react/view {:style styles/details-block}
    [details-list-row :t/block block]
@@ -261,6 +262,8 @@
        to])]
    [details-list-row :t/gas-limit [{:monospace true} gas-limit]]
    [details-list-row :t/gas-price gas-price-gwei [{:monospace false} gas-price-eth]]
+   [details-list-row :t/fee-cap fee-cap-gwei]
+   [details-list-row :t/tip-cap tip-cap-gwei]
    [details-list-row :t/gas-used gas-used]
    [details-list-row :t/cost-fee [{:monospace false} cost]]
    [details-list-row :t/nonce nonce]

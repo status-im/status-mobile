@@ -50,7 +50,8 @@
 (defn enrich-transfer
   [chain-tokens
    {:keys [address blockNumber timestamp from txStatus txHash gasPrice
-           gasUsed contract value gasLimit input nonce to type id]}]
+           gasUsed contract value gasLimit input nonce to type id
+           maxFeePerGas maxPriorityFeePerGas]}]
   (let [erc20?  (= type "erc20")
         failed? (= txStatus "0x0")]
     (merge {:address   (eip55/address->checksum address)
@@ -59,6 +60,8 @@
             :timestamp (* (decode/uint timestamp) 1000)
             :gas-used  (str (decode/uint gasUsed))
             :gas-price (str (decode/uint gasPrice))
+            :fee-cap   (str (decode/uint maxFeePerGas))
+            :tip-cap   (str (decode/uint maxPriorityFeePerGas))
             :gas-limit (str (decode/uint gasLimit))
             :nonce     (str (decode/uint nonce))
             :hash      txHash

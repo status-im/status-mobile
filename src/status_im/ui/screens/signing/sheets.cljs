@@ -6,7 +6,6 @@
             [quo.core :as quo]
             [quo.design-system.colors :as quo-colors]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.slider :as slider]
             [status-im.utils.money :as money]
             [status-im.ui.components.icons.icons :as icons]
             [clojure.string :as clojure.string]
@@ -69,12 +68,15 @@
 
 (declare fee-bottom-sheet-eip1559)
 
-(defn fee-bottom-sheet-eip1559-custom [fee-display-symbol]
+(defn fee-bottom-sheet-eip1559-custom [_ #_fee-display-symbol]
   (let [{gas-edit                      :gas
          max-fee-per-gas-edit          :maxFeePerGas
          max-priority-fee-per-gas-edit :maxPriorityFeePerGas}
         @(re-frame/subscribe [:signing/edit-fee])
-        base-fee @(re-frame/subscribe [:wallet/latest-base-fee])
+        error? (some :error [gas-edit
+                             max-fee-per-gas-edit
+                             max-priority-fee-per-gas-edit])
+        base-fee @(re-frame/subscribe [:wallet/current-base-fee])
         [fee-currency fiat-currency price]
         @(re-frame/subscribe [:signing/currencies])
         fee-eth
@@ -123,7 +125,7 @@
        {:label          (i18n/label :t/per-gas-tip-limit)
         :error          (or (:error max-priority-fee-per-gas-edit)
                             (get-in max-priority-fee-per-gas-edit [:fee-error :label]))
-        :default-value  (:value max-priority-fee-per-gas-edit)
+        :default-value  (str (:value max-priority-fee-per-gas-edit))
         :on-change-text #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxPriorityFeePerGas %])
         :show-cancel    false
         :after          {:component [quo/text
@@ -137,7 +139,7 @@
        {:label          (i18n/label :t/per-gas-price-limit)
         :error          (or (:error max-fee-per-gas-edit)
                             (get-in max-fee-per-gas-edit [:fee-error :label]))
-        :default-value  (:value max-fee-per-gas-edit)
+        :default-value  (str (:value max-fee-per-gas-edit))
         :on-change-text #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxFeePerGas %])
         :show-cancel    false
         :after          {:component [quo/text
@@ -176,66 +178,75 @@
                :justify-content :space-between}}
       [quo/button
        {:type     :secondary
-        :on-press #(re-frame/dispatch
-                    [:bottom-sheet/show-sheet
-                     {:content        (fn []
-                                        [fee-bottom-sheet-eip1559 fee-display-symbol])
-                      :content-height 270}])}
-       (i18n/label :t/see-suggestions)]
+        :accessibility-label :see-fee-suggestions
+        ;;:on-press
+        #_(re-frame/dispatch
+           [:bottom-sheet/show-sheet
+            {:content        (fn []
+                               [fee-bottom-sheet-eip1559 fee-display-symbol])
+             :content-height 270}])}
+       "" #_(i18n/label :t/see-suggestions)]
       [quo/button
-       {:type  :primary
+       {:type     :primary
+        :disabled error?
         :on-press #(re-frame/dispatch [:signing.edit-fee.ui/submit])
-        :theme :accent}
+        :theme    :accent}
        (i18n/label :t/save)]]]))
 
 (defn fee-bottom-sheet-eip1559 [fee-display-symbol]
   (let [{priority-fee-edit :maxPriorityFeePerGas
-         fee-edit :maxFeePerGas
-         gas :gas}
+         option :selected-fee-option
+         fee-edit :maxFeePerGas}
         @(re-frame/subscribe [:signing/edit-fee])
-        [min-value max-value]
-        @(re-frame/subscribe [:signing/priority-fee-suggestions-range])
-        [fee-currency fiat-currency price] @(re-frame/subscribe [:signing/currencies])
-        fee-eth
-        (if (and (:value-number gas)
-                 (:value-number fee-edit))
-          (money/mul
-           (money/wei->ether
-            (money/->wei :gwei (:value-number fee-edit)))
-           (:value-number gas))
-          (money/bignumber 0))]
+        {:keys [normal fast slow]}
+        @(re-frame/subscribe [:signing/priority-fee-suggestions-range])]
     [react/view
      [react/view {:style {:margin-horizontal 16 :margin-top 8}}
-      [react/text {:style {:typography :title-bold}} (i18n/label :t/max-priority-fee)]
-      [react/text {:style {:color (quo-colors/get-color :text-02)
-                           :margin-top 12}}
-       (i18n/label :t/miners-higher-fee)]
-      [quo/text {:style {:margin-horizontal 8
-                         :margin-top 24}
-                 :size :large}
+      [react/text {:style {:typography :title-bold}} (i18n/label :t/fee-options)]
+      [react/text {:style {:margin-top 12}
+                   :accessibility-label :slow-fee
+                   :on-press #(re-frame/dispatch [:signing.edit-fee.ui/set-option :slow])}
        (clojure.string/join
         " "
-        [(money/to-fixed fee-eth 6)
-         fee-currency
-         "•"
-         (money/to-fixed (money/mul fee-eth (money/bignumber (or price 0))) 2)
-         fiat-currency])]
-      [slider/animated-slider
-       {:style {:margin-horizontal 5
-                :margin-vertical 4}
-        :minimumValue min-value
-        :value (js/parseFloat (:value priority-fee-edit))
-        :onValueChange #(re-frame/dispatch [:signing.edit-fee.ui/set-priority-fee (str %)])
-        :maximumValue max-value
-        :minimumTrackTintColor (quo-colors/get-color :icon-04)}]
-      [react/view
-       {:style {:margin-horizontal 8
-                :flex-direction    :row
-                :align-items       :center
-                :justify-content   :space-between}}
-       [react/text {:style {:color (quo-colors/get-color :text-02)}} (i18n/label :t/slow)]
-       [react/text {:style {:color (quo-colors/get-color :text-02)}} (i18n/label :t/optimal)]
-       [react/text {:style {:color (quo-colors/get-color :text-02)}} (i18n/label :t/fast)]]]
+        [(str (i18n/label :t/slow) ":")
+         (str (:base-fee slow) " gwei")
+         (str (:tip slow) " gwei")
+         (when (= :slow option)
+           "<- selected")])]
+      [react/text {:style {:margin-top 12}
+                   :accessibility-label :normal-fee
+                   :on-press #(re-frame/dispatch [:signing.edit-fee.ui/set-option :normal])}
+       (clojure.string/join
+        " "
+        [(str (i18n/label :t/normal) ":")
+         (str (:base-fee normal) " gwei")
+         (str (:tip normal) " gwei")
+         (when (or (nil? option)
+                   (= :normal option))
+           "<- selected")])]
+      [react/text {:style {:margin-top 12}
+                   :accessibility-label :fast-fee
+                   :on-press #(re-frame/dispatch [:signing.edit-fee.ui/set-option :fast])}
+       (clojure.string/join
+        " "
+        [(str (i18n/label :t/fast) ":")
+         (str (:base-fee fast) " gwei")
+         (str (:tip fast) " gwei")
+         (when (= :fast option)
+           "<- selected")])]
+      (when (= :custom option)
+        [react/text {:style {:margin-top 12}}
+         (clojure.string/join
+          " "
+          [(str (i18n/label :t/custom) ":")
+           (str (-> fee-edit
+                    :value-number
+                    (money/to-fixed 2)) " gwei")
+           (str (-> priority-fee-edit
+                    :value-number
+                    (money/to-fixed 2)) " gwei")
+           (when (= :custom option)
+             "<- selected")])])]
      [react/view
       {:style {:margin-left 12
                :margin-right 16
@@ -245,6 +256,7 @@
        :justify-content   :space-between}
       [quo/button
        {:type :secondary
+        :accessibility-label :set-custom-fee
         :on-press #(re-frame/dispatch
                     [:bottom-sheet/show-sheet
                      {:content        (fn []
@@ -253,17 +265,18 @@
        (i18n/label :t/set-custom-fee)]
       [quo/button
        {:type :primary
+        :accessibility-label :save-custom-fee
         :theme :accent
         :on-press #(re-frame/dispatch [:signing.edit-fee.ui/submit])}
        (i18n/label :t/save)]]]))
 
 (defn gwei [val]
-  (str val " " (i18n/label :t/gwei)))
+  (str (money/to-fixed val 2) " " (i18n/label :t/gwei)))
 
 (defn fees-warning []
-  (let [base-fee     @(re-frame/subscribe [:wallet/latest-base-fee])
+  (let [base-fee     @(re-frame/subscribe [:wallet/current-base-fee])
         base-fee-gwei (money/wei-> :gwei (money/bignumber base-fee))
-        priority-fee @(re-frame/subscribe [:wallet/latest-priority-fee])
+        priority-fee @(re-frame/subscribe [:wallet/current-priority-fee])
         priority-fee-gwei (money/wei-> :gwei (money/bignumber priority-fee))
         {priority-fee-edit :maxPriorityFeePerGas
          fee-edit          :maxFeePerGas}
@@ -293,19 +306,21 @@
                :justify-content   :space-between
                :margin-horizontal 32}}
       [react/text (i18n/label :t/current-base-fee)]
-      [react/text (gwei (money/to-fixed base-fee-gwei 2))]]
+      [react/text (gwei base-fee-gwei)]]
      [react/view
       {:style {:flex-direction    :row
                :justify-content   :space-between
                :margin-horizontal 32}}
       [react/text (i18n/label :t/current-minimum-tip)]
-      [react/text (gwei gas/minimum-priority-fee)]]
-     [react/view
-      {:style {:flex-direction    :row
-               :justify-content   :space-between
-               :margin-horizontal 32}}
-      [react/text (i18n/label :t/current-average-tip)]
-      [react/text (gwei (money/to-fixed priority-fee-gwei 2))]]
+      [react/text (gwei (gas/get-minimum-priority-fee priority-fee))]]
+     ;;TODO(rasom): we can uncomment it once it will be clear which value can be
+     ;;used as "average" here
+     #_[react/view
+        {:style {:flex-direction    :row
+                 :justify-content   :space-between
+                 :margin-horizontal 32}}
+        [react/text (i18n/label :t/current-average-tip)]
+        [react/text (gwei (money/to-fixed priority-fee-gwei 2))]]
      [react/view {:margin-vertical  16
                   :height           1
                   :background-color colors/gray-lighter}]
@@ -317,7 +332,7 @@
       [react/text {:style {:color (quo-colors/get-color :negative-01)}}
        (i18n/label :t/your-tip-limit)]
       [react/text {:style {:color (quo-colors/get-color :negative-01)}}
-       (gwei (money/to-fixed (:value-number priority-fee-edit) 2))]]
+       (gwei (:value-number priority-fee-edit))]]
      [react/view
       {:style {:flex-direction    :row
                :justify-content   :space-between
@@ -325,7 +340,7 @@
       [react/text {:style {:color (quo-colors/get-color :negative-01)}}
        (i18n/label :t/your-price-limit)]
       [react/text {:style {:color (quo-colors/get-color :negative-01)}}
-       (gwei (money/to-fixed (:value-number fee-edit) 2))]]
+       (gwei (:value-number fee-edit))]]
      [react/view {:style
                   {:background-color   colors/gray-lighter
                    :padding-horizontal 32
@@ -335,12 +350,12 @@
        {:style {:flex-direction  :row
                 :justify-content :space-between}}
        [react/text (i18n/label :t/suggested-min-tip)]
-       [react/text (gwei gas/minimum-priority-fee)]]
+       [react/text (gwei priority-fee-gwei)]]
       [react/view
        {:style {:flex-direction  :row
                 :justify-content :space-between}}
        [react/text (i18n/label :t/suggested-price-limit)]
-       [react/text (gwei (money/to-fixed (money/add base-fee-gwei priority-fee-gwei) 2))]]]
+       [react/text (gwei (money/add base-fee-gwei priority-fee-gwei))]]]
      [react/view
       {:style {:align-items     :center
                :justify-content :center

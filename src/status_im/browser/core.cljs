@@ -406,7 +406,10 @@
                                            :typed? typed?
                                            :pinless? (= method constants/web3-keycard-sign-typed-data)
                                            :from dapps-address}}
-                                {:tx-obj  (update (first params) :from #(or % dapps-address))})
+                                {:tx-obj  (-> params
+                                              first
+                                              (update :from #(or % dapps-address))
+                                              (dissoc :gasPrice))})
                               {:on-result [:browser.dapp/transaction-on-result message-id id]
                                :on-error  [:browser.dapp/transaction-on-error message-id]}))))
       (if (#{"eth_accounts" "eth_coinbase"} method)

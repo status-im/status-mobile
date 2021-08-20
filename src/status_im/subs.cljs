@@ -165,8 +165,11 @@
 (reg-root-key-sub :wallet/refreshing-history? :wallet/refreshing-history?)
 (reg-root-key-sub :wallet/fetching-error :wallet/fetching-error)
 (reg-root-key-sub :wallet/non-archival-node :wallet/non-archival-node)
-(reg-root-key-sub :wallet/latest-base-fee :wallet/latest-base-fee)
-(reg-root-key-sub :wallet/latest-priority-fee :wallet/latest-priority-fee)
+(reg-root-key-sub :wallet/current-base-fee :wallet/current-base-fee)
+(reg-root-key-sub :wallet/slow-base-fee :wallet/slow-base-fee)
+(reg-root-key-sub :wallet/normal-base-fee :wallet/normal-base-fee)
+(reg-root-key-sub :wallet/fast-base-fee :wallet/fast-base-fee)
+(reg-root-key-sub :wallet/current-priority-fee :wallet/current-priority-fee)
 (reg-root-key-sub :wallet/transactions-management-enabled? :wallet/transactions-management-enabled?)
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)
@@ -2005,7 +2008,7 @@
     (re-frame/subscribe [:ethereum/native-currency])
     (re-frame/subscribe [:ethereum/chain-keyword])])
  (fn [[transactions native-currency chain-keyword] [_ hash _]]
-   (let [{:keys [gas-used gas-price hash timestamp type]
+   (let [{:keys [gas-used gas-price fee-cap tip-cap hash timestamp type]
           :as transaction}
          (get transactions hash)
          native-currency-text (name (or (:symbol-display native-currency)
@@ -2020,6 +2023,14 @@
                :gas-price-gwei (if gas-price
                                  (money/wei->str :gwei
                                                  gas-price)
+                                 "-")
+               :fee-cap-gwei   (if fee-cap
+                                 (money/wei->str :gwei
+                                                 fee-cap)
+                                 "-")
+               :tip-cap-gwei   (if tip-cap
+                                 (money/wei->str :gwei
+                                                 tip-cap)
                                  "-")
                :date           (datetime/timestamp->long-date timestamp)}
               (if (= type :unsigned)
@@ -2587,14 +2598,22 @@
 
 (re-frame/reg-sub
  :signing/priority-fee-suggestions-range
- :<- [:wallet/latest-priority-fee]
- (fn [latest-fee]
-   [0 (->> latest-fee
-           money/bignumber
-           (money/wei-> :gwei)
-           (money/mul (money/bignumber 2))
-           money/to-fixed
-           js/parseFloat)]))
+ :<- [:wallet/current-priority-fee]
+ :<- [:wallet/slow-base-fee]
+ :<- [:wallet/normal-base-fee]
+ :<- [:wallet/fast-base-fee]
+ (fn [[latest-tip slow normal fast]]
+   (reduce
+    (fn [acc [k fees]]
+      (assoc acc k (reduce
+                    (fn [acc [k fee]]
+                      (assoc acc k (-> fee
+                                       money/wei->gwei
+                                       (money/to-fixed 2))))
+                    {}
+                    fees)))
+    {}
+    (signing.gas/get-fee-options latest-tip slow normal fast))))
 
 (re-frame/reg-sub
  :signing/phrase

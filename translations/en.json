@@ -1648,5 +1648,9 @@
     "category": "Category",
     "edit-chats": "Edit chats",
     "hide": "Hide",
-    "account-is-used": "The account is being used with Dapps in the browser."
+    "account-is-used": "The account is being used with Dapps in the browser.",
+    "normal": "Normal",
+    "fee-options": "Suggested fee options",
+    "fee-cap": "Fee cap",
+    "tip-cap": "Tip cap"
 }

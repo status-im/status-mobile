@@ -62,17 +62,36 @@
         (assoc key data)
         edit-max-fee)))
 
-(def minimum-priority-fee
-  (money/wei-> :gwei (money/->wei :gwei 1)))
+;; TODO(rasom): this number is almost arbitrary, I was able to sent txs with
+;; 0.2 gwei tip, so it should be revisited lately
+(def minimum-priority-fee-gwei
+  (money/bignumber 0.3))
+
+(defn get-suggested-tip [latest-priority-fee]
+  (money/bignumber latest-priority-fee))
+
+(defn get-minimum-priority-fee [latest-priority-fee]
+  (let [latest-priority-fee-bn (money/bignumber latest-priority-fee)
+        suggested-tip-gwei (money/wei->gwei (get-suggested-tip latest-priority-fee-bn))]
+    (if (money/greater-than minimum-priority-fee-gwei suggested-tip-gwei)
+      (money/div suggested-tip-gwei 2)
+      minimum-priority-fee-gwei)))
+
+(defn get-suggestions-range [latest-priority-fee]
+  (let [current-minimum-fee (get-minimum-priority-fee latest-priority-fee)]
+    [(if (money/greater-than minimum-priority-fee-gwei current-minimum-fee)
+       current-minimum-fee
+       minimum-priority-fee-gwei)
+     (money/wei->gwei (money/bignumber latest-priority-fee))]))
 
 (def average-priority-fee
-  (money/wei-> :gwei (money/->wei :gwei 1.5)))
+  (money/wei->gwei (money/->wei :gwei 1.5)))
 
 (defn validate-max-fee [db]
   (let [{:keys [maxFeePerGas maxPriorityFeePerGas]} (get db :signing/edit-fee)
-        latest-base-fee (money/wei-> :gwei
-                                     (money/bignumber
-                                      (get db :wallet/latest-base-fee)))
+        latest-base-fee (money/wei->gwei
+                         (money/bignumber
+                          (get db :wallet/current-base-fee)))
         fee-error (cond
                     (or (:error maxFeePerGas)
                         (:error maxPriorityFeePerGas))
@@ -81,12 +100,6 @@
                     (money/greater-than latest-base-fee
                                         (:value-number maxFeePerGas))
                     {:label (i18n/label :t/below-base-fee)
-                     :severity :error}
-
-                    (money/greater-than (:value-number maxPriorityFeePerGas)
-                                        (money/sub (:value-number maxFeePerGas)
-                                                   latest-base-fee))
-                    {:label (i18n/label :t/reduced-tip)
                      :severity :error})]
     (if fee-error
       (assoc-in db [:signing/edit-fee :maxFeePerGas :fee-error] fee-error)
@@ -94,19 +107,22 @@
 
 (defn validate-max-priority-fee [db]
   (let [{:keys [maxPriorityFeePerGas]} (get db :signing/edit-fee)
+        latest-priority-fee (get db :wallet/current-priority-fee)
         fee-error (cond
                     (:error maxPriorityFeePerGas)
                     nil
 
-                    (money/greater-than minimum-priority-fee
+                    (money/greater-than (get-minimum-priority-fee
+                                         (money/div
+                                          (money/wei->gwei (money/bignumber latest-priority-fee)) 2))
                                         (:value-number maxPriorityFeePerGas))
                     {:label (i18n/label :t/low-tip)
                      :severity :error}
 
-                    (money/greater-than average-priority-fee
-                                        (:value-number maxPriorityFeePerGas))
-                    {:label (i18n/label :t/lower-than-average-tip)
-                     :severity :error})]
+                    #_(money/greater-than average-priority-fee
+                                          (:value-number maxPriorityFeePerGas))
+                    #_{:label (i18n/label :t/lower-than-average-tip)
+                       :severity :error})]
     (if fee-error
       (assoc-in db [:signing/edit-fee :maxPriorityFeePerGas :fee-error] fee-error)
       (update-in db [:signing/edit-fee :maxPriorityFeePerGas] dissoc :fee-error))))
@@ -125,20 +141,54 @@
   {:events [:signing.edit-fee.ui/edit-value]}
   [{:keys [db]} key value]
   {:db (-> db
+           (assoc-in [:signing/edit-fee :selected-fee-option] :custom)
            (update :signing/edit-fee build-edit key value)
            validate-eip1559-fees)})
+
+(defn get-fee-options [tip slow normal fast]
+  (let [tip-bn    (money/bignumber tip)
+        normal-bn (money/bignumber normal)
+        slow-bn   (money/bignumber slow)
+        fast-bn   (money/bignumber fast)]
+    {:normal
+     {:base-fee normal-bn
+      :tip      tip-bn
+      :fee      (money/add normal-bn tip-bn)}
+     :slow
+     {:base-fee slow-bn
+      :tip      tip-bn
+      :fee      (money/add slow-bn tip-bn)}
+     :fast
+     {:base-fee fast-bn
+      :tip      tip-bn
+      :fee      (money/add fast-bn tip-bn)}}))
+
+(fx/defn set-fee-option
+  {:events [:signing.edit-fee.ui/set-option]}
+  [{:keys [db] :as cofx} option]
+  (let [tip               (get db :wallet/current-priority-fee)
+        slow              (get db :wallet/slow-base-fee)
+        normal            (get db :wallet/normal-base-fee)
+        fast              (get db :wallet/fast-base-fee)
+        {:keys [fee tip]} (get (get-fee-options tip slow normal fast) option)]
+    {:db (-> db
+             (assoc-in [:signing/edit-fee :selected-fee-option] option)
+             (update :signing/edit-fee
+                     build-edit :maxFeePerGas (money/wei->gwei fee))
+             (update :signing/edit-fee
+                     build-edit :maxPriorityFeePerGas (money/wei->gwei tip)))}))
 
 (fx/defn set-priority-fee
   {:events [:signing.edit-fee.ui/set-priority-fee]}
   [{:keys [db]} value]
   (let [{:keys [maxFeePerGas maxPriorityFeePerGas]}
         (get db :signing/edit-fee)
-        latest-base-fee (get db :wallet/latest-base-fee)
+        latest-base-fee (get db :wallet/current-base-fee)
         max-fee-value (:value-number maxFeePerGas)
         max-priority-fee-value (:value-number maxPriorityFeePerGas)
         new-value (money/bignumber value)
         fee-without-tip (money/sub max-fee-value max-priority-fee-value)
-        base-fee (money/wei-> :gwei (money/bignumber latest-base-fee))
+        base-fee (money/wei->gwei (money/bignumber latest-base-fee))
         new-max-fee-value
         (money/to-fixed
          (if (money/greater-than base-fee fee-without-tip)
@@ -159,9 +209,21 @@
 (fx/defn update-gas-price-success
   {:events [:signing/update-gas-price-success]}
   [{db :db} price]
-  {:db (-> db
-           (assoc-in [:signing/tx :gasPrice] price)
-           (assoc-in [:signing/edit-fee :gas-price-loading?] false))})
+  (if (eip1559/sync-enabled?)
+    (let [{:keys [normal-base-fee max-priority-fee]} price
+          max-priority-fee-bn (money/with-precision
+                               (get-suggested-tip max-priority-fee)
+                                0)]
+      {:db (-> db
+               (assoc-in [:signing/tx :maxFeePerGas]
+                         (money/to-hex (money/add max-priority-fee-bn
+                                                  (money/bignumber normal-base-fee))))
+               (assoc-in [:signing/tx :maxPriorityFeePerGas]
+                         (money/to-hex max-priority-fee-bn))
+               (assoc-in [:signing/edit-fee :gas-price-loading?] false))})
+    {:db (-> db
+             (assoc-in [:signing/tx :gasPrice] price)
+             (assoc-in [:signing/edit-fee :gas-price-loading?] false))}))
 
 (fx/defn update-estimated-gas-error
   {:events [:signing/update-estimated-gas-error]}
@@ -179,12 +241,12 @@
   {:events [:signing.ui/open-fee-sheet]}
   [{{:signing/keys [tx] :as db} :db :as cofx} sheet-opts]
   (let [{:keys [gas gasPrice maxFeePerGas maxPriorityFeePerGas]} tx
-        max-fee          (money/to-fixed (money/wei-> :gwei maxFeePerGas))
-        max-priority-fee (money/to-fixed (money/wei-> :gwei maxPriorityFeePerGas))
+        max-fee          (money/to-fixed (money/wei->gwei maxFeePerGas))
+        max-priority-fee (money/to-fixed (money/wei->gwei maxPriorityFeePerGas))
         edit-fee         (reduce (partial apply build-edit)
-                                 {}
+                                 {:selected-fee-option  (get-in db [:signing/edit-fee :selected-fee-option])}
                                  {:gas                  (money/to-fixed gas)
-                                  :gasPrice             (money/to-fixed (money/wei-> :gwei gasPrice))
+                                  :gasPrice             (money/to-fixed (money/wei->gwei gasPrice))
                                   :maxFeePerGas         max-fee
                                   :maxPriorityFeePerGas max-priority-fee})]
     (fx/merge cofx
@@ -214,57 +276,100 @@
 
 (re-frame/reg-fx
  :signing/update-gas-price
- (fn [{:keys [success-event error-event network-id] :as params}]
+ (fn [{:keys [success-callback error-callback network-id] :as params}]
    (eip1559/enabled?
     network-id
     (fn []
       (json-rpc/call
-       {:method     "eth_getBlockByNumber"
-        :params     ["latest" false]
+       {:method "eth_feeHistory"
+        :params [101 "latest" nil]
         :on-success #(re-frame/dispatch [::header-fetched
-                                         (assoc params :header %)])
-        :on-error   #(re-frame/dispatch [error-event %])}))
+                                         (assoc params :fee-history %)])}))
     (fn []
       (json-rpc/call
        {:method     "eth_gasPrice"
-        :on-success #(re-frame/dispatch [success-event %])
-        :on-error   #(re-frame/dispatch [error-event %])})))))
-
-(fx/defn header-fetched
-  {:events [::header-fetched]}
-  [_ {:keys [error-event] :as params}]
-  {::json-rpc/call
-   [{:method     "eth_maxPriorityFeePerGas"
-     :on-success #(re-frame/dispatch [::max-priority-fee-per-gas-fetched
-                                      (assoc params :max-priority-fee %)])
-     :on-error (if error-event
-                 #(re-frame/dispatch [error-event %])
-                 #(log/error "Can't fetch header" %))}]})
+        :on-success #(success-callback %)
+        :on-error   #(error-callback %)})))))
 
 (def london-block-gas-limit (money/bignumber 30000000))
 
-(defn check-base-fee [{:keys [gasUsed baseFeePerGas]}]
-  {:base-fee baseFeePerGas
-   :spike?   (or (money/greater-than-or-equals
-                  (money/bignumber 0)
-                  (money/bignumber gasUsed))
-                 (money/greater-than-or-equals
-                  (money/bignumber gasUsed)
-                  (money/bignumber london-block-gas-limit)))})
+(defn calc-percentiles [v ps]
+  (let [sorted-v (sort-by
+                  identity
+                  (fn [a b]
+                    (status-im.utils.money/greater-than b a))
+                  v)]
+    (reduce
+     (fn [acc p]
+       (assoc acc p (nth sorted-v p)))
+     {}
+     ps)))
 
-(fx/defn max-priority-fee-per-gas-fetched
-  {:events [::max-priority-fee-per-gas-fetched]}
-  [_ {:keys [success-event header max-priority-fee]}]
-  (let [{:keys [base-fee spike?]} (check-base-fee header)]
-    {:dispatch [success-event {:base-fee         base-fee
-                               :max-priority-fee max-priority-fee
-                               :spike?           spike?}]}))
+;; It is very unlikely to be that small on mainnet, but on testnets current base
+;; fee might be very small and using this value might slow transaction
+(def minimum-base-fee (money/->wei :gwei (money/bignumber 1)))
+
+(defn recommended-base-fee [current perc20 perc80]
+  (let [fee
+        (cond (and (money/greater-than-or-equals current perc20)
+                   (money/greater-than-or-equals perc80 current))
+              current
+
+              (money/greater-than perc20 current)
+              perc20
+
+              :else
+              perc80)]
+    (if (money/greater-than minimum-base-fee fee)
+      minimum-base-fee
+      fee)))
+
+(defn slow-base-fee [_ perc10] perc10)
+
+(defn fast-base-fee [current _]
+  (let [fee (money/mul current 2)]
+    (if (money/greater-than minimum-base-fee fee)
+      (money/mul minimum-base-fee 2)
+      fee)))
+
+(defn check-base-fee [{:keys [baseFeePerGas]}]
+  (let [all-base-fees    (mapv money/bignumber baseFeePerGas)
+        current-base-fee (last all-base-fees)
+        previous-fees    (subvec all-base-fees 0 101)
+        percentiles      (calc-percentiles previous-fees [10 20 80])]
+    {:normal-base-fee  (money/to-hex
+                        (recommended-base-fee
+                         current-base-fee
+                         (get percentiles 20)
+                         (get percentiles 80)))
+     :slow-base-fee    (money/to-hex
+                        (slow-base-fee
+                         current-base-fee
+                         (get percentiles 10)))
+     :fast-base-fee    (money/to-hex
+                        (fast-base-fee
+                         current-base-fee
+                         (get percentiles 80)))
+     :current-base-fee (money/to-hex current-base-fee)}))
+
+(fx/defn header-fetched
+  {:events [::header-fetched]}
+  [_ {:keys [error-callback success-callback fee-history] :as params}]
+  {::json-rpc/call
+   [{:method     "eth_maxPriorityFeePerGas"
+     :on-success #(success-callback (merge {:max-priority-fee %}
+                                           (check-base-fee fee-history)))
+     :on-error   (if error-callback
+                   #(error-callback %)
+                   #(log/error "Can't fetch header" %))}]})
 
 (re-frame/reg-fx
  :signing/update-estimated-gas
  (fn [{:keys [obj success-event error-event]}]
-   (json-rpc/call
-    {:method     "eth_estimateGas"
-     :params     [obj]
-     :on-success #(re-frame/dispatch [success-event %])
-     :on-error #(re-frame/dispatch [error-event %])})))
+   (if (nil? (:data obj))
+     (re-frame/dispatch [success-event (money/bignumber 21000)])
+     (json-rpc/call
+      {:method     "eth_estimateGas"
+       :params     [obj]
+       :on-success #(re-frame/dispatch [success-event %])
+       :on-error #(re-frame/dispatch [error-event %])}))))

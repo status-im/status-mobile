@@ -28,6 +28,7 @@
    "eth_newFilter" {:subscription? true}
    "eth_getCode" {}
    "eth_syncing" {}
+   "eth_feeHistory" {}
    "net_version" {}
    "web3_clientVersion" {}
    "shh_generateSymKeyFromPassword" {}

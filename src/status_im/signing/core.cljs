@@ -103,9 +103,11 @@
                                   (when gasPrice
                                     {:gasPrice (str "0x" (abi-spec/number-to-hex gasPrice))})
                                   (when maxPriorityFeePerGas
-                                    {:maxPriorityFeePerGas (str "0x" (abi-spec/number-to-hex (.decimalPlaces maxPriorityFeePerGas 0)))})
+                                    {:maxPriorityFeePerGas (str "0x" (abi-spec/number-to-hex
+                                                                      (js/parseInt maxPriorityFeePerGas)))})
                                   (when maxFeePerGas
-                                    {:maxFeePerGas (str "0x" (abi-spec/number-to-hex (.decimalPlaces maxFeePerGas 0)))}))]
+                                    {:maxFeePerGas (str "0x" (abi-spec/number-to-hex
+                                                              (js/parseInt maxFeePerGas)))}))]
         (when-not in-progress?
           {:db                          (update db :signing/sign assoc :error nil :in-progress? true)
            :signing/send-transaction-fx {:tx-obj   tx-obj-to-send
@@ -113,7 +115,8 @@
                                          :cb       #(re-frame/dispatch [:signing/transaction-completed % tx-obj-to-send hashed-password])}})))))
 
 (fx/defn prepare-unconfirmed-transaction
-  [{:keys [db now]} new-tx-hash {:keys [value gasPrice gas data to from hash]} symbol amount]
+  [{:keys [db now]} new-tx-hash
+   {:keys [value gasPrice maxFeePerGas maxPriorityFeePerGas gas data to from hash]} symbol amount]
   (let [token (tokens/symbol->token (:wallet/all-tokens db) symbol)
         from  (eip55/address->checksum from)
         ;;if there is a hash in the tx object that means we resending transaction
@@ -132,6 +135,8 @@
                          (money/to-fixed (money/unit->token amount (:decimals token)))
                          (money/to-fixed (money/bignumber value)))
             :gas-price gas-price
+            :fee-cap   maxFeePerGas
+            :tip-cap   maxPriorityFeePerGas
             :gas-limit gas-limit}]
     (log/info "[signing] prepare-unconfirmed-transaction" tx)
     {:db (-> db
@@ -246,15 +251,25 @@
        (prices/update-prices)
        #(when-not gas
           {:db (assoc-in (:db %) [:signing/edit-fee :gas-loading?] true)
-           :signing/update-estimated-gas {:obj           (dissoc tx-obj :gasPrice)
+           :signing/update-estimated-gas {:obj           (-> tx-obj
+                                                             (dissoc :gasPrice)
+                                                             (update :maxFeePerGas
+                                                                     (fn [fee]
+                                                                       (some-> fee
+                                                                               money/bignumber
+                                                                               (money/mul 2)
+                                                                               money/to-hex))))
                                           :success-event :signing/update-estimated-gas-success
                                           :error-event :signing/update-estimated-gas-error}})
-       #(when-not (or maxFeePerGas gasPrice)
-          {:db (assoc-in (:db %) [:signing/edit-fee :gas-price-loading?] true)
-           :signing/update-gas-price {:success-event :signing/update-gas-price-success
-                                      :error-event :signing/update-gas-price-error
-                                      :network-id  (get-in (ethereum/current-network db)
-                                                           [:config :NetworkId])}})))))
+       (fn [cofx]
+         (when-not (or maxFeePerGas gasPrice)
+           {:db (assoc-in (:db cofx) [:signing/edit-fee :gas-price-loading?] true)
+            :signing/update-gas-price
+            {:success-callback #(re-frame/dispatch
+                                 [:wallet.send/update-gas-price-success :signing/tx %])
+             :error-callback   #(re-frame/dispatch [:signing/update-gas-price-error %])
+             :network-id       (get-in (ethereum/current-network db)
+                                       [:config :NetworkId])}}))))))
 
 (fx/defn check-queue [{:keys [db] :as cofx}]
   (let [{:signing/keys [tx queue]} db]
@@ -436,7 +451,7 @@
         to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
         from-address (:address from)
         identity (:current-chat-id db)
-        db (dissoc db :wallet/prepare-transaction)]
+        db (dissoc db :wallet/prepare-transaction :signing/edit-fee)]
     (if to-norm
       (fx/merge
        cofx
@@ -474,7 +489,7 @@
         to-norm (:address request-parameters)
         from-address (:address from)]
     (fx/merge cofx
-              {:db (dissoc db :wallet/prepare-transaction)}
+              {:db (dissoc db :wallet/prepare-transaction :signing/edit-fee)}
               (fn [cofx]
                 (sign
                  cofx
@@ -502,7 +517,7 @@
         to-norm      (ethereum/normalized-hex (if (string? to) to (:address to)))
         from-address (:address from)]
     (fx/merge cofx
-              {:db (dissoc db :wallet/prepare-transaction)}
+              {:db (dissoc db :wallet/prepare-transaction :signing/edit-fee)}
               (sign
                {:tx-obj (merge (if (eip1559/sync-enabled?)
                                  {:from                 from-address

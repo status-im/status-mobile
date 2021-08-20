@@ -25,16 +25,26 @@
      (status/hash-typed-data data on-completed))))
 
 (defn prepare-transaction
-  [{:keys [gas gasPrice data nonce tx-obj]}]
-  (let [{:keys [from to value chat-id message-id command?]} tx-obj]
+  [{:keys [gas gasPrice data nonce tx-obj] :as params}]
+  (let [{:keys [from to value chat-id message-id command? maxPriorityFeePerGas maxFeePerGas]} tx-obj
+        maxPriorityFeePerGas (or maxPriorityFeePerGas (get params :maxPriorityFeePerGas))
+        maxFeePerGas (or maxFeePerGas (get params :maxFeePerGas))]
     (cond-> {:from       from
              :to         to
              :value      value
-             :gas        (str "0x" (abi-spec/number-to-hex gas))
-             :gasPrice   (str "0x" (abi-spec/number-to-hex gasPrice))
              :chat-id    chat-id
              :message-id message-id
              :command?   command?}
+      maxPriorityFeePerGas
+      (assoc :maxPriorityFeePerGas (str "0x" (abi-spec/number-to-hex
+                                              (js/parseInt maxPriorityFeePerGas))))
+      maxFeePerGas
+      (assoc :maxFeePerGas (str "0x" (abi-spec/number-to-hex
+                                      (js/parseInt maxFeePerGas))))
+      gas
+      (assoc :gas (str "0x" (abi-spec/number-to-hex gas)))
+      gasPrice
+      (assoc :gasPrice (str "0x" (abi-spec/number-to-hex gasPrice)))
       data
       (assoc :data data)
       nonce
@@ -93,7 +103,7 @@
 (fx/defn sign-with-keycard
   {:events [:signing.ui/sign-with-keycard-pressed]}
   [{:keys [db] :as cofx}]
-  (let [message (get-in db [:signing/tx :message])]
+  (let [{:keys [message maxPriorityFeePerGas maxFeePerGas]} (get db :signing/tx)]
     (fx/merge
      cofx
      {:db (-> db

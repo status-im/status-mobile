@@ -25,8 +25,7 @@
             [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]
             [status-im.utils.utils :as utils]
-            [reagent.core :as reagent]
-            [status-im.signing.eip1559 :as eip1559]))
+            [reagent.core :as reagent]))
 
 (defn separator []
   [react/view {:height 1 :background-color colors/gray-lighter}])
@@ -382,13 +381,18 @@
                           [react/text {:style {:color colors/black}}
                            (i18n/format-currency converted-fee-value (:code wallet-currency))])
                         [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]]))
-        :on-press  #(re-frame/dispatch
-                     [:signing.ui/open-fee-sheet
-                      {:content        (fn []
-                                         (if (eip1559/sync-enabled?)
-                                           [sheets/fee-bottom-sheet-eip1559 fee-display-symbol]
-                                           [sheets/fee-bottom-sheet fee-display-symbol]))
-                       :content-height 270}])}])))
+        :on-press #(re-frame/dispatch
+                    [:signing.ui/open-fee-sheet
+                     {:content        (fn []
+                                        [sheets/fee-bottom-sheet-eip1559-custom fee-display-symbol])
+                      :content-height 270}])
+        #_(re-frame/dispatch
+           [:signing.ui/open-fee-sheet
+            {:content        (fn []
+                               (if (eip1559/sync-enabled?)
+                                 [sheets/fee-bottom-sheet-eip1559 fee-display-symbol]
+                                 [sheets/fee-bottom-sheet fee-display-symbol]))
+             :content-height 270}])}])))
 
 (views/defview network-item []
   (views/letsubs [network-name [:network-name]]

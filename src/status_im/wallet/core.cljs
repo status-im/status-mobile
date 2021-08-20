@@ -28,6 +28,7 @@
             [status-im.async-storage.core :as async-storage]
             [status-im.popover.core :as popover.core]
             [status-im.signing.eip1559 :as eip1559]
+            [status-im.signing.gas :as signing.gas]
             [clojure.set :as clojure.set]))
 
 (defn get-balance
@@ -380,23 +381,40 @@
 
 (fx/defn wallet-send-gas-price-success
   {:events [:wallet.send/update-gas-price-success]}
-  [{db :db} price]
+  [{db :db} tx-entry price]
   (if (eip1559/sync-enabled?)
-    (let [{:keys [base-fee max-priority-fee]} price
-          max-priority-fee-bn (money/bignumber max-priority-fee)]
+    (let [{:keys [slow-base-fee normal-base-fee fast-base-fee
+                  current-base-fee max-priority-fee]}
+          price
+          max-priority-fee-bn (money/with-precision
+                               (signing.gas/get-suggested-tip max-priority-fee)
+                                0)
+          fee-cap  (-> normal-base-fee
+                       money/bignumber
+                       (money/add max-priority-fee-bn)
+                       money/to-hex)
+          tip-cap (money/to-hex max-priority-fee-bn)]
       {:db (-> db
-               (update :wallet/prepare-transaction assoc
-                       :maxFeePerGas (money/to-hex (money/add max-priority-fee-bn base-fee))
-                       :maxPriorityFeePerGas max-priority-fee)
-               (assoc :wallet/latest-base-fee base-fee
-                      :wallet/latest-priority-fee max-priority-fee))})
-    {:db (assoc-in db [:wallet/prepare-transaction :gasPrice] price)}))
+               (update tx-entry assoc
+                       :maxFeePerGas fee-cap
+                       :maxPriorityFeePerGas tip-cap)
+               (assoc :wallet/current-base-fee current-base-fee
+                      :wallet/normal-base-fee normal-base-fee
+                      :wallet/slow-base-fee slow-base-fee
+                      :wallet/fast-base-fee fast-base-fee
+                      :wallet/current-priority-fee max-priority-fee)
+               (assoc-in [:signing/edit-fee :gas-price-loading?] false))})
+    {:db (-> db
+             (assoc-in [:wallet/prepare-transaction :gasPrice] price)
+             (assoc-in [:signing/edit-fee :gas-price-loading?] false))}))
 
 (fx/defn set-max-amount
   {:events [:wallet.send/set-max-amount]}
   [{:keys [db]} {:keys [amount decimals symbol]}]
   (let [^js gas (money/bignumber 21000)
-        ^js gasPrice (get-in db [:wallet/prepare-transaction :gasPrice])
+        ^js gasPrice (or
+                      (get-in db [:wallet/prepare-transaction :maxFeePerGas])
+                      (get-in db [:wallet/prepare-transaction :gasPrice]))
         ^js fee (when gasPrice (.times gas gasPrice))
         amount-text (if (= :ETH symbol)
                       (when (and fee (money/sufficient-funds? fee amount))
@@ -478,7 +496,9 @@
   {:events [::recipient-address-resolved]}
   [{:keys [db]} address]
   {:db (assoc-in db [:wallet/prepare-transaction :to :address] address)
-   :signing/update-gas-price {:success-event :wallet.send/update-gas-price-success
+   :signing/update-gas-price {:success-callback
+                              #(re-frame/dispatch
+                                [:wallet.send/update-gas-price-success :wallet/prepare-transaction %])
                               :network-id  (get-in (ethereum/current-network db)
                                                    [:config :NetworkId])}})
 
@@ -533,7 +553,9 @@
                :symbol     :ETH
                :from-chat? false})
    :dispatch [:open-modal :prepare-send-transaction]
-   :signing/update-gas-price {:success-event :wallet.send/update-gas-price-success
+   :signing/update-gas-price {:success-callback
+                              #(re-frame/dispatch
+                                [:wallet.send/update-gas-price-success :wallet/prepare-transaction %])
                               :network-id  (get-in (ethereum/current-network db)
                                                    [:config :NetworkId])}})
 

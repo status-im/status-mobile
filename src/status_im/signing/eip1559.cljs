@@ -34,11 +34,10 @@
     :on-error   #(callback nil)}))
 
 (defn sync-enabled? []
-  (and config/eip1559-enabled?
-       @activated-on-current-network?))
+  config/eip1559-enabled?)
 
 (defn enabled? [network-id enabled-callback disabled-callback]
-  (let [london-activated? (get @activated? network-id)]
+  (let [london-activated? true]
     (cond
       (not config/eip1559-enabled?)
       (disabled-callback)
