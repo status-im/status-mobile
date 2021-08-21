@@ -19,6 +19,7 @@
             [quo.components.list.item :as list-item]
             [status-im.ui.screens.chat.photos :as photos]
             [reagent.core :as reagent]
+            [status-im.ui.components.react :as react-comps]
             [clojure.string :as string]))
 
 (defn input-focus [text-input-ref]
@@ -212,6 +213,8 @@
         range (.-range ^js native-event)
         start (.-start ^js range)
         end (.-end ^js range)]
+    ;;for debug purposes
+    ;(react-comps/paste-image-ios)
     (when (and (not (get @mentions-enabled chat-id)) (string/index-of text "@"))
       (swap! mentions-enabled assoc chat-id true))
 
@@ -227,6 +230,13 @@
     (when platform/android?
       (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
+(defn context-press [event]
+  ;(println "wahala-event" (.. event -nativeEvent -name) (.. event -nativeEvent -index))
+  ;;TODO dispatch functions according to event types
+  (if (= 0 (.. event -nativeEvent -index))
+    (if platform/ios? (react-comps/paste-image-ios) (react-comps/paste-image-and-text-clipboard))
+      nil))
+
 (defn text-input [{:keys [set-active-panel refs chat-id sending-image]}]
   (let [cooldown-enabled? @(re-frame/subscribe [:chats/cooldown-enabled?])
         mentionable-users @(re-frame/subscribe [:chats/mentionable-users])
@@ -234,36 +244,43 @@
         last-text-change (atom nil)
         mentions-enabled (get @mentions-enabled chat-id)]
 
-    [rn/text-input
-     {:style                    (styles/text-input)
-      :ref                      (:text-input-ref refs)
-      :max-font-size-multiplier 1
-      :accessibility-label      :chat-message-input
-      :text-align-vertical      :center
-      :multiline                true
-      :editable                 (not cooldown-enabled?)
-      :blur-on-submit           false
-      :auto-focus               false
-      :on-focus                 #(set-active-panel nil)
-      :max-length               chat.constants/max-text-size
-      :placeholder-text-color   (:text-02 @colors/theme)
-      :placeholder              (if cooldown-enabled?
-                                  (i18n/label :cooldown/text-input-disabled)
-                                  (i18n/label :t/type-a-message))
-      :underline-color-android  :transparent
-      :auto-capitalize          :sentences
-      :on-selection-change      (partial on-selection-change timeout-id last-text-change mentionable-users)
-      :on-change                (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
-      :on-text-input            (partial on-text-input mentionable-users chat-id)}
-     (if mentions-enabled
-       (for [[idx [type text]] (map-indexed
-                                (fn [idx item]
-                                  [idx item])
-                                @(re-frame/subscribe [:chat/input-with-mentions]))]
-         ^{:key (str idx "_" type "_" text)}
-         [rn/text (when (= type :mention) {:style {:color "#0DA4C9"}})
-          text])
-       (get @input-texts chat-id))]))
+    [react-comps/context-menu-view
+     {
+      :actions [{:title "Paste"}]
+      :on-press #(context-press %)
+      }
+     [rn/text-input
+      {:style                    (styles/text-input)
+       :ref                      (:text-input-ref refs)
+       :max-font-size-multiplier 1
+       :accessibility-label      :chat-message-input
+       :text-align-vertical      :center
+       :multiline                true
+       :editable                 (not cooldown-enabled?)
+       :blur-on-submit           false
+       :auto-focus               false
+       :on-focus                 #(set-active-panel nil)
+       :max-length               chat.constants/max-text-size
+       :placeholder-text-color   (:text-02 @colors/theme)
+       :placeholder              (if cooldown-enabled?
+                                   (i18n/label :cooldown/text-input-disabled)
+                                   (i18n/label :t/type-a-message))
+       :underline-color-android  :transparent
+       :auto-capitalize          :sentences
+       :on-selection-change      (partial on-selection-change timeout-id last-text-change mentionable-users)
+       :on-change                (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
+       :on-text-input            (partial on-text-input mentionable-users chat-id)}
+      (if mentions-enabled
+        (for [[idx [type text]] (map-indexed
+                                  (fn [idx item]
+                                    [idx item])
+                                  @(re-frame/subscribe [:chat/input-with-mentions]))]
+          ^{:key (str idx "_" type "_" text)}
+          [rn/text (when (= type :mention) {:style {:color "#0DA4C9"}})
+           text])
+        (get @input-texts chat-id))]
+     ]
+    ))
 
 (defn mention-item
   [[public-key {:keys [alias name nickname] :as user}] _ _ text-input-ref]
@@ -367,14 +384,14 @@
                         :refs             refs
                         :set-active-panel set-active-panel}]
            ;;SEND button
-           [rn/view {:ref send-ref :style (when-not show-send {:width 0 :right -100})}
+           [rn/view {:ref send-ref :style (when-not show-send {:width 0 :right 0})}
             (when send
               [send-button #(do (clear-input chat-id refs)
                                 (re-frame/dispatch [:chat.ui/send-current-message]))])]
 
            ;;STICKERS and AUDIO buttons
            (when-not @(re-frame/subscribe [:chats/edit-message])
-             [rn/view {:style (merge {:flex-direction :row} (when show-send {:width 0 :right -100}))
+             [rn/view {:style (merge {:flex-direction :row :position "absolute" :right 30 } (when show-send {:width 0}))
                        :ref   sticker-ref}
               (when stickers
                 [touchable-stickers-icon {:panel               :stickers

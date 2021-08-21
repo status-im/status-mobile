@@ -205,6 +205,8 @@ PODS:
     - react-native-config/App (= 1.4.2)
   - react-native-config/App (1.4.2):
     - React-Core
+  - react-native-context-menu-view (1.2.1):
+    - React
   - react-native-image-resizer (1.2.3):
     - React
   - react-native-mail (4.0.0):
@@ -301,8 +303,8 @@ PODS:
     - React-RCTText
   - RNCAsyncStorage (1.11.0):
     - React
-  - RNCClipboard (1.2.2):
-    - React
+  - RNCClipboard (1.8.4):
+    - React-Core
   - RNCMaskedView (0.1.9):
     - React
   - RNCPushNotificationIOS (1.4.1):
@@ -401,6 +403,7 @@ DEPENDENCIES:
   - react-native-camera-kit (from `../node_modules/react-native-camera-kit`)
   - "react-native-cameraroll (from `../node_modules/@react-native-community/cameraroll`)"
   - react-native-config (from `../node_modules/react-native-config`)
+  - react-native-context-menu-view (from `../node_modules/react-native-context-menu-view`)
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -425,7 +428,7 @@ DEPENDENCIES:
   - ReactNativeDarkMode (from `../node_modules/react-native-dark-mode`)
   - ReactNativeNavigation (from `../node_modules/react-native-navigation`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
-  - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
+  - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
@@ -500,6 +503,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/cameraroll"
   react-native-config:
     :path: "../node_modules/react-native-config"
+  react-native-context-menu-view:
+    :path: "../node_modules/react-native-context-menu-view"
   react-native-image-resizer:
     :path: "../node_modules/react-native-image-resizer"
   react-native-mail:
@@ -549,7 +554,7 @@ EXTERNAL SOURCES:
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
   RNCClipboard:
-    :path: "../node_modules/@react-native-community/clipboard"
+    :path: "../node_modules/@react-native-clipboard/clipboard"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
   RNCPushNotificationIOS:
@@ -619,6 +624,7 @@ SPEC CHECKSUMS:
   react-native-camera-kit: 498a6d111a904834e0824e9073cfadef7303235f
   react-native-cameraroll: ac69828fc43b9dbf92149714fd739577d38e4448
   react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
+  react-native-context-menu-view: 314d901eb8d8b3d32c2bcc5c5288045c539fe345
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
   react-native-mail: 7e37dfbe93ff0d4c7df346b738854dbed533e86f
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
@@ -643,7 +649,7 @@ SPEC CHECKSUMS:
   ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
   ReactNativeNavigation: 4c4ca87edc0da4ee818158a62cb6188088454e5c
   RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
-  RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
+  RNCClipboard: ddd4d291537f1667209c9c405aaa4307297e252e
   RNCMaskedView: 71fc32d971f03b7f03d6ab6b86b730c4ee64f5b6
   RNCPushNotificationIOS: c145c6253ea016e5efeff604f2720736b4a596f7
   RNDeviceInfo: 9538a884f862fe4aa0d7cead9f34e292d41ba8f6

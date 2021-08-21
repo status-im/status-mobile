@@ -93,7 +93,8 @@
           (when first-img
             [image-preview first-img selected true height])
           (when second-img
-            [image-preview second-img selected false height])]))]))
+            [image-preview second-img selected false height])
+          ]))]))
 
 (defview image-view []
   {:component-did-mount

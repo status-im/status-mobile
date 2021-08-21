@@ -21,6 +21,7 @@ import java.util.List;
 import im.status.ethereum.keycard.RNStatusKeycardPackage;
 import im.status.ethereum.module.StatusPackage;
 import im.status.ethereum.pushnotifications.PushNotificationPackage;
+import im.status.ethereum.rnclipboard.ClipboardAndroidPackage;
 
 public class MainApplication extends NavigationApplication {
 
@@ -39,6 +40,7 @@ public class MainApplication extends NavigationApplication {
             packages.add(new ReactNativeDialogsPackage());
             packages.add(new RNStatusKeycardPackage());
             packages.add(new PushNotificationPackage());
+            packages.add(new ClipboardAndroidPackage());
             return packages;
         }
 
@@ -90,4 +92,6 @@ public class MainApplication extends NavigationApplication {
             }
         }
     }
+
+    
 }

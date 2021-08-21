@@ -6,16 +6,18 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             ["react" :as reactjs]
-            ["react-native" :as react-native :refer (Keyboard)]
+            ["react-native" :as react-native :refer (Keyboard NativeModules)]
             ["react-native-image-crop-picker" :default image-picker]
             ["react-native-safe-area-context" :as safe-area-context
              :refer (SafeAreaProvider SafeAreaInsetsContext)]
-            ["@react-native-community/clipboard" :default Clipboard]
+            ["@react-native-clipboard/clipboard" :default Clipboard]
             ["react-native-linear-gradient" :default LinearGradient]
+            ["react-native-context-menu-view" :default ContextMenu]
             ["react-native-navigation" :refer (Navigation)])
   (:require-macros [status-im.utils.views :as views]))
 
 (def native-modules (.-NativeModules react-native))
+(def clipboard-android (.-ClipboardAndroid native-modules))
 (def device-event-emitter (.-DeviceEventEmitter react-native))
 
 ;; React Components
@@ -35,6 +37,8 @@
 (defn resolve-asset-source [uri] (js->clj (.resolveAssetSource (.-Image react-native) uri) :keywordize-keys true))
 
 (def linear-gradient (reagent/adapt-react-class LinearGradient))
+(def context-menu-view (reagent/adapt-react-class ContextMenu))
+
 
 (defn valid-source? [source]
   (or (not (map? source))
@@ -131,6 +135,7 @@
 ;; when global react-navigation's onWillBlur event is invoked
 (def text-input-refs (atom {}))
 
+
 (defn text-input
   [options _]
   (let [render-fn (fn [options text]
@@ -224,6 +229,24 @@
 (defn get-from-clipboard [clbk]
   (let [clipboard-contents (.getString  ^js Clipboard)]
     (.then clipboard-contents #(clbk %))))
+
+   ;; Paste image/data from Clipboard
+
+  (def paste-callback
+       ( fn [copied-string]
+         (println "wahala" copied-string)))
+ (defn paste-image-and-text-clipboard "
+        converts text and media data from clipboard to
+        string data. In the case of media, images are
+        converted to base64 strings suitable for React
+        Native's Image uri
+        "
+        []
+   (.pasteEvent ^js clipboard-android paste-callback))
+
+(defn paste-image-ios []
+  (let [clipboard-media (.getImagePNG ^js  Clipboard)]
+    (.then clipboard-media paste-callback)))
 
 ;; KeyboardAvoidingView
 (def navigation-const (atom nil))

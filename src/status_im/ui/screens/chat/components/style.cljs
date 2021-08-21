@@ -23,10 +23,12 @@
 (def input-row
   {:flex-direction :row
    :overflow       :hidden
+   :justify-content :space-between
    :align-items    :flex-end})
 
 (defn text-input-wrapper []
-  (merge {:flex-direction :row
+  (merge {
+          :flex-direction :row
           :align-items    :flex-start
           :flex           1
           :min-height     34
