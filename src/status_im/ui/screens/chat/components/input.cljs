@@ -230,9 +230,9 @@
     (when platform/android?
       (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
+;custom context menu
 (defn context-press [event]
   ;(println "wahala-event" (.. event -nativeEvent -name) (.. event -nativeEvent -index))
-  ;;TODO dispatch functions according to event types
   (if (= 0 (.. event -nativeEvent -index))
     (if platform/ios? (react-comps/paste-image-ios) (react-comps/paste-image-and-text-clipboard))
       nil))
