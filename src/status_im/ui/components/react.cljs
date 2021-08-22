@@ -19,6 +19,9 @@
 (def native-modules (.-NativeModules react-native))
 (def clipboard-android (.-ClipboardAndroid native-modules))
 (def device-event-emitter (.-DeviceEventEmitter react-native))
+(def dimens  (.-Dimensions react-native))
+(def screen-width (.(. dimens get "window") -width))
+(def screen-height (.(. dimens get "window") -height))
 
 ;; React Components
 

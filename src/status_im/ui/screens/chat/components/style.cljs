@@ -23,12 +23,11 @@
 (def input-row
   {:flex-direction :row
    :overflow       :hidden
-   :justify-content :space-between
+   :justify-content  :space-between
    :align-items    :flex-end})
 
 (defn text-input-wrapper []
-  (merge {
-          :flex-direction :row
+  (merge {:flex-direction :row
           :align-items    :flex-start
           :flex           1
           :min-height     34
@@ -53,11 +52,11 @@
 
 (defn actions-wrapper [show-send]
   (merge
-   (when show-send
-     {:width 0 :left -88})
-   {:flex-direction :row
-    :padding-left   4
-    :min-height     34}))
+    (when show-send
+      {:width 0 :left -88})
+    {:flex-direction :row
+     :padding-left   4
+     :min-height     34}))
 
 (defn touchable-icon []
   {:padding-horizontal 10

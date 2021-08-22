@@ -25,6 +25,8 @@
 (defn input-focus [text-input-ref]
   (some-> ^js (react/current-ref text-input-ref) .focus))
 
+(def text-changing (atom 0))
+
 (def panel->icons {:extensions :main-icons/commands
                    :images     :main-icons/photo})
 
@@ -75,7 +77,7 @@
       [icons/icon :main-icons/speech (styles/icon false)])]])
 
 (defn send-button [on-send]
-  [rn/touchable-opacity {:on-press-in on-send}
+  [rn/touchable-opacity {:on-press-in on-send }
    [rn/view {:style (styles/send-message-button)}
     [icons/icon :main-icons/arrow-up
      {:container-style     (styles/send-message-container)
@@ -168,7 +170,7 @@
       (utils.utils/clear-timeout @timeout-id))
     (when platform/android?
       (reset! last-text-change (js/Date.now)))
-
+    (reset! text-changing 1)
     (on-text-change text chat-id)
     ;; NOTE(rasom): on iOS `on-change` is dispatched after `on-text-input`,
     ;; that's why mention suggestions are calculated on `on-change`
@@ -215,6 +217,7 @@
         end (.-end ^js range)]
     ;;for debug purposes
     ;(react-comps/paste-image-ios)
+    (reset! text-changing 1)
     (when (and (not (get @mentions-enabled chat-id)) (string/index-of text "@"))
       (swap! mentions-enabled assoc chat-id true))
 
@@ -232,7 +235,7 @@
 
 ;custom context menu
 (defn context-press [event]
-  ;(println "wahala-event" (.. event -nativeEvent -name) (.. event -nativeEvent -index))
+  ;(println "event" (.. event -nativeEvent -name) (.. event -nativeEvent -index))
   (if (= 0 (.. event -nativeEvent -index))
     (if platform/ios? (react-comps/paste-image-ios) (react-comps/paste-image-and-text-clipboard))
       nil))
@@ -258,6 +261,8 @@
        :multiline                true
        :editable                 (not cooldown-enabled?)
        :blur-on-submit           false
+       :on-blur                  (reset! text-changing 0)
+       :on-end-editing           (reset! text-changing 0)
        :auto-focus               false
        :on-focus                 #(set-active-panel nil)
        :max-length               chat.constants/max-text-size
@@ -384,14 +389,20 @@
                         :refs             refs
                         :set-active-panel set-active-panel}]
            ;;SEND button
-           [rn/view {:ref send-ref :style (when-not show-send {:width 0 :right 0})}
+           [rn/view {:ref send-ref :style (merge {:position "absolute" :right 20} (when-not show-send {:width 0 :right 0 }))}
             (when send
-              [send-button #(do (clear-input chat-id refs)
-                                (re-frame/dispatch [:chat.ui/send-current-message]))])]
+              [rn/view
+               {:style (if (= 1 @text-changing) {:align-items :flex-end :margin-right (* react-comps/screen-width -0.95)})}
+               [send-button #(do (clear-input chat-id refs)
+                                 (re-frame/dispatch [:chat.ui/send-current-message]))]
+               ]
+              )
+
+            ]
 
            ;;STICKERS and AUDIO buttons
            (when-not @(re-frame/subscribe [:chats/edit-message])
-             [rn/view {:style (merge {:flex-direction :row :position "absolute" :right 30 } (when show-send {:width 0}))
+             [rn/view {:style (merge {:flex-direction :row } (when show-send {:width 0 :right -100}))
                        :ref   sticker-ref}
               (when stickers
                 [touchable-stickers-icon {:panel               :stickers
