@@ -494,8 +494,10 @@
                                                     (on-long-press
                                                      (concat
                                                       [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                                        :id       :reply
                                                         :label    (i18n/label :t/message-reply)}
                                                        {:on-press #(react/copy-to-clipboard (get content :text))
+                                                        :id       :copy
                                                         :label    (i18n/label :t/sharing-copy-to-clipboard)}]
                                                       (when message-pin-enabled [{:on-press #(pin-message message)
                                                                                   :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))}]))))})
@@ -544,8 +546,10 @@
                                    :on-long-press (fn []
                                                     (on-long-press
                                                      [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                                       :id       :reply
                                                        :label    (i18n/label :t/message-reply)}
                                                       {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
+                                                       :id       :save
                                                        :label    (i18n/label :t/save)}]))}]
    reaction-picker])
 

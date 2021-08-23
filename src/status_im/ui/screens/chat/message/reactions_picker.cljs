@@ -51,9 +51,9 @@
          [rn/view {:style (styles/quick-actions-row)}
           [quo/text {:color  (if (= id "delete") :negative :link)
                      :weight :medium} label]
-          ;; fallback to warning icon if id to icon mapping is not defined
-          [icons/icon (get id-icon id :main-icons/warning)
-           {:color (if (= id "delete") :red :blue)}]]])])])
+          (when-let [icon (get id-icon id)]
+            [icons/icon icon
+             {:color (if (= id "delete") :red :blue)}])]])])])
 
 (def modal
   (reagent/adapt-react-class
