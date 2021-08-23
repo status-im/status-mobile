@@ -1,5 +1,6 @@
 (ns status-im.chat.models.message
   (:require [status-im.chat.models :as chat-model]
+            [re-frame.core :as re-frame]
             [status-im.chat.models.message-list :as message-list]
             [status-im.constants :as constants]
             [status-im.data-store.messages :as data-store.messages]
@@ -195,29 +196,21 @@
   [cofx messages]
   (protocol/send-chat-messages cofx messages))
 
-(defn flip-args [f]
-  (fn [x y] (f y x)))
-
-(defn message-ids->message-id-chat-id-map
-  "Determine the chat ids of a seq of message-ids"
-  [db message-ids]
-  (->> db
-       :messages ; get messages map
-       seq ; convert it to seq
-       (map second) ; get values of messages map -> message-id : message-obj
-       (into {}) ; convert message-id : message-obj seq to map
-       ((flip-args select-keys) message-ids) ; select the message objects of the ids in question
-       vals ; keep only the values of required messages
-       (map #(select-keys % [:chat-id :message-id])))) ; return the chat-id and message-id of required messages
-
 (fx/defn handle-removed-messages
   {:events [::handle-removed-messages]}
-  [{:keys [db]} removed-messages]
-  (let [mcids (message-ids->message-id-chat-id-map db removed-messages)]
-    {:db (reduce (fn [acc current]
-                   (update-in acc [:messages (:chat-id current)] dissoc (:message-id current)))
-                 db mcids)
-     :dispatch [:get-activity-center-notifications]}))
+  [{:keys [db] :as cofx} removed-messages]
+  (let [mark-as-seen-fx (mapv (fn [removed-message]
+                                (let [chat-id (:chatId removed-message)
+                                      message-id (:messageId removed-message)]
+                                  (data-store.messages/mark-messages-seen chat-id
+                                                                          [message-id]
+                                                                          #(re-frame/dispatch [:chat/decrease-unviewed-count chat-id %3])))) removed-messages)
+        remove-messages-fx (fn [{:keys [db]}]
+                             {:db (reduce (fn [acc current]
+                                            (update-in acc [:messages (:chatId current)] dissoc (:messageId current)))
+                                          db removed-messages)
+                              :dispatch [:get-activity-center-notifications]})]
+    (apply fx/merge cofx (conj mark-as-seen-fx remove-messages-fx))))
 
 (comment
   (handle-removed-messages

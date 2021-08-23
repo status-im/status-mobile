@@ -431,3 +431,13 @@
     :on-accept           #(do
                             (re-frame/dispatch [:bottom-sheet/hide])
                             (re-frame/dispatch [:chat.ui/remove-chat chat-id]))}})
+
+(fx/defn decrease-unviewed-count
+  {:events [:chat/decrease-unviewed-count]}
+  [{:keys [db]} chat-id unseen-messages]
+  {:db (update-in db [:chats chat-id :unviewed-messages-count]
+                  (fn [count]
+                    ;; There might be some other requests being fired,
+                    ;; so we need to make sure the count has not been set to
+                    ;; 0 in the meantime
+                    (max (- count unseen-messages) 0)))})
