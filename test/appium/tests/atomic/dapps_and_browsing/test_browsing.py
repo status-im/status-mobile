@@ -6,7 +6,7 @@ from views.sign_in_view import SignInView
 class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5395)
-    @marks.high
+    @marks.medium
     def test_back_forward_refresh_navigation_history_kept_after_relogin(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

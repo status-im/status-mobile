@@ -81,10 +81,48 @@ class ChatElement(SilentButton):
 
         return ChatImage(self.driver)
 
-class ChatElementInAC(SilentButton):
-    def __init__(self, driver, username_part):
-        self.username = username_part
-        super().__init__(driver, xpath="//*[@content-desc='chat-name-or-sender-text'][starts-with(@text,'%s')]/.." % username_part)
+
+class ActivityCenterChatElement(SilentButton):
+    def __init__(self, driver, chat_name):
+        self.chat_name = chat_name
+        super().__init__(driver, xpath="//*[@content-desc='chat-name-or-sender-text'][starts-with(@text,'%s')]/../.." % chat_name)
+
+    def navigate(self):
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
+
+    def click(self):
+        from views.chat_view import ChatView
+        desired_element = ChatView(self.driver).chat_message_input
+        self.click_until_presence_of_element(desired_element=desired_element)
+
+        return self.navigate()
+
+    @property
+    def chat_image(self):
+        class ChatImage(BaseElement):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, xpath="%s//*[@content-desc='current-account-photo']" % parent_locator)
+
+        return ChatImage(self.driver, self.locator)
+
+    @property
+    def chat_message_preview(self):
+        class ChatMessagePreview(BaseElement):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, xpath="%s//*[@content-desc='chat-message-text']" % parent_locator)
+
+        return ChatMessagePreview(self.driver, self.locator).text
+
+    @property
+    def chat_name_indicator_text(self):
+        class ChatNameIndicatorText(BaseElement):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, xpath="(%s//*[@content-desc='chat-name-container']//android.widget.TextView)[last()]" % parent_locator)
+        try:
+            return ChatNameIndicatorText(self.driver, self.locator).text
+        except NoSuchElementException:
+            return ''
 
 
 class HomeView(BaseView):
@@ -111,6 +149,7 @@ class HomeView(BaseView):
         self.notifications_accept_and_add_button = Button(self.driver, accessibility_id="accept-and-add-activity-center")
         self.notifications_select_all = Button(self.driver, xpath="(//android.widget.CheckBox["
                                                                   "@content-desc='checkbox'])[1]")
+
         # Options on long tap
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")
         self.delete_chat_button = Button(self.driver, accessibility_id="delete-chat-button")
@@ -151,7 +190,7 @@ class HomeView(BaseView):
         chat_element = ChatElement(self.driver, username[:25], community=community)
         if not chat_element.is_element_displayed():
             self.notifications_unread_badge.wait_and_click(30)
-            chat_in_ac = ChatElementInAC(self.driver, username[:25])
+            chat_in_ac = ActivityCenterChatElement(self.driver, username[:25])
             chat_in_ac.wait_for_element(20)
             chat_in_ac.click()
             self.home_button.double_click()
@@ -160,6 +199,11 @@ class HomeView(BaseView):
     def get_chat_from_home_view(self, username):
         self.driver.info("**Looking for chat '%s'**" % username)
         chat_element = ChatElement(self.driver, username[:25])
+        return chat_element
+
+    def get_chat_from_activity_center_view(self, chat_name):
+        self.driver.info("**Looking for chat '%s'**" % chat_name)
+        chat_element = ActivityCenterChatElement(self.driver, chat_name[:25])
         return chat_element
 
     def get_username_below_start_new_chat_button(self, username_part):
@@ -219,7 +263,6 @@ class HomeView(BaseView):
         chat_view.confirm_create_in_community_button.click()
         return chat_view.get_community_by_name(name)
 
-
     def join_public_chat(self, chat_name: str):
         self.driver.info("**Creating public chat %s**" % chat_name)
         self.plus_button.click_until_presence_of_element(self.join_public_chat_button, attempts=5)
@@ -230,7 +273,7 @@ class HomeView(BaseView):
         time.sleep(2)
         self.confirm_until_presence_of_element(chat_view.chat_message_input)
         self.driver.info("**Public chat %s is created successfully!**" % chat_name)
-        return chat_view
+        return self.get_chat_view()
 
     def open_status_test_dapp(self, url=test_dapp_url, allow_all=True):
         self.driver.info("**Open dapp '%s', allow all:%s**" % (test_dapp_url, str(allow_all)))
