@@ -183,7 +183,11 @@ public class PushNotificationHelper {
     }
 
     public void handleConversation(final Bundle bundle) {
-      this.addStatusMessage(bundle);
+        if (bundle.getBoolean("deleted")){
+            this.removeStatusMessage(bundle);
+        } else {
+            this.addStatusMessage(bundle);
+        }
     }
 
     public void sendToNotificationCentreWithPicture(final Bundle bundle, Bitmap largeIconBitmap, Bitmap bigPictureBitmap) {
@@ -654,7 +658,7 @@ public class PushNotificationHelper {
 
     private StatusMessage createMessage(Bundle data) {
         Person author = getPerson(data.getBundle("notificationAuthor"));
-        return new StatusMessage(author,  data.getLong("timestamp"), data.getString("message"));
+        return new StatusMessage(data.getString("id"), author,  data.getLong("timestamp"), data.getString("message"));
     }
 
     private PendingIntent createGroupOnDismissedIntent(Context context, int notificationId, String groupId, String deepLink) {
@@ -683,6 +687,22 @@ public class PushNotificationHelper {
         return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
+    public void removeStatusMessage(Bundle bundle) {
+      String conversationId = bundle.getString("conversationId");
+      StatusMessageGroup group = this.messageGroups.get(conversationId);
+      NotificationManager notificationManager = notificationManager();
+
+      if (group == null) {
+        group = new StatusMessageGroup(conversationId);
+      }
+
+      this.messageGroups.put(conversationId, group);
+
+      String id = bundle.getString("id");
+      group.removeMessage(id);
+
+      this.showMessages(bundle);
+    }
 
     public void addStatusMessage(Bundle bundle) {
       String conversationId = bundle.getString("conversationId");
@@ -697,8 +717,22 @@ public class PushNotificationHelper {
 
       group.addMessage(createMessage(bundle));
 
+      this.showMessages(bundle);
+    }
+
+    public void showMessages(Bundle bundle) {
+      String conversationId = bundle.getString("conversationId");
+      StatusMessageGroup group = this.messageGroups.get(conversationId);
+      NotificationManager notificationManager = notificationManager();
+
       NotificationCompat.MessagingStyle messagingStyle = new NotificationCompat.MessagingStyle("Me");
       ArrayList<StatusMessage> messages = group.getMessages();
+
+      if (messages.size() == 0) {
+          notificationManager.cancel(conversationId.hashCode());
+          return;
+      }
+
       for (int i = 0; i < messages.size(); i++) {
         StatusMessage message = messages.get(i);
         messagingStyle.addMessage(message.getText(),
@@ -744,6 +778,16 @@ public class PushNotificationHelper {
         this.messages.add(message);
       }
 
+      public void removeMessage(String id) {
+        ArrayList<StatusMessage> newMessages = new ArrayList<StatusMessage>();
+        for(StatusMessage message: this.messages) {
+            if(!message.id.equals(id)) {
+                newMessages.add(message);
+            }
+        }
+        this.messages = newMessages;
+      }
+
       public String getId() {
         return this.id;
       }
@@ -762,11 +806,13 @@ public class PushNotificationHelper {
         return text;
       }
 
+      private String id;
       private Person author;
       private long timestamp;
       private String text;
 
-      StatusMessage(Person author, long timestamp, String text) {
+      StatusMessage(String id, Person author, long timestamp, String text) {
+        this.id = id;
         this.author = author;
         this.timestamp = timestamp;
         this.text = text;
