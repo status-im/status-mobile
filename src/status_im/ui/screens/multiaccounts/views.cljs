@@ -20,10 +20,10 @@
                                [:multiaccounts.login.ui/multiaccount-selected key-uid])
                   :icon      [photos/photo (multiaccounts/displayed-photo account) {:size styles/multiaccount-image-size}]
                   :title     name
+                  :accessory-style (when keycard-pairing {:flex-basis 100})
                   :accessory (when keycard-pairing
                                [react/view {:justify-content  :center
                                             :align-items      :center
-                                            :margin-right     7
                                             :width            32
                                             :height           32
                                             :border-radius    24

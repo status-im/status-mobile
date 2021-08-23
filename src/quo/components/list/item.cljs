@@ -153,22 +153,24 @@
                     ;; Occupy only content width, never grow, but shrink if need be
                     :flex-grow      0
                     :flex-shrink    1
+                    :padding-right  16
                     :align-items    (or (:left-side-alignment props) :center)}}
    [icon-column props]
    [title-column props]])
 
-(defn right-side [{:keys [chevron active disabled accessory accessory-text animated-accessory?]}]
+(defn right-side [{:keys [chevron active disabled accessory accessory-text accessory-style animated-accessory?]}]
   (when (or chevron accessory)
-    [rn/view {:style {:align-items     :center
-                      :justify-content :flex-end
-                      :flex-direction  :row
-                      ;; Grow to occupy full space, shrink when need be, but always maitaining 16px left gutter
-                      :flex-grow       1
-                      :flex-shrink     1
-                      :margin-left     16
-                      ;; When the left-side leaves no room for right-side, the rendered element is pushed out. A flex-basis ensures that there is some room reserved.
-                      ;; The number 80px was determined by trial and error.
-                      :flex-basis      80}}
+    [rn/view {:style (merge {:align-items     :center
+                             :justify-content :flex-end
+                             :flex-direction  :row
+                             ;; Grow to occupy full space, shrink when need be, but always maitaining 16px left gutter
+                             :flex-grow       1
+                             :flex-shrink     0
+                             :margin-left     16
+                             ;; When the left-side leaves no room for right-side, the rendered element is pushed out. A flex-basis ensures that there is some room reserved.
+                             ;; The number 80px was determined by trial and error.
+                             :flex-basis      80}
+                            accessory-style)}
      [rn/view {:style (:tiny spacing/padding-horizontal)}
       (case accessory
         :radio    [controls/radio {:value active :disabled disabled}]
@@ -194,7 +196,7 @@
   [{:keys [theme accessory disabled subtitle-max-lines icon icon-container-style
            left-side-alignment
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
-           accessory-text accessibility-label title-accessibility-label
+           accessory-text accessibility-label title-accessibility-label accessory-style
            haptic-feedback haptic-type error animated animated-accessory? title-text-weight]
     :or   {subtitle-max-lines 1
            theme              :main
@@ -254,6 +256,7 @@
                     :on-press            on-press
                     :accessory-text      accessory-text
                     :animated-accessory? animated-accessory?
+                    :accessory-style     accessory-style
                     :accessory           accessory}]]]
      (when error
        [tooltip/tooltip (merge {:bottom-value 0}

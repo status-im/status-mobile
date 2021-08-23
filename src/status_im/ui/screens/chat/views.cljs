@@ -332,7 +332,9 @@
                        :height  256}]))
 
 (defn topbar []
-  [toolbar-content/toolbar-content-view-inner @(re-frame/subscribe [:chats/current-chat])])
+  (let [window-width @(re-frame/subscribe [:dimensions/window-width])]
+    [react/view {:flex 1 :width (- window-width 120)}
+     [toolbar-content/toolbar-content-view-inner @(re-frame/subscribe [:chats/current-chat])]]))
 
 (defn chat []
   (let [curr-chat-id (:chat-id @(re-frame/subscribe [:chats/current-chat-chat-view]))
