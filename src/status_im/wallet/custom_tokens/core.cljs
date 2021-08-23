@@ -145,14 +145,9 @@
 (fx/defn name-result
   {:events [:wallet.custom-token/name-result]}
   [{:keys [db]} contract token-name]
-  (let [name-exists? (field-exists? db :name token-name)]
-    {:db
-     (update db :wallet/custom-token-screen merge
-             {:name       token-name
-              :error-name (when name-exists?
-                            (i18n/label :t/you-already-have-an-asset
-                                        {:value token-name}))})
-     :wallet.custom-token/get-symbol contract}))
+  {:db
+   (update db :wallet/custom-token-screen merge {:name token-name})
+   :wallet.custom-token/get-symbol contract})
 
 (fx/defn balance-result
   {:events [:wallet.custom-token/balance-result]}
