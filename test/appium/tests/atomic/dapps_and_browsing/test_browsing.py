@@ -36,7 +36,7 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing.open_tabs_button.click()
         browsing.empty_tab_button.click()
         url = 'app.uniswap.org'
-        element_on_start_page = dapp.element_by_text('ETH')
+        element_on_start_page = dapp.element_by_text('Select a token')
         web_page = dapp.open_url(url)
         dapp.allow_button.click()
         element_on_start_page.click()

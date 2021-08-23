@@ -324,7 +324,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard_view = sign_in.begin_recovery_button.click()
         keycard_view.connect_pairing_card_button.click()
         keycard_view.pair_code_input.set_value(pair_code)
-        sign_in.pair_to_this_device_button.click()
+        keycard_view.confirm()
         keycard_view.enter_default_pin()
         sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
         sign_in.lets_go_button.click_until_absense_of_element(sign_in.lets_go_button)

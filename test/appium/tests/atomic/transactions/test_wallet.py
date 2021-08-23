@@ -59,14 +59,13 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
 
         sign_in.just_fyi('Restore account with funds offline')
-        sign_in.set_device_to_offline()
+        sign_in.toggle_airplane_mode()
         sign_in.recover_access(sender['passphrase'])
         home = sign_in.get_home_view()
 
         sign_in.just_fyi('Go back to online and check that balance is updated')
-        sign_in.set_network_to_cellular_only()
-        home.continue_syncing_button.wait_and_click()
-        home.connection_offline_icon.wait_for_invisibility_of_element(300)
+        sign_in.toggle_airplane_mode()
+        home.connection_offline_icon.wait_for_invisibility_of_element(100)
         wallet = home.wallet_button.click()
         wallet.wait_balance_is_changed('ETH')
         wallet.scan_tokens('STT')
@@ -79,11 +78,11 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet.accounts_status_account.click_until_presence_of_element(wallet.send_transaction_button)
         wallet.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
                                      sign_transaction=True)
-        sign_in.set_device_to_offline()
+        sign_in.toggle_airplane_mode()
         self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, token=True)
 
         sign_in.just_fyi('Change that balance is updated')
-        sign_in.set_network_to_cellular_only()
+        sign_in.toggle_airplane_mode()
 
         sign_in.just_fyi('Check that transaction is appeared in transaction history')
         wallet.wait_balance_is_changed('STT', initial_amount_STT)
@@ -586,6 +585,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5437)
     @marks.medium
+    @marks.skip
+    #TODO: rewrite with EIP1559 and #12476
     def test_validation_amount_errors(self):
         sender = wallet_users['C']
         sign_in_view = SignInView(self.driver)
