@@ -46,3 +46,12 @@
     {:db (if setting-value
            (assoc-in db [:multiaccount setting] setting-value)
            (update db :multiaccount dissoc setting))}))
+
+(fx/defn toggle-opensea-nfts-visibility
+  {:events [::toggle-opensea-nfts-visiblity]}
+  [cofx visible?]
+  (fx/merge cofx
+            {:db       (assoc-in (:db cofx) [:multiaccount :opensea-enabled?] visible?)
+             ;; need to add fully qualified namespace to counter circular deps
+             :dispatch [:status-im.wallet.core/fetch-collectibles-collection]}
+            (multiaccount-update :opensea-enabled? visible? {})))

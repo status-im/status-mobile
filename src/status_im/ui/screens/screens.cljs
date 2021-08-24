@@ -11,7 +11,7 @@
             [quo.previews.main :as quo.preview]
             [status-im.ui.screens.profile.contact.views :as contact]
             [status-im.ui.screens.notifications-settings.views :as notifications-settings]
-            [status-im.ui.screens.wallet.send.views :as wallet]
+            [status-im.ui.screens.wallet.send.views :as wallet.send]
             [status-im.ui.screens.status.new.views :as status.new]
             [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
             [status-im.ui.screens.communities.invite :as communities.invite]
@@ -653,7 +653,7 @@
             :options     {:topBar             {:title {:text (i18n/label :t/send-transaction)}}
                           :swipeToDismiss     false
                           :hardwareBackButton {:dismissModalOnPress false}}
-            :component   wallet/prepare-send-transaction}
+            :component   wallet.send/prepare-send-transaction}
 
            ;[Wallet] Request Transaction
            {:name        :request-transaction
@@ -662,7 +662,7 @@
             :options     {:topBar             {:title {:text (i18n/label :t/request-transaction)}}
                           :swipeToDismiss     false
                           :hardwareBackButton {:dismissModalOnPress false}}
-            :component   wallet/request-transaction}
+            :component   wallet.send/request-transaction}
 
            ;[Wallet] Buy crypto
            {:name      :buy-crypto
@@ -675,6 +675,12 @@
             ;;TODO subtitle
             :options   {:topBar {:visible false}}
             :component wallet.buy-crypto/website}
+
+           {:name   :nft-details
+            :insets {:bottom true}
+            ;;TODO dynamic title
+            :options   {:topBar {:visible false}}
+            :component wallet.account/nft-details}
 
            ;My Status
            {:name      :my-status

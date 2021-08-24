@@ -5,11 +5,11 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.icons :as icons]))
 
-(defn drop-down-icon [opened?]
+(defn drop-down-icon [{:keys [opened? dropdown-margin-left]}]
   [react/view {:flex-direction :row :align-items :center}
    [icons/icon (if opened? :main-icons/dropdown-up :main-icons/dropdown)
     {:container-style {:align-items     :center
-                       :margin-left     8
+                       :margin-left     dropdown-margin-left
                        :justify-content :center}
      :resize-mode     :center
      :color           colors/black}]])
@@ -18,20 +18,30 @@
   "Render collapsible section"
   [_props]
   (let [opened? (reagent/atom false)]
-    (fn [{:keys [title content icon opened disabled]}]
-      [react/view {:padding-vertical 8}
-       (if (string? title)
-         [quo/list-item
-          {:title     title
-           :icon      icon
-           :on-press  #(swap! opened? not)
-           :accessory [drop-down-icon (or @opened? opened)]}]
-         [react/touchable-opacity {:on-press #(swap! opened? not) :disabled disabled}
-          [react/view {:flex-direction  :row
-                       :margin-right 14
-                       :justify-content :space-between}
-           title
-           [drop-down-icon (or @opened? opened)]]])
-       (when (or @opened? opened)
-         content)])))
+    (fn [{:keys [title content icon opened disabled
+                 padding-vertical dropdown-margin-left
+                 on-open on-close]
+          :or   {padding-vertical     8
+                 dropdown-margin-left 8
+                 on-open              #()
+                 on-close             #()}}]
+      (let [on-press #(do
+                        (apply (if @opened? on-close on-open) [])
+                        (swap! opened? not))]
+        [react/view {:padding-vertical padding-vertical}
+         (if (string? title)
+           [quo/list-item
+            {:title     title
+             :icon      icon
+             :on-press  on-press
+             :accessory [drop-down-icon (or @opened? opened)]}]
+           [react/touchable-opacity {:on-press on-press :disabled disabled}
+            [react/view {:flex-direction  :row
+                         :margin-right    14
+                         :justify-content :space-between}
+             title
+             [drop-down-icon {:opened? (or @opened? opened)
+                              :dropdown-margin-left dropdown-margin-left}]]])
+         (when (or @opened? opened)
+           content)]))))
 

@@ -1652,5 +1652,7 @@
     "normal": "Normal",
     "fee-options": "Suggested fee options",
     "fee-cap": "Fee cap",
-    "tip-cap": "Tip cap"
+    "tip-cap": "Tip cap",
+    "enable-opensea-nfts": "Enable loading NFTs from OpenSea ?",
+    "opensea-nfts-leak-metadata": "Loading NFTs from OpenSea shares metadata with third party services"
 }

@@ -7,6 +7,7 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
             [status-im.utils.config :as config]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :as views]))
@@ -18,7 +19,8 @@
   (views/letsubs [{:keys [mnemonic
                           preview-privacy?
                           messages-from-contacts-only
-                          webview-allow-permission-requests?]} [:multiaccount]
+                          webview-allow-permission-requests?
+                          opensea-enabled?]} [:multiaccount]
                   supported-biometric-auth [:supported-biometric-auth]
                   keycard?                 [:keycard-multiaccount?]
                   auth-method              [:auth-method]]
@@ -57,6 +59,13 @@
                      :on-press                #(re-frame/dispatch
                                                 [:multiaccounts.ui/preview-privacy-mode-switched
                                                  ((complement boolean) preview-privacy?)])}]
+     (when config/collectibles-enabled?
+       [quo/list-item {:size                    :small
+                       :title                   (i18n/label :t/enable-opensea-nfts)
+                       :container-margin-bottom 8
+                       :active                  opensea-enabled?
+                       :accessory               :switch
+                       :on-press                #(re-frame/dispatch [::multiaccounts.update/toggle-opensea-nfts-visiblity (not opensea-enabled?)])}])
      [quo/list-item {:size                :small
                      :title               (i18n/label :t/chat-link-previews)
                      :chevron             true
