@@ -45,6 +45,7 @@
                                   ["p/" :chat-id]         :private-chat
                                   ["cr/" :community-id]   :community-requests
                                   ["c/" :community-id]    :community
+                                  ["cc/" :chat-id]        :community-chat
                                   "g/"                    group-chat-extractor
                                   ["wallet/" :account]    :wallet-account
                                   ["u/" :user-id]         :user
@@ -215,6 +216,9 @@
 
       (= handler :community)
       (cb {:type handler :community-id (:community-id route-params)})
+
+      (= handler :community-chat)
+      (cb {:type handler :chat-id (:chat-id route-params)})
 
       (= handler :referrals)
       (cb (match-referral route-params))
