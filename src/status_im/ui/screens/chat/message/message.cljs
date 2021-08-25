@@ -19,6 +19,7 @@
             [status-im.ui.screens.chat.message.reactions :as reactions]
             [status-im.ui.screens.chat.image.preview.views :as preview]
             [quo.core :as quo]
+            [status-im.utils.config :as config]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.components.reply :as components.reply]
             [status-im.ui.screens.chat.message.link-preview :as link-preview]
@@ -401,7 +402,7 @@
       [{:on-press #(pin-message message)
         :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))
         :id       (if pinned :unpin :pin)}])
-    (when outgoing
+    (when (and outgoing config/delete-message-enabled?)
       [{:on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
         :label    (i18n/label :t/delete)
         :id       :delete}]))))

@@ -50,6 +50,7 @@
 (def debug-webview? (enabled? (get-config :DEBUG_WEBVIEW "0")))
 (def metrics-enabled? (enabled? (get-config :METRICS_ENABLED "0")))
 (def eip1559-enabled? (enabled? (get-config :EIP1559_ENABLED "0")))
+(def delete-message-enabled? (enabled? (get-config :DELETE_MESSAGE_ENABLED "0")))
 
 ;; CONFIG VALUES
 (def log-level
