@@ -73,7 +73,7 @@
    "wakuext_sendContactUpdate" {}
    "wakuext_sendContactUpdates" {}
    "wakuext_chats" {}
-   "wakuext_latestActiveNChats" {}
+   "wakuext_latestActiveChats" {}
    "wakuext_activeChats" {}
    "wakuext_addSystemMessages" {}
    "wakuext_deleteMessagesFrom" {}

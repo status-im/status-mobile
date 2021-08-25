@@ -76,8 +76,8 @@
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})
 
-(fx/defn fetch-some-chats-rpc [_ {:keys [on-success num]}]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "latestActiveNChats")
-                     :params [num]
+(fx/defn fetch-latest-active-chats-rpc [_ {:keys [on-success]}]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "latestActiveChats")
+                     :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})

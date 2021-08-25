@@ -35,10 +35,9 @@
 (fx/defn initialize-chats
   "Initialize persisted chats on startup"
   [cofx]
-  (data-store.chats/fetch-some-chats-rpc cofx {:num 60
-                                               :on-success
-                                               #(re-frame/dispatch
-                                                 [:chats-list/load-success %])}))
+  (data-store.chats/fetch-latest-active-chats-rpc cofx {:on-success
+                                                        #(re-frame/dispatch
+                                                          [:chats-list/load-success %])}))
 
 (fx/defn load-all-chats
   "Initialize persisted chats on startup"
