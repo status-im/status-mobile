@@ -259,7 +259,7 @@
 
         (fx/merge cofx
                   (common/hide-connection-sheet)
-                  (common/show-wrong-keycard-alert true)
+                  (common/show-wrong-keycard-alert)
                   (clear-on-verify-handlers))))))
 
 (fx/defn unblock-pin

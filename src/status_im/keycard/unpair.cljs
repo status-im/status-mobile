@@ -145,7 +145,7 @@
                 (fx/merge cofx
                           {:db (assoc-in db [:keycard :pin :status] nil)}
                           (common/set-on-card-connected :keycard/remove-key-with-unpair))
-                (common/show-wrong-keycard-alert true)))))
+                (common/show-wrong-keycard-alert)))))
 
 (fx/defn on-unpair-and-delete-success
   {:events [:keycard.callback/on-unpair-and-delete-success]}
@@ -162,4 +162,4 @@
                 (fx/merge cofx
                           {:db (assoc-in db [:keycard :pin :status] nil)}
                           (common/set-on-card-connected :keycard/unpair-and-delete))
-                (common/show-wrong-keycard-alert true)))))
+                (common/show-wrong-keycard-alert)))))

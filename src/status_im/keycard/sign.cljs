@@ -11,12 +11,13 @@
 
 (fx/defn sign
   {:events [:keycard/sign]}
-  [{:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} hash on-success]
   (let [card-connected?      (get-in db [:keycard :card-connected?])
         key-uid              (get-in db [:multiaccount :key-uid])
         keycard-key-uid      (get-in db [:keycard :application-info :key-uid])
+        keycard-pin-retries  (get-in db [:keycard :application-info :pin-retry-counter])
         keycard-match?       (= key-uid keycard-key-uid)
-        hash                 (get-in db [:keycard :hash])
+        hash                 (or hash (get-in db [:keycard :hash]))
         data                 (get-in db [:keycard :data])
         typed?               (get-in db [:keycard :typed?])
         pin                  (common/vector->string (get-in db [:keycard :pin :sign]))
@@ -27,21 +28,25 @@
                                   (reduced path)))
                               nil
                               (:multiaccount/accounts db))]
-    (if (and card-connected?
-             keycard-match?)
+    (cond
+      (not keycard-match?)
+      (common/show-wrong-keycard-alert cofx)
+
+      (not card-connected?)
+      (fx/merge cofx
+                {:db (assoc-in db [:signing/sign :keycard-step] :signing)}
+                (common/set-on-card-connected :keycard/sign))
+
+      (pos? keycard-pin-retries) ; if 0, get-application-info will have already closed the connection sheet and opened the frozen card popup
       {:db              (-> db
                             (assoc-in [:keycard :card-read-in-progress?] true)
                             (assoc-in [:keycard :pin :status] :verifying))
-       :keycard/sign {:hash    (ethereum/naked-address hash)
-                      :data    data
-                      :typed?  typed?
-                      :pin     pin
-                      :path    path}}
-      (fx/merge cofx
-                {:db (assoc-in db [:signing/sign :keycard-step] :signing)}
-                (common/set-on-card-connected :keycard/sign)
-                (when-not keycard-match?
-                  (common/show-wrong-keycard-alert card-connected?))))))
+       :keycard/sign {:hash       (ethereum/naked-address hash)
+                      :data       data
+                      :typed?     typed? ; this parameter is for e2e
+                      :on-success on-success
+                      :pin        pin
+                      :path       path}})))
 
 (defn normalize-signature [signature]
   (-> signature
@@ -51,30 +56,12 @@
 
 (fx/defn sign-message
   {:events [:keycard/sign-message]}
-  [{:keys [db] :as cofx} params result]
+  [cofx params result]
   (let [{:keys [result error]} (types/json->clj result)
         on-success #(re-frame/dispatch [:keycard/on-sign-message-success params
                                         (normalize-signature %)])
-        hash (ethereum/naked-address result)
-        card-connected?                   (get-in db [:keycard :card-connected?])
-        key-uid                           (get-in db [:multiaccount :key-uid])
-        keycard-key-uid                   (get-in db [:keycard :application-info :key-uid])
-        keycard-match?                    (= key-uid keycard-key-uid)
-        pin                               (common/vector->string (get-in db [:keycard :pin :sign]))]
-    (if (and card-connected?
-             keycard-match?)
-      {:db           (-> db
-                         (assoc-in [:keycard :card-read-in-progress?] true)
-                         (assoc-in [:keycard :pin :status] :verifying))
-       :keycard/sign {:hash       (ethereum/naked-address hash)
-                      :data       (:data params)
-                      :pin        pin
-                      :on-success on-success}}
-      (fx/merge cofx
-                {:db (assoc-in db [:signing/sign :keycard-step] :signing)}
-                (common/set-on-card-connected :keycard/sign)
-                (when-not keycard-match?
-                  (common/show-wrong-keycard-alert card-connected?))))))
+        hash (ethereum/naked-address result)]
+    (sign cofx hash on-success)))
 
 (fx/defn on-sign-message-success
   {:events [:keycard/on-sign-message-success]}
@@ -209,4 +196,4 @@
 
         (fx/merge cofx
                   (common/hide-connection-sheet)
-                  (common/show-wrong-keycard-alert true))))))
+                  (common/show-wrong-keycard-alert))))))

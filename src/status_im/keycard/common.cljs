@@ -284,10 +284,10 @@
   {:db (assoc-in db [:keycard :back-button-listener] listener)})
 
 (fx/defn show-wrong-keycard-alert
-  [_ card-connected?]
-  (when card-connected?
-    {:utils/show-popup {:title   (i18n/label :t/wrong-card)
-                        :content (i18n/label :t/wrong-card-text)}}))
+  [_]
+  (log/debug "show-wrong-keycard-alert")
+  {:utils/show-popup {:title   (i18n/label :t/wrong-card)
+                      :content (i18n/label :t/wrong-card-text)}})
 
 (fx/defn unauthorized-operation
   [cofx]
@@ -405,7 +405,7 @@
          (when (zero? pin-retries-count) (frozen-keycard-popup))
          (when (= flow :import)
            (navigation/navigate-to-cofx :keycard-recovery-pin nil)))
-        (show-wrong-keycard-alert true)))))
+        (show-wrong-keycard-alert)))))
 
 (fx/defn factory-reset
   {:events [:keycard/factory-reset]}
@@ -475,7 +475,7 @@
                   (when (contains?
                          #{last-on-card-connected on-card-connected}
                          :keycard/prepare-to-sign)
-                    (show-wrong-keycard-alert true))
+                    (show-wrong-keycard-alert))
 
                   (when on-card-read
                     (dispatch-event on-card-read)))))))

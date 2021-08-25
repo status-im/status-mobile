@@ -201,4 +201,4 @@
                                                 :error-label  :t/pin-mismatch))}
                             (when (zero? pin-retries) (common/frozen-keycard-popup))
                             (navigation/navigate-to-cofx :enter-pin-settings nil))
-                  (common/show-wrong-keycard-alert true))))))
+                  (common/show-wrong-keycard-alert))))))

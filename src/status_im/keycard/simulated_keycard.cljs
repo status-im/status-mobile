@@ -82,12 +82,18 @@
        :message (str "Unexpected error SW, 0x63C" (get-in @state [:application-info :puk-retry-counter]))})
 
 (defn with-pin [pin on-failure on-valid]
-  (if (= pin (get @state :pin))
+  (cond
+    (= (get-in @state [:application-info :pin-retry-counter]) 0)
+    (later #(on-failure (pin-error)))
+
+    (= pin (get @state :pin))
     (do
       (swap! state update :application-info assoc
              :pin-retry-counter 3
              :puk-retry-counter 5)
       (later on-valid))
+
+    :else
     (do
       (swap! state update-in
              [:application-info :pin-retry-counter]
@@ -260,13 +266,19 @@
 
 (defn unblock-pin
   [{:keys [puk new-pin on-success on-failure]}]
-  (if (= puk (get @state :puk))
+  (cond
+    (= (get-in @state [:application-info :puk-retry-counter]) 0)
+    (later #(on-failure (puk-error)))
+
+    (= puk (get @state :puk))
     (do
       (swap! state update :application-info assoc
              :pin-retry-counter 3
              :puk-retry-counter 5)
       (swap! state assoc :pin new-pin)
       (later #(on-success true)))
+
+    :else
     (do
       (swap! state update-in
              [:application-info :puk-retry-counter]

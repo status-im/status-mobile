@@ -33,7 +33,7 @@
                     (when (zero? pin-retries) (common/frozen-keycard-popup)))
           :else
           (fx/merge cofx
-                    (common/show-wrong-keycard-alert true)
+                    (common/show-wrong-keycard-alert)
                     (common/clear-pin)
                     (common/hide-connection-sheet)))))
 
