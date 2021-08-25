@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.onboarding.phrase.view
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.i18n.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.utils.security :as security]

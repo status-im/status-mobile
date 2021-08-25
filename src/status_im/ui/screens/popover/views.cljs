@@ -17,7 +17,7 @@
             [status-im.ui.screens.multiaccounts.key-storage.views :as multiaccounts.key-storage]
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.biometric.views :as biometric]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.screens.keycard.views :as keycard.views]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
             [status-im.ui.screens.chat.message.pinned-message :as pinned-message]

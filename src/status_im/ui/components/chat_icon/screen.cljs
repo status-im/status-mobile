@@ -4,7 +4,7 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.chat-icon.styles :as styles]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.photos :as photos]))
 

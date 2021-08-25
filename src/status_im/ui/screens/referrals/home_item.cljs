@@ -8,7 +8,7 @@
             [quo.react-native :as rn]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.core :as utils]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.invite.events :as invite]))
 
 (defn icon-style []

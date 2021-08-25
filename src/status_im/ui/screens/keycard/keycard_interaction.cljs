@@ -5,7 +5,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.components.keycard-animation
              :refer [animated-circles]]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.screens.keycard.components.description :as description]
             [status-im.ui.screens.keycard.components.turn-nfc :as turn-nfc]
             [status-im.ui.screens.keycard.components.style :as styles]))

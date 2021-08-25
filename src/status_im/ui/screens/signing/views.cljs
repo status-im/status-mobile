@@ -3,7 +3,7 @@
   (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.keycard.common :as keycard.common]

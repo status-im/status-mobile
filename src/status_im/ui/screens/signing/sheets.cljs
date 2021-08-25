@@ -4,8 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
-            [quo.design-system.colors :as quo-colors]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.utils.money :as money]
             [status-im.ui.components.icons.icons :as icons]
             [clojure.string :as clojure.string]
@@ -90,7 +89,7 @@
     [react/view
      [react/view {:style {:margin-horizontal 16 :margin-top 8}}
       [react/text {:style {:typography :title-bold}} (i18n/label :t/max-priority-fee)]
-      [react/text {:style {:color      (quo-colors/get-color :text-02)
+      [react/text {:style {:color      (colors/get-color :text-02)
                            :margin-top 12}}
        (i18n/label :t/miners-higher-fee)]
       [react/view
@@ -131,7 +130,7 @@
         :on-change-text      #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxPriorityFeePerGas %])
         :show-cancel         false
         :after               {:component [quo/text
-                                          {:style {:color (quo-colors/get-color :text-02)}}
+                                          {:style {:color (colors/get-color :text-02)}}
                                           (i18n/label :t/gwei)]}}]]
      [react/view
       {:margin-horizontal 16
@@ -146,7 +145,7 @@
         :on-change-text      #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxFeePerGas %])
         :show-cancel         false
         :after               {:component [quo/text
-                                          {:style {:color (quo-colors/get-color :text-02)}}
+                                          {:style {:color (colors/get-color :text-02)}}
                                           (i18n/label :t/gwei)]}}]]
      [react/view {:margin-vertical  12
                   :height           1
@@ -164,13 +163,13 @@
                 :justify-content :flex-end}}
        [quo/text
         {:style {:margin-right 6
-                 :color        (quo-colors/get-color :text-02)}}
+                 :color        (colors/get-color :text-02)}}
         (str (money/to-fixed fee-eth 6) " " fee-currency)]
        [quo/text
         (money/to-fixed (money/mul fee-eth (money/bignumber (or price 0))) 2)
         " "
         fiat-currency]]]
-     [react/text {:style {:color  (quo-colors/get-color :text-02)
+     [react/text {:style {:color  (colors/get-color :text-02)
                           :margin 16}}
       (i18n/label :t/fee-explanation)]
      [react/view
@@ -333,17 +332,17 @@
                :justify-content   :space-between
                :margin-horizontal 32
                :color             :red}}
-      [react/text {:style {:color (quo-colors/get-color :negative-01)}}
+      [react/text {:style {:color (colors/get-color :negative-01)}}
        (i18n/label :t/your-tip-limit)]
-      [react/text {:style {:color (quo-colors/get-color :negative-01)}}
+      [react/text {:style {:color (colors/get-color :negative-01)}}
        (gwei (:value-number priority-fee-edit))]]
      [react/view
       {:style {:flex-direction    :row
                :justify-content   :space-between
                :margin-horizontal 32}}
-      [react/text {:style {:color (quo-colors/get-color :negative-01)}}
+      [react/text {:style {:color (colors/get-color :negative-01)}}
        (i18n/label :t/your-price-limit)]
-      [react/text {:style {:color (quo-colors/get-color :negative-01)}}
+      [react/text {:style {:color (colors/get-color :negative-01)}}
        (gwei (:value-number fee-edit))]]
      [react/view {:style
                   {:background-color   colors/gray-lighter

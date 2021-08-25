@@ -104,7 +104,7 @@
             [status-im.ui.screens.communities.channel-details :as communities.channel-details]
             [status-im.ui.screens.communities.edit-channel :as edit-channel]
             [status-im.ui.screens.anonymous-metrics-settings.views :as anonymous-metrics-settings]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.chat.pinned-messages :as pin-messages]
             [status-im.ui.screens.communities.create-category :as create-category]

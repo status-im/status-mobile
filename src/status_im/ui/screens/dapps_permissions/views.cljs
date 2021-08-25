@@ -5,7 +5,7 @@
             [status-im.constants :as constants]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.screens.dapps-permissions.styles :as styles]
             [quo.core :as quo]
             [status-im.ui.components.icons.icons :as icons]

@@ -12,7 +12,7 @@
             [status-im.ui.screens.communities.views :as communities.views]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.screens.referrals.home-item :as referral-item]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
             [quo.core :as quo]
             [status-im.add-new.core :as new-chat]

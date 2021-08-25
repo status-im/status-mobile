@@ -3,7 +3,7 @@
             [quo.core :as quo]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.i18n.i18n :as i18n]))
 

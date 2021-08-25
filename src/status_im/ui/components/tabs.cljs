@@ -1,6 +1,6 @@
 (ns status-im.ui.components.tabs
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]))
+            [quo.design-system.colors :as colors]))
 
 (defn tab-title [state key label active?]
   [react/view {:align-items :center}

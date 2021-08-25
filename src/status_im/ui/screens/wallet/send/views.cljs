@@ -7,7 +7,7 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.wallet.send.styles :as styles]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.wallet.utils :as wallet.utils]

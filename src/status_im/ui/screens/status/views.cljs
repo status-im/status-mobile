@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.status.views
   (:require [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.utils.datetime :as datetime]
             [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.constants :as constants]

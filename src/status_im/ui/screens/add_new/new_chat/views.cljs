@@ -3,7 +3,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
             [status-im.utils.gfycat.core :as gfycat]

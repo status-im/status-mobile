@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.custom-tokens.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
             [clojure.string :as string]

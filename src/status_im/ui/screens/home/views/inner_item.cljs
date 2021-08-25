@@ -4,7 +4,7 @@
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.badge :as badge]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [quo.core :as quo]
             [status-im.ui.components.react :as react]

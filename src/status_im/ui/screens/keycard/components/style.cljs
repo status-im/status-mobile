@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.keycard.components.style
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (def wrapper-style {:flex            1
                     :align-items     :center

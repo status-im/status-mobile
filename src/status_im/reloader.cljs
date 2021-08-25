@@ -2,7 +2,7 @@
   (:require [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]))
 
 (def cnt (reagent/atom 0))

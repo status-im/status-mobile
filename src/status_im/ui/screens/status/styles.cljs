@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.status.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (defn descr-container []
   {:border-width               1

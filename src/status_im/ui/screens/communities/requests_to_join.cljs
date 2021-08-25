@@ -3,7 +3,7 @@
             [quo.core :as quo]
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.ui.components.chat-icon.screen :as chat-icon]

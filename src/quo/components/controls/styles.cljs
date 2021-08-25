@@ -19,7 +19,7 @@
    :border-radius    10
    :opacity          (animated/mix hold 1 0.6)
    :transform        [{:translateX (animated/mix state 0 24)}]
-   :background-color colors/white
+   :background-color colors/white-persist
    :elevation        4
    :shadow-opacity   1
    :shadow-radius    16
@@ -43,7 +43,7 @@
    :border-radius    6
    :opacity          (animated/mix hold 1 0.6)
    :transform        [{:scale (animated/mix state 0.0001 1)}]
-   :background-color colors/white
+   :background-color colors/white-persist
    :elevation        4
    :shadow-opacity   1
    :shadow-radius    16

@@ -5,7 +5,7 @@
             [quo.core :as quo]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.colors :as colors]))
+            [quo.design-system.colors :as colors]))
 
 (defn render-account [_]
   (reagent/create-class

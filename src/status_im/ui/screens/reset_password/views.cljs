@@ -3,7 +3,7 @@
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.multiaccounts.reset-password.core :as reset-password]
             [status-im.utils.security :as security]

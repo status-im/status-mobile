@@ -4,7 +4,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.accordion :as accordion]
             [status-im.react-native.resources :as resources]
@@ -19,7 +19,6 @@
             [status-im.ui.screens.wallet.transactions.views :as history]
             [status-im.wallet.core :as wallet]
             [status-im.ui.components.tabs :as tabs]
-            [quo.design-system.colors :as quo-colors]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.utils.handlers :refer [<sub]])
@@ -344,7 +343,7 @@
            [icons/icon
             :main-icons/warning
             {:color           :red
-             :container-style {:background-color (quo-colors/get-color :negative-02)
+             :container-style {:background-color (colors/get-color :negative-02)
                                :height           40
                                :width            40
                                :border-radius    20

@@ -9,7 +9,7 @@
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.wallet.send.views :as wallet.send.views]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.utils.config :as config]
             [status-im.keycard.test-menu :as keycard.test-menu]
             [status-im.utils.platform :as platform]))

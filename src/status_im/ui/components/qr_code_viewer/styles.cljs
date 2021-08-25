@@ -1,5 +1,5 @@
 (ns status-im.ui.components.qr-code-viewer.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (def qr-code-padding 16)
 

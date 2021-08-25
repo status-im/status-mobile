@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.transactions.styles
-  (:require [status-im.ui.components.colors :as colors]
+  (:require [quo.design-system.colors :as colors]
             [status-im.utils.styles :as styles]))
 
 (def forward

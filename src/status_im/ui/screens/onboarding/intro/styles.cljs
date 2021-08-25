@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.onboarding.intro.styles
   (:require [quo.animated :as animated]
-            [status-im.ui.components.colors :as colors]))
+            [quo.design-system.colors :as colors]))
 
 (def dot-size 6)
 (def progress-size 36)

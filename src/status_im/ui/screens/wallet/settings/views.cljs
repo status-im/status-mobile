@@ -8,7 +8,7 @@
             [reagent.core :as reagent]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.screens.wallet.components.views :as wallet.components])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 

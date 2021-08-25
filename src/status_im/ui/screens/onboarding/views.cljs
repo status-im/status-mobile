@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.ui.screens.onboarding.styles :as styles]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [quo.core :as quo]
             [status-im.ui.components.toolbar :as toolbar]))
 

@@ -8,7 +8,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.browser.styles :as styles]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [quo.core :as quo])
   (:require-macros [status-im.utils.views :as views]))
 

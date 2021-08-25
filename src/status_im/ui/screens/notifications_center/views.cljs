@@ -5,7 +5,7 @@
             [status-im.ui.components.list.views :as list]
             [re-frame.core :as re-frame]
             [quo.core :as quo]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [reagent.core :as reagent]
             [status-im.ui.components.toolbar :as toolbar]
             [clojure.string :as string]

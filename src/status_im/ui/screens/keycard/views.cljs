@@ -5,7 +5,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
             [status-im.ui.components.toolbar :as toolbar]

@@ -1,6 +1,5 @@
 (ns status-im.navigation.core
   (:require
-   [status-im.ui.components.colors :as colors]
    [re-frame.core :as re-frame]
    [status-im.ui.screens.views :as views]
    [status-im.utils.platform :as platform]
@@ -61,9 +60,9 @@
   (merge options
          (roots/merge-top-bar {:elevation       0
                                :noBorder        true
-                               :title           {:color colors/black}
-                               :background      {:color colors/white}
-                               :leftButtonColor colors/black
+                               :title           {:color quo.colors/black}
+                               :background      {:color quo.colors/white}
+                               :leftButtonColor quo.colors/black
                                :leftButtons     {:id   "dismiss-modal"
                                                  :icon (icons/icon-source :main-icons/close)}}
                               options)))
@@ -272,7 +271,7 @@
                  {:component {:name    comp
                               :id      comp
                               :options (merge (cond-> (roots/status-bar-options)
-                                                (and platform/android? (colors/dark?))
+                                                (and platform/android? (quo.colors/dark?))
                                                 (assoc-in [:statusBar :translucent] true))
                                               {:layout  {:componentBackgroundColor (if platform/android?
                                                                                      (:backdrop @quo.colors/theme)

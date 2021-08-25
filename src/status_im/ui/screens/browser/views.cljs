@@ -5,7 +5,7 @@
             [status-im.browser.webview-ref :as webview-ref]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
@@ -33,7 +33,7 @@
                                  :accessibility-label :security-icon}
       (if secure?
         [icons/tiny-icon :tiny-icons/tiny-lock {:color colors/green}]
-        [icons/tiny-icon :tiny-icons/tiny-lock-broken {:color colors/dark}])]
+        [icons/tiny-icon :tiny-icons/tiny-lock-broken {:color colors/black}])]
      (if url-editing?
        [react/text-input {:on-change-text    #(reset! url-text %)
                           :on-blur           #(re-frame/dispatch [:browser.ui/url-input-blured])

@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.signing-phrase.views
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
             [status-im.i18n.i18n :as i18n]

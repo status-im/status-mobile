@@ -1,5 +1,5 @@
 (ns status-im.ui.components.chat-icon.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (defn default-chat-icon [color]
   {:margin           0

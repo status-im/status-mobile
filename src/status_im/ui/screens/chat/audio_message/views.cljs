@@ -12,7 +12,7 @@
    [status-im.ui.screens.chat.components.input :as input]
    [status-im.ui.screens.chat.components.style :as input.style]
    [status-im.ui.screens.chat.audio-message.styles :as styles]
-   [status-im.ui.components.colors :as colors]
+   [quo.design-system.colors :as colors]
    [status-im.ui.components.animation :as anim]
    [status-im.ui.components.icons.icons :as icons]
    [status-im.utils.utils :as utils.utils]

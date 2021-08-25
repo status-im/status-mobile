@@ -1,10 +1,9 @@
 (ns status-im.ui.screens.chat.styles.message.message
   (:require [status-im.constants :as constants]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as photos]
-            [status-im.ui.components.typography :as typography]
-            [quo.design-system.colors :as quo.colors]))
+            [status-im.ui.components.typography :as typography]))
 
 (defn style-message-text
   [outgoing]
@@ -169,7 +168,7 @@
    :elevation      4
    :shadow-opacity 1
    :shadow-radius  16
-   :shadow-color   (:shadow-01 @quo.colors/theme)
+   :shadow-color   (:shadow-01 @colors/theme)
    :shadow-offset  {:width 0 :height 4}})
 
 (defn message-view

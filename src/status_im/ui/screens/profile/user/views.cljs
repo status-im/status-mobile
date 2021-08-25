@@ -3,7 +3,7 @@
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.copyable-text :as copyable-text]

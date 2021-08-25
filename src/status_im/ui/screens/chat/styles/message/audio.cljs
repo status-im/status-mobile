@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.chat.styles.message.audio
-  (:require [status-im.ui.components.colors :as colors]
+  (:require [quo.design-system.colors :as colors]
             [status-im.ui.screens.chat.styles.message.message :as message.style]
             [status-im.utils.platform :as platform]))
 

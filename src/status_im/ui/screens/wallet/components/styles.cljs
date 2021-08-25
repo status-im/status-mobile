@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.components.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (defn separator []
   {:height           1

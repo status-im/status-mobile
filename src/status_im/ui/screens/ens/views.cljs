@@ -10,7 +10,7 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]

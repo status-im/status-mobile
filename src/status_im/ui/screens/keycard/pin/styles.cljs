@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.keycard.pin.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (def pin-container
   {:flex            1

@@ -13,7 +13,7 @@
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.core :as utils]
             [status-im.ui.components.plus-button :as components.plus-button]

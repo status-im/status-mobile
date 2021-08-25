@@ -7,7 +7,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [quo.core :as quo])
   (:require-macros [status-im.utils.views :as views]))
 

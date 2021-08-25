@@ -6,7 +6,7 @@
             [reagent.core :as reagent]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.communities.core :as communities]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.constants :as constants]
             [status-im.react-native.resources :as resources]

@@ -9,7 +9,7 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.constants :refer [docs-link]]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.colors :as colors])
+            [quo.design-system.colors :as colors])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn principles-item []

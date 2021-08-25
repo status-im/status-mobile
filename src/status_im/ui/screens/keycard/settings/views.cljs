@@ -4,7 +4,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [quo.core :as quo]
             [status-im.constants :as constants]
             [status-im.ui.screens.keycard.views :as keycard.views]))

@@ -4,7 +4,7 @@
             [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.i18n.i18n :as i18n]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [reagent.core :as reagent]
             [cljs.spec.alpha :as spec]
             [status-im.multiaccounts.db :as multiaccounts.db]

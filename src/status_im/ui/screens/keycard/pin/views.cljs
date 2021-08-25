@@ -4,7 +4,7 @@
             [reagent.core :as reagent]
             [status-im.ui.components.animation :as animation]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.pin.styles :as styles]

@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.chat.message.styles
   (:require [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.photos :as photos]
-            [status-im.ui.components.colors :as components.colors]))
+            [status-im.ui.screens.chat.styles.photos :as photos]))
 
 (defn picker-wrapper-style [{:keys [display-photo? outgoing timeline]}]
   (merge {:flex-direction :row
@@ -102,7 +101,7 @@
 (defn link-preview-request-wrapper []
   {:border-radius    16
    :border-width     1
-   :border-color     components.colors/gray-lighter
+   :border-color     colors/gray-lighter
    :margin-vertical  4
    :background-color (:ui-background @colors/theme)})
 
@@ -121,8 +120,8 @@
    :border-bottom-left-radius  (if timeline 16 (if outgoing 16 4))
    :border-bottom-right-radius (if timeline 16 (if outgoing 4 16))
    :border-width               1
-   :border-color               components.colors/gray-lighter
-   :background-color           components.colors/white
+   :border-color               colors/gray-lighter
+   :background-color           colors/white
    :margin-vertical            4})
 
 (def screen-width

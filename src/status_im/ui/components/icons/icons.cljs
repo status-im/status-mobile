@@ -1,6 +1,6 @@
 (ns status-im.ui.components.icons.icons
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors])
+            [quo.design-system.colors :as colors])
   (:refer-clojure :exclude [use])
   (:require-macros [status-im.ui.components.icons.icons :as icons]))
 

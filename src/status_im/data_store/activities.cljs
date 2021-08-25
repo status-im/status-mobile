@@ -1,7 +1,7 @@
 (ns status-im.data-store.activities
   (:require [status-im.data-store.messages :as messages]
             [status-im.constants :as constants]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             clojure.set))
 
 (defn rpc->type [{:keys [type name] :as chat}]

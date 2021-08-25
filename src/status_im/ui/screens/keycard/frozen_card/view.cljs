@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.keycard.frozen-card.view
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
             [status-im.keycard.login :as login]

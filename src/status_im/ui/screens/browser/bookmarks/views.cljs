@@ -5,7 +5,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [reagent.core :as reagent]
             [clojure.string :as string]
             [re-frame.core :as re-frame]))

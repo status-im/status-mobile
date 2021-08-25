@@ -9,7 +9,7 @@
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.communities.core :as communities]))
 
 (def selected-item (reagent/atom ""))

@@ -12,7 +12,7 @@
             [status-im.ui.screens.profile.contact.styles :as styles]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
             [status-im.utils.platform :as platform]

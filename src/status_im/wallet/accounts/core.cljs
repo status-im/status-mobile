@@ -8,7 +8,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as status]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]

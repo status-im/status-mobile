@@ -6,7 +6,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.qr-scanner.styles :as styles]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.utils.config :as config]
             [quo.core :as quo]
             [reagent.core :as reagent]

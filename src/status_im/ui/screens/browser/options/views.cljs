@@ -4,7 +4,7 @@
             [status-im.i18n.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.browser.core :as browser]
             [status-im.utils.http :as http]

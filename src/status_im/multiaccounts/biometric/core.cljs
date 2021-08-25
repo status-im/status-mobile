@@ -3,7 +3,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.popover.core :as popover]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]

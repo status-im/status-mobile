@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.keycard.onboarding :as keycard.onboarding]
             [status-im.ui.components.toolbar :as bottom-toolbar]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.i18n.i18n :as i18n]

@@ -7,7 +7,7 @@
             [status-im.ui.screens.chat.styles.main :as style]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 

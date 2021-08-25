@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.notifications-center.styles
-  (:require [status-im.ui.components.colors :as colors]
+  (:require [quo.design-system.colors :as colors]
             [quo.design-system.spacing :as spacing]))
 
 (def notification-message-text

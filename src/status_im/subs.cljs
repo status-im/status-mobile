@@ -40,7 +40,7 @@
             [status-im.notifications.core :as notifications]
             [status-im.utils.currency :as currency]
             [clojure.set :as clojure.set]
-            [status-im.ui.components.colors :as colors]))
+            [quo.design-system.colors :as colors]))
 
 ;; TOP LEVEL ===========================================================================================================
 

@@ -13,7 +13,7 @@
             [quo.core :as quo]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 

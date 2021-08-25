@@ -13,7 +13,7 @@
              :as
              profile.components.styles]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.utils.universal-links.core :as universal-links]

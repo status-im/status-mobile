@@ -9,7 +9,6 @@
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.copyable-text :as copyable-text]
    [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.components.colors :as colors]
    [status-im.ui.components.toolbar :as toolbar]
    [status-im.ui.components.badge :as badge]
    [status-im.ui.components.react :as react]
@@ -27,7 +26,7 @@
       [badge/message-counter unviewed-mentions-count]
 
       (pos? unviewed-messages-count)
-      [react/view {:style               {:background-color colors/blue
+      [react/view {:style               {:background-color quo.colors/blue
                                          :border-radius    6
                                          :margin-right     5
                                          :margin-top       2
@@ -162,7 +161,7 @@
                               :accessibility-label :chat-item}
    [react/view {:padding-right    8
                 :padding-vertical 8}
-    [react/view {:border-color       colors/gray-lighter
+    [react/view {:border-color       quo.colors/gray-lighter
                  :border-radius      36
                  :border-width       1
                  :padding-horizontal 8

@@ -2,7 +2,7 @@
   (:require [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.multiaccounts.core :as multiaccounts]))
 
 (def ^:private reply-symbol "↪ ")

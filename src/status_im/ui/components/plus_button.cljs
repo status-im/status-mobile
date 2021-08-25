@@ -1,5 +1,5 @@
 (ns status-im.ui.components.plus-button
-  (:require [status-im.ui.components.colors :as colors]
+  (:require [quo.design-system.colors :as colors]
             [quo.core :as quo]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.icons :as icons]))

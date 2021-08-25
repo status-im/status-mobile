@@ -7,7 +7,7 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.key-storage.core :as multiaccounts.key-storage]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -141,7 +141,7 @@
                                            :height 16}]]])
 
 (defn keycard-upsell-banner []
-  [react/view {:background-color (if (= :dark @colors/theme) "#2C5955" "#DDF8F4")
+  [react/view {:background-color (if (colors/dark?) "#2C5955" "#DDF8F4")
                :border-radius 16 :padding-left 12 :padding-right 50 :margin 16}
    [react/touchable-highlight {:on-press #(do
                                             (re-frame/dispatch [:hide-keycard-banner])

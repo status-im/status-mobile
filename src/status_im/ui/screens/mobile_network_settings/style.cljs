@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.mobile-network-settings.style
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (def container
   {:flex             1})

@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.status.new.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (def buttons
   {:padding-horizontal 14

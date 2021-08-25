@@ -5,7 +5,7 @@
             [status-im.stickers.core :as stickers]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [status-im.ui.screens.chat.stickers.styles :as styles]

@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.group.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (def group-container
   {:flex           1

@@ -3,7 +3,7 @@
             [status-im.keycard.card :as keycard-nfc]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]))
 

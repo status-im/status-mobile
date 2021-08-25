@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.communities.icon
-  (:require [status-im.ui.components.colors :as colors]
+  (:require [quo.design-system.colors :as colors]
             [status-im.constants :as constants]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.react :as react]

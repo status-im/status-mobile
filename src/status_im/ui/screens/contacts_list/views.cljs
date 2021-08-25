@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.contacts-list.views
   (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]

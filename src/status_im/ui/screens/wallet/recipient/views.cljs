@@ -6,7 +6,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [quo.core :as quo]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.utils.debounce :as debounce]
             [status-im.ui.components.search-input.view :as search-input]
             [status-im.ui.screens.wallet.components.views :as components]

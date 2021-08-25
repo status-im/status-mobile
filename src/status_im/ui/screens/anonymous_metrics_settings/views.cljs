@@ -6,7 +6,7 @@
             [status-im.anon-metrics.core :as anon-metrics]
             [status-im.ui.components.accordion :as accordion]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.i18n.i18n :as i18n]
             [status-im.constants :refer [metrics-github-link]]

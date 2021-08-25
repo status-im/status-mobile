@@ -6,7 +6,7 @@
             [status-im.data-store.chats :as chats-store]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.constants :as constants]
             [status-im.navigation :as navigation]
             [status-im.utils.clocks :as utils.clocks]

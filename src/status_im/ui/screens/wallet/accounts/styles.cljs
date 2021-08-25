@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.accounts.styles
   (:require [quo.animated :as animated]
-            [status-im.ui.components.colors :as colors]))
+            [quo.design-system.colors :as colors]))
 
 (def dot-size 6)
 

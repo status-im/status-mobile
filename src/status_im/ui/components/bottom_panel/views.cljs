@@ -2,7 +2,7 @@
   (:require ["react-native" :refer (BackHandler)]
             [reagent.core :as reagent]
             [status-im.ui.components.animation :as anim]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :as views]))

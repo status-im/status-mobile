@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.chat.image.preview.views
-  (:require [status-im.ui.components.colors :as colors]
+  (:require [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]

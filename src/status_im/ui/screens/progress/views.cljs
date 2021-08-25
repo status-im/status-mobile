@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.progress.views
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]))
+            [quo.design-system.colors :as colors]))
 
 ;; a simple view with animated progress indicator in its center
 (defview progress [_]

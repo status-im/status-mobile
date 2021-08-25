@@ -9,7 +9,7 @@
             [quo.core :as quo]
             [quo.design-system.typography :as typography]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.colors :as colors]))
+            [quo.design-system.colors :as colors]))
 
 (defonce index (reagent/atom 0))
 

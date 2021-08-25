@@ -7,7 +7,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.security :as security]

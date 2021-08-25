@@ -11,7 +11,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.contenthash :as contenthash]
             [status-im.constants :as constants]
-            [status-im.ui.components.colors :as colors]
+            [quo.design-system.colors :as colors]
             [status-im.ui.screens.home.views.inner-item :as home-item]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]))

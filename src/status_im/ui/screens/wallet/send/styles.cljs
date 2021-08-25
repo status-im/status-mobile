@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.send.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]))
 
 (defn sheet []
   {:flex 1})
