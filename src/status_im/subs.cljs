@@ -121,8 +121,6 @@
 (reg-root-key-sub :group-chat/invitations :group-chat/invitations)
 (reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
 (reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
-(reg-root-key-sub :chats/all-chats-loading? :chats/all-chats-loading?)
-
 ;;browser
 (reg-root-key-sub :browsers :browser/browsers)
 (reg-root-key-sub :browser/options :browser/options)

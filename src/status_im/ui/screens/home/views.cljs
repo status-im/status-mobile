@@ -141,8 +141,7 @@
 
 (views/defview communities-and-chats []
   (views/letsubs [{:keys [items search-filter]} [:home-items]
-                  hide-home-tooltip? [:hide-home-tooltip?]
-                  all-chats-loading? [:chats/all-chats-loading?]]
+                  hide-home-tooltip? [:hide-home-tooltip?]]
     (if (and (empty? items)
              (empty? search-filter)
              hide-home-tooltip?
@@ -155,7 +154,6 @@
         :keyboard-should-persist-taps :always
         :data                         items
         :render-fn                    render-fn
-        :on-end-reached               #(re-frame/dispatch [:load-all-chats])
         :header                       [:<>
                                        (when (or (seq items) @search-active? (seq search-filter))
                                          [search-input-wrapper search-filter (empty? items)])
@@ -163,12 +161,9 @@
                                        (when (and (empty? items)
                                                   (or @search-active? (seq search-filter)))
                                          [start-suggestion search-filter])]
-        :footer                       [:<>
-                                       (when all-chats-loading?
-                                         [react/activity-indicator])
-                                       (if (and (not hide-home-tooltip?) (not @search-active?))
-                                         [home-tooltip-view]
-                                         [react/view {:height 68}])]}])))
+        :footer                       (if (and (not hide-home-tooltip?) (not @search-active?))
+                                        [home-tooltip-view]
+                                        [react/view {:height 68}])}])))
 
 (views/defview chats-list []
   (views/letsubs [loading? [:chats/loading?]]
