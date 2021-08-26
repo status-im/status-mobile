@@ -7,7 +7,6 @@
             [reagent.core :as reagent]
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.radio :as radio]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.ui.screens.chat.message.message :as message]))
 
@@ -39,7 +38,7 @@
     [react/view {:style {:position    :absolute
                          :right       18
                          :padding-top 4}}
-     [radio/radio (= @selected-unpin message-id)]]]])
+     [quo/radio {:value (= @selected-unpin message-id)}]]]])
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 

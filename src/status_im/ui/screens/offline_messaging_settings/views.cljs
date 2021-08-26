@@ -5,11 +5,11 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.radio :as radio]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.offline-messaging-settings.styles :as styles]
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [quo.core :as quo]))
 
 (defn pinned-state [pinned?]
   [react/view {:style styles/automatic-selection-container}
@@ -42,7 +42,7 @@
          name]
 
         (if pinned?
-          [radio/radio connected?]
+          [quo/radio {:value connected?}]
           [icons/icon :check {:color colors/blue}])]])))
 
 (views/defview offline-messaging-settings []

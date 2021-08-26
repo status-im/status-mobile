@@ -2,7 +2,6 @@
   (:require [reagent.core :as reagent]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.styles :as styles]
-            [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
             ["react-native" :as react-native]))
@@ -56,11 +55,10 @@
 
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn list-item-with-radio-button
-  [{:keys [on-value-change style checked?] :as props} item]
+  [{:keys [on-value-change style checked?]} item]
   [react/touchable-highlight {:on-press #(on-value-change (not checked?))}
    (conj item
-         [react/view {:style (merge style styles/item-checkbox)}
-          [radio/radio (:checked? props)]])])
+         [react/view {:style (merge style styles/item-checkbox)}])])
 
 (def memo-wrap-render-fn
   (memoize
