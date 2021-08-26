@@ -18,19 +18,6 @@
    :align-items     :center
    :justify-content :center})
 
-(def primary-text-base
-  {:font-size 16})
-
-(def primary-text-only
-  (merge primary-text-base
-         {:padding-vertical 16}))
-
-(def image-size 40)
-
-(def item-image
-  {:width         image-size
-   :height        image-size})
-
 (def icon-size 24)
 (def icon-wrapper-size (+ icon-size (* 2 8)))
 

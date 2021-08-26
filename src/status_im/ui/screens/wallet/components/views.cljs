@@ -7,3 +7,11 @@
 
 (defn separator-dark []
   [react/view (styles/separator-dark)])
+
+(defn token-icon [{:keys [style source image-style]}]
+  [react/view {:style style}
+   [react/image {:source (if (fn? source) (source) source)
+                 :style  (merge
+                          {:width  40
+                           :height 40}
+                          image-style)}]])

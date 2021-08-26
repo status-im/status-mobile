@@ -9,14 +9,15 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
             [quo.core :as quo]
-            [status-im.ui.components.toolbar :as toolbar])
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- transaction-icon
   [icon-key background-color color]
-  {:icon      icon-key
-   :icon-opts {:color color}
-   :style     (styles/transaction-icon-background background-color)})
+  {:icon          icon-key
+   :icon-color    color
+   :icon-bg-color background-color})
 
 (defn- transaction-type->icon
   [k]
@@ -36,45 +37,29 @@
 
 (defn render-transaction
   [{:keys [label contact address contact-accessibility-label
-           address-accessibility-label currency-text amount-text
+           currency-text amount-text
            time-formatted on-touch-fn type hash]}
    _ _ {:keys [keycard-account? transactions-management-enabled?]}]
-  [react/view
-   [list/touchable-item on-touch-fn
-    [react/view {:accessibility-label :transaction-item}
-     [list/item
-      (when type
-        [list/item-icon (transaction-type->icon (keyword type))])
-      [list/item-content
-       [react/view {:style styles/amount-time}
-        [react/nested-text {:style           styles/tx-amount
-                            :ellipsize-mode  "tail"
-                            :number-of-lines 1}
-         [{:accessibility-label :amount-text}
-          amount-text]
-         " "
-         [{:accessibility-label :currency-text}
-          currency-text]]
-        [react/text {:style styles/tx-time}
-         time-formatted]]
-       [react/view {:style styles/address-row}
-        [react/text {:style styles/address-label}
-         label]
-        (when contact
-          [react/text {:style               styles/address-contact
-                       :accessibility-label contact-accessibility-label}
-           contact])
-        [quo/text {:style               styles/address-hash
-                   :monospace           true
-                   :color               :secondary
-                   :ellipsize-mode      "middle"
-                   :number-of-lines     1
-                   :accessibility-label address-accessibility-label}
-         address]]]
-      [list/item-icon {:icon      :main-icons/next
-                       :style     {:margin-top 10}
-                       :icon-opts (merge styles/forward
-                                         {:accessibility-label :show-transaction-button})}]]]]
+  [:<>
+   [quo/list-item
+    (merge
+     {:on-press            on-touch-fn
+      :accessibility-label :transaction-item
+      :title (str amount-text " " currency-text)
+      :subtitle (str label
+                     " "
+                     (when contact
+                       [react/text {:style               styles/address-contact
+                                    :accessibility-label contact-accessibility-label}
+                        contact])
+                     " "
+                     (utils/get-shortened-address address)
+                     " "
+                     (i18n/label :t/at)
+                     " "
+                     time-formatted)
+      :chevron             true}
+     (when type (transaction-type->icon (keyword type))))]
    (when (and transactions-management-enabled?
               (not keycard-account?)
               (= type :pending))
@@ -92,12 +77,12 @@
      {:on-press #(when link
                    (.openURL ^js react/linking link))}
      [react/view
-      {:style {:flex             1
+      {:style {:flex               1
                :padding-horizontal 14
-               :flex-direction   :row
-               :align-items :center
-               :background-color colors/blue-light
-               :height           52}}
+               :flex-direction     :row
+               :align-items        :center
+               :background-color   colors/blue-light
+               :height             52}}
       [icons/tiny-icon
        :tiny-icons/tiny-external
        {:color           colors/blue
@@ -120,26 +105,26 @@
 
 (defn non-archival-node []
   [react/view
-   {:style {:flex             1
+   {:style {:flex               1
             :padding-horizontal 14
-            :flex-direction   :row
-            :align-items :center
-            :background-color (quo/get-color :negative-02)
-            :height           52}}
+            :flex-direction     :row
+            :align-items        :center
+            :background-color   (quo/get-color :negative-02)
+            :height             52}}
    [react/text
     {:style {:color (quo/get-color :negative-01)}}
     (i18n/label :t/non-archival-node)]])
 
 (defn history-list
   [{:keys [transaction-history-sections total]} address]
-  (let [fetching-recent-history?         @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
-        fetching-more-history?           @(re-frame/subscribe [:wallet/fetching-tx-history? address])
-        keycard-account?                 @(re-frame/subscribe [:multiaccounts/keycard-account?])
+  (let [fetching-recent-history? @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
+        fetching-more-history? @(re-frame/subscribe [:wallet/fetching-tx-history? address])
+        keycard-account? @(re-frame/subscribe [:multiaccounts/keycard-account?])
         transactions-management-enabled? @(re-frame/subscribe [:wallet/transactions-management-enabled?])
-        custom-rpc-node?                 @(re-frame/subscribe [:custom-rpc-node])
-        non-archival-rpc-node?           @(re-frame/subscribe [:wallet/non-archival-node])
-        all-fetched?                     @(re-frame/subscribe [:wallet/tx-history-fetched? address])
-        syncing-allowed?                 @(re-frame/subscribe [:mobile-network/syncing-allowed?])]
+        custom-rpc-node? @(re-frame/subscribe [:custom-rpc-node])
+        non-archival-rpc-node? @(re-frame/subscribe [:wallet/non-archival-node])
+        all-fetched? @(re-frame/subscribe [:wallet/tx-history-fetched? address])
+        syncing-allowed? @(re-frame/subscribe [:mobile-network/syncing-allowed?])]
     [react/view {:flex 1}
      [etherscan-link address]
      (cond non-archival-rpc-node?
@@ -154,11 +139,11 @@
         [react/activity-indicator {:size      :large
                                    :animating true}]])
      [list/section-list
-      {:sections   transaction-history-sections
-       :key-fn     :hash
-       :render-data {:keycard-account? keycard-account?
+      {:sections    transaction-history-sections
+       :key-fn      :hash
+       :render-data {:keycard-account?                 keycard-account?
                      :transactions-management-enabled? transactions-management-enabled?}
-       :render-fn  render-transaction
+       :render-fn   render-transaction
        :empty-component
        [react/i18n-text {:style styles/empty-text
                          :key   (if (or fetching-recent-history? fetching-more-history?)
@@ -184,19 +169,16 @@
                                       [:transactions/fetch-more address]))}
             (i18n/label :t/transactions-load-more)]}]))]))
 
-;; NOTE: Is this needed?
 (defn details-header
   [date type amount-text currency-text]
-  [react/view {:style styles/details-header}
-   [react/view {:style styles/details-header-icon}
-    (when type
-      [list/item-icon (transaction-type->icon type)])]
-   [react/view {:style styles/details-header-infos}
-    [react/nested-text {:style styles/details-header-value}
-     [{:accessibility-label :amount-text} amount-text]
-     " "
-     [{:accessibility-label :currency-text} currency-text]]
-    [react/text {:style styles/details-header-date} date]]])
+  [quo/list-item
+   (merge
+    {:title [react/nested-text {:style styles/details-header-value}
+             [{:accessibility-label :amount-text} amount-text]
+             " "
+             [{:accessibility-label :currency-text} currency-text]]
+     :subtitle date}
+    (transaction-type->icon type))])
 
 (defn progress-bar [progress failed?]
   [react/view {:style styles/progress-bar}
@@ -219,9 +201,9 @@
   ([label props-value]
    (details-list-row label props-value nil))
   ([label props-value extra-props-value]
-   (let [[props value]             (if (string? props-value)
-                                     [nil props-value]
-                                     props-value)
+   (let [[props value] (if (string? props-value)
+                         [nil props-value]
+                         props-value)
          [extra-props extra-value] (if (string? extra-props-value)
                                      [nil extra-props-value]
                                      extra-props-value)]

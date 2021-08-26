@@ -7,7 +7,8 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.colors :as colors])
+            [status-im.ui.components.colors :as colors]
+            [quo.core :as quo])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- network-icon [connected? size]
@@ -29,15 +30,13 @@
 
 (defn render-network [{:keys [id name] :as network} _ _ current-network]
   (let [connected? (= id current-network)]
-    [list/touchable-item #(re-frame/dispatch [::network/network-entry-pressed network])
-     [react/view styles/network-item
-      [network-icon connected? 40]
-      [react/view {:padding-horizontal 16}
-       [react/text {:style styles/network-item-name-text} name]
-       (when connected?
-         [react/text {:style               styles/network-item-connected-text
-                      :accessibility-label :connected-text}
-          (i18n/label :t/connected)])]]]))
+    [quo/list-item {:on-press #(re-frame/dispatch [::network/network-entry-pressed network])
+                    :icon :main-icons/network
+                    :icon-bg-color (if connected? colors/blue colors/gray-lighter)
+                    :icon-color (if connected? colors/white-persist colors/gray)
+                    :title name
+                    :subtitle (when connected? (i18n/label :t/connected))
+                    :chevron true}]))
 
 (views/defview network-settings []
   (views/letsubs [current-network [:networks/current-network]

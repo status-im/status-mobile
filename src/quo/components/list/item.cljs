@@ -194,7 +194,7 @@
 
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon icon-container-style
-           left-side-alignment
+           left-side-alignment icon-color icon-bg-color
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label accessory-style
            haptic-feedback haptic-type error animated animated-accessory? title-text-weight]
@@ -204,9 +204,10 @@
            animated           platform/ios?
            haptic-type        :selection}}]
   (let [theme           (if disabled :disabled theme)
-        {:keys [icon-color text-color icon-bg-color
-                active-background passive-background]}
+        {:keys [text-color active-background passive-background]}
         (themes theme)
+        icon-color (or icon-color (:icon-color (themes theme)))
+        icon-bg-color (or icon-bg-color (:icon-bg-color (themes theme)))
         optional-haptic (fn []
                           (when haptic-feedback
                             (haptic/trigger haptic-type)))
