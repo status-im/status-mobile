@@ -94,11 +94,14 @@
      :message   description}))
 
 (defn show-message-pn?
-  [{{:keys [app-state]} :db :as cofx}
+  [{{:keys [app-state multiaccount]} :db :as cofx}
    notification]
-  (let [chat-id (get-in notification [:body :chat :id])]
-    (or (= app-state "background")
-        (not (chat.models/foreground-chat? cofx chat-id)))))
+  (let [chat-id             (get-in notification [:body :chat :id])
+        notification-author (get-in notification [:notificationAuthor :id])]
+    (and
+     (not= notification-author (:public-key multiaccount))
+     (or (= app-state "background")
+         (not (chat.models/foreground-chat? cofx chat-id))))))
 
 (defn create-notification
   ([notification]
