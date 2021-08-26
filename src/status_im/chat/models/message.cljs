@@ -209,7 +209,8 @@
                              {:db (reduce (fn [acc current]
                                             (update-in acc [:messages (:chatId current)] dissoc (:messageId current)))
                                           db removed-messages)
-                              :dispatch [:get-activity-center-notifications]})]
+                              :dispatch-n [[:get-activity-center-notifications]
+                                           [:get-activity-center-notifications-count]]})]
     (apply fx/merge cofx (conj mark-as-seen-fx remove-messages-fx))))
 
 (comment
