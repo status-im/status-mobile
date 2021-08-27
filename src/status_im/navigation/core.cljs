@@ -244,7 +244,7 @@
                                          :else
                                          (if (and (= :chat tab) platform/ios?)
                                            {:dotIndicator {:visible false}}
-                                           {:dotIndicator {:visible false} :badge nil}))}))))
+                                           {:dotIndicator {:visible false} :badge ""}))}))))
 
 (re-frame/reg-fx
  :pop-to-root-tab-fx
