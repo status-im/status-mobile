@@ -285,6 +285,7 @@
             :options   {:topBar {:visible false}}
             :component communities.channel-details/view}
            {:name      :edit-community-channel
+            :options   {:topBar {:title {:text (i18n/label :t/edit-channel-title)}}}
             :insets    {:bottom true}
             :component edit-channel/view}
            {:name      :contact-toggle-list

@@ -4,7 +4,6 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.communities.core :as communities]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.ui.screens.communities.create-channel :as create-channel]))
@@ -16,7 +15,6 @@
   (let [{:keys [name]} (<sub [:communities/create-channel])]
     (fn []
       [:<>
-       [topbar/topbar {:title (i18n/label :t/edit-channel-title)}]
        [create-channel/form]
        [toolbar/toolbar
         {:show-border? true
