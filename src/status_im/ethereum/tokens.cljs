@@ -763,6 +763,10 @@
                    {:address  "0xaa6e8127831c9de45ae56bb1b0d4d4da6e5665bd"
                     :symbol   :ETH2x-FLI
                     :name     "ETH 2x Flexible Leverage Index"
+                    :decimals 18}
+                   {:address  "0xba5BDe662c17e2aDFF1075610382B9B691296350"
+                    :symbol   :RARE
+                    :name     "SuperRare"
                     :decimals 18}])
    :testnet
    (resolve-icons :testnet
