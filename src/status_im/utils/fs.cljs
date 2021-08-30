@@ -14,6 +14,11 @@
       (.then on-read)
       (.catch on-error)))
 
+(defn write-file [path content encoding on-write on-error]
+  (-> (.writeFile react-native-fs path content encoding)
+      (.then on-write)
+      (.catch on-error)))
+
 (defn read-dir [path]
   (.readDir react-native-fs path))
 
@@ -25,3 +30,6 @@
 
 (defn file-exists? [path]
   (.exists react-native-fs path))
+
+(defn cache-dir []
+  (.-CachesDirectoryPath ^js react-native-fs))

@@ -2,7 +2,7 @@ PODS:
   - boost-for-react-native (1.63.0)
   - BVLinearGradient (2.5.6):
     - React
-  - CryptoSwift (1.3.8)
+  - CryptoSwift (1.4.1)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.4)
   - FBReactNativeSpec (0.63.4):
@@ -224,7 +224,7 @@ PODS:
   - react-native-status-keycard (2.5.35):
     - Keycard
     - React
-  - react-native-webview (10.9.2):
+  - react-native-webview (11.3.0):
     - React-Core
   - React-RCTActionSheet (0.63.4):
     - React-Core/RCTActionSheetHeaders (= 0.63.4)
@@ -359,6 +359,8 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNShare (7.0.1):
+    - React-Core
   - RNSVG (9.13.6):
     - React
   - secp256k1 (0.1.6)
@@ -367,7 +369,7 @@ PODS:
   - SQLCipher/common (3.4.2)
   - SQLCipher/standard (3.4.2):
     - SQLCipher/common
-  - SSZipArchive (2.2.3)
+  - SSZipArchive (2.4.2)
   - TOCropViewController (2.6.0)
   - TouchID (4.4.1):
     - React
@@ -435,6 +437,7 @@ DEPENDENCIES:
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - secp256k1 (from `https://github.com/status-im/secp256k1.swift.git`)
   - SQLCipher (~> 3.0)
@@ -569,6 +572,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-haptic-feedback"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   secp256k1:
@@ -591,7 +596,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
-  CryptoSwift: 01b0f0cba1d5c212e5a335ff6c054fb75a204f00
+  CryptoSwift: 0bc800a7e6a24c4fc9ebeab97d44b0d5f73a78bd
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
@@ -623,7 +628,7 @@ SPEC CHECKSUMS:
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-status: 45dbf1302ce3c258b459dfab137cd1c2c68c295d
   react-native-status-keycard: de55c01648d24ff7c17a77f3aa29a0421f44143c
-  react-native-webview: 4e96d493f9f90ba4f03b28933f30b2964df07e39
+  react-native-webview: af9990b21a9aeafa8e8347746eb4116c0de086af
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b
   React-RCTBlob: a97d378b527740cc667e03ebfa183a75231ab0f0
@@ -650,14 +655,15 @@ SPEC CHECKSUMS:
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 70f662b5232dd5d19ccff581e919a54ea73df51c
+  RNShare: 2dc2fcac3f7321cfd6b60a23ed4bf4d549f86f5f
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   secp256k1: f61d67e6fdcb85fd727acf1bf35ace6036db540c
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
-  SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
+  SSZipArchive: e7b4f3d9e780c2acc1764cd88fbf2de28f26e5b2
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: 27b3929c4d7f0b5afd76276d0bd4ae289ec11f18
+PODFILE CHECKSUM: 2769eb02c836ad1eaddf5f34a0c61153c4c5fbec
 
 COCOAPODS: 1.10.1
