@@ -9,6 +9,8 @@
             [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]
             [clojure.string :as string]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.utils.utils :as utils]
             [status-im.utils.platform :as platform]
             [status-im.chat.models :as chat]))
 
@@ -35,24 +37,36 @@
     (.-localIdentifier result)
     (.-path result)))
 
+(defn android-save-image-to-gallery [base64-uri]
+  (react/image-get-size
+   base64-uri
+   (fn [width height]
+     (image-processing/resize
+      base64-uri
+      width
+      height
+      100
+      (fn [^js resized-image]
+        (let [path (.-path resized-image)
+              path (if (string/starts-with? path "file") path (str "file://" path))]
+          (.saveToCameraRoll CameraRoll path)))
+      #(log/error "could not resize image" %)))))
+
 (re-frame/reg-fx
  ::save-image-to-gallery
  (fn [base64-uri]
    (if platform/ios?
-     (.saveToCameraRoll CameraRoll base64-uri)
-     (react/image-get-size
-      base64-uri
-      (fn [width height]
-        (image-processing/resize
-         base64-uri
-         width
-         height
-         100
-         (fn [^js resized-image]
-           (let [path (.-path resized-image)
-                 path (if (string/starts-with? path "file") path (str "file://" path))]
-             (.saveToCameraRoll CameraRoll path)))
-         #(log/error "could not resize image" %)))))))
+     (-> (.saveToCameraRoll CameraRoll base64-uri)
+         (.catch #(utils/show-popup (i18n/label :t/error)
+                                    (i18n/label :t/external-storage-denied))))
+     (permissions/request-permissions
+      {:permissions [:write-external-storage]
+       :on-allowed  #(android-save-image-to-gallery base64-uri)
+       :on-denied   (fn []
+                      (utils/set-timeout
+                       #(utils/show-popup (i18n/label :t/error)
+                                          (i18n/label :t/external-storage-denied))
+                       50))}))))
 
 (re-frame/reg-fx
  ::chat-open-image-picker-camera
