@@ -44,7 +44,7 @@
         offset          (reagent/atom 0)
         on-layout       (fn [evt]
                           (reset! offset (oget evt "nativeEvent" "layout" "height")))]
-    (fn [{:keys [extended-header] :as props} children]
+    (fn [{:keys [extended-header refresh-control refreshing-sub refreshing-counter] :as props} children]
       [animated/view {:flex           1
                       :pointer-events :box-none}
        [animated/code {:key  (str @offset)
@@ -67,6 +67,10 @@
                          :title-align     :left}
                         (dissoc props :extended-header))]]
        (into [animated/scroll-view {:on-scroll           on-scroll
+                                    :refreshControl      (when refresh-control
+                                                           (refresh-control
+                                                            (and @refreshing-sub
+                                                                 @refreshing-counter)))
                                     :style               {:z-index 1}
                                     :scrollEventThrottle 16}
               [animated/view {:pointer-events :box-none}

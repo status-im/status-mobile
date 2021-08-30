@@ -18,9 +18,7 @@
             [status-im.utils.money :as money]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.ui.components.tabs :as tabs]
-            [quo.react-native :as rn]
-            [quo.design-system.colors :as quo-colors]
-            [status-im.utils.utils :as utils.utils])
+            [quo.design-system.colors :as quo-colors])
   (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
@@ -58,8 +56,11 @@
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet/share-popover address])}
        [icons/icon :main-icons/share {:color                      colors/white-persist
                                       :accessibility-label :share-wallet-address-icon}]]]
-     [react/view {:height                     button-group-height :background-color          colors/black-transparent-20
-                  :border-bottom-right-radius 8                   :border-bottom-left-radius 8 :flex-direction :row}
+     [react/view {:height                     button-group-height
+                  :background-color           colors/black-transparent-20
+                  :border-bottom-right-radius 8
+                  :border-bottom-left-radius  8
+                  :flex-direction             :row}
       (if (= type :watch)
         [react/view {:flex 1 :align-items :center :justify-content :center}
          [react/text {:style {:margin-left 8 :color colors/white-persist}}
@@ -180,29 +181,6 @@
             (styles/bottom-send-recv-buttons-lower anim-y button-group-height)
             #(reset! to-show false))))))))
 
-;; Note(rasom): sometimes `refreshing` might get stuck on iOS if action happened
-;; too fast. By updating this atom in 1s we ensure that `refreshing?` property
-;; is updated properly in this case.
-(def updates-counter (reagent/atom 0))
-
-(defn schedule-counter-reset []
-  (utils.utils/set-timeout
-   (fn []
-     (swap! updates-counter inc)
-     (when @(re-frame/subscribe [:wallet/refreshing-history?])
-       (schedule-counter-reset)))
-   1000))
-
-(defn refresh-action []
-  (schedule-counter-reset)
-  (re-frame/dispatch [:wallet.ui/pull-to-refresh-history]))
-
-(defn refresh-control [refreshing?]
-  (reagent/as-element
-   [rn/refresh-control
-    {:refreshing (boolean refreshing?)
-     :onRefresh  refresh-action}]))
-
 (views/defview account []
   (views/letsubs [{:keys [name address] :as account} [:multiaccount/current-account]
                   fetching-error [:wallet/fetching-error]]
@@ -223,9 +201,9 @@
                                  [{:nativeEvent {:contentOffset {:y scroll-y}}}]
                                  {:useNativeDriver true})
          :scrollEventThrottle   1
-         :refreshControl        (refresh-control
+         :refreshControl        (accounts/refresh-control
                                  (and
-                                  @updates-counter
+                                  @accounts/updates-counter
                                   @(re-frame/subscribe [:wallet/refreshing-history?])))}
         (when fetching-error
           [react/view {:style {:flex 1
