@@ -33,7 +33,7 @@ To ensure consistency run [clj-kondo linter](https://github.com/borkdude/clj-kon
 
 # Best practices
 
-- Desing components atomically and compose them into bigger components.
+- Design components atomically and compose them into bigger components.
 - Do not export individual atoms, only components. This way we can limit design
 system to be used in too many way which can creating disjointed experiences.
 - Avoid external margins for atom components, it can be added on the wrapper
