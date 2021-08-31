@@ -434,10 +434,12 @@
 
 (fx/defn decrease-unviewed-count
   {:events [:chat/decrease-unviewed-count]}
-  [{:keys [db]} chat-id unseen-messages]
-  {:db (update-in db [:chats chat-id :unviewed-messages-count]
-                  (fn [count]
-                    ;; There might be some other requests being fired,
-                    ;; so we need to make sure the count has not been set to
-                    ;; 0 in the meantime
-                    (max (- count unseen-messages) 0)))})
+  [{:keys [db]} chat-id {:keys [count countWithMentions]}]
+  {:db (-> db
+           ;; There might be some other requests being fired,
+           ;; so we need to make sure the count has not been set to
+           ;; 0 in the meantime
+           (update-in [:chats chat-id :unviewed-messages-count]
+                      #(max (- % count) 0))
+           (update-in [:chats chat-id :unviewed-mentions-count]
+                      #(max (- % countWithMentions) 0)))})
