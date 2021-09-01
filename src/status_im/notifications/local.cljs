@@ -41,7 +41,7 @@
 (defn handle-notification-press [{{deep-link :deepLink} :userInfo
                                   interaction           :userInteraction
                                   :as data}]
-  (js/alert (pr-str data))
+  #_(js/alert (pr-str data))
   (when (and deep-link
              (or platform/ios?
                  (and platform/android? interaction)))
@@ -52,6 +52,7 @@
     (.addEventListener ^js pn-ios
                        notification-event-ios
                        (fn [notification]
+                         (js/alert (str (.getData ^js notification)))
                          (handle-notification-press {:userInfo (bean/bean (.getData ^js notification))})))
     (.addListener ^js react/device-event-emitter
                   notification-event-android
