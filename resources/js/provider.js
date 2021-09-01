@@ -135,8 +135,10 @@
             return web3Response(payload, [window.statusAppcurrentAccountAddress])
         } else if (payload.method == "eth_coinbase" && (typeof window.statusAppcurrentAccountAddress !== "undefined")) {
             return web3Response(payload, window.statusAppcurrentAccountAddress)
-        } else if (payload.method == "net_version" || payload.method == "eth_chainId"){
+        } else if (payload.method == "net_version"){
             return web3Response(payload, window.statusAppNetworkId)
+        } else if (payload.method == "eth_chainId"){
+            return web3Response(payload, "0x" + window.statusAppNetworkId.toString(16))
         } else if (payload.method == "eth_uninstallFilter"){
             return web3Response(payload, true);
         } else {
