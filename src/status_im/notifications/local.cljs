@@ -39,7 +39,9 @@
   (pn-android/present-local-notification notification))
 
 (defn handle-notification-press [{{deep-link :deepLink} :userInfo
-                                  interaction           :userInteraction}]
+                                  interaction           :userInteraction
+                                  :as data}]
+  (js/alert (pr-str data))
   (when (and deep-link
              (or platform/ios?
                  (and platform/android? interaction)))
