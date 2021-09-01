@@ -526,8 +526,8 @@
                     :name     "Numeraire"}
                    {:address  "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
                     :decimals 18
-                    :symbol   :PAX
-                    :name     "Paxos Standard"}
+                    :symbol   :USDP
+                    :name     "Pax Dollar"}
                    {:address  "0xEA26c4aC16D4a5A106820BC8AEE85fd0b7b2b664"
                     :decimals 18
                     :symbol   :QKC
