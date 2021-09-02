@@ -64,6 +64,7 @@
    [quo/text-input
     {:show-cancel         false
      :auto-correct        false
+     :keyboard-type       :visible-password
      :placeholder         (i18n/label :t/seed-phrase-placeholder)
      :monospace           true
      :multiline           true

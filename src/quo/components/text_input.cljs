@@ -146,7 +146,7 @@
     (fn [{:keys [label multiline error style input-style keyboard-type before after
                  cancel-label on-focus on-blur show-cancel accessibility-label
                  bottom-value secure-text-entry container-style get-ref on-cancel
-                 monospace]
+                 monospace auto-complete-type auto-correct]
           :or  {cancel-label "Cancel"}
           :as  props}]
       {:pre [(check-spec ::text-input props)]}
@@ -164,19 +164,30 @@
                            :on-press #(reset! visible true)}
 
                           :else after)
-            secure        (and (true? secure-text-entry)
-                               (or platform/android? (not @visible)))
+            secure        (and secure-text-entry (not @visible))
+            auto-complete (cond
+                            (= keyboard-type :visible-password)
+                            :off
+
+                            secure-text-entry
+                            :password
+
+                            :else
+                            auto-complete-type)
+            auto-correct  (and (not= keyboard-type :visible-password) (not secure-text-entry) auto-correct)
             on-cancel     (fn []
                             (when on-cancel
                               (on-cancel))
                             (blur))
             keyboard-type (cond
-                            (and platform/ios? (= keyboard-type "visible-password"))
-                            "default"
+                            (and platform/ios? (= keyboard-type :visible-password))
+                            :default
 
-                            ;; NOTE: Now switching dynamically brakes android input
-                            (and platform/android? secure-text-entry @visible)
-                            "visible-password"
+                            ; the correct approach on Android would be keep secure-text-entry on set keyboard type
+                            ; to visible-password. But until https://github.com/facebook/react-native/issues/27946
+                            ; is solved that's the second best way.
+                            (and platform/android? secure-text-entry)
+                            :default
 
                             :else
                             keyboard-type)]
@@ -200,6 +211,8 @@
                     :underline-color-android :transparent
                     :auto-capitalize         :none
                     :secure-text-entry       secure
+                    :auto-correct            auto-correct
+                    :auto-complete-type      auto-complete
                     :on-focus                (fn [evt]
                                                (when on-focus (on-focus evt))
                                                (when show-cancel
@@ -215,7 +228,7 @@
                      {:clear-button-mode :while-editing})
                    (dissoc props
                            :style :keyboard-type :on-focus :on-blur
-                           :secure-text-entry :ref :get-ref))]
+                           :secure-text-entry :ref :get-ref :auto-correct :auto-complete-type))]
            (when after
              [accessory-element after])]
           (when (and show-cancel

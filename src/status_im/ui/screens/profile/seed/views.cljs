@@ -104,7 +104,7 @@
                            (i18n/label :t/word-n {:number (inc idx)})]]
       :auto-focus        true
       :auto-correct      false
-      :keyboard-type     "visible-password"
+      :keyboard-type     :visible-password
       :monospace         true
       :on-change-text    #(re-frame/dispatch [:set-in [:my-profile/seed :word] %])
       :on-submit-editing next-handler

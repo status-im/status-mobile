@@ -94,6 +94,7 @@
              :bottom-value        40
              :multiline           true
              :auto-correct        false
+             :keyboard-type       :visible-password
              :monospace           true}]
            [react/view {:align-items :flex-end}
             [react/view {:flex-direction   :row
