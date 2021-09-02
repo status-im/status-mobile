@@ -578,41 +578,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-    @marks.testrail_id(5468)
-    @marks.medium
-    @marks.skip
-    # TODO: skip until profile picture change feature is enabled
-    def test_deny_camera_access_changing_profile_photo(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        profile = sign_in.profile_button.click()
-        profile.profile_picture.click()
-        profile.capture_button.click()
-        for _ in range(2):
-            profile.deny_button.click()
-        profile.element_by_translation_id("camera-access-error").wait_for_visibility_of_element(3)
-        profile.ok_button.click()
-        profile.profile_picture.click()
-        profile.capture_button.click()
-        profile.deny_button.wait_for_visibility_of_element(2)
-
-    @marks.testrail_id(5469)
-    @marks.medium
-    @marks.skip
-    # TODO: skip until profile picture change feature is enabled
-    def test_deny_device_storage_access_changing_profile_photo(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        profile = sign_in.profile_button.click()
-        profile.profile_picture.click()
-        profile.select_from_gallery_button.click()
-        profile.deny_button.click()
-        profile.element_by_translation_id(id="external-storage-denied", element_type='text').wait_for_visibility_of_element(3)
-        profile.ok_button.click()
-        profile.profile_picture.click()
-        profile.select_from_gallery_button.click()
-        profile.deny_button.wait_for_visibility_of_element(2)
-
 
 class TestProfileMultipleDevice(MultipleDeviceTestCase):
 

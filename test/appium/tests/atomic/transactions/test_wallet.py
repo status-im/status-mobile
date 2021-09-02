@@ -52,41 +52,25 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6237)
     @marks.high
-    @marks.flaky
     @marks.transaction
     def test_fetching_balance_after_offline(self):
         sender = wallet_users['E']
         sign_in = SignInView(self.driver)
 
-        sign_in.just_fyi('Restore account with funds offline')
+        sign_in.just_fyi('Checking if balance will be restored after going back online')
         sign_in.toggle_airplane_mode()
-        sign_in.recover_access(sender['passphrase'])
-        home = sign_in.get_home_view()
-
-        sign_in.just_fyi('Go back to online and check that balance is updated')
+        home = sign_in.recover_access(sender['passphrase'])
         sign_in.toggle_airplane_mode()
-        home.connection_offline_icon.wait_for_invisibility_of_element(100)
         wallet = home.wallet_button.click()
-        wallet.wait_balance_is_changed('ETH')
-        wallet.scan_tokens('STT')
-        initial_amount_STT = wallet.get_asset_amount_by_name('STT')
+        [wallet.wait_balance_is_changed(asset) for asset in ("ETH", "STT")]
+        self.driver.reset()
 
-        sign_in.just_fyi('Send some tokens to other account')
-        recipient = "0x" + basic_user['address']
-        sending_amount = wallet.get_unique_amount()
-        asset = 'STT'
-        wallet.accounts_status_account.click_until_presence_of_element(wallet.send_transaction_button)
-        wallet.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
-                                     sign_transaction=True)
+        sign_in.just_fyi('Keycard: checking if balance will be restored after going back online')
         sign_in.toggle_airplane_mode()
-        self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, token=True)
-
-        sign_in.just_fyi('Change that balance is updated')
+        sign_in.recover_access(sender['passphrase'], keycard=True)
         sign_in.toggle_airplane_mode()
-
-        sign_in.just_fyi('Check that transaction is appeared in transaction history')
-        wallet.wait_balance_is_changed('STT', initial_amount_STT)
-        wallet.find_transaction_in_history(amount=sending_amount, asset='STT')
+        wallet = home.wallet_button.click()
+        [wallet.wait_balance_is_changed(asset) for asset in ("ETH", "STT")]
 
     @marks.testrail_id(5461)
     @marks.medium
@@ -242,60 +226,61 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.transaction
     @marks.medium
     def test_send_funds_between_accounts_in_multiaccount_instance(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        wallet_view = sign_in_view.wallet_button.click()
-        status_account_address = wallet_view.get_wallet_address()[2:]
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        wallet = sign_in.wallet_button.click()
+        status_account_address = wallet.get_wallet_address()[2:]
         self.network_api.get_donate(status_account_address, external_faucet=True)
-        wallet_view.wait_balance_is_changed()
-        account_name = 'subaccount'
-        wallet_view.add_account(account_name)
+        wallet.wait_balance_is_changed()
 
-        wallet_view.just_fyi("Send transaction to new account")
-        wallet_view.accounts_status_account.click()
+        account_name = 'subaccount'
+        wallet.add_account(account_name)
+
+        wallet.just_fyi("Send transaction to new account")
+        wallet.accounts_status_account.click()
         initial_balance = self.network_api.get_balance(status_account_address)
 
         transaction_amount = '0.003%s' % str(random.randint(10000, 99999)) + '1'
-        wallet_view.send_transaction(account_name=account_name,
+        wallet.send_transaction(account_name=account_name,
                                      amount=transaction_amount)
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
         self.network_api.verify_balance_is_updated(str(initial_balance), status_account_address)
 
-        wallet_view.just_fyi("Verifying previously sent transaction in new account")
-        wallet_view.close_button.click()
-        wallet_view.get_account_by_name(account_name).click()
-        wallet_view.send_transaction_button.click()
-        wallet_view.close_send_transaction_view_button.click()
-        balance_after_receiving_tx = float(wallet_view.get_asset_amount_by_name('ETH'))
+        wallet.just_fyi("Verifying previously sent transaction in new account")
+        wallet.close_button.click()
+        wallet.get_account_by_name(account_name).click()
+        wallet.send_transaction_button.click()
+        wallet.close_send_transaction_view_button.click()
+        balance_after_receiving_tx = float(wallet.get_asset_amount_by_name('ETH'))
         expected_balance = self.network_api.get_rounded_balance(balance_after_receiving_tx, transaction_amount)
         if balance_after_receiving_tx != expected_balance:
             self.driver.fail('New account balance %s does not match expected %s after receiving a transaction' % (
                 balance_after_receiving_tx, transaction_amount))
 
-        wallet_view.just_fyi("Sending eth from new account to main account")
+        wallet.just_fyi("Sending eth from new account to main account")
         updated_balance = self.network_api.get_balance(status_account_address)
         transaction_amount_1 = round(float(transaction_amount) * 0.2, 12)
-        wallet_view.send_transaction(account_name=wallet_view.status_account_name,
+        wallet.send_transaction(account_name=wallet.status_account_name,
                                                         amount=transaction_amount_1,
                                                         default_gas_price=True)
-        wallet_view.close_button.click()
-        sub_account_address = wallet_view.get_wallet_address(account_name)[2:]
+        wallet.close_button.click()
+        sub_account_address = wallet.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
-        wallet_view.find_transaction_in_history(amount=transaction_amount)
-        wallet_view.find_transaction_in_history(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
+        wallet.find_transaction_in_history(amount=transaction_amount)
+        wallet.find_transaction_in_history(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
 
-        wallet_view.just_fyi("Check transactions on subaccount")
+        wallet.just_fyi("Check transactions on subaccount")
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
 
-        wallet_view.just_fyi("Verify total ETH on main wallet view")
+        wallet.just_fyi("Verify total ETH on main wallet view")
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1)
         self.network_api.verify_balance_is_updated((updated_balance + transaction_amount_1), status_account_address)
-        wallet_view.close_button.click()
+        wallet.close_button.click()
         balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000
         balance_of_status_account = float(self.network_api.get_balance(status_account_address)) / 1000000000000000000
-        wallet_view.scan_tokens()
-        total_eth_from_two_accounts = float(wallet_view.get_asset_amount_by_name('ETH'))
+        wallet.scan_tokens()
+        total_eth_from_two_accounts = float(wallet.get_asset_amount_by_name('ETH'))
         expected_balance = self.network_api.get_rounded_balance(total_eth_from_two_accounts,
                                                                 (balance_of_status_account + balance_of_sub_account))
 

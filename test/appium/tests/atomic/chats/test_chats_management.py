@@ -76,11 +76,10 @@ class TestChatManagement(SingleDeviceTestCase):
             if home.get_chat_from_home_view(chat_name).is_element_displayed():
                 self.errors.append('Deleted %s is shown after re-login, but the chat has been deleted' % chat_name)
 
-        # TODO: blocked due to #11683 - enable after fix
-        # sign_in.just_fyi('Rejoin public chat and check that messages are fetched again')
-        # public_chat = home.join_public_chat(public[1:])
-        # if not public_chat.chat_element_by_text(messages[1]).is_element_displayed(20):
-        #     self.errors.append('Messages are not fetched when rejoining public chat after deleting')
+        sign_in.just_fyi('Rejoin public chat and check that messages are fetched again')
+        public_chat = home.join_public_chat(public[1:])
+        if not public_chat.chat_element_by_text(messages[1]).is_element_displayed(20):
+            self.errors.append('Messages are not fetched when rejoining public chat after deleting')
 
         self.errors.verify_no_errors()
 

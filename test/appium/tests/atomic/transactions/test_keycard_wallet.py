@@ -29,42 +29,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.network_api.find_transaction_by_hash(transaction)
 
 
-    @marks.testrail_id(6290)
-    @marks.high
-    @marks.flaky
-    @marks.transaction
-    def test_keycard_fetching_balance_after_offline(self):
-        sender = transaction_senders['F']
-        sign_in = SignInView(self.driver)
-        sign_in.set_device_to_offline()
-
-        sign_in.just_fyi('Restore account with funds offline')
-        home = sign_in.recover_access(sender['passphrase'], keycard=True)
-
-        sign_in.just_fyi('Go back to online and check that balance is updated')
-        sign_in.set_network_to_cellular_only()
-        home.continue_syncing_button.wait_and_click()
-        home.connection_offline_icon.wait_for_invisibility_of_element(300)
-        wallet = home.wallet_button.click()
-        wallet.wait_balance_is_changed('ETH')
-        wallet.wait_balance_is_changed('STT')
-
-        sign_in.just_fyi('Send some tokens to other account')
-        recipient = "0x" + basic_user['address']
-        sending_amount = wallet.get_unique_amount()
-        asset = 'STT'
-        wallet.accounts_status_account.click_until_presence_of_element(wallet.send_transaction_button)
-        initial_amount_STT = wallet.get_asset_amount_by_name('STT')
-        wallet.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
-                                     sign_transaction=True, keycard=True)
-        sign_in.set_device_to_offline()
-        self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, token=True)
-
-        sign_in.just_fyi('Change that balance is updated and transaction is appeared in history')
-        sign_in.set_network_to_cellular_only()
-        wallet.wait_balance_is_changed('STT', initial_amount_STT)
-        wallet.find_transaction_in_history(amount=sending_amount, asset='STT')
-
     @marks.testrail_id(6291)
     @marks.critical
     @marks.transaction

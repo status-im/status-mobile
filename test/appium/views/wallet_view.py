@@ -158,12 +158,9 @@ class WalletView(BaseView):
             elif self.asset_by_name(asset).is_element_present() and self.get_asset_amount_by_name(asset) == initial_balance:
                 if scan_tokens:
                     self.scan_tokens()
-                if not self.transaction_history_button.is_element_displayed():
-                    self.wallet_account_by_name(self.status_account_name).click()
                 if (counter/60).is_integer():
                     self.pull_to_refresh()
                     counter+=20
-                self.wallet_button.double_click()
                 counter += 10
                 time.sleep(10)
                 self.driver.info('*Waiting %ss for %s updated balance*' % (counter,asset))
@@ -299,7 +296,7 @@ class WalletView(BaseView):
         return send_transaction_view
 
     def find_transaction_in_history(self, amount, asset='ETH', account_name=None, return_hash=False):
-        if account_name == None:
+        if account_name is None:
             account_name = self.status_account_name
         self.driver.info('**Finding %s %s transaction for %s**' % (amount, asset, account_name))
         if not self.transaction_history_button.is_element_displayed():

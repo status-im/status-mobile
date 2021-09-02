@@ -777,6 +777,11 @@ class ChatView(BaseView):
         self.chat_message_input.send_keys(message_to_update)
         self.send_message_button.click()
 
+    def delete_message_in_chat(self, message):
+        self.driver.info("**Looking for message '%s' to delete it**" % message)
+        self.element_by_text_part(message).long_press_element()
+        self.element_by_translation_id("delete").click()
+
     def copy_message_text(self, message_text):
         self.driver.info("**Copying '%s' message via long press**" % message_text)
         self.element_by_text_part(message_text).long_press_element()

@@ -555,9 +555,10 @@ class TestCreateAccount(SingleDeviceTestCase):
         profile.profile_button.double_click()
         profile.keycard_button.scroll_and_click()
         profile.change_pin_button.click()
-        if not home.element_by_translation_id("keycard-reset-passcode").is_element_displayed():
+        keycard.enter_default_pin()
+        if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed():
             self.driver.fail("No reset card flow is shown for frozen card")
-        home.element_by_text('reset with mnemonic').click()
+        home.element_by_translation_id("keycard-is-frozen-factory-reset").click()
         sign_in.seedphrase_input.set_value(transaction_senders['A']['passphrase'])
         sign_in.next_button.click()
         if not home.element_by_translation_id("seed-key-uid-mismatch").is_element_displayed():

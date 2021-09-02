@@ -17,13 +17,11 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1 = device_1.recover_access(passphrase=sender['passphrase'], keycard=True)
         home_2 = device_2.create_user(keycard=True)
         recipient_public_key, recipient_username = home_2.get_public_key_and_username(return_username=True)
-        wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
-        for wallet in (wallet_1, wallet_2):
-            wallet.home_button.click()
+        home_2.home_button.click()
 
         chat_1 = home_1.add_contact(recipient_public_key)
         amount = chat_1.get_unique_amount()
-        account_name = wallet_1.status_account_name
+        account_name = chat_1.status_account_name
 
         home_1.just_fyi('Send %s ETH in 1-1 chat and check it for sender and receiver: Address requested' % amount)
         chat_1.commands_button.click()
@@ -67,18 +65,15 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         if updated_timestamp_sender == timestamp_sender:
             self.errors.append("Timestamp of message is not updated after signing transaction")
 
-        chat_1.wallet_button.click()
+        wallet_1 = chat_1.wallet_button.click()
         wallet_1.find_transaction_in_history(amount=amount)
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
         wallet_1.home_button.click(desired_view='chat')
 
         home_1.just_fyi("Check 'Confirmed' state for sender and receiver(use pull-to-refresh to update history)")
-        chat_2.wallet_button.click()
+        wallet_2 = chat_2.wallet_button.click()
         wallet_2.find_transaction_in_history(amount=amount)
-        wallet_2.home_button.click(desired_view="chat")
-        [message.transaction_status.wait_for_element_text(message.confirmed, 60) for message in
-         (sender_message, receiver_message)]
-
+        sender_message.transaction_status.wait_for_element_text(sender_message.confirmed, 120)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6294)
@@ -100,6 +95,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         home_2 = device_2.recover_access(passphrase=sender['passphrase'], keycard=True, enable_notifications=True)
         wallet_2 = home_2.wallet_button.click()
+        initial_amount_STT = wallet_2.get_asset_amount_by_name('STT')
         wallet_2.home_button.click()
 
         device_2.just_fyi('Add recipient to contact and send 1 message')
@@ -141,16 +137,23 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_message = chat_2_sender_message.sign_and_send.click()
         send_message.next_button.click()
         send_message.sign_transaction(keycard=True)
-        chat_2_sender_message.transaction_status.wait_for_element_text(chat_2_sender_message.pending, wait_time=60)
+        chat_1.toggle_airplane_mode()
 
-        # TODO: blocked because of #12256
-        # home_2.just_fyi('Check that transaction message is updated with new status after offline')
-        # chat_2.toggle_airplane_mode()
-        # self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, token=True)
-        # chat_2.toggle_airplane_mode()
-        # chat_1_request_message.transaction_status.wait_for_element_text(chat_1_request_message.confirmed, wait_time=60)
-        # [message.transaction_status.wait_for_element_text(message.confirmed, wait_time=60) for message in
-        #  (chat_2_sender_message, chat_1_request_message)]
+        home_2.just_fyi('Check that transaction message is updated with new status after offline')
+        [chat.toggle_airplane_mode() for chat in (chat_1, chat_2)]
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, token=True)
+        for home in (home_1, home_2):
+            home.toggle_airplane_mode()
+            home.home_button.double_click()
+        home_1.get_chat(sender['username']).click()
+        home_2.get_chat(recipient_username).click()
+        chat_2_sender_message.transaction_status.wait_for_element_text(chat_2_sender_message.confirmed, wait_time=120)
+
+        home_1.just_fyi('Check that can find tx in history and balance is updated after offline')
+        [home.wallet_button.click() for home in (home_1, home_2)]
+        wallet_2.wait_balance_is_changed('STT', initial_amount_STT)
+        wallet_1.wait_balance_is_changed('STT')
+        [wallet.find_transaction_in_history(amount=amount, asset='STT') for wallet in (wallet_1, wallet_2)]
         self.errors.verify_no_errors()
 
 

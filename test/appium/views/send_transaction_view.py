@@ -21,15 +21,6 @@ class ChooseRecipientButton(Button):
         return self.navigate()
 
 
-class GasPriceInput(EditBox):
-    def __init__(self, driver):
-        super(GasPriceInput, self).__init__(driver, prefix="(", translation_id="gas-limit",
-                                            suffix="/..//android.widget.EditText)[2]")
-
-    @property
-    def text(self):
-        return self.find_element().text
-
 
 class UpdateFeeButton(Button):
     def __init__(self, driver):
@@ -89,15 +80,10 @@ class SendTransactionView(BaseView):
         self.validation_error_element = Text(self.driver, xpath="//*[@content-desc='custom-gas-fee']/../android.view.ViewGroup//*[@content-desc='icon']")
 
         self.network_fee_button = Button(self.driver, accessibility_id="custom-gas-fee")
+        self.gas_limit_input = EditBox(self.driver, accessibility_id="gas-amount-limit")
+        self.per_gas_tip_limit_input = EditBox(self.driver, accessibility_id="per-gas-tip-limit")
+        self.per_gas_price_limit_input = EditBox(self.driver, accessibility_id="per-gas-tip-limit")
 
-        ### Old tx interface
-        self.transaction_fee_button = Button(self.driver, accessibility_id="transaction-fee-button")
-        self.transaction_fee_total_value = Text(self.driver, translation_id="wallet-transaction-total-fee", suffix="//following::android.widget.TextView[1]")
-        self.gas_limit_input = EditBox(self.driver, prefix="(", translation_id="gas-limit", suffix="/..//android.widget.EditText)[1]")
-        self.gas_price_input = GasPriceInput(self.driver)
-        self.total_fee_input = EditBox(self.driver, translation_id="wallet-transaction-total-fee", suffix="/following-sibling::android.widget.TextView")
-        self.update_fee_button = UpdateFeeButton(self.driver)
-        #####
 
 
         self.sign_transaction_button = Button(self.driver, accessibility_id="send-transaction-bottom-sheet")

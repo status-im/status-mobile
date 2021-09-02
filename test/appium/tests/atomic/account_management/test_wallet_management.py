@@ -118,9 +118,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         web_view = wallet.get_webview_view()
         web_view.wait_for_d_aap_to_load(10)
         wallet.swipe_by_custom_coordinates(0.5,0.8,0.5,0.7)
-        wallet.element_by_text('Sign In').wait_and_click(60)
-        if not wallet.allow_button.is_element_displayed(40):
-            self.errors.append('Can not sign in in OpenSea dapp')
+        wallet.element_by_text('Sign In').wait_for_element(60)
+        wallet.element_by_text('Sign In').click_until_presence_of_element(wallet.allow_button)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5341)
