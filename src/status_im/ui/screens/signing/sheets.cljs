@@ -112,39 +112,42 @@
        :margin-top        4
        :margin-bottom     26}
       [quo/text-input
-       {:label          (i18n/label :t/gas-amount-limit)
-        :error          (:error gas-edit)
-        :default-value  (:value gas-edit)
-        :on-change-text #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :gas %])
-        :show-cancel    false}]]
+       {:label               (i18n/label :t/gas-amount-limit)
+        :accessibility-label :gas-amount-limit
+        :error               (:error gas-edit)
+        :default-value       (:value gas-edit)
+        :on-change-text      #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :gas %])
+        :show-cancel         false}]]
      [react/view
       {:margin-horizontal 16
        :margin-top        4
        :margin-bottom     26}
       [quo/text-input
-       {:label          (i18n/label :t/per-gas-tip-limit)
-        :error          (or (:error max-priority-fee-per-gas-edit)
-                            (get-in max-priority-fee-per-gas-edit [:fee-error :label]))
-        :default-value  (str (:value max-priority-fee-per-gas-edit))
-        :on-change-text #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxPriorityFeePerGas %])
-        :show-cancel    false
-        :after          {:component [quo/text
-                                     {:style {:color (quo-colors/get-color :text-02)}}
-                                     (i18n/label :t/gwei)]}}]]
+       {:label               (i18n/label :t/per-gas-tip-limit)
+        :accessibility-label :per-gas-tip-limit
+        :error               (or (:error max-priority-fee-per-gas-edit)
+                                 (get-in max-priority-fee-per-gas-edit [:fee-error :label]))
+        :default-value       (str (:value max-priority-fee-per-gas-edit))
+        :on-change-text      #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxPriorityFeePerGas %])
+        :show-cancel         false
+        :after               {:component [quo/text
+                                          {:style {:color (quo-colors/get-color :text-02)}}
+                                          (i18n/label :t/gwei)]}}]]
      [react/view
       {:margin-horizontal 16
        :margin-top        4
        :margin-bottom     12}
       [quo/text-input
-       {:label          (i18n/label :t/per-gas-price-limit)
-        :error          (or (:error max-fee-per-gas-edit)
-                            (get-in max-fee-per-gas-edit [:fee-error :label]))
-        :default-value  (str (:value max-fee-per-gas-edit))
-        :on-change-text #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxFeePerGas %])
-        :show-cancel    false
-        :after          {:component [quo/text
-                                     {:style {:color (quo-colors/get-color :text-02)}}
-                                     (i18n/label :t/gwei)]}}]]
+       {:label               (i18n/label :t/per-gas-price-limit)
+        :accessibility-label :per-gas-price-limit
+        :error               (or (:error max-fee-per-gas-edit)
+                                 (get-in max-fee-per-gas-edit [:fee-error :label]))
+        :default-value       (str (:value max-fee-per-gas-edit))
+        :on-change-text      #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxFeePerGas %])
+        :show-cancel         false
+        :after               {:component [quo/text
+                                          {:style {:color (quo-colors/get-color :text-02)}}
+                                          (i18n/label :t/gwei)]}}]]
      [react/view {:margin-vertical  12
                   :height           1
                   :background-color colors/gray-lighter}]
@@ -187,10 +190,11 @@
              :content-height 270}])}
        "" #_(i18n/label :t/see-suggestions)]
       [quo/button
-       {:type     :primary
-        :disabled error?
-        :on-press #(re-frame/dispatch [:signing.edit-fee.ui/submit])
-        :theme    :accent}
+       {:type                :primary
+        :accessibility-label :save-fees
+        :disabled            error?
+        :on-press            #(re-frame/dispatch [:signing.edit-fee.ui/submit])
+        :theme               :accent}
        (i18n/label :t/save)]]]))
 
 (defn fee-bottom-sheet-eip1559 [fee-display-symbol]

@@ -39,7 +39,6 @@
             [status-im.chat.models.mentions :as mentions]
             [status-im.notifications.core :as notifications]
             [status-im.utils.currency :as currency]
-            [status-im.signing.eip1559 :as eip1559]
             [clojure.set :as clojure.set]
             [status-im.ui.components.colors :as colors]))
 
@@ -2686,14 +2685,14 @@
  (fn [[_ address] _]
    [(re-frame/subscribe [:signing/tx])
     (re-frame/subscribe [:balance address])])
- (fn [[{:keys [amount token gas gasPrice approve? gas-error-message]} balance]]
-   (when-not (eip1559/sync-enabled?)
+ (fn [[{:keys [amount token gas gasPrice maxFeePerGas approve? gas-error-message]} balance]]
+   (let [gas-price (or maxFeePerGas gasPrice)]
      (if (and amount token (not approve?))
        (let [amount-bn (money/formatted->internal (money/bignumber amount) (:symbol token) (:decimals token))
              amount-error (or (get-amount-error amount (:decimals token))
                               (get-sufficient-funds-error balance (:symbol token) amount-bn))]
-         (merge amount-error (get-sufficient-gas-error gas-error-message balance (:symbol token) amount-bn gas gasPrice)))
-       (get-sufficient-gas-error gas-error-message balance nil nil gas gasPrice)))))
+         (merge amount-error (get-sufficient-gas-error gas-error-message balance (:symbol token) amount-bn gas gas-price)))
+       (get-sufficient-gas-error gas-error-message balance nil nil gas gas-price)))))
 
 (re-frame/reg-sub
  :wallet.send/prepare-transaction-with-balance
