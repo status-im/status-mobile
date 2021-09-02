@@ -178,7 +178,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     [SSZipArchive createZipFileAtPath:zipFile.path withContentsOfDirectory:logsFolderName.path];
     [fileManager removeItemAtPath:logsFolderName.path error:nil];
 
-    callback(@[zipFile.path]);
+    callback(@[zipFile.absoluteString]);
 }
 
 //////////////////////////////////////////////////////////////////// addPeer

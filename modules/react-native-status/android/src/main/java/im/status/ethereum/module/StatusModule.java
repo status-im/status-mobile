@@ -693,7 +693,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             final Boolean zipped = zip(new File[]{dbFile, gethLogFile, statusLogFile}, zipFile, errorList);
             if (zipped && zipFile.exists()) {
                 zipFile.setReadable(true, false);
-                callback.invoke(zipFile.getAbsolutePath());
+                Uri extUri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", zipFile);
+                callback.invoke(extUri.toString());
             } else {
                 Log.d(TAG, "File " + zipFile.getAbsolutePath() + " does not exist");
             }
