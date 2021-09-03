@@ -688,7 +688,7 @@
  :account-by-address
  :<- [:multiaccount/accounts]
  (fn [accounts [_ address]]
-   (when (and (string? address))
+   (when (string? address)
      (some #(when (= (string/lower-case (:address %))
                      (string/lower-case address)) %) accounts))))
 
@@ -1234,7 +1234,7 @@
  :<- [:chats/edit-message]
  (fn [[disconnected? {:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit]]
    (let [sending-image (seq sending-image)]
-     {:send          (and (not (or processing disconnected?)))
+     {:send          (not (or processing disconnected?))
       :stickers      (and mainnet?
                           (not sending-image)
                           (not reply))
