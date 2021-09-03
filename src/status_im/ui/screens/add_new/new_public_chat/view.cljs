@@ -35,12 +35,12 @@
     :error               error}])
 
 (defn render-topic [topic]
-  ^{:key topic}
   [react/touchable-highlight {:on-press            #(start-chat topic)
                               :accessibility-label :chat-item}
-   [react/view {:padding-right 8 :padding-vertical 8}
-    [react/view {:border-color colors/gray-lighter :border-radius 36 :border-width 1 :padding-horizontal 8 :padding-vertical 5}
-     [react/text {:style {:color colors/blue :typography :main-medium}} (str "#" topic)]]]])
+   [react/view {:border-color colors/gray-lighter :border-radius 36 :border-width 1 :padding-horizontal 8
+                :padding-vertical 5 :margin-right 8 :margin-vertical 8}
+    [react/text {:style {:color colors/blue :typography :main-medium}}
+     (str "#" topic)]]])
 
 (def lang-names {"es" "status-espanol"
                  "pt" "statusbrasil"

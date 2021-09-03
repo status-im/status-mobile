@@ -235,11 +235,9 @@
 
 (defn button []
   (if-not @(re-frame/subscribe [::invite.events/enabled])
-    [rn/view {:style {:align-items :center}}
-     [rn/view {:style (:tiny spacing/padding-vertical)}
-      [quo/button {:on-press            #(re-frame/dispatch [::invite.events/share-link nil])
-                   :accessibility-label :invite-friends-button}
-       (i18n/label :t/invite-friends)]]]
+    [quo/button {:on-press            #(re-frame/dispatch [::invite.events/share-link nil])
+                 :accessibility-label :invite-friends-button}
+     (i18n/label :t/invite-friends)]
     (let [pack   @(re-frame/subscribe [::invite.events/default-reward])
           tokens (transform-tokens pack)]
       [rn/view {:style {:align-items        :center

@@ -82,6 +82,7 @@
 (reg-root-key-sub :logged-in-since :logged-in-since)
 (reg-root-key-sub :link-previews-whitelist :link-previews-whitelist)
 (reg-root-key-sub :app-state :app-state)
+(reg-root-key-sub :home-items-show-number :home-items-show-number)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -120,6 +121,8 @@
 (reg-root-key-sub :group-chat/invitations :group-chat/invitations)
 (reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
 (reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
+(reg-root-key-sub :chats-home-list :chats-home-list)
+
 ;;browser
 (reg-root-key-sub :browsers :browser/browsers)
 (reg-root-key-sub :browser/options :browser/options)
@@ -771,17 +774,17 @@
 
 (re-frame/reg-sub
  :chats/chat
- :<- [:chats/active-chats]
+ :<- [::chats]
  (fn [chats [_ chat-id]]
    (get chats chat-id)))
 
 (re-frame/reg-sub
  :chats/by-community-id
- :<- [:chats/active-chats]
+ :<- [::chats]
  (fn [chats [_ community-id]]
    (->> chats
         (keep (fn [[_ chat]]
-                (when (= (:community-id chat) community-id)
+                (when (and (= (:community-id chat) community-id))
                   chat)))
         (sort-by :timestamp >))))
 
@@ -840,15 +843,11 @@
    (get ui-props prop)))
 
 (re-frame/reg-sub
- :chats/active-chats
+ :chats/home-list-chats
  :<- [::chats]
- (fn [chats]
-   (reduce-kv (fn [acc id {:keys [is-active profile-public-key timeline?] :as chat}]
-                (if (and is-active (not profile-public-key) (not timeline?))
-                  (assoc acc id chat)
-                  acc))
-              {}
-              chats)))
+ :<- [:chats-home-list]
+ (fn [[chats active-chats]]
+   (map #(get chats %) active-chats)))
 
 (re-frame/reg-sub
  :chat-by-id
@@ -1180,17 +1179,17 @@
 
 (re-frame/reg-sub
  :chats/unread-messages-number
- :<- [:chats/active-chats]
+ :<- [:chats/home-list-chats]
  (fn [chats _]
-   (reduce-kv (fn [{:keys [public other]} _ {:keys [unviewed-messages-count public?] :as chat}]
-                (if (or public? (chat.models/community-chat? chat))
-                  {:public (+ public unviewed-messages-count)
-                   :other other}
-                  {:other (+ other unviewed-messages-count)
-                   :public public}))
-              {:public 0
-               :other 0}
-              chats)))
+   (reduce (fn [{:keys [public other]} {:keys [unviewed-messages-count public?] :as chat}]
+             (if (or public? (chat.models/community-chat? chat))
+               {:public (+ public unviewed-messages-count)
+                :other other}
+               {:other (+ other unviewed-messages-count)
+                :public public}))
+           {:public 0
+            :other 0}
+           chats)))
 
 (re-frame/reg-sub
  :chats/cooldown-enabled?
@@ -1497,7 +1496,8 @@
  :<- [:search/filtered-chats]
  :<- [:communities/communities]
  :<- [:view-id]
- (fn [[search-filter filtered-chats communities view-id]]
+ :<- [:home-items-show-number]
+ (fn [[search-filter filtered-chats communities view-id home-items-show-number]]
    (if (= view-id :home)
      (let [communities-count (count communities)
            chats-count (count filtered-chats)
@@ -1511,7 +1511,7 @@
                                                 assoc :last? true)
                                         communities)
            res {:search-filter search-filter
-                :items         (concat communities-with-separator filtered-chats)}]
+                :items         (concat communities-with-separator (take home-items-show-number filtered-chats))}]
        (reset! memo-home-items res)
        res)
      ;;we want to keep data unchanged so react doesn't change component when we leave screen
@@ -1843,17 +1843,18 @@
 (re-frame/reg-sub
  :activity.center/notifications-grouped-by-date
  :<- [:activity.center/notifications]
- :<- [::chats]
- (fn [[{:keys [notifications]} chats]]
-   (let [supported-notifications (filter (fn [{:keys [type chat-id last-message]}]
-                                           (and
-                                            (or (and (= constants/activity-center-notification-type-one-to-one-chat type)
-                                                     (not (nil? last-message)))
-                                                (= constants/activity-center-notification-type-private-group-chat type)
-                                                (= constants/activity-center-notification-type-reply type)
-                                                (= constants/activity-center-notification-type-mention type))
-                                            (get chats chat-id))) notifications)]
-     (group-notifications-by-date (map #(assoc % :timestamp (or (:timestamp %) (:timestamp (or (:message %) (:last-message %))))) supported-notifications)))))
+ (fn [{:keys [notifications]}]
+   (let [supported-notifications
+         (filter (fn [{:keys [type last-message]}]
+                   (or (and (= constants/activity-center-notification-type-one-to-one-chat type)
+                            (not (nil? last-message)))
+                       (= constants/activity-center-notification-type-private-group-chat type)
+                       (= constants/activity-center-notification-type-reply type)
+                       (= constants/activity-center-notification-type-mention type)))
+                 notifications)]
+     (group-notifications-by-date
+      (map #(assoc % :timestamp (or (:timestamp %) (:timestamp (or (:message %) (:last-message %)))))
+           supported-notifications)))))
 
 ;;WALLET TRANSACTIONS ==================================================================================================
 
@@ -2458,7 +2459,7 @@
 
 (re-frame/reg-sub
  :search/filtered-chats
- :<- [:chats/active-chats]
+ :<- [:chats/home-list-chats]
  :<- [:contacts/contacts]
  :<- [:search/home-filter]
  (fn [[chats contacts search-filter]]
@@ -2468,13 +2469,9 @@
                            (partial filter-chat
                                     contacts
                                     (string/lower-case search-filter))
-                           (vals chats))
-                          (vals chats))]
-
-     (sort-by :timestamp > (filter (fn [{:keys [community-id]}]
-                                     ;; Ignore communities
-                                     (not community-id))
-                                   filtered-chats)))))
+                           chats)
+                          chats)]
+     (sort-by :timestamp > filtered-chats))))
 
 (defn extract-currency-attributes [currency]
   (let [{:keys [code display-name]} (val currency)]

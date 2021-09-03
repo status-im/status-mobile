@@ -33,14 +33,14 @@
                                 :nickname :localNickname})))
 
 (fx/defn fetch-contacts-rpc
-  [cofx on-success]
+  [_ on-success]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "contacts")
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch contacts" %)}]})
 
 (fx/defn save-contact
-  [cofx {:keys [public-key] :as contact} on-success]
+  [_ {:keys [public-key] :as contact} on-success]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "saveContact")
                      :params [(->rpc contact)]
                      :on-success #(do
@@ -49,7 +49,7 @@
                                       (on-success)))
                      :on-failure #(log/error "failed to save contact" public-key %)}]})
 
-(fx/defn block [cofx contact on-success]
+(fx/defn block [_ contact on-success]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "blockContact")
                      :params [(->rpc contact)]
                      :on-success on-success

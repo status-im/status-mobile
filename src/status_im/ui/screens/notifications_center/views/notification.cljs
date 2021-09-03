@@ -2,117 +2,16 @@
   (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
             [quo.core :as quo]
-            [clojure.string :as string]
-            [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.notifications-center.styles :as styles]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.utils.contenthash :as contenthash]
             [status-im.constants :as constants]
             [quo.design-system.colors :as colors]
             [status-im.ui.screens.home.views.inner-item :as home-item]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]))
-
-(defn mention-element [from]
-  (let [contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
-    (str (when-not (= (subs contact-name 0 1) "@") "@") contact-name)))
-
-(def max-notification-length 160)
-(def max-notification-lines 2)
-(def max-reply-lines 1)
-
-(defn add-parsed-to-message [acc style text-weight {:keys [type destination literal children]}]
-  (let [result (case type
-                 "paragraph"
-                 (reduce
-                  (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
-                    (if (>= length max-notification-length)
-                      (reduced acc-paragraph)
-                      (add-parsed-to-message acc-paragraph style text-weight parsed-child)))
-                  {:components [quo/text {:style style
-                                          :weight text-weight}]
-                   :length     0}
-                  children)
-
-                 "mention"
-                 {:components [quo/text {:style (merge style styles/mention-text)} [mention-element literal]]
-                  :length     4}                            ;; we can't predict name length so take the smallest possible
-
-                 "status-tag"
-                 (home-item/truncate-literal (str "#" literal))
-
-                 "link"
-                 (home-item/truncate-literal destination)
-
-                 (home-item/truncate-literal (string/replace literal #"\n" " ")))]
-    {:components (conj (:components acc) (:components result))
-     :length     (+ (:length acc) (:length result))}))
-
-(defn message-wrapper
-  ([] (message-wrapper 1 styles/notification-reply-text))
-  ([number-of-lines style]
-   [react/text-class {:style               style
-                      :number-of-lines     number-of-lines
-                      :ellipsize-mode      :tail
-                      :accessibility-label :chat-message-text}]))
-
-(defn render-message
-  "Render the preview of a message with a maximum length, maximum lines, style and font weight"
-  ([parsed-text] (render-message parsed-text max-notification-length max-notification-lines styles/notification-message-text :regular))
-  ([parsed-text max-length number-of-lines style text-weight]
-   (let [result
-         (reduce
-          (fn [{:keys [_ length] :as acc-text} new-text-chunk]
-            (if (>= length max-length)
-              (reduced acc-text)
-              (add-parsed-to-message acc-text style text-weight new-text-chunk)))
-          {:components (message-wrapper number-of-lines style)
-           :length     0}
-          parsed-text)]
-     (:components result))))
-
-(defn message-content-text [{:keys [content content-type community-id]} max-number-of-lines style text-weight]
-  [react/view
-   (cond
-
-     (not (and content content-type))
-     [react/text {:style               (merge
-                                        style
-                                        {:color colors/gray})
-                  :accessibility-label :no-messages-text}
-      (i18n/label :t/no-messages)]
-
-     (= constants/content-type-sticker content-type)
-     [react/image {:style  {:margin 1 :width 20 :height 20}
-                   ;;TODO (perf) move to event
-                   :source {:uri (contenthash/url (-> content :sticker :hash))}}]
-
-     (= constants/content-type-image content-type)
-     [react/text {:style               style
-                  :accessibility-label :no-messages-text}
-      (i18n/label :t/image)]
-
-     (= constants/content-type-audio content-type)
-     [react/text {:style               style
-                  :accessibility-label :no-messages-text}
-      (i18n/label :t/audio)]
-
-     (= constants/content-type-community content-type)
-     (let [{:keys [name]}
-           @(re-frame/subscribe [:communities/community community-id])]
-       [react/text {:style               style
-                    :accessibility-label :no-messages-text}
-        (i18n/label :t/community-message-preview {:community-name name})])
-
-     (string/blank? (:text content))
-     [react/text {:style style}
-      ""]
-
-     (:text content)
-     (render-message (:parsed-text content) max-notification-length max-number-of-lines style text-weight))])
 
 (defn activity-text-item [home-item opts]
   (let [{:keys [chat-id chat-name message last-message reply-message muted read group-chat timestamp type color]} home-item
@@ -155,7 +54,7 @@
        ;;TODO (perf) move to event
        (home-item/memo-timestamp timestamp)]
       [react/view {:style styles/notification-message-container}
-       [message-content-text (select-keys message [:content :content-type :community-id]) max-notification-lines styles/notification-message-text]
+       [home-item/message-content-text (select-keys message [:content :content-type]) false]
        (cond (= type constants/activity-center-notification-type-mention)
              [react/view {:style styles/group-info-container
                           :accessibility-label :chat-name-container}
@@ -190,4 +89,4 @@
                 :width  18
                 :height 18
                 :container-style styles/reply-icon}]
-              [message-content-text (select-keys reply-message [:content :content-type :community-id]) max-reply-lines styles/notification-reply-text :medium]])]]]))
+              [home-item/message-content-text (select-keys reply-message [:content :content-type]) false]])]]]))

@@ -21,22 +21,35 @@
 
 (fx/defn update-chats-in-app-db
   {:events [:chats-list/load-success]}
-  [{:keys [db]} new-chats]
-  (let [old-chats (:chats db)
-        chats (reduce (fn [acc {:keys [chat-id] :as chat}]
-                        (assoc acc chat-id chat))
-                      {}
-                      new-chats)
-        chats (merge old-chats chats)]
-    {:db (assoc db :chats chats
+  [{:keys [db]} ^js new-chats-js]
+  (let [{:keys [all-chats chats-home-list]}
+        (reduce (fn [acc ^js chat-js]
+                  (let [{:keys [chat-id profile-public-key timeline? community-id] :as chat}
+                        (data-store.chats/<-rpc-js chat-js)]
+                    (cond-> acc
+                      (and (not profile-public-key) (not timeline?) (not community-id))
+                      (update :chats-home-list conj chat-id)
+                      :always
+                      (assoc-in [:all-chats chat-id] chat))))
+                {:all-chats {}
+                 :chats-home-list #{}}
+                new-chats-js)]
+    {:db (assoc db :chats all-chats
+                :chats-home-list chats-home-list
                 :chats/loading? false)}))
 
-(fx/defn initialize-chats
-  "Initialize persisted chats on startup"
-  [cofx]
-  (data-store.chats/fetch-chats-rpc cofx {:on-success
-                                          #(re-frame/dispatch
-                                            [:chats-list/load-success %])}))
+(fx/defn load-chat-success
+  {:events [:chats-list/load-chat-success]}
+  [{:keys [db]} ^js chat]
+  (let [{:keys [chat-id] :as chat} (data-store.chats/<-rpc chat)]
+    {:db (update-in db [:chats chat-id] merge chat)}))
+
+(fx/defn load-chat
+  [_ chat-id]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "chat")
+                     :params [chat-id]
+                     :on-success #(re-frame/dispatch [:chats-list/load-chat-success %])
+                     :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})
 
 (fx/defn handle-failed-loading-messages
   {:events [::failed-loading-messages]}

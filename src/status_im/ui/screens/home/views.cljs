@@ -29,42 +29,40 @@
 
 (defn home-tooltip-view []
   [react/view (styles/chat-tooltip)
-   [react/view {:style {:flex-direction :row}}
-    [react/view {:flex 1}
-     [react/view {:style styles/empty-chats-header-container}
-      [react/view {:style {:width       66 :position :absolute :top -6 :background-color colors/white
-                           :align-items :center}}
-       [react/image {:source (resources/get-image :empty-chats-header)
-                     :style  {:width 50 :height 50}}]]]
-     [react/touchable-highlight
-      {:style               {:position :absolute :right  0  :top         0
-                             :width    44        :height 44 :align-items :center :justify-content :center}
-       :on-press            #(re-frame/dispatch [:multiaccounts.ui/hide-home-tooltip])
-       :accessibility-label :hide-home-button}
-      [icons/icon :main-icons/close-circle {:color colors/gray}]]]]
-   [react/view
-    [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]]
+   [react/view {:style {:width       66 :position :absolute :top -6 :background-color colors/white
+                        :align-items :center}}
+    [react/image {:source (resources/get-image :empty-chats-header)
+                  :style  {:width 50 :height 50}}]]
+   [react/touchable-highlight
+    {:style               {:position :absolute :right  0  :top         0
+                           :width    44        :height 44 :align-items :center :justify-content :center}
+     :on-press            #(re-frame/dispatch [:multiaccounts.ui/hide-home-tooltip])
+     :accessibility-label :hide-home-button}
+    [icons/icon :main-icons/close-circle {:color colors/gray}]]
+   [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]
    [invite/button]
-   [react/view {:align-items :center}
+   [react/view {:align-items :center :margin-bottom 16}
     [react/view {:style (styles/hr-wrapper)}]
     [react/i18n-text {:style (styles/or-text) :key :or}]]
-   [react/view {:margin-top 16}
-    [react/i18n-text {:style {:margin-horizontal 16
-                              :text-align        :center}
-                      :key   :follow-your-interests}]
-    [react/view {:style styles/tags-wrapper}
-     [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center}
-      (for [chat (new-public-chat/featured-public-chats)]
-        (new-public-chat/render-topic chat))]]
-    (when @(re-frame/subscribe [:communities/enabled?])
-      [react/view
-       [react/i18n-text {:style {:margin-horizontal 16
-                                 :text-align        :center}
-                         :key   :join-a-community}]
-       [react/view {:style styles/tags-wrapper}
-        [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center}
-         (for [community communities/featured]
-           (communities.views/render-featured-community community))]]])]])
+   [react/i18n-text {:style {:margin-horizontal 16
+                             :text-align        :center}
+                     :key   :follow-your-interests}]
+   [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center
+                :margin-top      10
+                :margin-bottom   18}
+    (for [chat (new-public-chat/featured-public-chats)]
+      ^{:key chat}
+      [new-public-chat/render-topic chat])]
+   (when @(re-frame/subscribe [:communities/enabled?])
+     [:<>
+      [react/i18n-text {:style {:margin-horizontal 16
+                                :text-align        :center}
+                        :key   :join-a-community}]
+      [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center
+                   :margin-top      10
+                   :margin-bottom   18}
+       (for [community communities/featured]
+         [communities.views/render-featured-community community])]])])
 
 (defn welcome-blank-page []
   [react/view {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :center}}
@@ -150,7 +148,7 @@
       [list/flat-list
        {:key-fn                       chat-list-key-fn
         :getItemLayout                get-item-layout
-        :initialNumToRender           5
+        :on-end-reached               #(re-frame/dispatch [:chat.ui/show-more-chats])
         :keyboard-should-persist-taps :always
         :data                         items
         :render-fn                    render-fn

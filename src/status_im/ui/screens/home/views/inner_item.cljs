@@ -10,105 +10,37 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.core :as utils]
             [status-im.utils.datetime :as time]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]))
 
-(defn mention-element [from]
-  @(re-frame/subscribe [:contacts/contact-name-by-identity from]))
+(defn preview-label [label-key]
+  [react/text {:style               styles/last-message-text
+               :accessibility-label :no-messages-text}
+   (i18n/label label-key)])
 
-;; if truncated subheader text is too short we won't get ellipsize at the end of text
-(def max-subheader-length 100)
-
-(defn truncate-literal [literal]
-  (let [size (min max-subheader-length (.-length literal))]
-    {:components (.substring literal 0 size)
-     :length     size}))
-
-(defn add-parsed-to-subheader [acc {:keys [type destination literal children]}]
-  (let [result (case type
-                 "paragraph"
-                 (reduce
-                  (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
-                    (if (>= length max-subheader-length)
-                      (reduced acc-paragraph)
-                      (add-parsed-to-subheader acc-paragraph parsed-child)))
-                  {:components [react/text-class]
-                   :length     0}
-                  children)
-
-                 "mention"
-                 {:components [react/text-class [mention-element literal]]
-                  :length     4}                            ;; we can't predict name length so take the smallest possible
-
-                 "status-tag"
-                 (truncate-literal (str "#" literal))
-
-                 "link"
-                 (truncate-literal destination)
-
-                 (truncate-literal literal))]
-    {:components (conj (:components acc) (:components result))
-     :length     (+ (:length acc) (:length result))}))
-
-(def subheader-wrapper
-  [react/text-class {:style               styles/last-message-text
-                     :number-of-lines     1
-                     :ellipsize-mode      :tail
-                     :accessibility-label :chat-message-text}])
-
-(defn render-subheader
-  "Render the preview of a last message to a maximum of max-subheader-length characters"
-  [parsed-text]
-  (let [result
-        (reduce
-         (fn [{:keys [_ length] :as acc-text} new-text-chunk]
-           (if (>= length max-subheader-length)
-             (reduced acc-text)
-             (add-parsed-to-subheader acc-text new-text-chunk)))
-         {:components subheader-wrapper
-          :length     0}
-         parsed-text)]
-    (:components result)))
-
-(defn message-content-text [{:keys [content content-type community-id]}]
-  [react/view {:position :absolute :left 72 :top 32 :right 80}
+(defn message-content-text [{:keys [content content-type]} absolute]
+  [react/view (when absolute {:position :absolute :left 72 :top 32 :right 80})
    (cond
-
      (not (and content content-type))
-     [react/text {:style               styles/last-message-text
-                  :accessibility-label :no-messages-text}
-      (i18n/label :t/no-messages)]
+     [preview-label :t/no-messages]
+
+     (and (= constants/content-type-text content-type)
+          (not (string/blank? (:text content))))
+     [react/text-class {:style               styles/last-message-text
+                        :number-of-lines     1
+                        :ellipsize-mode      :tail
+                        :accessibility-label :chat-message-text}
+      (:text content)]
 
      (= constants/content-type-sticker content-type)
-     [react/image {:style  {:margin 1 :width 20 :height 20}
-                   ;;TODO (perf) move to event
-                   :source {:uri (contenthash/url (-> content :sticker :hash))}}]
+     [preview-label :t/sticker]
 
      (= constants/content-type-image content-type)
-     [react/text {:style               styles/last-message-text
-                  :accessibility-label :no-messages-text}
-      (i18n/label :t/image)]
+     [preview-label :t/image]
 
      (= constants/content-type-audio content-type)
-     [react/text {:style               styles/last-message-text
-                  :accessibility-label :no-messages-text}
-      (i18n/label :t/audio)]
-
-     (= constants/content-type-community content-type)
-     (let [{:keys [name]}
-           @(re-frame/subscribe [:communities/community community-id])]
-       [react/text {:style               styles/last-message-text
-                    :accessibility-label :no-messages-text}
-        (i18n/label :t/community-message-preview {:community-name name})])
-
-     (string/blank? (:text content))
-     [react/text {:style styles/last-message-text}
-      ""]
-
-     (:text content)
-     (render-subheader (:parsed-text content)))])
+     [preview-label :t/audio])])
 
 (def memo-timestamp
   (memoize
@@ -186,5 +118,5 @@
        (memo-timestamp (if (pos? (:whisper-timestamp last-message))
                          (:whisper-timestamp last-message)
                          timestamp))]
-      [message-content-text (select-keys last-message [:content :content-type :community-id])]
+      [message-content-text (select-keys last-message [:content :content-type]) true]
       [unviewed-indicator home-item]]]))

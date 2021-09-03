@@ -22,7 +22,6 @@
               :lastClockValue 10
               :membershipUpdateEvents :events
               :unviewedMessagesCount 2
-              :active true
               :timestamp 2}
         expected-chat {:public? false
                        :group-chat true
@@ -37,7 +36,6 @@
                        :name "name"
                        :membership-update-events :events
                        :unviewed-messages-count 2
-                       :is-active true
                        :chat-id "chat-id"
                        :timestamp 2}]
     (testing "from-rpc"

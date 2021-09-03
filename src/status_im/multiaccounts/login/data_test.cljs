@@ -29,7 +29,6 @@
     :membership-updates        ()
     :unviewed-messages-count   0
     :last-message-content-type "text/plain"
-    :is-active                 true
     :last-message-content      {:chat-id "status" :text "darn typos...! "}
     :debug?                    false
     :group-chat                true
@@ -48,7 +47,6 @@
     :membership-updates        ()
     :unviewed-messages-count   0
     :last-message-content-type "text/plain"
-    :is-active                 true
     :last-message-content      {:chat-id "0x04173f7cdea0076a7998abb674cc79fe61337c42db77043c01d5b0f3e3ac1e5a45bca0c93bb9f3c3d38b7cc9a7337cd64f9f9b2114fe4bbdfe1ae2633ba14d8c9c"
                                 :text    "Hey"}
     :debug?                    false
@@ -68,7 +66,6 @@
     :membership-updates        ()
     :unviewed-messages-count   0
     :last-message-content-type "text/plain"
-    :is-active                 true
     :last-message-content      {:chat-id "0x04173f7cdea0076a7998abb674cc79fe61337c42db77043c01d5b0f3e3ac1e5a45bca0c93bb9f3c3d38b7cc9a7337cd64f9f9b2114fe4bbdfe1ae2633ba14d8c9c"
                                 :text    "Djndjd"}
     :debug?                    false

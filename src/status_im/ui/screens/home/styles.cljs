@@ -36,6 +36,7 @@
 
 (def no-chats-text
   {:margin-top        50
+   :margin-bottom     8
    :margin-horizontal 16
    :line-height       22
    :text-align        :center})

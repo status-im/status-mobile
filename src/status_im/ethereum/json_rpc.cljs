@@ -72,8 +72,9 @@
    "wakuext_removeFilters" {}
    "wakuext_sendContactUpdate" {}
    "wakuext_sendContactUpdates" {}
-   "wakuext_chats" {}
+   "wakuext_chatsPreview" {}
    "wakuext_activeChats" {}
+   "wakuext_chat" {}
    "wakuext_addSystemMessages" {}
    "wakuext_deleteMessagesFrom" {}
    "wakuext_deleteMessagesByChatID" {}

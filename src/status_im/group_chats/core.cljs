@@ -13,7 +13,7 @@
 (fx/defn navigate-chat-updated
   {:events [:navigate-chat-updated]}
   [cofx chat-id]
-  (when (get-in cofx [:db :chats chat-id :is-active])
+  (when (get-in cofx [:db :chats chat-id])
     (fx/merge cofx
               {:dispatch-later [{:ms 1000 :dispatch [:chat.ui/navigate-to-chat chat-id]}]}
               (navigation/pop-to-root-tab :chat-stack))))
@@ -59,7 +59,7 @@
 
 (fx/defn create-from-link
   [cofx {:keys [chat-id invitation-admin chat-name]}]
-  (if (get-in cofx [:db :chats chat-id :is-active])
+  (if (get-in cofx [:db :chats chat-id])
     {:dispatch-n [[:accept-all-activity-center-notifications-from-chat chat-id]
                   [:chat.ui/navigate-to-chat chat-id false]]}
     {::json-rpc/call [{:method     (json-rpc/call-ext-method "createGroupChatFromInvitation")

@@ -78,43 +78,44 @@
   (reagent/create-class
    {:display-name "activity-center"
     :component-did-mount #(re-frame/dispatch [:get-activity-center-notifications])
-    :reagent-render (fn []
-                      (let [notifications @(re-frame/subscribe [:activity.center/notifications-grouped-by-date])]
-                        [react/keyboard-avoiding-view {:style {:flex 1}
-                                                       :ignore-offset true}
-                         [topbar/topbar {:navigation {:on-press #(do
-                                                                   (reset-state)
-                                                                   (re-frame/dispatch [:navigate-back]))}
-                                         :title      (i18n/label :t/activity)}]
-                         (if (= (count notifications) 0)
-                           [react/view {:style {:flex 1
-                                                :justify-content :center
-                                                :align-items :center}}
-                            [quo/text {:color :secondary
-                                       :size :large
-                                       :align :center}
-                             (i18n/label :t/empty-activity-center)]]
-                           [:<>
-                            [filter-item]
-                            [list/section-list
-                             {:key-fn                       #(str (:timestamp %) (or (:chat-id %) (:id %)))
-                              :on-end-reached               #(re-frame/dispatch [:load-more-activity-center-notifications])
-                              :keyboard-should-persist-taps :always
-                              :sections                     notifications
-                              :render-fn                    render-fn
-                              :stickySectionHeadersEnabled false
-                              :render-section-header-fn
-                              (fn [{:keys [title]}]
-                                [quo/list-header title])}]
-                            (when (or @select-all (> (count @selected-items) 0))
-                              [toolbar/toolbar
-                               {:show-border? true
-                                :left         [quo/button {:type     :secondary
-                                                           :theme    :negative
-                                                           :accessibility-label :reject-and-delete-activity-center
-                                                           :on-press #(toolbar-action false)}
-                                               (i18n/label :t/reject-and-delete)]
-                                :right        [quo/button {:type     :secondary
-                                                           :accessibility-label :accept-and-add-activity-center
-                                                           :on-press #(toolbar-action true)}
-                                               (i18n/label :t/accept-and-add)]}])])]))}))
+    :reagent-render
+    (fn []
+      (let [notifications @(re-frame/subscribe [:activity.center/notifications-grouped-by-date])]
+        [react/keyboard-avoiding-view {:style {:flex 1}
+                                       :ignore-offset true}
+         [topbar/topbar {:navigation {:on-press #(do
+                                                   (reset-state)
+                                                   (re-frame/dispatch [:navigate-back]))}
+                         :title      (i18n/label :t/activity)}]
+         (if (= (count notifications) 0)
+           [react/view {:style {:flex 1
+                                :justify-content :center
+                                :align-items :center}}
+            [quo/text {:color :secondary
+                       :size :large
+                       :align :center}
+             (i18n/label :t/empty-activity-center)]]
+           [:<>
+            [filter-item]
+            [list/section-list
+             {:key-fn                       #(str (:timestamp %) (or (:chat-id %) (:id %)))
+              :on-end-reached               #(re-frame/dispatch [:load-more-activity-center-notifications])
+              :keyboard-should-persist-taps :always
+              :sections                     notifications
+              :render-fn                    render-fn
+              :stickySectionHeadersEnabled false
+              :render-section-header-fn
+              (fn [{:keys [title]}]
+                [quo/list-header title])}]
+            (when (or @select-all (> (count @selected-items) 0))
+              [toolbar/toolbar
+               {:show-border? true
+                :left         [quo/button {:type     :secondary
+                                           :theme    :negative
+                                           :accessibility-label :reject-and-delete-activity-center
+                                           :on-press #(toolbar-action false)}
+                               (i18n/label :t/reject-and-delete)]
+                :right        [quo/button {:type     :secondary
+                                           :accessibility-label :accept-and-add-activity-center
+                                           :on-press #(toolbar-action true)}
+                               (i18n/label :t/accept-and-add)]}])])]))}))
