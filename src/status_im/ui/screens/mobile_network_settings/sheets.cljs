@@ -69,6 +69,7 @@
      :accessibility-label "mobile-network-continue-syncing"
      :title    (i18n/label :t/mobile-network-continue-syncing)
      :subtitle (i18n/label :t/mobile-network-continue-syncing-details)
+     :subtitle-max-lines 2
      :icon     :main-icons/network
      :on-press #(hide-sheet-and-dispatch [:mobile-network/continue-syncing])}]
    [quo/list-item
@@ -93,6 +94,7 @@
     {:theme    :accent
      :title    (i18n/label :t/mobile-network-start-syncing)
      :subtitle (i18n/label :t/mobile-network-continue-syncing-details)
+     :subtitle-max-lines 2
      :icon     :main-icons/network
      :on-press #(re-frame/dispatch [:mobile-network/continue-syncing])}]
    [separator]

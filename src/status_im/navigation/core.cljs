@@ -272,7 +272,7 @@
                  {:component {:name    comp
                               :id      comp
                               :options (merge (cond-> (roots/status-bar-options)
-                                                (and platform/android? (not (colors/dark?)))
+                                                (and platform/android? (colors/dark?))
                                                 (assoc-in [:statusBar :translucent] true))
                                               {:layout  {:componentBackgroundColor (if platform/android?
                                                                                      (:backdrop @quo.colors/theme)
