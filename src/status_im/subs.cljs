@@ -1425,20 +1425,26 @@
  :<- [:chats/mentionable-contacts]
  :<- [:contacts/blocked-set]
  :<- [:multiaccount]
- (fn [[{:keys [chat-id users chat-type]} contacts blocked {:keys [name preferred-name public-key]}]]
-   (let [contacts-with-one-to-one (if (= chat-type constants/one-to-one-chat-type)
-                                    (assoc contacts chat-id (get contacts chat-id (-> chat-id
-                                                                                      contact.db/public-key->new-contact
-                                                                                      contact.db/enrich-contact)))
-                                    contacts)]
+ (fn [[{:keys [chat-id users contacts community-id chat-type] :as chat} mentionable-contacts blocked {:keys [name preferred-name public-key]}]]
+   (let [community-members @(re-frame/subscribe [:communities/community-members
+                                                 community-id])
+         contacts-with-one-to-one (if (= chat-type constants/one-to-one-chat-type)
+                                    (assoc mentionable-contacts chat-id (get mentionable-contacts chat-id (-> chat-id
+                                                                                                              contact.db/public-key->new-contact
+                                                                                                              contact.db/enrich-contact)))
+                                    mentionable-contacts)
+         members-left (into #{} (filter #(group-chat/member-removed? chat %) (keys users)))
+         filtered-contacts (select-keys contacts-with-one-to-one (if (nil? community-id)
+                                                                   (distinct (concat (seq contacts) (keys users) [chat-id]))
+                                                                   (keys community-members)))]
      (apply dissoc
             (-> users
-                (merge contacts-with-one-to-one)
+                (merge filtered-contacts)
                 (assoc public-key (mentions/add-searchable-phrases
                                    {:alias      name
                                     :name       (or preferred-name name)
                                     :public-key public-key})))
-            (conj blocked public-key)))))
+            (conj (concat blocked members-left) public-key)))))
 
 (re-frame/reg-sub
  :chat/mention-suggestions
