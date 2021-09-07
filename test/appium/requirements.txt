@@ -23,7 +23,7 @@ multidict==5.0.2
 namedlist==1.8
 numpy==1.19.4
 pbkdf2==1.3
-Pillow==8.1.0
+Pillow==8.3.2
 py==1.10.0
 py-ecc==5.1.0
 pycryptodome==3.9.9
