@@ -123,7 +123,7 @@ class TestDApps(SingleDeviceTestCase):
         profile_view.dapp_tab_button.click(desired_element_text='Accounts')
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
-        send_transaction_view.ok_got_it_button.click()
+        send_transaction_view.ok_got_it_button.wait_and_click()
         address = send_transaction_view.get_formatted_recipient_address(address)
         if not send_transaction_view.element_by_text(address).is_element_displayed():
             self.errors.append("Wallet address %s in not shown in 'From' on Send Transaction screen" % address)

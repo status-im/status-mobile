@@ -822,10 +822,10 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             message_to_send = symbol + message + symbol if 'quote' not in message else symbol + message
             chat_2.chat_message_input.send_keys(message_to_send)
             chat_2.send_message_button.click()
-            if not chat_2.chat_element_by_text(message).is_element_displayed():
+            if not chat_2.chat_element_by_text(message).is_element_displayed(30):
                 self.errors.append('%s is not displayed with markdown in public chat for the sender \n' % message)
 
-            if not chat_1.chat_element_by_text(message).is_element_displayed():
+            if not chat_1.chat_element_by_text(message).is_element_displayed(30):
                 self.errors.append('%s is not displayed with markdown in public chat for the recipient \n' % message)
 
         self.errors.verify_no_errors()

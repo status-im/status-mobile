@@ -79,11 +79,13 @@ class SendTransactionView(BaseView):
         self.set_max_button = Button(self.driver, translation_id="set-max")
         self.validation_error_element = Text(self.driver, xpath="//*[@content-desc='custom-gas-fee']/../android.view.ViewGroup//*[@content-desc='icon']")
 
+        # Network fee elements
         self.network_fee_button = Button(self.driver, accessibility_id="custom-gas-fee")
         self.gas_limit_input = EditBox(self.driver, accessibility_id="gas-amount-limit")
         self.per_gas_tip_limit_input = EditBox(self.driver, accessibility_id="per-gas-tip-limit")
-        self.per_gas_price_limit_input = EditBox(self.driver, accessibility_id="per-gas-tip-limit")
-
+        self.per_gas_price_limit_input = EditBox(self.driver, accessibility_id="per-gas-price-limit")
+        self.max_fee_text = Text(self.driver, xpath='//*[@text="Maximum fee:"]/following-sibling::android.widget.TextView[1]')
+        self.save_fee_button = Button(self.driver, accessibility_id="save-fees")
 
 
         self.sign_transaction_button = Button(self.driver, accessibility_id="send-transaction-bottom-sheet")
@@ -158,20 +160,19 @@ class SendTransactionView(BaseView):
     def get_validation_icon(self, field='Network fee'):
         return ValidationErrorOnSendTransaction(self.driver, field)
 
-    def get_values_from_send_transaction_bottom_sheet(self, gas=False):
+    def get_values_from_send_transaction_bottom_sheet(self):
         self.driver.info("**Getting values from send transaction bottom sheet**")
         data = {
             'amount': self.amount_edit_box.text,
             'asset': self.asset_text.text,
             'address':  self.enter_recipient_address_text.text
         }
-        if gas:
-            self.sign_transaction_button.click_until_presence_of_element(self.sign_with_password)
-            self.network_fee_button.click_until_presence_of_element(self.gas_limit_input)
-            data['gas_limit'] = self.gas_limit_input.text
-            data['gas_price'] = self.gas_price_input.text
-            self.cancel_button.click()
         return data
+
+    def get_network_fee_from_bottom_sheet(self):
+        self.driver.info("**Getting network fee from send transaction bottom sheet**")
+        return Text(self.driver, xpath="//*[@content-desc='custom-gas-fee']/android.widget.TextView[1]").text[0:-9]
+
 
     def add_to_favorites(self, name):
         self.driver.info("**Adding '%s' to favorite recipients**" % name)

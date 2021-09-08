@@ -556,7 +556,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         profile.keycard_button.scroll_and_click()
         profile.change_pin_button.click()
         keycard.enter_default_pin()
-        if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed():
+        if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed(30):
             self.driver.fail("No reset card flow is shown for frozen card")
         home.element_by_translation_id("keycard-is-frozen-factory-reset").click()
         sign_in.seedphrase_input.set_value(transaction_senders['A']['passphrase'])
