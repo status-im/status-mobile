@@ -27,9 +27,8 @@
 
 (def old-registrars
   {:mainnet "0xDB5ac1a559b02E12F29fC0eC0e37Be8E046DEF49"
-   ;;NOTE: can be enabled for testing builds
-   ;;:testnet "0x11d9F481effd20D76cEE832559bd9Aca25405841"
-   })
+   :testnet "0x11d9F481effd20D76cEE832559bd9Aca25405841"})
+
 
 (def registrars-cache (atom {}))
 

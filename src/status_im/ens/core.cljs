@@ -79,7 +79,7 @@
   [{:keys [db]} username state]
   (when (= username
            (get-in db [:ens/registration :username]))
-    {:db (assoc-in db [:ens/registration :state] state)}))
+    {:db (assoc-in db [:ens/registration :state] :connected-with-different-key)}))
 
 (fx/defn on-resolver-found
   {:events [::resolver-found]}
@@ -89,6 +89,7 @@
         {:keys [x y]} (ethereum/coordinates public-key)
         namehash (ens/namehash (str username (when-not custom-domain?
                                                ".stateofus.eth")))]
+    (println "resolver-contract" resolver-contract)
     (signing/eth-transaction-call
      cofx
      {:contract   resolver-contract
@@ -119,6 +120,7 @@
         registry-contract (get ens/ens-registries (ethereum/chain-keyword db))
         ens-name (str username (when-not custom-domain?
                                  ".stateofus.eth"))]
+    (println "registry-contract" registry-contract)
     (case state
       (:available :owned)
       (navigation/navigate-to-cofx cofx :ens-checkout {})
