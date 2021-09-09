@@ -166,7 +166,7 @@
                      [rn/touchable-opacity {:on-press #(>evt [:delete-community-category community-id id])}
                       [icons/icon :main-icons/delete-circle {:no-color true}]]
                      [icons/icon :main-icons/channel-category {:color colors/gray}])
-                   [rn/text {:style {:font-size 17 :margin-left 10}} name]]
+                   [rn/text {:style {:font-size 17 :margin-left 10 :color colors/black}} name]]
         :content  [rn/view
                    (for [chat (get chats id)]
                      (if edit
