@@ -6,7 +6,7 @@
             ["react-native-gesture-handler"
              :refer (TapGestureHandler PanGestureHandler LongPressGestureHandler
                                        PureNativeButton TouchableWithoutFeedback TouchableOpacity
-                                       TouchableHighlight
+                                       TouchableHighlight 
                                        createNativeWrapper State NativeViewGestureHandler
                                        FlatList ScrollView)]))
 

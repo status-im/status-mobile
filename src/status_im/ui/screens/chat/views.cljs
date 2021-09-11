@@ -240,22 +240,23 @@
                  idx
                  _
                  {:keys [group-chat public? current-public-key space-keeper chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
+
   [react/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
      [message-datemark/chat-datemark (:value message)]
      (if (= type :gap)
        [gap/gap message idx messages-list-ref false chat-id]
        ; message content
-       [message/chat-message
-        (assoc message
-               :incoming-group (and group-chat (not outgoing))
-               :group-chat group-chat
-               :public? public?
-               :current-public-key current-public-key
-               :show-input? show-input?
-               :message-pin-enabled message-pin-enabled
-               :edit-enabled edit-enabled)
-        space-keeper]))])
+        [message/chat-message
+         (assoc message
+                :incoming-group (and group-chat (not outgoing))
+                :group-chat group-chat
+                :public? public?
+                :current-public-key current-public-key
+                :show-input? show-input?
+                :message-pin-enabled message-pin-enabled
+                :edit-enabled edit-enabled)
+         space-keeper]))])
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 (def list-ref #(reset! messages-list-ref %))
