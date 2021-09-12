@@ -410,16 +410,25 @@
         :label    (i18n/label :t/delete)
         :id       :delete}]))))
 
-(defn translate-anim [translate-x-value translate-x-anim-value]
+
+(defn translate-anim [translate-x-to-value translate-x-anim-value]
   (animation/start
-   (animation/timing translate-x-anim-value {:toValue         translate-x-value
-                                             :duration        250
+   (animation/spring translate-x-anim-value {:toValue         translate-x-to-value
+                                             :duration        200
+                                             :easing          (.-ease ^js animation/easing)
                                              :useNativeDriver true})))
+
+(defn handle-swipe-gesture [translate-x-anim-value message outgoing]
+  #(when (and (< (-> ^js % .-nativeEvent.translationX) -50)
+              (not outgoing))
+     (translate-anim 50 translate-x-anim-value)
+     (re-frame/dispatch [:chat.ui/reply-to-message message])))
+
 
 (defn collapsible-text-message [{:keys [mentioned]} _]
   (let [collapsed?   (reagent/atom false)
         collapsible? (reagent/atom false)
-        translateX (animation/create-value 0)]
+        translate-x-anim-value (animation/create-value 0)]
     (fn [{:keys [content outgoing current-public-key public? pinned in-popover?] :as message} on-long-press modal]
       (let [max-height (when-not (or outgoing modal)
                          (if @collapsible?
@@ -437,52 +446,48 @@
                                   (on-long-press-fn on-long-press message content)))
             :disabled         in-popover?})
 
+         [gh/pan-gesture-handler {:onHandlerStateChange #(translate-anim 0 translate-x-anim-value)
+                                  :onGestureEvent #(when (and (< (-> ^js % .-nativeEvent.translationX) -50)
+                                                              (not outgoing))
+                                                     (translate-anim 50 translate-x-anim-value)
+                                                     (re-frame/dispatch [:chat.ui/reply-to-message message]))}
 
-         [gh/pan-gesture-handler {:onGestureHandler #(when-not outgoing
-                                                       (swap! translateX (.-nativeEvent.-translateX ^js %)))
-                                  :onHandlerStateChange #(when (and (< (-> ^js % .-nativeEvent.translationX) -50)
-                                                                    (not outgoing))
-                                                           (re-frame/dispatch [:chat.ui/reply-to-message message]))}
-
-          ;;[{:translateY (animated/mix animation 10 0)}]
-          ;;(reset! translateX (.-nativeEvent.-translateX ^js %))
-          ;;{:transform [{:translateX (reanimated/mix translate-anim 200 @translateX)}]}
-
-          [reanimated/view {:style {:transform [{:translateX (reanimated/mix translate-anim (animation/create-value 50) (animation/create-value 0))}]}}
-           [react/view {:style (style/message-view message)}
-            [react/view {:style      (style/message-view-content)
-                         :max-height max-height}
-             (let [response-to (:response-to content)]
-               [react/view {:on-layout
-                            #(when (and (> (.-nativeEvent.layout.height ^js %) max-message-height-px)
-                                        (not @collapsible?)
-                                        (not outgoing)
-                                        (not modal))
-                               (reset! collapsed? true)
-                               (reset! collapsible? true))}
-                (when (and (seq response-to) (:quoted-message message))
-                  [quoted-message response-to (:quoted-message message) outgoing current-public-key public? pinned])
-                [render-parsed-text-with-timestamp message (:parsed-text content)]])
-             (when-not @collapsed?
-               [message-timestamp message true])
-             (when (and @collapsible? (not modal))
-               (if @collapsed?
-                 (let [color (if pinned colors/pin-background (if mentioned colors/mentioned-background colors/blue-light))]
-                   [react/touchable-highlight
-                    {:on-press #(swap! collapsed? not)
-                     :style    {:position :absolute :bottom 0 :left 0 :right 0 :height 72}}
-                    [react/linear-gradient {:colors [(str color "00") color]
-                                            :start  {:x 0 :y 0} :end {:x 0 :y 0.9}}
-                     [react/view {:height         72 :align-self :center :justify-content :flex-end
-                                  :padding-bottom 10}
-                      [react/view (style/collapse-button)
-                       [icons/icon :main-icons/dropdown
-                        {:color colors/white}]]]]])
-                 [react/touchable-highlight {:on-press #(swap! collapsed? not)
-                                             :style    {:align-self :center :margin 5}}
-                  [react/view (style/collapse-button)
-                   [icons/icon :main-icons/dropdown-up
-                    {:color colors/white}]]]))]]]]]))))
+          [react/view
+           [react/animated-view {:style {:transform [{:translateX translate-x-anim-value}]}}
+            [react/view {:style (style/message-view message)}
+             [react/view {:style      (style/message-view-content)
+                          :max-height max-height}
+              (let [response-to (:response-to content)]
+                [react/view {:on-layout
+                             #(when (and (> (.-nativeEvent.layout.height ^js %) max-message-height-px)
+                                         (not @collapsible?)
+                                         (not outgoing)
+                                         (not modal))
+                                (reset! collapsed? true)
+                                (reset! collapsible? true))}
+                 (when (and (seq response-to) (:quoted-message message))
+                   [quoted-message response-to (:quoted-message message) outgoing current-public-key public? pinned])
+                 [render-parsed-text-with-timestamp message (:parsed-text content)]])
+              (when-not @collapsed?
+                [message-timestamp message true])
+              (when (and @collapsible? (not modal))
+                (if @collapsed?
+                  (let [color (if pinned colors/pin-background (if mentioned colors/mentioned-background colors/blue-light))]
+                    [react/touchable-highlight
+                     {:on-press #(swap! collapsed? not)
+                      :style    {:position :absolute :bottom 0 :left 0 :right 0 :height 72}}
+                     [react/linear-gradient {:colors [(str color "00") color]
+                                             :start  {:x 0 :y 0} :end {:x 0 :y 0.9}}
+                      [react/view {:height         72 :align-self :center :justify-content :flex-end
+                                   :padding-bottom 10}
+                       [react/view (style/collapse-button)
+                        [icons/icon :main-icons/dropdown
+                         {:color colors/white}]]]]])
+                  [react/touchable-highlight {:on-press #(swap! collapsed? not)
+                                              :style    {:align-self :center :margin 5}}
+                   [react/view (style/collapse-button)
+                    [icons/icon :main-icons/dropdown-up
+                     {:color colors/white}]]]))]]]]]]))))
 
 (defmethod ->message constants/content-type-text
   [message {:keys [on-long-press modal] :as reaction-picker}]
