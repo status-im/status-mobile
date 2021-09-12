@@ -168,6 +168,13 @@
 
     acc))
 
+(defn swipe-left-to-reply-anim [translate-x-to-value translate-x-anim-value]
+  (animation/start
+   (animation/spring translate-x-anim-value {:toValue         translate-x-to-value
+                                             :duration        200
+                                             :easing          (.-ease ^js animation/easing)
+                                             :useNativeDriver true})))
+
 (defn render-parsed-text [message tree]
   (reduce (fn [acc e] (render-block message acc e)) [:<>] tree))
 
@@ -332,28 +339,36 @@
    {:keys [on-long-press]}]
   (let [dimensions (reagent/atom [image-max-width image-max-height])
         visible (reagent/atom false)
-        uri (:image content)]
+        uri (:image content)
+        translate-x-anim-value (animation/create-value 0)]
     (react/image-get-size uri (image-set-size dimensions))
     (fn []
       (let [style-opts {:outgoing outgoing
                         :width    (first @dimensions)
                         :height   (second @dimensions)}]
-        [:<>
-         [preview/preview-image {:message  message
-                                 :visible  @visible
-                                 :on-close #(do (reset! visible false)
-                                                (reagent/flush))}]
-         [react/touchable-highlight {:on-press      (fn []
-                                                      (reset! visible true)
-                                                      (react/dismiss-keyboard!))
-                                     :on-long-press on-long-press
-                                     :disabled      in-popover?}
-          [react/view {:style               (style/image-message style-opts)
-                       :accessibility-label :image-message}
-           [react/image {:style       (dissoc style-opts :outgoing)
-                         :resize-mode :cover
-                         :source      {:uri uri}}
-            [react/view {:style (style/image-message-border style-opts)}]]]]]))))
+        [gh/pan-gesture-handler {:onHandlerStateChange #(swipe-left-to-reply-anim 0 translate-x-anim-value)
+                                 :onGestureEvent #(when (and (< (-> ^js % .-nativeEvent.translationX) -50)
+                                                             (not outgoing))
+                                                    (swipe-left-to-reply-anim 50 translate-x-anim-value)
+                                                    (re-frame/dispatch [:chat.ui/reply-to-message message]))}
+         [react/view
+          [react/animated-view {:style {:transform [{:translateX translate-x-anim-value}]}}
+           [:<>
+            [preview/preview-image {:message  message
+                                    :visible  @visible
+                                    :on-close #(do (reset! visible false)
+                                                   (reagent/flush))}]
+            [react/touchable-highlight {:on-press      (fn []
+                                                         (reset! visible true)
+                                                         (react/dismiss-keyboard!))
+                                        :on-long-press on-long-press
+                                        :disabled      in-popover?}
+             [react/view {:style               (style/image-message style-opts)
+                          :accessibility-label :image-message}
+              [react/image {:style       (dissoc style-opts :outgoing)
+                            :resize-mode :cover
+                            :source      {:uri uri}}
+               [react/view {:style (style/image-message-border style-opts)}]]]]]]]]))))
 
 (defmulti ->message :content-type)
 
@@ -411,20 +426,6 @@
         :id       :delete}]))))
 
 
-(defn translate-anim [translate-x-to-value translate-x-anim-value]
-  (animation/start
-   (animation/spring translate-x-anim-value {:toValue         translate-x-to-value
-                                             :duration        200
-                                             :easing          (.-ease ^js animation/easing)
-                                             :useNativeDriver true})))
-
-(defn handle-swipe-gesture [translate-x-anim-value message outgoing]
-  #(when (and (< (-> ^js % .-nativeEvent.translationX) -50)
-              (not outgoing))
-     (translate-anim 50 translate-x-anim-value)
-     (re-frame/dispatch [:chat.ui/reply-to-message message])))
-
-
 (defn collapsible-text-message [{:keys [mentioned]} _]
   (let [collapsed?   (reagent/atom false)
         collapsible? (reagent/atom false)
@@ -446,10 +447,10 @@
                                   (on-long-press-fn on-long-press message content)))
             :disabled         in-popover?})
 
-         [gh/pan-gesture-handler {:onHandlerStateChange #(translate-anim 0 translate-x-anim-value)
+         [gh/pan-gesture-handler {:onHandlerStateChange #(swipe-left-to-reply-anim 0 translate-x-anim-value)
                                   :onGestureEvent #(when (and (< (-> ^js % .-nativeEvent.translationX) -50)
                                                               (not outgoing))
-                                                     (translate-anim 50 translate-x-anim-value)
+                                                     (swipe-left-to-reply-anim 50 translate-x-anim-value)
                                                      (re-frame/dispatch [:chat.ui/reply-to-message message]))}
 
           [react/view
