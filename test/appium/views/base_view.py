@@ -190,7 +190,7 @@ class AirplaneModeButton(Button):
 
     def click(self):
         action = TouchAction(self.driver)
-        action.press(None, 50, 0).move_to(None, 50, 300).perform()
+        action.press(None, 200, 0).move_to(None, 200, 300).perform()
         super(AirplaneModeButton, self).click()
         self.driver.press_keycode(4)
 

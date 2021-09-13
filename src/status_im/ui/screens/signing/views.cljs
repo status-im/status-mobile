@@ -6,7 +6,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.wallet.utils :as wallet.utils]
-            [status-im.ui.components.list.views :as list]
             [status-im.keycard.common :as keycard.common]
             [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
@@ -25,7 +24,8 @@
             [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]
             [status-im.utils.utils :as utils]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im.ui.screens.wallet.components.views :as wallet.components]))
 
 (defn separator []
   [react/view {:height 1 :background-color colors/gray-lighter}])
@@ -60,7 +60,7 @@
                               :style {:margin-right 8}}
                     display-symbol]
                    (if icon
-                     [list/item-image
+                     [wallet.components/token-icon
                       (assoc icon
                              :style {:background-color colors/gray-lighter
                                      :border-radius    16}

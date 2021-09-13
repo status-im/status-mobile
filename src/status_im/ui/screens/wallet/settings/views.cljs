@@ -8,7 +8,8 @@
             [reagent.core :as reagent]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.components.colors :as colors])
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.wallet.components.views :as wallet.components])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defonce search-active? (reagent/atom false))
@@ -54,7 +55,7 @@
         :animated-accessory? false
         :animated            false
         :icon                (if icon
-                               [list/item-image icon]
+                               [wallet.components/token-icon icon]
                                [chat-icon/custom-icon-view-list name color])
         :title               name
         :subtitle            (clojure.core/name symbol)

@@ -10,7 +10,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.list.views :as list]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.multiaccounts.core :as multiaccounts]
@@ -42,8 +41,9 @@
                                         :margin-left    16}
                   :accessibility-label :choose-asset-button}
       (if icon
-        [list/item-image (assoc icon :style {:background-color colors/gray-lighter
-                                             :border-radius    50} :image-style {:width 32 :height 32})]
+        [components/token-icon
+         (assoc icon :style {:background-color colors/gray-lighter
+                             :border-radius    50} :image-style {:width 32 :height 32})]
         [chat-icon/custom-icon-view-list name color 32])
       [react/text {:style           {:margin-left 8
                                      :max-width   (/ window-width 4)}

@@ -15,11 +15,11 @@
                :testnet (i18n/label :t/ropsten-network)
                :rinkeby (i18n/label :t/rinkeby-network)
                :custom (i18n/label :t/custom))]
-    [list/list-item-with-radio-button
-     {:checked?        (= (get-in manage-network [:chain :value]) type)
-      :on-value-change #(re-frame/dispatch [::network/input-changed :chain type])}
-     [list/item
-      nil [list/item-primary-only name]]]))
+    [quo/list-item
+     {:title name
+      :accessory :radio
+      :active (= (get-in manage-network [:chain :value]) type)
+      :on-press #(re-frame/dispatch [::network/input-changed :chain type])}]))
 
 (views/defview edit-network []
   (views/letsubs [manage-network [:networks/manage]
@@ -40,20 +40,18 @@
            {:label          (i18n/label :t/rpc-url)
             :placeholder    (i18n/label :t/specify-rpc-url)
             :default-value  (get-in manage-network [:url :value])
-            :on-change-text #(re-frame/dispatch [::network/input-changed :url (string/lower-case %)])}]]
-         [react/view {:padding-vertical 8}
-          [react/i18n-text {:key :network-chain}]
-          [list/flat-list {:data        [:mainnet :testnet :rinkeby :custom]
-                           :key-fn      (fn [_ i] (str i))
-                           :separator   list/base-separator
-                           :render-data manage-network
-                           :render-fn   render-network-type}]]
-         (when custom?
-           [react/view {:padding-vertical 8}
-            [quo/text-input
-             {:label          (i18n/label :t/network-id)
-              :placeholder    (i18n/label :t/specify-network-id)
-              :on-change-text #(re-frame/dispatch [::network/input-changed :network-id %])}]])]]
+            :on-change-text #(re-frame/dispatch [::network/input-changed :url (string/lower-case %)])}]]]
+        [quo/list-header (i18n/label :t/network-chain)]
+        [list/flat-list {:data        [:mainnet :testnet :rinkeby :custom]
+                         :key-fn      (fn [_ i] (str i))
+                         :render-data manage-network
+                         :render-fn   render-network-type}]
+        (when custom?
+          [react/view styles/edit-network-view
+           [quo/text-input
+            {:label          (i18n/label :t/network-id)
+             :placeholder    (i18n/label :t/specify-network-id)
+             :on-change-text #(re-frame/dispatch [::network/input-changed :network-id %])}]])]
        [react/view styles/bottom-container
         [react/view {:flex 1}]
         [quo/button

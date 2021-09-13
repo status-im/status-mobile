@@ -164,7 +164,7 @@
                            :on-press #(reset! visible true)}
 
                           :else after)
-            secure        (and secure-text-entry (not @visible))
+            secure        (boolean (and secure-text-entry (not @visible))) ; must be a boolean to work on iOS
             auto-complete (cond
                             (= keyboard-type :visible-password)
                             :off

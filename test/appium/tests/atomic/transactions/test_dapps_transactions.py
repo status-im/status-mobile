@@ -20,7 +20,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
         send_transaction = status_test_dapp.request_stt_button.click()
-        if not send_transaction.onboarding_message.is_element_displayed():
+        if not send_transaction.onboarding_message.is_element_displayed(30):
             self.driver.fail('It seems onboarding screen is not shown.')
         home.ok_got_it_button.click()
         home.cancel_button.click()

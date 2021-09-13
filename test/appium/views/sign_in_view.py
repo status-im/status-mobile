@@ -202,6 +202,9 @@ class SignInView(BaseView):
         if not second_user:
             self.accept_tos_checkbox.click()
         self.get_started_button.click_until_presence_of_element(self.access_key_button)
+        if not self.access_key_button.is_element_displayed():
+            self.accept_tos_checkbox.click()
+            self.get_started_button.click()
         self.access_key_button.click()
         self.enter_seed_phrase_button.click()
         self.seedphrase_input.click()

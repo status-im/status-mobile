@@ -177,3 +177,15 @@ class NetworkApi(object):
         decimals = abs(Decimal(fetched_balance).as_tuple().exponent)
         rounded_balance = round(float(actual_balance), decimals)
         return rounded_balance
+
+    def get_custom_fee_tx_params(self, hash: str):
+        price_limit = int(w3.get_tx_param_by_hash(hash, 'maxFeePerGas'),16)/1000000000
+        tip_limit = int(w3.get_tx_param_by_hash(hash, 'maxPriorityFeePerGas'),16)/1000000000
+        gas_limit = w3.get_tx_param_by_hash(hash, 'gas')
+        return {
+            'fee_cap' : str(price_limit),
+            'tip_cap': str(tip_limit),
+            'gas_limit' : str(gas_limit)
+        }
+
+

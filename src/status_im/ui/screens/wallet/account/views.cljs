@@ -7,7 +7,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
-            [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.wallet.account.styles :as styles]
@@ -18,7 +17,8 @@
             [status-im.utils.money :as money]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.ui.components.tabs :as tabs]
-            [quo.design-system.colors :as quo-colors])
+            [quo.design-system.colors :as quo-colors]
+            [status-im.ui.screens.wallet.components.views :as wallet.components])
   (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
@@ -82,7 +82,7 @@
     [quo/list-item
      {:title          (wallet.utils/display-symbol collectible)
       :subtitle       name
-      :icon           [list/item-image icon]
+      :icon           [wallet.components/token-icon icon]
       :accessory      :text
       :accessory-text items-number}]))
 
