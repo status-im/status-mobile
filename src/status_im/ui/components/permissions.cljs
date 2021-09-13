@@ -6,8 +6,7 @@
   {:read-external-storage  (cond
                              platform/android? (.-READ_EXTERNAL_STORAGE (.-ANDROID PERMISSIONS)))
    :write-external-storage (cond
-                             platform/android? (.-WRITE_EXTERNAL_STORAGE (.-ANDROID PERMISSIONS))
-                             platform/ios?     (.-PHOTO_LIBRARY (.-IOS PERMISSIONS)))
+                             platform/low-device? (.-WRITE_EXTERNAL_STORAGE (.-ANDROID PERMISSIONS)))
    :camera                 (cond
                              platform/android? (.-CAMERA (.-ANDROID PERMISSIONS))
                              platform/ios?     (.-CAMERA (.-IOS PERMISSIONS)))

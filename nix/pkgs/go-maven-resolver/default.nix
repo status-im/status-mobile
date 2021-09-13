@@ -1,4 +1,4 @@
-{ lib, buildGo116Package, fetchFromGitHub }:
+{ lib, buildGo116Module, fetchFromGitHub }:
 
 let
   inherit (lib) strings;

@@ -11,7 +11,7 @@ androidenv.composeAndroidPackages {
   buildToolsVersions = [ "30.0.3" ];
   includeEmulator = false;
   includeSources = false;
-  platformVersions = [ "29" ];
+  platformVersions = [ "30" ];
   includeSystemImages = false;
   systemImageTypes = [ "default" ];
   cmakeVersions = [ "3.18.1" ];

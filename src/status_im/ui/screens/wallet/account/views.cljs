@@ -6,19 +6,23 @@
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.accordion :as accordion]
+            [status-im.react-native.resources :as resources]
             [quo.core :as quo]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
+            [status-im.utils.config :as config]
             [status-im.ui.screens.wallet.account.styles :as styles]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ui.screens.wallet.accounts.views :as accounts]
             [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
             [status-im.ui.screens.wallet.transactions.views :as history]
-            [status-im.utils.money :as money]
-            [status-im.wallet.utils :as wallet.utils]
+            [status-im.wallet.core :as wallet]
             [status-im.ui.components.tabs :as tabs]
             [quo.design-system.colors :as quo-colors]
-            [status-im.ui.screens.wallet.components.views :as wallet.components])
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.ui.screens.wallet.components.views :as wallet.components]
+            [status-im.utils.handlers :refer [<sub]])
   (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
@@ -77,22 +81,13 @@
        colors/white-persist
        #(re-frame/dispatch [:wallet/share-popover address])]]]))
 
-(defn render-collectible [{:keys [name icon amount] :as collectible}]
-  (let [items-number (money/to-fixed amount)]
-    [quo/list-item
-     {:title          (wallet.utils/display-symbol collectible)
-      :subtitle       name
-      :icon           [wallet.components/token-icon icon]
-      :accessory      :text
-      :accessory-text items-number}]))
-
 (views/defview transactions [address]
   (views/letsubs [data [:wallet.transactions.history/screen address]]
     [history/history-list data address]))
 
-(defn collectibles-link []
+(defn opensea-link [address]
   [react/touchable-highlight
-   {:on-press #(re-frame/dispatch [:browser.ui/open-url "https://opensea.io/account/"])}
+   {:on-press #(re-frame/dispatch [:browser.ui/open-url (str "https://opensea.io/" address)])}
    [react/view
     {:style {:flex             1
              :padding-horizontal 14
@@ -108,9 +103,141 @@
      {:style {:color colors/blue}}
      (i18n/label :t/check-on-opensea)]]])
 
+(defn nft-assets-skeleton [num-assets]
+  [:<>
+   (for [i (range num-assets)]
+     ^{:key i}
+     [react/view {:style {:width         "48%"
+                          :margin-bottom 16}}
+      [react/view {:style {:flex             1
+                           :aspect-ratio     1
+                           :border-width     1
+                           :background-color colors/gray-transparent-10
+                           :border-color     colors/gray-lighter
+                           :border-radius    16}}]])])
+
+(defn nft-assets [{:keys [num-assets address collectible-slug]}]
+  (let [assets (<sub [:wallet/collectible-assets-by-collection-and-address address collectible-slug])]
+    [react/view {:flex            1
+                 :flex-wrap       :wrap
+                 :justify-content :space-between
+                 :flex-direction  :row
+                 :style           {:padding-horizontal 16}}
+     (if (seq assets)
+       (for [asset assets]
+         ^{:key (:id asset)}
+         [react/touchable-opacity
+          {:style    {:width         "48%"
+                      :margin-bottom 16}
+           :on-press #(re-frame/dispatch [::wallet/show-nft-details asset])}
+          [react/image {:style  {:flex          1
+                                 :aspect-ratio  1
+                                 :border-width  1
+                                 :border-color  colors/gray-lighter
+                                 :border-radius 16}
+                        :source {:uri (:image_url asset)}}]])
+       [nft-assets-skeleton num-assets])]))
+
+(defn nft-collections [address]
+  (let [collection (<sub [:wallet/collectible-collection address])]
+    [:<>
+     (for [collectible collection]
+       ^{:key (:slug collectible)}
+       [accordion/section
+        {:title
+         [react/view {:flex 1}
+          [quo/list-item
+           {:title          (:name collectible)
+            :text-size      :large
+            :icon
+            [wallet.components/token-icon {:style  {:border-radius 40
+                                                    :overflow      :hidden
+                                                    :border-width  1
+                                                    :border-color  "#EEF2F5"}
+                                           :source {:uri (:image_url collectible)}}]
+            :accessory      :text
+            :accessory-text (:owned_asset_count collectible)}]]
+         :padding-vertical     0
+         :dropdown-margin-left -12
+         :on-open              #(re-frame/dispatch [::wallet/fetch-collectible-assets-by-owner-and-collection
+                                                    address
+                                                    (:slug collectible)
+                                                    (:owned_asset_count collectible)])
+         :content              [nft-assets {:address          address
+                                            :num-assets       (:owned_asset_count collectible)
+                                            :collectible-slug (:slug collectible)}]}])]))
+
+(defn nft-traits [traits]
+  [react/view {:flex           1
+               :margin-bottom  24
+               :flex-direction :row
+               :flex-wrap      :wrap}
+   (for [trait traits]
+     ^{:key (:trait_type trait)}
+     [react/view {:style {:border-width       1
+                          :border-radius      12
+                          :padding-horizontal 8
+                          :padding-vertical   4
+                          :margin-right       8
+                          :margin-bottom      8
+                          :border-color       colors/gray-lighter}}
+      [quo/text {:size  :small
+                 :color :secondary}
+       (:trait_type trait)]
+      [quo/text {}
+       (:value trait)]])])
+
+(defn nft-details []
+  (let [nft (<sub [:wallet/current-collectible-asset])]
+    [:<>
+     [topbar/topbar
+      {:title         (:name nft)
+       :subtitle      (-> nft :collection :name)
+       :border-bottom false
+       :right-accessories
+       [{:icon     :main-icons/browser
+         :on-press #(re-frame/dispatch [:browser.ui/open-url (:permalink nft)])}]}]
+     [react/scroll-view {:padding 16}
+      [react/image {:source {:uri (:image_url nft)}
+                    :style  {:width         "100%"
+                             :aspect-ratio  1
+                             :border-radius 4
+                             :border-width  1
+                             :border-color  "#EEF2F5"}}]
+      [react/text {:style {:margin-top    24
+                           :margin-bottom 16}}
+       (:description nft)]
+      [nft-traits (:traits nft)]]]))
+
+(defn enable-opensea-view []
+  [react/view {:style {:border-width  1
+                       :border-color  colors/gray-lighter
+                       :border-radius 8
+                       :margin        16}}
+   [react/view {:style {:padding 16}}
+    [react/image {:source (resources/get-theme-image :unfurl)
+                  :style  {:align-self :center
+                           :width      132
+                           :height     94}}]
+    [quo/text {:size  :small
+               :align :center
+               :style {:margin-top 6}}
+     (i18n/label :t/enable-opensea-nfts)]
+    [quo/text {:size  :small
+               :color :secondary
+               :align :center
+               :style {:margin-top 2}}
+     (i18n/label :t/opensea-nfts-leak-metadata)]]
+   [quo/separator]
+   [quo/button {:on-press #(re-frame/dispatch [::multiaccounts.update/toggle-opensea-nfts-visiblity true])
+                :type     :secondary}
+    (i18n/label :enable)]])
+
 (views/defview assets-and-collections [address]
-  (views/letsubs [{:keys [tokens nfts]} [:wallet/visible-assets-with-values address]
-                  currency [:wallet/currency]]
+  (views/letsubs [{:keys [tokens]} [:wallet/visible-assets-with-values address]
+                  currency [:wallet/currency]
+                  opensea-enabled? [:opensea-enabled?]
+                  collectible-collection [:wallet/collectible-collection address]]
     (let [{:keys [tab]} @state]
       [react/view {:flex 1}
        [react/view {:flex-direction :row :margin-bottom 8 :padding-horizontal 4}
@@ -125,16 +252,21 @@
             ^{:key (:name item)}
             [accounts/render-asset item nil nil (:code currency)])]
          (= tab :nft)
-         [react/view
-          [collectibles-link]
-          (if (seq nfts)
-            [:<>
-             (for [item nfts]
-               ^{:key (:name item)}
-               [render-collectible item nil nil (:code currency)])]
-            [react/view {:align-items :center :margin-top 32}
-             [react/text {:style {:color colors/gray}}
-              (i18n/label :t/no-collectibles)]])]
+         [:<>
+          [opensea-link address]
+          ;; Hide collectibles behind a feature flag
+          (when config/collectibles-enabled?
+            (cond
+              (not opensea-enabled?)
+              [enable-opensea-view]
+
+              (and opensea-enabled? (seq collectible-collection))
+              [nft-collections address]
+
+              :else
+              [react/view {:align-items :center :margin-top 32}
+               [react/text {:style {:color colors/gray}}
+                (i18n/label :t/no-collectibles)]]))]
          (= tab :history)
          [transactions address])])))
 

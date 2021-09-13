@@ -182,6 +182,8 @@
    "wallet_getFavourites" {}
    "wallet_deleteCustomToken" {}
    "wallet_getCryptoOnRamps" {}
+   "wallet_getOpenseaCollectionsByOwner" {}
+   "wallet_getOpenseaAssetsByOwnerAndCollection" {}
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}

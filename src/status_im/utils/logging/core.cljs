@@ -153,17 +153,17 @@
 
 (fx/defn send-email-event
   {:events [::send-email]}
-  [{:keys [db] :as cofx} archive-path]
+  [{:keys [db] :as cofx} archive-uri]
   (fx/merge
    cofx
    (dialog-closed)
    (send-email
-    {:subject    "Error report"
-     :recipients [report-email]
-     :body       (email-body db)
-     :attachment {:path archive-path
-                  :type "zip"
-                  :name "status_logs.zip"}}
+    {:subject     "Error report"
+     :recipients  [report-email]
+     :body        (email-body db)
+     :attachments [{:uri archive-uri
+                    :type "zip"
+                    :name "status_logs.zip"}]}
     (fn [event]
       (when (= event "not_available")
         (re-frame/dispatch [:show-client-error]))))))

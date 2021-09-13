@@ -41,8 +41,7 @@
       [buttons]
       (for [img camera-roll-photos]
         ^{:key (str "image" img)}
-        (when img
-          [image-preview img]))]]))
+        [image-preview img])]]))
 
 (def message-max-lenght 300)
 

@@ -49,14 +49,14 @@
       (fn [^js resized-image]
         (let [path (.-path resized-image)
               path (if (string/starts-with? path "file") path (str "file://" path))]
-          (.saveToCameraRoll CameraRoll path)))
+          (.save CameraRoll path)))
       #(log/error "could not resize image" %)))))
 
 (re-frame/reg-fx
  ::save-image-to-gallery
  (fn [base64-uri]
    (if platform/ios?
-     (-> (.saveToCameraRoll CameraRoll base64-uri)
+     (-> (.save CameraRoll base64-uri)
          (.catch #(utils/show-popup (i18n/label :t/error)
                                     (i18n/label :t/external-storage-denied))))
      (permissions/request-permissions

@@ -210,6 +210,7 @@
                 (if (utils.mobile-sync/syncing-allowed? cofx)
                   (wallet/set-max-block address 0)
                   (wallet/update-balances nil true))
+                (wallet/fetch-collectibles-collection)
                 (prices/update-prices)
                 (navigation/navigate-back)))))
 

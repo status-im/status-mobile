@@ -211,6 +211,46 @@
  :wallet/get-tokens-balances
  get-token-balances)
 
+(fx/defn collectibles-collection-fetch-success
+  {:events [::collectibles-collection-fetch-success]}
+  [{:keys [db]} address collection]
+  {:db (assoc-in db [:wallet/collectible-collections address] collection)})
+
+(fx/defn fetch-collectibles-collection
+  {:events [::fetch-collectibles-collection]}
+  [{:keys [db]}]
+  (let [addresses (map (comp string/lower-case :address)
+                       (get db :multiaccount/accounts))]
+    (when (get-in db [:multiaccount :opensea-enabled?])
+      {::json-rpc/call (map (fn [address]
+                              {:method "wallet_getOpenseaCollectionsByOwner"
+                               :params [address]
+                               :on-error (fn [error]
+                                           (log/error "Unable to get Opensea collections" address error))
+                               :on-success #(re-frame/dispatch [::collectibles-collection-fetch-success address %])})
+                            addresses)})))
+
+(fx/defn collectible-assets-fetch-success
+  {:events [::collectible-assets-fetch-success]}
+  [{:keys [db]} address collectible-slug assets]
+  {:db (assoc-in db [:wallet/collectible-assets address collectible-slug] assets)})
+
+(fx/defn fetch-collectible-assets-by-owner-and-collection
+  {:events [::fetch-collectible-assets-by-owner-and-collection]}
+  [_ address collectible-slug limit]
+  {::json-rpc/call [{:method     "wallet_getOpenseaAssetsByOwnerAndCollection"
+                     :params     [address collectible-slug limit]
+                     :on-error   (fn [error]
+                                   (log/error "Unable to get collectible assets" address error))
+                     :on-success #(re-frame/dispatch [::collectible-assets-fetch-success address collectible-slug %])}]})
+
+(fx/defn show-nft-details
+  {:events [::show-nft-details]}
+  [cofx asset]
+  (fx/merge cofx
+            {:db (assoc (:db cofx) :wallet/current-collectible-asset asset)}
+            (navigation/navigate-to :nft-details {})))
+
 (defn rpc->token [tokens]
   (reduce (fn [acc {:keys [address] :as token}]
             (assoc acc

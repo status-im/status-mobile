@@ -348,8 +348,8 @@ dependencies {
     implementation project(':react-native-status')
     implementation project(':react-native-status-keycard')
     implementation 'com.github.status-im:function:0.0.1'
-    implementation 'com.facebook.fresco:fresco:2.0.0'
-    implementation 'com.facebook.fresco:animated-gif:2.0.0'
+    implementation 'com.facebook.fresco:fresco:2.2.0'
+    implementation 'com.facebook.fresco:animated-gif:2.2.0'
 }
 
 def getLocalNDKDir = { ->
@@ -371,7 +371,7 @@ task hemroidBuild(type: Exec) {
     def localNdkDir = getLocalNDKDir()
     def ndkDir = System.env.ANDROID_NDK_ROOT
     if (localNdkDir != null) {
-        ndkDir = localNdkDir 
+        ndkDir = localNdkDir
     }
 
     def execPath = "$ndkDir/ndk-build"

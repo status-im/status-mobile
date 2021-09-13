@@ -51,6 +51,7 @@
 (def metrics-enabled? (enabled? (get-config :METRICS_ENABLED "0")))
 (def eip1559-enabled? (enabled? (get-config :EIP1559_ENABLED "0")))
 (def delete-message-enabled? (enabled? (get-config :DELETE_MESSAGE_ENABLED "0")))
+(def collectibles-enabled? (enabled? (get-config :COLLECTIBLES_ENABLED "1")))
 
 ;; CONFIG VALUES
 (def log-level
@@ -76,16 +77,17 @@
 (def verify-ens-contract-address (get-config :VERIFY_ENS_CONTRACT_ADDRESS ((ethereum/chain-id->chain-keyword verify-ens-chain-id) ens/ens-registries)))
 
 (def default-multiaccount
-  {:preview-privacy?      blank-preview?
-   :wallet/visible-tokens {:mainnet #{:SNT}}
-   :currency :usd
-   :appearance 0
-   :profile-pictures-visibility 1
-   :log-level log-level
+  {:preview-privacy?                   blank-preview?
+   :wallet/visible-tokens              {:mainnet #{:SNT}}
+   :currency                           :usd
+   :appearance                         0
+   :profile-pictures-visibility        1
+   :log-level                          log-level
    :webview-allow-permission-requests? false
-   :anon-metrics/should-send? false
-   :link-previews-enabled-sites #{}
-   :link-preview-request-enabled true})
+   :anon-metrics/should-send?          false
+   :opensea-enabled?                   false
+   :link-previews-enabled-sites        #{}
+   :link-preview-request-enabled       true})
 
 (defn default-visible-tokens [chain]
   (get-in default-multiaccount [:wallet/visible-tokens chain]))
