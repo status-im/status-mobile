@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.network.edit-network.views
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [status-im.network.core :as network]
             [status-im.ui.screens.network.edit-network.styles :as styles]
@@ -40,7 +39,7 @@
            {:label          (i18n/label :t/rpc-url)
             :placeholder    (i18n/label :t/specify-rpc-url)
             :default-value  (get-in manage-network [:url :value])
-            :on-change-text #(re-frame/dispatch [::network/input-changed :url (string/lower-case %)])}]]]
+            :on-change-text #(re-frame/dispatch [::network/input-changed :url %])}]]]
         [quo/list-header (i18n/label :t/network-chain)]
         [list/flat-list {:data        [:mainnet :testnet :rinkeby :custom]
                          :key-fn      (fn [_ i] (str i))
