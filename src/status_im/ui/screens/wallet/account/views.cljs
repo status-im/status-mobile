@@ -21,6 +21,7 @@
             [status-im.ui.components.tabs :as tabs]
             [quo.design-system.colors :as quo-colors]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.utils.handlers :refer [<sub]])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -149,11 +150,11 @@
            {:title          (:name collectible)
             :text-size      :large
             :icon
-            [list/item-image {:style  {:border-radius 40
-                                       :overflow      :hidden
-                                       :border-width  1
-                                       :border-color  "#EEF2F5"}
-                              :source {:uri (:image_url collectible)}}]
+            [wallet.components/token-icon {:style  {:border-radius 40
+                                                    :overflow      :hidden
+                                                    :border-width  1
+                                                    :border-color  "#EEF2F5"}
+                                           :source {:uri (:image_url collectible)}}]
             :accessory      :text
             :accessory-text (:owned_asset_count collectible)}]]
          :padding-vertical     0
