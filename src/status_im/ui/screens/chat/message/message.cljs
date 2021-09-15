@@ -19,10 +19,10 @@
             [status-im.ui.screens.chat.message.reactions :as reactions]
             [status-im.ui.screens.chat.image.preview.views :as preview]
             [quo.core :as quo]
-            [status-im.ui.components.animation :as animation]
-            [quo.react-native :as rn]
             [status-im.utils.config :as config]
             [reagent.core :as reagent]
+            [status-im.ui.components.animation :as animation]
+            [status-im.ui.screens.chat.components.accessory :as accessory]
             [status-im.ui.screens.chat.components.reply :as components.reply]
             [status-im.ui.screens.chat.message.link-preview :as link-preview]
             [status-im.ui.screens.communities.icon :as communities.icon]
@@ -410,28 +410,6 @@
         :label    (i18n/label :t/delete)
         :id       :delete}]))))
 
-(defn swipe-pan-responder [translate-x pan-state message]
-  (js->clj (.-panHandlers
-            ^js (.create
-                 ^js rn/pan-responder
-                 #js {:onStartShouldSetPanResponder (fn [] true)
-                      :onMoveShouldSetPanResponderCapture (fn [_ ^js state]
-                                                            (and (<= (.-moveX state) -20) (>= (.-moveX state) 0)))
-                      :onPanResponderGrant (fn []
-                                             (animation/set-value pan-state 1))
-                      :onPanResponderMove  (fn [_ ^js state]
-                                             (when (> (.-dx state) 20)
-                                               (animation/set-value translate-x (.-dx state))))                      
-                      :onPanResponderRelease (fn [_ ^js state]
-                                               (when (> (.-dx state) 20)
-                                                 (re-frame/dispatch [:chat.ui/reply-to-message message]))
-                                               (animation/set-value pan-state 0)
-                                               (js/setTimeout
-                                                (animation/set-value translate-x 0) 100))
-                      :onPanResponderTerminate (fn []
-                                                 (animation/set-value pan-state 0)
-                                                 (js/setTimeout
-                                                  (animation/set-value translate-x 0) 100))}))))
 
 (defn collapsible-text-message [{:keys [mentioned]} _]
   (let [collapsed?   (reagent/atom false)
@@ -444,7 +422,7 @@
                          (if @collapsible?
                            (if @collapsed? message-height-px nil)
                            message-height-px))
-            pan-responder (swipe-pan-responder translate-x pan-state message)]
+            pan-responder (accessory/swipe-pan-responder translate-x pan-state message)]
         [react/touchable-highlight
          (when-not modal
            {:on-press         (fn [_]
