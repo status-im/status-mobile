@@ -761,6 +761,7 @@ class ChatView(BaseView):
 
     def send_message(self, message: str = 'test message'):
         self.driver.info("**Sending message '%s'**" % message)
+        self.chat_message_input.wait_for_element(5)
         self.chat_message_input.send_keys(message)
         self.send_message_button.click()
 

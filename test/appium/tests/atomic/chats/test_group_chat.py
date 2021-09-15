@@ -12,38 +12,38 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
     def test_create_new_group_chat_messaging_pn_delivered(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        device_1_home, device_2_home = device_1.create_user(), device_2.create_user(enable_notifications=True)
-        device_1_key, device_1_username = device_1.get_public_key_and_username(True)
+        home_1, home_2 = device_1.create_user(), device_2.create_user(enable_notifications=True)
+        key_1, username_1 = device_1.get_public_key_and_username(True)
         device_1.home_button.click()
-        chat_name = device_1_home.get_random_chat_name()
-        device_1_home.plus_button.click()
+        chat_name = home_1.get_random_chat_name()
+        home_1.plus_button.click()
 
-        device_1_home.just_fyi('Check default placeholder when trying to create group chat without contacts')
-        device_1_home.new_group_chat_button.click()
-        if not device_1_home.element_by_translation_id("invite-friends").is_element_displayed():
+        home_1.just_fyi('Check default placeholder when trying to create group chat without contacts')
+        home_1.new_group_chat_button.click()
+        if not home_1.element_by_translation_id("invite-friends").is_element_displayed():
              self.errors.append("No placeholder is shown when there are no contacts")
-        device_1_home.get_back_to_home_view()
+        home_1.get_back_to_home_view()
 
         device_2.just_fyi('Create group chat with new user, check system messages for sender')
-        device_2_key, device_2_username = device_2.get_public_key_and_username(True)
+        key_2, username_2 = device_2.get_public_key_and_username(True)
         device_2.home_button.click()
-        device_1_home.add_contact(device_2_key)
-        device_1_home.get_back_to_home_view()
+        home_1.add_contact(key_2)
+        home_1.get_back_to_home_view()
 
-        device_1_chat = device_1_home.create_group_chat([device_2_username], chat_name)
-        create_system_message = device_1_chat.create_system_message(device_1_username, chat_name)
-        invite_system_message = device_1_chat.invite_system_message(device_1_username, device_2_username)
-        join_system_message = device_1_chat.join_system_message(device_2_username)
-        invited_to_join = device_1_chat.invited_to_join_system_message(device_1_username, chat_name)
+        device_1_chat = home_1.create_group_chat([username_2], chat_name)
+        create_system_message = device_1_chat.create_system_message(username_1, chat_name)
+        invite_system_message = device_1_chat.invite_system_message(username_1, username_2)
+        join_system_message = device_1_chat.join_system_message(username_2)
+        invited_to_join = device_1_chat.invited_to_join_system_message(username_1, chat_name)
         create_for_admin_system_message = device_1_chat.create_for_admin_system_message(chat_name)
         for message in [create_for_admin_system_message, create_system_message, invite_system_message]:
             if not device_1_chat.chat_element_by_text(message):
                 self.errors.append('%s system message is not shown' % message)
 
         device_2.just_fyi('Navigate to group chat, check system messages for member')
-        if not device_2_home.get_chat(chat_name).is_element_displayed():
+        if not home_2.get_chat(chat_name).is_element_displayed():
             self.drivers[0].fail('Group chat was not created!')
-        device_2_chat = device_2_home.get_chat(chat_name).click()
+        device_2_chat = home_2.get_chat(chat_name).click()
         for element in device_2_chat.join_chat_button, device_2_chat.decline_invitation_button:
             if not element.is_element_displayed():
                 self.drivers[0].fail('"Join Chat" or "Decline" is not shown for member of group chat')
@@ -62,11 +62,11 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         if device_1_chat.chat_element_by_text(message_1).status != 'delivered':
             self.errors.append('Message status is not delivered, it is %s!' % device_1_chat.chat_element_by_text(message_1).status)
 
-        device_2_home.put_app_to_background()
+        home_2.put_app_to_background()
 
-        device_2_home.just_fyi('check that PN is received and after tap you are redirected to public chat')
-        device_2_home.open_notification_bar()
-        device_2_home.element_by_text_part("Message from device: %s" % device_1_chat.driver.number).click()
+        home_2.just_fyi('check that PN is received and after tap you are redirected to public chat')
+        home_2.open_notification_bar()
+        home_2.element_by_text_part("Message from device: %s" % device_1_chat.driver.number).click()
         device_2_chat.send_message("Message from device: %s" % device_2_chat.driver.number)
         for chat in (device_1_chat, device_2_chat):
             for chat_driver in (device_1_chat, device_2_chat):

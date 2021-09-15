@@ -31,9 +31,7 @@ class TestDApps(SingleDeviceTestCase):
         profile.privacy_and_security_button.click()
 
         camera_dapp.just_fyi("Enable camera requests in Dapps")
-        camera_permission_requests = home.get_translation_by_key("webview-camera-permission-requests")
-        if profile.element_by_text_part(camera_permission_requests).is_element_displayed():
-            profile.element_by_text_part('Webview camera permission requests').click()
+        profile.element_by_translation_id("webview-camera-permission-requests").scroll_and_click()
         home.dapp_tab_button.click(desired_element_text='webview')
 
         camera_dapp.just_fyi("Check DApp asks now to allow camera aceess but Deny in DApp")
@@ -63,83 +61,84 @@ class TestDApps(SingleDeviceTestCase):
     def test_resolve_ipns_name(self):
         user = basic_user
         ipns_url = 'uniswap.eth'
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(passphrase=user['passphrase'])
-        profile_view = home_view.profile_button.click()
-        profile_view.switch_network()
+        home = SignInView(self.driver).recover_access(passphrase=user['passphrase'])
+        profile = home.profile_button.click()
+        profile.switch_network()
         self.driver.set_clipboard_text(ipns_url)
-        dapp_view = home_view.dapp_tab_button.click()
-        dapp_view.enter_url_editbox.click()
-        dapp_view.paste_text()
-        dapp_view.confirm()
-        if not dapp_view.allow_button.is_element_displayed(30):
+        dapp = home.dapp_tab_button.click()
+        dapp.enter_url_editbox.click()
+        dapp.paste_text()
+        dapp.confirm()
+        if not dapp.allow_button.is_element_displayed(30):
             self.driver.fail('No permission is asked for dapp, so IPNS name is not resolved')
 
     @marks.testrail_id(6232)
     @marks.medium
     def test_switching_accounts_in_dapp(self):
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.create_user()
-        wallet_view = sign_in_view.wallet_button.click()
+        home = SignInView(self.driver).create_user()
+        wallet = home.wallet_button.click()
 
-        wallet_view.just_fyi('create new account in multiaccount')
-        status_account = home_view.status_account_name
+        wallet.just_fyi('create new account in multiaccount')
+        status_account = home.status_account_name
         account_name = 'Subaccount'
-        wallet_view.add_account(account_name)
-        address = wallet_view.get_wallet_address(account_name)
+        wallet.add_account(account_name)
+        address = wallet.get_wallet_address(account_name)
 
-        sign_in_view.just_fyi('can see two accounts in DApps')
-        dapp_view = sign_in_view.dapp_tab_button.click()
-        dapp_view.select_account_button.click()
+        home.just_fyi('can see two accounts in DApps')
+        dapp = home.dapp_tab_button.click()
+        dapp.select_account_button.click()
         for text in 'Select the account', status_account, account_name:
-            if not dapp_view.element_by_text_part(text).is_element_displayed():
+            if not dapp.element_by_text_part(text).is_element_displayed():
                 self.driver.fail("No expected element %s is shown in menu" % text)
 
-        sign_in_view.just_fyi('add permission to Status account')
-        dapp_view.enter_url_editbox.click()
-        status_test_dapp = home_view.open_status_test_dapp()
-        sign_in_view.just_fyi('check that permissions from previous account was removed once you choose another')
-        dapp_view.select_account_button.click()
-        dapp_view.select_account_by_name(account_name).wait_for_element(30)
-        dapp_view.select_account_by_name(account_name).click()
-        profile_view = dapp_view.profile_button.click()
-        profile_view.privacy_and_security_button.click()
-        profile_view.dapp_permissions_button.click()
-        if profile_view.element_by_text(test_dapp_name).is_element_displayed():
+        home.just_fyi('add permission to Status account')
+        dapp.enter_url_editbox.click()
+        status_test_dapp = home.open_status_test_dapp()
+
+        home.just_fyi('check that permissions from previous account was removed once you choose another')
+        dapp.select_account_button.click()
+        dapp.select_account_by_name(account_name).wait_for_element(30)
+        dapp.select_account_by_name(account_name).click()
+        profile = dapp.profile_button.click()
+        profile.privacy_and_security_button.click()
+        profile.dapp_permissions_button.click()
+        if profile.element_by_text(test_dapp_name).is_element_displayed():
             self.errors.append("Permissions for %s are not removed" % test_dapp_name)
 
-        sign_in_view.just_fyi('check that can change account')
-        profile_view.dapp_tab_button.click()
+        home.just_fyi('check that can change account')
+        profile.dapp_tab_button.click()
+        if profile.element_by_text("Can't find web3 library").is_element_displayed():
+            status_test_dapp.browser_refresh_page_button.wait_and_click()
         if not status_test_dapp.element_by_text_part(account_name).is_element_displayed():
             self.errors.append("No expected account %s is shown in authorize web3 popup for wallet" % account_name)
         status_test_dapp.allow_button.click()
-        dapp_view.profile_button.click(desired_element_text='DApp permissions')
-        profile_view.element_by_text(test_dapp_name).click()
+        dapp.profile_button.click(desired_element_text='DApp permissions')
+        profile.element_by_text(test_dapp_name).click()
         for text in 'Chat key', account_name:
-            if not dapp_view.element_by_text_part(text).is_element_displayed():
+            if not dapp.element_by_text_part(text).is_element_displayed():
                 self.errors.append("Access is not granted to %s" % text)
 
-        sign_in_view.just_fyi('check correct account is shown for transaction if sending from DApp')
-        profile_view.dapp_tab_button.click(desired_element_text='Accounts')
+        home.just_fyi('check correct account is shown for transaction if sending from DApp')
+        profile.dapp_tab_button.click(desired_element_text='Accounts')
         status_test_dapp.assets_button.click()
-        send_transaction_view = status_test_dapp.request_stt_button.click()
-        send_transaction_view.ok_got_it_button.wait_and_click()
-        address = send_transaction_view.get_formatted_recipient_address(address)
-        if not send_transaction_view.element_by_text(address).is_element_displayed():
+        send_transaction = status_test_dapp.request_stt_button.click()
+        send_transaction.ok_got_it_button.wait_and_click()
+        address = send_transaction.get_formatted_recipient_address(address)
+        if not send_transaction.element_by_text(address).is_element_displayed():
             self.errors.append("Wallet address %s in not shown in 'From' on Send Transaction screen" % address)
 
-        sign_in_view.just_fyi('Relogin and check multiaccount loads fine')
-        send_transaction_view.cancel_button.click()
-        sign_in_view.profile_button.click()
-        sign_in_view.relogin()
-        sign_in_view.wallet_button.click()
-        if not wallet_view.element_by_text(account_name).is_element_displayed():
+        home.just_fyi('Relogin and check multiaccount loads fine')
+        send_transaction.cancel_button.click()
+        home.profile_button.click()
+        home.relogin()
+        home.wallet_button.click()
+        if not wallet.element_by_text(account_name).is_element_displayed():
             self.errors.append("Subaccount is gone after relogin in Wallet!")
-        sign_in_view.profile_button.click()
-        profile_view.privacy_and_security_button.click()
-        profile_view.dapp_permissions_button.click()
-        profile_view.element_by_text(test_dapp_name).click()
-        if not profile_view.element_by_text(account_name).is_element_displayed():
+        home.profile_button.click()
+        profile.privacy_and_security_button.click()
+        profile.dapp_permissions_button.click()
+        profile.element_by_text(test_dapp_name).click()
+        if not profile.element_by_text(account_name).is_element_displayed():
             self.errors.append("Subaccount is not selected after relogin in Dapps!")
         self.errors.verify_no_errors()
 

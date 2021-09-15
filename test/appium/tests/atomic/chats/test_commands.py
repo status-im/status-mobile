@@ -277,6 +277,9 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sender = transaction_senders['E']
         home = sign_in.recover_access(sender['passphrase'])
+        wallet = home.wallet_button.click()
+        wallet.wait_balance_is_changed()
+        wallet.home_button.click()
         chat = home.add_contact(ens_user_ropsten['ens'])
         chat.commands_button.click()
         amount = chat.get_unique_amount()

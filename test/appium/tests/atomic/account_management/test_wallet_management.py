@@ -101,10 +101,12 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.collectibles_button.click()
 
         wallet.just_fyi('Check collectibles amount in wallet')
+        wallet.element_by_translation_id("enable").scroll_and_click()
         wallet.cryptokitties_in_collectibles_number.wait_for_visibility_of_element(30)
         if wallet.cryptokitties_in_collectibles_number.text != '1':
             self.errors.append(
                 'Wrong number is shown on CK assets: %s' % wallet.cryptokitties_in_collectibles_number.text)
+        # TODO: should be added check for that NFT image is shown after adding accessibility
 
         wallet.just_fyi('Check that collectibles are not shown when sending assets from wallet')
         send_transaction = wallet.send_transaction_button.click()
@@ -113,13 +115,12 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.errors.append('Collectibles can be sent from wallet')
         wallet.close_send_transaction_view_button.double_click()
 
-        wallet.just_fyi('Check "Open in OpenSea"')
+        wallet.just_fyi('Check "Open in OpenSea" (that user is signed in)')
         wallet.element_by_translation_id("check-on-opensea").click()
         web_view = wallet.get_webview_view()
         web_view.wait_for_d_aap_to_load(10)
-        wallet.swipe_by_custom_coordinates(0.5,0.8,0.5,0.7)
-        wallet.element_by_text('Sign In').wait_for_element(60)
-        wallet.element_by_text('Sign In').click_until_presence_of_element(wallet.allow_button)
+        #wallet.swipe_by_custom_coordinates(0.5,0.8,0.5,0.7)
+        wallet.element_by_text('e2ecryptokitty').wait_for_element(60)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5341)
@@ -170,6 +171,8 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5381)
     @marks.high
+    @marks.skip
+    # TODO: enabling after adding NFT support on Rinkeby
     def test_user_can_see_all_own_assets_after_account_recovering(self):
         home = SignInView(self.driver).recover_access(wallet_users['E']['passphrase'])
         profile = home.profile_button.click()

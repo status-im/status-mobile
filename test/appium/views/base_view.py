@@ -544,7 +544,7 @@ class BaseView(object):
         profile_view = self.profile_button.click()
         default_username = profile_view.default_username_text.text
         profile_view.share_my_profile_button.click()
-        profile_view.public_key_text.wait_for_visibility_of_element()
+        profile_view.public_key_text.wait_for_visibility_of_element(20)
         public_key = profile_view.public_key_text.text
         self.click_system_back_button()
         user_data = (public_key, default_username) if return_username else public_key

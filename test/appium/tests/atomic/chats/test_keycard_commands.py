@@ -152,7 +152,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1.just_fyi('Check that can find tx in history and balance is updated after offline')
         [home.wallet_button.click() for home in (home_1, home_2)]
         wallet_2.wait_balance_is_changed('STT', initial_amount_STT)
-        wallet_1.wait_balance_is_changed('STT')
+        wallet_1.wait_balance_is_changed('STT', scan_tokens=True)
         [wallet.find_transaction_in_history(amount=amount, asset='STT') for wallet in (wallet_1, wallet_2)]
         self.errors.verify_no_errors()
 

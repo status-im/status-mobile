@@ -511,7 +511,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard.enter_another_pin()
         keycard.element_by_text_part('one attempt').wait_for_element(30)
         keycard.enter_another_pin()
-        if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed():
+        if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed(30):
             self.driver.fail("No popup about frozen keycard is shown!")
         home.element_by_translation_id("keycard-is-frozen-reset").click()
         keycard.enter_another_pin()
