@@ -86,13 +86,6 @@
                            :number-of-lines 5}
                (components.reply/get-quoted-text-with-mentions parsed-text)])]))
 
-
-(defn translate-anim [translate-x-value translate-x-anim-value]
-  (animation/start
-   (animation/spring translate-x-anim-value {:toValue         translate-x-value
-                                             :duration        200
-                                             :useNativeDriver true})))
-
 (defn render-inline [message-text outgoing pinned content-type acc {:keys [type literal destination]}]
   (case type
     ""
@@ -344,6 +337,7 @@
       (let [style-opts {:outgoing outgoing
                         :width    (first @dimensions)
                         :height   (second @dimensions)}]
+
         [:<>
          [preview/preview-image {:message  message
                                  :visible  @visible
