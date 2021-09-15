@@ -80,6 +80,7 @@
    "wakuext_deleteMessage" {}
    "wakuext_markMessagesSeen" {}
    "wakuext_markAllRead" {}
+   "wakuext_markAllReadInCommunity" {}
    "wakuext_confirmMessagesProcessedByID" {}
    "wakuext_updateMessageOutgoingStatus" {}
    "wakuext_chatMessages" {}

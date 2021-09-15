@@ -117,6 +117,12 @@
                     true
                     name
                     (or color (rand-nth colors/chat-colors))])}]
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/mark-all-read)
+       :accessibility-label :mark-all-read-button
+       :icon                :main-icons/check
+       :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-in-community-pressed id])}]
      (when can-manage-users?
        [:<>
         [quo/list-item

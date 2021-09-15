@@ -45,12 +45,21 @@
   (when current-chat-id
     {:db (assoc-in db [:pagination-info current-chat-id :loading-messages?] false)}))
 
+(defn mark-chat-all-read
+  [db chat-id]
+  (update-in db [:chats chat-id] assoc
+             :unviewed-messages-count 0
+             :unviewed-mentions-count 0))
+
 (fx/defn handle-mark-all-read-successful
   {:events [::mark-all-read-successful]}
   [{:keys [db]} chat-id]
-  {:db (update-in db [:chats chat-id] assoc
-                  :unviewed-messages-count 0
-                  :unviewed-mentions-count 0)})
+  {:db (mark-chat-all-read db chat-id)})
+
+(fx/defn handle-mark-all-read-in-community-successful
+  {:events [::mark-all-read-in-community-successful]}
+  [{:keys [db]} chat-ids]
+  {:db (reduce mark-chat-all-read db chat-ids)})
 
 (fx/defn handle-mark-all-read
   {:events [:chat.ui/mark-all-read-pressed :chat/mark-all-as-read]}
@@ -59,6 +68,14 @@
    ::json-rpc/call [{:method     (json-rpc/call-ext-method "markAllRead")
                      :params     [chat-id]
                      :on-success #(re-frame/dispatch [::mark-all-read-successful chat-id])}]})
+
+(fx/defn handle-mark-mark-all-read-in-community
+  {:events [:chat.ui/mark-all-read-in-community-pressed]}
+  [_ community-id]
+  {:clear-message-notifications community-id
+   ::json-rpc/call [{:method     (json-rpc/call-ext-method "markAllReadInCommunity")
+                     :params     [community-id]
+                     :on-success #(re-frame/dispatch [::mark-all-read-in-community-successful %])}]})
 
 (fx/defn messages-loaded
   "Loads more messages for current chat"
