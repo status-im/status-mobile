@@ -19,6 +19,8 @@
             [status-im.ui.screens.chat.message.reactions :as reactions]
             [status-im.ui.screens.chat.image.preview.views :as preview]
             [quo.core :as quo]
+            [status-im.ui.components.animation :as animation]
+            [quo.react-native :as rn]
             [status-im.utils.config :as config]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.components.reply :as components.reply]
@@ -29,7 +31,7 @@
 
 (defview mention-element [from]
   (letsubs [contact-name [:contacts/contact-name-by-identity from]]
-    contact-name))
+           contact-name))
 
 (def edited-at-text (str " ⌫ " (i18n/label :t/edited)))
 
@@ -64,25 +66,32 @@
 (defview quoted-message
   [_ {:keys [from parsed-text image]} outgoing current-public-key public? pinned]
   (letsubs [contact-name [:contacts/contact-name-by-identity from]]
-    [react/view {:style (style/quoted-message-container (and outgoing (not pinned)))}
-     [react/view {:style style/quoted-message-author-container}
-      [chat.utils/format-reply-author
-       from
-       contact-name
-       current-public-key
-       (partial style/quoted-message-author (and outgoing (not pinned)))
-       (and outgoing (not pinned))]]
-     (if (and image
+           [react/view {:style (style/quoted-message-container (and outgoing (not pinned)))}
+            [react/view {:style style/quoted-message-author-container}
+             [chat.utils/format-reply-author
+              from
+              contact-name
+              current-public-key
+              (partial style/quoted-message-author (and outgoing (not pinned)))
+              (and outgoing (not pinned))]]
+            (if (and image
               ;; Disabling images for public-chats
-              (not public?))
-       [react/image {:style  {:width            56
-                              :height           56
-                              :background-color :black
-                              :border-radius    4}
-                     :source {:uri image}}]
-       [react/text {:style           (style/quoted-message-text (and outgoing (not pinned)))
-                    :number-of-lines 5}
-        (components.reply/get-quoted-text-with-mentions parsed-text)])]))
+                     (not public?))
+              [react/image {:style  {:width            56
+                                     :height           56
+                                     :background-color :black
+                                     :border-radius    4}
+                            :source {:uri image}}]
+              [react/text {:style           (style/quoted-message-text (and outgoing (not pinned)))
+                           :number-of-lines 5}
+               (components.reply/get-quoted-text-with-mentions parsed-text)])]))
+
+
+(defn translate-anim [translate-x-value translate-x-anim-value]
+  (animation/start
+   (animation/spring translate-x-anim-value {:toValue         translate-x-value
+                                             :duration        200
+                                             :useNativeDriver true})))
 
 (defn render-inline [message-text outgoing pinned content-type acc {:keys [type literal destination]}]
   (case type
@@ -245,42 +254,42 @@
 
 (defview message-author-name [from opts]
   (letsubs [contact-with-names [:contacts/contact-by-identity from]]
-    (chat.utils/format-author contact-with-names opts)))
+           (chat.utils/format-author contact-with-names opts)))
 
 (defview message-my-name [opts]
   (letsubs [contact-with-names [:multiaccount/contact]]
-    (chat.utils/format-author contact-with-names opts)))
+           (chat.utils/format-author contact-with-names opts)))
 
 (defview community-content [{:keys [community-id] :as message}]
   (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]
             communities-enabled? [:communities/enabled?]]
-    (when (and communities-enabled? community)
-      [react/view {:style (assoc (style/message-wrapper message)
-                                 :margin-vertical 10
-                                 :margin-left 8
-                                 :width 271)}
-       (when verified
-         [react/view (style/community-verified)
-          [react/text {:style {:font-size 13
-                               :color colors/blue}} (i18n/label :t/communities-verified)]])
-       [react/view (style/community-message verified)
-        [react/view {:width 62
-                     :padding-left 14}
-         (if (= community-id constants/status-community-id)
-           [react/image {:source (resources/get-image :status-logo)
-                         :style {:width 40
-                                 :height 40}}]
-           [communities.icon/community-icon community])]
-        [react/view {:padding-right 14 :flex 1}
-         [react/text {:style {:font-weight "700" :font-size 17}}
-          name]
-         [react/text description]]]
-       [react/view (style/community-view-button)
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
-                                                                   :community
-                                                                   {:community-id (:id community)}])}
-         [react/text {:style {:text-align :center
-                              :color colors/blue}} (i18n/label :t/view)]]]])))
+           (when (and communities-enabled? community)
+             [react/view {:style (assoc (style/message-wrapper message)
+                                        :margin-vertical 10
+                                        :margin-left 8
+                                        :width 271)}
+              (when verified
+                [react/view (style/community-verified)
+                 [react/text {:style {:font-size 13
+                                      :color colors/blue}} (i18n/label :t/communities-verified)]])
+              [react/view (style/community-message verified)
+               [react/view {:width 62
+                            :padding-left 14}
+                (if (= community-id constants/status-community-id)
+                  [react/image {:source (resources/get-image :status-logo)
+                                :style {:width 40
+                                        :height 40}}]
+                  [communities.icon/community-icon community])]
+               [react/view {:padding-right 14 :flex 1}
+                [react/text {:style {:font-weight "700" :font-size 17}}
+                 name]
+                [react/text description]]]
+              [react/view (style/community-view-button)
+               [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
+                                                                          :community
+                                                                          {:community-id (:id community)}])}
+                [react/text {:style {:text-align :center
+                                     :color colors/blue}} (i18n/label :t/view)]]]])))
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
@@ -407,14 +416,41 @@
         :label    (i18n/label :t/delete)
         :id       :delete}]))))
 
+(defn swipe-pan-responder [translate-x pan-state message]
+  (js->clj (.-panHandlers
+            ^js (.create
+                 ^js rn/pan-responder
+                 #js {:onStartShouldSetPanResponder (fn [] true)
+                      :onMoveShouldSetPanResponderCapture (fn [_ ^js state]
+                                                            (and (<= (.-moveX state) -20) (>= (.-moveX state) 0)))
+                      :onPanResponderGrant (fn []
+                                             (animation/set-value pan-state 1))
+                      :onPanResponderMove  (fn [_ ^js state]
+                                             (when (> (.-dx state) 20)
+                                               (animation/set-value translate-x (.-dx state))))                      
+                      :onPanResponderRelease (fn [_ ^js state]
+                                               (when (> (.-dx state) 20)
+                                                 (re-frame/dispatch [:chat.ui/reply-to-message message]))
+                                               (animation/set-value pan-state 0)
+                                               (js/setTimeout
+                                                (animation/set-value translate-x 0) 100))
+                      :onPanResponderTerminate (fn []
+                                                 (animation/set-value pan-state 0)
+                                                 (js/setTimeout
+                                                  (animation/set-value translate-x 0) 100))}))))
+
 (defn collapsible-text-message [{:keys [mentioned]} _]
   (let [collapsed?   (reagent/atom false)
-        collapsible? (reagent/atom false)]
+        collapsible? (reagent/atom false)
+        translate-x (animation/create-value 0)
+        pan-state (animation/create-value 0)
+        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [0 1] :outputRange [0 0.5]})]
     (fn [{:keys [content outgoing current-public-key public? pinned in-popover?] :as message} on-long-press modal]
       (let [max-height (when-not (or outgoing modal)
                          (if @collapsible?
                            (if @collapsed? message-height-px nil)
-                           message-height-px))]
+                           message-height-px))
+            pan-responder (swipe-pan-responder translate-x pan-state message)]
         [react/touchable-highlight
          (when-not modal
            {:on-press         (fn [_]
@@ -426,40 +462,45 @@
                                       (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
                                   (on-long-press-fn on-long-press message content)))
             :disabled         in-popover?})
-         [react/view {:style (style/message-view message)}
-          [react/view {:style      (style/message-view-content)
-                       :max-height max-height}
-           (let [response-to (:response-to content)]
-             [react/view {:on-layout
-                          #(when (and (> (.-nativeEvent.layout.height ^js %) max-message-height-px)
-                                      (not @collapsible?)
-                                      (not outgoing)
-                                      (not modal))
-                             (reset! collapsed? true)
-                             (reset! collapsible? true))}
-              (when (and (seq response-to) (:quoted-message message))
-                [quoted-message response-to (:quoted-message message) outgoing current-public-key public? pinned])
-              [render-parsed-text-with-timestamp message (:parsed-text content)]])
-           (when-not @collapsed?
-             [message-timestamp message true])
-           (when (and @collapsible? (not modal))
-             (if @collapsed?
-               (let [color (if pinned colors/pin-background (if mentioned colors/mentioned-background colors/blue-light))]
-                 [react/touchable-highlight
-                  {:on-press #(swap! collapsed? not)
-                   :style    {:position :absolute :bottom 0 :left 0 :right 0 :height 72}}
-                  [react/linear-gradient {:colors [(str color "00") color]
-                                          :start  {:x 0 :y 0} :end {:x 0 :y 0.9}}
-                   [react/view {:height         72 :align-self :center :justify-content :flex-end
-                                :padding-bottom 10}
-                    [react/view (style/collapse-button)
-                     [icons/icon :main-icons/dropdown
-                      {:color colors/white}]]]]])
-               [react/touchable-highlight {:on-press #(swap! collapsed? not)
-                                           :style    {:align-self :center :margin 5}}
-                [react/view (style/collapse-button)
-                 [icons/icon :main-icons/dropdown-up
-                  {:color colors/white}]]]))]]]))))
+         [react/view
+          [react/animated-view
+           (when-not outgoing
+             (merge pan-responder
+                    {:style {:transform [{:translateX translate-x-anim-value}]}}))
+           [react/view {:style (style/message-view message)}
+            [react/view {:style      (style/message-view-content)
+                         :max-height max-height}
+             (let [response-to (:response-to content)]
+               [react/view {:on-layout
+                            #(when (and (> (.-nativeEvent.layout.height ^js %) max-message-height-px)
+                                        (not @collapsible?)
+                                        (not outgoing)
+                                        (not modal))
+                               (reset! collapsed? true)
+                               (reset! collapsible? true))}
+                (when (and (seq response-to) (:quoted-message message))
+                  [quoted-message response-to (:quoted-message message) outgoing current-public-key public? pinned])
+                [render-parsed-text-with-timestamp message (:parsed-text content)]])
+             (when-not @collapsed?
+               [message-timestamp message true])
+             (when (and @collapsible? (not modal))
+               (if @collapsed?
+                 (let [color (if pinned colors/pin-background (if mentioned colors/mentioned-background colors/blue-light))]
+                   [react/touchable-highlight
+                    {:on-press #(swap! collapsed? not)
+                     :style    {:position :absolute :bottom 0 :left 0 :right 0 :height 72}}
+                    [react/linear-gradient {:colors [(str color "00") color]
+                                            :start  {:x 0 :y 0} :end {:x 0 :y 0.9}}
+                     [react/view {:height         72 :align-self :center :justify-content :flex-end
+                                  :padding-bottom 10}
+                      [react/view (style/collapse-button)
+                       [icons/icon :main-icons/dropdown
+                        {:color colors/white}]]]]])
+                 [react/touchable-highlight {:on-press #(swap! collapsed? not)
+                                             :style    {:align-self :center :margin 5}}
+                  [react/view (style/collapse-button)
+                   [icons/icon :main-icons/dropdown-up
+                    {:color colors/white}]]]))]]]]]))))
 
 (defmethod ->message constants/content-type-text
   [message {:keys [on-long-press modal] :as reaction-picker}]
