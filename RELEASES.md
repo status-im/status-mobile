@@ -1,3 +1,44 @@
+## 1.16
+
+### For iOS and Android
+
+### Features
+
+- EIP-1159 support ([#12369](https://github.com/status-im/status-react/pull/12369))
+- Hide/show option for accounts in the wallet ([#12438](https://github.com/status-im/status-react/pull/12438))
+- Delete accounts in wallet ([#12444](https://github.com/status-im/status-react/pull/12444))
+- Enable keeping database when migrating account to keycard ([#12306](https://github.com/status-im/status-react/pull/12306))
+- Replies from group chat in activity centre ([#12266](https://github.com/status-im/status-react/pull/12266))
+
+### Improvements
+
+- Remove clear history from non-public chats ([#12384](https://github.com/status-im/status-react/pull/12384))
+- Clearing push notifications on read (Android) ([#12464](https://github.com/status-im/status-react/pull/12464))
+- Enable migration to keycard from signed-in state ([#11778](https://github.com/status-im/status-react/issues/11778))
+
+### Bug Fixes
+
+#### Chat
+
+- Fix Error when opening 1-1 chat in Activity center for blocked user ([#12399](https://github.com/status-im/status-react/pull/12399))
+- Long press is long and it makes the message disappear entirely ([#12445](https://github.com/status-im/status-react/pull/12445))
+- Sort pinned messages by time of pinning ([#12402](https://github.com/status-im/status-react/pull/12402))
+- Screens with overlapping long usernames ([#12471](https://github.com/status-im/status-react/pull/12471))
+
+#### Browser (Dapp)
+
+- Fix some token swap errors in Uniswap ([#12417](https://github.com/status-im/status-react/pull/12417))
+- Update react-native-webview for better SSL handling ([#12409](https://github.com/status-im/status-react/pull/12409))
+
+#### Keycard
+
+- App freezes until reopening when signing tx with frozen Keycard ([#12473](https://github.com/status-im/status-react/pull/12473))
+
+#### Wallet
+
+- Allow to add assets with same name ([#12466](https://github.com/status-im/status-react/pull/12466))
+- Update DATAcoin name ([#12454](https://github.com/status-im/status-react/pull/12454))
+
 ## 1.15
 
 ### For iOS and Android
