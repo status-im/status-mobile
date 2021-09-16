@@ -7089,6 +7089,10 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
+"rn-emoji-keyboard@git+https://github.com/status-im/rn-emoji-keyboard.git#v0.4.1":
+  version "0.4.1"
+  resolved "git+https://github.com/status-im/rn-emoji-keyboard.git#a7f609dd361314bff9ded025cc26ec20917daa0f"
+
 "rn-snoopy@git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status":
   version "2.0.2"
   resolved "git+https://github.com/status-im/rn-snoopy.git#f23dc13469c6c2a694649f658cdc1d1eaf8def64"

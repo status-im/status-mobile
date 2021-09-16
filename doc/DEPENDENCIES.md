@@ -160,3 +160,7 @@ fixed because even bugfix version upgrade causes runtime errors with current ver
 ## "web3-utils": "^1.2.1"
 
 used for some abi encoding primitives
+
+## "rn-emoji-keyboard": "https://github.com/status-im/rn-emoji-keyboard"
+
+Used for taking emoji input, for custom emoji thumbnails for community channels

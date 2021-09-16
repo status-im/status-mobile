@@ -6,7 +6,8 @@
             [status-im.ui.components.chat-icon.styles :as styles]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.photos :as photos]))
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
 
 ;;TODO REWORK THIS NAMESPACE
 
@@ -37,14 +38,31 @@
      (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
        [photos/photo photo-path styles]))])
 
+(defn emoji-chat-icon [emoji styles]
+  (when-not (emoji-utils/not-emoji? emoji)
+    [react/view (:default-chat-icon styles)
+     [react/text {:style (:default-chat-icon-text styles)} emoji]]))
+
+(defn emoji-chat-icon-view
+  [chat-id group-chat name emoji styles]
+  [react/view (:container styles)
+   (if group-chat
+     (if (emoji-utils/not-emoji? emoji)
+       [default-chat-icon name styles]
+       [emoji-chat-icon emoji styles])
+     (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
+       [photos/photo photo-path styles]))])
+
 (defn chat-icon-view-toolbar
-  [chat-id group-chat name color]
-  [chat-icon-view chat-id group-chat name
+  [chat-id group-chat name color emoji]
+  [emoji-chat-icon-view chat-id group-chat name emoji
    {:container              styles/container-chat-toolbar
     :size                   36
     :chat-icon              styles/chat-icon-chat-toolbar
     :default-chat-icon      (styles/default-chat-icon-chat-toolbar color)
-    :default-chat-icon-text (styles/default-chat-icon-text 36)}])
+    :default-chat-icon-text (if (emoji-utils/not-emoji? emoji)
+                              (styles/default-chat-icon-text 36)
+                              (styles/emoji-chat-icon-text 36))}])
 
 (defn chat-icon-view-chat-list
   [chat-id group-chat name color]
@@ -90,6 +108,15 @@
 (defn chat-intro-icon-view [icon-text chat-id group-chat styles]
   (if group-chat
     [default-chat-icon icon-text styles]
+    (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
+      (if-not (string/blank? photo-path)
+        [photos/photo photo-path styles]))))
+
+(defn emoji-chat-intro-icon-view [icon-text chat-id group-chat emoji styles]
+  (if group-chat
+    (if (emoji-utils/not-emoji? emoji)
+      [default-chat-icon icon-text styles]
+      [emoji-chat-icon emoji styles])
     (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
       (if-not (string/blank? photo-path)
         [photos/photo photo-path styles]))))

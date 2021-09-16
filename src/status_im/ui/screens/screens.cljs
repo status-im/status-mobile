@@ -30,6 +30,7 @@
             [status-im.ui.screens.communities.profile :as community.profile]
             [status-im.ui.screens.communities.edit :as community.edit]
             [status-im.ui.screens.communities.create-channel :as create-channel]
+            [status-im.ui.screens.communities.community-emoji-thumbnail-picker :as community-emoji-thumbnail-picker]
             [status-im.ui.screens.communities.membership :as membership]
             [status-im.ui.screens.communities.members :as members]
             [status-im.ui.screens.communities.requests-to-join :as requests-to-join]
@@ -265,6 +266,10 @@
             :insets    {:bottom true}
             :options   {:topBar {:title {:text (i18n/label :t/create-channel-title)}}}
             :component create-channel/view}
+           {:name      :community-emoji-thumbnail-picker
+            :insets    {:bottom true}
+            :options   {:topBar {:title {:text (i18n/label :t/community-emoji-thumbnail-title)}}}
+            :component community-emoji-thumbnail-picker/view}
            {:name      :create-community-category
             :insets    {:bottom true}
             :options   {:topBar {:title {:text (i18n/label :t/new-category)}}}

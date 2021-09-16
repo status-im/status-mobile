@@ -1,9 +1,9 @@
 {
-    "_comment": "THIS SHOULD NOT BE EDITTED BY HAND.",
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.86.7",
-    "commit-sha1": "93497f464410864ecf386e7494a544969ba9bd9e",
-    "src-sha256": "01kvn8bkijrlxar3ky2cyiwxvzig8h23wl3cazx4zamqgpnpijhq"
+    "version": "feature/custom_channel_thumbnails",
+    "commit-sha1": "6579e573f989c283d9b426c0182cedcb6f9d4419",
+    "src-sha256": "19h3z1awjk656vp17gxvbp6mj1gv82zr2zlk778gclbrhmxfxzil"
 }
