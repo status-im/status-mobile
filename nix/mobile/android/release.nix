@@ -24,6 +24,7 @@ let
 
   buildType = getConfig "build-type" "release";
   buildNumber = getConfig "build-number" 9999;
+  commitHash = getConfig "commit-hash" "unknown";
   gradleOpts = getConfig "android.gradle-opts" null;
   # Used to detect end-to-end builds
   androidAbiInclude = getConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
@@ -153,6 +154,7 @@ in stdenv.mkDerivation rec {
       -Dorg.gradle.daemon=false \
       -Dmaven.repo.local='${deps.gradle}' \
       -PversionCode=${toString buildNumber} \
+      -PcommitHash=${commitHash} \
       assemble${gradleBuildType} \
       || exit 1
     popd > /dev/null

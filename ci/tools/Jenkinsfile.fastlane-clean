@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.2.18'
+library 'status-jenkins-lib@v1.3.2'
 
 pipeline {
   agent { label 'macos' }

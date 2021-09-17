@@ -32,6 +32,7 @@ fi
 if [[ "${ANDROID_APK_SIGNED}" == "true" ]]; then
   config+="status-im.android.keystore-path=\"$(must_get_env KEYSTORE_PATH)\";"
 fi
+config+="status-im.commit-hash=\"$(git rev-parse --verify HEAD)\";"
 config+="status-im.build-type=\"$(must_get_env BUILD_TYPE)\";"
 config+="status-im.build-number=\"$(must_get_env BUILD_NUMBER)\";"
 config+="status-im.android.apk-signed=\"$(must_get_env ANDROID_APK_SIGNED)\";"

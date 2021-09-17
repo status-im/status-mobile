@@ -128,6 +128,13 @@ def enableHermes = project.ext.react.get("enableHermes", false);
  */
 def googleFree = project.env.get("GOOGLE_FREE", false)
 
+def getCommitHash = { ->
+    if (project.hasProperty("commitHash")) {
+        return project.commitHash
+    }
+    return "unknown"
+}
+
 def getVersionCode = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
         if (project.hasProperty("versionCode")) {
@@ -184,6 +191,7 @@ android {
         versionCode getVersionCode()
         versionName getVersionName()
         missingDimensionStrategy 'react-native-camera', 'general'
+        manifestPlaceholders = [commitHash: getCommitHash()]
         /* this needs to be empty if we want APKs split by ABIs */
         if (!getEnvOrConfig('ANDROID_ABI_SPLIT').toBoolean()) {
             ndk {

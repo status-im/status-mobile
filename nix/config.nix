@@ -3,6 +3,7 @@
   status-im = {
     build-type = "pr";       # Build type (influences which .env file gets used for feature flags)
     build-number = 9999;     # Used for versionCode and CFBundleVersion in Android and iOS respectively
+    commit-hash = "unknown"; # Included in APK Manifest for easier identification.
 
     android = {
       gradle-opts = null;    # Gradle options passed for Android builds
