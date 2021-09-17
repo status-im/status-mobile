@@ -270,30 +270,23 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
 
-        home_1.just_fyi('join public chat and check that stickers are not available on Ropsten')
+        home_1.just_fyi('Join public chat and check that stickers are not available on Ropsten')
         chat_name = home_1.get_random_chat_name()
         home_1.join_public_chat(chat_name)
         public_chat_1 = home_1.get_chat_view()
         if public_chat_1.show_stickers_button.is_element_displayed():
             self.errors.append('Sticker button is shown while on Ropsten')
 
-        home_1.just_fyi('switch to mainnet')
+        home_1.just_fyi('Switch to mainnet on both devices')
         public_chat_1.get_back_to_home_view()
-        device_1_profile, device_2_profile = home_1.profile_button.click(), home_2.profile_button.click()
-        device_2_public_key = device_2_profile.get_public_key_and_username()
-        device_1_public_key, device_1_username = device_1_profile.get_public_key_and_username(return_username=True)
-
-        for device in device_2_profile, device_1_profile:
-            device.switch_network('Mainnet with upstream RPC')
+        profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
+        public_key_2 = profile_2.get_public_key_and_username()
+        public_key_1, username_1 = profile_1.get_public_key_and_username(return_username=True)
+        [profile.switch_network() for profile in (profile_2, profile_1)]
         home_1.get_chat('#' + chat_name).click()
 
-        home_1.just_fyi('install free sticker pack and use it in public chat')
-        public_chat_1.show_stickers_button.click()
-        public_chat_1.get_stickers.click()
-        public_chat_1.install_sticker_pack_by_name('Status Cat')
-        public_chat_1.back_button.click()
-        time.sleep(2)
-        public_chat_1.swipe_left()
+        home_1.just_fyi('Install free sticker pack and use it in public chat')
+        public_chat_1.install_sticker_pack_by_name()
         public_chat_1.sticker_icon.click()
         if not public_chat_1.sticker_message.is_element_displayed():
             self.errors.append('Sticker was not sent')
@@ -302,15 +295,15 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('Sticker is not shown in recently used list')
         public_chat_1.get_back_to_home_view()
 
-        home_1.just_fyi('send stickers in 1-1 chat from Recent')
-        private_chat_1 = home_1.add_contact(device_2_public_key)
+        home_1.just_fyi('Send stickers in 1-1 chat from Recent')
+        private_chat_1 = home_1.add_contact(public_key_2)
         private_chat_1.show_stickers_button.click()
         private_chat_1.sticker_icon.click()
         if not private_chat_1.chat_item.is_element_displayed():
             self.errors.append('Sticker was not sent from Recent')
 
-        home_2.just_fyi('check that can install stickers by tapping on sticker message')
-        private_chat_2 = home_2.get_chat(device_1_username).click()
+        home_2.just_fyi('Check that can install stickers by tapping on sticker message')
+        private_chat_2 = home_2.get_chat(username_1).click()
         private_chat_2.chat_item.click()
         if not private_chat_2.element_by_text_part('Status Cat').is_element_displayed():
             self.errors.append('Stickerpack is not available for installation after tapping on sticker message')
@@ -318,7 +311,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if private_chat_2.element_by_text_part('Free').is_element_displayed():
             self.errors.append('Stickerpack was not installed')
 
-        home_2.just_fyi('check that can navigate to another user profile via long tap on sticker message')
+        home_2.just_fyi('Check that can navigate to another user profile via long tap on sticker message')
         private_chat_2.close_sticker_view_icon.click()
         private_chat_2.chat_item.long_press_element()
         private_chat_2.element_by_text('View Details').click()
@@ -690,12 +683,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2 = home_2.add_contact(public_key_1)
 
         home_2.just_fyi('Install free sticker pack and use it in 1-1 chat')
-        chat_2.show_stickers_button.click()
-        chat_2.get_stickers.click()
-        chat_2.install_sticker_pack_by_name('Status Cat')
-        chat_2.back_button.click()
-        time.sleep(2)
-        chat_2.swipe_left()
+        chat_2.install_sticker_pack_by_name()
         chat_1 = home_1.add_contact(public_key_2)
 
         # methods with steps to use later in loop
@@ -900,21 +888,14 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
     def test_can_use_purchased_stickers_on_recovered_account(self):
         sign_in = SignInView(self.driver)
         home_view = sign_in.recover_access(ens_user['passphrase'])
-
-        sign_in.just_fyi('switch to Mainnet')
         profile = home_view.profile_button.click()
-        profile.switch_network('Mainnet with upstream RPC')
+        profile.switch_network()
 
         sign_in.just_fyi('join to public chat, buy and install stickers')
         chat = home_view.join_public_chat(home_view.get_random_chat_name())
-        chat.show_stickers_button.click()
-        chat.get_stickers.click()
         chat.install_sticker_pack_by_name('Tozemoon')
-        chat.back_button.click()
 
         sign_in.just_fyi('check that can use installed pack')
-        time.sleep(2)
-        chat.swipe_left()
         chat.sticker_icon.click()
         if not chat.chat_item.is_element_displayed():
             self.driver.fail('Sticker was not sent')
@@ -975,20 +956,18 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
     def test_can_scan_qr_with_chat_key_from_home_start_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.recover_access(basic_user['passphrase'])
-        profile = home.profile_button.click()
-        profile.switch_network()
 
         url_data = {
             'ens_with_stateofus_domain_deep_link': {
-                'url': 'https://join.status.im/u/%s.stateofus.eth' % ens_user['ens'],
-                'username': ens_user['username']
+                'url': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_ropsten['ens'],
+                'username': ens_user_ropsten['username']
             },
             'ens_without_stateofus_domain_deep_link': {
                 'url': 'https://join.status.im/u/%s' % ens_user['ens'],
                 'username': ens_user['username']
             },
             'ens_another_domain_deep_link': {
-                'url': 'status-im://u/%s' % ens_user['ens_another_domain'],
+                'url': 'status-im://u/%s' % ens_user['ens_another'],
                 'username': ens_user['username']
             },
             'own_profile_key_deep_link': {
@@ -1005,7 +984,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             },
             # TODO: comment until clarification case with scanning QR with ENS names only
             # 'ens_another_domain':{
-            #     'url': ens_user['ens_another_domain'],
+            #     'url': ens_user['ens_another'],
             #     'username': ens_user['username']
             # },
             'own_profile_key': {
@@ -1035,18 +1014,18 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 contacts.allow_button.click()
             contacts.enter_qr_edit_box.scan_qr(url_data[key]['url'])
             from views.chat_view import ChatView
-            chat_view = ChatView(self.driver)
+            chat = ChatView(self.driver)
             if url_data[key].get('error'):
-                if not chat_view.element_by_text_part(url_data[key]['error']).is_element_displayed():
+                if not chat.element_by_text_part(url_data[key]['error']).is_element_displayed():
                     self.errors.append('Expected error %s is not shown' % url_data[key]['error'])
-                chat_view.ok_button.click()
+                chat.ok_button.click()
             if url_data[key].get('username'):
-                if not chat_view.chat_message_input.is_element_displayed():
+                if not chat.chat_message_input.is_element_displayed():
                     self.errors.append(
                         'In "%s" case chat input is not found after scanning, so no redirect to 1-1' % key)
-                if not chat_view.element_by_text(url_data[key]['username']).is_element_displayed():
+                if not chat.element_by_text(url_data[key]['username']).is_element_displayed():
                     self.errors.append('In "%s" case "%s" not found after scanning' % (key, url_data[key]['username']))
-                chat_view.get_back_to_home_view()
+                chat.get_back_to_home_view()
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6322)

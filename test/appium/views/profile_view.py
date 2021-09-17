@@ -452,15 +452,18 @@ class ProfileView(BaseView):
         if i == 5:
             self.driver.fail("Failed to connect after %s attempts" % i)
 
-    def connect_existing_status_ens(self, name):
+    def connect_existing_ens(self, name, is_stateofus=False):
         self.driver.info("**Connect existing ENS: %s**" % name)
-        profile = self.profile_button.click()
-        profile.switch_network('Mainnet with upstream RPC')
-        self.profile_button.click()
         dapp_view = self.ens_usernames_button.click()
         dapp_view.element_by_translation_id("get-started").click()
+        if not is_stateofus:
+            dapp_view.element_by_translation_id("ens-want-custom-domain").click()
         dapp_view.ens_name_input.set_value(name)
-        dapp_view.check_ens_name.click_until_presence_of_element(self.element_by_translation_id("ens-got-it"))
+        expected_text = dapp_view.get_translation_by_key("ens-username-connected")
+        if not dapp_view.element_by_text_part(expected_text).is_element_displayed():
+            dapp_view.click_system_back_button()
+            dapp_view.element_by_text_part(expected_text).wait_for_element(30)
+        dapp_view.check_ens_name.click_until_presence_of_element(dapp_view.element_by_translation_id("ens-got-it"))
         dapp_view.element_by_translation_id("ens-got-it").click()
         return dapp_view
 

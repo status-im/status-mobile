@@ -115,8 +115,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet.get_account_by_name(account_name).click()
         send_transaction = wallet.send_transaction(account_name=wallet.status_account_name,
                                                         amount=transaction_amount_1,
-                                                        keycard=True,
-                                                        default_gas_price=True)
+                                                        keycard=True)
         wallet.close_button.click()
         sub_account_address = wallet.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(sub_account_address, transaction_amount_1)
@@ -153,6 +152,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.accounts_button.click()
         send_transaction.element_by_text(wallet.status_account_name).click()
         send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction(keycard=True, default_gas_price=True)
+        send_transaction.sign_transaction(keycard=True)
         wallet.element_by_text('Assets').click()
         wallet.wait_balance_is_equal_expected_amount(asset='ETH', expected_balance=0)

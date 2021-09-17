@@ -116,31 +116,25 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5502)
     @marks.critical
-    def test_can_add_existing_ens(self):
+    def test_can_add_existing_ens_on_mainnet(self):
         home = SignInView(self.driver).recover_access(ens_user['passphrase'])
         profile = home.profile_button.click()
-        profile.switch_network('Mainnet with upstream RPC')
+
+        profile.just_fyi('check if your name can be added via "ENS usernames" in Profile')
+        profile.switch_network()
         home.profile_button.click()
-        dapp = profile.ens_usernames_button.click()
+        profile.connect_existing_ens(ens_user['ens'])
 
-        dapp.just_fyi('check if your name can be added via "ENS usernames" in Profile')
-        dapp.element_by_text('Get started').click()
-        dapp.ens_name_input.set_value(ens_user['ens'])
-        dapp.check_ens_name.click_until_absense_of_element(dapp.check_ens_name)
-        if not dapp.element_by_translation_id('ens-saved-title').is_element_displayed():
-            self.errors.append('No message "Username added" after resolving own username')
-        dapp.element_by_translation_id("ens-got-it").click()
-
-        dapp.just_fyi('check that after adding username is shown in "ENS usernames" and profile')
-        if not dapp.element_by_text(ens_user['ens']).is_element_displayed():
+        profile.just_fyi('check that after adding username is shown in "ENS usernames" and profile')
+        if not profile.element_by_text(ens_user['ens']).is_element_displayed():
             self.errors.append('No ENS name is shown in own "ENS usernames" after adding')
-        dapp.back_button.click()
-        if not dapp.element_by_text('@%s' % ens_user['ens']).is_element_displayed():
+        profile.back_button.click()
+        if not profile.element_by_text('@%s' % ens_user['ens']).is_element_displayed():
             self.errors.append('No ENS name is shown in own profile after adding')
-        if not dapp.element_by_text('%s.stateofus.eth' % ens_user['ens']).is_element_displayed():
+        if not profile.element_by_text('%s' % ens_user['ens']).is_element_displayed():
             self.errors.append('No ENS name is shown in own profile after adding')
         profile.share_my_profile_button.click()
-        if profile.ens_name_in_share_chat_key_text.text != '%s.stateofus.eth' % ens_user['ens']:
+        if profile.ens_name_in_share_chat_key_text.text != '%s' % ens_user['ens']:
             self.errors.append('No ENS name is shown on tapping on share icon in Profile')
         profile.close_share_popup()
 
@@ -201,7 +195,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         home.profile_button.click()
         profile.logout()
         self.driver.reset()
-        home.recover_access(recovery_phrase)
+        SignInView(self.driver).recover_access(recovery_phrase)
         wallet = home.wallet_button.click()
         if wallet.get_wallet_address() != address:
             self.driver.fail("Seed phrase displayed in new accounts for back up does not recover respective address")
@@ -233,8 +227,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         home.just_fyi('Check empty contacts view')
         profile = home.profile_button.click()
-        profile.switch_network()
-        home.profile_button.click()
         profile.contacts_button.click()
         if not profile.add_new_contact_button.is_element_displayed():
             self.driver.fail('No expected element on contacts view')
@@ -253,8 +245,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
                 'username': basic_user['username'],
             },
             'pasting_ens_another_domain': {
-                'contact_code': ens_user['ens_another_domain'],
-                'username': '@%s' % ens_user['ens_another_domain'],
+                'contact_code': ens_user['ens_another'],
+                'username': '@%s' % ens_user['ens_another'],
                 'nickname': 'my_dear_friend'
             },
 
@@ -283,7 +275,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
                     self.errors.append('In %s case nickname %s not found in contact view after scanning' % (key, users[key]['nickname']))
 
         home.just_fyi('Remove contact and check that it disappeared')
-        user_to_remove = '@%s' % ens_user['ens_another_domain']
+        user_to_remove = '@%s' % ens_user['ens_another']
         profile.element_by_text(user_to_remove).click()
         chat.remove_from_contacts.click()
         chat.close_button.click()
@@ -293,7 +285,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         home.just_fyi('Relogin and open profile view of the contact removed from Contact list to ensure there is no crash')
         profile.profile_button.click()
         profile.relogin()
-        one_to_one_chat = home.add_contact(public_key=ens_user['ens_another_domain'], add_in_contacts=False)
+        one_to_one_chat = home.add_contact(public_key=ens_user['ens_another'], add_in_contacts=False)
         one_to_one_chat.chat_options.click()
         profile = one_to_one_chat.view_profile_button.click()
         if profile.remove_from_contacts.is_element_displayed():
@@ -550,29 +542,27 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.medium
     def test_set_primary_ens_custom_domain(self):
         home = SignInView(self.driver).recover_access(ens_user['passphrase'])
-        ens_not_stateofus = ens_user['ens_another_domain']
-        ens_stateofus = ens_user['ens']
+        ens_second, ens_main = ens_user['ens_another'], ens_user['ens']
 
         home.just_fyi('add 2 ENS names in Profile')
         profile = home.profile_button.click()
-        dapp = profile.connect_existing_status_ens(ens_stateofus)
-        profile.element_by_text("Add username").click()
-        profile.element_by_text_part("another domain").click()
-        dapp.ens_name_input.set_value(ens_not_stateofus)
+        dapp = profile.connect_existing_ens(ens_main)
+        profile.element_by_translation_id("ens-add-username").wait_and_click()
+        profile.element_by_translation_id("ens-want-custom-domain").wait_and_click()
+        dapp.ens_name_input.set_value(ens_second)
         dapp.check_ens_name.click_until_presence_of_element(dapp.element_by_translation_id("ens-got-it"))
-        dapp.element_by_translation_id("ens-got-it").click()
+        dapp.element_by_translation_id("ens-got-it").wait_and_click()
 
-        home.just_fyi('check that by default %s ENS is set' % ens_stateofus)
-        dapp.element_by_text('Primary username').click()
+        home.just_fyi('check that by default %s ENS is set' % ens_main)
+        dapp.element_by_translation_id("ens-primary-username").click()
         message_to_check = 'Your messages are displayed to others with'
-        if not dapp.element_by_text('%s\n@%s.stateofus.eth' % (message_to_check, ens_stateofus)).is_element_displayed():
-             self.errors.append('%s ENS username is not set as primary by default' % ens_stateofus)
+        if not dapp.element_by_text('%s\n@%s' % (message_to_check, ens_main)).is_element_displayed():
+             self.errors.append('%s ENS username is not set as primary by default' % ens_main)
 
-        home.just_fyi('check view in chat settings ENS from other domain: %s after set new primary ENS' % ens_not_stateofus)
-        dapp.set_primary_ens_username(ens_user['ens_another_domain']).click()
-        if profile.username_in_ens_chat_settings_text.text != '@' + ens_not_stateofus:
-            self.errors.append('ENS username %s is not shown in ENS username Chat Settings after enabling' % ens_not_stateofus)
-
+        home.just_fyi('check view in chat settings ENS from other domain: %s after set new primary ENS' % ens_second)
+        dapp.set_primary_ens_username(ens_second).click()
+        if profile.username_in_ens_chat_settings_text.text != '@' + ens_second:
+            self.errors.append('ENS username %s is not shown in ENS username Chat Settings after enabling' % ens_second)
         self.errors.verify_no_errors()
 
 
@@ -651,6 +641,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         one_to_one_chat_2.chat_message_input.click()
         if not one_to_one_chat_2.user_profile_image_in_mentions_list(default_username_1).is_element_image_similar_to_template('sauce_logo.png'):
             self.errors.append('Profile picture was not updated in 1-1 chat mentions list')
+        one_to_one_chat_2.get_back_to_home_view()
 
         profile_1.just_fyi('Check profile image is updated in Group chat view')
         profile_2 = one_to_one_chat_2.profile_button.click()
@@ -659,12 +650,11 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not profile_2.profile_picture.is_element_image_similar_to_template('sauce_logo.png'):
             self.errors.append('Profile picture was not updated on user Profile view')
         profile_2.close_button.click()
-        one_to_one_chat_2.home_button.click(desired_view='home')
+        [home.home_button.click() for home in (profile_2, home_1)]
         if not home_2.get_chat(default_username_1).chat_image.is_element_image_similar_to_template('sauce_logo.png'):
             self.errors.append('User profile picture was not updated on Chats view')
 
         profile_1.just_fyi('Check profile image updated in user profile view in Group chat views 4')
-        home_1.home_button.click(desired_view='home')
         group_chat_message = 'Trololo'
         group_chat_2 = home_2.create_group_chat(user_names_to_add=[default_username_1])
         group_chat_2.send_message('Message')
@@ -865,7 +855,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.confirm_button.click()
 
         profile_1.just_fyi('check that popup "Error connecting" will not reappear if tap on "Cancel"')
-        profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(60)
+        profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(120)
         profile_1.cancel_button.click()
         profile_1.home_button.click()
 
@@ -1056,47 +1046,34 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         user_1 = ens_user
         home_1 = sign_in_1.recover_access(user_1['passphrase'], enable_notifications=True)
         home_2 = sign_in_2.create_user()
-        publuc_key_2, username_2 = home_2.get_public_key_and_username(return_username=True)
+        public_key_2, username_2 = home_2.get_public_key_and_username(return_username=True)
         home_2.home_button.double_click()
-
-        home_1.just_fyi('switching to mainnet and add ENS')
         profile_1 = sign_in_1.profile_button.click()
-        profile_1.switch_network('Mainnet with upstream RPC')
-        home_1.profile_button.click()
-        dapp_1 = profile_1.ens_usernames_button.click()
-        dapp_1.element_by_text('Get started').click()
-        dapp_1.ens_name_input.set_value(ens_user['ens'])
-        expected_text = 'This user name is owned by you and connected with your chat key.'
-        if not dapp_1.element_by_text_part(expected_text).is_element_displayed():
-            dapp_1.click_system_back_button()
-            dapp_1.wait_for_element_starts_with_text(expected_text)
-        dapp_1.check_ens_name.click_until_presence_of_element(dapp_1.element_by_text('Ok, got it'))
-        dapp_1.element_by_text('Ok, got it').click()
+        profile_1.connect_existing_ens(user_1['ens'])
 
         home_1.just_fyi('check ENS name wallet address and public key')
         profile_1.element_by_text(user_1['ens']).click()
-        for text in ('10 SNT, deposit unlocked', user_1['address'].lower(), user_1['public_key'] ):
+        for text in (user_1['address'].lower(), user_1['public_key'] ):
             if not profile_1.element_by_text_part(text).is_element_displayed(40):
                 self.errors.append('%s text is not shown' % text)
         profile_1.home_button.click()
 
         home_2.just_fyi('joining same public chat, set ENS name and check it in chat from device2')
         chat_name = home_1.get_random_chat_name()
-        public_2 = home_2.join_public_chat(chat_name)
-        public_1 = home_1.join_public_chat(chat_name)
-        public_1.get_back_to_home_view()
-        home_1.profile_button.click()
+        [public_1, public_2] = [home.join_public_chat(chat_name) for home in (home_1, home_2)]
+        public_1.home_button.double_click()
+        home_1.profile_button.double_click()
         ens_name = '@' + user_1['ens']
-        profile_1.element_by_text('Your ENS name').click()
+        profile_1.element_by_translation_id("ens-your-your-name").click()
         if profile_1.username_in_ens_chat_settings_text.text != ens_name:
-            self.errors.append('ENS username is not shown in ENS usernames Chat Settings after enabling')
+             self.errors.append('ENS username is not shown in ENS usernames Chat Settings after enabling')
         profile_1.back_button.click()
         profile_1.home_button.click()
         home_1.get_chat('#' + chat_name).click()
         message_text_2 = 'message test text 1'
         public_1.send_message(message_text_2)
         if not public_2.wait_for_element_starts_with_text(ens_name):
-            self.errors.append('ENS username is not shown in public chat')
+             self.errors.append('ENS username is not shown in public chat')
         home_1.put_app_to_background()
 
         home_2.just_fyi('check that can mention user with ENS name')
@@ -1112,7 +1089,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_1.just_fyi('check that PN is received and after tap you are redirected to public chat, mention is highligted')
         home_1.open_notification_bar()
         home_1.element_by_text_part(username_2).click()
-        if home_1.element_starts_with_text(user_1['ens'] +'.stateofus.eth').is_element_differs_from_template('mentioned.png', 2):
+        if home_1.element_starts_with_text(user_1['ens']).is_element_differs_from_template('mentioned.png', 2):
             self.errors.append('Mention is not highlighted!')
 
         # Close Device1 driver session since it's not needed anymore
@@ -1203,7 +1180,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not home_2.mobile_connection_on_icon.is_element_displayed():
             self.errors.append('No mobile connection ON icon is shown')
         home_2.get_chat('#%s'% public_chat_name).click()
-        if not public_2.chat_element_by_text(public_chat_message).is_element_displayed(90):
+        if not public_2.chat_element_by_text(public_chat_message).is_element_displayed(180):
             self.errors.append("Chat history was not fetched with mobile data fetching ON")
 
         home_2.just_fyi('check redirect to sync settings by tappin "Sync" in connection status bottom sheet')

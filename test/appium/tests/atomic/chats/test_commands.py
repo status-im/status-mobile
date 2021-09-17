@@ -1,8 +1,8 @@
 import time
 
 from tests import marks
-from tests.users import transaction_senders, transaction_recipients, ens_user_ropsten
-from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
+from tests.users import transaction_senders, ens_user
+from tests.base_test_case import MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
@@ -224,14 +224,14 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     def test_network_mismatch_for_send_request_in_1_1_chat(self):
         sender = transaction_senders['D']
         self.create_drivers(2)
-        device_1_sign_in, device_2_sign_in = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        device_1_sign_in.recover_access(passphrase=sender['passphrase'])
-        device_2_sign_in.create_user()
-        home_1, home_2 = device_1_sign_in.get_home_view(), device_2_sign_in.get_home_view()
+        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        sign_in_1.recover_access(passphrase=sender['passphrase'])
+        sign_in_2.create_user()
+        home_1, home_2 = sign_in_1.get_home_view(), sign_in_2.get_home_view()
         wallet_1 = home_1.wallet_button.click()
         wallet_1.home_button.click()
         profile_2 = home_2.profile_button.click()
-        device_2_username = profile_2.default_username_text.text
+        username_2 = profile_2.default_username_text.text
         profile_2.switch_network()
 
         chat_2 = home_2.add_contact(sender['public_key'])
@@ -249,7 +249,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         if chat_2.reply_message_button.is_element_displayed():
             self.errors.append('Reply is available on long-tap on Incoming transaction message!')
 
-        chat_1 = home_1.get_chat(device_2_username).click()
+        chat_1 = home_1.get_chat(username_2).click()
         chat_1_sender_message = chat_1.get_outgoing_transaction()
         chat_1_sender_message.long_press_element()
         if chat_1.reply_message_button.is_element_displayed():
@@ -267,32 +267,44 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append("Transaction is shown as confirmed on mainnet, but was sent on ropsten!")
         self.errors.verify_no_errors()
 
-
-class TestCommandsSingleDevices(SingleDeviceTestCase):
-
     @marks.testrail_id(6279)
     @marks.high
     @marks.transaction
     def test_send_eth_to_ens_in_chat(self):
-        sign_in = SignInView(self.driver)
-        sender = transaction_senders['E']
-        home = sign_in.recover_access(sender['passphrase'])
-        wallet = home.wallet_button.click()
-        wallet.wait_balance_is_changed()
-        wallet.home_button.click()
-        chat = home.add_contact(ens_user_ropsten['ens'])
-        chat.commands_button.click()
-        amount = chat.get_unique_amount()
+        self.create_drivers(2)
+        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        sender, reciever = transaction_senders['E'], ens_user
+        home_1, home_2 = sign_in_1.recover_access(sender['passphrase']), sign_in_2.recover_access(reciever['passphrase'])
 
-        send_message = chat.send_command.click()
+        home_2.just_fyi("Start chat with sender")
+        profile_2 = home_2.profile_button.click()
+        profile_2.connect_existing_ens(reciever['ens'])
+        profile_2.home_button.click()
+        chat_2 = home_2.add_contact(sender['public_key'])
+        message_1, message_2 = 'hello', 'hey'
+        chat_2.send_message(message_1)
+
+        wallet_1 = home_1.wallet_button.click()
+        wallet_1.wait_balance_is_changed()
+        wallet_1.home_button.click()
+        chat_1 = home_1.add_contact(reciever['ens'])
+        chat_1.send_message(message_2)
+        chat_1.commands_button.click()
+        amount = chat_1.get_unique_amount()
+
+        chat_1.just_fyi("Check sending assets to ENS name from sender side")
+        send_message = chat_1.send_command.click()
         send_message.amount_edit_box.set_value(amount)
         send_message.confirm()
         send_message.next_button.click()
-
         from views.send_transaction_view import SendTransactionView
-        send_transaction = SendTransactionView(self.driver)
+        send_transaction = SendTransactionView(self.drivers[0])
         send_transaction.ok_got_it_button.click()
         send_transaction.sign_transaction()
-        chat_sender_message = chat.get_outgoing_transaction()
+        chat_1_sender_message = chat_1.get_outgoing_transaction(transaction_value=amount)
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
-        chat_sender_message.transaction_status.wait_for_element_text(chat_sender_message.confirmed)
+        chat_1_sender_message.transaction_status.wait_for_element_text(chat_1_sender_message.confirmed)
+
+        chat_2.just_fyi("Check that message is fetched for receiver")
+        chat_2_reciever_message = chat_2.get_incoming_transaction(transaction_value=amount)
+        chat_2_reciever_message.transaction_status.wait_for_element_text(chat_2_reciever_message.confirmed)

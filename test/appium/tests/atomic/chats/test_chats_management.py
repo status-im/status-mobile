@@ -164,11 +164,9 @@ class TestChatManagement(SingleDeviceTestCase):
     def test_can_start_chat_from_suggestions_using_search_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
-        profile = home.profile_button.click()
-        profile.switch_network()
-        chat_view = ChatView(self.driver)
+        chat = ChatView(self.driver)
         ens_name_status, ens_name_another_domain, public_chat_name = ens_user_ropsten['ens'], \
-                                                                     ens_user['ens_another_domain'], 'some-pub-chat'
+                                                                     ens_user['ens_another'], 'some-pub-chat'
         search_list = {
             ens_name_status: {
                 'home': {
@@ -178,10 +176,10 @@ class TestChatManagement(SingleDeviceTestCase):
                     '#%s' % ens_name_status
                 },
                 'navigate_to': '%s.stateofus.eth' % ens_name_status,
-                'chat_view': {
-                    chat_view.add_to_contacts,
-                    chat_view.element_by_text('@%s' % ens_name_status),
-                    chat_view.chat_message_input
+                'chat': {
+                    chat.add_to_contacts,
+                    chat.element_by_text('@%s' % ens_name_status),
+                    chat.chat_message_input
                 }
             },
             ens_name_another_domain: {
@@ -190,10 +188,10 @@ class TestChatManagement(SingleDeviceTestCase):
                 },
                 'home_not_shown': 'Join a public chat',
                 'navigate_to': 'Start a new private chat',
-                'chat_view': {
-                    chat_view.add_to_contacts,
-                    chat_view.element_by_text('@%s' % ens_name_another_domain),
-                    chat_view.chat_message_input
+                'chat': {
+                    chat.add_to_contacts,
+                    chat.element_by_text('@%s' % ens_name_another_domain),
+                    chat.chat_message_input
                 },
             },
             public_chat_name: {
@@ -202,9 +200,9 @@ class TestChatManagement(SingleDeviceTestCase):
                 },
                 'home_not_shown': 'Start a new private chat',
                 'navigate_to': '#%s' % public_chat_name,
-                'chat_view': {
-                    chat_view.element_by_text('#%s' % public_chat_name),
-                    chat_view.chat_message_input
+                'chat': {
+                    chat.element_by_text('#%s' % public_chat_name),
+                    chat.chat_message_input
                 },
             },
 
@@ -229,7 +227,7 @@ class TestChatManagement(SingleDeviceTestCase):
                 if not home.element_by_text(text).is_element_displayed():
                     self.errors.append('%s is not shown on home view while searching for %s' % (text, keyword))
             home.element_by_text(search_list[keyword]['navigate_to']).click()
-            for element in search_list[keyword]['chat_view']:
+            for element in search_list[keyword]['chat']:
                 if not element.is_element_displayed():
                     self.errors.append(
                         'Requested %s element is not shown on chat view after navigating from suggestion '
@@ -534,6 +532,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_1.send_message_button.click()
         if not chat_1.chat_element_by_text('%s %s' % (nickname, additional_text)).is_element_displayed():
             self.errors.append("Nickname is not resolved on send message")
+        chat_1.get_back_to_home_view()
 
         device_1.just_fyi('check contact list in Profile after setting nickname')
         profile_1 = chat_1.profile_button.click()
@@ -956,28 +955,15 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
     def test_mention_users_not_in_chats_if_not_in_contacts(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        sender = ens_user_message_sender
+        sender = ens_user
         home_1, home_2 = device_1.create_user(), device_2.recover_access(passphrase=sender['passphrase'])
-
         profile_2 = home_2.profile_button.click()
-        profile_2.switch_network()
-
-        home_2.profile_button.click()
-
-        home_2.just_fyi('Set ENS name so its visible in chats')
-        dapp_view = profile_2.ens_usernames_button.click()
-        dapp_view.element_by_text('Get started').click()
-        dapp_view.ens_name_input.set_value(sender['ens'])
-        dapp_view.check_ens_name.click_until_presence_of_element(dapp_view.element_by_translation_id("ens-got-it"))
-        dapp_view.element_by_translation_id("ens-got-it").click()
+        profile_2.connect_existing_ens(sender['ens'])
+        profile_2.home_button.double_click()
 
         device_1.just_fyi('Both devices joining the same public chat and send messages')
         chat_name = device_1.get_random_chat_name()
-        own_default_username = home_1.get_public_key_and_username(return_username=True)
-        home_1.home_button.click()
-        chat_1 = home_1.join_public_chat(chat_name)
-        profile_2.home_button.click()
-        chat_2 = home_2.join_public_chat(chat_name)
+        [chat_1, chat_2] = [home.join_public_chat(chat_name) for home in (home_1, home_2)]
         message = 'From ' + sender['ens'] + ' message'
         chat_2.send_message(message)
         username_value = '@' + sender['ens']

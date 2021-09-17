@@ -553,8 +553,8 @@ class BaseView(object):
     def share_via_messenger(self):
         self.driver.info("**Sharing via messenger**")
         self.element_by_text_part("Direct share").wait_for_element()
-        self.element_by_text('Messages').click()
-        self.element_by_text('New message').click()
+        self.element_by_text('Messages').wait_and_click()
+        self.element_by_text('New message').wait_and_click()
         self.send_as_keyevent('+0100100101')
         self.confirm()
 

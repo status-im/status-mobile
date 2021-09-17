@@ -508,7 +508,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         device_1.just_fyi("Check profile settings")
         profile_1 = device_1.profile_button.click()
         profile_1.element_by_translation_id("ens-your-your-name").click()
-        for ens in user['ens'], user['ens_another_domain']:
+        for ens in user['ens'], user['ens_another']:
             if not profile_1.element_by_text(ens).is_element_displayed():
                 self.errors.append("ENS name %s is not shown after upgrade" % ens)
         profile_1.profile_button.click()

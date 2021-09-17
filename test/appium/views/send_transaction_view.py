@@ -124,13 +124,10 @@ class SendTransactionView(BaseView):
         self.enter_recipient_address_input.click()
         self.done_button.click_until_absense_of_element(self.done_button)
 
-    def sign_transaction(self, sender_password: str = common_password, keycard=False, default_gas_price=True):
-        self.driver.info("**Signing transaction (keycard:%s, default gas price:%s)**" % (str(keycard), str(default_gas_price)))
+    def sign_transaction(self, sender_password: str = common_password, keycard=False):
+        self.driver.info("**Signing transaction (keycard:%s)**" % str(keycard))
         if self.sign_in_phrase.is_element_displayed(30):
             self.set_up_wallet_when_sending_tx()
-        if not default_gas_price:
-            self.network_fee_button.click()
-            # to be updated with new fast/slow/normal fee
         if keycard:
             keycard_view = self.sign_with_keycard_button.click()
             keycard_view.enter_default_pin()

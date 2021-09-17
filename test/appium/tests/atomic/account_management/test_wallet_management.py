@@ -377,7 +377,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
         profile = home.profile_button.click()
-        profile.switch_network('Mainnet with upstream RPC')
+        profile.switch_network()
         search_list_assets = {
             'ad': ['AdEx', 'Open Trading Network', 'TrueCAD'],
             'zs': ['ZSC']

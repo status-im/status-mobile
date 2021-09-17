@@ -340,6 +340,7 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
                     self.errors.append("'Quiet here for %s' is not shown after fetching more history" % times[period])
             else:
                 variants = times[period]
+                chat.element_by_text_part(fetch_more).wait_for_invisibility_of_element(120)
                 res = any(profile.element_by_text_part(variant).is_element_displayed(30) for variant in variants)
                 if not res:
                     self.errors.append("History is not fetched for one month!" )

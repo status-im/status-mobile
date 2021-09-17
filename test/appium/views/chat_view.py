@@ -816,7 +816,6 @@ class ChatView(BaseView):
 
     def wait_ens_name_resolved_in_chat(self, message = str, username_value = str):
         self.driver.info("**Waiting ENS name '%s' is resolved in chat**" % username_value)
-        # self.view_profile_by_avatar_button.click()
         counter = 0
         while True:
             if counter >= 120:
@@ -826,19 +825,23 @@ class ChatView(BaseView):
                 time.sleep(5)
             else:
                 return
-        # self.profile_block_contact.wait_for_visibility_of_element(5)
 
     def move_to_messages_by_time_marker(self, marker='Today'):
         self.driver.info("**Moving to messages by time marker: '%s'**" % marker)
         Button(self.driver, xpath="//*[@text='%s'']"  % marker).scroll_to_element(depth=50, direction='up')
 
-    def install_sticker_pack_by_name(self, pack_name: str):
+    def install_sticker_pack_by_name(self, pack_name='Status Cat'):
         self.driver.info("**Installing '%s' stickerpack**" % pack_name)
+        self.show_stickers_button.click()
+        self.get_stickers.click()
         element = Button(self.driver,
                          xpath="//*[@content-desc='sticker-pack-name'][@text='%s']/..//*[@content-desc='sticker-pack-price']" % pack_name)
         element.scroll_to_element()
         element.click()
         element.wait_for_invisibility_of_element()
+        self.back_button.click()
+        time.sleep(2)
+        self.swipe_left()
 
     def scroll_to_start_of_history(self, depth=20):
         self.driver.info('*Scrolling th the start of chat history*')

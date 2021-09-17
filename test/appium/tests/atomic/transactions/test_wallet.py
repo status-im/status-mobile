@@ -261,8 +261,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         updated_balance = self.network_api.get_balance(status_account_address)
         transaction_amount_1 = round(float(transaction_amount) * 0.2, 12)
         wallet.send_transaction(account_name=wallet.status_account_name,
-                                                        amount=transaction_amount_1,
-                                                        default_gas_price=True)
+                                                        amount=transaction_amount_1)
         wallet.close_button.click()
         sub_account_address = wallet.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
@@ -541,7 +540,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             self.errors.append('ENS from contact is not resolved as recipient')
 
         send_tr.just_fyi('Set different ENS options')
-        send_tr.set_recipient_address(ens_other['ens_another_domain'])
+        send_tr.set_recipient_address(ens_other['ens_another'])
         if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(ens_other['address']):
             self.errors.append('ENS address on another domain is not resolved as recipient')
         send_tr.set_recipient_address('%s.stateofus.eth' % ens_status['ens'])

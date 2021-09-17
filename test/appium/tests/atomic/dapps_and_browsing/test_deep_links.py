@@ -26,17 +26,15 @@ class TestDeepLinks(SingleDeviceTestCase):
     @marks.testrail_id(5441)
     @marks.medium
     def test_open_user_profile_using_deep_link(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile = sign_in_view.profile_button.click()
-        profile.switch_network('Mainnet with upstream RPC')
-        for user_ident in ens_user['ens'], ens_user['ens_another_domain'], ens_user['public_key'],:
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        for user_ident in ens_user['ens'], ens_user['ens_another'], ens_user['public_key'],:
             self.driver.close_app()
             deep_link = 'status-im://u/%s' % user_ident
-            sign_in_view.open_weblink_and_login(deep_link)
-            chat_view = sign_in_view.get_chat_view()
-            for text in ens_user['username'], 'Add to contacts':
-                if not chat_view.element_by_text(text).scroll_to_element(10):
+            sign_in.open_weblink_and_login(deep_link)
+            chat = sign_in.get_chat_view()
+            for text in ens_user['username'], sign_in.get_translation_by_key("add-to-contacts"):
+                if not chat.element_by_text(text).scroll_to_element(10):
                     self.driver.fail("User profile screen is not opened")
 
     @marks.testrail_id(5442)

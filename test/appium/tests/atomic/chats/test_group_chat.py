@@ -236,16 +236,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         profile_1, profile_2 = [home.profile_button.click() for home in (home_1, home_2)]
         key_1, username_1 = profile_1.get_public_key_and_username(return_username=True)
         ens, full_ens, username_2 = ens_user['ens'], '@%s' % ens_user['ens'], ens_user['username']
-        [profile.switch_network() for profile in (profile_1, profile_2)]
-
-        home_2.just_fyi('Set ENS')
-        profile_2 = home_2.profile_button.click()
-        dapp_view = profile_2.ens_usernames_button.click()
-        dapp_view.element_by_text('Get started').click()
-        dapp_view.ens_name_input.set_value(ens)
-        dapp_view.check_ens_name.click_until_presence_of_element(dapp_view.element_by_translation_id("ens-got-it"))
-        dapp_view.element_by_translation_id("ens-got-it").click()
-        home_2.home_button.click()
+        profile_2.connect_existing_ens(ens)
+        [profile.home_button.click() for profile in (profile_1, profile_2)]
 
         home_1.just_fyi('Set nickname, using emojis, special chars and cyrrilic chars without adding to contact')
         emoji_message = random.choice(list(emoji.EMOJI_UNICODE))

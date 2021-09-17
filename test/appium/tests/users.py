@@ -11,8 +11,8 @@ ens_user['passphrase'] = "fashion quality know robust copy neck stand embody ent
 ens_user['username'] = "Legal Vibrant Indianabat"
 ens_user['public_key'] = "0x04359bb3e73cba0b815d71e562670ad00bb5d2db0d16cd1c4c92c668b61fde2274d6e487fcdffe66f913b3fea2a" \
                          "3058f53ce7946c2b501aa61a9ca8a883df72dc9"
-ens_user['ens'] = 'statuse2e'
-ens_user['ens_another_domain'] = 'statuse2e.eth'
+ens_user['ens'] = 'statuse2e.eth'
+ens_user['ens_another'] = 'status-another-ens-e2e.eth'
 ens_user['address'] = '0x1eE3058Bd300246B4B20E687Efc9Eba81FF7814b'
 
 ens_user_ropsten = dict()
