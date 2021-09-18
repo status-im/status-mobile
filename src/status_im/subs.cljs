@@ -2546,8 +2546,8 @@
     :chain             chain
     :amount-label      (ens-amount-label chain-id)
     :sufficient-funds? (money/sufficient-funds?
-                        (money/formatted->internal (money/bignumber 10) :SNT 18)
-                        (get balance :SNT))}))
+                        (money/formatted->internal (money/bignumber 10) (ethereum/chain-keyword->snt-symbol chain) 18)
+                        (get balance (ethereum/chain-keyword->snt-symbol chain)))}))
 
 (re-frame/reg-sub
  :ens/confirmation-screen

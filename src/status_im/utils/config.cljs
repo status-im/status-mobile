@@ -52,6 +52,7 @@
 (def eip1559-enabled? (enabled? (get-config :EIP1559_ENABLED "0")))
 (def delete-message-enabled? (enabled? (get-config :DELETE_MESSAGE_ENABLED "0")))
 (def collectibles-enabled? (enabled? (get-config :COLLECTIBLES_ENABLED "1")))
+(def test-stateofus? (enabled? (get-config :TEST_STATEOFUS "0")))
 
 ;; CONFIG VALUES
 (def log-level

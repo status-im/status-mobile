@@ -1,6 +1,7 @@
 (ns status-im.ethereum.stateofus
   (:require [clojure.string :as string]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.utils.config :as config]
             [status-im.ethereum.ens :as ens]))
 
 (def domain "stateofus.eth")
@@ -26,10 +27,10 @@
     (first (string/split name "."))))
 
 (def old-registrars
-  {:mainnet "0xDB5ac1a559b02E12F29fC0eC0e37Be8E046DEF49"
-   ;;NOTE: can be enabled for testing builds
-   ;;:testnet "0x11d9F481effd20D76cEE832559bd9Aca25405841"
-   })
+  (merge
+   {:mainnet "0xDB5ac1a559b02E12F29fC0eC0e37Be8E046DEF49"}
+   (when config/test-stateofus?
+     {:testnet "0x11d9F481effd20D76cEE832559bd9Aca25405841"})))
 
 (def registrars-cache (atom {}))
 

@@ -39,6 +39,11 @@
 (defn chain-keyword->chain-id [k]
   (get-in chains [k :id]))
 
+(defn chain-keyword->snt-symbol [k]
+  (case k
+    :mainnet :SNT
+    :STT))
+
 (defn testnet? [id]
   (contains? #{(chain-keyword->chain-id :testnet)
                (chain-keyword->chain-id :rinkeby)
@@ -120,9 +125,7 @@
   (network->chain-id (get networks current-network)))
 
 (defn snt-symbol [db]
-  (case (chain-keyword db)
-    :mainnet :SNT
-    :STT))
+  (chain-keyword->snt-symbol (chain-keyword db)))
 
 (def default-transaction-gas (money/bignumber 21000))
 
