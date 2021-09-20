@@ -143,7 +143,7 @@ class TestrailReport(BaseTestReport):
                     ids_failed_test.append(test.testrail_case_id)
                     case_title = '\n'
                     case_title += '-------\n'
-                    case_title += "### %s) ID %s: [%s](%s) \n" % (i + 1, test.testrail_case_id, test.name, test_rail_link)
+                    case_title += "## %s) ID %s: [%s](%s) \n" % (i + 1, test.testrail_case_id, test.name, test_rail_link)
                     error ="```%s```\n" % last_testrun.error[:255]
                     for job_id, f in last_testrun.jobs.items():
                              case_info = "Logs for device %d: [steps](%s), [failure screenshot](%s)"\
@@ -160,7 +160,7 @@ class TestrailReport(BaseTestReport):
 
 
     def get_run_results(self):
-        return self.get('get_results_for_run/%s' % self.run_id)
+        return self.get('get_results_for_run/%s' % self.run_id)['results']
 
     def is_run_successful(self):
         for test in self.get_run_results():
@@ -171,7 +171,7 @@ class TestrailReport(BaseTestReport):
 
     def get_test_result_link(self, test_run_id, test_case_id):
         try:
-            test_id = self.get('get_results_for_case/%s/%s' % (test_run_id, test_case_id))[0]['test_id']
+            test_id = self.get('get_results_for_case/%s/%s' % (test_run_id, test_case_id))['results'][0]['test_id']
             return '%stests/view/%s' % (self.url, test_id)
         except KeyError:
             return None

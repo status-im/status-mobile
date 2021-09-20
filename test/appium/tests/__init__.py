@@ -6,14 +6,12 @@ import json
 from support.appium_container import AppiumContainer
 from support.test_data import TestSuiteData
 
-
-@asyncio.coroutine
-def start_threads(quantity: int, func: type, returns: dict, *args):
+async def start_threads(quantity: int, func: type, returns: dict, *args):
     loop = asyncio.get_event_loop()
     for i in range(quantity):
         returns[i] = loop.run_in_executor(None, func, *args)
     for k in returns:
-        returns[k] = yield from returns[k]
+        returns[k] = await returns[k]
     return returns
 
 
