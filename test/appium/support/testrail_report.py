@@ -28,6 +28,7 @@ class TestrailReport(BaseTestReport):
         self.headers['Authorization'] = 'Basic %s' % str(
             base64.b64encode(bytes('%s:%s' % (self.user, self.password), 'utf-8')), 'ascii').strip()
         self.headers['Content-Type'] = 'application/json'
+        self.headers['x-api-ident'] = 'beta'
 
         self.url = 'https://ethstatus.testrail.net/index.php?/'
         self.api_url = self.url + 'api/v2/'
@@ -46,13 +47,13 @@ class TestrailReport(BaseTestReport):
         return self.get('get_suites/%s' % self.project_id)
 
     def get_tests(self):
-        return self.get('get_tests/%s' % self.run_id)
+        return self.get('get_tests/%s' % self.run_id)['tests']
 
     def get_milestones(self):
-        return self.get('get_milestones/%s' % self.project_id)
+        return self.get('get_milestones/%s' % self.project_id)['milestones']
 
     def get_runs(self, pr_number):
-        return [i for i in self.get('get_runs/%s' % self.project_id) if 'PR-%s ' % pr_number in i['name']]
+        return [i for i in self.get('get_runs/%s' % self.project_id)['runs'] if 'PR-%s ' % pr_number in i['name']]
 
     def get_run(self, run_id: int):
         return self.get('get_run/%s' % run_id)
@@ -77,7 +78,7 @@ class TestrailReport(BaseTestReport):
     def get_cases(self, section_ids):
         test_cases = list()
         for section_id in section_ids:
-            test_cases.append(self.get('get_cases/%s&suite_id=%s&section_id=%s' % (self.project_id, self.suite_id, section_id)))
+            test_cases.append(self.get('get_cases/%s&suite_id=%s&section_id=%s' % (self.project_id, self.suite_id, section_id))['cases'])
         return itertools.chain.from_iterable(test_cases)
 
     def get_regression_cases(self):
