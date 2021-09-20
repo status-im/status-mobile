@@ -7,6 +7,8 @@
             [quo.react :as react]
             [quo.platform :as platform]
             [quo.react-native :as rn]
+            [re-frame.core :as re-frame]
+            [status-im.ui.components.animation :as animation]
             [status-im.ui.components.tabbar.core :as tabbar]
             [quo.components.safe-area :refer [use-safe-area]]))
 
@@ -31,6 +33,27 @@
                                                    (js/setTimeout
                                                     #(animated/set-value y 0)
                                                     100))})))))
+
+(defn swipe-pan-responder [translate-x pan-state message]
+  (js->clj (.-panHandlers
+            ^js (.create
+                 ^js rn/pan-responder
+                 #js {:onStartShouldSetPanResponder (fn [] true)
+                      :onPanResponderGrant (fn []
+                                             (animation/set-value pan-state 1))
+                      :onPanResponderMove  (fn [_ ^js state]
+                                             (when (> (.-dx state) 30)
+                                               (animation/set-value translate-x (.-dx state))))
+                      :onPanResponderRelease (fn [_ ^js state]
+                                               (when (> (.-dx state) 100)
+                                                 (re-frame/dispatch [:chat.ui/reply-to-message message])
+                                                 (animation/set-value pan-state 0))
+                                               (js/setTimeout
+                                                #(animation/set-value translate-x 0) 100))
+                      :onPanResponderTerminate (fn []
+                                                 (animation/set-value pan-state 0)
+                                                 (js/setTimeout
+                                                  #(animation/set-value translate-x 0) 100))}))))
 
 (def ios-view
   (reagent/adapt-react-class
