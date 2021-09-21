@@ -4,11 +4,13 @@
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
             [status-im.constants :as constants]
+            [status-im.chat.models.link-preview :as link-preview]
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
             [status-im.communities.core :as communities]
             [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as components.react]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.react-native.resources :as resources]
@@ -240,10 +242,18 @@
       :data                         chats
       :render-fn                    channel-preview-item}]))
 
-(defn unknown-community []
-  [rn/view {:style {:flex 1}}
-   [topbar/topbar {:title  (i18n/label :t/not-found)}]
-   [blank-page (i18n/label :t/community-info-not-found)]])
+(defn unknown-community [community-id]
+  (let [fetching (<sub [:communities/fetching-community community-id])]
+    [:<> {:style {:flex 1}}
+     [topbar/topbar {:title  (if fetching (i18n/label :t/fetching-community) (i18n/label :t/not-found))}]
+     [rn/view {:style {:padding 16 :flex 1 :flex-direction :row :align-items :center :justify-content :center}}
+
+      [quo/button {:on-press (when-not fetching #(>evt [::link-preview/resolve-community-info community-id]))
+                   :disabled fetching
+                   :color :secondary}
+       (if fetching
+         [components.react/small-loading-indicator]
+         (i18n/label :t/fetch-community))]]]))
 
 (defn community-edit []
   (let [{:keys [community-id]} (<sub [:get-screen-params])]
@@ -319,4 +329,4 @@
                  :center       [quo/button {:on-press #(>evt [::communities/join id])
                                             :type     :secondary}
                                 (i18n/label :t/follow)]}]))]
-          [unknown-community])))))
+          [unknown-community community-id])))))

@@ -1325,6 +1325,8 @@
     "welcome-blank-message": "Your chats will appear here. To start new chats press the ⊕ button",
     "welcome-community-blank-message": "Your chats will appear here. To start new chats click on the 3 dots above and select \"Create a channel\"",
     "welcome-blank-community-message": "Your communities will appear here.",
+    "fetch-community": "Fetch community",
+    "fetching-community": "Fetching community...",
     "seed-phrase-placeholder": "Seed phrase...",
     "word-count": "Word count",
     "word-n": "Word #{{number}}",

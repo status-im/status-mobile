@@ -3,6 +3,7 @@
             [status-im.utils.fx :as fx]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.communities.core :as models.communities]
             [taoensso.timbre :as log]))
 
 (fx/defn enable
@@ -27,13 +28,37 @@
                #{})
              {})))
 
+(defn community-resolved [db community-id]
+  (update db :communities/resolve-community-info dissoc community-id))
+
+(defn community-failed-to-resolve [db community-id]
+  (update db :communities/resolve-community-info dissoc community-id))
+
+(defn community-resolving [db community-id]
+  (assoc-in db [:communities/resolve-community-info community-id] true))
+
+(fx/defn handle-community-failed-to-resolve
+  {:events [::community-failed-to-resolve]}
+  [{:keys [db]} community-id]
+  {:db (community-failed-to-resolve db community-id)})
+
+(fx/defn handle-community-resolved
+  {:events [::community-resolved]}
+  [{:keys [db] :as cofx} community-id community]
+  (fx/merge cofx
+            {:db (community-resolved db community-id)}
+            (models.communities/handle-community community)))
+
 (fx/defn resolve-community-info
   {:events [::resolve-community-info]}
-  [cofx community-id]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "requestCommunityInfoFromMailserver")
+  [{:keys [db]} community-id]
+  {:db (community-resolving db community-id)
+   ::json-rpc/call [{:method     (json-rpc/call-ext-method "requestCommunityInfoFromMailserver")
                      :params     [community-id]
-                     :on-success #()
-                     :on-error   #(log/error "Failed to request community info from mailserver")}]})
+                     :on-success #(re-frame/dispatch [::community-resolved community-id %])
+                     :on-error   #(do
+                                    (re-frame/dispatch [::community-failed-to-resolve community-id])
+                                    (log/error "Failed to request community info from mailserver"))}]})
 
 (fx/defn load-link-preview-data
   {:events [::load-link-preview-data]}
@@ -82,4 +107,3 @@
   [{:keys [db]} whitelist]
   {:db (assoc db :link-previews-whitelist
               whitelist)})
-

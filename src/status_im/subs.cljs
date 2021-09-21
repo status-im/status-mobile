@@ -238,6 +238,7 @@
 (reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
 (reg-root-key-sub :communities/community-id-input :communities/community-id-input)
 (reg-root-key-sub :communities/enabled? :communities/enabled?)
+(reg-root-key-sub :communities/resolve-community-info :communities/resolve-community-info)
 
 (reg-root-key-sub :activity.center/notifications :activity.center/notifications)
 (reg-root-key-sub :activity.center/notifications-count :activity.center/notifications-count)
@@ -259,6 +260,12 @@
    (if communities-enabled?
      raw-communities
      [])))
+
+(re-frame/reg-sub
+ :communities/fetching-community
+ :<- [:communities/resolve-community-info]
+ (fn [info [_ id]]
+   (get info id)))
 
 (re-frame/reg-sub
  :communities/section-list
