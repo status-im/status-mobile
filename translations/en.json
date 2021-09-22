@@ -1669,6 +1669,10 @@
     "fee-options": "Suggested fee options",
     "fee-cap": "Fee cap",
     "tip-cap": "Tip cap",
-    "enable-opensea-nfts": "Enable loading NFTs from OpenSea ?",
-    "opensea-nfts-leak-metadata": "Loading NFTs from OpenSea shares metadata with third party services"
+    "collectibles-leak-metadata": "You can display your NFTs here. If you do, you will share your wallet and IP address",
+    "display-collectibles": "Display collectibles",
+    "disable-later-in-settings": "You can disable this later in Settings",
+    "use-as-profile-picture": "Use as profile picture",
+    "view-on-opensea": "View on OpenSea",
+    "profile-picture-updated": "Profile picture updated"
 }

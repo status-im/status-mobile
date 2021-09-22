@@ -20,15 +20,18 @@
   (let [opened? (reagent/atom false)]
     (fn [{:keys [title content icon opened disabled
                  padding-vertical dropdown-margin-left
+                 open-container-style
                  on-open on-close]
           :or   {padding-vertical     8
                  dropdown-margin-left 8
+                 open-container-style {}
                  on-open              #()
                  on-close             #()}}]
       (let [on-press #(do
                         (apply (if @opened? on-close on-open) [])
                         (swap! opened? not))]
-        [react/view {:padding-vertical padding-vertical}
+        [react/view (merge {:padding-vertical padding-vertical}
+                           (when @opened? open-container-style))
          (if (string? title)
            [quo/list-item
             {:title     title
@@ -40,7 +43,7 @@
                          :margin-right    14
                          :justify-content :space-between}
              title
-             [drop-down-icon {:opened? (or @opened? opened)
+             [drop-down-icon {:opened?              (or @opened? opened)
                               :dropdown-margin-left dropdown-margin-left}]]])
          (when (or @opened? opened)
            content)]))))

@@ -6,9 +6,9 @@
    :welcome            (js/require "../resources/images/ui/welcome.jpg")
    :welcome-dark       (js/require "../resources/images/ui/welcome-dark.jpg")
    :chat               (js/require "../resources/images/ui/chat.jpg")
+   :chat-dark          (js/require "../resources/images/ui/chat-dark.jpg")
    :wallet             (js/require "../resources/images/ui/wallet.jpg")
    :browser            (js/require "../resources/images/ui/browser.jpg")
-   :chat-dark          (js/require "../resources/images/ui/chat-dark.jpg")
    :wallet-dark        (js/require "../resources/images/ui/wallet-dark.jpg")
    :browser-dark       (js/require "../resources/images/ui/browser-dark.jpg")
    :keys               (js/require "../resources/images/ui/keys.jpg")
@@ -43,6 +43,8 @@
    :theme-light        (js/require "../resources/images/ui/theme-light.png")
    :theme-system       (js/require "../resources/images/ui/theme-system.png")
    :notifications      (js/require "../resources/images/ui/notifications.png")
+   :collectible        (js/require "../resources/images/ui/collectible.png")
+   :collectible-dark   (js/require "../resources/images/ui/collectible-dark.png")
    :graph              (js/require "../resources/images/ui/graph.png")})
 
 (defn get-theme-image [k]

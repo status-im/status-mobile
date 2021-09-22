@@ -71,7 +71,7 @@
                                                  ((complement boolean) preview-privacy?)])}]
      (when config/collectibles-enabled?
        [quo/list-item {:size                    :small
-                       :title                   (i18n/label :t/enable-opensea-nfts)
+                       :title                   (i18n/label :t/display-collectibles)
                        :container-margin-bottom 8
                        :active                  opensea-enabled?
                        :accessory               :switch

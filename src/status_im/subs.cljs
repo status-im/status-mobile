@@ -176,8 +176,10 @@
 (reg-root-key-sub :wallet/transactions-management-enabled? :wallet/transactions-management-enabled?)
 (reg-root-key-sub :wallet/all-tokens :wallet/all-tokens)
 (reg-root-key-sub :wallet/collectible-collections :wallet/collectible-collections)
+(reg-root-key-sub :wallet/fetching-collection-assets :wallet/fetching-collection-assets)
 (reg-root-key-sub :wallet/collectible-assets :wallet/collectible-assets)
-(reg-root-key-sub :wallet/current-collectible-asset :wallet/current-collectible-asset)
+(reg-root-key-sub :wallet/selected-collectible :wallet/selected-collectible)
+
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)
 
@@ -1831,13 +1833,20 @@
  :<- [:wallet/collectible-collections]
  (fn [all-collections [_ address]]
    (when address
-     (get all-collections (string/lower-case address) []))))
+     (let [all-collections (get all-collections (string/lower-case address) [])]
+       (sort-by :name all-collections)))))
 
 (re-frame/reg-sub
  :wallet/collectible-assets-by-collection-and-address
  :<- [:wallet/collectible-assets]
  (fn [all-assets [_ address collectible-slug]]
    (get-in all-assets [address collectible-slug] [])))
+
+(re-frame/reg-sub
+ :wallet/fetching-assets-by-collectible-slug
+ :<- [:wallet/fetching-collection-assets]
+ (fn [fetching-collection-assets [_ collectible-slug]]
+   (get fetching-collection-assets collectible-slug false)))
 
 ;;ACTIVITY CENTER NOTIFICATIONS ========================================================================================
 

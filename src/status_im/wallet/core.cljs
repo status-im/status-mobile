@@ -220,36 +220,49 @@
   {:events [::fetch-collectibles-collection]}
   [{:keys [db]}]
   (let [addresses (map (comp string/lower-case :address)
-                       (get db :multiaccount/accounts))]
+                       (get db :multiaccount/accounts))
+        chain-id  (-> db
+                      ethereum/current-network
+                      ethereum/network->chain-id)]
     (when (get-in db [:multiaccount :opensea-enabled?])
       {::json-rpc/call (map (fn [address]
-                              {:method "wallet_getOpenseaCollectionsByOwner"
-                               :params [address]
-                               :on-error (fn [error]
-                                           (log/error "Unable to get Opensea collections" address error))
+                              {:method     "wallet_getOpenseaCollectionsByOwner"
+                               :params     [chain-id address]
+                               :on-error   (fn [error]
+                                             (log/error "Unable to get Opensea collections" address error))
                                :on-success #(re-frame/dispatch [::collectibles-collection-fetch-success address %])})
                             addresses)})))
 
 (fx/defn collectible-assets-fetch-success
   {:events [::collectible-assets-fetch-success]}
   [{:keys [db]} address collectible-slug assets]
-  {:db (assoc-in db [:wallet/collectible-assets address collectible-slug] assets)})
+  {:db (-> db
+           (assoc-in [:wallet/fetching-collection-assets collectible-slug] false)
+           (assoc-in [:wallet/collectible-assets address collectible-slug] assets))})
+
+(fx/defn collectibles-assets-fetch-error
+  {:events [::collectibles-assets-fetch-error]}
+  [{:keys [db]} collectible-slug]
+  {:db (assoc-in db [:wallet/fetching-collection-assets collectible-slug] false)})
 
 (fx/defn fetch-collectible-assets-by-owner-and-collection
   {:events [::fetch-collectible-assets-by-owner-and-collection]}
-  [_ address collectible-slug limit]
-  {::json-rpc/call [{:method     "wallet_getOpenseaAssetsByOwnerAndCollection"
-                     :params     [address collectible-slug limit]
-                     :on-error   (fn [error]
-                                   (log/error "Unable to get collectible assets" address error))
-                     :on-success #(re-frame/dispatch [::collectible-assets-fetch-success address collectible-slug %])}]})
+  [{:keys [db]} address collectible-slug limit]
+  (let [chain-id (ethereum/network->chain-id (ethereum/current-network db))]
+    {:db (assoc-in db [:wallet/fetching-collection-assets collectible-slug] true)
+     ::json-rpc/call [{:method     "wallet_getOpenseaAssetsByOwnerAndCollection"
+                       :params     [chain-id address collectible-slug limit]
+                       :on-error   (fn [error]
+                                     (log/error "Unable to get collectible assets" address error)
+                                     (re-frame/dispatch [::collectibles-assets-fetch-error collectible-slug]))
+                       :on-success #(re-frame/dispatch [::collectible-assets-fetch-success address collectible-slug %])}]}))
 
 (fx/defn show-nft-details
   {:events [::show-nft-details]}
   [cofx asset]
   (fx/merge cofx
-            {:db (assoc (:db cofx) :wallet/current-collectible-asset asset)}
-            (navigation/navigate-to :nft-details {})))
+            {:db (assoc (:db cofx) :wallet/selected-collectible asset)}
+            (navigation/open-modal :nft-details {})))
 
 (defn rpc->token [tokens]
   (reduce (fn [acc {:keys [address] :as token}]

@@ -134,6 +134,7 @@
    "multiaccounts_getIdentityImages" {}
    "multiaccounts_getIdentityImage" {}
    "multiaccounts_storeIdentityImage" {}
+   "multiaccounts_storeIdentityImageFromURL" {}
    "multiaccounts_deleteIdentityImage" {}
    "wakuext_changeIdentityImageShowTo" {}
    "wakuext_createCommunity" {}

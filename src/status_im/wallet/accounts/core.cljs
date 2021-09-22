@@ -343,3 +343,4 @@
   {:events [:wallet.accounts/share]}
   [_ address]
   {:list.selection/open-share {:message (eip55/address->checksum address)}})
+

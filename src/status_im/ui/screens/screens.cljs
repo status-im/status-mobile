@@ -55,6 +55,7 @@
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
+            [status-im.ui.screens.wallet.collectibles.views :as wallet.collectibles]
             [status-im.ui.screens.wallet.account.views :as wallet.account]
             [status-im.ui.screens.wallet.add-new.views :as add-account]
             [status-im.ui.screens.wallet.account-settings.views :as account-settings]
@@ -700,7 +701,7 @@
             :insets {:bottom true}
             ;;TODO dynamic title
             :options   {:topBar {:visible false}}
-            :component wallet.account/nft-details}
+            :component wallet.collectibles/nft-details-modal}
 
            ;My Status
            {:name      :my-status

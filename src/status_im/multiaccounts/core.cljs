@@ -202,6 +202,20 @@
                                                          :type (name photo-quality-large)}])
               (bottom-sheet/hide-bottom-sheet))))
 
+(fx/defn save-profile-picture-from-url
+  {:events [::save-profile-picture-from-url]}
+  [cofx url]
+  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+    (fx/merge cofx
+              {::json-rpc/call [{:method     "multiaccounts_storeIdentityImageFromURL"
+                                 :params     [key-uid url]
+                                 :on-error   log/warn
+                                 :on-success #(re-frame/dispatch [::update-local-picture %])}]}
+              (bottom-sheet/hide-bottom-sheet))))
+
+(comment
+  (re-frame/dispatch [::save-profile-picture-from-url "https://lh3.googleusercontent.com/XuKjNm3HydsaxbPkbpGs9YyCKhn5QQk5oDC8XF2jzmPyYXeZofxFtfUDZuQ3EVmacS_BlBKzbX2ypm37YNX3n1fDJA3WndeFcPsp7Z0=w600"]))
+
 (fx/defn delete-profile-picture
   {:events [::delete-profile-picture]}
   [cofx name]
