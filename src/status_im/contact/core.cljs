@@ -48,13 +48,13 @@
                         contacts))
    :dispatch-n (mapcat (fn [{:keys [public-key] :as contact}]
                          (cond-> []
-                           (contact.db/added? contact)
+                           (:added contact)
                            (conj [:start-profile-chat public-key])
 
-                           (contact.db/removed? contact)
+                           (not (:added contact))
                            (conj [:offload-messages constants/timeline-chat-id])
 
-                           (contact.db/blocked? contact)
+                           (:blocked contact)
                            (conj [::contact.block/contact-blocked contact chats])))
                        contacts)})
 
@@ -88,8 +88,7 @@
                     (and nickname (not (string/blank? nickname)))
                     (assoc :nickname nickname)
                     :else
-                    (update :system-tags
-                            (fnil #(conj % :contact/added) #{})))]
+                    (assoc :added true))]
       (fx/merge cofx
                 {:db (dissoc db :contacts/new-identity)
                  :dispatch-n [[:start-profile-chat public-key]
@@ -100,15 +99,12 @@
 (fx/defn remove-contact
   "Remove a contact from current account's contact list"
   {:events [:contact.ui/remove-contact-pressed]}
-  [{:keys [db] :as cofx} {:keys [public-key] :as contact}]
-  (let [new-contact (update contact
-                            :system-tags
-                            (fnil #(disj % :contact/added) #{}))]
-    {:db (assoc-in db [:contacts/contacts public-key] new-contact)
-     ::json-rpc/call [{:method "wakuext_removeContact"
-                       :params [public-key]
-                       :on-success #(log/debug "contact removed successfully")}]
-     :dispatch [:offload-messages constants/timeline-chat-id]}))
+  [{:keys [db]} {:keys [public-key]}]
+  {:db (assoc-in db [:contacts/contacts public-key :added] false)
+   ::json-rpc/call [{:method "wakuext_removeContact"
+                     :params [public-key]
+                     :on-success #(log/debug "contact removed successfully")}]
+   :dispatch [:offload-messages constants/timeline-chat-id]})
 
 (fx/defn create-contact
   "Create entry in contacts"

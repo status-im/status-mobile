@@ -46,8 +46,7 @@
   (let [contact (-> (contact.db/public-key->contact
                      (:contacts/contacts db)
                      public-key)
-                    (assoc :last-updated now)
-                    (update :system-tags (fnil conj #{}) :contact/blocked))
+                    (assoc :last-updated now :blocked true))
         from-one-to-one-chat? (not (get-in db [:chats (:current-chat-id db) :group-chat]))]
     (fx/merge cofx
               {:db (-> db
@@ -66,8 +65,7 @@
   {:events [:contact.ui/unblock-contact-pressed]}
   [{:keys [db now] :as cofx} public-key]
   (let [contact (-> (get-in db [:contacts/contacts public-key])
-                    (assoc :last-updated now)
-                    (update :system-tags disj :contact/blocked))]
+                    (assoc :last-updated now :blocked false))]
     (fx/merge cofx
               {:db (-> db
                        (update :contacts/blocked disj public-key)

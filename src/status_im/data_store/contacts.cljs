@@ -5,32 +5,22 @@
             [taoensso.timbre :as log]))
 
 (defn <-rpc [contact]
-  (-> contact
-      (update :systemTags
-              #(reduce (fn [acc s]
-                         (conj acc (keyword (subs s 1))))
-                       #{}
-                       %))
-      (clojure.set/rename-keys {:id :public-key
-                                :ensVerifiedAt :ens-verified-at
-                                :ensVerified :ens-verified
-                                :ensVerificationRetries :ens-verification-retries
-                                :lastENSClockValue :last-ens-clock-value
-                                :systemTags :system-tags
-                                :lastUpdated :last-updated
-                                :localNickname :nickname})))
+  (clojure.set/rename-keys contact {:id :public-key
+                                    :ensVerifiedAt :ens-verified-at
+                                    :ensVerified :ens-verified
+                                    :ensVerificationRetries :ens-verification-retries
+                                    :lastENSClockValue :last-ens-clock-value
+                                    :lastUpdated :last-updated
+                                    :localNickname :nickname}))
 
 (defn ->rpc [contact]
-  (-> contact
-      (update :system-tags #(mapv str %))
-      (clojure.set/rename-keys {:public-key :id
-                                :ens-verified :ensVerified
-                                :ens-verified-at :ensVerifiedAt
-                                :last-ens-clock-value :lastENSClockValue
-                                :ens-verification-retries :ensVerificationRetries
-                                :system-tags :systemTags
-                                :last-updated :lastUpdated
-                                :nickname :localNickname})))
+  (clojure.set/rename-keys contact {:public-key :id
+                                    :ens-verified :ensVerified
+                                    :ens-verified-at :ensVerifiedAt
+                                    :last-ens-clock-value :lastENSClockValue
+                                    :ens-verification-retries :ensVerificationRetries
+                                    :last-updated :lastUpdated
+                                    :nickname :localNickname}))
 
 (fx/defn fetch-contacts-rpc
   [_ on-success]

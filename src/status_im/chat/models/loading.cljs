@@ -7,7 +7,6 @@
             [status-im.chat.models.message-list :as message-list]
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [clojure.string :as string]
             [status-im.chat.models.pin-message :as models.pin-message]))
 
 (defn cursor->clock-value
@@ -99,13 +98,12 @@
                        (get-in db [:pagination-info chat-id :messages-initialized?])))
     (let [already-loaded-messages (get-in db [:messages chat-id])
           ;; We remove those messages that are already loaded, as we might get some duplicates
-          {:keys [all-messages new-messages senders]}
+          {:keys [all-messages new-messages senders contacts]}
           (reduce (fn [{:keys [all-messages] :as acc}
-                       {:keys [message-id alias from]
+                       {:keys [message-id from]
                         :as   message}]
                     (cond-> acc
-                      (and (not (string/blank? alias))
-                           (not (get-in db [:chats chat-id :users from])))
+                      (not (get-in db [:chats chat-id :users from]))
                       (update :senders assoc from message)
 
                       (nil? (get all-messages message-id))
@@ -115,6 +113,7 @@
                       (update :all-messages assoc message-id message)))
                   {:all-messages already-loaded-messages
                    :senders      {}
+                   :contacts     {}
                    :new-messages []}
                   messages)
           current-clock-value (get-in db [:pagination-info chat-id :cursor-clock-value])
@@ -134,7 +133,8 @@
                      (assoc-in [:messages chat-id] all-messages)
                      (update-in [:message-lists chat-id] message-list/add-many new-messages)
                      (assoc-in [:pagination-info chat-id :all-loaded?]
-                               (empty? cursor)))})))
+                               (empty? cursor))
+                     (update :contacts/contacts merge contacts))})))
 
 (fx/defn load-more-messages
   {:events [:chat.ui/load-more-messages]}

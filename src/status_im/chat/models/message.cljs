@@ -10,11 +10,11 @@
             [taoensso.timbre :as log]
             [status-im.chat.models.mentions :as mentions]
             [clojure.string :as string]
-            [status-im.contact.db :as contact.db]
             [status-im.utils.types :as types]
             [status-im.ui.screens.chat.state :as view.state]
             [status-im.chat.models.loading :as chat.loading]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.gfycat.core :as gfycat]))
 
 (defn- message-loaded?
   [db chat-id message-id]
@@ -39,14 +39,17 @@
   {:events [:chat/add-senders-to-chat-users]}
   [{:keys [db]} messages]
   (reduce (fn [acc {:keys [chat-id alias name identicon from]}]
-            (update-in acc [:db :chats chat-id :users] assoc
-                       from
-                       (mentions/add-searchable-phrases
-                        {:alias      alias
-                         :name       (or name alias)
-                         :identicon  identicon
-                         :public-key from
-                         :nickname   (get-in db [:contacts/contacts from :nickname])})))
+            (let [alias (if (string/blank? alias)
+                          (gfycat/generate-gfy from)
+                          alias)]
+              (update-in acc [:db :chats chat-id :users] assoc
+                         from
+                         (mentions/add-searchable-phrases
+                          {:alias      alias
+                           :name       (or name alias)
+                           :identicon  identicon
+                           :public-key from
+                           :nickname   (get-in db [:contacts/contacts from :nickname])}))))
           {:db db}
           messages))
 
@@ -56,14 +59,14 @@
    (or
     (= chat-id (chat-model/my-profile-chat-topic db))
     (when-let [pub-key (get-in db [:chats chat-id :profile-public-key])]
-      (contact.db/added? db pub-key)))))
+      (get-in db [:contacts/contacts pub-key :added])))))
 
 (defn get-timeline-message [db chat-id message-js]
   (when (timeline-message? db chat-id)
     (data-store.messages/<-rpc (types/js->clj message-js))))
 
 (defn add-message [{:keys [db] :as acc} message-js chat-id message-id cursor-clock-value]
-  (let [{:keys [alias replace from clock-value] :as message}
+  (let [{:keys [replace from clock-value] :as message}
         (data-store.messages/<-rpc (types/js->clj message-js))]
     (if (message-loaded? db chat-id message-id)
       ;; If the message is already loaded, it means it's an update, that
@@ -83,8 +86,7 @@
                    :cursor-clock-value clock-value)
 
         ;;conj sender for add-sender-to-chat-users
-        (and (not (string/blank? alias))
-             (not (get-in db [:chats chat-id :users from])))
+        (not (get-in db [:chats chat-id :users from]))
         (update :senders assoc from message)
 
         (not (string/blank? replace))

@@ -7,33 +7,26 @@
                  :address "address"
                  :name "name"
                  :identicon "identicon"
-                 :last-updated 1
-                 :system-tags #{:a :b}}
+                 :last-updated 1}
         expected-contact {:id "pk"
                           :address "address"
                           :name "name"
                           :identicon "identicon"
 
-                          :lastUpdated 1
-                          :systemTags #{":a" ":b"}}]
+                          :lastUpdated 1}]
     (testing "->rpc"
-      (is (= expected-contact (update
-                               (c/->rpc contact)
-                               :systemTags
-                               #(into #{} %)))))))
+      (is (= expected-contact (c/->rpc contact))))))
 
 (deftest contact<-rpc
   (let [contact {:id "pk"
                  :address "address"
                  :name "name"
                  :identicon "identicon"
-                 :lastUpdated 1
-                 :systemTags [":a" ":b"]}
+                 :lastUpdated 1}
         expected-contact {:public-key "pk"
                           :address "address"
                           :name "name"
                           :identicon "identicon"
-                          :last-updated 1
-                          :system-tags #{:a :b}}]
+                          :last-updated 1}]
     (testing "<-rpc"
       (is (= expected-contact (c/<-rpc contact))))))
