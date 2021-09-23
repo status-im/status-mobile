@@ -8,7 +8,8 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [clojure.string :as string]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.contact.block :as contact.block]))
 
 (fx/defn load-contacts
   {:events [::contacts-loaded]}
@@ -37,7 +38,7 @@
      :address       address}))
 
 (fx/defn ensure-contacts
-  [{:keys [db]} contacts]
+  [{:keys [db]} contacts chats]
   {:db (update db :contacts/contacts
                #(reduce (fn [acc {:keys [public-key] :as contact}]
                           (-> acc
@@ -45,10 +46,17 @@
                               (assoc-in [public-key :nickname] (:nickname contact))))
                         %
                         contacts))
-   :dispatch-n (map (fn [{:keys [public-key] :as contact}]
-                      (when (contact.db/added? contact)
-                        [:start-profile-chat public-key]))
-                    contacts)})
+   :dispatch-n (mapcat (fn [{:keys [public-key] :as contact}]
+                         (cond-> []
+                           (contact.db/added? contact)
+                           (conj [:start-profile-chat public-key])
+
+                           (contact.db/removed? contact)
+                           (conj [:offload-messages constants/timeline-chat-id])
+
+                           (contact.db/blocked? contact)
+                           (conj [::contact.block/contact-blocked contact chats])))
+                       contacts)})
 
 (fx/defn upsert-contact
   [{:keys [db] :as cofx}

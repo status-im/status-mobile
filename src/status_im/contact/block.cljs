@@ -35,7 +35,10 @@
   {:events [::contact-blocked]}
   [{:keys [db] :as cofx} {:keys [public-key]} chats]
   (let [fxs (map #(clean-up-chat public-key %) chats)]
-    (apply fx/merge cofx fxs)))
+    (apply fx/merge
+           cofx
+           {:db (update db :chats dissoc public-key)}
+           fxs)))
 
 (fx/defn block-contact
   {:events [:contact.ui/block-contact-confirmed]}
@@ -51,9 +54,7 @@
                        ;; add the contact to blocked contacts
                        (update :contacts/blocked (fnil conj #{}) public-key)
                        ;; update the contact in contacts list
-                       (assoc-in [:contacts/contacts public-key] contact)
-                       ;; remove the 1-1 chat if it exists
-                       (update-in [:chats] dissoc public-key))}
+                       (assoc-in [:contacts/contacts public-key] contact))}
               (contacts-store/block contact #(do (re-frame/dispatch [::contact-blocked contact (map chats-store/<-rpc %)])
                                                  (re-frame/dispatch [:hide-popover])))
               ;; reset navigation to avoid going back to non existing one to one chat
