@@ -542,8 +542,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         home_1.just_fyi("Grant another user with admin rights and check he can unpin message now")
         group_chat_1.chat_options.click()
-        group_info_view = group_chat_1.group_info.click()
-        options = group_info_view.get_username_options(username_2).click()
+        group_info = group_chat_1.group_info.click()
+        options = group_info.get_username_options(username_2).click()
         options.make_admin_button.click()
         group_chat_2.click_system_back_button()
         group_chat_2.pin_message(message_1, action="unpin")
@@ -887,12 +887,12 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
     @marks.critical
     def test_can_use_purchased_stickers_on_recovered_account(self):
         sign_in = SignInView(self.driver)
-        home_view = sign_in.recover_access(ens_user['passphrase'])
-        profile = home_view.profile_button.click()
+        home = sign_in.recover_access(ens_user['passphrase'])
+        profile = home.profile_button.click()
         profile.switch_network()
 
         sign_in.just_fyi('join to public chat, buy and install stickers')
-        chat = home_view.join_public_chat(home_view.get_random_chat_name())
+        chat = home.join_public_chat(home.get_random_chat_name())
         chat.install_sticker_pack_by_name('Tozemoon')
 
         sign_in.just_fyi('check that can use installed pack')
@@ -931,7 +931,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         home.just_fyi('Set nickname and mention user by nickname in 1-1 chat')
         russian_nickname = 'МОЙ дорогой ДРУх'
         chat.set_nickname(russian_nickname)
-        chat.close_button.click()
         chat.select_mention_from_suggestion_list(russian_nickname + ' @' + ens)
         chat.chat_element_by_text('%s hey!' % russian_nickname).click()
         if not chat.profile_block_contact.is_element_displayed():

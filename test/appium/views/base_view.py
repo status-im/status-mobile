@@ -9,7 +9,7 @@ from PIL import Image
 from appium.webdriver.common.touch_action import TouchAction
 from datetime import datetime
 from io import BytesIO
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from support.device_apps import start_web_browser
 from tests import common_password, pytest_config_global, geth_log_emulator_path, transl

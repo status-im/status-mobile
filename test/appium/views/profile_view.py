@@ -332,7 +332,7 @@ class ProfileView(BaseView):
 
     def open_contact_from_profile(self, username):
         self.driver.info("**Open profile of '%s' via Contacts**" % username)
-        self.contacts_button.click()
+        self.contacts_button.wait_and_click(30)
         self.element_by_text(username).click()
         from views.chat_view import ChatView
         return ChatView(self.driver)

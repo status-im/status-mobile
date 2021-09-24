@@ -267,7 +267,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
                 chat.public_key_edit_box.send_keys(users[key]['contact_code'])
                 if 'nickname' in users[key]:
                     chat.nickname_input_field.set_value(users[key]['nickname'])
-                chat.confirm_until_presence_of_element(profile.contacts_button)
+                chat.confirm_until_presence_of_element(profile.add_new_contact_button)
             if not profile.element_by_text(users[key]['username']).is_element_displayed():
                 self.errors.append('In %s case username not found in contact view after scanning' % key)
             if 'nickname' in users[key]:
@@ -936,107 +936,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('History was not fetched after enabling use_history_node')
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5762)
-    @marks.high
-    def test_pair_devices_sync_one_to_one_contacts_nicknames_public_chat(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1 = device_1.create_user()
-        home_1.profile_button.click()
-        profile_1 = home_1.get_profile_view()
-        profile_1.privacy_and_security_button.click()
-        profile_1.backup_recovery_phrase_button.click()
-        profile_1.ok_continue_button.click()
-        recovery_phrase = profile_1.get_recovery_phrase()
-        profile_1.close_button.click()
-        profile_1.home_button.click()
-        name_1 = 'device_%s' % device_1.driver.number
-        name_2 = 'device_%s' % device_2.driver.number
-        message_before_sync = 'sent before sync'
-        message_after_sync = 'sent after sync'
-        public_chat_before_sync = 'before-pairing'
-        public_chat_after_sync = 'after-pairing'
-
-        device_1.just_fyi('add contact, start 1-1 chat with basic user')
-        chat_1 = home_1.add_contact(basic_user['public_key'])
-        chat_1.chat_message_input.send_keys(message_before_sync)
-        chat_1.send_message_button.click()
-
-        device_1.just_fyi('join public chat')
-        chat_1.get_back_to_home_view()
-        device_1_public_chat = home_1.join_public_chat(public_chat_before_sync)
-        home_2 = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
-        profile_1, device_2_profile = home_1.profile_button.click(), home_2.profile_button.click()
-
-        device_2.just_fyi('go to profile and set nickname for contact')
-        profile_1.open_contact_from_profile(basic_user['username'])
-        nickname = 'my_basic_user'
-        chat_1.set_nickname(nickname)
-        profile_1.close_button.click()
-        device_1.back_button.click()
-
-        device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
-        device_2_profile.discover_and_advertise_device(name_2)
-        profile_1.discover_and_advertise_device(name_1)
-        profile_1.get_toggle_device_by_name(name_2).wait_and_click()
-        profile_1.sync_all_button.click()
-        profile_1.sync_all_button.wait_for_visibility_of_element(15)
-        [device.profile_button.click() for device in (profile_1, device_2_profile)]
-
-        device_2.just_fyi('check that contact with nickname is appeared in Contact list')
-        device_2_profile.contacts_button.scroll_to_element(9, 'up')
-        device_2_profile.contacts_button.click()
-        for name in (basic_user['username'], nickname):
-            if not device_2_profile.element_by_text(name).is_element_displayed():
-                self.errors.append('"%s" is not found in Contacts after initial sync' % name)
-
-        device_1.just_fyi('send message to 1-1 chat with basic user and add another contact')
-        profile_1.home_button.click(desired_view='chat')
-        device_1_public_chat.back_button.click()
-        home_1.get_chat(nickname).click()
-        chat_1.chat_message_input.send_keys(message_after_sync)
-        chat_1.send_message_button.click()
-        chat_1.back_button.click()
-        home_1.add_contact(transaction_senders['A']['public_key'])
-
-        device_2.just_fyi('check that messages appeared in 1-1 chat, public chats and new contacts are synced')
-        if not device_2_profile.element_by_text(transaction_senders['A']['username']).is_element_displayed(60):
-            self.errors.append(
-                '"%s" is not found in Contacts after adding when devices are paired' % transaction_senders['A'][
-                    'username'])
-
-        device_1.just_fyi('Set nickname for added contact and check that it will be synced')
-        home_1.profile_button.click()
-        profile_1.contacts_button.scroll_to_element(9, 'up')
-        profile_1.open_contact_from_profile(transaction_senders['A']['username'])
-        nickname_after_sync = 'my_transaction sender'
-        chat_1.set_nickname(nickname_after_sync)
-        profile_1.close_button.click()
-        device_1.home_button.click(desired_view='chat')
-        if not device_2_profile.element_by_text(nickname_after_sync).is_element_displayed(60):
-            self.errors.append(
-                '"%s" is not updated in Contacts after setting nickname when devices are paired' % nickname_after_sync)
-
-        device_2_profile.home_button.click()
-        if not home_2.element_by_text_part(public_chat_before_sync).is_element_displayed():
-            self.errors.append(
-                '"%s" is not found in Home after initial sync when devices are paired' % public_chat_before_sync)
-        chat = home_2.get_chat(nickname).click()
-        if chat.chat_element_by_text(message_before_sync).is_element_displayed():
-            self.errors.append('"%s" message sent before pairing is synced' % message_before_sync)
-        if not chat.chat_element_by_text(message_after_sync).is_element_displayed(60):
-            self.errors.append('"%s" message in 1-1 is not synced' % message_after_sync)
-
-        device_1.just_fyi('add new public chat and check that it will be synced with device2')
-        chat_1.get_back_to_home_view()
-        home_1.join_public_chat(public_chat_after_sync)
-        home_2 = chat.get_back_to_home_view()
-        if not home_2.element_by_text_part(public_chat_after_sync).is_element_displayed(20):
-            self.errors.append(
-                '"%s" public chat is not synced after adding when devices are paired' % public_chat_after_sync)
-
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(6226)
     @marks.critical
     def test_ens_mentions_pn_and_nickname_in_public_and_1_1_chats(self):
@@ -1115,7 +1014,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_2.just_fyi('set nickname and recheck username in 1-1 header, profile, options, contacts')
         nickname = 'test user' + str(round(time()))
         public_2.set_nickname(nickname)
-        profile_2.close_button.click()
         for name in (nickname, ens_name):
             if not profile_2.element_by_text(name).is_element_displayed():
                 self.errors.append('%s is not shown in contact list' % name)

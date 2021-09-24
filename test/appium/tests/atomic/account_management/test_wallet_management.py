@@ -90,6 +90,8 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5346)
     @marks.high
+    @marks.skip
+    #TODO: skipped due to bug on status-go, should be enabled after 12615 merge
     def test_collectible_from_wallet(self):
         passphrase = wallet_users['F']['passphrase']
         home = SignInView(self.driver).recover_access(passphrase=passphrase)
