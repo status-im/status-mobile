@@ -339,7 +339,6 @@ class TestChatManagement(SingleDeviceTestCase):
         profile.open_contact_from_profile(dummy_user['username'])
         nickname = 'dummy_user'
         public_chat.set_nickname(nickname)
-        public_chat.get_back_to_home_view()
         public_chat.home_button.click()
 
         search_list = {
@@ -395,20 +394,20 @@ class TestChatManagement(SingleDeviceTestCase):
     @marks.medium
     def test_unblocked_user_is_not_added_in_contacts(self):
         home = SignInView(self.driver).create_user()
-        chat_view = home.add_contact(basic_user["public_key"], add_in_contacts=False)
+        chat = home.add_contact(basic_user["public_key"], add_in_contacts=False)
 
-        chat_view.just_fyi('Block user not added as contact from chat view')
-        chat_view.chat_options.click()
-        chat_view.view_profile_button.click()
-        chat_view.block_contact()
-        chat_view.get_back_to_home_view()
+        chat.just_fyi('Block user not added as contact from chat view')
+        chat.chat_options.click()
+        chat.view_profile_button.click()
+        chat.block_contact()
+        chat.get_back_to_home_view()
 
-        chat_view.just_fyi('Unblock user not added as contact from chat view')
+        chat.just_fyi('Unblock user not added as contact from chat view')
         profile = home.profile_button.click()
         profile.contacts_button.click()
         profile.blocked_users_button.click()
         profile.element_by_text(basic_user["username"]).click()
-        chat_view.unblock_contact_button.click()
+        chat.unblock_contact_button.click()
 
         profile.just_fyi('Navigating to contact list and check that user is not in list')
         profile.close_button.click()
@@ -422,42 +421,42 @@ class TestChatManagement(SingleDeviceTestCase):
         home = SignInView(self.driver).create_user()
 
         home.just_fyi('Join to one-to-one chat and share link to other user profile via messenger')
-        chat_view = home.add_contact(dummy_user["public_key"])
-        chat_view.chat_options.click()
-        chat_view.view_profile_button.click_until_presence_of_element(chat_view.remove_from_contacts)
-        chat_view.profile_details.click()
-        chat_view.share_button.click()
-        chat_view.share_via_messenger()
-        if not chat_view.element_by_text_part(
+        chat = home.add_contact(dummy_user["public_key"])
+        chat.chat_options.click()
+        chat.view_profile_button.click_until_presence_of_element(chat.remove_from_contacts)
+        chat.profile_details.click()
+        chat.share_button.click()
+        chat.share_via_messenger()
+        if not chat.element_by_text_part(
                 'https://join.status.im/u/%s' % dummy_user["public_key"]).is_element_present():
             self.errors.append("Can't share public key of contact")
         for _ in range(2):
-            chat_view.click_system_back_button()
+            chat.click_system_back_button()
 
         home.just_fyi('Join to public chat and share link to it via messenger')
-        chat_view.get_back_to_home_view()
+        chat.get_back_to_home_view()
         public_chat_name = 'pubchat'
         public_chat = home.join_public_chat(public_chat_name)
         public_chat.chat_options.click()
         public_chat.share_chat_button.click()
         public_chat.share_via_messenger()
-        if not chat_view.element_by_text_part('https://join.status.im/%s' % public_chat_name).is_element_present():
+        if not chat.element_by_text_part('https://join.status.im/%s' % public_chat_name).is_element_present():
             self.errors.append("Can't share link to public chat")
         for _ in range(2):
-            chat_view.click_system_back_button()
-        chat_view.get_back_to_home_view()
+            chat.click_system_back_button()
+        chat.get_back_to_home_view()
 
         home.just_fyi('Open URL and share link to it via messenger')
-        daap_view = home.dapp_tab_button.click()
-        browsing_view = daap_view.open_url('dap.ps')
-        browsing_view.options_button.click()
-        browsing_view.share_url_button.click()
-        browsing_view.share_via_messenger()
+        daap = home.dapp_tab_button.click()
+        browser = daap.open_url('dap.ps')
+        browser.options_button.click()
+        browser.share_url_button.click()
+        browser.share_via_messenger()
         expeceted_text_1 = 'https://join.status.im/b/https://dap.ps'
         expeceted_text_2 = 'https://join.status.im/b/http://dap.ps'
 
-        if not (chat_view.element_by_text_part(expeceted_text_1).is_element_present() or
-                chat_view.element_by_text_part(expeceted_text_2).is_element_present()):
+        if not (chat.element_by_text_part(expeceted_text_1).is_element_present() or
+                chat.element_by_text_part(expeceted_text_2).is_element_present()):
             self.errors.append("Can't share link to URL")
 
         self.errors.verify_no_errors()
@@ -508,7 +507,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi('Set nickname for user without adding him to contacts, check it in public chat')
         nickname = 'Name1'
         chat_1.set_nickname(nickname)
-        chat_1.close_button.click()
         expected_username = '%s %s' % (nickname, username_2)
         if chat_element.username.text != expected_username:
             self.errors.append('Username %s in public chat does not match expected %s' % (
@@ -617,7 +615,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('check that new messages from blocked user are not delivered')
         self.drivers[0].launch_app()
-        # device_1.accept_agreements()
         device_1.sign_in()
         home_1.join_public_chat(chat_name)
         for message in message_before_block_2, message_after_block_2:
@@ -984,7 +981,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_1.view_profile_long_press(message)
         nickname = 'nicknamefortestuser'
         chat_1.set_nickname(nickname)
-        chat_1.close_button.click()
         ens_nickname_value = nickname + " @" + sender['ens']
         chat_1.wait_ens_name_resolved_in_chat(message=message, username_value=ens_nickname_value)
 

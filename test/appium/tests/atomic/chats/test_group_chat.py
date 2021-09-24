@@ -30,46 +30,46 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         home_1.add_contact(key_2)
         home_1.get_back_to_home_view()
 
-        device_1_chat = home_1.create_group_chat([username_2], chat_name)
-        create_system_message = device_1_chat.create_system_message(username_1, chat_name)
-        invite_system_message = device_1_chat.invite_system_message(username_1, username_2)
-        join_system_message = device_1_chat.join_system_message(username_2)
-        invited_to_join = device_1_chat.invited_to_join_system_message(username_1, chat_name)
-        create_for_admin_system_message = device_1_chat.create_for_admin_system_message(chat_name)
+        chat_1 = home_1.create_group_chat([username_2], chat_name)
+        create_system_message = chat_1.create_system_message(username_1, chat_name)
+        invite_system_message = chat_1.invite_system_message(username_1, username_2)
+        join_system_message = chat_1.join_system_message(username_2)
+        invited_to_join = chat_1.invited_to_join_system_message(username_1, chat_name)
+        create_for_admin_system_message = chat_1.create_for_admin_system_message(chat_name)
         for message in [create_for_admin_system_message, create_system_message, invite_system_message]:
-            if not device_1_chat.chat_element_by_text(message):
+            if not chat_1.chat_element_by_text(message):
                 self.errors.append('%s system message is not shown' % message)
 
         device_2.just_fyi('Navigate to group chat, check system messages for member')
         if not home_2.get_chat(chat_name).is_element_displayed():
             self.drivers[0].fail('Group chat was not created!')
-        device_2_chat = home_2.get_chat(chat_name).click()
-        for element in device_2_chat.join_chat_button, device_2_chat.decline_invitation_button:
+        chat_2 = home_2.get_chat(chat_name).click()
+        for element in chat_2.join_chat_button, chat_2.decline_invitation_button:
             if not element.is_element_displayed():
                 self.drivers[0].fail('"Join Chat" or "Decline" is not shown for member of group chat')
         for message in [invited_to_join, create_system_message, invite_system_message]:
-            if not device_2_chat.chat_element_by_text(message):
+            if not chat_2.chat_element_by_text(message):
                 self.errors.append('%s system message is not shown' % message)
 
         device_2.just_fyi('Join to group chat, check system messages and send messages to group chat, check message status is delivered')
-        device_2_chat.join_chat_button.click()
-        for chat in (device_1_chat, device_2_chat):
+        chat_2.join_chat_button.click()
+        for chat in (chat_1, chat_2):
             if not chat.chat_element_by_text(join_system_message).is_element_displayed(30):
                 self.drivers[0].fail('System message after joining group chat is not shown')
-        device_2_chat.home_button.click(desired_view="home")
-        message_1 = "Message from device: %s" % device_1_chat.driver.number
-        device_1_chat.send_message(message_1)
-        if device_1_chat.chat_element_by_text(message_1).status != 'delivered':
-            self.errors.append('Message status is not delivered, it is %s!' % device_1_chat.chat_element_by_text(message_1).status)
+        chat_2.home_button.click(desired_view="home")
+        message_1 = "Message from device: %s" % chat_1.driver.number
+        chat_1.send_message(message_1)
+        if chat_1.chat_element_by_text(message_1).status != 'delivered':
+            self.errors.append('Message status is not delivered, it is %s!' % chat_1.chat_element_by_text(message_1).status)
 
         home_2.put_app_to_background()
 
         home_2.just_fyi('check that PN is received and after tap you are redirected to public chat')
         home_2.open_notification_bar()
-        home_2.element_by_text_part("Message from device: %s" % device_1_chat.driver.number).click()
-        device_2_chat.send_message("Message from device: %s" % device_2_chat.driver.number)
-        for chat in (device_1_chat, device_2_chat):
-            for chat_driver in (device_1_chat, device_2_chat):
+        home_2.element_by_text_part("Message from device: %s" % chat_1.driver.number).click()
+        chat_2.send_message("Message from device: %s" % chat_2.driver.number)
+        for chat in (chat_1, chat_2):
+            for chat_driver in (chat_1, chat_2):
                 if not chat.chat_element_by_text(
                         "Message from device: %s" % chat_driver.driver.number).is_element_displayed():
                     self.errors.append("Message from device '%s' was not received" % chat_driver.driver.number)
@@ -82,32 +82,32 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
-        chat_name = device_1_home.get_random_chat_name()
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        chat_name = home_1.get_random_chat_name()
 
         device_2.just_fyi('Create and join group chat')
-        device_2_key, device_2_username = device_2.get_public_key_and_username(True)
+        public_key_2, username_2 = device_2.get_public_key_and_username(True)
         device_2.home_button.click()
-        device_1_home.add_contact(device_2_key)
-        device_1_home.get_back_to_home_view()
-        device_1_chat = device_1_home.create_group_chat([device_2_username], chat_name)
-        left_system_message = device_1_chat.leave_system_message(device_2_username)
-        device_2_chat = device_2_home.get_chat(chat_name).click()
-        device_2_chat.join_chat_button.click()
+        home_1.add_contact(public_key_2)
+        home_1.get_back_to_home_view()
+        chat_1 = home_1.create_group_chat([username_2], chat_name)
+        left_system_message = chat_1.leave_system_message(username_2)
+        chat_2 = home_2.get_chat(chat_name).click()
+        chat_2.join_chat_button.click()
 
         device_2.just_fyi('Send several message and leave chat')
-        for chat in device_1_chat, device_2_chat:
+        for chat in chat_1, chat_2:
             chat.send_message('sent before leaving')
-        device_2_chat.leave_chat_via_group_info()
-        if not device_1_chat.chat_element_by_text(left_system_message).is_element_displayed():
+        chat_2.leave_chat_via_group_info()
+        if not chat_1.chat_element_by_text(left_system_message).is_element_displayed():
             self.errors.append('No system message after user left the group chat')
-        if device_2_home.element_by_text(chat_name).is_element_displayed():
+        if home_2.element_by_text(chat_name).is_element_displayed():
             self.errors.append("Group chat '%s' is shown, but user has left" % chat_name)
 
         device_2.just_fyi('Send message after user is left and check that it is not reappeared')
         message = 'sent after leaving'
-        device_1_chat.send_message(message)
-        if device_2_home.element_by_text(chat_name).is_element_displayed():
+        chat_1.send_message(message)
+        if home_2.element_by_text(chat_name).is_element_displayed():
             self.errors.append("Group chat '%s' reappeared when new message is sent" % chat_name)
         self.errors.verify_no_errors()
 
@@ -116,28 +116,28 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
     def test_decline_invitation_to_group_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
-        chat_name = device_1_home.get_random_chat_name()
-        device_1_home.plus_button.click()
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        chat_name = home_1.get_random_chat_name()
+        home_1.plus_button.click()
 
         device_2.just_fyi('Create group chat with new user')
-        device_2_key, device_2_username = device_2.get_public_key_and_username(True)
+        public_key_2, username_2 = device_2.get_public_key_and_username(True)
         device_2.home_button.click()
-        device_1_home.add_contact(device_2_key)
-        device_1_home.get_back_to_home_view()
-        device_1_chat = device_1_home.create_group_chat([device_2_username], chat_name)
-        device_2_chat = device_2_home.get_chat(chat_name).click()
-        device_2_chat.decline_invitation_button.click()
-        left_system_message = device_2_chat.leave_system_message(device_2_username)
-        if device_1_chat.chat_element_by_text(left_system_message).is_element_displayed():
+        home_1.add_contact(public_key_2)
+        home_1.get_back_to_home_view()
+        chat_1 = home_1.create_group_chat([username_2], chat_name)
+        chat_2 = home_2.get_chat(chat_name).click()
+        chat_2.decline_invitation_button.click()
+        left_system_message = chat_2.leave_system_message(username_2)
+        if chat_1.chat_element_by_text(left_system_message).is_element_displayed():
             self.errors.append('System message after user left the group chat is shown if declined before accepting in Activity Centre')
-        if device_2_home.element_by_text(chat_name).is_element_displayed():
+        if home_2.element_by_text(chat_name).is_element_displayed():
             self.errors.append("Group chat '%s' is shown, but user has left" % chat_name)
 
         device_2.just_fyi('Send message after invite is declined and check that it is not reappeared')
         message = 'sent after leaving'
-        device_1_chat.send_message(message)
-        if device_2_home.element_by_text(chat_name).is_element_displayed():
+        chat_1.send_message(message)
+        if home_2.element_by_text(chat_name).is_element_displayed():
             self.errors.append("Group chat '%s' reappeared when new message is sent" % chat_name)
 
         self.errors.verify_no_errors()
@@ -147,48 +147,48 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
     def test_make_admin_member_of_group_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
-        device_1_key, device_1_username = device_1.get_public_key_and_username(True)
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        public_key_1, username_1 = device_1.get_public_key_and_username(True)
         device_1.home_button.click()
-        chat_name = device_1_home.get_random_chat_name()
+        chat_name = home_1.get_random_chat_name()
 
         device_2.just_fyi('Create and join to group chat')
         device_2_key, device_2_username = device_2.get_public_key_and_username(True)
         device_2.home_button.click()
-        device_1_home.add_contact(device_2_key)
-        device_1_home.get_back_to_home_view()
-        device_1_chat = device_1_home.create_group_chat([device_2_username], chat_name)
-        device_2_chat = device_2_home.get_chat(chat_name).click()
-        device_2_chat.join_chat_button.click()
+        home_1.add_contact(device_2_key)
+        home_1.get_back_to_home_view()
+        chat_1 = home_1.create_group_chat([device_2_username], chat_name)
+        chat_2 = home_2.get_chat(chat_name).click()
+        chat_2.join_chat_button.click()
 
         device_1.just_fyi('Check group info view and options of users')
-        device_1_chat.chat_options.click()
-        group_info_view = device_1_chat.group_info.click()
-        if not group_info_view.user_admin(device_1_username).is_element_displayed():
+        chat_1.chat_options.click()
+        group_info_1 = chat_1.group_info.click()
+        if not group_info_1.user_admin(username_1).is_element_displayed():
             self.errors.append("Admin user is not marked as admin")
-        group_info_view.get_user_from_group_info(device_1_username).click()
-        if device_1_chat.profile_block_contact.is_element_displayed():
+        group_info_1.get_user_from_group_info(username_1).click()
+        if chat_1.profile_block_contact.is_element_displayed():
             self.errors.append("Admin is redirected to own profile on tapping own username from group info")
-        group_info_view.get_user_from_group_info(device_2_username).click()
-        if not device_1_chat.profile_block_contact.is_element_displayed():
+        group_info_1.get_user_from_group_info(device_2_username).click()
+        if not chat_1.profile_block_contact.is_element_displayed():
             self.errors.append("Admin is not redirected to user profile on tapping member username from group info")
-        device_1_chat.close_button.click()
+        chat_1.close_button.click()
 
         device_1.just_fyi('Made admin another user and check system message')
-        options = group_info_view.get_username_options(device_2_username).click()
+        options = group_info_1.get_username_options(device_2_username).click()
         options.make_admin_button.click()
-        admin_system_message = device_1_chat.has_been_made_admin_system_message(device_1_username, device_2_username)
-        for chat in (device_1_chat, device_2_chat):
+        admin_system_message = chat_1.has_been_made_admin_system_message(username_1, device_2_username)
+        for chat in (chat_1, chat_2):
             if not chat.chat_element_by_text(admin_system_message).is_element_displayed():
                 self.errors.append("Message with test '%s' was not received" % admin_system_message)
 
         device_2.just_fyi('Check Admin in group info and that "add members" is available')
-        device_2_chat.chat_options.click()
-        group_info_view = device_2_chat.group_info.click()
-        for username in (device_1_username, device_2_username):
-            if not group_info_view.user_admin(username).is_element_displayed():
+        chat_2.chat_options.click()
+        group_info_1 = chat_2.group_info.click()
+        for username in (username_1, device_2_username):
+            if not group_info_1.user_admin(username).is_element_displayed():
                 self.errors.append("Admin user is not marked as admin")
-        if not group_info_view.add_members.is_element_displayed():
+        if not group_info_1.add_members.is_element_displayed():
             self.errors.append("Add member button is not available for new admin")
 
         self.errors.verify_no_errors()
@@ -198,18 +198,18 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
     def test_rename_group_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
         device_1_key, device_1_username = device_1.get_public_key_and_username(True)
         device_1.home_button.click()
-        initial_chat_name = device_1_home.get_random_chat_name()
+        initial_chat_name = home_1.get_random_chat_name()
 
         device_2.just_fyi('Create and join group chat')
-        device_2_key, device_2_username = device_2.get_public_key_and_username(True)
+        public_key_2, username_2 = device_2.get_public_key_and_username(True)
         device_2.home_button.click()
-        device_1_home.add_contact(device_2_key)
-        device_1_home.get_back_to_home_view()
-        device_1_chat = device_1_home.create_group_chat([device_2_username], initial_chat_name)
-        device_2_chat = device_2_home.get_chat(initial_chat_name).click()
+        home_1.add_contact(public_key_2)
+        home_1.get_back_to_home_view()
+        device_1_chat = home_1.create_group_chat([username_2], initial_chat_name)
+        device_2_chat = home_2.get_chat(initial_chat_name).click()
         device_2_chat.join_chat_button.click()
 
         device_2.just_fyi('Rename chat and check system messages')
@@ -223,7 +223,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         device_2.just_fyi('Check that you can navigate to renamed chat')
         device_2_chat.back_button.click()
-        device_2_home.get_chat(new_chat_name).click()
+        home_2.get_chat(new_chat_name).click()
 
         self.errors.verify_no_errors()
 
@@ -288,7 +288,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         nickname = 'funny_bunny'
         device_2_options = chat_1.get_user_options(full_ens)
         device_2_options.view_profile_button.click()
-        chat_1.set_nickname(nickname)
+        chat_1.set_nickname(nickname, close_profile=False)
         if not chat_1.element_by_text(nickname).is_element_displayed():
             self.errors.append('Nickname is not shown in profile view after setting from group info')
         chat_1.close_button.click()
@@ -334,40 +334,40 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
     def test_block_and_unblock_user_from_group_chat_via_group_info(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
-        initial_chat_name = device_1_home.get_random_chat_name()
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        initial_chat_name = home_1.get_random_chat_name()
 
         device_2.just_fyi('Create and join group chat')
-        device_2_key, device_2_username = device_2.get_public_key_and_username(True)
+        public_key_2, username_2 = device_2.get_public_key_and_username(True)
         device_2.home_button.click()
-        device_1_home.add_contact(device_2_key)
-        device_1_home.get_back_to_home_view()
-        device_1_chat = device_1_home.create_group_chat([device_2_username], initial_chat_name)
-        device_2_chat = device_2_home.get_chat(initial_chat_name).click()
-        device_2_chat.join_chat_button.click()
+        home_1.add_contact(public_key_2)
+        home_1.get_back_to_home_view()
+        chat_1 = home_1.create_group_chat([username_2], initial_chat_name)
+        chat_2 = home_2.get_chat(initial_chat_name).click()
+        chat_2.join_chat_button.click()
 
         device_2.just_fyi('Send message and block user via Group Info')
         message_before_block = 'message from device2'
-        device_2_chat.send_message(message_before_block)
-        device_2_options = device_1_chat.get_user_options(device_2_username)
-        device_2_options.view_profile_button.click()
-        device_2_options.block_contact()
-        device_1_home.close_button.click()
-        if device_1_chat.chat_element_by_text(message_before_block).is_element_displayed(10):
+        chat_2.send_message(message_before_block)
+        options_2 = chat_1.get_user_options(username_2)
+        options_2.view_profile_button.click()
+        options_2.block_contact()
+        home_1.close_button.click()
+        if chat_1.chat_element_by_text(message_before_block).is_element_displayed(10):
             self.errors.append('User was blocked, but past message are shown')
         message_after_block = 'message from device2 after block'
-        device_2_chat.send_message(message_after_block)
-        if device_1_chat.chat_element_by_text(message_after_block).is_element_displayed(10):
+        chat_2.send_message(message_after_block)
+        if chat_1.chat_element_by_text(message_after_block).is_element_displayed(10):
             self.errors.append('User was blocked, but new messages still received')
 
         device_1.just_fyi('Unblock user via group info and check that new messages will arrive')
-        device_2_options = device_1_chat.get_user_options(device_2_username)
-        device_2_options.view_profile_button.click()
-        device_2_options.unblock_contact_button.click()
-        [device_2_options.close_button.click() for _ in range(2)]
+        options_2 = chat_1.get_user_options(username_2)
+        options_2.view_profile_button.click()
+        options_2.unblock_contact_button.click()
+        [options_2.close_button.click() for _ in range(2)]
         message_after_unblock = 'message from device2 after unblock'
-        device_2_chat.send_message(message_after_unblock)
-        if not device_1_chat.chat_element_by_text(message_after_unblock).is_element_displayed(20):
+        chat_2.send_message(message_after_unblock)
+        if not chat_1.chat_element_by_text(message_after_unblock).is_element_displayed(20):
             self.errors.append('User was unblocked, but new messages are not received')
 
         self.errors.verify_no_errors()

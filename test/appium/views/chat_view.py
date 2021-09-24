@@ -885,11 +885,19 @@ class ChatView(BaseView):
         self.profile_block_contact.click()
         self.confirm_block_contact_button.click()
 
-    def set_nickname(self, nickname):
+    def open_user_profile_from_public_chat(self, message):
+        chat_element = self.chat_element_by_text(message)
+        chat_element.find_element()
+        chat_element.member_photo.click()
+
+
+    def set_nickname(self, nickname, close_profile=True):
         self.driver.info("**Setting nickname:%s**" % nickname)
         self.profile_nickname_button.click()
         self.nickname_input_field.send_keys(nickname)
         self.element_by_text('Done').click()
+        if close_profile:
+            self.close_button.click()
 
     def convert_device_time_to_chat_timestamp(self) -> list:
         sent_time_object = dateutil.parser.parse(self.driver.device_time)

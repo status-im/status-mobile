@@ -1,7 +1,6 @@
-import time
-
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase
+from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
 from views.sign_in_view import SignInView
 from views.chat_view import ChatView
 
@@ -61,6 +60,156 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         for key in chats:
             if not chats[key].chat_element_by_text(message_from_old_member_after_adding).is_element_displayed(20):
                 self.errors.append("Message with text '%s' was not received" % message_from_old_member_after_adding)
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(5762)
+    @marks.high
+    def test_pair_devices_sync_one_to_one_contacts_nicknames_public_chat(self):
+        self.create_drivers(3)
+        device_1, device_2, device_3 = SignInView(self.drivers[0]), SignInView(self.drivers[1]), SignInView(self.drivers[2])
+
+        no_contact_nickname = 'no_contact_nickname'
+        name_1, name_2 = 'device_%s' % device_1.driver.number, 'device_%s' % device_2.driver.number
+        message_before_sync, message_after_sync = 'sent before sync', 'sent after sync'
+        message_blocked_before, message_blocked_after = 'I am blocked user', 'Not blocked anymore'
+        public_chat_before_sync, public_chat_after_sync = device_1.get_random_chat_name(), 'after-pairing'
+
+        device_3.just_fyi("Block contact: create user for blocking from main device")
+        home_3 = device_3.create_user()
+        public_chat_3 = home_3.join_public_chat(public_chat_before_sync)
+        public_chat_3.send_message(message_blocked_before)
+        self.drivers[2].quit()
+
+        device_1.just_fyi("(main device): create main user")
+        home_1 = device_1.create_user()
+        profile_1 = home_1.profile_button.click()
+        profile_1.privacy_and_security_button.click()
+        profile_1.backup_recovery_phrase_button.click()
+        profile_1.ok_continue_button.click()
+        recovery_phrase = profile_1.get_recovery_phrase()
+        profile_1.close_button.click()
+        profile_1.home_button.click()
+
+        device_1.just_fyi('Add contact, 1-1 chat (main device): 3-random, contact with ENS, start 1-1')
+        chat_1 = home_1.add_contact(basic_user['public_key'])
+        chat_1.send_message(message_before_sync)
+        chat_1.home_button.click()
+        chat_1 = home_1.add_contact(ens_user['ens'])
+        chat_1.home_button.click()
+
+        device_1.just_fyi('Chats, contacts (main device): join public chat, block user, set nickname')
+        public_chat_1 = home_1.join_public_chat(public_chat_before_sync)
+        public_chat_1.open_user_profile_from_public_chat(message_blocked_before)
+        public_chat_1.set_nickname(no_contact_nickname, close_profile=False)
+        public_chat_1.block_contact()
+
+        device_2.just_fyi("(secondary device): restore same multiaccount on another device")
+        home_2 = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
+        profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
+
+        device_2.just_fyi('Nicknames (main device): set nickname for contact')
+        profile_1.open_contact_from_profile(basic_user['username'])
+        nickname = 'my_basic_user'
+        chat_1.set_nickname(nickname)
+        device_1.back_button.click()
+
+        device_2.just_fyi('Pair main and secondary devices')
+        profile_2.discover_and_advertise_device(name_2)
+        profile_1.discover_and_advertise_device(name_1)
+        profile_1.get_toggle_device_by_name(name_2).wait_and_click()
+        profile_1.sync_all_button.click()
+        profile_1.sync_all_button.wait_for_visibility_of_element(15)
+        [device.profile_button.click() for device in (profile_1, profile_2)]
+
+        device_2.just_fyi('Contacts (secondary device): check contacts + blocked users after initial sync')
+        profile_2.contacts_button.scroll_to_element(9, 'up')
+        profile_2.contacts_button.click()
+        if not profile_2.blocked_users_button.is_element_displayed(30):
+            self.errors.append('Blocked users are not synced after initial sync')
+        for name in (basic_user['username'], nickname, '@%s' % ens_user['ens']):
+            if not profile_2.element_by_text(name).is_element_displayed():
+                self.errors.append('"%s" is not found in Contacts after initial sync' % name)
+        profile_2.blocked_users_button.click()
+        if not profile_2.element_by_text(no_contact_nickname).is_element_displayed():
+            self.errors.append("'%s' nickname without addeing to contacts is not synced after initial sync" % no_contact_nickname)
+        profile_2.profile_button.double_click()
+
+        device_1.just_fyi("Contacts(main device): unblock user, send message from unblocked user")
+        profile_1.profile_button.click()
+        profile_1.contacts_button.scroll_to_element(direction='up')
+        profile_1.contacts_button.click()
+        profile_1.blocked_users_button.click()
+        profile_1.element_by_text(no_contact_nickname).click()
+        public_chat_1.unblock_contact_button.click()
+        profile_1.close_button.click()
+
+        device_1.just_fyi('Chats, contacts, nickname (main device): send message to 1-1, add new contact')
+        profile_1.home_button.click(desired_view='chat')
+        public_chat_1.back_button.click()
+        home_1.get_chat(nickname).click()
+        chat_1.send_message(message_after_sync)
+        chat_1.back_button.click()
+        new_contact, new_contact_ens = transaction_senders['A'], ens_user_ropsten
+        home_1.add_contact(new_contact['public_key'])
+        home_1.home_button.click()
+        home_1.add_contact(new_contact_ens['ens'])
+
+        device_2.just_fyi('Contacts (secondary device): check unblocked user, new contact')
+        profile_2.contacts_button.click()
+        profile_2.blocked_users_button.wait_for_invisibility_of_element(60)
+        for name in (new_contact['username'], '@%s' % new_contact_ens['ens']):
+            if not profile_2.element_by_text(name).is_element_displayed(60):
+                self.errors.append('"%s" is not found in Contacts after adding when devices are paired' % name)
+
+        device_1.just_fyi('Contacts (main device): set nickname, (secondary device): check that synced')
+        home_1.profile_button.click()
+        profile_1.contacts_button.scroll_to_element(9, 'up')
+        profile_1.open_contact_from_profile(transaction_senders['A']['username'])
+        nickname_after_sync = 'my_transaction sender'
+        chat_1.set_nickname(nickname_after_sync)
+        device_1.home_button.double_click()
+        if not profile_2.element_by_text(nickname_after_sync).is_element_displayed(60):
+            self.errors.append(
+                '"%s" is not updated in Contacts after setting nickname when devices are paired' % nickname_after_sync)
+
+        device_2.just_fyi("Chats(secondary device): check public chats")
+        profile_2.home_button.click()
+        if not home_2.element_by_text_part(public_chat_before_sync).is_element_displayed():
+            self.errors.append(
+                '"%s" is not found in Home after initial sync when devices are paired' % public_chat_before_sync)
+        public_chat_2 = home_2.get_chat('#%s' % public_chat_before_sync).click()
+        if public_chat_2.chat_element_by_text(message_blocked_before).is_element_displayed(30):
+            self.errors.append('Message %s from previously blocked user is fetched' % message_blocked_before)
+
+        home_2.just_fyi("Chats (secondary device): check messages in 1-1")
+        public_chat_2.home_button.click()
+        chat = home_2.get_chat(nickname).click()
+        if chat.chat_element_by_text(message_before_sync).is_element_displayed():
+            self.errors.append('"%s" message sent before pairing is synced' % message_before_sync)
+        if not chat.chat_element_by_text(message_after_sync).is_element_displayed(60):
+            self.errors.append('"%s" message in 1-1 is not synced' % message_after_sync)
+
+        device_1.just_fyi('Chats (main device):add new public chat, (secondary device): check that synced ')
+        home_1.join_public_chat(public_chat_after_sync)
+        home_2 = chat.get_back_to_home_view()
+        if not home_2.element_by_text_part(public_chat_after_sync).is_element_displayed(20):
+            self.errors.append(
+                '"%s" public chat is not synced after adding when devices are paired' % public_chat_after_sync)
+
+        home_1.just_fyi('Contacts (main device): remove and block contact')
+        home_1.profile_button.click()
+        profile_1.contacts_button.scroll_to_element(9, 'up')
+        profile_1.open_contact_from_profile(nickname)
+        chat_1.block_contact()
+        profile_1.element_by_text(nickname_after_sync).click()
+        chat_1.remove_from_contacts.click()
+
+        home_2.just_fyi('Contacts (secondary device): check removed and blocked contact')
+        home_2.element_by_text_part(nickname).wait_for_invisibility_of_element(60)
+        home_2.profile_button.click()
+        profile_2.contacts_button.click()
+        profile_2.element_by_text(nickname_after_sync).wait_for_invisibility_of_element(60)
 
         self.errors.verify_no_errors()
 
