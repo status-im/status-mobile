@@ -1,7 +1,5 @@
 (ns status-im.ethereum.core
   (:require [clojure.string :as string]
-            [status-im.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money]
             ["web3-utils" :as utils]))
 
 (defn sha3 [s]
@@ -126,14 +124,6 @@
 
 (defn snt-symbol [db]
   (chain-keyword->snt-symbol (chain-keyword db)))
-
-(def default-transaction-gas (money/bignumber 21000))
-
-(defn estimate-gas [symbol]
-  (if (tokens/ethereum? symbol)
-    default-transaction-gas
-    ;; TODO(jeluard) Rely on estimateGas call
-    (.times ^js default-transaction-gas 5)))
 
 (defn address= [address1 address2]
   (and address1 address2

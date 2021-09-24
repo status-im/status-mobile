@@ -366,10 +366,7 @@
 (re-frame/reg-fx
  :signing/update-estimated-gas
  (fn [{:keys [obj success-event error-event]}]
-   (if (nil? (:data obj))
-     (re-frame/dispatch [success-event (money/bignumber 21000)])
-     (json-rpc/call
-      {:method     "eth_estimateGas"
-       :params     [obj]
-       :on-success #(re-frame/dispatch [success-event %])
-       :on-error #(re-frame/dispatch [error-event %])}))))
+   (json-rpc/call {:method     "eth_estimateGas"
+                   :params     [obj]
+                   :on-success #(re-frame/dispatch [success-event %])
+                   :on-error   #(re-frame/dispatch [error-event %])})))

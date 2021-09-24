@@ -25,10 +25,6 @@
 (defn- find-address-name [db address]
   (:name (contact.db/find-contact-by-address (:contacts/contacts db) address)))
 
-(defn use-default-eth-gas [fx]
-  (assoc-in fx [:db :wallet :send-transaction :gas]
-            ethereum/default-transaction-gas))
-
 (fx/defn set-recipient
   {:events [:wallet.send/set-recipient]}
   [{:keys [db]} address]
