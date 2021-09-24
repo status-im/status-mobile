@@ -179,6 +179,8 @@
 (defonce rset-app-launched
   (.registerAppLaunchedListener (.events Navigation)
                                 (fn []
+                                  (reset! curr-modal false)
+                                  (reset! dissmissing false)
                                   (if (or (= @root-id :multiaccounts) (= @root-id :multiaccounts-keycard))
                                     (re-frame/dispatch-sync [::set-multiaccount-root])
                                     (when @root-id
