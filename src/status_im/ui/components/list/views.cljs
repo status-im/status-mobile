@@ -3,11 +3,11 @@
             [status-im.ui.components.list.styles :as styles]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
-            ["react-native" :as react-native]
-            ["react-native-bidirectional-list" :refer [BidirectionalList]]))
+            ["react-native-bidirectional-infinite-scroll" :as react-native-bidirectional-infinite-scroll]
+            ["react-native" :as react-native]))
 
-(def flat-list-class (reagent/adapt-react-class BidirectionalList))
-;(def flat-list-class (reagent/adapt-react-class (.-FlatList react-native)))
+(def flat-list-class (reagent/adapt-react-class (.-FlatList react-native)))
+(def bidi-flat-list-class (reagent/adapt-react-class (.-FlatList react-native-bidirectional-infinite-scroll)))
 (def section-list-class (reagent/adapt-react-class (.-SectionList react-native)))
 
 (def memo-wrap-render-fn
@@ -53,6 +53,18 @@
      {:pre [(or (nil? data)
                 (sequential? data))]}
      [class
+      (merge (base-list-props props)
+             props
+             {:data (to-array data)})])))
+
+(defn bidi-flat-list
+  "A wrapper for react-native-bidirectional-infinite-scroll.
+  See https://github.com/GetStream/react-native-bidirectional-infinite-scroll"
+  ([{:keys [data] :as props}]
+   (do
+     {:pre [(or (nil? data)
+                (sequential? data))]}
+     [bidi-flat-list-class
       (merge (base-list-props props)
              props
              {:data (to-array data)})])))

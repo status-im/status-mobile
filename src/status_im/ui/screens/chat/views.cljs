@@ -302,7 +302,7 @@
   (let [{:keys [group-chat chat-id public? community-id admins]} chat
         messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])]
     ;;do not use anonymous functions for handlers
-    [list/flat-list
+    [list/bidi-flat-list
      (merge
       pan-responder
       {:key-fn                       list-key-fn

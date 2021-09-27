@@ -6603,13 +6603,6 @@ react-native-bidirectional-infinite-scroll@^0.3.3:
   resolved "https://registry.yarnpkg.com/react-native-bidirectional-infinite-scroll/-/react-native-bidirectional-infinite-scroll-0.3.3.tgz#31e83e30514be2eaaa889b97d01149c8a08576ec"
   integrity sha512-zxYJDjrxTkGqg83WH3fSdufg79XZ7xDDn9HdHlKo9avAcz92Rf28/ivDeUM2aOUmmboqJK8BqtVByT6cF/taYg==
 
-"react-native-bidirectional-list@git+https://github.com/callstack-internal/react-native-bidirectional-list.git#main":
-  version "0.1.0"
-  resolved "git+https://github.com/callstack-internal/react-native-bidirectional-list.git#ef52f1c115917b9f7a5e0a67b2bb83864f349b61"
-  dependencies:
-    "@stream-io/flat-list-mvcp" "^0.10.1"
-    react-native-bidirectional-infinite-scroll "^0.3.3"
-
 react-native-camera-kit@^8.0.4:
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/react-native-camera-kit/-/react-native-camera-kit-8.0.4.tgz#8e350b37a205054ceb140a8babe1d032acdcdbd5"
