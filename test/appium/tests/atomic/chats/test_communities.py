@@ -76,6 +76,8 @@ class TestCommunitiesMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(695845)
     @marks.medium
+    @marks.skip
+    # TODO: blocked due to 12649
     def test_notification_in_activity_center_for_mention_in_community_and_group_chat(self):
         self.create_drivers(2)
         home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()

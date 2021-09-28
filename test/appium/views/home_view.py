@@ -223,7 +223,6 @@ class HomeView(BaseView):
             one_to_one_chat.chat_options.click()
             one_to_one_chat.view_profile_button.click()
             one_to_one_chat.set_nickname(nickname)
-            one_to_one_chat.close_button.click()
         self.driver.info("**1-1 chat is created successfully!**")
         return one_to_one_chat
 
