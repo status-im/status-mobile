@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.3.2'
+library 'status-jenkins-lib@v1.3.3'
 
 pipeline {
   agent { label 'linux' }
@@ -58,7 +58,7 @@ pipeline {
         //jenkins.copyArts(iose2e)
         jenkins.copyArts(apk)
         jenkins.copyArts(apke2e)
-        sha = "pkg/${utils.pkgFilename('sha256')}"
+        sha = "pkg/${utils.pkgFilename(ext: 'sha256')}"
         dir('pkg') {
           /* generate sha256 checksums for upload */
           sh "sha256sum * | tee ../${sha}"
