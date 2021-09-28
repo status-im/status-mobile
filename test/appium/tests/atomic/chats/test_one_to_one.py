@@ -449,7 +449,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(695847)
     @marks.medium
-    def test_can_pin_messages_in_ono_to_one_and_group_chats(self):
+    def test_can_pin_messages_in_one_to_one_and_group_chats(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
@@ -531,8 +531,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         group_chat_2.join_chat_button.click()
         group_chat_1.send_message(message_1)
         group_chat_1.pin_message(message_1)
-        if not (group_chat_1.chat_element_by_text(message_1).pinned_by_label.is_element_present() and
-                group_chat_2.chat_element_by_text(message_1).pinned_by_label.is_element_present()):
+        if not (group_chat_1.chat_element_by_text(message_1).pinned_by_label.is_element_present(30) and
+                group_chat_2.chat_element_by_text(message_1).pinned_by_label.is_element_present(30)):
             self.errors.append("Message is not pinned in group chat!")
 
         home_1.just_fyi("Check that non admin user can not unpin messages")
