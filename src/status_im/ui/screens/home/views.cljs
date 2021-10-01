@@ -61,7 +61,8 @@
       [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center
                    :margin-top      10
                    :margin-bottom   18}
-       (for [community communities/featured]
+       (for [{:keys [id] :as community} communities/featured]
+         ^{:key id}
          [communities.views/render-featured-community community])]])])
 
 (defn welcome-blank-page []

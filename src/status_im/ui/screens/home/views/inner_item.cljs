@@ -19,6 +19,58 @@
                :accessibility-label :no-messages-text}
    (i18n/label label-key)])
 
+(def max-subheader-length 100)
+
+(defn truncate-literal [literal]
+  (when literal
+    (let [size (min max-subheader-length (.-length literal))]
+      {:components (.substring literal 0 size)
+       :length     size})))
+
+(defn add-parsed-to-subheader [acc {:keys [type destination literal children]}]
+  (let [result (case type
+                 "paragraph"
+                 (reduce
+                  (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
+                    (if (>= length max-subheader-length)
+                      (reduced acc-paragraph)
+                      (add-parsed-to-subheader acc-paragraph parsed-child)))
+                  {:components [react/text-class]
+                   :length     0}
+                  children)
+
+                 "mention"
+                 {:components [react/text-class @(re-frame/subscribe [:contacts/contact-name-by-identity literal])]
+                  :length     4} ;; we can't predict name length so take the smallest possible
+
+                 "status-tag"
+                 (truncate-literal (str "#" literal))
+
+                 "link"
+                 (truncate-literal destination)
+
+                 (truncate-literal literal))]
+    {:components (conj (:components acc) (:components result))
+     :length     (+ (:length acc) (:length result))}))
+
+(defn render-subheader
+  "Render the preview of a last message to a maximum of max-subheader-length characters"
+  [parsed-text]
+  (println "PARSED" parsed-text)
+  (let [result
+        (reduce
+         (fn [{:keys [_ length] :as acc-text} new-text-chunk]
+           (if (>= length max-subheader-length)
+             (reduced acc-text)
+             (add-parsed-to-subheader acc-text new-text-chunk)))
+         {:components [react/text-class {:style               styles/last-message-text
+                                         :number-of-lines     1
+                                         :ellipsize-mode      :tail
+                                         :accessibility-label :chat-message-text}]
+          :length     0}
+         parsed-text)]
+    (:components result)))
+
 (defn message-content-text [{:keys [content content-type]} absolute]
   [react/view (when absolute {:position :absolute :left 72 :top 32 :right 80})
    (cond
@@ -27,11 +79,13 @@
 
      (and (= constants/content-type-text content-type)
           (not (string/blank? (:text content))))
-     [react/text-class {:style               styles/last-message-text
-                        :number-of-lines     1
-                        :ellipsize-mode      :tail
-                        :accessibility-label :chat-message-text}
-      (:text content)]
+     (if (string/blank? (:parsed-text content))
+       [react/text-class {:style               styles/last-message-text
+                          :number-of-lines     1
+                          :ellipsize-mode      :tail
+                          :accessibility-label :chat-message-text}
+        (:text content)]
+       [render-subheader (:parsed-text content)])
 
      (= constants/content-type-sticker content-type)
      [preview-label :t/sticker]

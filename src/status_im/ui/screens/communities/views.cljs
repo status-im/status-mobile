@@ -160,7 +160,6 @@
        community-key]]]))
 
 (defn render-featured-community [{:keys [name id]}]
-  ^{:key id}
   [react/touchable-highlight {:on-press            #(>evt [:navigate-to :community {:community-id id}])
                               :accessibility-label :chat-item}
    [react/view {:padding-right    8

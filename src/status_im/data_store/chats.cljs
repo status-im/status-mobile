@@ -4,7 +4,8 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.constants :as constants]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.types :as types]))
 
 (defn rpc->type [{:keys [chat-type name] :as chat}]
   (cond
@@ -82,18 +83,19 @@
        :muted (.-muted chat)
        :joined (.-joined chat)
 
-       :chat-id (.-id chat)
-       :community-id (.-communityId chat)
-       :synced-from (.-syncedFrom chat)
-       :synced-to (.-syncedTo chat)
-       :deleted-at-clock-value (.-deletedAtClockValue chat)
-       :chat-type (.-chatType chat)
+       :chat-id                 (.-id chat)
+       :community-id            (.-communityId chat)
+       :synced-from             (.-syncedFrom chat)
+       :synced-to               (.-syncedTo chat)
+       :deleted-at-clock-value  (.-deletedAtClockValue chat)
+       :chat-type               (.-chatType chat)
        :unviewed-messages-count (.-unviewedMessagesCount chat)
        :unviewed-mentions-count (.-unviewedMentionsCount chat)
-       :last-message {:content {:text (.-text chat)}
-                      :content-type (.-contentType chat)}
-       :last-clock-value (.-lastClockValue chat)
-       :profile-public-key (.-profile chat)}
+       :last-message            {:content      {:text        (.-text chat)
+                                                :parsed-text (types/js->clj (.-parsedText chat))}
+                                 :content-type (.-contentType chat)}
+       :last-clock-value        (.-lastClockValue chat)
+       :profile-public-key      (.-profile chat)}
       rpc->type
       unmarshal-members))
 
