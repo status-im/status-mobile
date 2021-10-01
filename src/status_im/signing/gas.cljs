@@ -228,6 +228,7 @@
 (fx/defn update-estimated-gas-error
   {:events [:signing/update-estimated-gas-error]}
   [{db :db} {:keys [message]}]
+  (log/warn "signing/update-estimated-gas-error" message)
   {:db (-> db
            (assoc-in [:signing/edit-fee :gas-loading?] false)
            (assoc-in [:signing/tx :gas-error-message] message))})
@@ -366,7 +367,10 @@
 (re-frame/reg-fx
  :signing/update-estimated-gas
  (fn [{:keys [obj success-event error-event]}]
-   (json-rpc/call {:method     "eth_estimateGas"
-                   :params     [obj]
-                   :on-success #(re-frame/dispatch [success-event %])
-                   :on-error   #(re-frame/dispatch [error-event %])})))
+   (let [value (:value obj)]
+     (json-rpc/call {:method     "eth_estimateGas"
+                     :params     [(if value
+                                    (assoc obj :value "0x0")
+                                    obj)]
+                     :on-success #(re-frame/dispatch [success-event %])
+                     :on-error   #(re-frame/dispatch [error-event %])}))))
