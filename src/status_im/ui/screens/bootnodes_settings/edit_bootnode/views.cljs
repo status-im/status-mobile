@@ -22,7 +22,7 @@
 
 (views/defview edit-bootnode []
   (views/letsubs [manage-bootnode   [:get-manage-bootnode]
-                  validation-errors [:manage-bootnode-validation-errors]]
+                  validation-errors [:wakuv2-nodes/validation-errors]]
     (let [url          (get-in manage-bootnode [:url :value])
           id           (get-in manage-bootnode [:id :value])
           name         (get-in manage-bootnode [:name :value])
