@@ -2,7 +2,7 @@ PODS:
   - boost-for-react-native (1.63.0)
   - BVLinearGradient (2.5.6):
     - React
-  - CryptoSwift (1.4.1)
+  - CryptoSwift (1.4.2)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.4)
   - FBReactNativeSpec (0.63.4):
@@ -199,16 +199,16 @@ PODS:
     - React
   - react-native-camera-kit (8.0.4):
     - React
-  - react-native-cameraroll (1.6.2):
-    - React
+  - react-native-cameraroll (4.0.4):
+    - React-Core
   - react-native-config (1.4.2):
     - react-native-config/App (= 1.4.2)
   - react-native-config/App (1.4.2):
     - React-Core
   - react-native-image-resizer (1.2.3):
     - React
-  - react-native-mail (4.0.0):
-    - React
+  - react-native-mail (6.1.1):
+    - React-Core
   - react-native-netinfo (4.7.0):
     - React
   - react-native-safe-area-context (2.0.0):
@@ -313,12 +313,12 @@ PODS:
     - React
   - RNGestureHandler (1.8.0):
     - React
-  - RNImageCropPicker (0.31.1):
+  - RNImageCropPicker (0.36.2):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.31.1)
+    - RNImageCropPicker/QBImagePickerController (= 0.36.2)
     - TOCropViewController
-  - RNImageCropPicker/QBImagePickerController (0.31.1):
+  - RNImageCropPicker/QBImagePickerController (0.36.2):
     - React-Core
     - React-RCTImage
     - TOCropViewController
@@ -596,12 +596,12 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
-  CryptoSwift: 0bc800a7e6a24c4fc9ebeab97d44b0d5f73a78bd
+  CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 060ff9f5bfc2e5fc0ef1a3961cdf58307ce2086d
+  glog: 5bc68409594b19a3e5c5cbced7b1ecf61053b709
   Keycard: dd96182888da0aacf4de821b641103143bbb26cc
   Permission-Camera: afad27bf90337684d4a86f3825112d648c8c4d3b
   Permission-Microphone: 0ffabc3fe1c75cfb260525ee3f529383c9f4368c
@@ -617,10 +617,10 @@ SPEC CHECKSUMS:
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-camera-kit: 498a6d111a904834e0824e9073cfadef7303235f
-  react-native-cameraroll: ac69828fc43b9dbf92149714fd739577d38e4448
+  react-native-cameraroll: 88f4e62d9ecd0e1f253abe4f685474f2ea14bfa2
   react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
-  react-native-mail: 7e37dfbe93ff0d4c7df346b738854dbed533e86f
+  react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
   react-native-safe-area-context: 60f654e00b6cc416573f6d5dbfce3839958eb57a
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
@@ -649,7 +649,7 @@ SPEC CHECKSUMS:
   RNDeviceInfo: 9538a884f862fe4aa0d7cead9f34e292d41ba8f6
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
-  RNImageCropPicker: 38865ab4af1b0b2146ad66061196bc0184946855
+  RNImageCropPicker: 35a3ceb837446fa11547704709bb22b5fac6d584
   RNKeychain: 216f37338fcb9e5c3a2530f1e3295f737a690cb1
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
@@ -666,4 +666,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 2769eb02c836ad1eaddf5f34a0c61153c4c5fbec
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.0
