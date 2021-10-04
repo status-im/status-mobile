@@ -402,6 +402,15 @@
       :accessory      :text
       :accessory-text network-name}]))
 
+(defn advanced-item []
+  [:<>
+   [separator]
+   [quo/list-item
+    {:size  :small
+     :title (i18n/label :t/advanced)
+     :chevron true
+     :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet {:content sheets/advanced}])}]])
+
 (views/defview sheet
   [{:keys [from contact amount token cancel?] :as tx}]
   (views/letsubs [fee                   [:signing/fee]
@@ -413,7 +422,8 @@
                   prices                [:prices]
                   wallet-currency       [:wallet/currency]
                   mainnet?              [:mainnet?]
-                  prices-loading?       [:prices-loading?]]
+                  prices-loading?       [:prices-loading?]
+                  management-enabled?   [:wallet/transactions-management-enabled?]]
     (let [display-symbol     (wallet.utils/display-symbol token)
           fee-display-symbol (wallet.utils/display-symbol (tokens/native-currency chain))]
       [react/view (styles/sheet)
@@ -438,6 +448,8 @@
             [amount-item prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?])
           [separator]
           [fee-item prices wallet-currency fee-display-symbol fee gas-error gas-error-state prices-loading?]
+          (when management-enabled?
+            [advanced-item])
           (when (= :gas-is-set gas-error-state)
             [react/text {:style {:color colors/gray :margin-horizontal 32 :text-align :center}}
              (i18n/label :t/tx-fail-description1)])

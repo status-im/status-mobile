@@ -275,6 +275,13 @@
                              :maxPriorityFeePerGas (money/->wei :gwei (:value-number maxPriorityFeePerGas)))}
                 (bottom-sheet/hide-bottom-sheet)))))
 
+(fx/defn submit-nonce
+  {:events [:signing.nonce/submit]}
+  [{db :db :as cofx} nonce]
+  (fx/merge cofx
+            {:db (assoc-in db [:signing/tx :nonce] nonce)}
+            (bottom-sheet/hide-bottom-sheet)))
+
 (re-frame/reg-fx
  :signing/update-gas-price
  (fn [{:keys [success-callback error-callback network-id] :as params}]

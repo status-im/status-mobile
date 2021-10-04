@@ -8,7 +8,8 @@
             [status-im.utils.money :as money]
             [status-im.ui.components.icons.icons :as icons]
             [clojure.string :as clojure.string]
-            [status-im.signing.gas :as gas]))
+            [status-im.signing.gas :as gas]
+            [reagent.core :as reagent]))
 
 (views/defview fee-bottom-sheet [fee-display-symbol]
   (views/letsubs [{gas-edit :gas gas-price-edit :gasPrice max-fee :max-fee} [:signing/edit-fee]]
@@ -377,3 +378,25 @@
         :on-press #(do (re-frame/dispatch [:hide-popover])
                        (re-frame/dispatch [:signing.edit-fee.ui/submit true]))}
        (i18n/label :t/continue-anyway)]]]))
+
+(defn advanced []
+  (let [nonce (reagent/atom nil)
+        default-nonce (:nonce @(re-frame/subscribe [:signing/tx]))]
+    (fn []
+      [react/view {:padding 20}
+       [quo/text-input
+        {:label               (i18n/label :t/nonce)
+         :accessibility-label :nonce
+         :keyboard-type       :numeric
+         :default-value       default-nonce
+         :on-change-text      #(reset! nonce %)
+         :show-cancel         false
+         :container-style {:margin-bottom 20}}]
+       [react/view {:align-items :flex-end}
+        [quo/button
+         {:type                :primary
+          :accessibility-label :save-nonce
+          :theme               :accent
+          :disabled            (clojure.string/blank? @nonce)
+          :on-press            #(re-frame/dispatch [:signing.nonce/submit @nonce])}
+         (i18n/label :t/save)]]])))

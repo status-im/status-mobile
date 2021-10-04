@@ -93,7 +93,7 @@
   {:events [:signing.ui/sign-is-pressed]}
   [{{:signing/keys [sign tx] :as db} :db :as cofx}]
   (let [{:keys [in-progress? password]} sign
-        {:keys [tx-obj gas gasPrice maxPriorityFeePerGas maxFeePerGas message]} tx
+        {:keys [tx-obj gas gasPrice maxPriorityFeePerGas maxFeePerGas message nonce]} tx
         hashed-password (ethereum/sha3 (security/safe-unmask-data password))]
     (if message
       (sign-message cofx)
@@ -102,6 +102,8 @@
                                     {:gas (str "0x" (abi-spec/number-to-hex gas))})
                                   (when gasPrice
                                     {:gasPrice (str "0x" (abi-spec/number-to-hex gasPrice))})
+                                  (when nonce
+                                    {:nonce (str "0x" (abi-spec/number-to-hex nonce))})
                                   (when maxPriorityFeePerGas
                                     {:maxPriorityFeePerGas (str "0x" (abi-spec/number-to-hex
                                                                       (js/parseInt maxPriorityFeePerGas)))})
