@@ -67,16 +67,19 @@
                           contact-name
                           color
                           loading-messages?
-                          no-messages?]}]
+                          no-messages?
+                          emoji]}]
   [react/view {:style (style/intro-header-container loading-messages? no-messages?)
                :accessibility-label :history-chat}
    ;; Icon section
    [react/view {:style {:margin-top    42
                         :margin-bottom 24}}
-    [chat-icon.screen/chat-intro-icon-view
-     chat-name chat-id group-chat
+    [chat-icon.screen/emoji-chat-intro-icon-view
+     chat-name chat-id group-chat emoji
      {:default-chat-icon      (style/intro-header-icon 120 color)
-      :default-chat-icon-text style/intro-header-icon-text
+      :default-chat-icon-text (if (string/blank? emoji)
+                                style/intro-header-icon-text
+                                (style/emoji-intro-header-icon-text 120))
       :size                   120}]]
    ;; Chat title section
    [react/text {:style (style/intro-header-chat-name)}
@@ -106,7 +109,7 @@
            chat-type
            synced-to
            color chat-id chat-name
-           public?]}
+           public? emoji]}
    no-messages]
   [react/touchable-without-feedback
    {:style               {:flex        1
@@ -122,7 +125,8 @@
           :public? public?
           :color color
           :loading-messages? (not (pos? synced-to))
-          :no-messages? no-messages}]
+          :no-messages? no-messages
+          :emoji emoji}]
      (if group-chat
        [chat-intro opts]
        [chat-intro-one-to-one opts]))])

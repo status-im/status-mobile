@@ -75,6 +75,7 @@
   (-> {:name (.-name chat)
        :description (.-description chat)
        :color (.-color chat)
+       :emoji (.-emoji chat)
        :timestamp (.-timestamp chat)
        :alias (.-alias chat)
        :identicon (.-identicon chat)

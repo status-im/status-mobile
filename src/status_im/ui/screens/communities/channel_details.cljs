@@ -11,7 +11,7 @@
   (let [{:keys [chat-id]} (<sub [:get-screen-params])]
     (fn []
       (let [current-chat (<sub [:chat-by-id chat-id])
-            {:keys [chat-name color description community-id]} current-chat
+            {:keys [chat-name color description community-id emoji]} current-chat
             category (<sub [:chats/category-by-chat-id community-id chat-id])
             {:keys [admin]} (<sub [:communities/community community-id])
             pinned-messages (<sub [:chats/pinned chat-id])]
@@ -24,10 +24,13 @@
                                                                                             community-id
                                                                                             chat-name
                                                                                             description
-                                                                                            color])}])
+                                                                                            color
+                                                                                            emoji
+                                                                                            chat-id])}])
                               :extended-header   (profile-header/extended-header
                                                   {:title    chat-name
                                                    :color    color
+                                                   :emoji    emoji
                                                    :subtitle (i18n/label :t/public-channel)})
                               :use-insets        true}
          (when-not (string/blank? description)

@@ -99,17 +99,19 @@
      (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))])
 
 (defn home-list-item [home-item opts]
-  (let [{:keys [chat-id chat-name color group-chat public? timestamp last-message muted]} home-item]
+  (let [{:keys [chat-id chat-name color group-chat public? timestamp last-message muted emoji]} home-item]
     [react/touchable-opacity (merge {:style {:height 64}} opts)
      [:<>
       [chat-item-icon muted (and group-chat (not public?)) (and group-chat public?)]
-      [chat-icon.screen/chat-icon-view chat-id group-chat chat-name
+      [chat-icon.screen/emoji-chat-icon-view chat-id group-chat chat-name emoji
        {:container              (assoc chat-icon.styles/container-chat-list
                                        :top 12 :left 16 :position :absolute)
         :size                   40
         :chat-icon              chat-icon.styles/chat-icon-chat-list
         :default-chat-icon      (chat-icon.styles/default-chat-icon-chat-list color)
-        :default-chat-icon-text (chat-icon.styles/default-chat-icon-text 40)}]
+        :default-chat-icon-text (if (string/blank? emoji)
+                                  (chat-icon.styles/default-chat-icon-text 40)
+                                  (chat-icon.styles/emoji-chat-icon-text 40))}]
       [chat-item-title chat-id muted group-chat chat-name]
       [react/text {:style               styles/datetime-text
                    :number-of-lines     1

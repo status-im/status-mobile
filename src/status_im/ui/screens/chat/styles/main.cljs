@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.styles.main
-  (:require [quo.design-system.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]
+            [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
 
 (def toolbar-container
   {:flex           1
@@ -65,7 +66,9 @@
    :align-items      :center
    :justify-content  :center
    :border-radius    (/ diameter 2)
-   :background-color color})
+   :background-color color
+   :border-width     0.5
+   :border-color     "rgba(0,0,0,0.1)"})
 
 (def intro-header-icon-text
   {:color       colors/white
@@ -73,6 +76,10 @@
    :font-weight "700"
    :opacity     0.8
    :line-height 72})
+
+(defn emoji-intro-header-icon-text [size]
+  {:font-size   (emoji-utils/emoji-font-size size)
+   :margin-top  (emoji-utils/emoji-top-margin-for-vertical-alignment size)})  ;; Required for vertical alignment bug - Check function defination for more info
 
 (defn intro-header-chat-name []
   {:font-size         22

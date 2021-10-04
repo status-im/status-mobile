@@ -32,12 +32,12 @@
         (i18n/label :chat-is-not-a-contact))]]))
 
 (defn toolbar-content-view-inner [chat-info]
-  (let [{:keys [group-chat invitation-admin color chat-id contacts chat-type chat-name public?]}
+  (let [{:keys [group-chat invitation-admin color chat-id contacts chat-type chat-name public? emoji]}
         chat-info]
     [react/view {:style st/toolbar-container}
      [react/view {:margin-right 10}
       [react/touchable-highlight {:on-press #(when-not group-chat (re-frame/dispatch [:chat.ui/show-profile chat-id]))}
-       [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color]]]
+       [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color emoji]]]
      [react/view {:style st/chat-name-view}
       (if group-chat
         [react/text {:style               st/chat-name-text
