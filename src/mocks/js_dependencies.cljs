@@ -203,6 +203,9 @@
 
 (def push-notification-ios #js {})
 
+(def rn-emoji-keyboard
+  #js {:EmojiKeyboard #js {}})
+
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -235,6 +238,7 @@
     "react-native-navigation" react-native-navigation
     "@react-native-community/push-notification-ios" push-notification-ios
     "react-native-camera-kit" react-native-camera-kit
+    "rn-emoji-keyboard" rn-emoji-keyboard
     "./fleets.js" default-fleets
     "./chats.js" default-chats
     "../translations/ar.json" (js/JSON.parse (slurp "./translations/ar.json"))

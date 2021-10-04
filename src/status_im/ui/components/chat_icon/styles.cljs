@@ -1,5 +1,6 @@
 (ns status-im.ui.components.chat-icon.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]
+            [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
 
 (defn default-chat-icon [color]
   {:margin           0
@@ -33,6 +34,11 @@
    :font-weight "700"
    :font-size   (/ size 2)
    :line-height size})
+
+(defn emoji-chat-icon-text [size]
+  {:font-size   (emoji-utils/emoji-font-size size)
+   :line-height size
+   :margin-top  (emoji-utils/emoji-top-margin-for-vertical-alignment size)})  ;; Required for vertical alignment bug - Check function defination for more info
 
 (def chat-icon
   {:margin        4

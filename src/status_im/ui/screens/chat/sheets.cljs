@@ -77,13 +77,13 @@
        :on-press            #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])}]]))
 
 (defn community-chat-accents []
-  (fn [{:keys [chat-id group-chat chat-name color]}]
+  (fn [{:keys [chat-id group-chat chat-name color emoji]}]
     [react/view
      [quo/list-item
       {:theme               :accent
        :title               chat-name
-       :icon                [chat-icon/chat-icon-view-chat-sheet
-                             chat-id group-chat chat-name color]
+       :icon                [chat-icon/emoji-chat-icon-view-chat-sheet
+                             chat-id group-chat chat-name color emoji]
        :subtitle            (i18n/label :t/view-details)
        :chevron             true
        :accessibility-label :view-community-channel-details

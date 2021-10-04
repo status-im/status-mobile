@@ -12,7 +12,9 @@
    [status-im.utils.universal-links.core :as universal-links]
    [status-im.ethereum.json-rpc :as json-rpc]
    [quo.design-system.colors :as colors]
-   [status-im.navigation :as navigation]))
+   [status-im.navigation :as navigation]
+   [status-im.utils.handlers :refer [>evt]]
+   [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]))
 
 (def crop-size 1000)
 
@@ -259,12 +261,13 @@
   {:events [::create-channel-confirmation-pressed]}
   [{:keys [db] :as cofx}]
   (let [community-id (fetch-community-id-input cofx)
-        {:keys [name description]} (get db :communities/create-channel)]
+        {:keys [name description color emoji]} (get db :communities/create-channel)]
     {::json-rpc/call [{:method     "wakuext_createCommunityChat"
                        :params     [community-id
                                     {:identity    {:display_name name
-                                                   :color        (rand-nth colors/chat-colors)
-                                                   :description  description}
+                                                   :description  description
+                                                   :color        color
+                                                   :emoji        emoji}
                                      :permissions {:access constants/community-channel-access-no-membership}}]
                        :js-response true
                        :on-success #(re-frame/dispatch [::community-channel-created %])
@@ -280,14 +283,14 @@
 (fx/defn edit-channel
   {:events [::edit-channel-confirmation-pressed]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [name description color community-id]} (get db :communities/create-channel)
-        chat-id (to-community-chat-id (get db :current-chat-id))]
+  (let [{:keys [name description color community-id emoji edit-channel-id]} (get db :communities/create-channel)]
     {::json-rpc/call [{:method     "wakuext_editCommunityChat"
                        :params     [community-id
-                                    chat-id
+                                    edit-channel-id
                                     {:identity    {:display_name name
                                                    :description  description
-                                                   :color        color}
+                                                   :color        color
+                                                   :emoji        emoji}
                                      :permissions {:access constants/community-channel-access-no-membership}}]
                        :js-response true
                        :on-success #(re-frame/dispatch [::community-channel-edited %])
@@ -330,17 +333,23 @@
   (fx/merge cofx
             (reset-community-id-input id)
             (reset-channel-info)
+            (>evt [::create-channel-fields (rand-nth emoji-thumbnail-styles/emoji-picker-default-thumbnails)])
             (navigation/open-modal :create-community-channel {:community-id id})))
 
 (fx/defn edit-channel-pressed
   {:events [::edit-channel-pressed]}
-  [{:keys [db] :as cofx} community-id chat-name description color]
-  (fx/merge cofx
-            {:db (assoc db :communities/create-channel {:name         chat-name
-                                                        :description  description
-                                                        :color        color
-                                                        :community-id community-id})}
-            (navigation/open-modal :edit-community-channel nil)))
+  [{:keys [db] :as cofx} community-id chat-name description color emoji chat-id]
+  (let [{:keys [color emoji]} (if (string/blank? emoji)
+                                (rand-nth emoji-thumbnail-styles/emoji-picker-default-thumbnails)
+                                {:color color :emoji emoji})]
+    (fx/merge cofx
+              {:db (assoc db :communities/create-channel {:name            chat-name
+                                                          :description     description
+                                                          :color           color
+                                                          :community-id    community-id
+                                                          :emoji           emoji
+                                                          :edit-channel-id chat-id})}
+              (navigation/open-modal :edit-community-channel nil))))
 
 (fx/defn community-created
   {:events [::community-created]}
@@ -420,6 +429,11 @@
   {:events [::create-channel-field]}
   [{:keys [db]} field value]
   {:db (assoc-in db [:communities/create-channel field] value)})
+
+(fx/defn create-channel-fields
+  {:events [::create-channel-fields]}
+  [{:keys [db]} field-values]
+  {:db (update-in db [:communities/create-channel] merge field-values)})
 
 (fx/defn member-banned
   {:events [::member-banned]}

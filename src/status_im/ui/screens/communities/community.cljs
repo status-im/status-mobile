@@ -204,8 +204,8 @@
         :header                       [categories-accordion community-id chats categories edit {:from-chat from-chat}]
         :footer                       [rn/view {:height 68}]}])))
 
-(defn channel-preview-item [{:keys [id color name]}]
-  (let [color (or color colors/default-community-color)]
+(defn channel-preview-item [{:keys [id name]}]
+  (let [color colors/default-community-color]
     [quo/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
                                   id true name color false false]

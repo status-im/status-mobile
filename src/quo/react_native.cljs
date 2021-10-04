@@ -4,7 +4,10 @@
             [quo.platform :as platform]
             ["react-native" :as rn]
             ["@react-native-community/hooks" :as hooks]
-            ["react-native-navigation" :refer (Navigation)]))
+            ["react-native-navigation" :refer (Navigation)]
+            ["rn-emoji-keyboard" :refer (EmojiKeyboard)]))
+
+(def emoji-keyboard (reagent/adapt-react-class EmojiKeyboard))
 
 (def app-registry (.-AppRegistry rn))
 
