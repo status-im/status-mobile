@@ -37,7 +37,9 @@
   (let [fxs (map #(clean-up-chat public-key %) chats)]
     (apply fx/merge
            cofx
-           {:db (update db :chats dissoc public-key)}
+           {:db (-> db
+                    (update :chats dissoc public-key)
+                    (assoc-in [:contacts/contacts public-key :added] false))}
            fxs)))
 
 (fx/defn block-contact
@@ -46,7 +48,9 @@
   (let [contact (-> (contact.db/public-key->contact
                      (:contacts/contacts db)
                      public-key)
-                    (assoc :last-updated now :blocked true))
+                    (assoc :last-updated now
+                           :blocked true
+                           :added false))
         from-one-to-one-chat? (not (get-in db [:chats (:current-chat-id db) :group-chat]))]
     (fx/merge cofx
               {:db (-> db
@@ -62,7 +66,7 @@
                 (navigation/navigate-back)))))
 
 (fx/defn unblock-contact
-  {:events [:contact.ui/unblock-contact-pressed]}
+  {:events [:contact.ui/unblock-contact-pressed ::contact-unblocked]}
   [{:keys [db now] :as cofx} public-key]
   (let [contact (-> (get-in db [:contacts/contacts public-key])
                     (assoc :last-updated now :blocked false))]

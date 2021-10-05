@@ -79,8 +79,8 @@
    (added? (get-in db [:contacts/contacts public-key]))))
 
 (defn blocked?
-  ([{:keys [system-tags]}]
-   (contains? system-tags :contact/blocked))
+  ([contact]
+   (:blocked contact))
   ([db public-key]
    (blocked? (get-in db [:contacts/contacts public-key]))))
 

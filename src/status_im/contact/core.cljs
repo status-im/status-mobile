@@ -55,7 +55,10 @@
                            (conj [:offload-messages constants/timeline-chat-id])
 
                            (:blocked contact)
-                           (conj [::contact.block/contact-blocked contact chats])))
+                           (conj [::contact.block/contact-blocked contact chats])
+
+                           (contact.db/blocked? db public-key)
+                           (conj [::contact.block/contact-unblocked public-key])))
                        contacts)})
 
 (fx/defn upsert-contact
