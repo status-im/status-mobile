@@ -210,7 +210,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             if not timeline_1.element_by_text_part(expected_value).is_element_displayed():
                 self.errors.append("Expected value %s is not shown" % expected_value)
         text_status = 'some text'
-        timeline_1.set_new_status(text_status)
+        timeline_1.set_new_status(status=text_status)
         for timestamp in ('Now', '1M', '2M'):
             if not timeline_1.element_by_text(timestamp).is_element_displayed():
                 self.errors.append("Expected timestamp %s is not shown in timeline_1" % timestamp)
@@ -231,6 +231,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
                 self.errors.append("Expected value %s is not shown in other user profile without adding to contacts" % expected_value)
 
         home_2.just_fyi('Add device1 to contacts and check that status will be shown in timeline_1')
+        chat_2.close_button.scroll_and_click(direction='up')
         chat_2.close_button.click()
         chat_2.add_to_contacts.click()
         timeline_2 = chat_2.status_button.click()

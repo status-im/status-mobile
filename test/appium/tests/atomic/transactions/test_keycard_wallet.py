@@ -119,7 +119,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet.close_button.click()
         sub_account_address = wallet.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(sub_account_address, transaction_amount_1)
-        wallet.find_transaction_in_history(amount=transaction_amount)
         wallet.find_transaction_in_history(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
 
         wallet.just_fyi("Check transactions on subaccount")

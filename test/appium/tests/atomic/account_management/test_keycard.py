@@ -13,9 +13,15 @@ class TestCreateAccount(SingleDeviceTestCase):
         seed = basic_user['passphrase']
         home = sign_in.recover_access(passphrase=seed)
         profile = home.profile_button.click()
-        profile.logout()
+        profile.privacy_and_security_button.click()
+        profile.element_by_translation_id("manage-keys-and-storage").scroll_and_click()
+        profile.logout_dialog.logout_button.wait_and_click()
+        profile.logout_button.wait_for_invisibility_of_element(30)
+        if not sign_in.element_by_translation_id("move-keystore-file").is_element_displayed():
+            self.errors.append("Was not redirected to Key management screen when Manage keys from logged in state!")
 
         home.just_fyi("Checking keycard banner and starting migrate multiaccount to keycard: no db saved")
+        sign_in.close_button.click()
         sign_in.back_button.click()
         sign_in.multi_account_on_login_button.wait_for_visibility_of_element(30)
         sign_in.get_multiaccount_by_position(1).click()

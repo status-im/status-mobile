@@ -2,6 +2,7 @@ import base64
 from io import BytesIO
 import os
 import time
+import emoji
 from timeit import timeit
 
 from PIL import Image, ImageChops, ImageStat
@@ -271,6 +272,10 @@ class BaseElement(object):
     def get_translation_by_key(key):
         return transl[key]
 
+    @staticmethod
+    def exclude_emoji(value):
+        return 'emoji' if value in emoji.UNICODE_EMOJI else value
+
 
 class EditBox(BaseElement):
 
@@ -278,10 +283,12 @@ class EditBox(BaseElement):
         super(EditBox, self).__init__(driver, **kwargs)
 
     def send_keys(self, value):
+        value = self.exclude_emoji(value)
         self.find_element().send_keys(value)
         self.driver.info("*Type '%s' to %s*" % (value, self.name))
 
     def set_value(self, value):
+        value = self.exclude_emoji(value)
         self.find_element().set_value(value)
         self.driver.info("*Type '%s' to %s*" % (value, self.name))
 
@@ -306,7 +313,7 @@ class EditBox(BaseElement):
         action.press(x=x + 25, y=y - 50).release().perform()
 
     def cut_text(self):
-        self.driver.info('-Cut text in %s' % self.name)
+        self.driver.info('*Cut text in %s*' % self.name)
         location = self.find_element().location
         x, y = location['x'], location['y']
         action = TouchAction(self.driver)

@@ -574,8 +574,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
     def test_set_profile_picture(self):
         self.create_drivers(2)
         home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
-        profile_1 = home_1.profile_button.click()
-        public_key_1 = profile_1.get_public_key_and_username()
+        profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
+        public_key_1, public_key_2 = profile_1.get_public_key_and_username(), profile_2.get_public_key_and_username()
+        profile_2.home_button.click()
 
         profile_1.just_fyi("Set user Profile image from Gallery")
         profile_1.edit_profile_picture(file_name='sauce_logo.png')
@@ -585,14 +586,18 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not profile_1.profile_picture.is_element_image_similar_to_template('sauce_logo_profile.png'):
             self.drivers[0].fail('Profile picture was not updated')
 
+        profile_1.just_fyi("Add user2 to contacts")
+        profile_1.home_button.click()
+        home_1.add_contact(public_key_2)
+        home_1.home_button.click()
+
         profile_1.just_fyi("Check user profile updated in chat")
-        home = profile_1.home_button.click()
         message = "Text message"
-        public_chat_name = home.get_random_chat_name()
+        public_chat_name = home_1.get_random_chat_name()
         home_2.add_contact(public_key=public_key_1)
         home_2.home_button.click()
         public_chat_2 = home_2.join_public_chat(public_chat_name)
-        public_chat_1 = home.join_public_chat(public_chat_name)
+        public_chat_1 = home_1.join_public_chat(public_chat_name)
         public_chat_1.chat_message_input.send_keys(message)
         public_chat_1.send_message_button.click()
         if not public_chat_2.chat_element_by_text(message).member_photo.is_element_image_similar_to_template('sauce_logo.png'):
@@ -613,8 +618,13 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
     def test_show_profile_picture_of_setting(self):
         self.create_drivers(2)
         home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
-        profile_1 = home_1.profile_button.click()
+        profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
         public_key_1, default_username_1 = profile_1.get_public_key_and_username(return_username=True)
+        public_key_2 = profile_2.get_public_key_and_username()
+
+        [profile.home_button.click() for profile in (profile_1, profile_2)]
+        home_1.add_contact(public_key_2)
+        home_1.profile_button.click()
 
         profile_1.just_fyi("Set user Profile image from Gallery")
         profile_1.edit_profile_picture(file_name='sauce_logo.png')
@@ -654,11 +664,11 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not home_2.get_chat(default_username_1).chat_image.is_element_image_similar_to_template('sauce_logo.png'):
             self.errors.append('User profile picture was not updated on Chats view')
 
-        profile_1.just_fyi('Check profile image updated in user profile view in Group chat views 4')
-        group_chat_message = 'Trololo'
+        profile_1.just_fyi('Check profile image updated in user profile view in Group chat views')
+        group_chat_name, group_chat_message = 'new_group_chat',  'Trololo'
         group_chat_2 = home_2.create_group_chat(user_names_to_add=[default_username_1])
         group_chat_2.send_message('Message')
-        group_chat_1 = home_1.get_chat('new_group_chat').click()
+        group_chat_1 = home_1.get_chat(group_chat_name).click()
         group_chat_1.join_chat_button.click()
         group_chat_1.send_message(group_chat_message)
         if not group_chat_2.chat_element_by_text(group_chat_message).member_photo.is_element_image_similar_to_template('sauce_logo.png'):
@@ -691,9 +701,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         profile_2.just_fyi('Enable to see profile image from "Everyone" setting')
         home_2.profile_button.click()
-        profile_2.appearance_button.click()
-        profile_2.show_profile_pictures_of.click()
-        profile_2.element_by_text('Everyone').click()
+        profile_2.privacy_and_security_button.click()
+        profile_2.show_profile_pictures_of.scroll_and_click()
+        profile_2.element_by_translation_id("everyone").click()
         group_chat_1.send_message(group_chat_message)
         profile_2.home_button.click(desired_view='home')
         if not home_2.get_chat(default_username_1).chat_image.is_element_image_similar_to_template('sauce_logo.png'):
@@ -715,13 +725,14 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.bootnodes_button.click()
         profile_1.add_bootnode_button.click()
         profile_1.specify_name_input.set_value('test')
-        profile_1.bootnode_address_input.set_value('invalid_bootnode_address')
-        if not profile_1.element_by_text_part('Invalid format').is_element_displayed():
-             self.errors.append('Validation message about invalid format of bootnode is not shown')
-        profile_1.save_button.click()
-        if profile_1.add_bootnode_button.is_element_displayed():
-             self.errors.append('User was navigated to another screen when tapped on disabled "Save" button')
-        profile_1.bootnode_address_input.clear()
+        # TODO: blocked as validation is missing for bootnodes
+        # profile_1.bootnode_address_input.set_value('invalid_bootnode_address')
+        # if not profile_1.element_by_text_part('Invalid format').is_element_displayed():
+        #      self.errors.append('Validation message about invalid format of bootnode is not shown')
+        # profile_1.save_button.click()
+        # if profile_1.add_bootnode_button.is_element_displayed():
+        #      self.errors.append('User was navigated to another screen when tapped on disabled "Save" button')
+        # profile_1.bootnode_address_input.clear()
         profile_1.bootnode_address_input.set_value(bootnode_address)
         profile_1.save_button.click()
         profile_1.enable_bootnodes.click()

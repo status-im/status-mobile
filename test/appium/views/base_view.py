@@ -315,7 +315,7 @@ class BaseView(object):
         while not desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.confirm()
-                self.driver.info('Wait for %s' % desired_element.name)
+                self.driver.info('*Wait for %s*' % desired_element.name)
                 desired_element.wait_for_element(5)
                 return
             except TimeoutException:

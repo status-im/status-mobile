@@ -206,8 +206,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2.just_fyi("Create public chat on Device1, send message and edit it then")
         public_key_1, username_1 = home_1.get_public_key_and_username(return_username=True)
         public_key_2, username_2 = home_2.get_public_key_and_username(return_username=True)
-        home_1.home_button.click()
-        home_2.home_button.click()
+        [home.home_button.click() for home in (home_1, home_2)]
         chat_name = home_1.get_random_chat_name()
         home_1.join_public_chat(chat_name)
         public_chat_1 = home_1.get_chat_view()

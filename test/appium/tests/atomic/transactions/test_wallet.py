@@ -608,9 +608,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet.ok_got_it_button.wait_and_click(30)
         if not send_transaction.validation_error_element.is_element_displayed(10):
             self.errors.append('Validation icon is not shown when testing %s on %s' % (errors['sending_screen']['Network fee'],screen))
-        send_transaction.sign_with_password.click()
-        if send_transaction.enter_password_input.is_element_displayed():
-            self.errors.append('Sign button is active when not enough ETH for gas')
+        if not wallet.element_by_translation_id("tx-fail-description2").is_element_displayed():
+            self.errors.append("No warning about failing tx is shown!")
         send_transaction.cancel_button.click()
 
         screen = 'sending screen from DApp'
@@ -648,8 +647,9 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet.ok_got_it_button.wait_and_click(30)
         send_transaction.network_fee_button.click()
         send_transaction = wallet.get_send_transaction_view()
-        fee_fields = (send_transaction.gas_limit_input, send_transaction.per_gas_tip_limit_input, send_transaction.per_gas_price_limit_input)
-        [default_limit, default_tip, default_price] = [input.text for input in fee_fields]
+        fee_fields = (send_transaction.per_gas_tip_limit_input, send_transaction.per_gas_price_limit_input)
+        [default_tip, default_price] = [input.text for input in fee_fields]
+        default_limit = '21000'
 
 
 
@@ -721,6 +721,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.network_fee_button.click()
         send_transaction = wallet.get_send_transaction_view()
 
+        send_transaction.gas_limit_input.clear()
+        send_transaction.gas_limit_input.set_value(default_limit)
         send_transaction.per_gas_price_limit_input.clear()
         send_transaction.per_gas_price_limit_input.click()
         send_transaction.per_gas_price_limit_input.send_keys('1')

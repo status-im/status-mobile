@@ -910,7 +910,8 @@ class ChatView(BaseView):
 
 
     def set_new_status(self, status='something is happening', image=False):
-        self.driver.info("**Setting new status:%s, image set is: %s**" % (status, str(image)))
+        status = BaseElement(self.driver).exclude_emoji(status)
+        self.driver.info("**Setting new status:'%s', image set is: '%s'**" % (status, str(image)))
         self.timeline_add_new_status_button.click_until_presence_of_element(self.timeline_my_status_editbox)
         self.timeline_my_status_editbox.set_value(status)
 
