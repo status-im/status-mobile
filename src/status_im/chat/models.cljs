@@ -187,10 +187,12 @@
 (fx/defn offload-messages
   {:events [:offload-messages]}
   [{:keys [db]} chat-id]
-  {:db (-> db
-           (update :messages dissoc chat-id)
-           (update :message-lists dissoc chat-id)
-           (update :pagination-info dissoc chat-id))})
+  (merge {:db (-> db
+                  (update :messages dissoc chat-id)
+                  (update :message-lists dissoc chat-id)
+                  (update :pagination-info dissoc chat-id))}
+         (when (and (= chat-id constants/timeline-chat-id) (= (:view-id db) :status))
+           {:dispatch [:init-timeline-chat]})))
 
 (fx/defn close-chat
   {:events [:close-chat]}

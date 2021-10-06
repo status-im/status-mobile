@@ -73,8 +73,8 @@
   (get-in db [:contacts/contacts public-key]))
 
 (defn added?
-  ([{:keys [system-tags]}]
-   (contains? system-tags :contact/added))
+  ([contact]
+   (:added contact))
   ([db public-key]
    (added? (get-in db [:contacts/contacts public-key]))))
 
@@ -83,29 +83,6 @@
    (:blocked contact))
   ([db public-key]
    (blocked? (get-in db [:contacts/contacts public-key]))))
-
-(defn pending?
-  "Check if this is a pending? contact, meaning one side sent a contact request
-  but the other didn't respond to it yet"
-  ([{:keys [system-tags] :as contact}]
-   (let [request-received? (contains? system-tags :contact/request-received)
-         added? (added? contact)]
-     (and (or request-received?
-              added?)
-          (not (and request-received? added?)))))
-  ([db public-key]
-   (pending? (get-in db [:contacts/contacts public-key]))))
-
-(defn legacy-pending?
-  "Would the :pending? field be true? for contacts sync payload sent to devices
-  running 0.11.0 or older?"
-  ([{:keys [system-tags] :as contact}]
-   (let [request-received? (contains? system-tags :contact/request-received)
-         added? (added? contact)]
-     (and request-received?
-          (not added?))))
-  ([db public-key]
-   (pending? (get-in db [:contacts/contacts public-key]))))
 
 (defn active?
   "Checks that the user is added to the contact and not blocked"

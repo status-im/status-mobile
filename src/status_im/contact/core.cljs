@@ -39,27 +39,37 @@
 
 (fx/defn ensure-contacts
   [{:keys [db]} contacts chats]
-  {:db (update db :contacts/contacts
-               #(reduce (fn [acc {:keys [public-key] :as contact}]
-                          (-> acc
-                              (update public-key merge contact)
-                              (assoc-in [public-key :nickname] (:nickname contact))))
-                        %
-                        contacts))
-   :dispatch-n (mapcat (fn [{:keys [public-key] :as contact}]
-                         (cond-> []
-                           (:added contact)
-                           (conj [:start-profile-chat public-key])
+  (let [events
+        (reduce
+         (fn [acc {:keys [public-key] :as contact}]
+           (let [added (:added contact)
+                 was-added (contact.db/added? db public-key)
+                 blocked (:blocked contact)
+                 was-blocked (contact.db/blocked? db public-key)]
+             (cond-> acc
+               (and added (not was-added))
+               (conj [:start-profile-chat public-key])
 
-                           (not (:added contact))
-                           (conj [:offload-messages constants/timeline-chat-id])
+               (and was-added (not added))
+               (conj nil)
 
-                           (:blocked contact)
-                           (conj [::contact.block/contact-blocked contact chats])
+               (and blocked (not was-blocked))
+               (conj [::contact.block/contact-blocked contact chats])
 
-                           (contact.db/blocked? db public-key)
-                           (conj [::contact.block/contact-unblocked public-key])))
-                       contacts)})
+               (and was-blocked (not blocked))
+               (conj [::contact.block/contact-unblocked public-key]))))
+         [[:offload-messages constants/timeline-chat-id]]
+         contacts)]
+    (merge
+     {:db (update db :contacts/contacts
+                  #(reduce (fn [acc {:keys [public-key] :as contact}]
+                             (-> acc
+                                 (update public-key merge contact)
+                                 (assoc-in [public-key :nickname] (:nickname contact))))
+                           %
+                           contacts))}
+     (when (> (count events) 1)
+       {:dispatch-n events}))))
 
 (fx/defn upsert-contact
   [{:keys [db] :as cofx}
