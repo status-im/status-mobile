@@ -760,7 +760,7 @@ class ChatView(BaseView):
             errors.append("Message '%s' is not under 'Today' text" % text)
 
     def send_message(self, message: str = 'test message'):
-        self.driver.info("**Sending message '%s'**" % message)
+        self.driver.info("**Sending message '%s'**" % BaseElement(self.driver).exclude_emoji(message))
         self.chat_message_input.wait_for_element(5)
         self.chat_message_input.send_keys(message)
         self.send_message_button.click()
@@ -910,8 +910,7 @@ class ChatView(BaseView):
 
 
     def set_new_status(self, status='something is happening', image=False):
-        status = BaseElement(self.driver).exclude_emoji(status)
-        self.driver.info("**Setting new status:'%s', image set is: '%s'**" % (status, str(image)))
+        self.driver.info("**Setting new status:'%s', image set is: '%s'**" % (BaseElement(self.driver).exclude_emoji(status), str(image)))
         self.timeline_add_new_status_button.click_until_presence_of_element(self.timeline_my_status_editbox)
         self.timeline_my_status_editbox.set_value(status)
 

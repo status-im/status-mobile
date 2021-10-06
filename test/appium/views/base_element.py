@@ -283,14 +283,12 @@ class EditBox(BaseElement):
         super(EditBox, self).__init__(driver, **kwargs)
 
     def send_keys(self, value):
-        value = self.exclude_emoji(value)
         self.find_element().send_keys(value)
-        self.driver.info("*Type '%s' to %s*" % (value, self.name))
+        self.driver.info("*Type '%s' to %s*" % (self.exclude_emoji(value), self.name))
 
     def set_value(self, value):
-        value = self.exclude_emoji(value)
         self.find_element().set_value(value)
-        self.driver.info("*Type '%s' to %s*" % (value, self.name))
+        self.driver.info("*Type '%s' to %s*" % (self.exclude_emoji(value), self.name))
 
     def clear(self):
         self.find_element().clear()

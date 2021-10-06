@@ -232,7 +232,6 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         home_2.just_fyi('Add device1 to contacts and check that status will be shown in timeline_1')
         chat_2.close_button.scroll_and_click(direction='up')
-        chat_2.close_button.click()
         chat_2.add_to_contacts.click()
         timeline_2 = chat_2.status_button.click()
         for status in statuses:
