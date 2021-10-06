@@ -43,7 +43,7 @@
         ^{:key (str "image" img)}
         [image-preview img])]]))
 
-(def message-max-lenght 300)
+(def message-max-lenght 600)
 
 (defn my-status []
   (let [images-opened (reagent/atom false)
