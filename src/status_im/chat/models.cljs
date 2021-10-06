@@ -46,7 +46,8 @@
    (community-chat? (get-chat cofx chat-id))))
 
 (defn active-chat? [cofx chat-id]
-  (not (nil? (get-chat cofx chat-id))))
+  (let [chat (get-chat cofx chat-id)]
+    (not (nil? chat))))
 
 (defn foreground-chat?
   [{{:keys [current-chat-id view-id]} :db} chat-id]
@@ -102,6 +103,13 @@
   (fn [val]
     (and (not (get-in db [:chats (:chat-id val)])) (:public? val))))
 
+(fx/defn leave-removed-chat
+  [{{:keys [view-id current-chat-id chats]} :db
+    :as cofx}]
+  (when (and (= view-id :chat)
+             (not (contains? chats current-chat-id)))
+    (navigation/navigate-back cofx)))
+
 (fx/defn ensure-chats
   "Add chats to db and update"
   [{:keys [db] :as cofx} chats]
@@ -118,11 +126,14 @@
                  :chats-home-list #{}
                  :removed-chats #{}}
                 (map (map-chats cofx) chats))]
-    {:db (-> db
-             (update :chats merge all-chats)
-             (update :chats-home-list set/union chats-home-list)
-             (update :chats #(apply dissoc % removed-chats))
-             (update :chats-home-list set/difference removed-chats))}))
+    (fx/merge
+     cofx
+     {:db (-> db
+              (update :chats merge all-chats)
+              (update :chats-home-list set/union chats-home-list)
+              (update :chats #(apply dissoc % removed-chats))
+              (update :chats-home-list set/difference removed-chats))}
+     leave-removed-chat)))
 
 (fx/defn clear-history
   "Clears history of the particular chat"
@@ -137,11 +148,14 @@
     {:db            (-> db
                         (assoc-in [:messages chat-id] {})
                         (update-in [:message-lists] dissoc chat-id)
-                        (update-in [:chats chat-id] merge
-                                   {:last-message              nil
-                                    :unviewed-messages-count   0
-                                    :unviewed-mentions-count   0
-                                    :deleted-at-clock-value    last-message-clock-value}))}))
+                        (update :chats (fn [chats]
+                                         (if (contains? chats chat-id)
+                                           (update chats chat-id merge
+                                                   {:last-message              nil
+                                                    :unviewed-messages-count   0
+                                                    :unviewed-mentions-count   0
+                                                    :deleted-at-clock-value    last-message-clock-value})
+                                           chats))))}))
 
 (fx/defn clear-history-handler
   "Clears history of the particular chat"
@@ -161,7 +175,7 @@
   (fx/merge
    cofx
    {:db (-> db
-            (assoc-in [:chats chat-id :is-active] false)
+            (update :chats dissoc chat-id)
             (update :chats-home-list disj chat-id)
             (assoc-in [:current-chat-id] nil))
     ::json-rpc/call [{:method "wakuext_deactivateChat"

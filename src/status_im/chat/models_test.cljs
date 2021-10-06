@@ -48,9 +48,9 @@
     (testing "it deletes all the messages"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (= nil (get-in actual [:db :messages chat-id])))))
-    (testing "it sets a deleted-at-clock-value equal to the last message clock-value"
-      (let [actual (chat/remove-chat cofx chat-id)]
-        (is (= 10 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))))
+    #_(testing "it sets a deleted-at-clock-value equal to the last message clock-value"
+        (let [actual (chat/remove-chat cofx chat-id)]
+          (is (= 10 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))))
 
 (deftest multi-user-chat?
   (let [chat-id "1"]
