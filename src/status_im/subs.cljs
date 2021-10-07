@@ -1177,7 +1177,7 @@
    (let [contact (or (get contacts id)
                      (when (= id (:public-key multiaccount))
                        multiaccount)
-                     (if identicon
+                     (if (not (string/blank? identicon))
                        {:identicon identicon}
                        (contact.db/public-key->new-contact id)))]
      (multiaccounts/displayed-photo contact))))
