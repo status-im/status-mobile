@@ -162,7 +162,11 @@
     [react/view {:margin-top 8}
      [ppst-radio-item constants/profile-pictures-show-to-everyone profile-pictures-show-to]
      [ppst-radio-item constants/profile-pictures-show-to-contacts-only profile-pictures-show-to]
-     [ppst-radio-item constants/profile-pictures-show-to-none profile-pictures-show-to]]))
+     [ppst-radio-item constants/profile-pictures-show-to-none profile-pictures-show-to]
+
+     [react/view {:style {:margin-horizontal 16}}
+      [quo/text {:color :secondary}
+       (i18n/label :t/privacy-show-to-warning)]]]))
 
 (defn ppvf-radio-item [id value]
   [quo/list-item
