@@ -1,31 +1,32 @@
 (ns status-im.ui.screens.signing.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.components.react :as react]
-            [re-frame.core :as re-frame]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [quo.design-system.colors :as colors]
-            [status-im.ui.components.copyable-text :as copyable-text]
-            [status-im.wallet.utils :as wallet.utils]
-            [status-im.keycard.common :as keycard.common]
-            [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.utils.security :as security]
-            [status-im.ui.screens.signing.sheets :as sheets]
-            [status-im.ethereum.tokens :as tokens]
-            [status-im.utils.types :as types]
-            [status-im.utils.platform :as platform]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [quo.core :as quo]
+            [quo.design-system.colors :as colors]
             [quo.gesture-handler :as gh]
-            [status-im.ui.screens.signing.styles :as styles]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.screens.keycard.pin.views :as pin.views]
-            [status-im.ui.components.bottom-panel.views :as bottom-panel]
-            [status-im.utils.utils :as utils]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ui.screens.wallet.components.views :as wallet.components]))
+            [status-im.ethereum.tokens :as tokens]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.keycard.common :as keycard.common]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.react-native.resources :as resources]
+            [status-im.signing.eip1559 :as eip1559]
+            [status-im.ui.components.bottom-panel.views :as bottom-panel]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.copyable-text :as copyable-text]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
+            [status-im.ui.screens.keycard.pin.views :as pin.views]
+            [status-im.ui.screens.signing.sheets :as sheets]
+            [status-im.ui.screens.signing.styles :as styles]
+            [status-im.ui.screens.wallet.components.views :as wallet.components]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.security :as security]
+            [status-im.utils.types :as types]
+            [status-im.utils.utils :as utils]
+            [status-im.wallet.utils :as wallet.utils]))
 
 (defn separator []
   [react/view {:height 1 :background-color colors/gray-lighter}])
@@ -384,15 +385,9 @@
         :on-press #(re-frame/dispatch
                     [:signing.ui/open-fee-sheet
                      {:content        (fn []
-                                        [sheets/fee-bottom-sheet-eip1559-custom fee-display-symbol])
-                      :content-height 270}])
-        #_(re-frame/dispatch
-           [:signing.ui/open-fee-sheet
-            {:content        (fn []
-                               (if (eip1559/sync-enabled?)
-                                 [sheets/fee-bottom-sheet-eip1559 fee-display-symbol]
-                                 [sheets/fee-bottom-sheet fee-display-symbol]))
-             :content-height 270}])}])))
+                                        (if (eip1559/enabled?)
+                                          [sheets/fee-bottom-sheet-eip1559-custom fee-display-symbol]
+                                          [sheets/fee-bottom-sheet fee-display-symbol]))}])}])))
 
 (views/defview network-item []
   (views/letsubs [network-name [:network-name]]
