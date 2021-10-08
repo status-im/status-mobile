@@ -56,7 +56,6 @@
 (defn render-subheader
   "Render the preview of a last message to a maximum of max-subheader-length characters"
   [parsed-text]
-  (println "PARSED" parsed-text)
   (let [result
         (reduce
          (fn [{:keys [_ length] :as acc-text} new-text-chunk]
