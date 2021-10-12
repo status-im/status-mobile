@@ -25,7 +25,6 @@ abstract_target 'Status' do
   pod 'secp256k1', git: "https://github.com/status-im/secp256k1.swift.git", submodules: true
 
   target 'StatusIm' do
-    pod 'RNShare', :path => '../node_modules/react-native-share'
 
     target 'StatusImTests' do
       inherit! :complete
