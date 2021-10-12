@@ -306,9 +306,7 @@
 
 (defn messages-view [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
   (let [{:keys [group-chat chat-id public? community-id admins]} chat
-        messages (->> @(re-frame/subscribe [:chats/chat-messages-stream chat-id])
-                      ;; remove when the issue with key-fn is fixed
-                      (filter (fn [message] (some? (:message-id message)))))]
+        messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])]
     ;;do not use anonymous functions for handlers
     (when (seq messages)
       [list/bidi-flat-list

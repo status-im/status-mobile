@@ -1103,13 +1103,16 @@
  (fn [[message-list messages pin-messages loading-messages? synced-from chat-type joined] [_ chat-id]]
    ;;TODO (perf)
    (let [message-list-seq (models.message-list/->seq message-list)]
-     ; Don't show gaps if that's the case as we are still loading messages
+                                        ; Don't show gaps if that's the case as we are still loading messages
      (if (and (empty? message-list-seq) loading-messages?)
        []
-       (-> message-list-seq
-           (chat.db/add-datemarks)
-           (hydrate-messages messages pin-messages)
-           (chat.db/collapse-gaps chat-id synced-from (datetime/timestamp) chat-type joined loading-messages?))))))
+       (->>
+        (-> message-list-seq
+            (chat.db/add-datemarks)
+            (hydrate-messages messages pin-messages)
+            (chat.db/collapse-gaps chat-id synced-from (datetime/timestamp) chat-type joined loading-messages?))
+        ;; remove when the issue with messages-view chat list-key-fn is fixed
+        (filter (fn [message] (some? (:message-id message)))))))))
 
 (re-frame/reg-sub
  :chats/raw-chat-pin-messages-stream
