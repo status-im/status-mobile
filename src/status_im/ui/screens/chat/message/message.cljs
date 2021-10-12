@@ -4,6 +4,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [quo.design-system.colors :as colors]
+            [quo.animated :as animated]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.message.audio :as message.audio]
@@ -22,6 +23,8 @@
             [status-im.utils.config :as config]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.components.reply :as components.reply]
+            [status-im.ui.components.animation :as animation]
+            [status-im.ui.screens.chat.components.accessory :as accessory]
             [status-im.ui.screens.chat.message.link-preview :as link-preview]
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.chat.models.pin-message :as models.pin-message])
@@ -329,7 +332,11 @@
    {:keys [on-long-press]}]
   (let [dimensions (reagent/atom [image-max-width image-max-height])
         visible (reagent/atom false)
-        uri (:image content)]
+        uri (:image content)
+        translate-x  (animation/create-value 0)
+        pan-state    (animation/create-value 0)
+        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [0 1] :outputRange [0 0.5]})
+        pan-responder (accessory/swipe-pan-responder translate-x pan-state message)]
     (react/image-get-size uri (image-set-size dimensions))
     (fn []
       (let [style-opts {:outgoing outgoing
@@ -345,12 +352,17 @@
                                                       (react/dismiss-keyboard!))
                                      :on-long-press on-long-press
                                      :disabled      in-popover?}
+         [react/view
+          [react/animated-view
+           (when-not outgoing
+             (merge pan-responder
+                    {:style {:transform [{:translateX translate-x-anim-value}]}}))
           [react/view {:style               (style/image-message style-opts)
                        :accessibility-label :image-message}
            [react/image {:style       (dissoc style-opts :outgoing)
                          :resize-mode :cover
                          :source      {:uri uri}}
-            [react/view {:style (style/image-message-border style-opts)}]]]]]))))
+          [react/view {:style (style/image-message-border style-opts)}]]]]]]]))))
 
 (defmulti ->message :content-type)
 
@@ -409,12 +421,16 @@
 
 (defn collapsible-text-message [{:keys [mentioned]} _]
   (let [collapsed?   (reagent/atom false)
-        collapsible? (reagent/atom false)]
+        collapsible? (reagent/atom false)
+        translate-x  (animation/create-value 0)
+        pan-state    (animation/create-value 0)
+        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [0 1] :outputRange [0 0.5]})]
     (fn [{:keys [content outgoing current-public-key public? pinned in-popover?] :as message} on-long-press modal]
       (let [max-height (when-not (or outgoing modal)
                          (if @collapsible?
                            (if @collapsed? message-height-px nil)
-                           message-height-px))]
+                           message-height-px))
+            pan-responder (accessory/swipe-pan-responder translate-x pan-state message)]
         [react/touchable-highlight
          (when-not modal
            {:on-press         (fn [_]
@@ -426,6 +442,17 @@
                                       (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
                                   (on-long-press-fn on-long-press message content)))
             :disabled         in-popover?})
+        [react/view {:accessibility-label :swipe-to-reply}
+          [react/animated-view
+           (when-not outgoing
+             (merge pan-responder
+                    {:style {:transform [{:translateX translate-x-anim-value}]}
+                    :flex-direction                   :row
+                    :align-items                      :center}))
+          ;;TODO: Add opacity animation on reply icon.
+          [react/view {:position :absolute :left -80 }
+            [icons/icon :main-icons/reply {:color colors/blue}]]
+
          [react/view {:style (style/message-view message)}
           [react/view {:style      (style/message-view-content)
                        :max-height max-height}
@@ -459,7 +486,7 @@
                                            :style    {:align-self :center :margin 5}}
                 [react/view (style/collapse-button)
                  [icons/icon :main-icons/dropdown-up
-                  {:color colors/white}]]]))]]]))))
+                  {:color colors/white}]]]))]]]]]))))
 
 (defmethod ->message constants/content-type-text
   [message {:keys [on-long-press modal] :as reaction-picker}]
@@ -484,7 +511,11 @@
 (defmethod ->message constants/content-type-emoji
   [{:keys [content current-public-key outgoing public? pinned in-popover? message-pin-enabled] :as message} {:keys [on-long-press modal]
                                                                                                              :as   reaction-picker}]
-  (let [response-to (:response-to content)]
+  (let [response-to (:response-to content)
+        translate-x  (animation/create-value 0)
+        pan-state    (animation/create-value 0)
+        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [0 1] :outputRange [0 0.5]})
+        pan-responder (accessory/swipe-pan-responder translate-x pan-state message)]
     [message-content-wrapper message
      [react/touchable-highlight (when-not modal
                                   {:disabled      in-popover?
@@ -502,6 +533,11 @@
                                                         :label    (i18n/label :t/sharing-copy-to-clipboard)}]
                                                       (when message-pin-enabled [{:on-press #(pin-message message)
                                                                                   :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))}]))))})
+      [react/view
+       [react/animated-view
+        (when-not outgoing
+          (merge pan-responder
+                 {:style {:transform [{:translateX translate-x-anim-value}]}}))
       [react/view (style/message-view message)
        [react/view {:style (style/message-view-content)}
         [react/view {:style (style/style-message-text outgoing)}
@@ -509,7 +545,7 @@
            [quoted-message response-to (:quoted-message message) outgoing current-public-key public? pinned])
          [react/text {:style (style/emoji-message message)}
           (:text content)]]
-        [message-timestamp message]]]]
+         [message-timestamp message]]]]]]
      reaction-picker]))
 
 (defmethod ->message constants/content-type-sticker
@@ -517,7 +553,11 @@
     :as   message}
    {:keys [on-long-press modal]
     :as   reaction-picker}]
-  (let [pack (get-in content [:sticker :pack])]
+  (let [pack (get-in content [:sticker :pack])
+        translate-x  (animation/create-value 0)
+        pan-state    (animation/create-value 0)
+        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [0 1] :outputRange [0 0.5]})
+        pan-responder (accessory/swipe-pan-responder translate-x pan-state message)]
     [message-content-wrapper message
      [react/touchable-highlight (when-not modal
                                   {:disabled            in-popover?
@@ -533,9 +573,14 @@
                                                              [{:on-press #(when pack
                                                                             (re-frame/dispatch [:chat.ui/show-profile from]))
                                                                :label    (i18n/label :t/view-details)}])))})
+      [react/view
+       [react/animated-view
+        (when-not outgoing
+          (merge pan-responder
+                 {:style {:transform [{:translateX translate-x-anim-value}]}}))
       [react/image {:style  {:margin 10 :width 140 :height 140}
                     ;;TODO (perf) move to event
-                    :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
+                    :source {:uri (contenthash/url (-> content :sticker :hash))}}]]]]
      reaction-picker]))
 
 (defmethod ->message constants/content-type-image [{:keys [content in-popover?] :as message} {:keys [on-long-press modal]
