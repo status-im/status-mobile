@@ -7,6 +7,8 @@
             [quo.react :as react]
             [quo.platform :as platform]
             [quo.react-native :as rn]
+            [re-frame.core :as re-frame]
+            [status-im.ui.components.animation :as animation]
             [status-im.ui.components.tabbar.core :as tabbar]
             [quo.components.safe-area :refer [use-safe-area]]))
 
