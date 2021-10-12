@@ -293,41 +293,57 @@
      :edit-enabled        edit-enabled
      :in-pinned-view?     in-pinned-view?}))
 
+
+;; TODO: memoize
+(defn on-scroll-to-index-failed [^js e]
+  (let [wait (js/Promise. (fn [resolve] (js/setTimeout resolve 50)))]
+    (.then wait (fn []
+                  (when @messages-list-ref
+                    (.scrollToIndex @messages-list-ref
+                                    #js {:index (.-index e)}))))))
+
+
+
 (defn messages-view [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
   (let [{:keys [group-chat chat-id public? community-id admins]} chat
-        messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])]
+        messages (->> @(re-frame/subscribe [:chats/chat-messages-stream chat-id])
+                      ;; remove when the issue with key-fn is fixed
+                      (filter (fn [message] (some? (:message-id message)))))]
     ;;do not use anonymous functions for handlers
-    [list/bidi-flat-list
-     (merge
-      pan-responder
-      {:key-fn                       list-key-fn
-       :ref                          list-ref
-       :header                       [list-header chat]
-       :footer                       [list-footer chat]
-       :data                         messages
-       :render-data                  (get-render-data {:group-chat      group-chat
-                                                       :chat-id         chat-id
-                                                       :public?         public?
-                                                       :community-id    community-id
-                                                       :admins          admins
-                                                       :space-keeper    space-keeper
-                                                       :show-input?     show-input?
-                                                       :edit-enabled    true
-                                                       :in-pinned-view? false})
-       :render-fn                    render-fn
-       :on-viewable-items-changed    on-viewable-items-changed
-       :on-end-reached               list-on-end-reached
-       :on-scroll-to-index-failed    identity              ;;don't remove this
-       :content-container-style      {:padding-top (+ bottom-space 16)
-                                      :padding-bottom 16}
-       :scroll-indicator-insets      {:top bottom-space}    ;;ios only
-       :keyboard-dismiss-mode        :interactive
-       :keyboard-should-persist-taps :handled
-       :onMomentumScrollBegin        state/start-scrolling
-       :onMomentumScrollEnd          state/stop-scrolling
-       ;;TODO https://github.com/facebook/react-native/issues/30034
-       :inverted                     (when platform/ios? true)
-       :style                        (when platform/android? {:scaleY -1})})]))
+    (when (seq messages)
+      [list/bidi-flat-list
+       (merge
+        pan-responder
+        {:key-fn                       list-key-fn
+         :ref                          list-ref
+         :header                       [list-header chat]
+         :footer                       [list-footer chat]
+         :data                         messages
+         :render-data                  (get-render-data {:group-chat      group-chat
+                                                         :chat-id         chat-id
+                                                         :public?         public?
+                                                         :community-id    community-id
+                                                         :admins          admins
+                                                         :space-keeper    space-keeper
+                                                         :show-input?     show-input?
+                                                         :edit-enabled    true
+                                                         :in-pinned-view? false})
+         :render-fn                    render-fn
+         :on-viewable-items-changed    on-viewable-items-changed
+         :on-end-reached               list-on-end-reached
+         ;; just to simulate initial position on the list
+         :initial-scroll-index         (quot (count messages) 2)
+         :on-scroll-to-index-failed    on-scroll-to-index-failed
+         :content-container-style      {:padding-top (+ bottom-space 16)
+                                        :padding-bottom 16}
+         :scroll-indicator-insets      {:top bottom-space}    ;;ios only
+         :keyboard-dismiss-mode        :interactive
+         :keyboard-should-persist-taps :handled
+         :onMomentumScrollBegin        state/start-scrolling
+         :onMomentumScrollEnd          state/stop-scrolling
+         ;;TODO https://github.com/facebook/react-native/issues/30034
+         :inverted                     (when platform/ios? true)
+         :style                        (when platform/android? {:scaleY -1})})])))
 
 (defn topbar-button []
   (re-frame/dispatch [:bottom-sheet/show-sheet
