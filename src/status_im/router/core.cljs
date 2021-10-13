@@ -42,6 +42,7 @@
                                   "chat"                  {["/public/" :chat-id] :public-chat}
                                   "b/"                    browser-extractor
                                   "browser/"              browser-extractor
+                                  ["m/" :chat-id "/" :message-id]         :message
                                   ["p/" :chat-id]         :private-chat
                                   ["cr/" :community-id]   :community-requests
                                   ["c/" :community-id]    :community
@@ -216,6 +217,9 @@
 
       (= handler :community)
       (cb {:type handler :community-id (:community-id route-params)})
+
+      (= handler :message)
+      (cb {:type handler :chat-id (:chat-id route-params) :message-id (:message-id route-params)})
 
       (= handler :community-chat)
       (cb {:type handler :chat-id (:chat-id route-params)})

@@ -26,6 +26,7 @@
 
 (def links {:public-chat        "%s/%s"
             :private-chat       "%s/p/%s"
+            :message            "%s/m/%s/%s"
             :community-requests "%s/cr/%s"
             :community          "%s/c/%s"
             :group-chat         "%s/g/%s"
@@ -52,6 +53,12 @@
 (fx/defn handle-group-chat [cofx params]
   (log/info "universal-links: handling group" params)
   (group-chats/create-from-link cofx params))
+
+(fx/defn handle-message [{:keys [db] :as cofx} {:keys [chat-id message-id]}]
+  (let [chat (get-in db [:chats chat-id])]
+    (when chat
+      (log/info "universal-links: handling message" chat-id message-id)
+      (chat/navigate-to-chat-message cofx chat-id message-id false))))
 
 (fx/defn handle-private-chat [{:keys [db] :as cofx} {:keys [chat-id]}]
   (log/info "universal-links: handling private chat" chat-id)
@@ -130,6 +137,7 @@
     :group-chat         (handle-group-chat cofx data)
     :public-chat        (handle-public-chat cofx data)
     :private-chat       (handle-private-chat cofx data)
+    :message            (handle-message cofx data)
     :community-requests (handle-community-requests cofx data)
     :community          (handle-community cofx data)
     :community-chat     (handle-community-chat cofx data)

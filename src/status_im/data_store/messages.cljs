@@ -106,3 +106,14 @@
 
 (fx/defn delete-messages-by-chat-id [cofx chat-id]
   (delete-messages-by-chat-id-rpc chat-id))
+
+(defn message-context [chat-id
+                       message-id
+                       limit
+                       on-success
+                       on-failure]
+  {::json-rpc/call [{:method     (json-rpc/call-ext-method "messageContext")
+                     :params     [{:chatId chat-id :limit limit :messageId message-id}]
+                     :on-success (fn [result]
+                                   (on-success (update result :messages #(map <-rpc %))))
+                     :on-failure on-failure}]})

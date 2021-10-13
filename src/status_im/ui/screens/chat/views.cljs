@@ -3,6 +3,7 @@
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [taoensso.timbre :as log]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.icons :as icons]
@@ -295,6 +296,8 @@
 
 
 ;; TODO: memoize
+
+
 (defn on-scroll-to-index-failed [^js e]
   (let [wait (js/Promise. (fn [resolve] (js/setTimeout resolve 50)))]
     (.then wait (fn []
@@ -302,11 +305,20 @@
                     (.scrollToIndex @messages-list-ref
                                     #js {:index (.-index e)}))))))
 
-
+(defn get-index [messages initial-message-id]
+  (let [i (->> messages
+               (map-indexed vector)
+               (filter (fn [[idx {:keys [message-id]}]]
+                         (when (= message-id initial-message-id)
+                           idx)))
+               first)]
+    (log/info "Scrolling to I" i)
+    i))
 
 (defn messages-view [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
   (let [{:keys [group-chat chat-id public? community-id admins]} chat
-        messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])]
+        messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])
+        initial-message-id @(re-frame/subscribe [:chats/initial-message-id])]
     ;;do not use anonymous functions for handlers
     (when (seq messages)
       [list/bidi-flat-list
@@ -330,7 +342,8 @@
          :on-viewable-items-changed    on-viewable-items-changed
          :on-end-reached               list-on-end-reached
          ;; just to simulate initial position on the list
-         :initial-scroll-index         (quot (count messages) 2)
+         :initial-scroll-index         (when initial-message-id
+                                         (get-index messages initial-message-id))
          :on-scroll-to-index-failed    on-scroll-to-index-failed
          :content-container-style      {:padding-top (+ bottom-space 16)
                                         :padding-bottom 16}

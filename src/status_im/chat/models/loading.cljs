@@ -146,7 +146,9 @@
       (let [cursor (get-in db [:pagination-info chat-id :cursor])]
         (when (or first-request cursor)
           (merge
-           {:db (assoc-in db [:pagination-info chat-id :loading-messages?] true)}
+           {:db (-> db
+                    (assoc-in [:pagination-info chat-id :loading-messages?] true)
+                    (dissoc :chats/initial-message-id))}
            {:utils/dispatch-later [{:ms 100 :dispatch [:load-more-reactions cursor chat-id]}
                                    {:ms 100 :dispatch [::models.pin-message/load-pin-messages chat-id]}]}
            (data-store.messages/messages-by-chat-id-rpc
@@ -168,3 +170,32 @@
               {:db (assoc-in db [:pagination-info chat-id :messages-initialized?] now)
                :utils/dispatch-later [{:ms 500 :dispatch [:chat.ui/mark-all-read-pressed chat-id]}]}
               (load-more-messages chat-id true))))
+
+(fx/defn load-message-context-2
+  [{:keys [db]} chat-id message-id first-request]
+  (when-let [session-id (get-in db [:pagination-info chat-id :messages-initialized?])]
+    (when (and
+           (not (get-in db [:pagination-info chat-id :all-loaded?]))
+           (not (get-in db [:pagination-info chat-id :loading-messages?])))
+      (let [cursor (get-in db [:pagination-info chat-id :cursor])]
+        (when (or first-request cursor)
+          (merge
+           {:db
+            (-> db
+                (assoc :chats/initial-message-id message-id)
+                (assoc-in [:pagination-info chat-id :loading-messages?] true))}
+           (data-store.messages/message-context
+            chat-id
+            message-id
+            constants/default-number-of-messages
+            #(re-frame/dispatch [::messages-loaded chat-id session-id %])
+            #(re-frame/dispatch [::failed-loading-messages chat-id session-id %]))))))))
+
+(fx/defn load-message-context
+  [{:keys [db now] :as cofx} chat-id message-id]
+  (log/info "loading message context" chat-id message-id)
+  (when-not (get-in db [:pagination-info chat-id :messages-initialized?])
+    (fx/merge cofx
+              {:db (assoc-in db [:pagination-info chat-id :messages-initialized?] now)
+               :utils/dispatch-later [{:ms 500 :dispatch [:chat.ui/mark-all-read-pressed chat-id]}]}
+              (load-message-context-2 chat-id message-id true))))

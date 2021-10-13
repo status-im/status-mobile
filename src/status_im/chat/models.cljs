@@ -228,6 +228,11 @@
   [cofx chat-id]
   (loading/load-messages cofx chat-id))
 
+(fx/defn preload-chat-message-data
+  "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
+  [cofx chat-id message-id]
+  (loading/load-message-context cofx chat-id message-id))
+
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
   {:events [:chat.ui/navigate-to-chat]}
@@ -237,6 +242,22 @@
             (fn [{:keys [db]}]
               {:db (assoc db :current-chat-id chat-id :ignore-close-chat true)})
             (preload-chat-data chat-id)
+            #(when (group-chat? cofx chat-id)
+               (loading/load-chat % chat-id))
+            #(when-not dont-reset?
+               (navigation/change-tab % :chat))
+            #(when-not dont-reset?
+               (navigation/pop-to-root-tab % :chat-stack))
+            (navigation/navigate-to-cofx :chat nil)))
+
+(fx/defn navigate-to-chat-message
+  "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
+  [{db :db :as cofx} chat-id message-id dont-reset?]
+  (fx/merge cofx
+            (close-chat (:current-chat-id db))
+            (fn [{:keys [db]}]
+              {:db (assoc db :current-chat-id chat-id :ignore-close-chat true)})
+            (preload-chat-message-data chat-id message-id)
             #(when (group-chat? cofx chat-id)
                (loading/load-chat % chat-id))
             #(when-not dont-reset?

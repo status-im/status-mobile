@@ -38,6 +38,7 @@
    "waku_getSymKey" {}
    "waku_markTrustedPeer" {}
    "wakuext_post" {}
+   "wakuext_messageContext" {}
    "wakuext_requestAllHistoricMessages" {}
    "wakuext_editMessage" {}
    "wakuext_deleteMessageAndSend" {}
