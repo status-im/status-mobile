@@ -209,7 +209,7 @@
     (fx/merge cofx
               {::json-rpc/call [{:method     "multiaccounts_storeIdentityImageFromURL"
                                  :params     [key-uid url]
-                                 :on-error   log/warn
+                                 :on-error   #(log/error "::save-profile-picture-from-url error" %)
                                  :on-success #(re-frame/dispatch [::update-local-picture %])}]}
               (bottom-sheet/hide-bottom-sheet))))
 
