@@ -311,6 +311,7 @@
                (filter (fn [[idx {:keys [message-id]}]]
                          (when (= message-id initial-message-id)
                            idx)))
+               first
                first)]
     (log/info "Scrolling to I" i)
     i))
