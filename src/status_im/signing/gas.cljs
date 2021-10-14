@@ -296,8 +296,8 @@
     (fn []
       (json-rpc/call
        {:method     "eth_gasPrice"
-        :on-success #(success-callback %)
-        :on-error   #(error-callback %)})))))
+        :on-success success-callback
+        :on-error   (or error-callback #(log/warn "eth_gasPrice error" %))})))))
 
 (def london-block-gas-limit (money/bignumber 30000000))
 
