@@ -19,6 +19,7 @@
             [status-im.constants :as constants]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.notifications-center.core :as notifications-center]
+            [status-im.status-updates.core :as models.status-updates]
             [clojure.string :as string]))
 
 (fx/defn process-next
@@ -42,6 +43,7 @@
         ^js activity-notifications     (.-activityCenterNotifications response-js)
         ^js pin-messages               (.-pinMessages response-js)
         ^js removed-messages           (.-removedMessages response-js)
+        ^js status-updates             (.-statusUpdates response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
 
@@ -149,7 +151,14 @@
         (js-delete response-js "removedMessages")
         (fx/merge cofx
                   (process-next response-js sync-handler)
-                  (models.message/handle-removed-messages removed-messages-clj))))))
+                  (models.message/handle-removed-messages removed-messages-clj)))
+
+      (seq status-updates)
+      (let [status-updates-clj (types/js->clj status-updates)]
+        (js-delete response-js "statusUpdates")
+        (fx/merge cofx
+                  (process-next response-js sync-handler)
+                  (models.status-updates/handle-status-updates status-updates-clj))))))
 
 (defn group-by-and-update-unviewed-counts
   "group messages by current chat, profile updates, transactions and update unviewed counters in db for not curent chats"

@@ -15,8 +15,9 @@
     [quo/list-item
      {:title    first-name
       :subtitle second-name
-      :icon     [chat-icon.screen/contact-icon-contacts-tab
-                 (multiaccounts/displayed-photo contact)]
+      :icon     [chat-icon.screen/profile-photo-plus-dot-view
+                 {:public-key public-key
+                  :photo-path (multiaccounts/displayed-photo contact)}]
       :chevron  true
       :on-press #(re-frame/dispatch [:chat.ui/show-profile public-key])}]))
 

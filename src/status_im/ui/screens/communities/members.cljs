@@ -51,8 +51,9 @@
      {:title               first-name
       :subtitle            second-name
       :accessibility-label :member-item
-      :icon                [chat-icon/contact-icon-contacts-tab
-                            (multiaccounts/displayed-photo member)]
+      :icon                 [chat-icon/profile-photo-plus-dot-view
+                             {:public-key public-key
+                              :photo-path (multiaccounts/displayed-photo member)}]
       :accessory           (when (not= public-key my-public-key)
                              [quo/button {:on-press
                                           #(>evt [:bottom-sheet/show-sheet
@@ -94,7 +95,6 @@
                     can-manage-users?]} (<sub [:communities/community community-id])]
         [:<>
          [topbar/topbar {:title    (i18n/label :t/community-members-title)
-
                          :subtitle (str (count members))}]
          [header community-id]
          (when (and can-manage-users? (= constants/community-on-request-access (:access permissions)))

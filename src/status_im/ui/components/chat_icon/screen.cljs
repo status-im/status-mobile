@@ -6,7 +6,9 @@
             [status-im.ui.components.chat-icon.styles :as styles]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.photos :as photos]))
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.profile.db :as profile.db]
+            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]))
 
 ;;TODO REWORK THIS NAMESPACE
 
@@ -42,6 +44,18 @@
     [react/view (:default-chat-icon styles)
      [react/text {:style (:default-chat-icon-text styles)} emoji]]))
 
+(defn profile-photo-plus-dot-view [{:keys [public-key photo-container photo-path]}]
+  (let [photo-path      (if (nil? photo-path) @(re-frame.core/subscribe [:chats/photo-path public-key]) photo-path)
+        photo-container (if (nil? photo-container) styles/container-chat-list photo-container)
+        size            (:width photo-container)
+        identicon?      (when photo-path (profile.db/base64-png? photo-path))
+        dot-styles      (visibility-status-utils/icon-visibility-status-dot public-key size identicon?)]
+    [react/view {:style               photo-container
+                 :accessibility-label :profile-photo}
+     [photos/photo photo-path {:size size}]
+     [react/view {:style               dot-styles
+                  :accessibility-label :profile-photo-dot}]]))
+
 (defn emoji-chat-icon-view
   [chat-id group-chat name emoji styles]
   [react/view (:container styles)
@@ -49,8 +63,8 @@
      (if (string/blank? emoji)
        [default-chat-icon name styles]
        [emoji-chat-icon emoji styles])
-     (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
-       [photos/photo photo-path styles]))])
+     [profile-photo-plus-dot-view {:public-key      chat-id
+                                   :photo-container (:default-chat-icon styles)}])])
 
 (defn chat-icon-view-toolbar
   [chat-id group-chat name color emoji]
@@ -131,7 +145,7 @@
       (if-not (string/blank? photo-path)
         [photos/photo photo-path styles]))))
 
-(defn profile-icon-view [photo-path name color emoji edit? size override-styles]
+(defn profile-icon-view [photo-path name color emoji edit? size override-styles public-key]
   (let [styles (merge {:container              {:width size :height size}
                        :size                   size
                        :chat-icon              styles/chat-icon-profile
@@ -141,7 +155,9 @@
                                                  (styles/emoji-chat-icon-text size))} override-styles)]
     [react/view (:container styles)
      (if (and photo-path (seq photo-path))
-       [photos/photo photo-path styles]
+       [profile-photo-plus-dot-view {:photo-path      photo-path
+                                     :public-key      public-key
+                                     :photo-container (:container styles)}]
        (if (string/blank? emoji)
          [default-chat-icon name styles]
          [emoji-chat-icon emoji styles]))

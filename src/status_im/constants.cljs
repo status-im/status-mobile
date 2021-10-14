@@ -162,3 +162,8 @@
 (def ^:const activity-center-notification-type-private-group-chat 2)
 (def ^:const activity-center-notification-type-mention 3)
 (def ^:const activity-center-notification-type-reply 4)
+
+(def ^:const visibility-status-unknown 0)
+(def ^:const visibility-status-online 1)
+(def ^:const visibility-status-dnd 2)
+(def ^:const visibility-status-invisible 3)

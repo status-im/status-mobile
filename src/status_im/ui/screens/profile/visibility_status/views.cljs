@@ -1,0 +1,162 @@
+(ns status-im.ui.screens.profile.visibility-status.views
+  (:require-macros [status-im.utils.views :as views])
+  (:require ["react-native" :refer (BackHandler)]
+            [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [quo.react-native :as rn]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.handlers :refer [<sub]]
+            [status-im.constants :as constants]
+            [status-im.ui.screens.profile.visibility-status.styles :as styles]
+            [status-im.ui.screens.profile.visibility-status.utils :as utils]))
+
+;; === Code Related to visibility-status-button ===
+
+(def button-ref (atom nil))
+
+(defn dispatch-popover [top]
+  (re-frame/dispatch [:show-visibility-status-popover {:top top}]))
+
+(defn calculate-button-height-and-dispatch-popover []
+  (.measure @button-ref
+            (fn  [_ _ _ _ _ py]
+              (dispatch-popover py))))
+
+(defn visibility-status-button [on-press props]
+  (let [{:keys [statusType]}  (<sub [:multiaccount/current-user-status])
+        statusType            (if (nil? statusType) constants/visibility-status-online statusType)
+        {:keys [color title]} (get utils/visibility-status-type-data statusType)]
+    [rn/touchable-opacity
+     (merge
+      {:on-press             on-press
+       :accessibility-label :visibility-status-button
+       :style               (styles/visibility-status-button-container)
+       :ref                 #(reset! button-ref ^js %)} props)
+     [rn/view {:style (styles/visiblity-status-profile-dot color)}]
+     [rn/text {:style (styles/visibility-status-text)} title]]))
+
+;; === Code Related to visibility-status-popover ===
+(def scale (anim/create-value 0))
+(def position (anim/create-value 0))
+
+(defn hide-options []
+  (anim/start
+   (anim/parallel
+    [(anim/timing scale {:toValue         0
+                         :duration        140
+                         :useNativeDriver true})
+     (anim/timing position {:toValue         50
+                            :duration        210
+                            :useNativeDriver true})])))
+
+(defn show-options []
+  (anim/start
+   (anim/parallel
+    [(anim/timing scale {:toValue         1
+                         :duration        210
+                         :useNativeDriver true})
+     (anim/timing position {:toValue         80
+                            :duration        70
+                            :useNativeDriver true})])))
+
+(defn status-option-pressed [request-close status-type]
+  (request-close)
+  (re-frame/dispatch [:status-updates/delayed-visibility-status-update status-type]))
+
+(defn status-option [{:keys [request-close status-type]}]
+  (let [{:keys [color title subtitle]} (get utils/visibility-status-type-data status-type)]
+    [rn/touchable-opacity {:style               {:padding 6}
+                           :accessibility-label :visibility-status-option
+                           :on-press            #(status-option-pressed request-close status-type)}
+     [rn/view  {:style {:flex-direction "row"}}
+      [rn/view {:style (styles/visiblity-status-profile-dot color)}]
+      [rn/text {:style (styles/visibility-status-text)} title]]
+     (when-not (nil? subtitle)
+       [rn/text {:style (styles/visibility-status-subtitle)} subtitle])]))
+
+(defn visibility-status-options [request-close top]
+  [react/view {:position :absolute
+               :top      (int top)}
+   [visibility-status-button request-close {:ref nil :active-opacity 1}]
+   [react/animated-view {:style               (styles/visibility-status-options scale position)
+                         :accessibility-label :visibility-status-options}
+    [status-option
+     {:status-type   constants/visibility-status-online
+      :request-close request-close}]
+    [quo/separator {:style {:margin-top 8}}]
+    [status-option
+     {:status-type   constants/visibility-status-dnd
+      :request-close request-close}]
+    [quo/separator]
+    [status-option
+     {:status-type   constants/visibility-status-invisible
+      :request-close request-close}]]])
+
+(defn popover-view [_]
+  (let [clear-timeout     (atom nil)
+        current-popover   (reagent/atom nil)
+        update?           (reagent/atom nil)
+        request-close     (fn []
+                            (reset! clear-timeout
+                                    (js/setTimeout
+                                     #(do (reset! current-popover nil)
+                                          (re-frame/dispatch [:hide-visibility-status-popover])) 200))
+                            (hide-options)
+                            true)
+        on-show           (fn []
+                            (show-options)
+                            (when platform/android?
+                              (.removeEventListener BackHandler
+                                                    "hardwareBackPress"
+                                                    request-close)
+                              (.addEventListener BackHandler
+                                                 "hardwareBackPress"
+                                                 request-close)))
+        on-hide           (fn []
+                            (when platform/android?
+                              (.removeEventListener BackHandler
+                                                    "hardwareBackPress"
+                                                    request-close)))]
+    (reagent/create-class
+     {:UNSAFE_componentWillUpdate
+      (fn [_ [_ popover _]]
+        (when @clear-timeout (js/clearTimeout @clear-timeout))
+        (cond
+          @update?
+          (do (reset! update? false)
+              (on-show))
+
+          (and @current-popover popover)
+          (do (reset! update? true)
+              (js/setTimeout #(reset! current-popover popover) 600)
+              (hide-options))
+
+          popover
+          (do (reset! current-popover popover)
+              (on-show))
+
+          :else
+          (do (reset! current-popover nil)
+              (on-hide))))
+      :component-will-unmount on-hide
+      :reagent-render
+      (fn []
+        (when @current-popover
+          (let [{:keys [top]} @current-popover]
+            [react/view styles/visibility-status-popover-view
+             (when platform/ios?
+               [react/view
+                {:style {:flex 1
+                         :background-color colors/black-persist}}])
+             [react/touchable-highlight
+              {:style {:flex 1}
+               :on-press request-close}
+              [visibility-status-options request-close top]]])))})))
+
+(views/defview visibility-status-popover []
+  (views/letsubs [popover [:visibility-status-popover/popover]]
+    [popover-view popover]))

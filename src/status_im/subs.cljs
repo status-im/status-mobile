@@ -86,6 +86,7 @@
 (reg-root-key-sub :app-state :app-state)
 (reg-root-key-sub :home-items-show-number :home-items-show-number)
 (reg-root-key-sub :waku/v2-peer-stats :peer-stats)
+(reg-root-key-sub :status-updates :status-updates)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -200,6 +201,7 @@
 (reg-root-key-sub :intro-wizard-state :intro-wizard)
 
 (reg-root-key-sub :popover/popover :popover/popover)
+(reg-root-key-sub :visibility-status-popover/popover :visibility-status-popover/popover)
 (reg-root-key-sub :add-account :add-account)
 
 (reg-root-key-sub :keycard :keycard)
@@ -355,6 +357,11 @@
 
 ;;GENERAL ==============================================================================================================
 
+(re-frame/reg-sub
+ :status-updates/status-update
+ :<- [:status-updates]
+ (fn [status-updates [_ public-key]]
+   (get status-updates public-key)))
 
 (re-frame/reg-sub
  :multiaccount/logged-in?
@@ -783,6 +790,12 @@
          :seed
          (string/blank? (security/safe-unmask-data seed))
          false))))
+
+(re-frame/reg-sub
+ :multiaccount/current-user-status
+ :<- [:multiaccount]
+ (fn [{:keys [current-user-status]}]
+   current-user-status))
 
 ;;CHAT ==============================================================================================================
 

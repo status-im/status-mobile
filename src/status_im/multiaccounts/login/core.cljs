@@ -37,7 +37,8 @@
             [status-im.notifications-center.core :as notifications-center]
             [status-im.navigation :as navigation]
             [status-im.signing.eip1559 :as eip1559]
-            [status-im.data-store.chats :as data-store.chats]))
+            [status-im.data-store.chats :as data-store.chats]
+            [status-im.status-updates.core :as status-updates]))
 
 (re-frame/reg-fx
  ::initialize-communities-enabled
@@ -338,7 +339,8 @@
               (get-group-chat-invitations)
               (multiaccounts/get-profile-picture)
               (multiaccounts/switch-preview-privacy-mode-flag)
-              (link-preview/request-link-preview-whitelist))))
+              (link-preview/request-link-preview-whitelist)
+              (status-updates/initialize-status-updates))))
 
 (defn get-new-auth-method [auth-method save-password?]
   (when save-password?

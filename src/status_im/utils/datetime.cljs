@@ -167,3 +167,6 @@
     (str day (or (s (mod (- m 20) 10))
                  (s m)
                  (s 0)))))
+
+(defn to-mills [sec]
+  (* 1000 sec))

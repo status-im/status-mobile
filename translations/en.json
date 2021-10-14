@@ -1674,5 +1674,10 @@
     "disable-later-in-settings": "You can disable this later in Settings",
     "use-as-profile-picture": "Use as profile picture",
     "view-on-opensea": "View on OpenSea",
-    "profile-picture-updated": "Profile picture updated"
+    "profile-picture-updated": "Profile picture updated",
+    "status-online": "Online",
+    "status-dnd": "Do not disturb",
+    "status-invisible": "Invisible",
+    "subtitle-dnd": "Mutes all notifications",
+    "subtitle-invisible": "Hides your online status"
 }

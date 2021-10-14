@@ -32,6 +32,7 @@
              :tooltips                           {}
              :dimensions/window                  (dimensions/window)
              :registry                           {}
+             :status-updates                     {}
              :stickers/packs-owned               #{}
              :stickers/packs-pending             #{}
              :keycard                            {:nfc-enabled?   false
