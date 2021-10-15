@@ -1,3 +1,45 @@
+## 1.17
+
+### For iOS and Android
+
+### Features
+
+- 🖼️ Add ability to Share image from Status ([details](https://github.com/status-im/status-react/pull/12528))
+- 🕵️ Private Profile Photos ([details](https://github.com/status-im/status-react/pull/11768))
+- 🥥 Custom Emoji Thumbnails for Community Channels ([details](https://github.com/status-im/status-react/pull/12594))
+- 🔄 Sync deleted chats ([details](https://github.com/status-im/status-react/pull/12662))
+- 🔃 Sync removed/deleted/blocked contacts ([details](https://github.com/status-im/status-react/pull/12541))
+- 💸 Allow overriding nonce when sending transaction ([details](https://github.com/status-im/status-react/pull/12679))
+- 🗑️ Delete messages ([details](https://github.com/status-im/status-react/pull/12390))
+- 🎨 NFT Support via OpenSea ([details](https://github.com/status-im/status-react/pull/12485))
+- 🤳🏻 Enable collectibles and NFT as profile picture ([details](https://github.com/status-im/status-react/pull/12615))
+
+### Improvements
+
+- Move pull to refresh to the account overview screen ([details](https://github.com/status-im/status-react/pull/12479))
+- Add $RARE token to our default list ([details](https://github.com/status-im/status-react/pull/12521))
+- Small UI Design Improvements ([details](https://github.com/status-im/status-react/pull/12544))
+- Chats list performance ([details](https://github.com/status-im/status-react/pull/12554))
+- Add push notification on group chat invite ([details](https://github.com/status-im/status-react/pull/12440))
+- Contacts performance ([details](https://github.com/status-im/status-react/pull/12643))
+- Add profile image in push notifications ([details](https://github.com/status-im/status-react/pull/12427))
+- Enable UI for signing legacy txs on networks without eip1559 ([details](https://github.com/status-im/status-react/pull/12692))
+- Doubled the character limit on timeline posts ([details](https://github.com/status-im/status-react/commit/a9333ad52ca71f512d5306f802927d0c20d63944))
+
+### Bugfixes
+
+- Don't show notifications from self ([details](https://github.com/status-im/status-react/pull/12505))
+- Request permissions before saving images ([details](https://github.com/status-im/status-react/pull/12516))
+- Re-enable amount/fee validation on tx signing ([details](https://github.com/status-im/status-react/pull/12537))
+- Fix browser history sorting ([details](https://github.com/status-im/status-react/pull/12497))
+- Fix show/hide password on Android ([details](https://github.com/status-im/status-react/pull/12536))
+- Fix connecting autofarm.network dapps with status wallet freezes ([details](https://github.com/status-im/status-react/pull/12529))
+- RPC URL is lower-cased when entered in URL field when adding ([details](https://github.com/status-im/status-react/pull/12574))
+- Allow retrieving of profile updates after removing contact ([details](https://github.com/status-im/status-react/pull/12581))
+- Fetch history on receiving pubchat installation ([details](https://github.com/status-im/status-react/pull/12644))
+- Can't send funds to multisig - Out of gas ([details](https://github.com/status-im/status-react/pull/12648))
+- Fix handling errors on eth_gasPrice ([details](https://github.com/status-im/status-react/pull/12710))
+
 ## 1.16
 
 ### For iOS and Android
