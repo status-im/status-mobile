@@ -4,7 +4,7 @@
 (def color-error "#FA6565")
 (def color-online "#7CDA00")
 (def color-dnd "#FA6565")
-(def color-invisible "#FFFFFF")
+(def color-inactive "#939BA1")
 
 (defn visibility-status-button-container []
   {:background-color       (:interactive-02 @colors/theme)
@@ -14,11 +14,9 @@
    :align-self             "flex-start"
    :flex-direction         "row"
    :align-items            "center"
+   :justify-content        "center"
    :padding                6
    :padding-right          12})
-
-(defn color-invisible? [dot-color]
-  (= dot-color color-invisible))
 
 (defn visibility-status-dot [dot-color size]
   {:background-color dot-color
@@ -26,11 +24,13 @@
    :height           size
    :border-radius    (/ size 2)
    :border-width     1
-   :border-color     (if (color-invisible? dot-color) "rgba(0,0,0,0.1)" "#FFFFFF")})
+   :border-color     "#FFFFFF"})
 
-(defn visiblity-status-profile-dot [color]
-  (merge (visibility-status-dot color 10) {:margin 6
-                                           :border-width (if (color-invisible? color) 1 0)}))
+(defn visibility-status-profile-dot [color size border-width margin-left]
+  (merge (visibility-status-dot color size)
+         {:margin-right 6
+          :margin-left  margin-left
+          :border-width border-width}))
 
 (defn visibility-status-text []
   {:color      (:text-01 @colors/theme)
@@ -45,6 +45,10 @@
    :margin-right 6
    :weight       600})
 
+(defn visibility-status-option []
+  {:flex-direction  "row"
+   :align-items "center"})
+
 (defn visibility-status-options [scale position]
   {:background-color       (:ui-background @colors/theme)
    :border-radius          16
@@ -53,8 +57,8 @@
    :align-self             "flex-start"
    :left                    16
    :top                    -76
-   :padding-top             6
    :padding-bottom          6
+   :padding-top             8
    :transform               [{:scaleY scale}
                              {:translateY position}]})
 

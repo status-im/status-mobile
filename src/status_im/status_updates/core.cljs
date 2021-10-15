@@ -41,7 +41,7 @@
   (let [events-to-dispatch-later (atom [])]
     (swap! events-to-dispatch-later conj {:ms 10 :dispatch [:status-updates/update-visibility-status status-type]})
     (when
-     (not= status-type constants/visibility-status-online)
+     (= status-type constants/visibility-status-inactive)
       ;; Disable broadcasting further updates
       (swap! events-to-dispatch-later conj {:ms 1000 :dispatch [:status-updates/send-status-updates? false]}))
     {:dispatch        [:status-updates/send-status-updates? true] ;; Enable broadcasting for current update
@@ -67,7 +67,7 @@
   [{:keys [db]} public-key clock]
   (let [current-clock (get-in db [:status-updates public-key :clock] 0)]
     (when (= current-clock clock)
-      {:db (update-in db [:status-updates public-key] merge {:status-type constants/visibility-status-invisible})})))
+      {:db (update-in db [:status-updates public-key] merge {:status-type constants/visibility-status-inactive})})))
 
 (fx/defn countdown-for-online-user
   {:events [:status-updates/countdown-for-online-user]}

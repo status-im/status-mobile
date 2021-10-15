@@ -20,6 +20,8 @@
 (def hour (* 60 minute))
 (def day (* 24 hour))
 (def week (* 7 day))
+(defn weeks [w]
+  (* w week))
 (def units [{:name :t/datetime-second-short :limit 60 :in-second 1}
             {:name :t/datetime-minute-short :limit 3600 :in-second 60}
             {:name :t/datetime-hour-short :limit 86400 :in-second 3600}

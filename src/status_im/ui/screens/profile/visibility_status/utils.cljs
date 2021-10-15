@@ -5,31 +5,48 @@
             [re-frame.core :as re-frame]
             [status-im.utils.datetime :as datetime]))
 
+;; Specs:
+;; :visibility-status-automatic
+;;        To Send - "visibility-status-automatic" status ping every 5 minutes
+;;        Display - Online for up to 5 minutes from the last clock, after that Offline
+;; :visibility-status-always-online
+;;        To Send - "visibility-status-always-online" status ping every 5 minutes
+;;        Display - Online for up to 2 weeks from the last clock, after that Offline
+;; :visibility-status-inactive
+;;        To Send - A single "visibility-status-inactive" status ping
+;;        Display - Offline forever
+;; Note: Only send pings if the user interacted with the app in the last x minutes.
 (def visibility-status-type-data
-  {constants/visibility-status-unknown   {:color    styles/color-error
-                                          :title    (i18n/label :t/error)}
-   constants/visibility-status-online    {:color    styles/color-online
-                                          :title    (i18n/label :t/status-online)}
-   constants/visibility-status-dnd       {:color    styles/color-dnd
-                                          :title    (i18n/label :t/status-dnd)
-                                          :subtitle (i18n/label :t/subtitle-dnd)}
-   constants/visibility-status-invisible {:color    styles/color-invisible
-                                          :title    (i18n/label :t/status-invisible)
-                                          :subtitle (i18n/label :t/subtitle-invisible)}})
+  {constants/visibility-status-unknown       {:color    styles/color-error
+                                              :title    (i18n/label :t/error)}
+   constants/visibility-status-automatic     {:color    styles/color-online
+                                              :title    (i18n/label :t/status-automatic)
+                                              :subtitle (i18n/label :t/status-automatic-subtitle)}
+   constants/visibility-status-dnd           {:color    styles/color-dnd
+                                              :title    (i18n/label :t/status-dnd)
+                                              :subtitle (i18n/label :t/status-dnd-subtitle)}
+   constants/visibility-status-always-online {:color    styles/color-online
+                                              :title    (i18n/label :t/status-always-online)
+                                              :alias    (i18n/label :t/status-always-online-alias)}
+   constants/visibility-status-inactive      {:color    styles/color-inactive
+                                              :title    (i18n/label :t/status-inactive)
+                                              :subtitle (i18n/label :t/status-inactive-subtitle)}})
 
 ;; Currently, Another user is broadcasting their status updates at the rate of 5 minutes.
-;; So, we need to show that user online a little extra than that time. (broadcast receiving delay)
+;; So for status-type automatic, we need to show that user online a little longer than that time. (broadcast receiving delay)
 (defn dot-color [{:keys [public-key status-type clock]}]
-  (let [status-lifespan    (datetime/minutes 5.1)
+  (let [status-lifespan    (if (= status-type constants/visibility-status-automatic)
+                             (datetime/minutes 5.05)
+                             (datetime/weeks 2))
         status-expire-time (+ (datetime/to-mills clock) status-lifespan)
         time-left          (-  status-expire-time (datetime/timestamp))
         status-type        (if (or (nil? status-type)
                                    (and
-                                    (= status-type constants/visibility-status-online)
+                                    (not= status-type constants/visibility-status-inactive)
                                     (neg? time-left)))
-                             constants/visibility-status-invisible
+                             constants/visibility-status-inactive
                              status-type)]
-    (when (= status-type constants/visibility-status-online)
+    (when (= status-type constants/visibility-status-automatic)
       (re-frame/dispatch [:status-updates/countdown-for-online-user public-key clock time-left]))
     (:color (get visibility-status-type-data status-type))))
 

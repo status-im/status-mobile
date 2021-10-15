@@ -1675,9 +1675,12 @@
     "use-as-profile-picture": "Use as profile picture",
     "view-on-opensea": "View on OpenSea",
     "profile-picture-updated": "Profile picture updated",
-    "status-online": "Online",
+    "status-automatic": "Automatic",
+    "status-automatic-subtitle": "Set status automatically",
     "status-dnd": "Do not disturb",
-    "status-invisible": "Invisible",
-    "subtitle-dnd": "Mutes all notifications",
-    "subtitle-invisible": "Hides your online status"
+    "status-dnd-subtitle": "Mutes all notifications",
+    "status-always-online": "Always Online",
+    "status-always-online-alias": "Online",
+    "status-inactive": "Inactive",
+    "status-inactive-subtitle": "Hides your online status"
 }

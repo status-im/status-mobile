@@ -21,22 +21,37 @@
 (defn dispatch-popover [top]
   (re-frame/dispatch [:show-visibility-status-popover {:top top}]))
 
+(defn dispatch-status-update [status-type]
+  (re-frame/dispatch [:status-updates/delayed-visibility-status-update status-type]))
+
 (defn calculate-button-height-and-dispatch-popover []
   (.measure @button-ref
             (fn  [_ _ _ _ _ py]
               (dispatch-popover py))))
 
+(defn profile-visibility-status-dot [status-type color]
+  (let [automatic?                      (= status-type constants/visibility-status-automatic)
+        [border-width margin-left size] (if automatic? [1 -10 12] [0 6 10])]
+    [:<>
+     (when automatic?
+       [rn/view {:style (styles/visibility-status-profile-dot styles/color-inactive size border-width 6)}])
+     [rn/view {:style (styles/visibility-status-profile-dot color size border-width margin-left)}]]))
+
 (defn visibility-status-button [on-press props]
-  (let [{:keys [statusType]}  (<sub [:multiaccount/current-user-status])
-        statusType            (if (nil? statusType) constants/visibility-status-online statusType)
-        {:keys [color title]} (get utils/visibility-status-type-data statusType)]
+  (let [{:keys [statusType]}        (<sub [:multiaccount/current-user-status])
+        status-type                 (if (nil? statusType)
+                                      (do
+                                        (dispatch-status-update constants/visibility-status-automatic)
+                                        constants/visibility-status-automatic) statusType)
+        {:keys [color alias title]} (get utils/visibility-status-type-data status-type)
+        title                       (if (nil? alias) title alias)]
     [rn/touchable-opacity
      (merge
       {:on-press             on-press
        :accessibility-label :visibility-status-button
        :style               (styles/visibility-status-button-container)
        :ref                 #(reset! button-ref ^js %)} props)
-     [rn/view {:style (styles/visiblity-status-profile-dot color)}]
+     [profile-visibility-status-dot status-type color]
      [rn/text {:style (styles/visibility-status-text)} title]]))
 
 ;; === Code Related to visibility-status-popover ===
@@ -65,15 +80,15 @@
 
 (defn status-option-pressed [request-close status-type]
   (request-close)
-  (re-frame/dispatch [:status-updates/delayed-visibility-status-update status-type]))
+  (dispatch-status-update status-type))
 
 (defn status-option [{:keys [request-close status-type]}]
   (let [{:keys [color title subtitle]} (get utils/visibility-status-type-data status-type)]
     [rn/touchable-opacity {:style               {:padding 6}
                            :accessibility-label :visibility-status-option
                            :on-press            #(status-option-pressed request-close status-type)}
-     [rn/view  {:style {:flex-direction "row"}}
-      [rn/view {:style (styles/visiblity-status-profile-dot color)}]
+     [rn/view  {:style (styles/visibility-status-option)}
+      [profile-visibility-status-dot status-type color]
       [rn/text {:style (styles/visibility-status-text)} title]]
      (when-not (nil? subtitle)
        [rn/text {:style (styles/visibility-status-subtitle)} subtitle])]))
@@ -85,15 +100,15 @@
    [react/animated-view {:style               (styles/visibility-status-options scale position)
                          :accessibility-label :visibility-status-options}
     [status-option
-     {:status-type   constants/visibility-status-online
+     {:status-type   constants/visibility-status-always-online
       :request-close request-close}]
     [quo/separator {:style {:margin-top 8}}]
     [status-option
-     {:status-type   constants/visibility-status-dnd
+     {:status-type   constants/visibility-status-inactive
       :request-close request-close}]
     [quo/separator]
     [status-option
-     {:status-type   constants/visibility-status-invisible
+     {:status-type   constants/visibility-status-automatic
       :request-close request-close}]]])
 
 (defn popover-view [_]
