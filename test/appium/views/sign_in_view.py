@@ -176,8 +176,8 @@ class SignInView(BaseView):
         if not second_user:
             self.accept_tos_checkbox.click()
             self.get_started_button.click()
-        self.generate_key_button.click_until_presence_of_element(self.next_button)
-        if self.generate_key_button.is_element_displayed():
+        self.generate_key_button.click()
+        if not self.next_button.is_element_displayed():
             [button.click() for button in [self.accept_tos_checkbox, self.get_started_button,self.generate_key_button]]
         self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
         if keycard:
@@ -232,7 +232,7 @@ class SignInView(BaseView):
         return self.get_home_view()
 
     def sign_in(self, password=common_password, keycard=False, position=1):
-        self.driver.info("**Sign in (password:%s, keycard:%s)**" % (password, str(keycard)))
+        self.driver.info("**Sign in** (password:%s, keycard:%s)" % (password, str(keycard)))
         if self.multi_account_on_login_button.is_element_displayed(30):
             self.get_multiaccount_by_position(position).click()
 

@@ -108,8 +108,6 @@ class WalletView(BaseView):
         # elements for multiaccount
         self.multiaccount_more_options = Button(self.driver, accessibility_id="accounts-more-options")
         self.accounts_status_account = AccountElementButton(self.driver, account_name=self.status_account_name)
-        self.collectibles_button = Button(self.driver, translation_id="wallet-collectibles")
-        self.cryptokitties_in_collectibles_number = Text(self.driver, xpath="//*[@text='CryptoKitties']//following-sibling::android.widget.TextView")
         self.set_currency_button = Button(self.driver, translation_id="set-currency")
         self.add_account_button = Button(self.driver, accessibility_id="add-new-account")
         self.generate_an_account_button = Button(self.driver, accessibility_id="add-account-sheet-generate")
@@ -128,6 +126,12 @@ class WalletView(BaseView):
         self.scan_qr_button = Button(self.driver, accessibility_id="accounts-qr-code")
         self.close_send_transaction_view_button = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
         self.hide_account_button = Button(self.driver, accessibility_id="hide-account-button")
+
+        #collectibles
+        self.collectibles_button = Button(self.driver, translation_id="wallet-collectibles")
+        self.nft_asset_button = Button(self.driver, accessibility_id="nft-asset")
+        self.set_collectible_as_profile_photo_button = Button(self.driver, accessibility_id="set-nft-as-pfp")
+        self.view_collectible_on_opensea_button = Button(self.driver, translation_id="view-on-opensea")
 
         # individual account settings
         self.account_settings_button = Button(self.driver, translation_id="account-settings")
@@ -321,11 +325,11 @@ class WalletView(BaseView):
         desired_currency.click()
 
     def get_account_by_name(self, account_name: str):
-        self.driver.info("**Getting account '%s'**" % account_name)
+        self.driver.info("**Getting account:** %s'" % account_name)
         return AccountElementButton(self.driver, account_name)
 
     def add_account(self, account_name: str, password: str = common_password, keycard=False):
-        self.driver.info("**Adding account '%s'**" % account_name)
+        self.driver.info("**Adding account:** '%s'" % account_name)
         self.add_account_button.click()
         self.generate_an_account_button.click()
         self.account_name_input.send_keys(account_name)
@@ -337,3 +341,6 @@ class WalletView(BaseView):
         else:
             self.enter_your_password_input.send_keys(password)
             self.add_account_generate_account_button.click()
+
+    def get_collectibles_amount(self, collectibles='CryptoKitties'):
+        return Text(self.driver,xpath="//*[@text='%s']//following-sibling::android.widget.TextView" % collectibles)

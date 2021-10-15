@@ -16,6 +16,10 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         key_1, username_1 = device_1.get_public_key_and_username(True)
         device_1.home_button.click()
         chat_name = home_1.get_random_chat_name()
+
+        home_2.just_fyi('Add admin to contacts to see PN about group chat invite')
+        home_2.home_button.double_click()
+        home_2.add_contact(key_1)
         home_1.plus_button.click()
 
         home_1.just_fyi('Check default placeholder when trying to create group chat without contacts')
@@ -29,8 +33,21 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_2.home_button.click()
         home_1.add_contact(key_2)
         home_1.get_back_to_home_view()
+        home_2.put_app_to_background()
 
         chat_1 = home_1.create_group_chat([username_2], chat_name)
+
+        home_2.just_fyi('check that PN invite to group chat is received and after tap you are redirected to group chat')
+        home_2.open_notification_bar()
+        pns = [chat_1.pn_invited_to_group_chat(username_1, chat_name), chat_1.pn_wants_you_to_join_to_group_chat(username_1, chat_name)]
+        for pn in pns:
+            if not home_2.element_by_text(pn).is_element_displayed(30):
+                self.errors.append('%s is not shown after invite to group chat' % pn)
+        if not home_2.pn_group_chat_invite_icon(pns[1]).is_element_displayed(30):
+            self.drivers[0].fail('No icon is shown for PN')
+
+        home_2.pn_group_chat_invite_icon(pns[1]).click()
+        home_2.element_by_text(chat_1.pn_invited_to_group_chat(username_1, chat_name))
         create_system_message = chat_1.create_system_message(username_1, chat_name)
         invite_system_message = chat_1.invite_system_message(username_1, username_2)
         join_system_message = chat_1.join_system_message(username_2)

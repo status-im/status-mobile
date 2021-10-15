@@ -581,10 +581,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.home_button.double_click()
         chat_2.element_starts_with_text(url_message, 'button').click()
         web_view = chat_2.open_in_status_button.click()
-        try:
-            web_view.element_by_text('Private, Secure Communication').find_element()
-        except TimeoutException:
-            self.errors.append('Device 2: URL was not opened from 1-1 chat')
+        if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
+            self.errors.append('URL was not opened from 1-1 chat')
         home_2.dapp_tab_button.double_click()
         chat_2.home_button.click()
 
@@ -595,10 +593,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.send_message(url_message)
         chat_1.element_starts_with_text(url_message, 'button').click()
         web_view = chat_1.open_in_status_button.click()
-        try:
-            web_view.element_by_text('Private, Secure Communication').find_element()
-        except TimeoutException:
-            self.errors.append('Device 1: URL was not opened from 1-1 chat')
+        if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
+            self.errors.append('URL was not opened from 1-1 chat')
         home_1.home_button.click(desired_view='chat')
 
         preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-react/pull/11707',
@@ -607,7 +603,12 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
                         'yotube': {
                             'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
                             'txt': 'Status & Keycard – Hardware-Enforced Security',
-                            'subtitle': 'YouTube'}}
+                            'subtitle': 'YouTube'},
+                        'twitter':{
+                            'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
+                            'txt': "We've rethought how we translate content, allowing us to translate",
+                            'subtitle': 'Twitter'
+                        }}
 
         home_1.just_fyi("Check enabling and sending first gif")
         giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
@@ -623,7 +624,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             data = preview_urls[key]
             chat_2.send_message(data['url'])
             message = chat_1.get_preview_message_by_text(data['url'])
-            if message.preview_title.text != data['txt']:
+            if data['txt'] not in message.preview_title.text:
                 self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
             if message.preview_subtitle.text != data['subtitle']:
                 self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)

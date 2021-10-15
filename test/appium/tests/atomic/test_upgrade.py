@@ -91,10 +91,10 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         public_chat = home.get_chat(markdown_name).click()
         messages = pub_chat_data['markdown_text_messages']
         public_chat.element_starts_with_text(messages[0]).scroll_to_element(10, 'up')
+        public_chat.element_starts_with_text('quoted').scroll_to_element()
         for i in range(len(messages)):
             if not public_chat.chat_element_by_text(messages[i]).is_element_displayed():
-                self.errors.append("Markdown message '%s' does not match expected" % messages[i])
-        public_chat.element_starts_with_text('quoted').scroll_to_element()
+                self.errors.append("Markdown message '%s' does not match expected in %s" % (messages[i], markdown_name))
         public_chat.home_button.click()
 
         home.just_fyi("Checking reactions, sticker, tag messages")
@@ -112,13 +112,15 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         home.just_fyi("Checking reply to long messages and mentions")
         mention = '#before-upgrade-2'
         public_chat = home.get_chat(mention).click()
+        public_chat.scroll_to_start_of_history()
         pub_chat_data = chats[mention]
         public_replied_message = public_chat.chat_element_by_text(pub_chat_data['reply'])
+        public_replied_message.scroll_to_element()
         if pub_chat_data['long'] not in public_replied_message.replied_message_text:
-            self.errors.append("Reply is not present in message received in public chat after upgrade")
+            self.errors.append("Reply is not present in message received in public chat %s after upgrade" % mention)
         public_chat.element_starts_with_text(pub_chat_data['mention']).scroll_to_element()
         if not public_chat.chat_element_by_text(pub_chat_data['mention']).is_element_displayed():
-            self.errors.append("Mention is not present in public chat after upgrade")
+            self.errors.append("Mention is not present in %s after upgrade" % mention)
         home.home_button.click()
 
         home.just_fyi("Checking collapsable messages")
@@ -126,7 +128,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         public_chat = home.get_chat(long_name).click()
         pub_chat_data = chats[long_name]
         if not public_chat.chat_element_by_text(pub_chat_data['long']).uncollapse:
-            self.errors.append("No uncollapse icon on long message is shown!")
+            self.errors.append("No uncollapse icon on long message is shown in %s!" % long_name)
 
         self.errors.verify_no_errors()
 
@@ -416,10 +418,10 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
                 self.errors.append("Reply is not present in message received in group chat after upgrade")
         if not chat_2.chat_element_by_text(messages['invite']).uncollapse:
             self.errors.append("No uncollapse icon on long message is shown!")
-        resolved_ens = '@%s' % admin['ens']
+        resolved_ens = '@%s' % admin['ens_upgrade']
         chat_2.chat_element_by_text(messages['text']).username.scroll_to_element(direction='up')
         if chat_2.chat_element_by_text(messages['text']).username.text != resolved_ens:
-            self.errors.append("ENS is not resolved in group chat")
+            self.errors.append("ENS '%s' is not resolved in group chat '%s'" % (resolved_ens, chat_name))
         [chat.home_button.click() for chat in [chat_1, chat_2]]
 
         home_1.just_fyi("Check that can join group chat after upgrade")
@@ -427,11 +429,11 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         invite_message = chat_1.invite_system_message(resolved_ens, member['username'])
         [chat_1, chat_2] = [home.get_chat(chat_name).click() for home in (home_1, home_2)]
         if not chat_2.chat_element_by_text(invite_message).is_element_displayed():
-            self.errors.append("System message is not shown after upgrade")
+            self.errors.append("'%s' is not shown after upgrade in '%s'" % (invite_message, chat_name))
         chat_2.join_chat_button.click()
         joined_system_message = chat_1.join_system_message(member['username'])
         if not chat_1.chat_element_by_text(joined_system_message).is_element_displayed(30):
-            self.errors.append("System message is not shown after user was joined")
+            self.errors.append("'%s' is not shown after user was joined in '%s'" % (joined_system_message, chat_name))
         [chat.home_button.double_click() for chat in [chat_1, chat_2]]
 
         home_2.just_fyi("Check that removed member can't send messages")

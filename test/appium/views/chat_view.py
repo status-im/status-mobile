@@ -738,18 +738,18 @@ class ChatView(BaseView):
         self.add_button.click()
 
     def get_user_options(self, username: str):
-        self.driver.info("**Get user options for %s**" % username)
+        self.driver.info("**Get user options for** %s" % username)
         self.chat_options.click()
         group_info_view = self.group_info.click()
         group_info_view.get_username_options(username).click()
         return self
 
     def chat_element_by_text(self, text):
-        self.driver.info("**Looking for a message by text: %s**" % text)
+        self.driver.info("**Looking for a message by text:** %s" % text)
         return ChatElementByText(self.driver, text)
 
     def verify_message_is_under_today_text(self, text, errors):
-        self.driver.info("**Veryfying that '%s' is under today**" % text)
+        self.driver.info("**Verifying that '%s' is under today**" % text)
         message_element = self.chat_element_by_text(text)
         message_element.wait_for_visibility_of_element()
         message_location = message_element.find_element().location['y']
@@ -970,3 +970,12 @@ class ChatView(BaseView):
     @staticmethod
     def changed_group_name_system_message(admin, chat_name):
         return "%s changed the group's name to %s" % (admin, chat_name)
+
+    ### Push notifications
+    @staticmethod
+    def pn_invited_to_group_chat(admin, chat_name):
+        return '%s invited you to %s' % (admin, chat_name)
+
+    @staticmethod
+    def pn_wants_you_to_join_to_group_chat(admin, chat_name):
+        return '%s wants you to join group %s' % (admin, chat_name)

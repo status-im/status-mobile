@@ -12,6 +12,7 @@ ens_user['username'] = "Legal Vibrant Indianabat"
 ens_user['public_key'] = "0x04359bb3e73cba0b815d71e562670ad00bb5d2db0d16cd1c4c92c668b61fde2274d6e487fcdffe66f913b3fea2a" \
                          "3058f53ce7946c2b501aa61a9ca8a883df72dc9"
 ens_user['ens'] = 'statuse2e.eth'
+ens_user['ens_upgrade'] = 'statuse2e'
 ens_user['ens_another'] = 'status-another-ens-e2e.eth'
 ens_user['address'] = '0x1eE3058Bd300246B4B20E687Efc9Eba81FF7814b'
 
@@ -83,7 +84,12 @@ wallet_users['E']['username'] = "Wry Shiny Damselfly"
 wallet_users['E']['address'] = "0x3e2e4077753d3c229a9ae332b9ca46958945e2f6"
 wallet_users['E']['public_key'] = "0x044cf0620ec3ea0aba9fb0e19cb42a6fbd6b4e74f234f0da82580564817b238cc6434745d31" \
                                   "fa1649927ba48adfa7c95991fd51940bc00a71e80b095db5b107f1b"
-
+wallet_users['E']['collectibles'] = {
+    'Coins & Steel Exclusive Item Skin V2' : '1',
+    'Coins & Steel Founder Aura' : '2',
+    'CryptoKittiesRinkeby' : '2',
+    'KudosToken V7' : '1',
+}
 wallet_users['F'] = dict()
 wallet_users['F']['passphrase'] = "jazz human replace save wreck merry evolve oval black expose clutch sword"
 wallet_users['F']['username'] = "Dual Sour Galapagostortoise"

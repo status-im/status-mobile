@@ -90,27 +90,43 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5346)
     @marks.high
-    @marks.skip
-    #TODO: skipped due to bug on status-go, should be enabled after 12615 merge
     def test_collectible_from_wallet(self):
         passphrase = wallet_users['F']['passphrase']
         home = SignInView(self.driver).recover_access(passphrase=passphrase)
-        profile = home.profile_button.click()
-        profile.switch_network()
-        wallet = profile.wallet_button.click()
+
+        home.just_fyi('Check that collectibles are not shown on Ropsten')
+        wallet = home.wallet_button.click()
         wallet.scan_tokens()
         wallet.accounts_status_account.click()
         wallet.collectibles_button.click()
+        wallet.element_by_translation_id("display-collectibles").scroll_and_click()
+        if not wallet.element_by_translation_id("no-collectibles").is_element_displayed():
+            self.errors.append("Collectibles are shown on Ropsten network!")
 
         wallet.just_fyi('Check collectibles amount in wallet')
-        wallet.element_by_translation_id("enable").scroll_and_click()
-        wallet.cryptokitties_in_collectibles_number.wait_for_visibility_of_element(30)
-        if wallet.cryptokitties_in_collectibles_number.text != '1':
+        profile = home.profile_button.click()
+        profile.switch_network()
+        profile.wallet_button.click()
+        wallet.accounts_status_account.click()
+        wallet.collectibles_button.click()
+        wallet.get_collectibles_amount().wait_for_visibility_of_element(30)
+        if wallet.get_collectibles_amount().text != '1':
             self.errors.append(
-                'Wrong number is shown on CK assets: %s' % wallet.cryptokitties_in_collectibles_number.text)
-        # TODO: should be added check for that NFT image is shown after adding accessibility
+                'Wrong number is shown on CK assets: %s' % wallet.get_collectibles_amount().text)
+        wallet.get_collectibles_amount().click()
+        if not wallet.nft_asset_button.is_element_displayed():
+            self.driver.fail("Kitty is not shown after opening it from collectibles!")
+        wallet.nft_asset_button.click()
+        wallet.set_collectible_as_profile_photo_button.scroll_and_click()
+        web_view = wallet.get_base_web_view()
+        wallet.view_collectible_on_opensea_button.click_until_presence_of_element(web_view.browser_previous_page_button)
+        web_view.wait_for_d_aap_to_load()
+        if not web_view.element_by_text('Princess Gunklater').is_element_displayed(30):
+            self.errors.append("Collectible can't be opened when tapping 'View on OpenSea' via NFT page")
+        wallet.wallet_button.double_click()
 
         wallet.just_fyi('Check that collectibles are not shown when sending assets from wallet')
+        wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.select_asset_button.click()
         if send_transaction.asset_by_name("CryptoKitties").is_element_displayed():
@@ -118,11 +134,15 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.close_send_transaction_view_button.double_click()
 
         wallet.just_fyi('Check "Open in OpenSea" (that user is signed in)')
-        wallet.element_by_translation_id("check-on-opensea").click()
-        web_view = wallet.get_webview_view()
+        wallet.element_by_translation_id("check-on-opensea").click_until_presence_of_element((web_view.browser_previous_page_button))
         web_view.wait_for_d_aap_to_load(10)
-        #wallet.swipe_by_custom_coordinates(0.5,0.8,0.5,0.7)
         wallet.element_by_text('e2ecryptokitty').wait_for_element(60)
+
+        wallet.just_fyi("Check that custom image from collectible is set as profile photo")
+        wallet.profile_button.double_click()
+        if not profile.profile_picture.is_element_image_similar_to_template('collectible_pic.png'):
+            self.errors.append("Collectible image is not set as profile image")
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5341)
@@ -173,10 +193,9 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5381)
     @marks.high
-    @marks.skip
-    # TODO: enabling after adding NFT support on Rinkeby
-    def test_user_can_see_all_own_assets_after_account_recovering(self):
-        home = SignInView(self.driver).recover_access(wallet_users['E']['passphrase'])
+    def test_user_can_see_collectibles_on_rinkeby_after_account_recovering(self):
+        user = wallet_users['E']
+        home = SignInView(self.driver).recover_access(user['passphrase'])
         profile = home.profile_button.click()
         profile.switch_network('Rinkeby with upstream RPC')
         profile = home.profile_button.click()
@@ -184,10 +203,11 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.scan_tokens()
         wallet.accounts_status_account.click()
         wallet.collectibles_button.click()
-        if not wallet.element_by_text('KDO').is_element_displayed():
-            self.driver.fail('User collectibles token name in not shown')
-        if not wallet.element_by_text('1').is_element_displayed():
-            self.driver.fail('User collectibles amount does not match')
+        wallet.element_by_translation_id("display-collectibles").scroll_and_click()
+        for asset in user['collectibles']:
+            wallet.get_collectibles_amount(asset).scroll_to_element()
+            if wallet.get_collectibles_amount(asset).text != user['collectibles'][asset]:
+                self.errors.append('%s %s is not shown in Collectibles for Rinkeby!' % (user['collectibles'][asset], asset))
 
     @marks.testrail_id(6224)
     @marks.critical

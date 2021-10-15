@@ -10,7 +10,7 @@ class BaseWebView(BaseView):
 
         self.progress_bar_icon = Button(self.driver, xpath="//android.widget.ProgressBar")
         self.url_edit_box_lock_icon = Button(self.driver, xpath="'(//android.view.ViewGroup[@content-desc='icon'])[2]")
-        self.policy_summary = Button(self.driver, xpath="//*[@content-desc='Status Privacy Policy'] | //*[@text='Status Privacy Policyy']")
+        self.policy_summary = Button(self.driver, xpath="//*[@content-desc='Status Privacy Policy'] | //*[@text='Status Privacy Policy']")
         self.terms_of_use_summary = Button(self.driver, xpath="//*[@content-desc='Status App Terms of Use']")
 
         self.browser_previous_page_button = Button(self.driver, accessibility_id="previous-page-button")

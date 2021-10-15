@@ -186,7 +186,7 @@ class HomeView(BaseView):
                 break
 
     def get_chat(self, username, community=False):
-        self.driver.info("**Looking for chat '%s'**" % username)
+        self.driver.info("**Looking for chat:** '%s'" % username)
         chat_element = ChatElement(self.driver, username[:25], community=community)
         if not chat_element.is_element_displayed():
             self.notifications_unread_badge.wait_and_click(30)
@@ -197,12 +197,12 @@ class HomeView(BaseView):
         return chat_element
 
     def get_chat_from_home_view(self, username):
-        self.driver.info("**Looking for chat '%s'**" % username)
+        self.driver.info("**Looking for chat:** '%s'" % username)
         chat_element = ChatElement(self.driver, username[:25])
         return chat_element
 
     def get_chat_from_activity_center_view(self, chat_name):
-        self.driver.info("**Looking for chat '%s'**" % chat_name)
+        self.driver.info("**Looking for chat:** '%s'" % chat_name)
         chat_element = ActivityCenterChatElement(self.driver, chat_name[:25])
         return chat_element
 
@@ -306,3 +306,7 @@ class HomeView(BaseView):
         self.clear_history_button.click()
         from views.chat_view import ChatView
         ChatView(self.driver).clear_button.click()
+
+    def pn_group_chat_invite_icon(self, pn_text):
+        self.driver.info("**Getting PN icon for group chat invite: %s**" % pn_text)
+        return SilentButton(self.driver, xpath="//*[@text='%s']/../../../*[@resource-id='android:id/right_icon_container']" % pn_text)
