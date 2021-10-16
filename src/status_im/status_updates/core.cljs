@@ -17,20 +17,41 @@
                 status-updates-loaded)]
     {:db (assoc db :status-updates status-updates)}))
 
+(defn handle-my-status-updates [prev-map my-current-status clock status-update]
+  (let [status-type (:status-type status-update)]
+    (when (or
+           (nil? my-current-status)
+           (> clock (:clock my-current-status)))
+      (-> prev-map
+          (update :current-user-status merge {:clock clock :status-type status-type})
+          (assoc :dispatch [:status-updates/send-status-updates? (not= status-type constants/visibility-status-inactive)])))))
+
+(defn handle-other-status-updates [prev-map public-key clock status-update]
+  (let [status-update-old (get-in prev-map [:status-updates public-key])]
+    (when (or
+           (nil? status-update-old)
+           (> clock (:clock status-update-old)))
+      (assoc-in prev-map [:status-updates public-key] status-update))))
+
 (fx/defn handle-status-updates
   [{:keys [db]} status-updates-received]
   (let [status-updates-old (if (nil? (:status-updates db)) {} (:status-updates db))
-        {:keys [status-updates]}
+        my-public-key      (get-in db [:multiaccount :public-key])
+        my-current-status  (get-in db [:multiaccount :current-user-status])
+        {:keys [status-updates current-user-status dispatch]}
         (reduce (fn [prev-map status-update-received]
-                  (let [{:keys [public-key clock] :as status-update} (status-updates-store/<-rpc status-update-received)
-                        status-update-old (get-in prev-map [:status-updates public-key])]
-                    (when (or
-                           (nil? status-update-old)
-                           (> clock (:clock status-update-old)))
-                      (assoc-in prev-map [:status-updates public-key] status-update))))
-                {:status-updates status-updates-old}
+                  (let [{:keys [public-key clock] :as status-update} (status-updates-store/<-rpc status-update-received)]
+                    (if (= public-key my-public-key)
+                      (handle-my-status-updates prev-map my-current-status clock status-update)
+                      (handle-other-status-updates prev-map public-key clock status-update))))
+                {:status-updates      status-updates-old
+                 :current-user-status my-current-status
+                 :dispatch            nil}
                 status-updates-received)]
-    {:db (update-in db [:status-updates] merge status-updates)}))
+    (merge {:db (-> db
+                    (update-in [:status-updates] merge status-updates)
+                    (update-in [:multiaccount :current-user-status] merge current-user-status))}
+           (if (nil? dispatch) {} {:dispatch dispatch}))))
 
 (fx/defn initialize-status-updates [cofx]
   (status-updates-store/fetch-status-updates-rpc cofx #(re-frame/dispatch [::status-updates-loaded %])))
@@ -50,7 +71,7 @@
 (fx/defn update-visibility-status
   {:events [:status-updates/update-visibility-status]}
   [{:keys [db] :as cofx} status-type]
-  {:db (update-in db [:multiaccount :current-user-status] merge {:statusType status-type})
+  {:db (update-in db [:multiaccount :current-user-status] merge {:status-type status-type})
    ::json-rpc/call [{:method     "wakuext_setUserStatus"
                      :params     [status-type ""]
                      :on-success #()}]})

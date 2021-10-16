@@ -1,7 +1,8 @@
 (ns status-im.data-store.settings
   (:require
    [status-im.utils.config :as config]
-   [status-im.ethereum.eip55 :as eip55]))
+   [status-im.ethereum.eip55 :as eip55]
+   [status-im.data-store.status-updates :as status-updates]))
 
 (defn rpc->networks [networks]
   (reduce (fn [acc {:keys [id] :as network}]
@@ -50,4 +51,5 @@
       (update :link-previews-enabled-sites set)
       (update :custom-bootnodes rpc->custom-bootnodes)
       (update :custom-bootnodes-enabled? rpc->custom-bootnodes)
-      (update :currency keyword)))
+      (update :currency keyword)
+      (update :current-user-status status-updates/<-rpc)))

@@ -38,11 +38,11 @@
      [rn/view {:style (styles/visibility-status-profile-dot color size border-width margin-left)}]]))
 
 (defn visibility-status-button [on-press props]
-  (let [{:keys [statusType]}        (<sub [:multiaccount/current-user-status])
-        status-type                 (if (nil? statusType)
+  (let [{:keys [status-type]}       (<sub [:multiaccount/current-user-status])
+        status-type                 (if (nil? status-type)
                                       (do
                                         (dispatch-status-update constants/visibility-status-automatic)
-                                        constants/visibility-status-automatic) statusType)
+                                        constants/visibility-status-automatic) status-type)
         {:keys [color alias title]} (get utils/visibility-status-type-data status-type)
         title                       (if (nil? alias) title alias)]
     [rn/touchable-opacity
