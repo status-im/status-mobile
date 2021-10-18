@@ -42,7 +42,7 @@
                       :onPanResponderGrant (fn []
                                              (animation/set-value pan-state 1))
                       :onPanResponderMove  (fn [_ ^js state]
-                                             (when (> (.-dx state) 30)
+                                             (when (> (.-dx state) 0.1)
                                                (animation/set-value translate-x (.-dx state))))
                       :onPanResponderRelease (fn [_ ^js state]
                                                (when (> (.-dx state) 100)
