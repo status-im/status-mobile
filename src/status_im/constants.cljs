@@ -3,6 +3,9 @@
 
 (def ^:const ms-in-bg-for-require-bioauth 5000)
 
+(def ^:const sorting-direction-desc 0)
+(def ^:const sorting-direction-asc 1)
+
 (def ^:const content-type-text 1)
 (def ^:const content-type-sticker 2)
 (def ^:const content-type-status 3)

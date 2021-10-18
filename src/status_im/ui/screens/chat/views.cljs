@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.chat.views
+  (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
@@ -269,10 +270,24 @@
 ;;if they outside the viewarea, but we load more here because end is reached,so its slowdown UI because we
 ;;load and render 20 messages more, but we can't prevent this , because otherwise :on-end-reached will work wrong
 (defn list-on-end-reached []
-  (if @state/scrolling
-    (re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat])
-    (utils/set-timeout #(re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat])
-                       (if platform/low-device? 700 200))))
+  (log/info "CALLED")
+  (js/Promise. (fn [resolve]
+                 (log/info "DISPATCHING")
+                 (if @state/scrolling
+                   (re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat constants/sorting-direction-desc])
+                   (utils/set-timeout #(re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat constants/sorting-direction-desc])
+                                      (if platform/low-device? 700 200)))
+                 (resolve))))
+
+(defn list-on-start-reached []
+  (log/info "CALLED on start")
+  (js/Promise. (fn [resolve]
+                 (log/info "DISPATCHING on start")
+                 (if @state/scrolling
+                   (re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat constants/sorting-direction-asc])
+                   (utils/set-timeout #(re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat constants/sorting-direction-asc])
+                                      (if platform/low-device? 700 200)))
+                 (resolve))))
 
 (defn get-render-data [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled in-pinned-view?]}]
   (let [current-public-key @(re-frame/subscribe [:multiaccount/public-key])
@@ -299,7 +314,7 @@
 
 
 (defn on-scroll-to-index-failed [^js e]
-  (let [wait (js/Promise. (fn [resolve] (js/setTimeout resolve 50)))]
+  (let [wait (js/Promise. (fn [^js resolve] (js/setTimeout resolve 50)))]
     (.then wait (fn []
                   (when @messages-list-ref
                     (.scrollToIndex @messages-list-ref
@@ -316,46 +331,50 @@
     (log/info "Scrolling to I" i)
     i))
 
-(defn messages-view [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
-  (let [{:keys [group-chat chat-id public? community-id admins]} chat
-        messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])
-        initial-message-id @(re-frame/subscribe [:chats/initial-message-id])]
+(views/defview messages-view [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
+  (views/letsubs [messages [:chats/chat-messages-stream (:chat-id chat)]
+                  initial-message-id [:chats/initial-message-id]]
+                 {:component-did-mount #(when (and initial-message-id @messages-list-ref)
+                                          (.scrollToIndex @messages-list-ref #js {:index (get-index messages initial-message-id)}))}
+                 (let  [{:keys [group-chat chat-id public? community-id admins]} chat]
+
     ;;do not use anonymous functions for handlers
-    (when (seq messages)
-      [list/bidi-flat-list
-       (merge
-        pan-responder
-        {:key-fn                       list-key-fn
-         :ref                          list-ref
-         :header                       [list-header chat]
-         :footer                       [list-footer chat]
-         :data                         messages
-         :render-data                  (get-render-data {:group-chat      group-chat
-                                                         :chat-id         chat-id
-                                                         :public?         public?
-                                                         :community-id    community-id
-                                                         :admins          admins
-                                                         :space-keeper    space-keeper
-                                                         :show-input?     show-input?
-                                                         :edit-enabled    true
-                                                         :in-pinned-view? false})
-         :render-fn                    render-fn
-         :on-viewable-items-changed    on-viewable-items-changed
-         :on-end-reached               list-on-end-reached
+                   (when (seq messages)
+                     [list/bidi-flat-list
+                      (merge
+                       pan-responder
+                       {:key-fn                       list-key-fn
+                        :ref                          list-ref
+                        :header                       [list-header chat]
+                        :footer                       [list-footer chat]
+                        :data                         messages
+                        :on-scroll-to-index-failed    on-scroll-to-index-failed
+                        :render-data                  (get-render-data {:group-chat      group-chat
+                                                                        :chat-id         chat-id
+                                                                        :public?         public?
+                                                                        :community-id    community-id
+                                                                        :admins          admins
+                                                                        :space-keeper    space-keeper
+                                                                        :show-input?     show-input?
+                                                                        :edit-enabled    true
+                                                                        :in-pinned-view? false})
+                        :render-fn                    render-fn
+                        :on-viewable-items-changed    on-viewable-items-changed
+                        :initialNumToRender (when initial-message-id
+                                              (inc (get-index messages initial-message-id)))
+                        :on-end-reached               list-on-end-reached
+                        :on-start-reached               list-on-start-reached
          ;; just to simulate initial position on the list
-         :initial-scroll-index         (when initial-message-id
-                                         (get-index messages initial-message-id))
-         :on-scroll-to-index-failed    on-scroll-to-index-failed
-         :content-container-style      {:padding-top (+ bottom-space 16)
-                                        :padding-bottom 16}
-         :scroll-indicator-insets      {:top bottom-space}    ;;ios only
-         :keyboard-dismiss-mode        :interactive
-         :keyboard-should-persist-taps :handled
-         :onMomentumScrollBegin        state/start-scrolling
-         :onMomentumScrollEnd          state/stop-scrolling
+                        :content-container-style      {:padding-top (+ bottom-space 16)
+                                                       :padding-bottom 16}
+                        :scroll-indicator-insets      {:top bottom-space}    ;;ios only
+                        :keyboard-dismiss-mode        :interactive
+                        :keyboard-should-persist-taps :handled
+                        :onMomentumScrollBegin        state/start-scrolling
+                        :onMomentumScrollEnd          state/stop-scrolling
          ;;TODO https://github.com/facebook/react-native/issues/30034
-         :inverted                     (when platform/ios? true)
-         :style                        (when platform/android? {:scaleY -1})})])))
+                        :inverted                     (when platform/ios? true)
+                        :style                        (when platform/android? {:scaleY -1})})]))))
 
 (defn topbar-button []
   (re-frame/dispatch [:bottom-sheet/show-sheet

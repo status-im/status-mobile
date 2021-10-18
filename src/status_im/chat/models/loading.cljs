@@ -92,10 +92,12 @@
 (fx/defn messages-loaded
   "Loads more messages for current chat"
   {:events [::messages-loaded]}
-  [{db :db} chat-id session-id {:keys [cursor messages]}]
+  [{db :db} chat-id session-id {:keys [cursor prevPageCursor nextPageCursor messages]}]
+  (log/info "CURSORS PREV" prevPageCursor "CURSOR NEXT" nextPageCursor "a" cursor)
   (when-not (and (get-in db [:pagination-info chat-id :messages-initialized?])
                  (not= session-id
                        (get-in db [:pagination-info chat-id :messages-initialized?])))
+    (log/info "ADDING MESSAGES")
     (let [already-loaded-messages (get-in db [:messages chat-id])
           ;; We remove those messages that are already loaded, as we might get some duplicates
           {:keys [all-messages new-messages senders contacts]}
@@ -117,33 +119,40 @@
                    :new-messages []}
                   messages)
           current-clock-value (get-in db [:pagination-info chat-id :cursor-clock-value])
-          clock-value (when cursor (cursor->clock-value cursor))]
+          clock-value (when prevPageCursor (cursor->clock-value prevPageCursor))]
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]
-                                #(if (and (seq cursor) (or (not %) (< clock-value %)))
+                                #(if (and (seq prevPageCursor) (or (not %) (< clock-value %)))
                                    clock-value
                                    %))
 
-                     (update-in [:pagination-info chat-id :cursor]
-                                #(if (or (empty? cursor) (not current-clock-value) (< clock-value current-clock-value))
-                                   cursor
+                     (update-in [:pagination-info chat-id :prev-page-cursor]
+                                #(if (or (empty? prevPageCursor) (not current-clock-value) (< clock-value current-clock-value))
+                                   prevPageCursor
                                    %))
+                     (assoc-in [:pagination-info chat-id :next-page-cursor] nextPageCursor)
                      (assoc-in [:pagination-info chat-id :loading-messages?] false)
                      (assoc-in [:messages chat-id] all-messages)
                      (update-in [:message-lists chat-id] message-list/add-many new-messages)
-                     (assoc-in [:pagination-info chat-id :all-loaded?]
-                               (empty? cursor))
+                     (assoc-in [:pagination-info chat-id :prev-all-loaded?]
+                               (empty? prevPageCursor))
+                     (assoc-in [:pagination-info chat-id :next-all-loaded?]
+                               (empty? nextPageCursor))
                      (update :contacts/contacts merge contacts))})))
 
 (fx/defn load-more-messages
   {:events [:chat.ui/load-more-messages]}
-  [{:keys [db]} chat-id first-request]
+  [{:keys [db]} chat-id first-request direction]
+  (log/info "LOADING MORE MESSAGES")
   (when-let [session-id (get-in db [:pagination-info chat-id :messages-initialized?])]
     (when (and
-           (not (get-in db [:pagination-info chat-id :all-loaded?]))
+           (not (= direction constants/sorting-direction-desc (get-in db [:pagination-info chat-id :prev-all-loaded?])))
+           (not (= direction constants/sorting-direction-asc (get-in db [:pagination-info chat-id :next-all-loaded?])))
            (not (get-in db [:pagination-info chat-id :loading-messages?])))
-      (let [cursor (get-in db [:pagination-info chat-id :cursor])]
+      (let [cursor (if (= direction constants/sorting-direction-desc)
+                     (get-in db [:pagination-info chat-id :prev-page-cursor])
+                     (get-in db [:pagination-info chat-id :next-page-cursor]))]
         (when (or first-request cursor)
           (merge
            {:db (-> db
@@ -155,13 +164,15 @@
             chat-id
             cursor
             constants/default-number-of-messages
+            direction
             #(re-frame/dispatch [::messages-loaded chat-id session-id %])
             #(re-frame/dispatch [::failed-loading-messages chat-id session-id %]))))))))
 
 (fx/defn load-more-messages-for-current-chat
   {:events [:chat.ui/load-more-messages-for-current-chat]}
-  [{:keys [db] :as cofx}]
-  (load-more-messages cofx (:current-chat-id db) false))
+  [{:keys [db] :as cofx} direction]
+  (log/info "LOADING MORE MESSAGES" direction)
+  (load-more-messages cofx (:current-chat-id db) false direction))
 
 (fx/defn load-messages
   [{:keys [db now] :as cofx} chat-id]
@@ -169,7 +180,7 @@
     (fx/merge cofx
               {:db (assoc-in db [:pagination-info chat-id :messages-initialized?] now)
                :utils/dispatch-later [{:ms 500 :dispatch [:chat.ui/mark-all-read-pressed chat-id]}]}
-              (load-more-messages chat-id true))))
+              (load-more-messages chat-id true constants/sorting-direction-desc))))
 
 (fx/defn load-message-context-2
   [{:keys [db]} chat-id message-id first-request]

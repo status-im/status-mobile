@@ -69,7 +69,6 @@
              props
              {:data (to-array data)})])))
 
-
 (defn- wrap-render-section-header-fn [f]
   (fn [^js data]
     (let [^js section (.-section data)]

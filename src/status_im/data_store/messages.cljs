@@ -1,6 +1,7 @@
 (ns status-im.data-store.messages
   (:require [clojure.set :as clojure.set]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.constants :as constants]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
@@ -58,12 +59,22 @@
 (defn messages-by-chat-id-rpc [chat-id
                                cursor
                                limit
+                               direction
                                on-success
                                on-failure]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "chatMessages")
-                     :params     [chat-id cursor limit]
-                     :on-success (fn [result]
-                                   (on-success (update result :messages #(map <-rpc %))))
+  (log/info "CALLING ENDPOINT" direction cursor)
+  {::json-rpc/call [{:method     (json-rpc/call-ext-method "messagesByChatID")
+                     :params     [{:chatId chat-id
+                                   :cursor cursor
+                                   :limit limit
+                                   :direction direction}]
+                     :on-success (fn [{:keys [cursor] :as result}]
+                                   (println "RESULT" result)
+                                   (let [r1 (if (= direction constants/sorting-direction-desc)
+                                              (assoc result :prevPageCursor cursor)
+                                              (assoc result :nextPageCursor cursor))]
+
+                                     (on-success (update r1 :messages #(map <-rpc %)))))
                      :on-failure on-failure}]})
 
 (defn mark-seen-rpc [chat-id ids on-success]
@@ -113,7 +124,7 @@
                        on-success
                        on-failure]
   {::json-rpc/call [{:method     (json-rpc/call-ext-method "messageContext")
-                     :params     [{:chatId chat-id :limit limit :messageId message-id}]
+                     :params     [{:chatId chat-id :limit 10 :messageId message-id}]
                      :on-success (fn [result]
                                    (on-success (update result :messages #(map <-rpc %))))
                      :on-failure on-failure}]})

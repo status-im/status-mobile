@@ -222,7 +222,7 @@
                                          [react/text {:style {:color colors/gray :line-height 22}}
                                           (i18n/label :t/status-updates-descr)]]])]
          :ref                       #(reset! status.views/messages-list-ref %)
-         :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages current-chat-id])
+         :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages current-chat-id 0])
          :on-scroll-to-index-failed #()                        ;;don't remove this
          :render-data               {:chat-id current-chat-id
                                      :profile true}

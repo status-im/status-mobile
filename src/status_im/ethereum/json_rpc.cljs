@@ -45,6 +45,7 @@
    "wakuext_fillGaps" {}
    "wakuext_syncChatFromSyncedFrom" {}
    "wakuext_createPublicChat" {}
+   "wakuext_messagesByChatID" {}
    "wakuext_createOneToOneChat" {}
    "wakuext_createProfileChat" {}
    "wakuext_startMessenger" {}

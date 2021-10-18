@@ -212,7 +212,7 @@
                                        :account  account}
            :render-fn                 render-message
            :data                      messages
-           :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages constants/timeline-chat-id])
+           :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages constants/timeline-chat-id 0])
            ;;don't remove :on-scroll-to-index-failed
            :on-scroll-to-index-failed #()
            :header                    [react/view {:height 8}]
