@@ -54,7 +54,7 @@
                                                  (animation/set-value pan-state 0)
                                                  (js/setTimeout
                                                   #(animation/set-value translate-x 0) 100))}))))
-                                                  
+
 (def ios-view
   (reagent/adapt-react-class
    (react/memo
