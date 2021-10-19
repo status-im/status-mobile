@@ -482,7 +482,7 @@
    ;; then fetch connectivity status from
    ;; peer-stats (populated from "wakuv2.peerstats" status-go signal)
    ;; Otherwise use peers-count fetched from "discovery.summary" signal
-   (if wakuv2-flag (not (:IsOnline peer-stats)) (zero? peers-count))))
+   (if wakuv2-flag (not (:isOnline peer-stats)) (zero? peers-count))))
 
 (re-frame/reg-sub
  :offline?

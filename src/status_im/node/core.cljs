@@ -113,8 +113,8 @@
                                  (into (pick-nodes 2
                                                    (vals (:whisper current-fleet)))
                                        (vals (:static current-fleet))))
-                             :WakuNodes wakuv2-nodes
-                             :WakuStoreNodes wakuv2-nodes
+                             :RelayNodes wakuv2-nodes
+                             :StoreNodes wakuv2-nodes
                              :RendezvousNodes    (if wakuv2-enabled [] rendezvous-nodes)})
 
       :always
