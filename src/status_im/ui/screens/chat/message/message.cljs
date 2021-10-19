@@ -319,6 +319,11 @@
 (def image-max-width 260)
 (def image-max-height 192)
 
+;; start and end values of interpolation method
+(def start 0)
+(def end 1)
+(def outputEnd 0.5)
+
 (defn image-set-size [dimensions]
   (fn [width height]
     (when (< width height)
@@ -330,12 +335,12 @@
 (defn message-content-image
   [{:keys [content outgoing in-popover?] :as message}
    {:keys [on-long-press]}]
-  (let [dimensions (reagent/atom [image-max-width image-max-height])
+  (let [dimensions (reagent/atom [image-max-width image-max-height start end outputEnd])
         visible (reagent/atom false)
         uri (:image content)
         translate-x  (animation/create-value 0)
         pan-state    (animation/create-value 0)
-        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [0 1] :outputRange [0 0.5]})
+        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [start end] :outputRange [start outputEnd]})
         pan-responder (accessory/swipe-pan-responder translate-x pan-state message)]
     (react/image-get-size uri (image-set-size dimensions))
     (fn []
@@ -424,7 +429,7 @@
         collapsible? (reagent/atom false)
         translate-x  (animation/create-value 0)
         pan-state    (animation/create-value 0)
-        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [0 1] :outputRange [0 0.5]})]
+        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [start end] :outputRange [start outputEnd]})]
     (fn [{:keys [content outgoing current-public-key public? pinned in-popover?] :as message} on-long-press modal]
       (let [max-height (when-not (or outgoing modal)
                          (if @collapsible?
@@ -514,7 +519,7 @@
   (let [response-to (:response-to content)
         translate-x  (animation/create-value 0)
         pan-state    (animation/create-value 0)
-        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [0 1] :outputRange [0 0.5]})
+        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [start end] :outputRange [start outputEnd]})
         pan-responder (accessory/swipe-pan-responder translate-x pan-state message)]
     [message-content-wrapper message
      [react/touchable-highlight (when-not modal
@@ -556,7 +561,7 @@
   (let [pack (get-in content [:sticker :pack])
         translate-x  (animation/create-value 0)
         pan-state    (animation/create-value 0)
-        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [0 1] :outputRange [0 0.5]})
+        translate-x-anim-value (animation/interpolate translate-x {:inputRange  [start end] :outputRange [start outputEnd]})
         pan-responder (accessory/swipe-pan-responder translate-x pan-state message)]
     [message-content-wrapper message
      [react/touchable-highlight (when-not modal
