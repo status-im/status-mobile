@@ -46,6 +46,7 @@
                                                (animation/set-value translate-x (.-dx state))))
                       :onPanResponderRelease (fn [_ ^js state]
                                                (when (> (.-dx state) 100)
+                                              ;;  :dispatch-later [{:ms 25 :dispatch [:chat.ui/reply-to-message message]}]
                                                  (re-frame/dispatch [:chat.ui/reply-to-message message])
                                                  (animation/set-value pan-state 0))
                                                (js/setTimeout
