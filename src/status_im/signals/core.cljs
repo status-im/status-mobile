@@ -47,7 +47,7 @@
   [{:keys [db]} peer-stats]
   (let [previous-stats (:peer-stats db)]
     {:db (assoc db :peer-stats peer-stats
-                :peers-count (count (:Peers peer-stats)))}))
+                :peers-count (count (:peers peer-stats)))}))
 
 (fx/defn process
   {:events [:signals/signal-received]}
