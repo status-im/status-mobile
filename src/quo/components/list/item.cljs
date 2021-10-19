@@ -197,17 +197,19 @@
            left-side-alignment icon-color icon-bg-color
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label accessory-style
-           haptic-feedback haptic-type error animated animated-accessory? title-text-weight container-style]
-    :or   {subtitle-max-lines 1
-           theme              :main
-           haptic-feedback    true
-           animated           platform/ios?
-           haptic-type        :selection}}]
+           haptic-feedback haptic-type error animated animated-accessory? title-text-weight container-style
+           active-background-enabled]
+    :or   {subtitle-max-lines        1
+           theme                     :main
+           haptic-feedback           true
+           animated                  platform/ios?
+           active-background-enabled true
+           haptic-type               :selection}}]
   (let [theme           (if disabled :disabled theme)
         {:keys [text-color active-background passive-background]}
         (themes theme)
-        icon-color (or icon-color (:icon-color (themes theme)))
-        icon-bg-color (or icon-bg-color (:icon-bg-color (themes theme)))
+        icon-color      (or icon-color (:icon-color (themes theme)))
+        icon-bg-color   (or icon-bg-color (:icon-bg-color (themes theme)))
         optional-haptic (fn []
                           (when haptic-feedback
                             (haptic/trigger haptic-type)))
@@ -223,7 +225,7 @@
      [component
       (merge {:type                :list-item
               :disabled            disabled
-              :bg-color            active-background
+              :bg-color            (when active-background-enabled active-background)
               :accessibility-label accessibility-label}
              (when on-press
                {:on-press (fn []

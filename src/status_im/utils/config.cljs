@@ -53,6 +53,7 @@
 (def collectibles-enabled? (enabled? (get-config :COLLECTIBLES_ENABLED "1")))
 (def test-stateofus? (enabled? (get-config :TEST_STATEOFUS "0")))
 (def two-minutes-syncing? (enabled? (get-config :TWO_MINUTES_SYNCING "0")))
+(def swap-enabled? (enabled? (get-config :SWAP_ENABLED "0")))
 
 ;; CONFIG VALUES
 (def log-level

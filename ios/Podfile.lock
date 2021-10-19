@@ -230,7 +230,7 @@ PODS:
     - React
   - react-native-status (1.0.0):
     - React
-  - react-native-status-keycard (2.5.36):
+  - react-native-status-keycard (2.5.37):
     - Keycard
     - React
   - react-native-webview (11.3.0):
@@ -626,7 +626,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 5bc68409594b19a3e5c5cbced7b1ecf61053b709
+  glog: 61334f8bdb4deea07543d4fbac3fb5948e78a7a5
   Keycard: dd96182888da0aacf4de821b641103143bbb26cc
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   Permission-Camera: afad27bf90337684d4a86f3825112d648c8c4d3b
@@ -653,7 +653,7 @@ SPEC CHECKSUMS:
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-status: 45dbf1302ce3c258b459dfab137cd1c2c68c295d
-  react-native-status-keycard: eb84554a23315510948613a9467e7e3481be340c
+  react-native-status-keycard: 961d01ca190889ddf220206822fd752f8f4f3f7a
   react-native-webview: af9990b21a9aeafa8e8347746eb4116c0de086af
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b

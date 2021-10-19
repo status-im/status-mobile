@@ -180,6 +180,12 @@
 (reg-root-key-sub :wallet/fetching-collection-assets :wallet/fetching-collection-assets)
 (reg-root-key-sub :wallet/collectible-assets :wallet/collectible-assets)
 (reg-root-key-sub :wallet/selected-collectible :wallet/selected-collectible)
+(reg-root-key-sub :wallet/modal-selecting-source-token? :wallet/modal-selecting-source-token?)
+(reg-root-key-sub :wallet/swap-from-token :wallet/swap-from-token)
+(reg-root-key-sub :wallet/swap-to-token :wallet/swap-to-token)
+(reg-root-key-sub :wallet/swap-from-token-amount :wallet/swap-from-token-amount)
+(reg-root-key-sub :wallet/swap-to-token-amount :wallet/swap-to-token-amount)
+(reg-root-key-sub :wallet/swap-advanced-mode? :wallet/swap-advanced-mode?)
 
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)
