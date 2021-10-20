@@ -76,7 +76,9 @@
      (not (and content content-type))
      [preview-label :t/no-messages]
 
-     (and (= constants/content-type-text content-type)
+     (and (or (= constants/content-type-text content-type)
+              (= constants/content-type-emoji content-type)
+              (= constants/content-type-command content-type))
           (not (string/blank? (:text content))))
      (if (string/blank? (:parsed-text content))
        [react/text-class {:style               styles/last-message-text
