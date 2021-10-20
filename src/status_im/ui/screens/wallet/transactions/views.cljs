@@ -39,7 +39,7 @@
   [{:keys [label contact address contact-accessibility-label
            currency-text amount-text
            time-formatted on-touch-fn type hash]}
-   _ _ {:keys [keycard-account? transactions-management-enabled?]}]
+   _ _ {:keys [keycard-account?]}]
   [:<>
    [quo/list-item
     (merge
@@ -60,7 +60,9 @@
                      time-formatted)
       :chevron             true}
      (when type (transaction-type->icon (keyword type))))]
-   (when (and transactions-management-enabled?
+   ;; Disabling for now as we have added nonce which is more reliable, until we
+   ;; address the ux issues
+   (when (and false
               (not keycard-account?)
               (= type :pending))
      [react/view {:flex-direction :row :padding 16 :justify-content :space-between}
@@ -120,7 +122,6 @@
   (let [fetching-recent-history? @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
         fetching-more-history? @(re-frame/subscribe [:wallet/fetching-tx-history? address])
         keycard-account? @(re-frame/subscribe [:multiaccounts/keycard-account?])
-        transactions-management-enabled? @(re-frame/subscribe [:wallet/transactions-management-enabled?])
         custom-rpc-node? @(re-frame/subscribe [:custom-rpc-node])
         non-archival-rpc-node? @(re-frame/subscribe [:wallet/non-archival-node])
         all-fetched? @(re-frame/subscribe [:wallet/tx-history-fetched? address])
@@ -141,8 +142,7 @@
      [list/section-list
       {:sections    transaction-history-sections
        :key-fn      :hash
-       :render-data {:keycard-account?                 keycard-account?
-                     :transactions-management-enabled? transactions-management-enabled?}
+       :render-data {:keycard-account? keycard-account?}
        :render-fn   render-transaction
        :empty-component
        [react/i18n-text {:style styles/empty-text
