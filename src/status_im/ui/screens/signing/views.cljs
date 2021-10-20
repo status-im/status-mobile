@@ -443,7 +443,7 @@
             [amount-item prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?])
           [separator]
           [fee-item prices wallet-currency fee-display-symbol fee gas-error gas-error-state prices-loading?]
-          (when management-enabled?
+          (when (and management-enabled? (not keycard-multiaccount?))
             [advanced-item])
           (when (= :gas-is-set gas-error-state)
             [react/text {:style {:color colors/gray :margin-horizontal 32 :text-align :center}}
