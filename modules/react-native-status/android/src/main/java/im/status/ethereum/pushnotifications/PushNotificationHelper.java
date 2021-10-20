@@ -106,7 +106,9 @@ public class PushNotificationHelper {
         //flags in this link:
         //https://stackoverflow.com/questions/52390129/android-intent-setflags-issue
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.setData(Uri.parse(deepLink));
+        if (deepLink != null) {
+            intent.setData(Uri.parse(deepLink));
+        }
         return intent;
     }
 
