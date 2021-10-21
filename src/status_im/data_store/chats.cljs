@@ -93,9 +93,11 @@
        :unviewed-mentions-count (.-unviewedMentionsCount chat)
        :last-message            {:content      {:text        (.-text chat)
                                                 :parsed-text (types/js->clj (.-parsedText chat))}
-                                 :content-type (.-contentType chat)}
+                                 :content-type (.-contentType chat)
+                                 :community-id (.-contentCommunityId chat)}
        :last-clock-value        (.-lastClockValue chat)
-       :profile-public-key      (.-profile chat)}
+       :profile-public-key      (.-profile chat)
+       :highlight               (.-highlight chat)}
       rpc->type
       unmarshal-members))
 

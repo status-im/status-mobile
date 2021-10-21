@@ -61,7 +61,8 @@
   [db chat-id]
   (update-in db [:chats chat-id] assoc
              :unviewed-messages-count 0
-             :unviewed-mentions-count 0))
+             :unviewed-mentions-count 0
+             :highlight false))
 
 (fx/defn handle-mark-all-read-successful
   {:events [::mark-all-read-successful]}
