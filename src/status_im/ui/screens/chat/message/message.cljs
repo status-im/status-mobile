@@ -454,7 +454,7 @@
                    :flex-direction                   :row
                    :align-items                      :center})
           ;;TODO: Add opacity animation on reply icon.
-           [react/view {:position :absolute :left (when-not outgoing -80)}
+           [react/view {:position :absolute :left (when-not outgoing -80) :bottom (when outgoing 0)}
             [icons/icon :main-icons/reply {:color colors/blue}]]
 
            [react/view {:style (style/message-view message)}
