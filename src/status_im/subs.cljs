@@ -861,7 +861,11 @@
  :<- [::chats]
  :<- [:chats-home-list]
  (fn [[chats active-chats]]
-   (map #(get chats %) active-chats)))
+   (reduce #(if-let [item (get chats %2)]
+              (conj %1 item)
+              %1)
+           []
+           active-chats)))
 
 (re-frame/reg-sub
  :chat-by-id
