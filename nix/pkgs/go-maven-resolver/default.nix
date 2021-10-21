@@ -4,7 +4,7 @@ let
   inherit (lib) strings;
 in buildGo116Module rec {
   pname = "go-maven-resolver";
-  version = "v1.1.1";
+  version = "v1.1.2";
 
   vendorSha256 = "1p9pl33zpbw8zc85301mnp692lkr46ppm1q99wnqwynzi7x8hnkn";
 
@@ -13,6 +13,6 @@ in buildGo116Module rec {
     owner = "status-im";
     repo = pname;
     rev = version;
-    sha256 = "0pjab7v4cq3w5z3h0g9bfahqfs4raqp8y9sxwsri4zgbvdllq11q";
+    sha256 = "0p3qz5w8spzdxs70m1sdfwi0ajv4ciw3f7fxligf45vj2fwp5dab";
   };
 }
