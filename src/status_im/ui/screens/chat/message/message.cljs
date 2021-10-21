@@ -4,7 +4,6 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [quo.design-system.colors :as colors]
-            [quo.animated :as animated]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.message.audio :as message.audio]
@@ -449,13 +448,13 @@
             :disabled         in-popover?})
          [react/view {:accessibility-label :swipe-to-reply}
           [react/animated-view
-           (when-not outgoing
-             (merge pan-responder
-                    {:style {:transform [{:translateX translate-x-anim-value}]}
-                     :flex-direction                   :row
-                     :align-items                      :center}))
+          ;;  (when-not outgoing
+           (merge pan-responder
+                  {:style {:transform [{:translateX translate-x-anim-value}]}
+                   :flex-direction                   :row
+                   :align-items                      :center})
           ;;TODO: Add opacity animation on reply icon.
-           [react/view {:position :absolute :left -80}
+           [react/view {:position :absolute :left (when-not outgoing -80)}
             [icons/icon :main-icons/reply {:color colors/blue}]]
 
            [react/view {:style (style/message-view message)}
