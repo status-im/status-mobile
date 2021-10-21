@@ -39,6 +39,7 @@
            cofx
            {:db (-> db
                     (update :chats dissoc public-key)
+                    (update :chats-home-list disj public-key)
                     (assoc-in [:contacts/contacts public-key :added] false))}
            fxs)))
 
