@@ -44,7 +44,8 @@
                      :number-of-lines     1
                      :accessibility-label :chat-name-text}
          chat-name]
-        [one-to-one-name chat-id])
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/show-profile chat-id])}
+         [one-to-one-name chat-id]])
       (when-not group-chat
         [contact-indicator chat-id])
       (when (and group-chat (not invitation-admin) (not= chat-type constants/community-chat-type))
