@@ -162,7 +162,7 @@
                                                     [sheets/actions home-item])}])}])
 
 (defn categories-accordion [community-id chats categories edit data]
-  [rn/view {:padding-bottom 8}
+  [:<>
    (for [{:keys [name id]} (vals categories)]
      ^{:key (str "cat" name id)}
      [:<>
