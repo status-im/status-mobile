@@ -35,7 +35,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1 = home_1.add_contact(public_key_2)
         chat_1.send_message(message_no_pn)
         device_2.open_notification_bar()
-        if device_2.element_by_text_part(message_no_pn).is_element_displayed():
+        if home_2.element_by_text(message_no_pn).is_element_displayed():
             self.errors.append("Push notification with text was received for new message in activity centre")
         device_2.get_app_from_background()
         device_2.home_button.click()
@@ -52,8 +52,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_2.just_fyi("Check text push notification and tap it")
         device_2.open_notification_bar()
-        if not (device_2.element_by_text_part(message).is_element_displayed()
-                and device_2.element_by_text_part(default_username_1).is_element_displayed()):
+        pn = home_2.get_pn(message)
+        if not pn.icon.is_element_displayed():
             device_2.driver.fail("Push notification with text was not received")
         chat_2 = device_2.click_upon_push_notification_by_text(message)
 
@@ -402,6 +402,20 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         reply_message = private_chat_2.chat_element_by_text(reply_to_message_from_receiver)
         if not reply_message.image_in_reply.is_element_displayed():
             self.errors.append("Image is not displayed in reply")
+
+        home_2.just_fyi('check share and save options on opened image')
+        private_chat_2.image_message_in_chat.click()
+        private_chat_2.share_image_icon_button.click()
+        private_chat_2.share_via_messenger()
+        if not private_chat_2.image_in_android_messenger.is_element_present():
+            self.errors.append("Can't share image")
+        private_chat_2.click_system_back_button()
+        private_chat_2.save_image_icon_button.click()
+        private_chat_2.show_images_button.click()
+        private_chat_2.allow_button.wait_and_click()
+
+        if not private_chat_2.first_image_from_gallery.is_element_image_similar_to_template('saved.png'):
+            self.errors.append("New picture was not saved!")
 
         self.errors.verify_no_errors()
 
@@ -924,6 +938,14 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         home.just_fyi('Mention user by ENS in 1-1 chat')
         message = '@%s hey!' % ens
         chat.send_message(message)
+
+        home.just_fyi('Check that ENS is shown in preview for 1-1 chat')
+        chat.home_button.double_click()
+        if not home.element_by_text(message).is_element_displayed():
+            self.errors.append('"%s" is not show in chat preview on home screen!' % message)
+        home.get_chat('@%s' % ens).click()
+
+        home.just_fyi('Check redirect to user profile on mention by ENS tap')
         chat.chat_element_by_text(message).click()
         if not chat.profile_block_contact.is_element_displayed():
             self.errors.append('No redirect to user profile after tapping on message with mention (ENS) in 1-1 chat')
@@ -932,7 +954,16 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         russian_nickname = 'МОЙ дорогой ДРУх'
         chat.set_nickname(russian_nickname)
         chat.select_mention_from_suggestion_list(russian_nickname + ' @' + ens)
-        chat.chat_element_by_text('%s hey!' % russian_nickname).click()
+
+        home.just_fyi('Check that nickname is shown in preview for 1-1 chat')
+        updated_message = '%s hey!' % russian_nickname
+        chat.home_button.double_click()
+        if not home.element_by_text(updated_message).is_element_displayed():
+            self.errors.append('"%s" is not show in chat preview on home screen!' % message)
+        home.get_chat(russian_nickname).click()
+
+        home.just_fyi('Check redirect to user profile on mention by nickname tap')
+        chat.chat_element_by_text(updated_message).click()
         if not chat.profile_block_contact.is_element_displayed():
             self.errors.append(
                 'No redirect to user profile after tapping on message with mention (nickname) in 1-1 chat')

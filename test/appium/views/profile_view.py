@@ -320,7 +320,7 @@ class ProfileView(BaseView):
         self.confirm_logout_button = Button(self.driver, translation_id="logout", uppercase=True)
 
     def switch_network(self, network='Mainnet with upstream RPC'):
-        self.driver.info("**Switching network to '%s'**" % network)
+        self.driver.info("## Switching network to '%s'" % network)
         self.advanced_button.click()
         self.network_settings_button.click()
         network_button = Button(self.driver, xpath="//*[@text='%s']" % network)
@@ -331,14 +331,14 @@ class ProfileView(BaseView):
         SignInView(self.driver).sign_in()
 
     def open_contact_from_profile(self, username):
-        self.driver.info("**Open profile of '%s' via Contacts**" % username)
+        self.driver.info("## Open profile of '%s' via Contacts" % username)
         self.contacts_button.wait_and_click(30)
         self.element_by_text(username).click()
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
     def add_custom_network(self):
-        self.driver.info("**Adding predefined custom network**")
+        self.driver.info("## Adding predefined custom network")
         self.advanced_button.click()
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
@@ -360,7 +360,7 @@ class ProfileView(BaseView):
         return dict(zip(map(int, text[::2]), text[1::2]))
 
     def backup_recovery_phrase(self):
-        self.driver.info("**Backing up seed phrase**")
+        self.driver.info("## Back up seed phrase")
         self.ok_continue_button.click()
         recovery_phrase = self.get_recovery_phrase()
         self.next_button.click()
@@ -372,11 +372,11 @@ class ProfileView(BaseView):
         self.done_button.click()
         self.yes_button.click()
         self.ok_got_it_button.click()
-        self.driver.info("**Seed phrase is backed up!**")
+        self.driver.info("## Seed phrase is backed up!")
         return recovery_phrase
 
     def edit_profile_picture(self, file_name: str, update_by = "Gallery"):
-        self.driver.info("**Setting custom profile image**")
+        self.driver.info("## Setting custom profile image")
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
         self.profile_picture.click()
@@ -417,7 +417,7 @@ class ProfileView(BaseView):
 
 
     def logout(self):
-        self.driver.info("**Logging out**")
+        self.driver.info("## Logging out")
         self.logout_button.click()
         self.logout_dialog.logout_button.click()
         self.logout_button.wait_for_invisibility_of_element(30)
@@ -429,11 +429,11 @@ class ProfileView(BaseView):
         return SilentButton(self.driver, xpath="//*[contains(@content-desc,'%s')]" % image_name)
 
     def get_toggle_device_by_name(self, device_name):
-        self.driver.info("**Selecting device %s for sync**" % device_name)
+        self.driver.info("## Selecting device '%s' for sync" % device_name)
         return SilentButton(self.driver, xpath="//android.widget.TextView[contains(@text,'%s')]/..//android.widget.CheckBox" % device_name)
 
     def discover_and_advertise_device(self, device_name):
-        self.driver.info("**Discover and advertise %s**" % device_name)
+        self.driver.info("## Discover and advertise '%s'" % device_name)
         self.sync_settings_button.click()
         self.devices_button.scroll_to_element()
         self.devices_button.click()
@@ -442,7 +442,7 @@ class ProfileView(BaseView):
         self.advertise_device_button.click()
 
     def retry_to_connect_to_mailserver(self):
-        self.driver.info("**Retrying to connect to mailserver 5 times**")
+        self.driver.info("## Retrying to connect to mailserver 5 times")
         i = 0
         while self.element_by_translation_id("mailserver-error-title").is_element_present(20) and i < 5:
             self.element_by_translation_id("mailserver-retry", uppercase=True).click()

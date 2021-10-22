@@ -41,13 +41,13 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         home_2.open_notification_bar()
         pns = [chat_1.pn_invited_to_group_chat(username_1, chat_name), chat_1.pn_wants_you_to_join_to_group_chat(username_1, chat_name)]
         for pn in pns:
-            if not home_2.element_by_text(pn).is_element_displayed(30):
+            if not home_2.get_pn(pn).is_element_displayed(30):
                 self.errors.append('%s is not shown after invite to group chat' % pn)
-        if not home_2.pn_group_chat_invite_icon(pns[1]).is_element_displayed(30):
-            self.drivers[0].fail('No icon is shown for PN')
+        group_invite_pn = home_2.get_pn(pns[1])
 
-        home_2.pn_group_chat_invite_icon(pns[1]).click()
-        home_2.element_by_text(chat_1.pn_invited_to_group_chat(username_1, chat_name))
+        # if not group_invite_pn.group_chat_icon.is_element_displayed(30):
+        #     self.drivers[0].fail('No icon is shown for PN for group invite')
+        group_invite_pn.click()
         create_system_message = chat_1.create_system_message(username_1, chat_name)
         invite_system_message = chat_1.invite_system_message(username_1, username_2)
         join_system_message = chat_1.join_system_message(username_2)

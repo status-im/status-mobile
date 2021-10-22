@@ -54,7 +54,7 @@ class KeycardView(BaseView):
         return recovery_phrase
 
     def backup_seed_phrase(self):
-        self.driver.info("**Backing up seed phrase for keycard**")
+        self.driver.info("## Backing up seed phrase for keycard")
         recovery_phrase = self.get_seed_phrase()
         self.confirm_button.click()
         self.yes_button.click()

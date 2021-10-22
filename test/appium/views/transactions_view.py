@@ -75,12 +75,12 @@ class TransactionTable(BaseElement):
             return self.TransactionDetailsView(self.driver)
 
     def transaction_by_index(self, index: int):
-        self.driver.info('**Finding transaction by index %s**' % index)
+        self.driver.info('## Finding transaction by index %s' % index)
         return self.TransactionElement.by_index(self.driver, index=index)
 
 
     def transaction_by_amount(self, amount: str, asset):
-        self.driver.info('**Finding transaction by amount %s**' % amount)
+        self.driver.info('## Finding transaction by amount %s' % amount)
         return self.TransactionElement.by_amount(self.driver, amount=amount.replace(',', '.'), asset=asset)
 
     def find_transaction(self, amount: str, asset='ETH') -> TransactionElement:

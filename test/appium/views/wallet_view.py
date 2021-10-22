@@ -243,16 +243,16 @@ class WalletView(BaseView):
 
 
     def select_asset(self, *args):
-        self.driver.info("**Selecting asset(s)**")
+        self.driver.info("## Selecting asset(s)")
         self.multiaccount_more_options.click()
         self.manage_assets_button.click()
         for asset in args:
             self.asset_checkbox_by_name(asset).click()
         self.cross_icon.click()
-        self.driver.info("**Assets are selected!**")
+        self.driver.info("## Assets are selected!")
 
     def scan_tokens(self, *args):
-        self.driver.info("**Scanning tokens**")
+        self.driver.info("## Scanning tokens")
         self.multiaccount_more_options.click()
         self.scan_tokens_button.click()
         counter = 0
@@ -273,7 +273,7 @@ class WalletView(BaseView):
                         return self
 
     def send_transaction(self, **kwargs):
-        self.driver.info("**Sending transaction**")
+        self.driver.info("## Sending transaction")
         send_transaction_view = self.send_transaction_button.click()
         send_transaction_view.select_asset_button.click()
         asset_name = kwargs.get('asset_name', 'ETH').upper()
@@ -302,7 +302,7 @@ class WalletView(BaseView):
     def find_transaction_in_history(self, amount, asset='ETH', account_name=None, return_hash=False):
         if account_name is None:
             account_name = self.status_account_name
-        self.driver.info('**Finding %s %s transaction for %s**' % (amount, asset, account_name))
+        self.driver.info("Finding '%s %s' transaction for '%s'" % (amount, asset, account_name))
         if not self.transaction_history_button.is_element_displayed():
             self.get_account_by_name(account_name).click()
             self.transaction_history_button.wait_for_element()
@@ -317,7 +317,7 @@ class WalletView(BaseView):
 
 
     def set_currency(self, desired_currency='EUR'):
-        self.driver.info("**Setting '%s' currency**" % desired_currency)
+        self.driver.info("## Setting '%s' currency" % desired_currency)
         self.multiaccount_more_options.click_until_presence_of_element(self.set_currency_button)
         self.set_currency_button.click()
         desired_currency = self.element_by_text_part(desired_currency)
@@ -325,11 +325,11 @@ class WalletView(BaseView):
         desired_currency.click()
 
     def get_account_by_name(self, account_name: str):
-        self.driver.info("**Getting account:** %s'" % account_name)
+        self.driver.info("## Getting account: '%s'" % account_name)
         return AccountElementButton(self.driver, account_name)
 
     def add_account(self, account_name: str, password: str = common_password, keycard=False):
-        self.driver.info("**Adding account:** '%s'" % account_name)
+        self.driver.info("## Adding account: '%s'" % account_name)
         self.add_account_button.click()
         self.generate_an_account_button.click()
         self.account_name_input.send_keys(account_name)

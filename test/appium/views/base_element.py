@@ -73,7 +73,7 @@ class BaseElement(object):
     def find_element(self):
         for _ in range(3):
             try:
-                self.driver.info('*Find %s by %s:* `%s`' % (self.name, self.by, self.locator))
+                self.driver.info("Find '%s' by '%s': `%s`" % (self.name, self.by, self.locator))
                 return self.driver.find_element(self.by, self.locator)
             except NoSuchElementException:
                 raise NoSuchElementException(
@@ -87,11 +87,11 @@ class BaseElement(object):
 
     def click(self):
         self.find_element().click()
-        self.driver.info('*Tap on found %s*' % self.name)
+        self.driver.info('Tap on found: %s' % self.name)
         return self.navigate()
 
     def double_click(self):
-        self.driver.info('*Double tap on %s*' % self.name)
+        self.driver.info('Double tap on: %s' % self.name)
         [self.find_element().click() for _ in range(2)]
 
     def wait_for_element(self, seconds=10):
@@ -128,7 +128,7 @@ class BaseElement(object):
 
     def wait_for_element_text(self, text, wait_time=30):
         counter = 0
-        self.driver.info("*Wait for text element %s to be equal to %s*" % (self.name, text))
+        self.driver.info("Wait for text element '%s' to be equal to '%s'" % (self.name, text))
         while True:
             if counter >= wait_time:
                 self.driver.fail(
@@ -137,11 +137,11 @@ class BaseElement(object):
                 counter += 10
                 time.sleep(10)
             else:
-                self.driver.info('*Element %s text is equal to %s*' % (self.name, text))
+                self.driver.info('Element %s text is equal to %s' % (self.name, text))
                 return
 
     def scroll_to_element(self, depth: int = 9, direction='down'):
-        self.driver.info('*Scrolling %s to %s*' % (direction, self.name))
+        self.driver.info('Scrolling %s to %s' % (direction, self.name))
         for _ in range(depth):
             try:
                 return self.find_element()
@@ -244,7 +244,7 @@ class BaseElement(object):
 
     def long_press_element(self):
         element = self.find_element()
-        self.driver.info('*Long press on %s*' % self.name)
+        self.driver.info("Long press on '%s'" % self.name)
         action = TouchAction(self.driver)
         action.long_press(element).release().perform()
 
@@ -284,25 +284,25 @@ class EditBox(BaseElement):
 
     def send_keys(self, value):
         self.find_element().send_keys(value)
-        self.driver.info("*Type '%s' to %s*" % (self.exclude_emoji(value), self.name))
+        self.driver.info("Type '%s' to '%s'" % (self.exclude_emoji(value), self.name))
 
     def set_value(self, value):
         self.find_element().set_value(value)
-        self.driver.info("*Type '%s' to %s*" % (self.exclude_emoji(value), self.name))
+        self.driver.info("Set '%s' value for '%s'" % (self.exclude_emoji(value), self.name))
 
     def clear(self):
         self.find_element().clear()
-        self.driver.info('*Clear text in %s*' % self.name)
+        self.driver.info("Clear text in '%s'" % self.name)
 
     def delete_last_symbols(self, number_of_symbols_to_delete: int):
-        self.driver.info('*Delete last %s symbols from %s*' % (number_of_symbols_to_delete, self.name))
+        self.driver.info("Delete last %s symbols from '%s'" % (number_of_symbols_to_delete, self.name))
         self.click()
         for _ in range(number_of_symbols_to_delete):
             time.sleep(1)
             self.driver.press_keycode(67)
 
     def paste_text_from_clipboard(self):
-        self.driver.info('*Paste text from clipboard into %s*' % self.name)
+        self.driver.info("Paste text from clipboard into '%s'" % self.name)
         self.long_press_element()
         time.sleep(2)
         action = TouchAction(self.driver)
@@ -311,7 +311,7 @@ class EditBox(BaseElement):
         action.press(x=x + 25, y=y - 50).release().perform()
 
     def cut_text(self):
-        self.driver.info('*Cut text in %s*' % self.name)
+        self.driver.info("Cut text in '%s'" % self.name)
         location = self.find_element().location
         x, y = location['x'], location['y']
         action = TouchAction(self.driver)
@@ -327,7 +327,7 @@ class Text(BaseElement):
     @property
     def text(self):
         text = self.find_element().text
-        self.driver.info('*%s is %s*' % (self.name, text))
+        self.driver.info("'%s' is '%s'" % (self.name, text))
         return text
 
 
@@ -338,13 +338,13 @@ class Button(BaseElement):
         super(Button, self).__init__(driver, **kwargs)
 
     def wait_and_click(self, time=30):
-        self.driver.info('*Wait for element %s for max %ss and click when it is available*' % (self.name, time))
+        self.driver.info("Wait for element '%s' for max %ss and click when it is available" % (self.name, time))
         self.wait_for_visibility_of_element(time)
         self.click()
 
     def click_until_presence_of_element(self, desired_element, attempts=4):
         counter = 0
-        self.driver.info('*Click until %s by %s:*`%s` *will be presented*' % (desired_element.name, desired_element.by, desired_element.locator))
+        self.driver.info("Click until '%s' by '%s': `%s` will be presented" % (desired_element.name, desired_element.by, desired_element.locator))
         while not desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.find_element().click()
@@ -357,7 +357,7 @@ class Button(BaseElement):
 
     def click_until_absense_of_element(self, desired_element, attempts=3):
         counter = 0
-        self.driver.info('*Click until %s by %s:*`%s` *is NOT presented*' % (desired_element.name, desired_element.by, desired_element.locator))
+        self.driver.info("Click until '%s' by '%s': `%s` is NOT presented" % (desired_element.name, desired_element.by, desired_element.locator))
         while desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.find_element().click()

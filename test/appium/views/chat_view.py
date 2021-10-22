@@ -88,7 +88,8 @@ class ViewProfileButton(Button):
 
 class ChatOptionsButton(Button):
     def __init__(self, driver):
-        super().__init__(driver, xpath="(//android.widget.TextView[@content-desc='chat-name-text']/../..//android.widget.TextView)[last()]")
+        super().__init__(driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
+
 
     def click(self):
         self.click_until_presence_of_element(HomeView(self.driver).mark_all_messages_as_read_button)
@@ -575,6 +576,8 @@ class ChatView(BaseView):
         self.image_from_gallery_button = Button(self.driver, accessibility_id="open-gallery")
         self.first_image_from_gallery = Button(self.driver,
                                                xpath="//*[@content-desc='open-gallery']/following-sibling::android.view.ViewGroup[1]")
+        self.images_area_in_gallery = Button(self.driver,
+                                               xpath="//*[@content-desc='open-gallery']/following-sibling::android.view.ViewGroup[1]")
         self.image_message_in_chat = Button(self.driver, accessibility_id="image-message")
         self.save_image_button = Button(self.driver, translation_id="save")
         self.recent_image_in_gallery = Button(self.driver,
@@ -582,6 +585,9 @@ class ChatView(BaseView):
         self.cancel_send_image_button = Button(self.driver, accessibility_id="cancel-send-image")
         self.view_image_options = Button(self.driver,
                                          xpath="//*[@content-desc='icon']/android.widget.ImageView")
+        self.share_image_icon_button =  Button(self.driver, accessibility_id="share-button")
+        self.save_image_icon_button = Button(self.driver, accessibility_id="save-button")
+        self.image_in_android_messenger = Button(self.driver, accessibility_id="Image")
 
         #Audio
         self.audio_message_in_chat = Button(self.driver, accessibility_id="audio-message")
@@ -662,41 +668,41 @@ class ChatView(BaseView):
         return IncomingTransaction(self.driver, account, transaction_value)
 
     def get_preview_message_by_text(self, text=None) -> object:
-        self.driver.info('**Getting preview message for link:** %s' % text)
+        self.driver.info('## Getting preview message for link: %s' % text)
         return PreviewMessage(self.driver, text)
 
     def get_community_link_preview_by_text(self, text=None) -> object:
-        self.driver.info('**Getting community preview message for link:** %s' % text)
+        self.driver.info('## Getting community preview message for link: %s' % text)
         return CommunityLinkPreviewMessage(self.driver, text)
 
     def delete_chat(self):
-        self.driver.info("**Delete chat via options**")
+        self.driver.info("## Delete chat via options")
         self.chat_options.click()
         self.delete_chat_button.click()
         self.delete_button.click()
 
     def leave_chat(self):
-        self.driver.info("**Leave chat via options**")
+        self.driver.info("## Leave chat via options")
         self.chat_options.click()
         self.leave_chat_button.click()
         self.leave_button.click()
 
     def clear_history(self):
-        self.driver.info("**Clear chat history via options**")
+        self.driver.info("## Clear chat history via options")
         self.chat_options.click()
         self.clear_history_button.click()
         self.clear_button.click()
 
 
     def leave_chat_via_group_info(self):
-        self.driver.info("**Leave group chat via group info**")
+        self.driver.info("## Leave group chat via group info")
         self.chat_options.click()
         self.group_info.click()
         self.leave_chat_button.click()
         self.leave_button.click()
 
     def rename_chat_via_group_info(self, new_chat_name):
-        self.driver.info("**Rename group chat to %s**" % new_chat_name)
+        self.driver.info("## Rename group chat to: %s" % new_chat_name)
         self.chat_options.click()
         self.group_info.click()
         self.edit_group_chat_name_button.click()
@@ -704,30 +710,30 @@ class ChatView(BaseView):
         self.done_button.click()
 
     def get_group_invite_via_group_info(self):
-        self.driver.info("**Copy group invite link**")
+        self.driver.info("## Copy group invite link")
         self.chat_options.click()
         self.group_info.click()
         self.group_invite_button.click()
         return self.group_invite_link_text.text
 
     def request_membership_for_group_chat(self, intro_message):
-        self.driver.info("**Requesting membership to group chat**")
+        self.driver.info("## Requesting membership to group chat")
         self.introduce_yourself_edit_box.set_value(intro_message)
         self.request_membership_button.click_until_presence_of_element(self.element_by_text('Request pending…'))
 
     def get_username_checkbox(self, username: str):
-        self.driver.info("**Getting %s checkbox**" % username)
+        self.driver.info("## Getting %s checkbox" % username)
         return UsernameCheckbox(self.driver, username)
 
     def accept_membership_for_group_chat_via_chat_view(self, username, accept=True):
         info = "%s membership to group chat" % username
-        self.driver.info("**Accept %s**" % info) if accept else  self.driver.info("**Decline %s**" % info)
+        self.driver.info("## Accept %s" % info) if accept else  self.driver.info("## Decline %s" % info)
         self.group_membership_request_button.click()
         self.element_by_text(username).click()
         self.accept_group_invitation_button.click() if accept else self.decline_group_invitation_button.click()
 
     def add_members_to_group_chat(self, user_names_to_add: list):
-        self.driver.info("**Add %s to group chat**" % ', '.join(map(str, user_names_to_add)))
+        self.driver.info("## Add %s to group chat" % ', '.join(map(str, user_names_to_add)))
         self.chat_options.click()
         group_info_view = self.group_info.click()
         group_info_view.add_members.click()
@@ -738,18 +744,18 @@ class ChatView(BaseView):
         self.add_button.click()
 
     def get_user_options(self, username: str):
-        self.driver.info("**Get user options for** %s" % username)
+        self.driver.info("## Get user options for: %s" % username)
         self.chat_options.click()
         group_info_view = self.group_info.click()
         group_info_view.get_username_options(username).click()
         return self
 
     def chat_element_by_text(self, text):
-        self.driver.info("**Looking for a message by text:** %s" % text)
+        self.driver.info("## Looking for a message by text: %s" % text)
         return ChatElementByText(self.driver, text)
 
     def verify_message_is_under_today_text(self, text, errors):
-        self.driver.info("**Verifying that '%s' is under today**" % text)
+        self.driver.info("## Verifying that '%s' is under today" % text)
         message_element = self.chat_element_by_text(text)
         message_element.wait_for_visibility_of_element()
         message_location = message_element.find_element().location['y']
@@ -760,18 +766,18 @@ class ChatView(BaseView):
             errors.append("Message '%s' is not under 'Today' text" % text)
 
     def send_message(self, message: str = 'test message'):
-        self.driver.info("**Sending message '%s'**" % BaseElement(self.driver).exclude_emoji(message))
+        self.driver.info("## Sending message '%s'" % BaseElement(self.driver).exclude_emoji(message))
         self.chat_message_input.wait_for_element(5)
         self.chat_message_input.send_keys(message)
         self.send_message_button.click()
 
     def pin_message(self, message, action="pin"):
-        self.driver.info("**Looking for message '%s' pin**" % message)
+        self.driver.info("## Looking for message '%s' pin**" % message)
         self.element_by_text_part(message).long_press_element()
         self.element_by_translation_id(action).click()
 
     def edit_message_in_chat(self, message_to_edit, message_to_update):
-        self.driver.info("**Looking for message '%s' to edit it**" % message_to_edit)
+        self.driver.info("## Looking for message '%s' to edit it" % message_to_edit)
         self.element_by_text_part(message_to_edit).long_press_element()
         self.element_by_translation_id("edit").click()
         self.chat_message_input.clear()
@@ -779,22 +785,22 @@ class ChatView(BaseView):
         self.send_message_button.click()
 
     def delete_message_in_chat(self, message):
-        self.driver.info("**Looking for message '%s' to delete it**" % message)
+        self.driver.info("## Looking for message '%s' to delete it" % message)
         self.element_by_text_part(message).long_press_element()
         self.element_by_translation_id("delete").click()
 
     def copy_message_text(self, message_text):
-        self.driver.info("**Copying '%s' message via long press**" % message_text)
+        self.driver.info("## Copying '%s' message via long press" % message_text)
         self.element_by_text_part(message_text).long_press_element()
         self.element_by_translation_id("copy-to-clipboard").click()
 
     def quote_message(self, message = str):
-        self.driver.info("**Quote '%s' message**" % message)
+        self.driver.info("## Quoting '%s' message" % message)
         self.element_by_text_part(message).long_press_element()
         self.reply_message_button.click()
 
     def set_reaction(self, message: str,  emoji: str = 'thumbs-up', emoji_message=False):
-        self.driver.info("**Setting '%s' reaction**" % emoji)
+        self.driver.info("## Setting '%s' reaction" % emoji)
         key = emojis[emoji]
         # Audio message is obvious should be tapped not on audio-scroll-line
         # so we tap on its below element as exception here (not the case for link/tag message!)
@@ -815,7 +821,7 @@ class ChatView(BaseView):
         self.profile_block_contact.wait_for_visibility_of_element(5)
 
     def wait_ens_name_resolved_in_chat(self, message = str, username_value = str):
-        self.driver.info("**Waiting ENS name '%s' is resolved in chat**" % username_value)
+        self.driver.info("## Waiting ENS name '%s' is resolved in chat" % username_value)
         counter = 0
         while True:
             if counter >= 120:
@@ -827,11 +833,11 @@ class ChatView(BaseView):
                 return
 
     def move_to_messages_by_time_marker(self, marker='Today'):
-        self.driver.info("**Moving to messages by time marker: '%s'**" % marker)
+        self.driver.info("## Moving to messages by time marker: '%s'" % marker)
         Button(self.driver, xpath="//*[@text='%s'']"  % marker).scroll_to_element(depth=50, direction='up')
 
     def install_sticker_pack_by_name(self, pack_name='Status Cat'):
-        self.driver.info("**Installing '%s' stickerpack**" % pack_name)
+        self.driver.info("## Installing '%s' stickerpack" % pack_name)
         self.show_stickers_button.click()
         self.get_stickers.click()
         element = Button(self.driver,
@@ -844,7 +850,7 @@ class ChatView(BaseView):
         self.swipe_left()
 
     def scroll_to_start_of_history(self, depth=20):
-        self.driver.info('*Scrolling th the start of chat history*')
+        self.driver.info('## Scrolling th the start of chat history')
         for _ in range(depth):
             try:
                 return self.history_start_icon.find_element()
@@ -862,26 +868,26 @@ class ChatView(BaseView):
         return Button(self.driver, xpath="//*[@content-desc='suggestions-list']//*[@text='%s']" % username)
 
     def select_mention_from_suggestion_list(self, username_in_list, typed_search_pattern = ''):
-        self.driver.info("**Selecting '%s' from suggestion list by '%s'**" % (username_in_list, typed_search_pattern))
+        self.driver.info("## Selecting '%s' from suggestion list by '%s'" % (username_in_list, typed_search_pattern))
         self.chat_message_input.set_value('@' + typed_search_pattern)
         self.chat_message_input.click()
         self.search_user_in_mention_suggestion_list(username_in_list).wait_for_visibility_of_element(10).click()
 
     def record_audio_message(self, message_length_in_seconds=5):
-        self.driver.info("**Recording audiomessage %ss**" % message_length_in_seconds)
+        self.driver.info("## Recording audiomessage %ss" % message_length_in_seconds)
         self.audio_message_button.click()
         self.allow_button.click()
         self.record_audio_button.click()
         sleep(message_length_in_seconds)
 
     def play_audio_message(self, listen_time=5):
-        self.driver.info("**Playing audiomessage during %ss**" % listen_time)
+        self.driver.info("## Playing audiomessage during %ss" % listen_time)
         self.play_pause_audio_message_button.click()
         sleep(listen_time)
         self.play_pause_audio_message_button.click()
 
     def block_contact(self):
-        self.driver.info("**Block contact from other user profile**")
+        self.driver.info("## Block contact from other user profile")
         self.profile_block_contact.click()
         self.confirm_block_contact_button.click()
 
@@ -892,7 +898,7 @@ class ChatView(BaseView):
 
 
     def set_nickname(self, nickname, close_profile=True):
-        self.driver.info("**Setting nickname:%s**" % nickname)
+        self.driver.info("## Setting nickname:%s" % nickname)
         self.profile_nickname_button.click()
         self.nickname_input_field.send_keys(nickname)
         self.element_by_text('Done').click()
@@ -910,7 +916,7 @@ class ChatView(BaseView):
 
 
     def set_new_status(self, status='something is happening', image=False):
-        self.driver.info("**Setting new status:'%s', image set is: '%s'**" % (BaseElement(self.driver).exclude_emoji(status), str(image)))
+        self.driver.info("## Setting new status:'%s', image set is: '%s'" % (BaseElement(self.driver).exclude_emoji(status), str(image)))
         self.timeline_add_new_status_button.click_until_presence_of_element(self.timeline_my_status_editbox)
         self.timeline_my_status_editbox.set_value(status)
 

@@ -190,7 +190,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         if not chat.chat_element_by_text(message_after_sync).is_element_displayed(60):
             self.errors.append('"%s" message in 1-1 is not synced' % message_after_sync)
 
-        device_1.just_fyi('Chats (main device):add new public chat, (secondary device): check that synced ')
+        device_1.just_fyi('Chats (main device):add new public chat, (secondary device): check that synced')
         home_1.join_public_chat(public_chat_after_sync)
         home_2 = chat.get_back_to_home_view()
         if not home_2.element_by_text_part(public_chat_after_sync).is_element_displayed(20):
@@ -210,6 +210,13 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         home_2.profile_button.click()
         profile_2.contacts_button.click()
         profile_2.element_by_text(nickname_after_sync).wait_for_invisibility_of_element(60)
+
+        device_1.just_fyi('Chats (main device):delete added public chat, (secondary device): check that synced')
+        for profile in (profile_1, profile_2):
+            profile.get_back_to_home_view()
+            profile.home_button.click()
+        home_1.delete_chat_long_press(public_chat_after_sync)
+        home_2.element_by_text(public_chat_after_sync).wait_for_invisibility_of_element(60)
 
         self.errors.verify_no_errors()
 
