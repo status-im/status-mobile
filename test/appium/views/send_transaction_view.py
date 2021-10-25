@@ -118,14 +118,14 @@ class SendTransactionView(BaseView):
 
 
     def set_recipient_address(self, address):
-        self.driver.info("## Setting recipient address to '%s'" % address)
+        self.driver.info("Setting recipient address to '%s'" % address)
         self.chose_recipient_button.click()
         self.enter_recipient_address_input.set_value(address)
         self.enter_recipient_address_input.click()
         self.done_button.click_until_absense_of_element(self.done_button)
 
     def sign_transaction(self, sender_password: str = common_password, keycard=False):
-        self.driver.info("## Signing transaction, (keycard: %s)" % str(keycard))
+        self.driver.info("## Signing transaction, (keycard: %s)" % str(keycard), device=False)
         if self.sign_in_phrase.is_element_displayed(30):
             self.set_up_wallet_when_sending_tx()
         if keycard:
@@ -138,7 +138,7 @@ class SendTransactionView(BaseView):
         self.ok_button.wait_for_element(120)
         if self.element_by_text_part('Transaction failed').is_element_displayed():
             self.driver.fail('Transaction failed')
-        self.driver.info("## Transaction is signed!")
+        self.driver.info("## Transaction is signed!", device=False)
         self.ok_button.click()
 
 
@@ -147,18 +147,18 @@ class SendTransactionView(BaseView):
         return address[:6] + '…' + address[-4:]
 
     def get_username_in_transaction_bottom_sheet_button(self, username_part):
-        self.driver.info("## Getting username by '%s' in transaction fee bottom sheet" % username_part)
+        self.driver.info("Getting username by '%s' in transaction fee bottom sheet" % username_part)
         return SilentButton(self.driver, xpath="//*[@content-desc='amount-input']/..//*[starts-with(@text,'%s')]" % username_part)
 
     def get_account_in_select_account_bottom_sheet_button(self, account_name):
-        self.driver.info("## Getting account by '%s' in transaction fee bottom sheet" % account_name)
+        self.driver.info("Getting account by '%s' in transaction fee bottom sheet" % account_name)
         return SilentButton(self.driver, translation_id="select-account", suffix="/..//*[starts-with(@text,'%s')]" % account_name)
 
     def get_validation_icon(self, field='Network fee'):
         return ValidationErrorOnSendTransaction(self.driver, field)
 
     def get_values_from_send_transaction_bottom_sheet(self):
-        self.driver.info("## Getting values from send transaction bottom sheet")
+        self.driver.info("Getting values from send transaction bottom sheet")
         data = {
             'amount': self.amount_edit_box.text,
             'asset': self.asset_text.text,
@@ -167,12 +167,12 @@ class SendTransactionView(BaseView):
         return data
 
     def get_network_fee_from_bottom_sheet(self):
-        self.driver.info("## Getting network fee from send transaction bottom sheet")
+        self.driver.info("Getting network fee from send transaction bottom sheet")
         return Text(self.driver, xpath="//*[@content-desc='custom-gas-fee']/android.widget.TextView[1]").text[0:-9]
 
 
     def add_to_favorites(self, name):
-        self.driver.info("## Adding '%s' to favorite recipients" % name)
+        self.driver.info("Adding '%s' to favorite recipients" % name)
         self.recipient_add_to_favorites.click()
         self.new_favorite_name_input.set_value(name)
         self.new_favorite_add_favorite.click()

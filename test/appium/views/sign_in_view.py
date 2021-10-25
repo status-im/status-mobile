@@ -172,7 +172,7 @@ class SignInView(BaseView):
         self.cancel_custom_seed_phrase_button = Button(self.driver, accessibility_id="cancel-custom-seed-phrase")
 
     def create_user(self, password=common_password, keycard=False, enable_notifications=False, second_user=False):
-        self.driver.info("**Creating new multiaccount (password:%s, keycard:%s)**" % (password, str(keycard)))
+        self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s')" % (password, str(keycard)), device=False)
         if not second_user:
             self.accept_tos_checkbox.click()
             self.get_started_button.click()
@@ -196,11 +196,11 @@ class SignInView(BaseView):
             self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
         self.lets_go_button.click_until_absense_of_element(self.lets_go_button)
         self.profile_button.wait_for_visibility_of_element(30)
-        self.driver.info("**New multiaccount is created successfully!**")
+        self.driver.info("## New multiaccount is created successfully!", device=False)
         return self.get_home_view()
 
     def recover_access(self, passphrase: str, password: str = common_password, keycard=False, enable_notifications=False, second_user=False):
-        self.driver.info("**Recover access(password:%s, keycard:%s)**" % (password, str(keycard)))
+        self.driver.info("## Recover access(password:%s, keycard:%s)" % (password, str(keycard)), device=False)
         if not second_user:
             self.accept_tos_checkbox.click()
         self.get_started_button.click_until_presence_of_element(self.access_key_button)
@@ -228,11 +228,11 @@ class SignInView(BaseView):
             self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
         self.lets_go_button.click()
         self.profile_button.wait_for_visibility_of_element(30)
-        self.driver.info("**Multiaccount is recovered successfully!**")
+        self.driver.info("## Multiaccount is recovered successfully!", device=False)
         return self.get_home_view()
 
     def sign_in(self, password=common_password, keycard=False, position=1):
-        self.driver.info("**Sign in** (password:%s, keycard:%s)" % (password, str(keycard)))
+        self.driver.info("## Sign in (password:%s, keycard:%s)" % (password, str(keycard)), device=False)
         if self.multi_account_on_login_button.is_element_displayed(30):
             self.get_multiaccount_by_position(position).click()
 
@@ -246,7 +246,7 @@ class SignInView(BaseView):
         else:
             self.password_input.set_value(password)
             self.sign_in_button.click()
-        self.driver.info("**Signed in successfully!**")
+        self.driver.info("## Signed in successfully!", device=False)
         return self.get_home_view()
 
 
@@ -259,12 +259,12 @@ class SignInView(BaseView):
                 'Device %s: Unable to find multiaccount by position %s' % (self.driver.number, position)) from None
 
     def open_weblink_and_login(self, url_weblink):
-        self.driver.info("**Open weblink %s**" % url_weblink)
+        self.driver.info("Open weblink '%s'" % url_weblink)
         self.open_universal_web_link(url_weblink)
         self.sign_in()
 
     def import_db(self, user, import_db_folder_name):
-        self.just_fyi('**Importing database**')
+        self.driver.info('## Importing database', device=False)
         import_file_name = 'export.db'
         home = self.recover_access(user['passphrase'])
         profile = home.profile_button.click()
@@ -280,5 +280,5 @@ class SignInView(BaseView):
         self.element_by_text('Import unencrypted').wait_for_invisibility_of_element(40)
         self.sign_in_button.click()
         self.home_button.wait_for_element(40)
-        self.just_fyi('**Importing database is finished!**')
+        self.driver.info('## Importing database is finished!', device=False)
         return self.get_home_view()

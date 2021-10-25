@@ -215,8 +215,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         for profile in (profile_1, profile_2):
             profile.get_back_to_home_view()
             profile.home_button.click()
-        home_1.delete_chat_long_press(public_chat_after_sync)
-        home_2.element_by_text(public_chat_after_sync).wait_for_invisibility_of_element(60)
+        home_1.delete_chat_long_press('#%s' % public_chat_after_sync)
+        home_2.element_by_text('#%s' % public_chat_after_sync).wait_for_invisibility_of_element(60)
 
         self.errors.verify_no_errors()
 

@@ -208,7 +208,7 @@ class HomeView(BaseView):
         self.not_connected_to_peers_text = Text(self.driver, accessibility_id="not-connected-to-peers")
 
     def wait_for_syncing_complete(self):
-        self.driver.info('## Waiting for syncing to complete')
+        self.driver.info('Waiting for syncing to complete')
         while True:
             try:
                 sync = self.element_by_text_part('Syncing').wait_for_element(10)
@@ -217,7 +217,7 @@ class HomeView(BaseView):
                 break
 
     def get_chat(self, username, community=False):
-        self.driver.info("## Looking for chat: '%s'" % username)
+        self.driver.info("Looking for chat: '%s'" % username)
         chat_element = ChatElement(self.driver, username[:25], community=community)
         if not chat_element.is_element_displayed():
             self.notifications_unread_badge.wait_and_click(30)
@@ -228,12 +228,12 @@ class HomeView(BaseView):
         return chat_element
 
     def get_chat_from_home_view(self, username):
-        self.driver.info("## Looking for chat: '%s'" % username)
+        self.driver.info("Looking for chat: '%s'" % username)
         chat_element = ChatElement(self.driver, username[:25])
         return chat_element
 
     def get_chat_from_activity_center_view(self, chat_name):
-        self.driver.info("## Looking for chat: '%s'" % chat_name)
+        self.driver.info("Looking for chat: '%s'" % chat_name)
         chat_element = ActivityCenterChatElement(self.driver, chat_name[:25])
         return chat_element
 
@@ -241,7 +241,7 @@ class HomeView(BaseView):
         return Text(self.driver, xpath="//*[@content-desc='enter-contact-code-input']/../..//*[starts-with(@text,'%s')]" % username_part)
 
     def add_contact(self, public_key, add_in_contacts=True, nickname=''):
-        self.driver.info("## Starting 1-1 chat, add in contacts:%s" % str(add_in_contacts))
+        self.driver.info("## Starting 1-1 chat, add in contacts:%s" % str(add_in_contacts), device=False)
         self.plus_button.click_until_presence_of_element(self.start_new_chat_button)
         chat = self.start_new_chat_button.click()
         chat.public_key_edit_box.click()
@@ -254,11 +254,11 @@ class HomeView(BaseView):
             one_to_one_chat.chat_options.click()
             one_to_one_chat.view_profile_button.click()
             one_to_one_chat.set_nickname(nickname)
-        self.driver.info("**1-1 chat is created successfully!**")
+        self.driver.info("## 1-1 chat is created successfully!", device=False)
         return one_to_one_chat
 
     def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat'):
-        self.driver.info("## Creating group chat '%s'" % group_chat_name)
+        self.driver.info("## Creating group chat '%s'" % group_chat_name, device=False)
         self.plus_button.click()
         chat_view = self.new_group_chat_button.click()
         if user_names_to_add:
@@ -272,11 +272,11 @@ class HomeView(BaseView):
         chat_view.next_button.click()
         chat_view.chat_name_editbox.send_keys(group_chat_name)
         chat_view.create_button.click()
-        self.driver.info("## Group chat %s is created successfully!" % group_chat_name)
+        self.driver.info("## Group chat %s is created successfully!" % group_chat_name, device=False)
         return chat_view
 
     def create_community(self, name: str, description="some_description", set_image=False, file_name='sauce_logo.png'):
-        self.driver.info("## Creating community '%s', set image is set to '%s'" % (name, str(set_image)))
+        self.driver.info("## Creating community '%s', set image is set to '%s'" % (name, str(set_image)), device=False)
         self.plus_button.click()
         chat_view = self.communities_button.click()
         chat_view.create_community_button.click()
@@ -291,11 +291,11 @@ class HomeView(BaseView):
             set_picture_view.crop_photo_button.click()
 
         chat_view.confirm_create_in_community_button.click()
-        self.driver.info("## Community is created successfully!")
+        self.driver.info("## Community is created successfully!", device=False)
         return chat_view.get_community_by_name(name)
 
     def join_public_chat(self, chat_name: str):
-        self.driver.info("## Creating public chat %s" % chat_name)
+        self.driver.info("## Creating public chat %s" % chat_name, device=False)
         self.plus_button.click_until_presence_of_element(self.join_public_chat_button, attempts=5)
         self.join_public_chat_button.wait_for_visibility_of_element(5)
         chat_view = self.join_public_chat_button.click()
@@ -303,11 +303,11 @@ class HomeView(BaseView):
         chat_view.chat_name_editbox.send_keys(chat_name)
         time.sleep(2)
         self.confirm_until_presence_of_element(chat_view.chat_message_input)
-        self.driver.info("**Public chat %s is created successfully!**" % chat_name)
+        self.driver.info("## Public chat '%s' is created successfully!" % chat_name, device=False)
         return self.get_chat_view()
 
     def open_status_test_dapp(self, url=test_dapp_url, allow_all=True):
-        self.driver.info("## Open dapp '%s', allow all:'%s'" % (test_dapp_url, str(allow_all)))
+        self.driver.info("Opening dapp '%s', allow all:'%s'" % (test_dapp_url, str(allow_all)))
         dapp_view = self.dapp_tab_button.click()
         dapp_view.open_url(url)
         status_test_dapp = dapp_view.get_status_test_dapp_view()
@@ -316,30 +316,29 @@ class HomeView(BaseView):
             status_test_dapp.allow_button.click_until_absense_of_element(status_test_dapp.allow_button)
         else:
             status_test_dapp.deny_button.click_until_absense_of_element(status_test_dapp.deny_button)
-        self.driver.info("## Dapp is opened!")
         return status_test_dapp
 
     def delete_chat_long_press(self, username):
-        self.driver.info("## Deleting chat '%s' by long press" % username)
+        self.driver.info("Deleting chat '%s' by long press" % username)
         self.get_chat(username).long_press_element()
         self.delete_chat_button.click()
         self.delete_button.click()
 
     def leave_chat_long_press(self, username):
-        self.driver.info("## Leaving chat '%s' by long press" % username)
+        self.driver.info("Leaving chat '%s' by long press" % username)
         self.get_chat(username).long_press_element()
         from views.chat_view import ChatView
         ChatView(self.driver).leave_chat_button.click()
         ChatView(self.driver).leave_button.click()
 
     def clear_chat_long_press(self, username):
-        self.driver.info("## Clearing history in chat '%s' by long press**" % username)
+        self.driver.info("Clearing history in chat '%s' by long press" % username)
         self.get_chat(username).long_press_element()
         self.clear_history_button.click()
         from views.chat_view import ChatView
         ChatView(self.driver).clear_button.click()
 
     def get_pn(self, pn_text: str):
-        self.driver.info("## Getting PN by '%s'" % pn_text)
+        self.driver.info("Getting PN by '%s'" % pn_text)
         PushNotificationElement(self.driver, pn_text).wait_for_element(60)
         return PushNotificationElement(self.driver, pn_text)

@@ -317,7 +317,7 @@ class WalletView(BaseView):
 
 
     def set_currency(self, desired_currency='EUR'):
-        self.driver.info("## Setting '%s' currency" % desired_currency)
+        self.driver.info("Setting '%s' currency" % desired_currency)
         self.multiaccount_more_options.click_until_presence_of_element(self.set_currency_button)
         self.set_currency_button.click()
         desired_currency = self.element_by_text_part(desired_currency)
@@ -325,11 +325,11 @@ class WalletView(BaseView):
         desired_currency.click()
 
     def get_account_by_name(self, account_name: str):
-        self.driver.info("## Getting account: '%s'" % account_name)
+        self.driver.info("Getting account: '%s'" % account_name)
         return AccountElementButton(self.driver, account_name)
 
     def add_account(self, account_name: str, password: str = common_password, keycard=False):
-        self.driver.info("## Adding account: '%s'" % account_name)
+        self.driver.info("## Add account: '%s'" % account_name, device=False)
         self.add_account_button.click()
         self.generate_an_account_button.click()
         self.account_name_input.send_keys(account_name)
@@ -341,6 +341,8 @@ class WalletView(BaseView):
         else:
             self.enter_your_password_input.send_keys(password)
             self.add_account_generate_account_button.click()
+        self.driver.info("## Account is added!", device=False)
 
     def get_collectibles_amount(self, collectibles='CryptoKitties'):
+        self.driver.info("Getting '%s' Collectibles amount" % collectibles)
         return Text(self.driver,xpath="//*[@text='%s']//following-sibling::android.widget.TextView" % collectibles)

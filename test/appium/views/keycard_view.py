@@ -24,15 +24,15 @@ class KeycardView(BaseView):
         self.confirm_seed_phrase_edit_box = EditBox(self.driver, accessibility_id="enter-word")
 
     def enter_default_pin(self):
-        self.driver.info("**Enter default pin 111111**")
+        self.driver.info("Enter default pin 111111")
         [self.one_button.click() for _ in range(6)]
 
     def enter_default_puk(self):
-        self.driver.info("**Enter default pin 1111 1111 1111**")
+        self.driver.info("Enter default pin 1111 1111 1111")
         [self.one_button.click() for _ in range(12)]
 
     def enter_another_pin(self):
-        self.driver.info("**Enter not-default pin 222222**")
+        self.driver.info("Enter not-default pin 222222")
         for _ in range(6):
             self.two_button.click()
 
@@ -54,7 +54,7 @@ class KeycardView(BaseView):
         return recovery_phrase
 
     def backup_seed_phrase(self):
-        self.driver.info("## Backing up seed phrase for keycard")
+        self.driver.info("Backing up seed phrase for keycard")
         recovery_phrase = self.get_seed_phrase()
         self.confirm_button.click()
         self.yes_button.click()

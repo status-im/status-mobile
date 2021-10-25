@@ -320,7 +320,7 @@ class ProfileView(BaseView):
         self.confirm_logout_button = Button(self.driver, translation_id="logout", uppercase=True)
 
     def switch_network(self, network='Mainnet with upstream RPC'):
-        self.driver.info("## Switching network to '%s'" % network)
+        self.driver.info("## Switch network to '%s'" % network, device=False)
         self.advanced_button.click()
         self.network_settings_button.click()
         network_button = Button(self.driver, xpath="//*[@text='%s']" % network)
@@ -329,16 +329,17 @@ class ProfileView(BaseView):
         self.confirm_button.click_until_absense_of_element(self.confirm_button)
         from views.sign_in_view import SignInView
         SignInView(self.driver).sign_in()
+        self.driver.info("## Network is switched successfully!", device=False)
 
     def open_contact_from_profile(self, username):
-        self.driver.info("## Open profile of '%s' via Contacts" % username)
+        self.driver.info("Opening profile of '%s' via Contacts" % username)
         self.contacts_button.wait_and_click(30)
         self.element_by_text(username).click()
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
     def add_custom_network(self):
-        self.driver.info("## Adding predefined custom network")
+        self.driver.info("## Add predefined custom network", device=False)
         self.advanced_button.click()
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
@@ -353,6 +354,7 @@ class ProfileView(BaseView):
         self.element_by_text_part('custom_ropsten').click_until_presence_of_element(self.connect_button)
         self.connect_button.click()
         self.confirm_button.click()
+        self.driver.info("## Custom network is added succesfully!", device=False)
         return self.get_sign_in_view()
 
     def get_recovery_phrase(self):
@@ -360,7 +362,7 @@ class ProfileView(BaseView):
         return dict(zip(map(int, text[::2]), text[1::2]))
 
     def backup_recovery_phrase(self):
-        self.driver.info("## Back up seed phrase")
+        self.driver.info("## Back up seed phrase", device=False)
         self.ok_continue_button.click()
         recovery_phrase = self.get_recovery_phrase()
         self.next_button.click()
@@ -372,11 +374,11 @@ class ProfileView(BaseView):
         self.done_button.click()
         self.yes_button.click()
         self.ok_got_it_button.click()
-        self.driver.info("## Seed phrase is backed up!")
+        self.driver.info("## Seed phrase is backed up!", device=False)
         return recovery_phrase
 
     def edit_profile_picture(self, file_name: str, update_by = "Gallery"):
-        self.driver.info("## Setting custom profile image")
+        self.driver.info("## Setting custom profile image", device=False)
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
         self.profile_picture.click()
@@ -392,7 +394,7 @@ class ProfileView(BaseView):
             self.take_photo()
             self.accept_photo_button.click()
         self.crop_photo_button.click()
-        self.driver.info("**Custom profile image has been set**")
+        self.driver.info("## Custom profile image has been set", device=False)
 
 
     def take_photo(self):
@@ -417,7 +419,7 @@ class ProfileView(BaseView):
 
 
     def logout(self):
-        self.driver.info("## Logging out")
+        self.driver.info("Logging out")
         self.logout_button.click()
         self.logout_dialog.logout_button.click()
         self.logout_button.wait_for_invisibility_of_element(30)
@@ -429,11 +431,11 @@ class ProfileView(BaseView):
         return SilentButton(self.driver, xpath="//*[contains(@content-desc,'%s')]" % image_name)
 
     def get_toggle_device_by_name(self, device_name):
-        self.driver.info("## Selecting device '%s' for sync" % device_name)
+        self.driver.info("Selecting device '%s' for sync" % device_name)
         return SilentButton(self.driver, xpath="//android.widget.TextView[contains(@text,'%s')]/..//android.widget.CheckBox" % device_name)
 
     def discover_and_advertise_device(self, device_name):
-        self.driver.info("## Discover and advertise '%s'" % device_name)
+        self.driver.info("Discovering and advertising '%s'" % device_name)
         self.sync_settings_button.click()
         self.devices_button.scroll_to_element()
         self.devices_button.click()
@@ -442,7 +444,7 @@ class ProfileView(BaseView):
         self.advertise_device_button.click()
 
     def retry_to_connect_to_mailserver(self):
-        self.driver.info("## Retrying to connect to mailserver 5 times")
+        self.driver.info("Retrying to connect to mailserver 5 times")
         i = 0
         while self.element_by_translation_id("mailserver-error-title").is_element_present(20) and i < 5:
             self.element_by_translation_id("mailserver-retry", uppercase=True).click()
@@ -453,7 +455,7 @@ class ProfileView(BaseView):
             self.driver.fail("Failed to connect after %s attempts" % i)
 
     def connect_existing_ens(self, name, is_stateofus=False):
-        self.driver.info("**Connect existing ENS: %s**" % name)
+        self.driver.info("## Connect existing ENS: %s" % name, device=False)
         dapp_view = self.ens_usernames_button.click()
         dapp_view.element_by_translation_id("get-started").click()
         if not is_stateofus:
@@ -465,6 +467,7 @@ class ProfileView(BaseView):
             dapp_view.element_by_text_part(expected_text).wait_for_element(30)
         dapp_view.check_ens_name.click_until_presence_of_element(dapp_view.element_by_translation_id("ens-got-it"))
         dapp_view.element_by_translation_id("ens-got-it").click()
+        self.driver.info("## ENS name is connected successfully!", device=False)
         return dapp_view
 
     @staticmethod

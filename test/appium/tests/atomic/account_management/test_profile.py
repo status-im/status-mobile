@@ -1162,7 +1162,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_2 = home_2.get_profile_view()
         profile_2.discover_and_advertise_device(device_2_name)
 
-        device_1.just_fyi('enable pairing of `device 2` and sync')
+        device_1.just_fyi('enable pairing of device 2 and sync')
         profile_1.discover_and_advertise_device(device_1_name)
         profile_1.get_toggle_device_by_name(device_2_name).click()
         profile_1.sync_all_button.click()

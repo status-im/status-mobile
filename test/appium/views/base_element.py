@@ -73,7 +73,7 @@ class BaseElement(object):
     def find_element(self):
         for _ in range(3):
             try:
-                self.driver.info("Find '%s' by '%s': `%s`" % (self.name, self.by, self.locator))
+                self.driver.info("Find '%s' by '%s': `%s`" % (self.name, self.by, self.exclude_emoji(self.locator)))
                 return self.driver.find_element(self.by, self.locator)
             except NoSuchElementException:
                 raise NoSuchElementException(

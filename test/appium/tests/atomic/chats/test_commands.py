@@ -18,7 +18,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_2 = device_2.create_user(enable_notifications=True)
         for home in home_1, home_2:
             profile = home.profile_button.click()
-            profile.profile_notifications_button.click()
+            profile.profile_notifications_button.scroll_and_click()
             profile.wallet_push_notifications.click()
 
         recipient_public_key, recipient_username = home_2.get_public_key_and_username(return_username=True)

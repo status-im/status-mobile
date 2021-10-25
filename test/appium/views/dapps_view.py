@@ -52,7 +52,7 @@ class DappsView(BaseView):
         self.select_account_button = Button(self.driver, accessibility_id="select-account")
 
     def open_url(self, url):
-        self.driver.info("## Open url '%s'" % url)
+        self.driver.info("Open url '%s'" % url)
         self.enter_url_editbox.wait_for_visibility_of_element(10)
         self.enter_url_editbox.click()
         self.enter_url_editbox.send_keys(url)
@@ -65,7 +65,7 @@ class DappsView(BaseView):
         return BrowserEntry(self.driver, name)
 
     def browser_entry_long_press(self, name):
-        self.driver.info("## Long press on '%s' browser entry" % name)
+        self.driver.info("Long press on '%s' browser entry" % name)
         entry = self.get_browser_entry(name)
         entry.scroll_to_element()
         entry.long_press_element()
@@ -73,10 +73,10 @@ class DappsView(BaseView):
 
     def select_account_by_name(self, account_name=''):
         account_name = self.status_account_name if not account_name else account_name
-        self.driver.info("## Select account by '%s'" % account_name)
+        self.driver.info("Select account by '%s'" % account_name)
         return Button(self.driver,
                       xpath="//*[@text='%s']/../../android.view.ViewGroup/android.view.ViewGroup[2]" % account_name)
 
     def set_primary_ens_username(self, ens_name):
-        self.driver.info("## Set '%s' as primary ENS name" % ens_name)
+        self.driver.info("Set '%s' as primary ENS name" % ens_name)
         return Button(self.driver, accessibility_id="not-primary-username")

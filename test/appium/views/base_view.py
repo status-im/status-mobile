@@ -296,7 +296,7 @@ class BaseView(object):
     def close_native_device_dialog(self, alert_text_part):
         element = self.element_by_text_part(alert_text_part)
         if element.is_element_present(1):
-            self.driver.info("**Closing '%s' alert..." % alert_text_part)
+            self.driver.info("Closing '%s' alert..." % alert_text_part)
             self.native_close_button.click()
 
     @property
@@ -307,7 +307,7 @@ class BaseView(object):
         raise TimeoutError('Logcat is empty')
 
     def confirm(self):
-        self.driver.info("*Tap 'Confirm' on native keyboard*")
+        self.driver.info("Tap 'Confirm' on native keyboard")
         self.driver.press_keycode(66)
 
     def confirm_until_presence_of_element(self, desired_element, attempts=3):
@@ -315,55 +315,53 @@ class BaseView(object):
         while not desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.confirm()
-                self.driver.info('*Wait for %s*' % desired_element.name)
+                self.driver.info("Wait for '%s'" % desired_element.name)
                 desired_element.wait_for_element(5)
                 return
             except TimeoutException:
                 counter += 1
 
     def just_fyi(self, string):
-        self.driver.info('=========================================================================')
-        self.driver.info('# %s' % string)
-        self.driver.info('=========================================================================')
+        self.driver.info('# STEP: %s' % string, device=False)
 
     def click_system_back_button(self, times=1):
-        self.driver.info('*Click system back button*')
+        self.driver.info('Click system back button')
         for _ in range(times):
             self.driver.press_keycode(4)
 
     def get_app_from_background(self):
-        self.driver.info('## Get Status back from Recent apps')
+        self.driver.info('Get Status back from Recent apps')
         self.driver.press_keycode(187)
         self.status_in_background_button.click()
 
     def put_app_to_background_and_back(self, time_in_background=1):
-        self.driver.info('## Put app to background and back')
+        self.driver.info('Put app to background and back')
         self.driver.press_keycode(187)
         time.sleep(time_in_background)
         self.status_in_background_button.click()
 
     def click_system_home_button(self):
-        self.driver.info('## Press system Home button')
+        self.driver.info('Press system Home button')
         self.driver.press_keycode(3)
 
     def put_app_to_background(self):
-        self.driver.info('## App to background')
+        self.driver.info('App to background')
         self.driver.press_keycode(187)
 
     def cut_text(self):
-        self.driver.info('## Cut text')
+        self.driver.info('Cut text')
         self.driver.press_keycode(277)
 
     def copy_text(self):
-        self.driver.info('## Copy text')
+        self.driver.info('Copy text')
         self.driver.press_keycode(278)
 
     def paste_text(self):
-        self.driver.info('## Paste text')
+        self.driver.info('Paste text')
         self.driver.press_keycode(279)
 
     def send_as_keyevent(self, string):
-        self.driver.info("## Sending as keyevent `%s`" % string)
+        self.driver.info("Sending as keyevent `%s`" % string)
         keys = {'0': 7, '1': 8, '2': 9, '3': 10, '4': 11, '5': 12, '6': 13, '7': 14, '8': 15, '9': 16,
 
                 ',': 55, '-': 69, '+': 81, '.': 56, '/': 76, '\\': 73, ';': 74, ' ': 62,
@@ -406,32 +404,32 @@ class BaseView(object):
 
     def swipe_by_custom_coordinates(self, x_start, y_start, x_end, y_end):
         """Uses percentage values based on device width/height"""
-        self.driver.info("## Swiping based on custom coordinates relative to device height/width")
+        self.driver.info("Swiping based on custom coordinates relative to device height/width")
         size = self.driver.get_window_size()
         self.driver.swipe(size["width"] * x_start, size["height"] * y_start, size["width"] * x_end, size["height"] * y_end)
 
     def swipe_up(self):
-        self.driver.info("## Swiping up")
+        self.driver.info("Swiping up")
         size = self.driver.get_window_size()
         self.driver.swipe(size["width"]*0.5, size["height"]*0.8, size["width"]*0.5, size["height"]*0.2)
 
     def swipe_down(self):
-        self.driver.info("## Swiping down")
+        self.driver.info("Swiping down")
         size = self.driver.get_window_size()
         self.driver.swipe(size["width"]*0.5, size["height"]*0.2, size["width"]*0.5, size["height"]*0.8)
 
     def swipe_left(self):
-        self.driver.info("## Swiping left")
+        self.driver.info("Swiping left")
         size = self.driver.get_window_size()
         self.driver.swipe(size["width"]*0.8, size["height"]*0.8, size["width"]*0.2, size["height"]*0.8)
 
     def swipe_right(self):
-        self.driver.info("## Swiping right")
+        self.driver.info("Swiping right")
         size = self.driver.get_window_size()
         self.driver.swipe(size["width"]*0.2, size["height"]*0.8, size["width"]*0.8, size["height"]*0.8)
 
     def switch_to_mobile(self, before_login=False, sync=False):
-        self.driver.info("## Turning on mobile data, syncing is %s" % str(sync))
+        self.driver.info("Turning on mobile data, syncing is %s" % str(sync))
         self.driver.set_network_connection(4)
         if before_login is False:
             from views.home_view import HomeView
@@ -442,7 +440,7 @@ class BaseView(object):
                 home.stop_syncing_button.wait_and_click()
 
     def pull_to_refresh(self, wait_sec=20):
-        self.driver.info("*Pull to refresh view*")
+        self.driver.info("Pull to refresh view")
         self.driver.swipe(500, 500, 500, 1000)
         time.sleep(wait_sec)
 
@@ -534,13 +532,13 @@ class BaseView(object):
         sign_in_view.sign_in(password)
 
     def close_share_popup(self):
-        self.driver.info("*Closing share popup*")
+        self.driver.info("Closing share popup")
         TouchAction(self.driver).tap(None, 255, 104, 1).perform()
         time.sleep(3)
 
 
     def get_public_key_and_username(self, return_username=False):
-        self.driver.info("## Get public key and username")
+        self.driver.info("Get public key and username")
         profile_view = self.profile_button.click()
         default_username = profile_view.default_username_text.text
         profile_view.share_my_profile_button.click()
@@ -551,7 +549,7 @@ class BaseView(object):
         return user_data
 
     def share_via_messenger(self):
-        self.driver.info("## Sharing via messenger")
+        self.driver.info("Sharing via messenger", device=False)
         self.element_by_text_part("Direct share").wait_for_element()
         self.element_by_text('Messages').wait_and_click()
         self.element_by_text('New message').wait_and_click()
@@ -559,8 +557,9 @@ class BaseView(object):
         self.confirm()
 
     def click_upon_push_notification_by_text(self, text):
-        self.driver.info("## Click on PN with text:** `%s`" % text)
-        self.element_by_text_part(text).click()
+        element = self.element_by_text_part(text)
+        self.driver.info("Click on PN with text: '%s'" % element.exclude_emoji(text))
+        element.click()
         return self.get_chat_view()
 
 
@@ -568,7 +567,7 @@ class BaseView(object):
         logcat = self.logcat
         items_in_logcat = list()
         for key, value in kwargs.items():
-            self.driver.info("**Checking in logcat for: `%s`" % value)
+            self.driver.info("Checking in logcat for: `%s`" % value)
             escaped_value = re.escape(value)
             if re.findall(r'\W%s$|\W%s\W' % (escaped_value, escaped_value), logcat):
                 items_in_logcat.append('%s in logcat!!!' % key.capitalize())
@@ -579,7 +578,7 @@ class BaseView(object):
         file = base64.b64decode(b64_log)
         result = False
         for value in args:
-            self.driver.info('## Checking in geth for: `%s`' % value)
+            self.driver.info('Checking in geth for: `%s`' % value)
             if re.findall('%s*' % value, file.decode("utf-8")):
                 self.driver.info('%s was found in geth.log' % value)
                 result = True
@@ -593,7 +592,7 @@ class BaseView(object):
         self.driver.open_notifications()
 
     def toggle_airplane_mode(self):
-        self.driver.info("## Toggling airplane mode")
+        self.driver.info("Toggling airplane mode")
         self.airplane_mode_button.click()
         self.close_native_device_dialog("MmsService")
 
@@ -606,7 +605,7 @@ class BaseView(object):
         self.driver.set_network_connection(4)
 
     def toggle_mobile_data(self):
-        self.driver.info("## Toggling mobile data")
+        self.driver.info("Toggling mobile data")
         self.driver.start_activity(app_package='com.android.settings', app_activity='.Settings')
         network_and_internet = self.element_by_text('Network & internet')
         network_and_internet.wait_for_visibility_of_element()
@@ -619,21 +618,21 @@ class BaseView(object):
 
     def open_universal_web_link(self, deep_link):
         start_web_browser(self.driver)
-        self.driver.info('## Open web link via web browser: `%s`' % deep_link)
+        self.driver.info('Open web link via web browser: `%s`' % deep_link)
         self.driver.get(deep_link)
 
     def upgrade_app(self):
-        self.driver.info("## Upgrading apk to apk_upgrade")
+        self.driver.info("Upgrading apk to apk_upgrade")
         self.driver.install_app(pytest_config_global['apk_upgrade'], replace=True)
         self.app = self.driver.launch_app()
 
     def search_by_keyword(self, keyword):
-        self.driver.info('## Search for `%s`' % keyword)
+        self.driver.info('Search for `%s`' % keyword)
         self.search_input.click()
         self.search_input.send_keys(keyword)
 
     def set_up_wallet_when_sending_tx(self):
-        self.driver.info("## Setting up wallet")
+        self.driver.info("Setting up wallet")
         phrase = self.sign_in_phrase.text
         self.ok_got_it_button.wait_and_click(20)
         return phrase
