@@ -47,6 +47,11 @@
            (assoc-in db [:multiaccount setting] setting-value)
            (update db :multiaccount dissoc setting))}))
 
+(fx/defn toggle-backup-enabled
+  {:events [:multiaccounts.ui/switch-backup-enabled]}
+  [cofx enabled?]
+  (multiaccount-update cofx :backup-enabled? enabled? {}))
+
 (fx/defn toggle-opensea-nfts-visibility
   {:events [::toggle-opensea-nfts-visiblity]}
   [cofx visible?]

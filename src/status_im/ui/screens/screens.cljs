@@ -95,6 +95,7 @@
             [status-im.ui.screens.progress.views :as progress]
             [status-im.ui.screens.qr-scanner.views :as qr-scanner]
             [status-im.ui.screens.referrals.public-chat :as referrals.public-chat]
+            [status-im.ui.screens.backup-settings.view :as backup-settings]
             [status-im.ui.screens.reset-password.views :as reset-password]
             [status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
             [status-im.ui.screens.status.new.views :as status.new]
@@ -546,6 +547,9 @@
            {:name      :mobile-network-settings
             :options   {:topBar {:title {:text (i18n/label :t/mobile-network-settings)}}}
             :component mobile-network-settings/mobile-network-settings}
+           {:name      :backup-settings
+            :options   {:topBar {:title {:text (i18n/label :t/backup-settings)}}}
+            :component backup-settings/backup-settings}
            {:name      :backup-seed
             ;;TODO dynamic navigation
             :options   {:topBar {:visible false}}

@@ -56,6 +56,7 @@
    "wakuext_disableInstallation" {}
    "wakuext_sendChatMessage" {}
    "wakuext_sendChatMessages" {}
+   "wakuext_backupData" {}
    "wakuext_confirmJoiningGroup" {}
    "wakuext_addAdminsToGroupChat" {}
    "wakuext_addMembersToGroupChat" {}
@@ -90,9 +91,12 @@
    "wakuext_unmuteChat" {}
    "wakuext_contacts" {}
    "wakuext_removeContact" {}
+   "wakuext_setContactLocalNickname" {}
    "wakuext_clearHistory" {}
    "wakuext_prepareContent" {}
    "wakuext_blockContact" {}
+   "wakuext_unblockContact" {}
+   "wakuext_addContact" {}
    "wakuext_updateMailservers" {}
    "wakuext_sendEmojiReaction" {}
    "wakuext_sendEmojiReactionRetraction" {}

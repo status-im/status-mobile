@@ -13,15 +13,6 @@
                                     :lastUpdated :last-updated
                                     :localNickname :nickname}))
 
-(defn ->rpc [contact]
-  (clojure.set/rename-keys contact {:public-key :id
-                                    :ens-verified :ensVerified
-                                    :ens-verified-at :ensVerifiedAt
-                                    :last-ens-clock-value :lastENSClockValue
-                                    :ens-verification-retries :ensVerificationRetries
-                                    :last-updated :lastUpdated
-                                    :nickname :localNickname}))
-
 (fx/defn fetch-contacts-rpc
   [_ on-success]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "contacts")
@@ -29,18 +20,37 @@
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch contacts" %)}]})
 
-(fx/defn save-contact
-  [_ {:keys [public-key] :as contact} on-success]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "saveContact")
-                     :params [(->rpc contact)]
+(fx/defn add
+  [_ public-key nickname ens-name on-success]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "addContact")
+                     :params [{:id public-key :nickname nickname :ensName ens-name}]
+                     :js-response true
                      :on-success #(do
-                                    (log/debug "saved contact" public-key "successfuly")
+                                    (log/info "saved contact" public-key "successfuly")
                                     (when on-success
-                                      (on-success)))
-                     :on-failure #(log/error "failed to save contact" public-key %)}]})
+                                      (on-success %)))
+                     :on-failure #(log/error "failed to add contact" public-key %)}]})
 
-(fx/defn block [_ contact on-success]
+(fx/defn set-nickname
+  [_ public-key nickname on-success]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "setContactLocalNickname")
+                     :params [{:id public-key :nickname nickname}]
+                     :js-response true
+                     :on-success #(do
+                                    (log/debug "set contact nickname" public-key "successfuly" nickname)
+                                    (when on-success
+                                      (on-success %)))
+                     :on-failure #(log/error "failed to set contact nickname " public-key nickname %)}]})
+
+(fx/defn block [_ contact-id on-success]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "blockContact")
-                     :params [(->rpc contact)]
+                     :params [contact-id]
                      :on-success on-success
-                     :on-failure #(log/error "failed to block contact" % contact)}]})
+                     :on-failure #(log/error "failed to block contact" % contact-id)}]})
+
+(fx/defn unblock [_ contact-id on-success]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "unblockContact")
+                     :params [contact-id]
+                     :on-success on-success
+                     :js-response true
+                     :on-failure #(log/error "failed to unblock contact" % contact-id)}]})

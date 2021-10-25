@@ -3,11 +3,9 @@
             [status-im.contact.db :as contact.db]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.mailserver.core :as mailserver]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
-            [clojure.string :as string]
             [status-im.constants :as constants]
             [status-im.contact.block :as contact.block]))
 
@@ -54,10 +52,7 @@
                (conj nil)
 
                (and blocked (not was-blocked))
-               (conj [::contact.block/contact-blocked contact chats])
-
-               (and was-blocked (not blocked))
-               (conj [::contact.block/contact-unblocked public-key]))))
+               (conj [::contact.block/contact-blocked contact chats]))))
          [[:offload-messages constants/timeline-chat-id]]
          contacts)]
     (merge
@@ -71,17 +66,6 @@
      (when (> (count events) 1)
        {:dispatch-n events}))))
 
-(fx/defn upsert-contact
-  [{:keys [db] :as cofx}
-   {:keys [public-key] :as contact}]
-  (fx/merge cofx
-            {:db            (-> db
-                                (update-in [:contacts/contacts public-key] merge contact))}
-            (fn [cf]
-              (contacts-store/save-contact cf
-                                           (get-in cf [:db :contacts/contacts public-key])
-                                           #(re-frame/dispatch [::send-contact-request  public-key])))))
-
 (fx/defn send-contact-request
   {:events [::send-contact-request]}
   [{:keys [db] :as cofx} public-key]
@@ -92,22 +76,17 @@
 
 (fx/defn add-contact
   "Add a contact and set pending to false"
-  {:events [:contact.ui/add-to-contact-pressed]
-   :interceptors [(re-frame/inject-cofx :random-id-generator)]}
-  [{:keys [db] :as cofx} public-key nickname]
+  {:events [:contact.ui/add-to-contact-pressed]}
+  [{:keys [db] :as cofx} public-key nickname ens-name]
   (when (not= (get-in db [:multiaccount :public-key]) public-key)
-    (let [contact (cond-> (get-in db [:contacts/contacts public-key]
-                                  (build-contact cofx public-key))
-                    (and nickname (not (string/blank? nickname)))
-                    (assoc :nickname nickname)
-                    :else
-                    (assoc :added true))]
-      (fx/merge cofx
-                {:db (dissoc db :contacts/new-identity)
-                 :dispatch-n [[:start-profile-chat public-key]
-                              [:offload-messages constants/timeline-chat-id]]}
-                (upsert-contact contact)
-                (mailserver/process-next-messages-request)))))
+    (contacts-store/add
+     cofx
+     public-key
+     nickname
+     ens-name
+     #(do
+        (re-frame/dispatch [:sanitize-messages-and-process-response %])
+        (re-frame/dispatch [:offload-messages constants/timeline-chat-id])))))
 
 (fx/defn remove-contact
   "Remove a contact from current account's contact list"
@@ -118,16 +97,6 @@
                      :params [public-key]
                      :on-success #(log/debug "contact removed successfully")}]
    :dispatch [:offload-messages constants/timeline-chat-id]})
-
-(fx/defn create-contact
-  "Create entry in contacts"
-  [{:keys [db] :as cofx} public-key]
-  (when (not= (get-in db [:multiaccount :public-key]) public-key)
-    (let [contact (build-contact cofx public-key)]
-      (log/info "create contact" contact)
-      (fx/merge cofx
-                {:db (dissoc db :contacts/new-identity)}
-                (upsert-contact contact)))))
 
 (fx/defn initialize-contacts [cofx]
   (contacts-store/fetch-contacts-rpc cofx #(re-frame/dispatch [::contacts-loaded %])))
@@ -141,29 +110,12 @@
                         :new-chat-name "")}
             (navigation/navigate-to-cofx :contact-toggle-list nil)))
 
-(fx/defn name-verified
-  {:events [:contacts/ens-name-verified]}
-  [{:keys [db now] :as cofx} public-key ens-name]
-  (let [contact (-> (or (get-in db [:contacts/contacts public-key])
-                        (build-contact cofx public-key))
-                    (assoc :name ens-name
-                           :ens-verified true))]
-    (fx/merge cofx
-              {:db            (-> db
-                                  (update-in [:contacts/contacts public-key] merge contact))
-               ::json-rpc/call [{:method "wakuext_ensVerified"
-                                 :params [public-key ens-name]
-                                 :on-success #(log/debug "ens name verified successuful")}]})))
-
 (fx/defn update-nickname
   {:events [:contacts/update-nickname]}
   [{:keys [db] :as cofx} public-key nickname]
-  (let [contact (-> (build-contact cofx public-key)
-                    (merge (get-in db [:contacts/contacts public-key])))]
-    (fx/merge cofx
-              {:db (assoc-in db [:contacts/contacts public-key]
-                             (if (string/blank? nickname)
-                               (dissoc contact :nickname)
-                               (assoc contact :nickname nickname)))}
-              (upsert-contact {:public-key public-key})
-              (navigation/navigate-back))))
+  (fx/merge cofx
+            (contacts-store/set-nickname
+             public-key
+             nickname
+             #(re-frame/dispatch [:sanitize-messages-and-process-response %]))
+            (navigation/navigate-back)))

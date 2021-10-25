@@ -191,6 +191,7 @@
                   :latest-derived-path   0
                   :signing-phrase        signing-phrase
                   :send-push-notifications? true
+                  :backup-enabled?       true
                   :installation-id       (random-guid-generator)
                   ;; default mailserver (history node) setting
                   :use-mailservers?      true

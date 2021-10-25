@@ -57,7 +57,7 @@
   (log/info "universal-links: handling private chat" chat-id)
   (when chat-id
     (if-not (new-chat.db/own-public-key? db chat-id)
-      (chat/start-chat cofx chat-id)
+      (chat/start-chat cofx chat-id nil)
       {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
                           :content (i18n/label :t/can-not-add-yourself)}})))
 

@@ -20,12 +20,10 @@
   (let [{:keys [public-key ens-name]} new-identity]
     (fx/merge cofx
               #(if new-contact?
-                 (contact/add-contact % public-key nickname)
-                 (chat/start-chat % public-key))
+                 (contact/add-contact % public-key nickname ens-name)
+                 (chat/start-chat % public-key ens-name))
               #(when new-contact?
-                 (navigation/navigate-back %))
-              #(when ens-name
-                 (contact/name-verified % public-key ens-name)))))
+                 (navigation/navigate-back %)))))
 
 (fx/defn pinned-messages-pressed
   {:events       [:contact.ui/pinned-messages-pressed]}

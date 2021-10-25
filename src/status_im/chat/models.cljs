@@ -4,6 +4,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chat.models.message-list :as message-list]
             [status-im.data-store.chats :as chats-store]
+            [status-im.data-store.contacts :as contacts-store]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [quo.design-system.colors :as colors]
@@ -254,10 +255,16 @@
 (fx/defn handle-one-to-one-chat-created
   {:events [::one-to-one-chat-created]}
   [{:keys [db]} chat-id response]
-  (let [chat (chats-store/<-rpc (first (:chats response)))]
-    {:db (-> db
-             (assoc-in [:chats chat-id] chat)
-             (update :chats-home-list conj chat-id))
+  (let [chat (chats-store/<-rpc (first (:chats response)))
+        contact-rpc (first (:contacts response))
+        contact (when contact-rpc (contacts-store/<-rpc contact-rpc))]
+    {:db (cond-> db
+           contact
+           (assoc-in [:contacts/contacts chat-id] contact)
+           :always
+           (assoc-in [:chats chat-id] chat)
+           :always
+           (update :chats-home-list conj chat-id))
      :dispatch [:chat.ui/navigate-to-chat chat-id]}))
 
 (fx/defn navigate-to-user-pinned-messages
@@ -269,11 +276,11 @@
 (fx/defn start-chat
   "Start a chat, making sure it exists"
   {:events [:chat.ui/start-chat]}
-  [{:keys [db] :as cofx} chat-id]
+  [{:keys [db] :as cofx} chat-id ens-name]
   ;; don't allow to open chat with yourself
   (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
     {::json-rpc/call [{:method "wakuext_createOneToOneChat"
-                       :params [{:id chat-id}]
+                       :params [{:id chat-id :ensName ens-name}]
                        :on-success #(re-frame/dispatch [::one-to-one-chat-created chat-id %])
                        :on-error #(log/error "failed to create one-to-on chat" chat-id %)}]}))
 

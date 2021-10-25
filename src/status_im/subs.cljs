@@ -260,6 +260,8 @@
 (reg-root-key-sub :bug-report/description-error :bug-report/description-error)
 (reg-root-key-sub :bug-report/details :bug-report/details)
 
+(reg-root-key-sub :backup/performing-backup :backup/performing-backup)
+
 (re-frame/reg-sub
  :communities
  :<- [:raw-communities]

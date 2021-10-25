@@ -9,6 +9,7 @@
 
 (views/defview sync-settings []
   (views/letsubs [{:keys [syncing-on-mobile-network?
+                          backup-enabled?
                           default-sync-period
                           use-mailservers?]}          [:multiaccount]
                   current-mailserver-name             [:mailserver/current-name]]
@@ -23,6 +24,15 @@
                      :accessory-text      (if syncing-on-mobile-network?
                                             (i18n/label :t/mobile-network-use-mobile)
                                             (i18n/label :t/mobile-network-use-wifi))}]
+     [quo/list-item {:size                :small
+                     :title               (i18n/label :t/backup-settings)
+                     :accessibility-label :backup-settings-button
+                     :on-press            #(re-frame/dispatch [:navigate-to :backup-settings])
+                     :chevron             true
+                     :accessory           :text
+                     :accessory-text      (if backup-enabled?
+                                            (i18n/label :t/backup-enabled)
+                                            (i18n/label :t/backup-disabled))}]
      [quo/list-item {:size                :small
                      :title               (i18n/label :t/default-sync-period)
                      :accessibility-label :default-sync-period-button

@@ -78,9 +78,9 @@
     (if-not validation-result
       (if new-contact?
         (fx/merge cofx
-                  (contact/add-contact chat-key nil)
+                  (contact/add-contact chat-key nil nil)
                   (navigation/navigate-to-cofx :contacts-list {}))
-        (chat/start-chat cofx chat-key))
+        (chat/start-chat cofx chat-key nil))
       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                           :content    (case validation-result
                                         :invalid
