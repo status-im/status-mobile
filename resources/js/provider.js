@@ -179,6 +179,10 @@
         this._events[name] = this._events[name].filter(filterListeners);
     }
 
+    EthereumProvider.prototype.removeAllListeners = function () {
+        this._events = {};
+    }
+
     EthereumProvider.prototype.emit = function (name, data) {
         if (!this._events[name]) {
           return
