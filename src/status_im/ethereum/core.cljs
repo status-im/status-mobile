@@ -1,6 +1,7 @@
 (ns status-im.ethereum.core
   (:require [clojure.string :as string]
-            ["web3-utils" :as utils]))
+            ["web3-utils" :as utils]
+            [status-im.ethereum.eip55 :as eip55]))
 
 (defn sha3 [s]
   (when s
@@ -73,6 +74,11 @@
   (-> (get db :multiaccount/accounts)
       get-default-account
       :address))
+
+(defn addresses-without-watch [db]
+  (into #{}
+        (remove #(= (:type %) :watch)
+                (map #(eip55/address->checksum (:address %)) (get db :multiaccount/accounts)))))
 
 (defn naked-address [s]
   (when s
