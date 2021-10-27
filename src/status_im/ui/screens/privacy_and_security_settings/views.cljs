@@ -30,6 +30,7 @@
                           webview-allow-permission-requests?
                           opensea-enabled?
                           profile-pictures-visibility]} [:multiaccount]
+                  has-picture              [:profile/has-picture]
                   supported-biometric-auth [:supported-biometric-auth]
                   keycard?                 [:keycard-multiaccount?]
                   auth-method              [:auth-method]
@@ -135,6 +136,7 @@
      [quo/list-item
       {:size                :small
        :title               (i18n/label :t/show-profile-pictures-to)
+       :disabled            (not has-picture)
        :accessibility-label :show-profile-pictures-to
        :accessory           :text
        :accessory-text      (get titles profile-pictures-show-to)
