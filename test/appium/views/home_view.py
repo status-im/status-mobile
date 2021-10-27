@@ -248,7 +248,7 @@ class HomeView(BaseView):
         chat.public_key_edit_box.send_keys(public_key)
         one_to_one_chat = self.get_chat_view()
         chat.confirm_until_presence_of_element(one_to_one_chat.chat_message_input)
-        if add_in_contacts:
+        if add_in_contacts and one_to_one_chat.add_to_contacts.is_element_displayed():
             one_to_one_chat.add_to_contacts.click()
         if nickname:
             one_to_one_chat.chat_options.click()
