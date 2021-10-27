@@ -14,12 +14,20 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.accordion :as accordion]))
+            [status-im.ui.components.accordion :as accordion]
+            ["react-native-svg" :refer (SvgUri)]
+            [reagent.core :as reagent]))
+
+(def svg-uri (reagent/adapt-react-class SvgUri))
 
 (defn is-image? [nft]
   (and (seq (:image_url nft))
        (not (str/ends-with? (:image_url nft) ".svg"))
        (not (str/ends-with? (:image_url nft) ".mp4"))))
+
+(defn is-vector? [nft]
+  (and (seq (:image_url nft))
+       (str/ends-with? (:image_url nft) ".svg")))
 
 (defn missing-image-placeholder []
   [react/view {:style {:width            "100%"
@@ -75,74 +83,6 @@
    [react/view {:style {:height 40
                         :width  40}}]])
 
-(defn nft-details-modal []
-  (let [nft (<sub [:wallet/selected-collectible])]
-    [react/scroll-view
-     [topbar/topbar
-      {:navigation    {:icon :main-icons/close}
-       :border-bottom false}]
-     [react/view {:padding-horizontal 16}
-      [quo/text {:size   :large
-                 :weight :bold}
-       (:name nft)]
-      [quo/text {:size  :small
-                 :color :secondary
-                 :style {:margin-top 4}}
-       (-> nft :collection :name)]
-
-      (if (is-image? nft)
-        [react/image {:source {:uri (:image_url nft)}
-                      :style  {:width         "100%"
-                               :margin-bottom 16
-                               :aspect-ratio  1
-                               :border-radius 4
-                               :border-width  1
-                               :border-color  colors/gray-lighter}}]
-        [missing-image-placeholder])
-
-      [quo/text {:style {:margin-top 12}}
-       (:description nft)]]
-
-     (when (seq (:traits nft))
-       [nft-traits-scroller (:traits nft)])
-
-     ;; seperator
-     [react/view {:style {:border-bottom-width 1
-                          :padding-top         8
-                          :border-color        colors/gray-lighter}}]
-
-     ;; TODO <shivekkhurana>: Enable txns
-     ;; [quo/list-item {:title    (i18n/label :t/wallet-send)
-     ;;                 :icon     :main-icons/send
-     ;;                 :accessibility-label
-     ;;                 :nft-send
-     ;;                 :theme    :accent
-     ;;                 :on-press #()}]
-
-     ;; TODO <shivekkhurana>: What to do with share?
-     ;; Share links or share image?
-     ;; [quo/list-item {:title    (i18n/label :t/share)
-     ;;                 :theme    :accent
-     ;;                 :accessibility-label
-     ;;                 :nft-share
-     ;;                 :on-press #()
-     ;;                 :icon     :main-icons/share}]
-     [quo/list-item {:title    (i18n/label :t/view-on-opensea)
-                     :theme    :accent
-                     :icon     :main-icons/browser
-                     :on-press #(re-frame/dispatch [:browser.ui/open-url (:permalink nft)])}]
-     (when (is-image? nft)
-       [toastable-highlight-view
-        ;; the last string is an emoji. It might not show up in all editors but its there
-        {:toast-label (str (i18n/label :profile-picture-updated)) " " "😎"}
-        [quo/list-item {:title    (i18n/label :t/use-as-profile-picture)
-                        :theme    :accent
-                        :on-press #(re-frame/dispatch
-                                    [::multiaccounts/save-profile-picture-from-url (:image_url nft)])
-                        :icon     :main-icons/profile
-                        :accessibility-label
-                        :set-nft-as-pfp}]])]))
-
 (defn no-assets-error []
   [react/view {:style {:flex            1
                        :justify-content :center
@@ -154,6 +94,38 @@
    [quo/text {:color :secondary
               :style {:magin-top 8}}
     (i18n/label :t/no-collectibles)]])
+
+(defn render-asset [{:keys [asset width clickable?]}]
+  [(if clickable? react/touchable-opacity react/view)
+   {:style
+    {:width         width
+     :border-radius 16
+     :margin-bottom 16}
+    :on-press (when clickable? #(re-frame/dispatch [::wallet/show-nft-details asset]))
+    :accessibility-label
+    :nft-asset}
+   (cond
+     ;; pngs and jpegs
+     (is-image? asset)
+     [react/image {:style  {:flex          1
+                            :aspect-ratio  1
+                            :border-width  1
+                            :border-color  colors/gray-lighter
+                            :border-radius 16}
+                   :source {:uri (:image_url asset)}}]
+
+     ;; vectors
+     (is-vector? asset)
+     [react/view {:style {:flex          1
+                          :aspect-ratio  1
+                          :border-width  1
+                          :border-color  colors/gray-lighter
+                          :border-radius 16}}
+      [svg-uri {:uri   (:image_url asset)
+                :width "100%" :height "100%"}]]
+
+     ;; ¯\_(ツ)_/¯
+     :else [missing-image-placeholder])])
 
 (defn nft-assets [{:keys [num-assets address collectible-slug]}]
   (let [assets    (<sub [:wallet/collectible-assets-by-collection-and-address address collectible-slug])
@@ -175,22 +147,9 @@
        (seq assets)
        (for [asset assets]
          ^{:key (:id asset)}
-         [react/touchable-opacity
-          {:style
-           {:width         "48%"
-            :border-radius 16
-            :margin-bottom 16}
-           :on-press #(re-frame/dispatch [::wallet/show-nft-details asset])
-           :accessibility-label
-           :nft-asset}
-          (if (is-image? asset)
-            [react/image {:style  {:flex          1
-                                   :aspect-ratio  1
-                                   :border-width  1
-                                   :border-color  colors/gray-lighter
-                                   :border-radius 16}
-                          :source {:uri (:image_url asset)}}]
-            [missing-image-placeholder])]))]))
+         [render-asset {:asset      asset
+                        :clickable? true
+                        :width      "48%"}]))]))
 
 (defn nft-collections [address]
   (let [collection (<sub [:wallet/collectible-collection address])]
@@ -254,3 +213,65 @@
               :align :center
               :style {:margin-top 10}}
     (i18n/label :t/disable-later-in-settings)]])
+
+(defn nft-details-modal []
+  (let [nft (<sub [:wallet/selected-collectible])]
+    [react/scroll-view
+     [topbar/topbar
+      {:navigation    {:icon :main-icons/close}
+       :border-bottom false}]
+     [react/view {:padding-horizontal 16}
+      [quo/text {:size   :large
+                 :weight :bold}
+       (:name nft)]
+      [quo/text {:size  :small
+                 :color :secondary
+                 :style {:margin-top 4}}
+       (-> nft :collection :name)]
+
+      [render-asset {:asset      nft
+                     :clickable? false
+                     :width      "100%"}]
+
+      [quo/text {:style {:margin-top 12}}
+       (:description nft)]]
+
+     (when (seq (:traits nft))
+       [nft-traits-scroller (:traits nft)])
+
+     ;; seperator
+     [react/view {:style {:border-bottom-width 1
+                          :padding-top         8
+                          :border-color        colors/gray-lighter}}]
+
+     ;; TODO <shivekkhurana>: Enable txns
+     ;; [quo/list-item {:title    (i18n/label :t/wallet-send)
+     ;;                 :icon     :main-icons/send
+     ;;                 :accessibility-label
+     ;;                 :nft-send
+     ;;                 :theme    :accent
+     ;;                 :on-press #()}]
+
+     ;; TODO <shivekkhurana>: What to do with share?
+     ;; Share links or share image?
+     ;; [quo/list-item {:title    (i18n/label :t/share)
+     ;;                 :theme    :accent
+     ;;                 :accessibility-label
+     ;;                 :nft-share
+     ;;                 :on-press #()
+     ;;                 :icon     :main-icons/share}]
+     [quo/list-item {:title    (i18n/label :t/view-on-opensea)
+                     :theme    :accent
+                     :icon     :main-icons/browser
+                     :on-press #(re-frame/dispatch [:browser.ui/open-url (:permalink nft)])}]
+     (when (is-image? nft)
+       [toastable-highlight-view
+        ;; the last string is an emoji. It might not show up in all editors but its there
+        {:toast-label (str (i18n/label :profile-picture-updated)) " " "😎"}
+        [quo/list-item {:title    (i18n/label :t/use-as-profile-picture)
+                        :theme    :accent
+                        :on-press #(re-frame/dispatch
+                                    [::multiaccounts/save-profile-picture-from-url (:image_url nft)])
+                        :icon     :main-icons/profile
+                        :accessibility-label
+                        :set-nft-as-pfp}]])]))
