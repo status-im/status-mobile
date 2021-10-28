@@ -1,5 +1,6 @@
 (ns status-im.ui.components.emoji-thumbnail.styles
   (:require [quo.design-system.colors :as colors]
+            [status-im.utils.platform :as platform]
             [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
 
 (defn emoji-thumbnail-icon [color size]
@@ -24,7 +25,8 @@
 
 (def emoji-thumbnail-preview-size 60)
 
-(def emoji-picker-upper-components-size 350)
+(def emoji-picker-upper-components-size
+  (if platform/android? 350 405))
 
 (defn emoji-picker-gray-color []
   (if (colors/dark?) "#c3c3bc99" "#3C3C4399"))
