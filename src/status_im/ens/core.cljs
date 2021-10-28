@@ -15,7 +15,8 @@
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
-            [status-im.utils.random :as random]))
+            [status-im.utils.random :as random]
+            [status-im.bottom-sheet.core :as bottom-sheet]))
 
 (defn fullname [custom-domain? username]
   (if custom-domain?
@@ -165,10 +166,9 @@
 (fx/defn register-name
   {:events [::register-name-pressed]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [custom-domain? username]}
+  (let [{:keys [custom-domain? username address]}
         (:ens/registration db)
         {:keys [public-key]} (:multiaccount db)
-        address (ethereum/default-address db)
         chain (ethereum/chain-keyword db)
         chain-id (ethereum/chain-id db)
         amount (registration-cost chain-id)
@@ -180,6 +180,7 @@
         cofx
         {:contract   (contracts/get-address db :status/snt)
          :method     "approveAndCall(address,uint256,bytes)"
+         :from       address
          :params     [contract
                       (money/unit->token amount 18)
                       (abi-spec/encode "register(bytes32,address,bytes32,bytes32)"
@@ -249,6 +250,13 @@
             {:db (-> db
                      (update :ens/registration dissoc :username :state)
                      (update-in [:ens/registration :custom-domain?] not))}))
+
+(fx/defn change-address
+  {:events [::change-address]}
+  [{:keys [db] :as cofx} _ {:keys [address]}]
+  (fx/merge cofx
+            {:db (assoc-in db [:ens/registration :address] address)}
+            (bottom-sheet/hide-bottom-sheet)))
 
 (fx/defn save-preferred-name
   {:events [::save-preferred-name]}

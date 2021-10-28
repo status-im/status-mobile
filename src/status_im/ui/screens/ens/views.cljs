@@ -23,7 +23,10 @@
             [status-im.utils.debounce :as debounce]
             [clojure.string :as string]
             [status-im.ethereum.tokens :as tokens]
-            [quo.core :as quo])
+            [quo.core :as quo]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.utils.utils :as utils]
+            [status-im.ui.screens.wallet.send.sheets :as sheets])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- link
@@ -261,11 +264,22 @@
     "\n"
     (i18n/label :t/ens-understand)]])
 
+(defn render-account [address]
+  (let [account @(re-frame/subscribe [:account-by-address address])]
+    [quo/list-item
+     {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
+      :title    (:name account)
+      :subtitle (utils/get-shortened-checksum-address (:address account))
+      :chevron  true
+      :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                     {:content (fn [] [sheets/accounts-list :from ::ens/change-address])}])}]))
+
 (defn- registration
   [checked contract address public-key]
   [react/view {:style {:flex 1 :margin-top 24}}
-   [section {:title   (i18n/label :t/wallet-address)
-             :content address}]
+   [react/text {:style {:color colors/gray :font-size 15 :margin-horizontal 16}}
+    (i18n/label :t/wallet)]
+   [render-account address]
    [react/view {:style {:margin-top 14}}
     [section {:title   (i18n/label :t/key)
               :content public-key}]]

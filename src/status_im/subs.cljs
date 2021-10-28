@@ -2612,18 +2612,20 @@
  :<- [:multiaccount/default-account]
  :<- [:multiaccount/public-key]
  :<- [:chain-id]
- :<- [:balance-default]
- (fn [[{:keys [custom-domain? username]}
-       chain default-account public-key chain-id balance]]
-   {:address           (ethereum/normalized-hex (:address default-account))
-    :username          username
-    :public-key        public-key
-    :custom-domain?    custom-domain?
-    :chain             chain
-    :amount-label      (ens-amount-label chain-id)
-    :sufficient-funds? (money/sufficient-funds?
-                        (money/formatted->internal (money/bignumber 10) (ethereum/chain-keyword->snt-symbol chain) 18)
-                        (get balance (ethereum/chain-keyword->snt-symbol chain)))}))
+ :<- [:wallet]
+ (fn [[{:keys [custom-domain? username address]}
+       chain default-account public-key chain-id wallet]]
+   (let [address (or address (ethereum/normalized-hex (:address default-account)))
+         balance (get-in wallet [:accounts address :balance])]
+     {:address           address
+      :username          username
+      :public-key        public-key
+      :custom-domain?    custom-domain?
+      :chain             chain
+      :amount-label      (ens-amount-label chain-id)
+      :sufficient-funds? (money/sufficient-funds?
+                          (money/formatted->internal (money/bignumber 10) (ethereum/chain-keyword->snt-symbol chain) 18)
+                          (get balance (ethereum/chain-keyword->snt-symbol chain)))})))
 
 (re-frame/reg-sub
  :ens/confirmation-screen
