@@ -751,8 +751,9 @@ class ChatView(BaseView):
         return self
 
     def chat_element_by_text(self, text):
-        self.driver.info("Looking for a message by text: %s" % text)
-        return ChatElementByText(self.driver, text)
+        chat_element = ChatElementByText(self.driver, text)
+        self.driver.info("Looking for a message by text: %s" % chat_element.exclude_emoji(text))
+        return chat_element
 
     def verify_message_is_under_today_text(self, text, errors):
         self.driver.info("Verifying that '%s' is under today" % text)

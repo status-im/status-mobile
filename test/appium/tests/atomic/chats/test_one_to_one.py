@@ -201,7 +201,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     def test_edit_delete_message_in_one_to_one_and_public_chats(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        home_1, home_2 = device_1.create_user(enable_notifications=True), device_2.create_user()
 
         device_2.just_fyi("Create public chat on Device1, send message and edit it then")
         public_key_1, username_1 = home_1.get_public_key_and_username(return_username=True)
@@ -247,6 +247,17 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_private_1.home_button.double_click()
         if home_1.element_by_text(message_after_edit_1_1).is_element_displayed():
             self.errors.append("Deleted message is shown on chat element on home screen")
+
+        device_2.just_fyi("Send one more message and check that PN will be deleted with message deletion")
+        message_to_delete = 'DELETE ME'
+        home_1.put_app_to_background()
+        chat_private_2.send_message(message_to_delete)
+        home_1.open_notification_bar()
+        home_1.get_pn(message_to_delete).wait_for_element(30)
+        chat_private_2.delete_message_in_chat(message_to_delete)
+        if not home_1.get_pn(message_to_delete).is_element_disappeared(30):
+            self.errors.append("Push notification was not removed after initial message deletion")
+        home_1.click_system_back_button(2)
 
         chat_private_2.just_fyi("Check for that edited message is shown for Device 2 and delete message in public chat")
         [home.home_button.double_click() for home in (home_1, home_2)]

@@ -89,6 +89,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('Transaction hash was not copied')
 
     @marks.testrail_id(5346)
+    @marks.flaky
     @marks.high
     def test_collectible_from_wallet(self):
         passphrase = wallet_users['F']['passphrase']

@@ -175,10 +175,12 @@ class SignInView(BaseView):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s')" % (password, str(keycard)), device=False)
         if not second_user:
             self.accept_tos_checkbox.click()
-            self.get_started_button.click()
+            self.get_started_button.click_until_presence_of_element(self.generate_key_button)
+            if not self.generate_key_button.is_element_displayed():
+                [button.click() for button in
+                 [self.accept_tos_checkbox, self.get_started_button, self.generate_key_button]]
             self.generate_key_button.click()
-        if not self.next_button.is_element_displayed():
-            [button.click() for button in [self.accept_tos_checkbox, self.get_started_button,self.generate_key_button]]
+
         self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
         if keycard:
             keycard_flow = self.keycard_storage_button.click()

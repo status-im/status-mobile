@@ -153,7 +153,7 @@ class BaseElement(object):
                     self.driver.swipe(500, size["height"]*0.25, 500, size["height"]*0.8)
         else:
             raise NoSuchElementException(
-                "Device %s: %s by %s:* `%s` is not found on the screen" % (self.driver.number, self.name,  self.by, self.locator)) from None
+                "Device %s: %s by %s: `%s` is not found on the screen" % (self.driver.number, self.name,  self.by, self.locator)) from None
 
     def scroll_and_click(self, direction='down'):
         self.scroll_to_element(direction=direction)
@@ -168,6 +168,12 @@ class BaseElement(object):
     def is_element_displayed(self, sec=5, ignored_exceptions=None):
         try:
             return self.wait_for_visibility_of_element(sec, ignored_exceptions=ignored_exceptions)
+        except TimeoutException:
+            return False
+
+    def is_element_disappeared(self, sec=20):
+        try:
+            return self.wait_for_invisibility_of_element(sec)
         except TimeoutException:
             return False
 

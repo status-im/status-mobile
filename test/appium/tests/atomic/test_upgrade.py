@@ -258,7 +258,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         home.upgrade_app()
         home = device_1.sign_in()
 
-        device_1.just_fyi("**Check messages in 1-1 chat**")
+        device_1.just_fyi("Check messages in 1-1 chat")
         command_username = 'Royal Defensive Solenodon'
         messages = chat_data.chats[command_username]['messages']
         home.swipe_up()
