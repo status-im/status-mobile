@@ -40,7 +40,8 @@
             [status-im.notifications.core :as notifications]
             [status-im.utils.currency :as currency]
             [clojure.set :as clojure.set]
-            [quo.design-system.colors :as colors]))
+            [quo.design-system.colors :as colors]
+            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]))
 
 ;; TOP LEVEL ===========================================================================================================
 
@@ -86,6 +87,7 @@
 (reg-root-key-sub :app-state :app-state)
 (reg-root-key-sub :home-items-show-number :home-items-show-number)
 (reg-root-key-sub :waku/v2-peer-stats :peer-stats)
+(reg-root-key-sub :visibility-status-updates :visibility-status-updates)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -200,6 +202,7 @@
 (reg-root-key-sub :intro-wizard-state :intro-wizard)
 
 (reg-root-key-sub :popover/popover :popover/popover)
+(reg-root-key-sub :visibility-status-popover/popover :visibility-status-popover/popover)
 (reg-root-key-sub :add-account :add-account)
 
 (reg-root-key-sub :keycard :keycard)
@@ -293,6 +296,36 @@
    (get-in communities [id :chats])))
 
 (re-frame/reg-sub
+ :communities/community-members
+ :<- [:communities]
+ (fn [communities [_ id]]
+   (get-in communities [id :members])))
+
+(re-frame/reg-sub
+ :communities/sorted-community-members
+ (fn [[_ community-id]]
+   (let [contacts     (re-frame/subscribe [:contacts/contacts])
+         multiaccount (re-frame/subscribe [:multiaccount])
+         members      (re-frame/subscribe
+                       [:communities/community-members community-id])]
+     [contacts multiaccount members]))
+ (fn [[contacts multiaccount members] _]
+   (let [names (reduce
+                (fn [acc identity]
+                  (let [me?     (= (:public-key multiaccount)
+                                   identity)
+                        contact (when-not me?
+                                  (multiaccounts/contact-by-identity
+                                   contacts identity))
+                        name    (first
+                                 (multiaccounts/contact-two-names-by-identity
+                                  contact multiaccount identity))]
+                    (assoc acc identity name))) {} (keys members))]
+     (->> members
+          (sort-by #(get names (get % 0)))
+          (sort-by #(visibility-status-utils/visibility-status-order (get % 0)))))))
+
+(re-frame/reg-sub
  :communities/communities
  :<- [:communities/enabled?]
  :<- [:search/home-filter]
@@ -355,6 +388,11 @@
 
 ;;GENERAL ==============================================================================================================
 
+(re-frame/reg-sub
+ :visibility-status-updates/visibility-status-update
+ :<- [:visibility-status-updates]
+ (fn [visibility-status-updates [_ public-key]]
+   (get visibility-status-updates public-key)))
 
 (re-frame/reg-sub
  :multiaccount/logged-in?
@@ -783,6 +821,12 @@
          :seed
          (string/blank? (security/safe-unmask-data seed))
          false))))
+
+(re-frame/reg-sub
+ :multiaccount/current-user-visibility-status
+ :<- [:multiaccount]
+ (fn [{:keys [current-user-visibility-status]}]
+   current-user-visibility-status))
 
 ;;CHAT ==============================================================================================================
 
@@ -2209,6 +2253,15 @@
    (contact.db/get-active-contacts contacts)))
 
 (re-frame/reg-sub
+ :contacts/sorted-contacts
+ :<- [:contacts/active]
+ (fn [active-contacts]
+   (->> active-contacts
+        (sort-by :alias)
+        (sort-by
+         #(visibility-status-utils/visibility-status-order (:public-key %))))))
+
+(re-frame/reg-sub
  :contacts/active-count
  :<- [:contacts/active]
  (fn [active-contacts]
@@ -2265,8 +2318,7 @@
  :contacts/contact-by-identity
  :<- [:contacts/contacts]
  (fn [contacts [_ identity]]
-   (or (get contacts identity)
-       (multiaccounts/contact-with-names {:public-key identity}))))
+   (multiaccounts/contact-by-identity contacts identity)))
 
 (re-frame/reg-sub
  :contacts/contact-added?
@@ -2281,11 +2333,8 @@
    [(re-frame/subscribe [:contacts/contact-by-identity identity])
     (re-frame/subscribe [:multiaccount])])
  (fn [[contact current-multiaccount] [_ identity]]
-   (let [me? (= (:public-key current-multiaccount) identity)]
-     (if me?
-       [(or (:preferred-name current-multiaccount)
-            (gfycat/generate-gfy identity))]
-       (multiaccounts/contact-two-names contact false)))))
+   (multiaccounts/contact-two-names-by-identity contact current-multiaccount
+                                                identity)))
 
 (re-frame/reg-sub
  :contacts/contact-name-by-identity

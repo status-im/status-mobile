@@ -27,6 +27,8 @@
             status-im.wallet.choose-recipient.core
             status-im.wallet.accounts.core
             status-im.popover.core
+            status-im.visibility-status-popover.core
+            status-im.visibility-status-updates.core
             status-im.bottom-sheet.core
             status-im.add-new.core
             status-im.search.core

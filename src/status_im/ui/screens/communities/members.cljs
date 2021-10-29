@@ -51,8 +51,9 @@
      {:title               first-name
       :subtitle            second-name
       :accessibility-label :member-item
-      :icon                [chat-icon/contact-icon-contacts-tab
-                            (multiaccounts/displayed-photo member)]
+      :icon                 [chat-icon/profile-photo-plus-dot-view
+                             {:public-key public-key
+                              :photo-path (multiaccounts/displayed-photo member)}]
       :accessory           (when (not= public-key my-public-key)
                              [quo/button {:on-press
                                           #(>evt [:bottom-sheet/show-sheet
@@ -89,17 +90,17 @@
   (let [{:keys [community-id]} (<sub [:get-screen-params])]
     (fn []
       (let [my-public-key               (<sub [:multiaccount/public-key])
-            {:keys [members
-                    permissions
-                    can-manage-users?]} (<sub [:communities/community community-id])]
+            {:keys [permissions
+                    can-manage-users?]} (<sub [:communities/community community-id])
+            sorted-members              (<sub [:communities/sorted-community-members
+                                               community-id])]
         [:<>
          [topbar/topbar {:title    (i18n/label :t/community-members-title)
-
-                         :subtitle (str (count members))}]
+                         :subtitle (str (count sorted-members))}]
          [header community-id]
          (when (and can-manage-users? (= constants/community-on-request-access (:access permissions)))
            [requests-to-join community-id])
-         [rn/flat-list {:data        (keys members)
+         [rn/flat-list {:data        (keys sorted-members)
                         :render-data {:community-id community-id
                                       :my-public-key my-public-key
                                       :can-kick-users? (and can-manage-users?

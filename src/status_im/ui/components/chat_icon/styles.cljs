@@ -70,51 +70,6 @@
           :height        64
           :border-radius 32}))
 
-(def online-view-wrapper
-  {:position         :absolute
-   :bottom           -2
-   :right            -2
-   :width            17
-   :height           17
-   :border-radius    11
-   :background-color colors/white})
-
-(def online-view
-  {:position         :absolute
-   :bottom           2
-   :right            2
-   :width            13
-   :height           13
-   :border-radius    9
-   :background-color colors/blue})
-
-(def online-view-profile
-  (merge online-view
-         {:width         24
-          :height        24
-          :border-radius 12}))
-
-(def online-dot
-  {:position         :absolute
-   :top              5
-   :width            3
-   :height           3
-   :border-radius    2
-   :background-color colors/white})
-(def online-dot-left (merge online-dot {:left 2.8}))
-(def online-dot-right (merge online-dot {:left 7.2}))
-
-(def online-dot-profile
-  (merge online-dot
-         {:top    8
-          :width  4
-          :height 4}))
-
-(def online-dot-left-profile
-  (merge online-dot-profile {:left 5}))
-(def online-dot-right-profile
-  (merge online-dot-profile {:left 11}))
-
 (def container-chat-list
   {:width  40
    :height 40})

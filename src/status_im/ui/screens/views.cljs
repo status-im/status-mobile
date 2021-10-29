@@ -5,6 +5,7 @@
             [status-im.ui.screens.screens :as screens]
             [oops.core :refer [oget]]
             [status-im.ui.screens.popover.views :as popover]
+            [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
             [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.wallet.send.views :as wallet.send.views]
@@ -83,6 +84,16 @@
      [react/safe-area-provider
       [inactive]
       [popover/popover]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))
+
+(def visibility-status-popover-comp
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "visibility-status-popover" @reloader/cnt)}
+     [react/safe-area-provider
+      [inactive]
+      [visibility-status-views/visibility-status-popover]
       (when js/goog.DEBUG
         [reloader/reload-view])])))
 

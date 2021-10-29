@@ -131,6 +131,8 @@
    "wakuext_enablePushNotificationsBlockMentions" {}
    "wakuext_disablePushNotificationsBlockMentions" {}
    "wakuext_unreadActivityCenterNotificationsCount" {}
+   "wakuext_setUserStatus" {}
+   "wakuext_statusUpdates" {}
    "multiaccounts_getIdentityImages" {}
    "multiaccounts_getIdentityImage" {}
    "multiaccounts_storeIdentityImage" {}

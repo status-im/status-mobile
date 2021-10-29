@@ -37,8 +37,10 @@
          (when-not minimized
            {:padding-top    subtitle-margin})))
 
-(defn extended-header [{:keys [title photo color subtitle subtitle-icon on-edit on-press monospace bottom-separator emoji]
-                        :or   {bottom-separator true}}]
+(defn extended-header
+  [{:keys [title photo color subtitle subtitle-icon on-edit on-press monospace
+           bottom-separator emoji public-key community?]
+    :or   {bottom-separator true}}]
   (fn [{:keys [animation minimized]}]
     (let [wrapper  (if on-press
                      [rn/touchable-opacity {:on-press on-press}]
@@ -57,7 +59,7 @@
                   [chat-icon.screen/profile-icon-view
                    photo title color emoji (and (not minimized) on-edit)
                    (if minimized avatar-minimized-size avatar-extended-size)
-                   nil]]])
+                   nil public-key community?]]])
           [animated/view {:style          (header-text)
                           :pointer-events :box-none}
            [quo/text {:animated?           true

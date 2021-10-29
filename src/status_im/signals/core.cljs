@@ -7,6 +7,7 @@
             [status-im.notifications.local :as local-notifications]
             [status-im.chat.models.message :as models.message]
             [status-im.chat.models.link-preview :as link.preview]
+            [status-im.visibility-status-updates.core :as visibility-status-updates]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
@@ -41,7 +42,8 @@
               {:db (assoc db
                           :peers-summary peers-summary
                           :peers-count peers-count)}
-              (mailserver/peers-summary-change previous-summary))))
+              (mailserver/peers-summary-change previous-summary)
+              (visibility-status-updates/peers-summary-change peers-count))))
 
 (fx/defn wakuv2-peer-stats
   [{:keys [db]} peer-stats]
