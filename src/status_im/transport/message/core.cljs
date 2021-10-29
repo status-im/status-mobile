@@ -19,6 +19,7 @@
             [status-im.constants :as constants]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.notifications-center.core :as notifications-center]
+            [status-im.visibility-status-updates.core :as models.visibility-status-updates]
             [clojure.string :as string]))
 
 (fx/defn process-next
@@ -42,6 +43,8 @@
         ^js activity-notifications     (.-activityCenterNotifications response-js)
         ^js pin-messages               (.-pinMessages response-js)
         ^js removed-messages           (.-removedMessages response-js)
+        ^js visibility-status-updates  (.-statusUpdates response-js)
+        ^js current-visibility-status  (.-currentStatus response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
 
@@ -149,7 +152,23 @@
         (js-delete response-js "removedMessages")
         (fx/merge cofx
                   (process-next response-js sync-handler)
-                  (models.message/handle-removed-messages removed-messages-clj))))))
+                  (models.message/handle-removed-messages removed-messages-clj)))
+
+      (seq visibility-status-updates)
+      (let [visibility-status-updates-clj (types/js->clj visibility-status-updates)]
+        (js-delete response-js "statusUpdates")
+        (fx/merge cofx
+                  (process-next response-js sync-handler)
+                  (models.visibility-status-updates/handle-visibility-status-updates
+                   visibility-status-updates-clj)))
+
+      (some? current-visibility-status)
+      (let [current-visibility-status-clj (types/js->clj current-visibility-status)]
+        (js-delete response-js "currentStatus")
+        (fx/merge cofx
+                  (process-next response-js sync-handler)
+                  (models.visibility-status-updates/sync-visibility-status-update
+                   current-visibility-status-clj))))))
 
 (defn group-by-and-update-unviewed-counts
   "group messages by current chat, profile updates, transactions and update unviewed counters in db for not curent chats"

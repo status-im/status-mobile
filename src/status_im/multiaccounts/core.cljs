@@ -64,6 +64,17 @@
         (str "@" (or username ens-name)))
       (or alias (gfycat/generate-gfy public-key)))))
 
+(defn contact-by-identity [contacts identity]
+  (or (get contacts identity)
+      (contact-with-names {:public-key identity})))
+
+(defn contact-two-names-by-identity [contact current-multiaccount identity]
+  (let [me? (= (:public-key current-multiaccount) identity)]
+    (if me?
+      [(or (:preferred-name current-multiaccount)
+           (gfycat/generate-gfy identity))]
+      (contact-two-names contact false))))
+
 (def photo-quality-thumbnail :thumbnail)
 (def photo-quality-large :large)
 

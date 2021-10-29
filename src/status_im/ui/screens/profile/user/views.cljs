@@ -17,7 +17,9 @@
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.ui.screens.profile.user.edit-picture :as edit]
             [status-im.utils.utils :as utils]
-            [status-im.ethereum.stateofus :as stateofus])
+            [status-im.ethereum.stateofus :as stateofus]
+            [quo.design-system.spacing :as spacing]
+            [status-im.ui.screens.profile.visibility-status.views :as visibility-status])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-chat-key []
@@ -64,6 +66,9 @@
         chain @(re-frame/subscribe [:chain-keyword])
         registrar (stateofus/get-cached-registrar chain)]
     [:<>
+     [visibility-status/visibility-status-button
+      visibility-status/calculate-button-height-and-dispatch-popover]
+     [quo/separator {:style {:margin-top  (:tiny spacing/spacing)}}]
      [quo/list-item
       (cond-> {:title                (or (when registrar preferred-name)
                                          (i18n/label :t/ens-usernames))

@@ -218,4 +218,7 @@
       (set! pin-background (:pin-background old-colors-mapping-colors)))
     (reset! theme-type type)))
 
-
+;; Colors related to Visibility Status
+(def color-online "#7CDA00")
+(def color-dnd "#FA6565")
+(def color-inactive "#939BA1")

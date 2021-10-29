@@ -15,8 +15,9 @@
     [quo/list-item
      {:title    first-name
       :subtitle second-name
-      :icon     [chat-icon.screen/contact-icon-contacts-tab
-                 (multiaccounts/displayed-photo contact)]
+      :icon     [chat-icon.screen/profile-photo-plus-dot-view
+                 {:public-key public-key
+                  :photo-path (multiaccounts/displayed-photo contact)}]
       :chevron  true
       :on-press #(re-frame/dispatch [:chat.ui/show-profile public-key])}]))
 
@@ -30,7 +31,7 @@
 
 (defview contacts-list []
   (letsubs [blocked-contacts-count [:contacts/blocked-count]
-            contacts      [:contacts/active]]
+            sorted-contacts        [:contacts/sorted-contacts]]
     [react/scroll-view {:flex 1}
      [add-new-contact]
      (when (pos? blocked-contacts-count)
@@ -44,9 +45,9 @@
           :accessory           :text
           :accessory-text      blocked-contacts-count
           :on-press            #(re-frame/dispatch [:navigate-to :blocked-users-list])}]])
-     (if (seq contacts)
+     (if (seq sorted-contacts)
        [list.views/flat-list
-        {:data                      contacts
+        {:data                      sorted-contacts
          :key-fn                    :address
          :render-fn                 contacts-list-item}]
        [react/view {:align-items     :center

@@ -205,7 +205,8 @@
                                         :title    first-name
                                         :photo    (multiaccounts/displayed-photo contact)
                                         :monospace (not ens-verified)
-                                        :subtitle second-name})]
+                                        :subtitle second-name
+                                        :public-key public-key})]
                                      [react/view {:height 1 :background-color colors/gray-lighter :margin-top 8}]
                                      [nickname-settings contact]
                                      [pin-settings public-key (count pinned-messages)]

@@ -41,7 +41,8 @@
                                                                 (get-in community [:images :large :uri]))
                                                     :subtitle (if show-members-count?
                                                                 (i18n/label-pluralize members-count :t/community-members {:count members-count})
-                                                                (i18n/label :t/open-membership))})
+                                                                (i18n/label :t/open-membership))
+                                                    :community? true})
                                :use-insets        true}
           [:<>
            (when-not (string/blank? description)

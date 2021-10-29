@@ -20,6 +20,8 @@
 (def hour (* 60 minute))
 (def day (* 24 hour))
 (def week (* 7 day))
+(defn weeks [w]
+  (* w week))
 (def units [{:name :t/datetime-second-short :limit 60 :in-second 1}
             {:name :t/datetime-minute-short :limit 3600 :in-second 60}
             {:name :t/datetime-hour-short :limit 86400 :in-second 3600}
@@ -144,6 +146,9 @@
 (defn timestamp []
   (inst-ms (js/Date.)))
 
+(defn timestamp-sec []
+  (int (/ (timestamp) 1000)))
+
 (defn timestamp->year-month-day-date [ms]
   (unparse (:year-month-day formatters) (to-date ms)))
 
@@ -167,3 +172,6 @@
     (str day (or (s (mod (- m 20) 10))
                  (s m)
                  (s 0)))))
+
+(defn to-ms [sec]
+  (* 1000 sec))
