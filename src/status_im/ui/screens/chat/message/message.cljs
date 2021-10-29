@@ -533,9 +533,9 @@
                                                              [{:on-press #(when pack
                                                                             (re-frame/dispatch [:chat.ui/show-profile from]))
                                                                :label    (i18n/label :t/view-details)}])))})
-      [react/image {:style  {:margin 10 :width 140 :height 140}
-                    ;;TODO (perf) move to event
-                    :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
+      [react/fast-image {:style  {:margin 10 :width 140 :height 140}
+                         ;;TODO (perf) move to event
+                         :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
      reaction-picker]))
 
 (defmethod ->message constants/content-type-image [{:keys [content in-popover?] :as message} {:keys [on-long-press modal]

@@ -34,6 +34,7 @@ androidx.documentfile:documentfile:1.0.0
 androidx.drawerlayout:drawerlayout:1.0.0
 androidx.exifinterface:exifinterface:1.1.0-beta01
 androidx.exifinterface:exifinterface:1.1.0-rc01
+androidx.exifinterface:exifinterface:1.2.0
 androidx.fragment:fragment:1.0.0
 androidx.fragment:fragment:1.1.0
 androidx.interpolator:interpolator:1.0.0
@@ -333,6 +334,12 @@ com.facebook.soloader:annotation:0.9.0
 com.facebook.soloader:nativeloader:0.9.0
 com.facebook.soloader:soloader:0.9.0
 com.facebook.yoga:proguard-annotations:1.14.1
+com.github.bumptech.glide:annotations:4.12.0
+com.github.bumptech.glide:compiler:4.12.0
+com.github.bumptech.glide:disklrucache:4.12.0
+com.github.bumptech.glide:gifdecoder:4.12.0
+com.github.bumptech.glide:glide:4.12.0
+com.github.bumptech.glide:okhttp3-integration:4.12.0
 com.github.clans:fab:1.6.4
 com.github.gundy:semver4j:0.16.4
 com.github.status-im.status-keycard-java:android:3.0.4

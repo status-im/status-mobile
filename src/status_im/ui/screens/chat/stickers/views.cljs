@@ -39,9 +39,9 @@
        ^{:key (str hash)}
        [react/touchable-highlight {:style    {:height 75 :width 75 :margin 5}
                                    :on-press #(debounce/dispatch-and-chill [:chat/send-sticker sticker] 1000)}
-        [react/image {:style {:resize-mode :cover :width "100%" :height "100%"}
-                      :accessibility-label :sticker-icon
-                      :source {:uri (contenthash/url (str "0x" hash))}}]])]]])
+        [react/fast-image {:style {:width "100%" :height "100%"}
+                           :accessibility-label :sticker-icon
+                           :source {:uri (contenthash/url (str "0x" hash))}}]])]]])
 
 (defview recent-stickers-panel [window-width]
   (letsubs [stickers [:stickers/recent]]
@@ -143,6 +143,6 @@
            ^{:key id}
            [pack-icon {:id               id
                        :background-color colors/white}
-            [react/image {:style  {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
-                          :source {:uri (contenthash/url thumbnail)}}]])]
+            [react/fast-image {:style  {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
+                               :source {:uri (contenthash/url thumbnail)}}]])]
         [scroll-indicator]]]]]))

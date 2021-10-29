@@ -12,7 +12,8 @@
              :refer (SafeAreaProvider SafeAreaInsetsContext)]
             ["@react-native-community/clipboard" :default Clipboard]
             ["react-native-linear-gradient" :default LinearGradient]
-            ["react-native-navigation" :refer (Navigation)])
+            ["react-native-navigation" :refer (Navigation)]
+            ["react-native-fast-image" :as FastImage])
   (:require-macros [status-im.utils.views :as views]))
 
 (def native-modules (.-NativeModules react-native))
@@ -30,6 +31,8 @@
 (def text-input-class (reagent/adapt-react-class (.-TextInput react-native)))
 
 (def image-class (reagent/adapt-react-class (reactjs/memo (.-Image react-native))))
+
+(def fast-image (reagent/adapt-react-class FastImage))
 
 (defn image-get-size [uri callback] (.getSize (.-Image react-native) uri callback))
 (defn resolve-asset-source [uri] (js->clj (.resolveAssetSource (.-Image react-native) uri) :keywordize-keys true))

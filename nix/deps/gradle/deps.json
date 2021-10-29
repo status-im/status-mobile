@@ -602,6 +602,20 @@
   },
 
   {
+    "path": "androidx/exifinterface/exifinterface/1.2.0/exifinterface-1.2.0",
+    "host": "https://dl.google.com/dl/android/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "34832395bc9a4fe2aafdd73605ddf9da9f842e7a",
+      "sha256": "1qi9p1nmdw8d0wpy0nmakvnpj4hgb0xf3aicd8qzn0nclszr2zkg"
+    },
+    "jar": {
+      "sha1": "e8a2f661f33bbfa8e9d226aa5dacae90aedf2fc9",
+      "sha256": "19xf8zwzxlvq2l4qfwfijasjpv3jlz5ylmh5cykpbr4m618qxrma"
+    }
+  },
+
+  {
     "path": "androidx/fragment/fragment/1.0.0/fragment-1.0.0",
     "host": "https://dl.google.com/dl/android/maven2",
     "type": "aar",
@@ -5474,6 +5488,90 @@
   },
 
   {
+    "path": "com/github/bumptech/glide/annotations/4.12.0/annotations-4.12.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "jar",
+    "pom": {
+      "sha1": "94d5a495b107bd421804a296c9073439402c0996",
+      "sha256": "0r1f6n03hrh7m0br3wzx81bz8addxk2pgc0cnfw2bx1n46d469z4"
+    },
+    "jar": {
+      "sha1": "298d793db124809d74ad9a90de5eddc408898c84",
+      "sha256": "13nyz9h7ibplz14nybkcmk464kgg8iasp5c1qf4ws7wkiyzhqhzs"
+    }
+  },
+
+  {
+    "path": "com/github/bumptech/glide/compiler/4.12.0/compiler-4.12.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "jar",
+    "pom": {
+      "sha1": "4a090fcf1fe6ec3782581efc517a8f621e85a804",
+      "sha256": "121xrlvir16f38k7qif0c311l2ccivxaqsq6sr4csdd1jgs25agc"
+    },
+    "jar": {
+      "sha1": "75cf5e43fd6e6c6e769e060014feb985284cfae7",
+      "sha256": "16n94cf2d7sba5r6kzh8sqvvaikl5ph9an6lz4pdabd579rrf0h3"
+    }
+  },
+
+  {
+    "path": "com/github/bumptech/glide/disklrucache/4.12.0/disklrucache-4.12.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "jar",
+    "pom": {
+      "sha1": "0c90a83f7490992222d8bf7227b35e6bc0e4f552",
+      "sha256": "1m0a7yiafry9g84vgqmaznxqhs0sg008vya13i2ckhbcky2nblk4"
+    },
+    "jar": {
+      "sha1": "6d44c9103551e3ff51f00ac26077c143a8fb74f9",
+      "sha256": "0yb38pnjbsb8qc5c4hffp40a4gihj0g65gwdwwp5ib26jq3cj33g"
+    }
+  },
+
+  {
+    "path": "com/github/bumptech/glide/gifdecoder/4.12.0/gifdecoder-4.12.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "9105e854c39f7d5dbcfd04f644a243f31e48033d",
+      "sha256": "1s9qsf8awvnrr3a5ia7ppcj2vx51pnqwd8mvdmqjdl5y0w3vv4w1"
+    },
+    "jar": {
+      "sha1": "a00cc6741d9f7cf025dd93293c724a688c47631e",
+      "sha256": "0158p9w1w80m8fmnzff23n89n8lkw9s3kh9hn81almb8nzaiqyhr"
+    }
+  },
+
+  {
+    "path": "com/github/bumptech/glide/glide/4.12.0/glide-4.12.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "74ef469a4966c69ec7346df8b3895ac11474f8be",
+      "sha256": "1h5qbi06valf58madv01zlapny64368r17x21lck54wy2dr4hvgx"
+    },
+    "jar": {
+      "sha1": "3f57db6cc954212739bb0d693ec48ecbc8ab73c4",
+      "sha256": "11432hpyjc74rhf494xn50c6qcmx49mgii227zjpz5v2vd599qka"
+    }
+  },
+
+  {
+    "path": "com/github/bumptech/glide/okhttp3-integration/4.12.0/okhttp3-integration-4.12.0",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "86bab5a64ff1b3492ca0a416b59de2ed89d46608",
+      "sha256": "0x30kznlw383w6yvz7vynk7mwbhscx4j1lyjl9aa0419byiyw7ng"
+    },
+    "jar": {
+      "sha1": "8235c8ea4484c142ac058b736e807f9c56346e59",
+      "sha256": "086nrnk2i6jgfi6iv2s3gfqhywzzm79isd87x84ks7wpvbs2wwhd"
+    }
+  },
+
+  {
     "path": "com/github/clans/fab/1.6.4/fab-1.6.4",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "aar",
@@ -6440,6 +6538,20 @@
   },
 
   {
+    "path": "com/squareup/okhttp3/okhttp/3.9.1/okhttp-3.9.1",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "jar",
+    "pom": {
+      "sha1": "7a34bfe0899e4b1a4b84f4e9e79c221bd37e9808",
+      "sha256": "1vjwzaf5y4qfc5pvbsa79m11zjvzhn1b3rszvv6xxky1rpha3hdw"
+    },
+    "jar": {
+      "sha1": "84b4b7d1c4a238e7899972b7446c250691e65f1f",
+      "sha256": "0pkqnz1dmfrhvr17qbv1dr5nylvfnf5l8vgw0zjjdfiblhbi1l50"
+    }
+  },
+
+  {
     "path": "com/squareup/okhttp3/okhttp/3.12.1/okhttp-3.12.1",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
@@ -6478,6 +6590,16 @@
     "jar": {
       "sha1": "bf7bed2b2469e05290e258813396114ef080f574",
       "sha256": "1zzmw406i776k076cmrx9g52s7slqw93nq4zga9da7g6q3fwlp7a"
+    }
+  },
+
+  {
+    "path": "com/squareup/okhttp3/parent/3.9.1/parent-3.9.1",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "pom",
+    "pom": {
+      "sha1": "e55ee2b70a7a64431236eac139096e369db69bb6",
+      "sha256": "0lqm0gpbxfkw7n530hfr2jxr7r4cgiia2ahd0m1kb6kwdfzf05gm"
     }
   },
 
