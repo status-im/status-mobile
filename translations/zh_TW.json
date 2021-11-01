@@ -1283,7 +1283,7 @@
     "repeat-pin": "重複新的六位數密碼",
     "repeat-puk": "再次確認新的12位數PUK",
     "replying-to": "回覆給{{author}}",
-    "report-bug-email-template": "1.問題說明\n （請描述您想要的功能，或簡要說明一下錯誤和您的操作，原本預期的事情以及實際發生的結果。請依序在下方填寫） \n\n\n 2.操作步驟\n （請試著回想操作順序，方便我們尋找錯誤。例如：啟動Status後，按下...然後步驟3...，依此類推）\n\n\n 3.預期行為\n （請描述您期望發生的事情。） \n\n\n 4.實際結果\n （請描述實際發生的情況。） \n\n\n 5.請附上可以顯示問題的螢幕截圖\n",
+    "report-bug-email-template": "1.問題說明\n {{description}} \n\n\n 2.操作步驟\n {{steps}}\n\n3.請附上可以顯示問題的螢幕截圖\n",
     "request-access": "申請加入",
     "request-feature": "要求功能",
     "request-membership": "申請會員",

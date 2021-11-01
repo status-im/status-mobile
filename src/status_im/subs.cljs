@@ -257,6 +257,9 @@
 (reg-root-key-sub :anon-metrics/data-visible? :anon-metrics/data-visible?)
 (reg-root-key-sub :anon-metrics/learn-more-visible? :anon-metrics/learn-more-visible?)
 
+(reg-root-key-sub :bug-report/description-error :bug-report/description-error)
+(reg-root-key-sub :bug-report/details :bug-report/details)
+
 (re-frame/reg-sub
  :communities
  :<- [:raw-communities]

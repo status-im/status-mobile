@@ -1294,7 +1294,7 @@
     "repeat-pin": "Répéter le nouveau code PIN",
     "repeat-puk": "Répéter le nouveau code PUK",
     "replying-to": "Répondre à {{author}}",
-    "report-bug-email-template": "1. Description du problème \n (Décrivez la fonctionnalité que vous souhaitez ou résumez brièvement le bogue et ce que vous avez fait, ce à quoi vous vous attendiez et ce qui se passe réellement. Sections ci-dessous) \n\n\n 2. Étapes à suivre pour reproduire \n (Décrivez comment nous pouvons répliquer le bogue étape par étape.) \n - Ouvrir Status \n -... \n - Étape 3, etc. \n\n\n 3. Comportement attendu \n (Décrivez ce que vous attendiez.) \n\n\n 4. Comportement réel \n (Décrivez ce qui s'est réellement passé.) \n\n\n 5. Joignez des captures d’écran permettant de faire la démonstration du problème. \n",
+    "report-bug-email-template": "1. Description du problème \n {{description}}\n\n\n 2. Étapes à suivre pour reproduire \n{{steps}}\n\n\n 3. Joignez des captures d’écran permettant de faire la démonstration du problème. \n",
     "request-access": "Demander l’accès",
     "request-feature": "Demander une fonctionnalité",
     "request-membership": "Demande d'inscription",

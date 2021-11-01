@@ -1279,7 +1279,7 @@
     "repeat-pin": "Repite el nuevo código de acceso de 6 dígitos",
     "repeat-puk": "Repita el nuevo PUK de 12 dígitos",
     "replying-to": "Respondiendo a {{author}}",
-    "report-bug-email-template": "1. Descripción del problema \n (Describe la función que deseas, o resume brevemente el error y lo que hiciste, lo que esperabas que sucediera y lo que realmente sucede. Secciones a continuación) \n\n\n 2. Pasos para reproducir \n (Describe cómo podemos replicar el error paso a paso). \n -Abre Status \n -... \n -Paso 3, etc. \n\n\n 3. Comportamiento esperado \n (Describe lo que esperabas que sucediera). \n\n\n 4. Comportamiento real \n (Describe lo que realmente sucedió). \n\n\n 5. Adjunta capturas de pantalla que puedan demostrar el problema, por favor \n",
+    "report-bug-email-template": "1. Descripción del problema \n {{description}}\n\n\n 2. Pasos para reproducir \n {{steps}} \n\n\n 3. Adjunta capturas de pantalla que puedan demostrar el problema, por favor \n",
     "request-access": "Solicitar acceso",
     "request-feature": "Solicitar una funcionalidad",
     "request-membership": "Solicitar membresía",

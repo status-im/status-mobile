@@ -1279,7 +1279,7 @@
     "repeat-pin": "Ripeti il codice a 6 cifre",
     "repeat-puk": "Ripeti il nuovo PUK di 12 caratteri",
     "replying-to": "Rispondendo a {{author}}",
-    "report-bug-email-template": "1. Descrizione del problema \n (Descrivi la funzionalità che desideri o riassumi brevemente il bug e cosa hai fatto, cosa ti aspetti che succeda e cosa effettivamente accade. Sezioni seguenti) \n\n\n 2. Passaggi per riprodurre \n (Descrivi come possiamo replicare il bug passo dopo passo.) \n -Apri Status\n -... \n -Passo 3, ecc. \n\n\n 3. Comportamento previsto \n (Descrivi cosa ti aspetti che succeda.) \n\n\n 4. Comportamento reale \n (Descrivi cosa è realmente accaduto.) \n\n\n 5. Allegare schermate che possono dimostrare il problema, per favore \n",
+    "report-bug-email-template": "1. Descrizione del problema \n {{description}} \n\n\n 2. Passaggi per riprodurre \n {{steps}} \n\n\n 3. Allegare schermate che possono dimostrare il problema, per favore \n",
     "request-access": "Richiedi accesso",
     "request-feature": "Richiedi una funzionalità",
     "request-membership": "Richiedi adesione",

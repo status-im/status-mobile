@@ -1288,7 +1288,7 @@
     "repeat-pin": "Repita os 6 novos dígitos do código de acesso",
     "repeat-puk": "Repita o novo PUK de 12 dígitos",
     "replying-to": "Respondendo a {{author}}",
-    "report-bug-email-template": "1. Descrição do problema \n (Descreva o recurso que você deseja ou resuma brevemente o bug e o que você fez, o que esperava que acontecesse e o que realmente acontece. Seções abaixo) \n\n\n 2. Passos para reproduzir \n (Descreva como podemos replicar o bug passo a passo.) \n - Abrir Status\n - ... \n - Etapa 3, etc. \n\n\n 3. Comportamento esperado \n (Descreva o que você esperava que acontecesse.) \n\n\n 4. Comportamento real \n (Descreva o que realmente aconteceu.) \n\n\n 5. Por favor, anexe capturas de tela que possam demonstrar o problema \n",
+    "report-bug-email-template": "1. Descrição do problema \n {{description}} \n\n\n 2. Passos para reproduzir \n {{steps}}\n\n\n 3. Por favor, anexe capturas de tela que possam demonstrar o problema \n",
     "request-access": "Solicitar acesso",
     "request-feature": "Solicitar um recurso",
     "request-membership": "Solicitar para entrar",

@@ -1022,7 +1022,7 @@
     "remove-token": "Xóa mã thông báo",
     "removed": "loại bỏ",
     "repeat-pin": "Lặp lại mật mã 6 chữ số mới",
-    "report-bug-email-template": "1. Mô tả vấn đề\n (Mô tả tính năng bạn muốn hoặc tóm tắt ngắn gọn về lỗi và những gì bạn đã làm, những gì bạn mong đợi sẽ xảy ra và những gì thực sự xảy ra. Các phần bên dưới) \n\n\n 2. Các bước tái tạo\n (Mô tả cách chúng tôi có thể sao chép lỗi từng bước.)\n -Tình trạng mở\n -...\n -Bước 3, v.v. \n\n\n 3. Hành vi mong đợi\n (Mô tả những gì bạn mong đợi sẽ xảy ra.) \n\n\n 4. Hành vi thực tế\n (Mô tả những gì thực sự đã xảy ra.) \n\n\n 5. Đính kèm ảnh chụp màn hình có thể demo vấn đề, vui lòng\n",
+    "report-bug-email-template": "1. Mô tả vấn đề\n {{description}} \n\n\n 2. Các bước tái tạo\n {{steps}}\n\n\n 3. Đính kèm ảnh chụp màn hình có thể demo vấn đề, vui lòng\n",
     "request-feature": "Yêu cầu một tính năng",
     "request-membership": "Yêu cầu thành viên",
     "request-pending": "Đợi phản hồi…",

@@ -24,7 +24,7 @@
     :title               (i18n/label :t/submit-bug)
     :accessibility-label :submit-bug-button
     :on-press
-    #(re-frame/dispatch [:logging.ui/send-logs-pressed])
+    #(re-frame/dispatch [:open-modal :bug-report])
     :chevron             true}
    {:size                :small
     :title               (i18n/label :t/request-feature)

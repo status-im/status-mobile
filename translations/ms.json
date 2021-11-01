@@ -1267,7 +1267,7 @@
     "repeat-pin": "Ulangi kod laluan 6 digit baru",
     "repeat-puk": "Ulangi PUK 12 digit baru",
     "replying-to": "Membalas kepada {{author}}",
-    "report-bug-email-template": "1. Penerangan Isu\n (Jelaskan ciri yang anda mahukan, atau ringkaskan pepijat dan apa yang anda buat, apa yang anda harapkan berlaku, dan apa yang sebenarnya berlaku. Bahagian di bawah) \n\n\n 2. Langkah untuk membiak\n (Terangkan bagaimana kita dapat meniru bug langkah demi langkah.)\n -Buka Status\n -...\n -Langkah 3, dll. \n\n\n 3. Tingkah laku yang diharapkan\n (Jelaskan apa yang anda jangkakan akan berlaku.) \n\n\n 4. Tingkah laku sebenar\n (Huraikan apa yang sebenarnya berlaku.) \n\n\n 5. Lampirkan tangkapan skrin yang dapat menunjukkan masalah\n",
+    "report-bug-email-template": "1. Penerangan Isu\n{{description}} \n\n\n 2. Langkah untuk membiak\n {{steps}} \n\n\n 3. Lampirkan tangkapan skrin yang dapat menunjukkan masalah\n",
     "request-access": "Minta akses",
     "request-feature": "Mohon ciri",
     "request-membership": "Minta keahlian",

@@ -460,6 +460,7 @@ RCT_EXPORT_METHOD(saveAccountAndLogin:(NSString *)multiaccountData
 #if DEBUG
     NSLog(@"SaveAccountAndLogin() method called");
 #endif
+    [self getExportDbFilePath];
     NSString *keyUID = [self getKeyUID:multiaccountData];
     NSString *finalConfig = [self prepareDirAndUpdateConfig:config
                                                  withKeyUID:keyUID];
@@ -477,11 +478,23 @@ RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)multiaccountData
 #if DEBUG
     NSLog(@"SaveAccountAndLoginWithKeycard() method called");
 #endif
+    [self getExportDbFilePath];
     NSString *keyUID = [self getKeyUID:multiaccountData];
     NSString *finalConfig = [self prepareDirAndUpdateConfig:config
                                                  withKeyUID:keyUID];
     NSString *result = StatusgoSaveAccountAndLoginWithKeycard(multiaccountData, password, settings, finalConfig, accountsData, chatKey);
     NSLog(@"%@", result);
+}
+
+- (NSString *) getExportDbFilePath {
+    NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"export.db"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if ([fileManager fileExistsAtPath:filePath]) {
+        [fileManager removeItemAtPath:filePath error:nil];
+    }
+    
+    return filePath;
 }
 
 - (NSURL *) getKeyStoreDir:(NSString *)keyUID {
@@ -523,6 +536,7 @@ RCT_EXPORT_METHOD(login:(NSString *)accountData
 #if DEBUG
     NSLog(@"Login() method called");
 #endif
+    [self getExportDbFilePath];
     [self migrateKeystore:accountData password:password];
     NSString *result = StatusgoLogin(accountData, password);
     NSLog(@"%@", result);
@@ -535,6 +549,7 @@ RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
 #if DEBUG
     NSLog(@"LoginWithKeycard() method called");
 #endif
+    [self getExportDbFilePath];
     [self migrateKeystore:accountData password:password];
 
     NSString *result = StatusgoLoginWithKeycard(accountData, password, chatKey);
@@ -858,8 +873,8 @@ RCT_EXPORT_METHOD(exportUnencryptedDatabase:(NSString *)accountData
 #if DEBUG
     NSLog(@"exportUnencryptedDatabase() method called");
 #endif
-    NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"export.db"];
     
+    NSString *filePath = [self getExportDbFilePath];
     StatusgoExportUnencryptedDatabase(accountData, password, filePath);
     
     callback(@[filePath]);

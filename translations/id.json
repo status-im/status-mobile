@@ -1103,7 +1103,7 @@
     "removed": "dihapus",
     "repeat-pin": "Ulangi kode sandi 6 digit yang baru",
     "repeat-puk": "Masukkan kode sandi 6 digit yang baru",
-    "report-bug-email-template": "1. Deskripsi Masalah \n (Jelaskan fitur yang Anda inginkan, atau singkatkan bug dan apa yang Anda lakukan, apa yang Anda harapkan terjadi, dan apa yang sebenarnya terjadi. Bagian di bawah) \n\n\n 2. Langkah-langkah mereproduksi \n (Jelaskan bagaimana kita dapat mereplikasi bug langkah demi langkah.) \n Status -Buka \n -... \n -Langkah 3, dll. \n\n\n 3. Perilaku yang diharapkan \n (Jelaskan apa yang Anda harapkan terjadi.) \n\n\n 4. Perilaku aktual \n (Jelaskan apa yang sebenarnya terjadi.) \n\n\n 5. Tolong pasang screenshot yang bisa menunjukkan masalah \n",
+    "report-bug-email-template": "1. Deskripsi Masalah \n{{description}}\n\n\n 2. Langkah-langkah mereproduksi \n {{steps}}\n\n\n 3. Tolong pasang screenshot yang bisa menunjukkan masalah \n",
     "request-feature": "Minta fitur",
     "request-membership": "Minta keanggotaan",
     "request-pending": "Permintaan tertunda…",

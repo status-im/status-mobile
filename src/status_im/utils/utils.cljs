@@ -53,13 +53,14 @@
 
 (re-frame/reg-fx
  :utils/show-confirmation
- (fn [{:keys [title content confirm-button-text on-accept on-cancel cancel-button-text]}]
+ (fn [{:keys [title content confirm-button-text on-accept on-cancel cancel-button-text extra-options]}]
    (show-confirmation {:title title
                        :content content
                        :confirm-button-text confirm-button-text
                        :cancel-button-text cancel-button-text
                        :on-accept on-accept
-                       :on-cancel on-cancel})))
+                       :on-cancel on-cancel
+                       :extra-options extra-options})))
 
 (defn show-question
   ([title content on-accept]

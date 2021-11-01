@@ -1273,7 +1273,7 @@
     "repeat-pin": "Yeni 6 haneli şifreyi tekrarlayın",
     "repeat-puk": "Yeni 12 haneli PUK'u tekrarlayın",
     "replying-to": "{{author}} yanıtlanıyor",
-    "report-bug-email-template": "1. Sorun Açıklaması\n( İstediğiniz özelliği açıklayın veya hatayı ve ne yaptığınızı, ne olmasını beklediğinizi ve gerçekte ne olduğunu kısaca özetleyin. Aşağıdaki bölümler )\n2. Birincil adım\n( Hatayı adım adım nasıl kopyalayabileceğimizi açıklayın. )\nStatus açın\n3. Adım vb.\n3. Beklenen davranış\n( Ne olmasını beklediğinizi açıklayın. )\n4. Gerçek davranış\n( Gerçekte ne olduğunu açıklayın. )\n5. sorunu demo olabilir ekran görüntüleri ekleyin, lütfen",
+    "report-bug-email-template": "1. Sorun Açıklaması\n{{description}}\n2. Birincil adım\n {{steps}} \n\n\n3. sorunu demo olabilir ekran görüntüleri ekleyin, lütfen",
     "request-access": "Erişim talep et",
     "request-feature": "Bir özellik isteyin",
     "request-membership": "Üyelik iste",
