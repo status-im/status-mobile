@@ -853,11 +853,16 @@ StatusgoStartLocalNotifications();
 }
 
 RCT_EXPORT_METHOD(exportUnencryptedDatabase:(NSString *)accountData
-                  password:(NSString *)password) {
+                  password:(NSString *)password
+                  callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"exportUnencryptedDatabase() method called");
 #endif
-    "";
+    NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"export.db"];
+    
+    StatusgoExportUnencryptedDatabase(accountData, password, filePath);
+    
+    callback(@[filePath]);
 }
 
 RCT_EXPORT_METHOD(importUnencryptedDatabase:(NSString *)accountData

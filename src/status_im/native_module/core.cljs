@@ -66,12 +66,12 @@
 
 (defn export-db
   "NOTE: beware, the password has to be sha3 hashed"
-  [key-uid account-data hashed-password]
+  [key-uid account-data hashed-password callback]
   (log/debug "[native-module] export-db")
   (clear-web-data)
   (init-keystore
    key-uid
-   #(.exportUnencryptedDatabase ^js (status) account-data hashed-password)))
+   #(.exportUnencryptedDatabase ^js (status) account-data hashed-password callback)))
 
 (defn import-db
   "NOTE: beware, the password has to be sha3 hashed"

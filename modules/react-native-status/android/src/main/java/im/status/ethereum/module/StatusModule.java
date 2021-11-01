@@ -371,7 +371,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void exportUnencryptedDatabase(final String accountData, final String password) {
+    public void exportUnencryptedDatabase(final String accountData, final String password, final Callback callback) {
         Log.d(TAG, "login");
 
         final File newFile = getExportDBFile();

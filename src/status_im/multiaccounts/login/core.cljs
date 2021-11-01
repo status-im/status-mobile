@@ -38,7 +38,9 @@
             [status-im.navigation :as navigation]
             [status-im.signing.eip1559 :as eip1559]
             [status-im.data-store.chats :as data-store.chats]
-            [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]))
+            [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.platform :as platform]))
 
 (re-frame/reg-fx
  ::initialize-communities-enabled
@@ -65,8 +67,8 @@
 
 (re-frame/reg-fx
  ::export-db
- (fn [[key-uid account-data hashed-password]]
-   (status/export-db key-uid account-data hashed-password)))
+ (fn [[key-uid account-data hashed-password callback]]
+   (status/export-db key-uid account-data hashed-password callback)))
 
 (re-frame/reg-fx
  ::import-db
@@ -143,10 +145,15 @@
   [{:keys [db]}]
   (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
     {::export-db [key-uid
-                  (types/clj->json {:name       name
-                                    :key-uid    key-uid
-                                    :identicon  identicon})
-                  (ethereum/sha3 (security/safe-unmask-data password))]}))
+                  (types/clj->json {:name      name
+                                    :key-uid   key-uid
+                                    :identicon identicon})
+                  (ethereum/sha3 (security/safe-unmask-data password))
+                  (fn [path]
+                    (when platform/ios?
+                      (let [uri (str "file://" path)]
+                        (.share ^js react/sharing (clj->js {:title "Unencrypted database"
+                                                            :url   uri})))))]}))
 
 (fx/defn import-db-submitted
   {:events [:multiaccounts.login.ui/import-db-submitted]}
