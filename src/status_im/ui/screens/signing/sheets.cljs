@@ -176,6 +176,7 @@
      [react/view
       {:style {:margin-left     12
                :margin-right    16
+               :margin-bottom   20
                :flex-direction  :row
                :align-items     :center
                :justify-content :space-between}}
