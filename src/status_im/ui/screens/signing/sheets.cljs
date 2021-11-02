@@ -87,7 +87,7 @@
             (money/->wei :gwei (:value-number max-fee-per-gas-edit)))
            (:value-number gas-edit))
           (money/bignumber 0))]
-    [react/view
+    [:<>
      [react/view {:style {:margin-horizontal 16 :margin-top 8}}
       [react/text {:style {:typography :title-bold}} (i18n/label :t/max-priority-fee)]
       [react/text {:style {:color      (colors/get-color :text-02)

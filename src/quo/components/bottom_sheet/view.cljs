@@ -47,7 +47,11 @@
         {window-height :height}   (rn/use-window-dimensions)
         {:keys [keyboard-shown
                 keyboard-height]} (rn/use-keyboard)
+        keyboard-height-android-delta (if (and platform/android? keyboard-shown) (+ keyboard-height 20) 0)
         safe-area                 (safe-area/use-safe-area)
+        window-height             (- window-height (if platform/android?
+                                                     (+ 50 keyboard-height-android-delta)
+                                                     0))
         min-height                (+ (* styles/vertical-padding 2) (:bottom safe-area))
         max-height                (- window-height (:top safe-area) styles/margin-top)
         visible                   (react/state false)
@@ -199,7 +203,7 @@
                                         {:opacity          opacity
                                          :background-color (:backdrop @colors/theme)}))}]]
        [animated/view {:style (merge (styles/content-container window-height)
-                                     {:transform [{:translateY translate-y}
+                                     {:transform [{:translateY (animated/add translate-y keyboard-height-android-delta)}
                                                   {:translateY (* window-height 2)}]})}
         [gesture-handler/pan-gesture-handler (merge on-master-event
                                                     {:ref      master-ref
