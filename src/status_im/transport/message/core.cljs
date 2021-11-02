@@ -50,31 +50,10 @@
 
       (seq chats)
       (do
-        (when (seq contacts)
-          ;; Note(rasom): in case if response contains contacts entries, some
-          ;; of them might be blocked. That means we might need to recalculate
-          ;; unviewed/mentions counters in chats where blocked users sent
-          ;; messages. Currently we ignore unviewed/mentions values which come
-          ;; from go side (see code few lines below) because it (probably)
-          ;; breaks app-db state. But we still have to apply those values when
-          ;; blocked contact is received from a paired device.
-          ;; In order to do so, we store all affected chats separately so that
-          ;; process loop might continue and then we use those chats on
-          ;; processing contacts update. Currently it causes one bug: for some
-          ;; reason own messages are counted as unviewed in 1-1 chat if they are
-          ;; sent on paired device. Although this change reveals the bug it is
-          ;; not the cause and thus the bug should be fixed separately.
-          (set! (.-chatsForContacts response-js) chats))
         (js-delete response-js "chats")
         (fx/merge cofx
                   (process-next response-js sync-handler)
-                  (models.chat/ensure-chats (map #(-> %
-                                                      (data-store.chats/<-rpc)
-                                                      ;; We dissoc this fields as they are handled by status-react and
-                                                      ;; not status-go, as there might be requests in-flight that change
-                                                      ;; this value
-                                                      (dissoc :unviewed-messages-count :unviewed-mentions-count))
-                                                 (types/js->clj chats)))))
+                  (models.chat/ensure-chats (map data-store.chats/<-rpc (types/js->clj chats)))))
 
       (seq messages)
       (models.message/receive-many cofx response-js)
