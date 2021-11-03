@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.89.18",
-    "commit-sha1": "4a0ad1cf69dada9569664cefee81f3cf7a9312ae",
-    "src-sha256": "19rghmv0jqdw7l66rnib9001rxl2hszmkam2v0q4999x8qnj2jfl"
+    "version": "fix/keep-existing-profile-images-on-saving-contact",
+    "commit-sha1": "32dc911ccbebe7e70fb28f81c7ebde65ff907fa5",
+    "src-sha256": "0nmka3dw5qc4hf8aw9jvq42j11s7adcxih5sbdw71bj0i4s8kdwm"
 }
