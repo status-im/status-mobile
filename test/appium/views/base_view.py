@@ -562,7 +562,6 @@ class BaseView(object):
         element.click()
         return self.get_chat_view()
 
-
     def find_values_in_logcat(self, **kwargs):
         logcat = self.logcat
         items_in_logcat = list()
@@ -583,7 +582,6 @@ class BaseView(object):
                 self.driver.info('%s was found in geth.log' % value)
                 result = True
         return result
-
 
     def asset_by_name(self, asset_name):
         return AssetButton(self.driver, asset_name)
@@ -650,4 +648,10 @@ class BaseView(object):
         string_source = self.driver.page_source
         source = open(full_path_to_file, "a+")
         source.write(string_source)
+
+    def double_tap(self):
+        actions = TouchAction(self.driver)
+        size = self.driver.get_window_size()
+        actions.tap(x=size["width"]/2, y=size["height"]/2, count=2)
+        actions.perform()
 

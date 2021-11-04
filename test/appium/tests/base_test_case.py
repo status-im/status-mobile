@@ -94,7 +94,7 @@ class AbstractTestCase:
         desired_caps['deviceName'] = 'nexus_5'
         desired_caps['platformName'] = 'Android'
         desired_caps['appiumVersion'] = '1.9.1'
-        desired_caps['platformVersion'] = pytest_config_global['platform_version']
+        desired_caps['platformVersion'] = '10.0'
         desired_caps['newCommandTimeout'] = 600
         desired_caps['fullReset'] = False
         desired_caps['unicodeKeyboard'] = True
@@ -118,7 +118,7 @@ class AbstractTestCase:
     def implicitly_wait(self):
         return 5
 
-    network_api = NetworkApi()
+    # network_api = NetworkApi()
     github_report = GithubHtmlReport()
 
     def is_alert_present(self, driver):
@@ -200,8 +200,11 @@ class SingleDeviceTestCase(AbstractTestCase):
 
 class LocalMultipleDeviceTestCase(AbstractTestCase):
 
+    @classmethod
+    def setup_class(cls):
+        cls.drivers = dict()
+
     def setup_method(self, method):
-        self.drivers = dict()
         self.errors = Errors()
 
     def create_drivers(self, quantity):
@@ -214,8 +217,16 @@ class LocalMultipleDeviceTestCase(AbstractTestCase):
     def teardown_method(self, method):
         for driver in self.drivers:
             try:
-                self.add_alert_text_to_report(driver)
-                self.drivers[driver].quit()
+                self.add_alert_text_to_report(self.drivers[driver])
+                # self.drivers[driver].quit()
+            except WebDriverException:
+                pass
+
+    @classmethod
+    def teardown_class(cls):
+        for driver in cls.drivers:
+            try:
+                cls.drivers[driver].quit()
             except WebDriverException:
                 pass
 
