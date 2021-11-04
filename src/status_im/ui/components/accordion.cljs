@@ -17,7 +17,7 @@
 (defn section
   "Render collapsible section"
   [_props]
-  (let [opened? (reagent/atom false)]
+  (let [opened? (reagent/atom (get _props :default))]
     (fn [{:keys [title content icon opened disabled
                  padding-vertical dropdown-margin-left
                  open-container-style

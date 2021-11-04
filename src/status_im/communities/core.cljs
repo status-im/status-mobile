@@ -586,3 +586,56 @@
     (fx/merge cofx
               (navigation/navigate-back)
               (remove-chat-from-category community-id id categoryID))))
+
+(fx/defn reorder-category
+  {:events [::reorder-community-category]}
+  [_ community-id category-id new-position]
+  {::json-rpc/call [{:method     "wakuext_reorderCommunityCategories"
+                     :params     [{:communityId community-id
+                                   :categoryId  category-id
+                                   :position    new-position}]
+                     :js-response true
+                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                     :on-error    #(log/error "failed to reorder community category" %)}]})
+
+(defn category-hash [public-key community-id category-id]
+  (hash (str public-key community-id category-id)))
+
+(fx/defn store-category-state
+  {:events [::store-category-state]}
+  [{:keys [db]} community-id category-id state-open?]
+  (let [public-key (get-in db [:multiaccount :public-key])
+        hash       (category-hash public-key community-id category-id)]
+    {::async-storage/set! {hash state-open?}}))
+
+(fx/defn update-category-states-in-db
+  {:events [::category-states-loaded]}
+  [{:keys [db]} community-id hashes states]
+  (let [public-key     (get-in db [:multiaccount :public-key])
+        categories-old (get-in db [:communities community-id :categories])
+        categories     (reduce (fn [acc [category-id category]]
+                                 (let [hash             (get hashes category-id)
+                                       state            (get states hash)
+                                       category-updated (assoc category :state state)]
+                                   (assoc acc category-id category-updated)))
+                               {} categories-old)]
+    {:db (update-in db [:communities community-id :categories] merge categories)}))
+
+(fx/defn load-category-states
+  {:events [::load-category-states]}
+  [{:keys [db]} community-id]
+  (let [public-key            (get-in db [:multiaccount :public-key])
+        categories            (get-in db [:communities community-id :categories])
+        {:keys [keys hashes]} (reduce (fn [acc category]
+                                        (let [category-id (get category 0)
+                                              hash        (category-hash
+                                                           public-key
+                                                           community-id
+                                                           category-id)]
+                                          (-> acc
+                                              (assoc-in [:hashes category-id] hash)
+                                              (update :keys #(conj % hash)))))
+                                      {} categories)]
+    {::async-storage/get {:keys keys
+                          :cb   #(re-frame/dispatch
+                                  [::category-states-loaded community-id hashes %])}}))

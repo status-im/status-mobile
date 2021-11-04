@@ -115,6 +115,7 @@
             [status-im.ui.screens.chat.pinned-messages :as pin-messages]
             [status-im.ui.screens.communities.create-category :as create-category]
             [status-im.ui.screens.communities.select-category :as select-category]
+            [status-im.ui.screens.communities.reorder-categories :as reorder-categories]
             [status-im.ui.screens.wallet.accounts-manage.views :as accounts-manage]))
 
 (def components
@@ -289,6 +290,10 @@
             :insets    {:bottom true}
             :options   {:topBar {:visible false}}
             :component community/community-edit}
+           {:name      :community-reorder-categories
+            :insets    {:top false}
+            :options   {:topBar {:visible false}}
+            :component reorder-categories/view}
            {:name      :community-channel-details
             :insets    {:top false}
             ;;TODO custom

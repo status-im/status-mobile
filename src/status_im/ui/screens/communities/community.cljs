@@ -139,7 +139,14 @@
           :title               (i18n/label :t/edit-chats)
           :accessibility-label :community-edit-chats
           :icon                :main-icons/edit
-          :on-press            #(hide-sheet-and-dispatch [:open-modal :community-edit-chats {:community-id id}])}]])]))
+          :on-press            #(hide-sheet-and-dispatch [:open-modal :community-edit-chats {:community-id id}])}]
+        [quo/list-item
+         {:theme               :accent
+          :title               (i18n/label :t/reorder-categories)
+          :accessibility-label :community-reorder-categories
+          :icon                :main-icons/channel-category
+          :on-press            #(hide-sheet-and-dispatch
+                                 [:open-modal :community-reorder-categories {:community-id id}])}]])]))
 
 (defn blank-page [text]
   [rn/view {:style {:padding 16 :flex 1 :flex-direction :row :align-items :center :justify-content :center}}
@@ -163,11 +170,14 @@
 
 (defn categories-accordion [community-id chats categories edit data]
   [:<>
-   (for [{:keys [name id]} (vals categories)]
+   (for [{:keys [name id state]} (vals categories)]
      ^{:key (str "cat" name id)}
      [:<>
       [accordion/section
-       {:opened   edit
+       {:on-open  #(>evt [::communities/store-category-state community-id id true])
+        :on-close #(>evt [::communities/store-category-state community-id id false])
+        :default  state
+        :opened   edit
         :disabled edit
         :title    [rn/view styles/category-item
                    (if edit
@@ -195,7 +205,9 @@
 (defn community-chat-list [community-id categories edit from-chat]
   (let [chats (<sub [:chats/categories-by-community-id community-id])]
     (if (and (empty? categories) (empty? chats))
-      [blank-page (i18n/label :t/welcome-community-blank-message)]
+      (if edit
+        [blank-page (i18n/label :t/welcome-community-blank-message-edit-chats)]
+        [blank-page (i18n/label :t/welcome-community-blank-message)])
       [list/flat-list
        {:key-fn                       :chat-id
         :content-container-style      {:padding-bottom 8}
@@ -258,7 +270,8 @@
 (defn community-edit []
   (let [{:keys [community-id]} (<sub [:get-screen-params])]
     (fn []
-      (let [{:keys [id name images members permissions color categories]} (<sub [:communities/community community-id])]
+      (let [{:keys [id name images members permissions color]} (<sub [:communities/community community-id])
+            categories (<sub [:communities/sorted-categories community-id])]
         [:<>
          [topbar/topbar
           {:modal?  true
@@ -274,9 +287,10 @@
 (defn community []
   (let [{:keys [community-id from-chat]} (<sub [:get-screen-params])]
     (fn []
-      (let [{:keys [id chats name images members permissions color joined can-request-access?
-                    can-join? requested-to-join-at admin categories]
-             :as   community}      (<sub [:communities/community community-id])]
+      (let [{:keys [id chats name images members permissions color joined
+                    can-request-access? can-join? requested-to-join-at admin]
+             :as   community} (<sub [:communities/community community-id])
+            categories        (<sub [:communities/sorted-categories community-id])]
         (if community
           [rn/view {:style {:flex 1}}
            [topbar/topbar
