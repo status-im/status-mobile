@@ -24,7 +24,7 @@
 (defn view []
   (let [{:keys [community-id chat]} (<sub [:get-screen-params])]
     (fn []
-      (let [categories (<sub [:community/categories community-id])
+      (let [categories (<sub [:communities/sorted-categories community-id])
             comm-chat (<sub [:chats/community-chat-by-id community-id (:chat-id chat)])
             _ (reset! selected-item (:categoryID comm-chat))]
         [:<>

@@ -888,6 +888,13 @@
    categories))
 
 (re-frame/reg-sub
+ :communities/sorted-categories
+ :<- [:communities]
+ (fn [communities [_ id]]
+   (->> (get-in communities [id :categories])
+        (sort-by #(:position (get % 1))))))
+
+(re-frame/reg-sub
  :chats/current-chat-ui-props
  :<- [::chat-ui-props]
  :<- [:chats/current-chat-id]

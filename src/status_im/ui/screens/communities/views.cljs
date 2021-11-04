@@ -41,6 +41,7 @@
                                                     {:border-bottom-color (quo.colors/get-color :ui-01)
                                                      :border-bottom-width 1}))
                             :on-press      (fn []
+                                             (>evt [::communities/load-category-states id])
                                              (>evt [:dismiss-keyboard])
                                              (>evt [:navigate-to :community {:community-id id}]))
                             :on-long-press #(>evt [:bottom-sheet/show-sheet
