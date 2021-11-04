@@ -138,7 +138,7 @@
         } else if (payload.method == "net_version"){
             return web3Response(payload, window.statusAppNetworkId)
         } else if (payload.method == "eth_chainId"){
-            return web3Response(payload, "0x" + window.statusAppNetworkId.toString(16))
+            return web3Response(payload, "0x" + Number(window.statusAppNetworkId).toString(16))
         } else if (payload.method == "eth_uninstallFilter"){
             return web3Response(payload, true);
         } else {
@@ -159,7 +159,7 @@
     EthereumProvider.prototype.isConnected = function () { return true; };
     // Set legacy metamask fields https://docs.metamask.io/guide/ethereum-provider.html#legacy-api
     EthereumProvider.prototype.networkVersion = window.statusAppNetworkId;
-    EthereumProvider.prototype.chainId = "0x" + window.statusAppNetworkId.toString(16);
+    EthereumProvider.prototype.chainId = "0x" + Number(window.statusAppNetworkId).toString(16);
 
     EthereumProvider.prototype._events = {};
 
@@ -222,6 +222,7 @@
          var syncResponse = getSyncResponse({method: method});
          if (syncResponse){
              return new Promise(function (resolve, reject) {
+                                        if (window.statusAppDebug) { console.log("resolve sync: " + resolve + " " + JSON.stringify(syncResponse.result)); }
                                         resolve(syncResponse.result);
                                     });
          }
