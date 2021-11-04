@@ -19,46 +19,88 @@ from tests import test_suite_data, start_threads, appium_container, pytest_confi
 import base64
 from re import findall
 
+sauce_username = environ.get('SAUCE_USERNAME')
+
+
+sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
+
+executor_sauce_lab = 'http://%s:%s@ondemand.saucelabs.com:80/wd/hub' % (sauce_username, sauce_access_key)
+
+executor_local = 'http://localhost:4723/wd/hub'
+
+implicit_wait = 5
+
+
+def get_capabilities_local():
+    desired_caps = dict()
+    if pytest_config_global['docker']:
+        # apk is in shared volume directory
+        apk = '/root/shared_volume/%s' % pytest_config_global['apk']
+    else:
+        apk = pytest_config_global['apk']
+    desired_caps['app'] = apk
+    desired_caps['deviceName'] = 'nexus_5'
+    desired_caps['platformName'] = 'Android'
+    desired_caps['appiumVersion'] = '1.9.1'
+    desired_caps['platformVersion'] = '10.0'
+    desired_caps['newCommandTimeout'] = 600
+    desired_caps['fullReset'] = False
+    desired_caps['unicodeKeyboard'] = True
+    desired_caps['automationName'] = 'UiAutomator2'
+    desired_caps['setWebContentDebuggingEnabled'] = True
+    return desired_caps
+
+
+def add_local_devices_to_capabilities():
+    updated_capabilities = list()
+    raw_out = re.split(r'[\r\\n]+', str(subprocess.check_output(['adb', 'devices'])).rstrip())
+    for line in raw_out[1:]:
+        serial = re.findall(r"(([\d.\d:]*\d+)|\bemulator-\d+)", line)
+        if serial:
+            capabilities = get_capabilities_local()
+            capabilities['udid'] = serial[0][0]
+            updated_capabilities.append(capabilities)
+    return updated_capabilities
+
+
+def get_capabilities_sauce_lab():
+    desired_caps = dict()
+    desired_caps['app'] = 'sauce-storage:' + test_suite_data.apk_name
+
+    desired_caps['build'] = pytest_config_global['build']
+    desired_caps['name'] = test_suite_data.current_test.name
+    desired_caps['platformName'] = 'Android'
+    desired_caps['appiumVersion'] = '1.18.1'
+    desired_caps['platformVersion'] = '10.0'
+    desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
+    desired_caps['deviceOrientation'] = "portrait"
+    desired_caps['commandTimeout'] = 600
+    desired_caps['idleTimeout'] = 600
+    desired_caps['unicodeKeyboard'] = True
+    desired_caps['automationName'] = 'UiAutomator2'
+    desired_caps['setWebContentDebuggingEnabled'] = True
+    desired_caps['ignoreUnimportantViews'] = False
+    desired_caps['enableNotificationListener'] = True
+    desired_caps['maxDuration'] = 1800
+    return desired_caps
+
+
+def update_capabilities_sauce_lab(new_capabilities: dict):
+    caps = get_capabilities_sauce_lab().copy()
+    caps.update(new_capabilities)
+    return caps
+
 
 class AbstractTestCase:
     __metaclass__ = ABCMeta
 
-    @property
-    def sauce_username(self):
-        return environ.get('SAUCE_USERNAME')
-
-    @property
-    def sauce_access_key(self):
-        return environ.get('SAUCE_ACCESS_KEY')
-
-    @property
-    def executor_sauce_lab(self):
-        return 'http://%s:%s@ondemand.saucelabs.com:80/wd/hub' % (self.sauce_username, self.sauce_access_key)
-
-    @property
-    def executor_local(self):
-        return 'http://localhost:4723/wd/hub'
-
-    @staticmethod
-    def print_sauce_lab_info(driver):
+    def print_sauce_lab_info(self, driver):
         sys.stdout = sys.stderr
         print("SauceOnDemandSessionID=%s job-name=%s" % (driver.session_id,
                                                          pytest_config_global['build']))
 
-    @staticmethod
-    def get_translation_by_key(key):
+    def get_translation_by_key(self, key):
         return transl[key]
-
-    def add_local_devices_to_capabilities(self):
-        updated_capabilities = list()
-        raw_out = re.split(r'[\r\\n]+', str(subprocess.check_output(['adb', 'devices'])).rstrip())
-        for line in raw_out[1:]:
-            serial = re.findall(r"(([\d.\d:]*\d+)|\bemulator-\d+)", line)
-            if serial:
-                capabilities = self.capabilities_local
-                capabilities['udid'] = serial[0][0]
-                updated_capabilities.append(capabilities)
-        return updated_capabilities
 
     @property
     def app_path(self):
@@ -71,53 +113,6 @@ class AbstractTestCase:
     def geth_path(self):
         return self.app_path + 'geth.log'
 
-    @property
-    def capabilities_sauce_lab(self):
-        desired_caps = dict()
-        desired_caps['app'] = 'sauce-storage:' + test_suite_data.apk_name
-
-        desired_caps['build'] = pytest_config_global['build']
-        desired_caps['name'] = test_suite_data.current_test.name
-        desired_caps['platformName'] = 'Android'
-        desired_caps['appiumVersion'] = '1.18.1'
-        desired_caps['platformVersion'] = '10.0'
-        desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
-        desired_caps['deviceOrientation'] = "portrait"
-        desired_caps['commandTimeout'] = 600
-        desired_caps['idleTimeout'] = 600
-        desired_caps['unicodeKeyboard'] = True
-        desired_caps['automationName'] = 'UiAutomator2'
-        desired_caps['setWebContentDebuggingEnabled'] = True
-        desired_caps['ignoreUnimportantViews'] = False
-        desired_caps['enableNotificationListener'] = True
-        desired_caps['maxDuration'] = 1800
-        return desired_caps
-
-    def update_capabilities_sauce_lab(self, new_capabilities: dict):
-        caps = self.capabilities_sauce_lab.copy()
-        caps.update(new_capabilities)
-        return caps
-
-    @property
-    def capabilities_local(self):
-        desired_caps = dict()
-        if pytest_config_global['docker']:
-            # apk is in shared volume directory
-            apk = '/root/shared_volume/%s' % pytest_config_global['apk']
-        else:
-            apk = pytest_config_global['apk']
-        desired_caps['app'] = apk
-        desired_caps['deviceName'] = 'nexus_5'
-        desired_caps['platformName'] = 'Android'
-        desired_caps['appiumVersion'] = '1.9.1'
-        desired_caps['platformVersion'] = pytest_config_global['platform_version']
-        desired_caps['newCommandTimeout'] = 600
-        desired_caps['fullReset'] = False
-        desired_caps['unicodeKeyboard'] = True
-        desired_caps['automationName'] = 'UiAutomator2'
-        desired_caps['setWebContentDebuggingEnabled'] = True
-        return desired_caps
-
     @abstractmethod
     def setup_method(self, method):
         raise NotImplementedError('Should be overridden from a child class')
@@ -129,10 +124,6 @@ class AbstractTestCase:
     @property
     def environment(self):
         return pytest_config_global['env']
-
-    @property
-    def implicitly_wait(self):
-        return 5
 
     network_api = NetworkApi()
     github_report = GithubHtmlReport()
@@ -197,13 +188,13 @@ class SingleDeviceTestCase(AbstractTestCase):
             appium_container.start_appium_container(pytest_config_global['docker_shared_volume'])
             appium_container.connect_device(pytest_config_global['device_ip'])
 
-        (executor, capabilities) = (self.executor_sauce_lab, self.capabilities_sauce_lab) if \
-            self.environment == 'sauce' else (self.executor_local, self.capabilities_local)
+        (executor, capabilities) = (executor_sauce_lab, get_capabilities_sauce_lab()) if \
+            self.environment == 'sauce' else (executor_local, get_capabilities_local())
         for key, value in kwargs.items():
             capabilities[key] = value
         self.driver = Driver(executor, capabilities)
         test_suite_data.current_test.testruns[-1].jobs[self.driver.session_id] = 1
-        self.driver.implicitly_wait(self.implicitly_wait)
+        self.driver.implicitly_wait(implicit_wait)
         self.errors = Errors()
 
         if pytest_config_global['docker']:
@@ -241,7 +232,7 @@ class LocalMultipleDeviceTestCase(AbstractTestCase):
     def teardown_method(self, method):
         for driver in self.drivers:
             try:
-                self.add_alert_text_to_report(driver)
+                self.add_alert_text_to_report(self.drivers[driver])
                 self.drivers[driver].quit()
             except WebDriverException:
                 pass
@@ -263,12 +254,12 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         self.drivers = self.loop.run_until_complete(start_threads(quantity,
                                                                   Driver,
                                                                   self.drivers,
-                                                                  self.executor_sauce_lab,
-                                                                  self.update_capabilities_sauce_lab(capabilities)))
+                                                                  executor_sauce_lab,
+                                                                  update_capabilities_sauce_lab(capabilities)))
         for driver in range(quantity):
             test_suite_data.current_test.testruns[-1].jobs[self.drivers[driver].session_id] = driver + 1
             self.drivers[driver].implicitly_wait(
-                custom_implicitly_wait if custom_implicitly_wait else self.implicitly_wait)
+                custom_implicitly_wait if custom_implicitly_wait else implicit_wait)
 
     def teardown_method(self, method):
         geth_names, geth_contents = [], []
@@ -290,10 +281,97 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         cls.loop.close()
 
 
+def create_shared_drivers(quantity):
+    drivers = dict()
+    if pytest_config_global['env'] == 'local':
+        capabilities = add_local_devices_to_capabilities()
+        for i in range(quantity):
+            driver = Driver(executor_local, capabilities[i])
+            test_suite_data.current_test.testruns[-1].jobs[driver.session_id] = i + 1
+            driver.implicitly_wait(implicit_wait)
+            drivers[i] = driver
+        loop = None
+    else:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        capabilities = {'maxDuration': 1800}
+        drivers = loop.run_until_complete(start_threads(quantity,
+                                                        Driver,
+                                                        drivers,
+                                                        executor_sauce_lab,
+                                                        update_capabilities_sauce_lab(capabilities)))
+        for i in range(quantity):
+            test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
+            drivers[i].implicitly_wait(implicit_wait)
+    return drivers, loop
+
+
+class LocalSharedMultipleDeviceTestCase(AbstractTestCase):
+
+    def setup_method(self, method):
+        jobs = test_suite_data.current_test.testruns[-1].jobs
+        if not jobs:
+            for index, driver in self.drivers.items():
+                jobs[driver.session_id] = index + 1
+        self.errors = Errors()
+
+    def teardown_method(self, method):
+        for driver in self.drivers:
+            try:
+                self.add_alert_text_to_report(self.drivers[driver])
+            except WebDriverException:
+                pass
+
+    @classmethod
+    def teardown_class(cls):
+        for driver in cls.drivers:
+            try:
+                cls.drivers[driver].quit()
+            except WebDriverException:
+                pass
+
+
+class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
+
+    def setup_method(self, method):
+        jobs = test_suite_data.current_test.testruns[-1].jobs
+        if not jobs:
+            for index, driver in self.drivers.items():
+                jobs[driver.session_id] = index + 1
+        self.errors = Errors()
+
+    def teardown_method(self, method):
+        geth_names, geth_contents = [], []
+        for driver in self.drivers:
+            try:
+                self.print_sauce_lab_info(self.drivers[driver])
+                self.add_alert_text_to_report(self.drivers[driver])
+                geth_names.append(
+                    '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
+                geth_contents.append(self.pull_geth(self.drivers[driver]))
+
+            except (WebDriverException, AttributeError):
+                pass
+            finally:
+                geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
+                self.github_report.save_test(test_suite_data.current_test, geth)
+
+    @classmethod
+    def teardown_class(cls):
+        for driver in cls.drivers:
+            try:
+                cls.drivers[driver].quit()
+            except WebDriverException:
+                pass
+        cls.loop.close()
+
+
 if pytest_config_global['env'] == 'local':
     MultipleDeviceTestCase = LocalMultipleDeviceTestCase
+    MultipleSharedDeviceTestCase = LocalSharedMultipleDeviceTestCase
 else:
     MultipleDeviceTestCase = SauceMultipleDeviceTestCase
+    MultipleSharedDeviceTestCase = SauceSharedMultipleDeviceTestCase
 
 
 class NoDeviceTestCase(AbstractTestCase):

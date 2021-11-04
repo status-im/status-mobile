@@ -1,26 +1,35 @@
-import emoji
 import random
-from dateutil import parser
-from tests import marks
-from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
-from views.sign_in_view import SignInView
 from datetime import timedelta
 from time import sleep
 
+import emoji
+import pytest
+from dateutil import parser
 
-class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
+from tests import marks
+from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase, create_shared_drivers, \
+    MultipleSharedDeviceTestCase
+from views.home_view import HomeView
+from views.sign_in_view import SignInView
+
+
+@pytest.mark.xdist_group(name="public_chat")
+class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
+
+    @classmethod
+    def setup_class(cls):
+        cls.drivers, cls.loop = create_shared_drivers(2)
+        device_1, device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        profile_1 = home_1.profile_button.click()
+        cls.username_1 = profile_1.default_username_text.text
+        profile_1.home_button.click()
+        home_2.home_button.click()
 
     @marks.testrail_id(5313)
     @marks.critical
     def test_public_chat_messaging_emojis_timestamps(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-        profile_1 = home_1.profile_button.click()
-        default_username_1 = profile_1.default_username_text.text
-        profile_1.home_button.click()
-        home_2.home_button.click()
-
+        home_1, home_2 = HomeView(self.drivers[0]), HomeView(self.drivers[1])
         home_1.just_fyi("Check preselected chats, redirect to status chat")
         home_1.plus_button.click_until_presence_of_element(home_1.join_public_chat_button)
         home_1.join_public_chat_button.click()
@@ -50,8 +59,8 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             if timestamp not in sent_time_variants:
                 self.errors.append(
                     "Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time_variants.join(','), timestamp))
-        if chat_2.chat_element_by_text(message).username.text != default_username_1:
-            self.errors.append("Default username '%s' is not shown next to the received message" % default_username_1)
+        if chat_2.chat_element_by_text(message).username.text != self.username_1:
+            self.errors.append("Default username '%s' is not shown next to the received message" % self.username_1)
 
         chat_1.send_message(emoji_message)
         for chat in chat_1, chat_2:
@@ -63,13 +72,11 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
     @marks.testrail_id(5360)
     @marks.critical
     def test_unread_messages_counter_public_chat(self):
-        self.create_drivers(2)
-        driver_2 = self.drivers[1]
-        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
-        profile_1 = home_1.profile_button.click()
-        username_1 = profile_1.default_username_text.text
-        profile_1.home_button.click()
-
+        home_1, home_2 = HomeView(self.drivers[0]), HomeView(self.drivers[1])
+        home_1.get_back_to_home_view()
+        home_2.get_back_to_home_view()
+        home_1.home_button.click()
+        home_2.home_button.click()
         chat_name = home_1.get_random_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
         chat_1.send_message('пиу')
@@ -87,7 +94,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         home_1.just_fyi("Check unread message counter when mentioned in public chat")
         chat_2 = home_2.get_chat_view()
-        chat_2.select_mention_from_suggestion_list(username_1, username_1[:2])
+        chat_2.select_mention_from_suggestion_list(self.username_1, self.username_1[:2])
         chat_2.send_message_button.click()
         chat_element.new_messages_counter.wait_for_element(30)
         chat_element.new_messages_counter.wait_for_element_text("1", 60)
@@ -104,6 +111,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_2.chat_element_by_text(message_2).wait_for_element(20)
 
         home_2.just_fyi("Check that unread message indicator is not reappeared after relogin")
+        driver_2 = self.drivers[1]
         driver_2.close_app()
         driver_2.launch_app()
         SignInView(driver_2).sign_in()
@@ -111,6 +119,9 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         if chat_element.new_messages_public_chat.is_element_displayed():
             self.errors.append('New messages counter is shown after relogin')
         self.errors.verify_no_errors()
+
+
+class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6270)
     @marks.medium
