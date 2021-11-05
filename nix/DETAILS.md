@@ -47,9 +47,9 @@ It pulls in all the `pkgs`, `targets` and `shells` defined in [`nix/default.nix`
 
 # Shells
 
-Normally shells are started using `make shell TARGET=android`, but that is essentially the same as calling:
+Normally shells are started using `make shell TARGET=default`, but that is essentially the same as calling:
 ```bash
-nix-shell -A shells.android default.nix
+nix-shell -A shells.default default.nix
 ```
 The [`nix/scripts/shell.sh`](./scripts/shell.sh) script is essentially a wrapper around that command to make it usable as shell for the `Makefile`.
 
