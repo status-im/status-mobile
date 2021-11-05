@@ -57,13 +57,10 @@ endif
 # Nix targets
 #----------------
 
-# WARNING: This has to be located right before the targets
-ifdef IN_NIX_SHELL
-SHELL := env bash
-else
+# WARNING: This has to be located right before all the targets.
 SHELL := ./nix/scripts/shell.sh
-endif
 
+shell: export TARGET ?= default
 shell: ##@prepare Enter into a pre-configured shell
 ifndef IN_NIX_SHELL
 	@ENTER_NIX_SHELL
