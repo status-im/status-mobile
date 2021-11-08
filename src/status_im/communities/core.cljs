@@ -287,7 +287,8 @@
 (fx/defn edit-channel
   {:events [::edit-channel-confirmation-pressed]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [name description color community-id emoji edit-channel-id]} (get db :communities/create-channel)]
+  (let [{:keys [name description color community-id emoji edit-channel-id category-id]}
+        (get db :communities/create-channel)]
     {::json-rpc/call [{:method     "wakuext_editCommunityChat"
                        :params     [community-id
                                     edit-channel-id
@@ -295,6 +296,7 @@
                                                    :description  description
                                                    :color        color
                                                    :emoji        emoji}
+                                     :category_id  category-id
                                      :permissions {:access constants/community-channel-access-no-membership}}]
                        :js-response true
                        :on-success #(re-frame/dispatch [::community-channel-edited %])
@@ -342,7 +344,7 @@
 
 (fx/defn edit-channel-pressed
   {:events [::edit-channel-pressed]}
-  [{:keys [db] :as cofx} community-id chat-name description color emoji chat-id]
+  [{:keys [db] :as cofx} community-id chat-name description color emoji chat-id category-id]
   (let [{:keys [color emoji]} (if (string/blank? emoji)
                                 (rand-nth emoji-thumbnail-styles/emoji-picker-default-thumbnails)
                                 {:color color :emoji emoji})]
@@ -352,7 +354,8 @@
                                                           :color           color
                                                           :community-id    community-id
                                                           :emoji           emoji
-                                                          :edit-channel-id chat-id})}
+                                                          :edit-channel-id chat-id
+                                                          :category-id     category-id})}
               (navigation/open-modal :edit-community-channel nil))))
 
 (fx/defn community-created
