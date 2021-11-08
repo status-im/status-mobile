@@ -54,7 +54,7 @@
        ;;TODO (perf) move to event
        (home-item/memo-timestamp timestamp)]
       [react/view {:style styles/notification-message-container}
-       [home-item/message-content-text (select-keys message [:content :content-type]) false]
+       [home-item/message-content-text (select-keys message [:content :content-type :community-id]) false]
        (cond (= type constants/activity-center-notification-type-mention)
              [react/view {:style styles/group-info-container
                           :accessibility-label :chat-name-container}
@@ -89,4 +89,4 @@
                 :width  18
                 :height 18
                 :container-style styles/reply-icon}]
-              [home-item/message-content-text (select-keys reply-message [:content :content-type]) false]])]]]))
+              [home-item/message-content-text (select-keys reply-message [:content :content-type :community-id]) false]])]]]))
