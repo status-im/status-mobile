@@ -26,7 +26,8 @@
                                                                                             description
                                                                                             color
                                                                                             emoji
-                                                                                            chat-id])}])
+                                                                                            chat-id
+                                                                                            (:id category)])}])
                               :extended-header   (profile-header/extended-header
                                                   {:title    chat-name
                                                    :color    color
