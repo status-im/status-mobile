@@ -503,14 +503,10 @@
   [{:keys [db]} chat-id {:keys [value contract] :as request-parameters}]
   (let [identity (:current-chat-id db)
         all-tokens (:wallet/all-tokens db)
-        current-network-string  (:networks/current-network db)
-        all-networks (:networks/networks db)
-        current-network (get all-networks current-network-string)
-        chain (ethereum/network->chain-keyword current-network)
         {:keys [symbol decimals]}
         (if (seq contract)
           (get all-tokens contract)
-          (tokens/native-currency chain))
+          (tokens/native-currency (ethereum/get-current-network db)))
         amount-text (str (money/internal->formatted value symbol decimals))]
     {:db (assoc db :wallet/prepare-transaction
                 {:from (ethereum/get-default-account (:multiaccount/accounts db))

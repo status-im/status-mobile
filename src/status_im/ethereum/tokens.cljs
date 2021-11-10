@@ -1,13 +1,15 @@
 (ns status-im.ethereum.tokens
-  (:require [clojure.string :as string])
+  (:require [clojure.string :as string]
+            [status-im.ethereum.core :as ethereum])
   (:require-macros
    [status-im.ethereum.macros :as ethereum.macros :refer [resolve-icons]]))
 
 (def default-native-currency
   (memoize
-   (fn []
+   (fn [symbol]
      {:name           "Native"
       :symbol         :ETH
+      :symbol-display symbol
       :decimals       18
       :icon           {:source (js/require "../resources/images/tokens/default-token.png")}})))
 
@@ -43,8 +45,9 @@
 (def native-currency-symbols
   (set (map #(-> % val :symbol) all-native-currencies)))
 
-(defn native-currency [chain]
-  (-> (get all-native-currencies chain (default-native-currency))))
+(defn native-currency [{:keys [symbol] :as current-network}]
+  (let [chain (ethereum/network->chain-keyword current-network)]
+    (get all-native-currencies chain (default-native-currency symbol))))
 
 (defn ethereum? [symbol]
   (native-currency-symbols symbol))
@@ -855,8 +858,8 @@
 (defn address->token [all-tokens address]
   (get all-tokens (string/lower-case address)))
 
-(defn asset-for [all-tokens chain symbol]
-  (let [native-coin (native-currency chain)]
+(defn asset-for [all-tokens current-network symbol]
+  (let [native-coin (native-currency current-network)]
     (if (or (= (:symbol-display native-coin) symbol)
             (= (:symbol native-coin) symbol))
       native-coin

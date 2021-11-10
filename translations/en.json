@@ -1157,6 +1157,7 @@
     "soon": "Soon",
     "specify-address": "Specify address",
     "specify-name": "Specify a name",
+    "specify-symbol": "Specify a symbol",
     "specify-network-id": "Specify network id",
     "specify-rpc-url": "Specify a RPC URL",
     "start-chat": "Start chat",

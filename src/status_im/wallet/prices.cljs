@@ -58,7 +58,7 @@
       {:wallet/get-prices
        {:from          (if mainnet?
                          (conj tokens "ETH")
-                         [(-> (tokens/native-currency chain)
+                         [(-> (tokens/native-currency (ethereum/get-current-network db))
                               (wallet.utils/exchange-symbol))])
         :to            [(:code currency)]
         :mainnet?      mainnet?

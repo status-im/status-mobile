@@ -510,6 +510,12 @@
    (= 1 chain-id)))
 
 (re-frame/reg-sub
+ :ethereum-network?
+ :<- [:chain-id]
+ (fn [chain-id]
+   (< chain-id 6)))
+
+(re-frame/reg-sub
  :network-name
  :<- [:current-network]
  (fn [network]
@@ -654,9 +660,9 @@
 
 (re-frame/reg-sub
  :ethereum/native-currency
- :<- [:ethereum/chain-keyword]
- (fn [chain-keyword]
-   (tokens/native-currency chain-keyword)))
+ :<- [:current-network]
+ (fn [network]
+   (tokens/native-currency network)))
 
 ;;MULTIACCOUNT ==============================================================================================================
 
@@ -1794,12 +1800,12 @@
 
 (re-frame/reg-sub
  :wallet/visible-assets
- :<- [:ethereum/chain-keyword]
+ :<- [:current-network]
  :<- [:wallet/visible-tokens-symbols]
  :<- [:wallet/sorted-tokens]
- (fn [[chain visible-tokens-symbols all-tokens-sorted]]
+ (fn [[network visible-tokens-symbols all-tokens-sorted]]
    (conj (filter #(contains? visible-tokens-symbols (:symbol %)) all-tokens-sorted)
-         (tokens/native-currency chain))))
+         (tokens/native-currency network))))
 
 (re-frame/reg-sub
  :wallet/visible-assets-with-amount
@@ -2796,11 +2802,11 @@
  :<- [:wallet]
  :<- [:offline?]
  :<- [:wallet/all-tokens]
- :<- [:ethereum/chain-keyword]
+ :<- [:current-network]
  (fn [[{:keys [symbol from to amount-text] :as transaction}
-       wallet offline? all-tokens chain]]
+       wallet offline? all-tokens current-network]]
    (let [balance (get-in wallet [:accounts (:address from) :balance])
-         {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
+         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network symbol)
          {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
          amount  (money/formatted->internal value symbol decimals)
          {:keys [amount-error] :as transaction-new}
@@ -2823,11 +2829,11 @@
  :<- [:wallet]
  :<- [:offline?]
  :<- [:wallet/all-tokens]
- :<- [:ethereum/chain-keyword]
+ :<- [:current-network]
  (fn [[{:keys [symbol from to amount-text] :as transaction}
-       wallet offline? all-tokens chain]]
+       wallet offline? all-tokens current-network]]
    (let [balance (get-in wallet [:accounts (:address from) :balance])
-         {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
+         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network symbol)
          {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
          amount  (money/formatted->internal value symbol decimals)
          {:keys [amount-error] :as transaction-new}

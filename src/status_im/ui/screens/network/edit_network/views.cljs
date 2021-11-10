@@ -36,6 +36,13 @@
             :auto-focus     true}]]
          [react/view {:padding-vertical 8}
           [quo/text-input
+           {:label          (i18n/label :t/symbol)
+            :placeholder    (i18n/label :t/specify-symbol)
+            :default-value  (get-in manage-network [:symbol :value])
+            :on-change-text #(re-frame/dispatch [::network/input-changed :symbol %])
+            :auto-focus     true}]]
+         [react/view {:padding-vertical 8}
+          [quo/text-input
            {:label          (i18n/label :t/rpc-url)
             :placeholder    (i18n/label :t/specify-rpc-url)
             :default-value  (get-in manage-network [:url :value])

@@ -149,12 +149,13 @@
 
 (defn- command-transaction-info
   [contract value]
-  (let [{:keys [symbol icon decimals color] :as token}
+  (let [{:keys [symbol symbol-display icon decimals color] :as token}
         (if (seq contract)
           (get @(re-frame/subscribe [:wallet/all-tokens])
                contract
                transactions/default-erc20-token)
           @(re-frame/subscribe [:ethereum/native-currency]))
+        symbol (or symbol-display symbol)
         amount (money/internal->formatted value symbol decimals)
         {:keys [code]}
         @(re-frame/subscribe [:wallet/currency])

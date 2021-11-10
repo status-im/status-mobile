@@ -197,7 +197,7 @@
                 :symbol  :ETH
                 :value   value
                 :amount  (str eth-amount)
-                :token   (tokens/asset-for (:wallet/all-tokens db) (ethereum/chain-keyword db) :ETH)}
+                :token   (tokens/asset-for (:wallet/all-tokens db) (ethereum/get-current-network db) :ETH)}
                (not (nil? token))
                token
                :else

@@ -102,14 +102,15 @@
                   currency [:wallet/currency]
                   opensea-enabled? [:opensea-enabled?]
                   collectible-collection [:wallet/collectible-collection address]
-                  mainnet? [:mainnet?]]
+                  mainnet? [:mainnet?]
+                  ethereum-network? [:ethereum-network?]]
     (let [{:keys [tab]} @state]
       [react/view {:flex 1}
        [react/view {:flex-direction :row :margin-bottom 8 :padding-horizontal 4}
         [tabs/tab-title state :assets (i18n/label :t/wallet-assets) (= tab :assets)]
-        (when mainnet?
+        (when ethereum-network?
           [tabs/tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)])
-        (when mainnet?
+        (when ethereum-network?
           [tabs/tab-title state :history (i18n/label :t/history) (= tab :history)])]
        (cond
          (= tab :assets)

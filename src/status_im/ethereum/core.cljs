@@ -122,13 +122,17 @@
       network->chain-keyword
       name))
 
-(defn chain-keyword
+(defn get-current-network
   [{:networks/keys [current-network networks]}]
-  (network->chain-keyword (get networks current-network)))
+  (get networks current-network))
+
+(defn chain-keyword
+  [db]
+  (network->chain-keyword (get-current-network db)))
 
 (defn chain-id
-  [{:networks/keys [current-network networks]}]
-  (network->chain-id (get networks current-network)))
+  [db]
+  (network->chain-id (get-current-network db)))
 
 (defn snt-symbol [db]
   (chain-keyword->snt-symbol (chain-keyword db)))
