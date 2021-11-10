@@ -216,7 +216,8 @@
      :onRefresh  refresh-action}]))
 
 (defn accounts-overview []
-  (let [mnemonic @(re-frame/subscribe [:mnemonic])]
+  (let [mnemonic @(re-frame/subscribe [:mnemonic])
+        mainnet? @(re-frame/subscribe [:mainnet?])]
     [react/view
      {:style {:flex 1}}
      [quo/animated-header
@@ -235,7 +236,8 @@
                              :icon                :main-icons/more
                              :accessibility-label :accounts-more-options}]}
       [accounts]
-      [buy-crypto/banner]
+      (when mainnet?
+        [buy-crypto/banner])
       [assets]
       [react/view {:height 68}]]
      [send-button]]))

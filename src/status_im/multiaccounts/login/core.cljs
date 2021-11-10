@@ -300,17 +300,20 @@
   (let [{:networks/keys [current-network networks]
          :as            settings}
         (data-store.settings/rpc->settings settings)
-        multiaccount (dissoc settings :networks/current-network :networks/networks)]
+        multiaccount (dissoc settings :networks/current-network :networks/networks)
+        ;;for some reason we save default networks in db, in case when we want to modify default-networks for
+        ;; existing accounts we have to merge them again into networks
+        merged-networks (merge networks config/default-networks-by-id)]
     (fx/merge cofx
               {:db (-> db
                        (dissoc :multiaccounts/login)
                        (assoc :networks/current-network current-network
-                              :networks/networks networks
+                              :networks/networks merged-networks
                               :multiaccount multiaccount))}
               (data-store.chats/fetch-chats-rpc
                {:on-success
                 #(do (re-frame/dispatch [:chats-list/load-success %])
-                     (re-frame/dispatch [::get-chats-callback settings]))})
+                     (re-frame/dispatch [::get-chats-callback]))})
               (acquisition/login)
               (initialize-appearance)
               (initialize-communities-enabled)
@@ -321,9 +324,9 @@
 
 (fx/defn get-chats-callback
   {:events [::get-chats-callback]}
-  [{:keys [db] :as cofx} settings]
-  (let [{:keys          [notifications-enabled?]
-         :networks/keys [current-network networks]} settings
+  [{:keys [db] :as cofx}]
+  (let [{:networks/keys [current-network networks]} db
+        notifications-enabled? (get-in db [:multiaccount :notifications-enabled?])
         network-id   (str (get-in networks [current-network :config :NetworkId]))]
     (fx/merge cofx
               (cond-> {::eip1559/check-eip1559-activation

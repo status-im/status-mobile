@@ -114,7 +114,13 @@
     :config {:NetworkId      (ethereum/chain-keyword->chain-id :poa)
              :DataDir        "/ethereum/poa_rpc"
              :UpstreamConfig {:Enabled true
-                              :URL     "https://core.poa.network"}}}])
+                              :URL     "https://core.poa.network"}}}
+   {:id     "bsc_rpc",
+    :name   "BSC Network",
+    :config {:NetworkId      (ethereum/chain-keyword->chain-id :bsc)
+             :DataDir        "/ethereum/bsc_rpc"
+             :UpstreamConfig {:Enabled true
+                              :URL     "https://bsc-dataseed.binance.org"}}}])
 
 (def testnet-networks
   [{:id             "testnet_rpc",

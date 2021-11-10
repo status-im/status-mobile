@@ -6,10 +6,10 @@
 (def default-native-currency
   (memoize
    (fn []
-     {:name     "Native"
-      :symbol   :ETH
-      :decimals 18
-      :icon     {:source (js/require "../resources/images/tokens/default-native.png")}})))
+     {:name           "Native"
+      :symbol         :ETH
+      :decimals       18
+      :icon           {:source (js/require "../resources/images/tokens/default-token.png")}})))
 
 (def snt-icon-source (js/require "../resources/images/tokens/mainnet/SNT.png"))
 
@@ -34,6 +34,10 @@
               :symbol          :ETH
               :symbol-display  :xDAI
               :symbol-exchange :DAI
+              :decimals        18}
+    :bsc     {:name            "BSC"
+              :symbol          :ETH
+              :symbol-display  :BNB
               :decimals        18}}))
 
 (def native-currency-symbols
