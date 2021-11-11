@@ -43,6 +43,12 @@ class TestrailReport(BaseTestReport):
         data = bytes(json.dumps(data), 'utf-8')
         return requests.post(self.api_url + method, data=data, headers=self.headers).json()
 
+    def add_attachment(self, method, path):
+        files = {'attachment': (open(path, 'rb'))}
+        result = requests.post(self.api_url + method, headers={'Authorization': self.headers['Authorization']}, files=files)
+        files['attachment'].close()
+        return result.json()
+
     def get_suites(self):
         return self.get('get_suites/%s' % self.project_id)
 
@@ -119,7 +125,10 @@ class TestrailReport(BaseTestReport):
             data = {'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
                     'comment': '%s' % ('# Error: \n %s \n' % emoji.demojize(last_testrun.error)) + devices + test_steps if last_testrun.error
                     else devices + test_steps}
-            self.post(method, data=data)
+            result_id =self.post(method, data=data)['id']
+            if last_testrun.error:
+                for geth in test.geth_paths.keys():
+                    self.add_attachment(method='add_attachment_to_result/%s' % str(result_id), path=test.geth_paths[geth])
         self.change_test_run_description()
 
     def change_test_run_description(self):

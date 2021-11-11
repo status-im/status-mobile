@@ -1,7 +1,6 @@
-from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
 import os
-from tests import common_password, appium_root_project_path, app_path
+from tests import common_password, appium_root_project_path
 from views.base_element import Button, EditBox, Text
 from views.base_view import BaseView
 
@@ -266,6 +265,7 @@ class SignInView(BaseView):
         self.sign_in()
 
     def import_db(self, user, import_db_folder_name):
+        from tests.base_test_case import AbstractTestCase
         self.driver.info('## Importing database', device=False)
         import_file_name = 'export.db'
         home = self.recover_access(user['passphrase'])
@@ -276,7 +276,7 @@ class SignInView(BaseView):
         self.multi_account_on_login_button.wait_for_visibility_of_element(30)
         self.get_multiaccount_by_position(1).click()
         self.password_input.set_value(common_password)
-        self.driver.push_file(source_path=full_path_to_file, destination_path=app_path + import_file_name)
+        self.driver.push_file(source_path=full_path_to_file, destination_path='%s%s'% (AbstractTestCase().app_path, import_file_name))
         self.options_button.click()
         self.element_by_text('Import unencrypted').click()
         self.element_by_text('Import unencrypted').wait_for_invisibility_of_element(40)

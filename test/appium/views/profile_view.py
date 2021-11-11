@@ -338,20 +338,21 @@ class ProfileView(BaseView):
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
-    def add_custom_network(self):
+    def add_custom_network(self, rpc_url ='https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a',
+                                 name='custom_ropsten'):
         self.driver.info("## Add predefined custom network", device=False)
         self.advanced_button.click()
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
         self.plus_button.click_until_presence_of_element(self.ropsten_chain_button)
-        self.custom_network_url_input.send_keys('https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a')
-        self.specify_name_input.send_keys('custom_ropsten')
+        self.custom_network_url_input.send_keys(rpc_url)
+        self.specify_name_input.send_keys(name)
         self.ropsten_chain_button.scroll_to_element()
         self.ropsten_chain_button.click()
         self.ropsten_chain_button.click()
         self.save_button.click()
-        self.element_by_text_part('custom_ropsten').scroll_to_element()
-        self.element_by_text_part('custom_ropsten').click_until_presence_of_element(self.connect_button)
+        self.element_by_text_part(name).scroll_to_element()
+        self.element_by_text_part(name).click_until_presence_of_element(self.connect_button)
         self.connect_button.click()
         self.confirm_button.click()
         self.driver.info("## Custom network is added succesfully!", device=False)

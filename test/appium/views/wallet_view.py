@@ -186,14 +186,14 @@ class WalletView(BaseView):
 
 
     def set_up_wallet_when_sending_tx(self):
-        self.driver.info("**Setting up wallet**")
+        self.driver.info("Setting up wallet")
         phrase = self.sign_in_phrase.text
         self.ok_got_it_button.click()
         return phrase
 
     def get_wallet_address(self, account_name=''):
         account_name = self.status_account_name if not account_name else account_name
-        self.driver.info("**Getting wallet address for '%s'**" % account_name)
+        self.driver.info("Getting wallet address for '%s'" % account_name)
         self.wallet_account_by_name(account_name).click()
         self.receive_transaction_button.click_until_presence_of_element(self.qr_code_image)
         address = self.address_text.text
@@ -206,7 +206,7 @@ class WalletView(BaseView):
 
 
     def get_asset_amount_by_name(self, asset: str):
-        self.driver.info("*Getting %s amount*" % asset)
+        self.driver.info("Getting %s amount" % asset)
         asset_value = SilentButton(self.driver, xpath="//android.view.ViewGroup[@content-desc=':%s-asset-value']"
                                                    "//android.widget.TextView[1]" % asset)
         asset_value.scroll_to_element()
@@ -216,21 +216,21 @@ class WalletView(BaseView):
             return 0.0
 
     def asset_by_name(self, asset_name):
-        self.driver.info("*Selecting %s asset*" % asset_name)
+        self.driver.info("Selecting %s asset" % asset_name)
         return SilentButton(self.driver, xpath="//*[contains(@text,'%s')]" % asset_name)
 
     def asset_checkbox_by_name(self, asset_name):
-        self.driver.info("*Selecting %s asset checkbox by name*" % asset_name)
+        self.driver.info("Selecting %s asset checkbox by name" % asset_name)
         return AssetCheckBox(self.driver, asset_name)
 
     def get_account_options_by_name(self, account_name=''):
         account_name = self.status_account_name if not account_name else account_name
-        self.driver.info("*Getting '%s'account options*" % account_name)
+        self.driver.info("Getting '%s'account options" % account_name)
         return SilentButton(self.driver, xpath="(//*[@text='%s']/../..//*[@content-desc='icon'])[2]" % account_name)
 
     def get_account_options_from_main_screen(self, account_name=''):
         account_name = self.status_account_name if not account_name else account_name
-        self.driver.info("*Getting '%s'account options from main wallet screen*" % account_name)
+        self.driver.info("Getting '%s'account options from main wallet screen" % account_name)
         return SilentButton(self.driver, xpath="//*[@content-desc='accountcard%s']//*[@content-desc='icon']" % account_name)
 
     def hidden_account_by_name_button(self, account_name=''):
@@ -243,16 +243,15 @@ class WalletView(BaseView):
 
 
     def select_asset(self, *args):
-        self.driver.info("## Selecting asset(s)")
+        self.driver.info("Selecting asset(s)")
         self.multiaccount_more_options.click()
         self.manage_assets_button.click()
         for asset in args:
             self.asset_checkbox_by_name(asset).click()
         self.cross_icon.click()
-        self.driver.info("## Assets are selected!")
 
     def scan_tokens(self, *args):
-        self.driver.info("## Scanning tokens")
+        self.driver.info("Scanning tokens")
         self.multiaccount_more_options.click()
         self.scan_tokens_button.click()
         counter = 0
@@ -273,7 +272,7 @@ class WalletView(BaseView):
                         return self
 
     def send_transaction(self, **kwargs):
-        self.driver.info("## Sending transaction")
+        self.driver.info("## Sending transaction", device=False)
         send_transaction_view = self.send_transaction_button.click()
         send_transaction_view.select_asset_button.click()
         asset_name = kwargs.get('asset_name', 'ETH').upper()

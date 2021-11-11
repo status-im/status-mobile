@@ -12,7 +12,7 @@ from io import BytesIO
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from support.device_apps import start_web_browser
-from tests import common_password, pytest_config_global, geth_log_emulator_path, transl
+from tests import common_password, pytest_config_global, transl
 from views.base_element import Button, BaseElement, EditBox, Text
 
 
@@ -574,7 +574,8 @@ class BaseView(object):
         return items_in_logcat
 
     def find_values_in_geth(self, *args):
-        b64_log = self.driver.pull_file(geth_log_emulator_path)
+        from tests.base_test_case import AbstractTestCase
+        b64_log = self.driver.pull_file(AbstractTestCase().geth_path)
         file = base64.b64decode(b64_log)
         result = False
         for value in args:
@@ -583,7 +584,6 @@ class BaseView(object):
                 self.driver.info('%s was found in geth.log' % value)
                 result = True
         return result
-
 
     def asset_by_name(self, asset_name):
         return AssetButton(self.driver, asset_name)

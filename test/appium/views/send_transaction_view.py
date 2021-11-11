@@ -125,7 +125,7 @@ class SendTransactionView(BaseView):
         self.done_button.click_until_absense_of_element(self.done_button)
 
     def sign_transaction(self, sender_password: str = common_password, keycard=False):
-        self.driver.info("## Signing transaction, (keycard: %s)" % str(keycard), device=False)
+        self.driver.info("Signing transaction, (keycard: %s)" % str(keycard), device=False)
         if self.sign_in_phrase.is_element_displayed(30):
             self.set_up_wallet_when_sending_tx()
         if keycard:

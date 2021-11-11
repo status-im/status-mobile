@@ -28,11 +28,19 @@ class BaseTestReport:
         file_name = "%s.json" % test_name
         return os.path.join(self.TEST_REPORT_DIR, file_name)
 
-    def save_test(self, test):
+    def save_test(self, test, geth: dict):
         file_path = self.get_test_report_file_path(test.name)
+        geth_paths = {}
+        for log in geth.keys():
+            geth_path = os.path.join(self.TEST_REPORT_DIR, log)
+            result = open(geth_path, 'wb')
+            result.write(geth[log])
+            result.close()
+            geth_paths[log] = geth_path
         test_dict = {
             'testrail_case_id': test.testrail_case_id,
             'name': test.name,
+            'geth_paths': geth_paths,
             'testruns': list()
         }
         for testrun in test.testruns:
@@ -41,15 +49,19 @@ class BaseTestReport:
 
     def get_all_tests(self):
         tests = list()
-        file_list = [f for f in os.listdir(self.TEST_REPORT_DIR)]
+        file_list = [f for f in os.listdir(self.TEST_REPORT_DIR) if f.endswith('json')]
         for file_name in file_list:
             file_path = os.path.join(self.TEST_REPORT_DIR, file_name)
             test_data = json.load(open(file_path))
             testruns = list()
             for testrun_data in test_data['testruns']:
                 testruns.append(SingleTestData.TestRunData(
-                    steps=testrun_data['steps'], jobs=testrun_data['jobs'], error=testrun_data['error']))
-            tests.append(SingleTestData(name=test_data['name'], testruns=testruns,
+                    steps=testrun_data['steps'],
+                    jobs=testrun_data['jobs'],
+                    error=testrun_data['error']))
+            tests.append(SingleTestData(name=test_data['name'],
+                                        geth_paths=test_data['geth_paths'],
+                                        testruns=testruns,
                                         testrail_case_id=test_data['testrail_case_id']))
         return tests
 
