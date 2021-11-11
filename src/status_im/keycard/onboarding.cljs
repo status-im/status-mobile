@@ -232,11 +232,10 @@
   [{:keys [db] :as cofx} secrets]
   (let [secrets' (js->clj secrets :keywordize-keys true)]
     (fx/merge cofx
-              {:keycard/get-application-info nil
-               :db                              (-> db
-                                                    (assoc-in [:keycard :card-state] :init)
-                                                    (assoc-in [:keycard :setup-step] :secret-keys)
-                                                    (update-in [:keycard :secrets] merge secrets'))}
+              {:db (-> db
+                       (assoc-in [:keycard :card-state] :init)
+                       (assoc-in [:keycard :setup-step] :secret-keys)
+                       (update-in [:keycard :secrets] merge secrets'))}
               (load-pairing-screen))))
 
 (fx/defn on-install-applet-and-init-card-error
