@@ -1294,7 +1294,6 @@
 
 (re-frame/reg-sub
  :chats/chat-toolbar
- :<- [:disconnected?]
  :<- [:multiaccounts/login]
  :<- [:chats/sending-image]
  :<- [:mainnet?]
@@ -1302,9 +1301,9 @@
  :<- [:current-chat/metadata]
  :<- [:chats/reply-message]
  :<- [:chats/edit-message]
- (fn [[disconnected? {:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit]]
+ (fn [[{:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit]]
    (let [sending-image (seq sending-image)]
-     {:send          (not (or processing disconnected?))
+     {:send          (not processing)
       :stickers      (and mainnet?
                           (not sending-image)
                           (not reply))
