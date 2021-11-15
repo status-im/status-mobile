@@ -42,7 +42,7 @@ export NIX_CONF_DIR = $(PWD)/nix
 # Location of symlinks to derivations that should not be garbage collected
 export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-react
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
-export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE,NIMBUS_SRC_OVERRIDE
+export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE
 
 # Useful for Andoird release builds
 TMP_BUILD_NUMBER := $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)

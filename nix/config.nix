@@ -13,7 +13,6 @@
       abi-include = "armeabi-v7a;arm64-v8a;x86"; # Android architectures to build for
     };
 
-    nimbus = { src-override = null; };
     status-go = { src-override = null; };
   };
 
