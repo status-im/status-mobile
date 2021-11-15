@@ -71,7 +71,7 @@
                             :size :small}
                   name]
                  [icons/icon
-                  :main-icons/chevron-down
+                  :main-icons/chevron-right
                   {:color  colors/gray
                    :width  16
                    :height 22}]])

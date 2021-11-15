@@ -159,7 +159,7 @@
    (.events Navigation)
    (fn [^js evn]
      (let [view-id (keyword (.-componentName evn))]
-       (when-not (#{"popover" "bottom-sheet" "signing-sheet" "visibility-status-popover"}
+       (when-not (#{"popover" "bottom-sheet" "signing-sheet" "visibility-status-popover" "wallet-connect-sheet" "wallet-connect-success-sheet" "wallet-connect-app-management-sheet"}
                   (.-componentName evn))
          (re-frame/dispatch [::view-disappeared view-id])
          (doseq [[_ {:keys [ref value]}] @quo.text-input/text-input-refs]
@@ -337,6 +337,33 @@
 
 (re-frame/reg-fx :show-bottom-sheet (fn [] (show-overlay "bottom-sheet")))
 (re-frame/reg-fx :hide-bottom-sheet (fn [] (dissmiss-overlay "bottom-sheet")))
+
+;; WALLET CONNECT
+
+(defonce wallet-connect-sheet-reg
+  (.registerComponent Navigation
+                      "wallet-connect-sheet"
+                      (fn [] (gestureHandlerRootHOC views/wallet-connect-comp))
+                      (fn [] views/wallet-connect-comp)))
+
+(defonce wallet-connect-success-sheet-reg
+  (.registerComponent Navigation
+                      "wallet-connect-success-sheet"
+                      (fn [] (gestureHandlerRootHOC views/wallet-connect-success-comp))
+                      (fn [] views/wallet-connect-success-comp)))
+
+(defonce wallet-connect-app-management-sheet-reg
+  (.registerComponent Navigation
+                      "wallet-connect-app-management-sheet"
+                      (fn [] (gestureHandlerRootHOC views/wallet-connect-app-management-comp))
+                      (fn [] views/wallet-connect-app-management-comp)))
+
+(re-frame/reg-fx :show-wallet-connect-sheet (fn [] (show-overlay "wallet-connect-sheet")))
+(re-frame/reg-fx :hide-wallet-connect-sheet (fn [] (dissmiss-overlay "wallet-connect-sheet")))
+(re-frame/reg-fx :show-wallet-connect-success-sheet (fn [] (show-overlay "wallet-connect-success-sheet")))
+(re-frame/reg-fx :hide-wallet-connect-success-sheet (fn [] (dissmiss-overlay "wallet-connect-success-sheet")))
+(re-frame/reg-fx :show-wallet-connect-app-management-sheet (fn [] (show-overlay "wallet-connect-app-management-sheet")))
+(re-frame/reg-fx :hide-wallet-connect-app-management-sheet (fn [] (dissmiss-overlay "wallet-connect-app-management-sheet")))
 
 ;; SIGNING
 

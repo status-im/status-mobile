@@ -86,3 +86,20 @@
   [_]
   {:hide-select-acc-sheet nil})
 
+(fx/defn hide-wallet-connect-sheet
+  {:events [:hide-wallet-connect-sheet]}
+  [_]
+  {:hide-wallet-connect-sheet nil})
+
+(fx/defn hide-wallet-connect-success-sheet
+  {:events [:hide-wallet-connect-success-sheet]}
+  [_]
+  {:hide-wallet-connect-success-sheet nil})
+
+(fx/defn hide-wallet-connect-app-management-sheet
+  {:events [:hide-wallet-connect-app-management-sheet]}
+  [{:keys [db]}]
+  {:db (-> db
+           (assoc db :wallet-connect/showing-app-management-sheet? false)
+           (dissoc :wallet-connect/session-managed))
+   :hide-wallet-connect-app-management-sheet nil})

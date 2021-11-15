@@ -22,5 +22,10 @@ module.exports = {
                 ios: null,
             },
         },
+        '@react-native-community/blur': {
+            platforms: {
+                android: null,
+            },
+        },
     },
 };

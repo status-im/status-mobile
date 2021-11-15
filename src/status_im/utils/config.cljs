@@ -167,3 +167,12 @@
     "giphy.com"
     "gph.is"
     "media.giphy.com"})
+
+(def default-relay-provider "https://relay.walletconnect.com")
+
+(def default-wallet-connect-metadata {:name "Status Wallet"
+                                      :description "Status is a secure messaging app, crypto wallet, and Web3 browser built with state of the art technology."
+                                      :url "#"
+                                      :icons ["https://statusnetwork.com/img/press-kit-status-logo.svg"]})
+
+(def wallet-connect-project-id "87815d72a81d739d2a7ce15c2cfdefb3")

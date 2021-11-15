@@ -12,11 +12,14 @@
             [status-im.utils.db :as utils.db]
             [status-im.utils.http :as http]
             [status-im.chat.models :as chat.models]
-            [status-im.ethereum.stateofus :as stateofus]))
+            [status-im.ethereum.stateofus :as stateofus]
+            [status-im.utils.wallet-connect :as wallet-connect]))
 
 (def ethereum-scheme "ethereum:")
 
 (def uri-schemes ["status-im://" "status-im:"])
+
+(def wallet-connect-scheme "wc:")
 
 (def web-prefixes ["https://" "http://" "https://www." "http://wwww."])
 
@@ -225,6 +228,9 @@
 
       (http/url? uri)
       (cb (match-browser-string uri))
+
+      (wallet-connect/url? uri)
+      (cb {:type :wallet-connect :data uri})
 
       :else
       (cb {:type :undefined

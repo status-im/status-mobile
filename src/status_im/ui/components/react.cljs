@@ -13,7 +13,8 @@
             ["@react-native-community/clipboard" :default Clipboard]
             ["react-native-linear-gradient" :default LinearGradient]
             ["react-native-navigation" :refer (Navigation)]
-            ["react-native-fast-image" :as FastImage])
+            ["react-native-fast-image" :as FastImage]
+            ["@react-native-community/blur" :as blur])
   (:require-macros [status-im.utils.views :as views]))
 
 (def native-modules (.-NativeModules react-native))
@@ -38,6 +39,8 @@
 (defn resolve-asset-source [uri] (js->clj (.resolveAssetSource (.-Image react-native) uri) :keywordize-keys true))
 
 (def linear-gradient (reagent/adapt-react-class LinearGradient))
+
+(def blur-view (reagent/adapt-react-class (.-BlurView blur)))
 
 (defn valid-source? [source]
   (or (not (map? source))

@@ -78,16 +78,20 @@
             (navigation/change-tab :wallet)
             (navigation/pop-to-root-tab :wallet-stack)))
 
+(fx/defn handle-wallet-connect [cofx data]
+  {:dispatch [:wallet-connect/pair data]})
+
 (fx/defn match-scan
   {:events [::match-scanned-value]}
   [cofx {:keys [type] :as data}]
   (case type
-    :public-chat  (handle-public-chat cofx data)
-    :group-chat   (handle-group-chat cofx data)
-    :private-chat (handle-private-chat cofx data)
-    :contact      (handle-view-profile cofx data)
-    :browser      (handle-browse cofx data)
-    :eip681       (handle-eip681 cofx data)
+    :public-chat    (handle-public-chat cofx data)
+    :group-chat     (handle-group-chat cofx data)
+    :private-chat   (handle-private-chat cofx data)
+    :contact        (handle-view-profile cofx data)
+    :browser        (handle-browse cofx data)
+    :eip681         (handle-eip681 cofx data)
+    :wallet-connect (handle-wallet-connect cofx data)
     {:dispatch [:navigate-back]
      :utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                         :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}}))

@@ -1738,5 +1738,15 @@
     "current-average": "Current average",
     "current-base": "Current base",
     "maximum-fee-desc": "Maximum overall price for the transaction. If the current block base fee exceeds this, your transaction will be included in a following block with a lower base fee.",
-    "insufficient-balance-to-cover-fee": "not enough balance to cover transaction fee"
+    "insufficient-balance-to-cover-fee": "not enough balance to cover transaction fee",
+    "wallet-connect-proposal-title": "Would like to connect with your wallet",
+    "wallet-connect-proposal-description": "By connecting you allow {{name}} to retrieve your account address and enable Web3",
+    "wallet-connect-app-connected": "is connected",
+    "wallet-connect-go-back": "Go back to your browser or dapp",
+    "wallet-connect-2.0": "Wallet Connect 2.0",
+    "reject": "Reject",
+    "manage-connections": "Manage connections from within Application Connections",
+    "wallet-manage-app-connections": "Manage app connections",
+    "connection-request": "Connection Request",
+    "disconnect": "Disconnect"
 }

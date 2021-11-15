@@ -213,6 +213,16 @@
 (def react-native-notifications
   #js {:Notifications #js {}})
 
+(def react-native-blur
+  (clj->js {:BlurView {}}))
+
+(def wallet-connect-client #js {:default       #js {}
+                                :CLIENT_EVENTS #js {:session #js {:request nil
+                                                                  :created nil
+                                                                  :deleted nil
+                                                                  :proposal nil
+                                                                  :updated nil}}})
+
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -243,12 +253,14 @@
     "react-native-linear-gradient" react-native-gradien
     "react-native-navigation" react-native-navigation
     "@react-native-community/push-notification-ios" push-notification-ios
+    "@react-native-community/blur" react-native-blur
     "react-native-camera-kit" react-native-camera-kit
     "rn-emoji-keyboard" rn-emoji-keyboard
     "react-native-notifications" react-native-notifications
     "react-native-draggable-flatlist" react-native-draggable-flatlist
     "./fleets.js" default-fleets
     "./chats.js" default-chats
+    "@walletconnect/client" wallet-connect-client
     "../translations/ar.json" (js/JSON.parse (slurp "./translations/ar.json"))
     "../translations/de.json" (js/JSON.parse (slurp "./translations/de.json"))
     "../translations/en.json" (js/JSON.parse (slurp "./translations/en.json"))

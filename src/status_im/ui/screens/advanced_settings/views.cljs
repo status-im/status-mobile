@@ -13,7 +13,8 @@
                                           transactions-management-enabled?
                                           wakuv2-flag
                                           current-fleet
-                                          webview-debug]}]
+                                          webview-debug
+                                          wallet-connect-enabled?]}]
   (keep
    identity
    [{:size                 :small
@@ -112,7 +113,16 @@
      #(re-frame/dispatch
        [:multiaccounts.ui/waku-bloom-filter-mode-switched (not waku-bloom-filter-mode)])
      :accessory               :switch
-     :active                  waku-bloom-filter-mode}]))
+     :active                  waku-bloom-filter-mode}
+    {:size                    :small
+     :title                   (i18n/label :t/wallet-connect-2.0)
+     :accessibility-label     :wallet-connect-settings-switch
+     :container-margin-bottom 8
+     :on-press
+     #(re-frame/dispatch
+       [:multiaccounts.ui/switch-wallet-connect-enabled (not wallet-connect-enabled?)])
+     :accessory               :switch
+     :active                  wallet-connect-enabled?}]))
 
 (defn- flat-list-data [options]
   (normal-mode-settings-data options))
@@ -130,7 +140,8 @@
                   communities-enabled?             [:communities/enabled?]
                   transactions-management-enabled? [:wallet/transactions-management-enabled?]
                   current-log-level                [:log-level/current-log-level]
-                  current-fleet                    [:fleets/current-fleet]]
+                  current-fleet                    [:fleets/current-fleet]
+                  wallet-connect-enabled?          [:wallet-connect/enabled?]]
     [list/flat-list
      {:data      (flat-list-data
                   {:network-name                     network-name
@@ -141,6 +152,7 @@
                    :dev-mode?                        false
                    :wakuv2-flag                      wakuv2-flag
                    :waku-bloom-filter-mode           waku-bloom-filter-mode
-                   :webview-debug                    webview-debug})
+                   :webview-debug                    webview-debug
+                   :wallet-connect-enabled?          wallet-connect-enabled?})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))

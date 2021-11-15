@@ -9,7 +9,7 @@
             [quo.core :as quo]))
 
 (defn bottom-sheet []
-  (let [{:keys [show? view]} @(re-frame/subscribe [:bottom-sheet])
+  (let [{:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
         {:keys [content]
          :as   opts}
         (cond-> {:visible?  show?
@@ -40,4 +40,4 @@
           (merge key-storage/migrate-account-password))]
     [quo/bottom-sheet opts
      (when content
-       [content])]))
+       [content (when options options)])]))

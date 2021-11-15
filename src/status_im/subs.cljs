@@ -268,6 +268,14 @@
 
 (reg-root-key-sub :backup/performing-backup :backup/performing-backup)
 
+;; wallet connect
+(reg-root-key-sub :wallet-connect/proposal-metadata :wallet-connect/proposal-metadata)
+(reg-root-key-sub :wallet-connect/enabled? :wallet-connect/enabled?)
+(reg-root-key-sub :wallet-connect/session-connected :wallet-connect/session-connected)
+(reg-root-key-sub :wallet-connect/showing-app-management-sheet? :wallet-connect/showing-app-management-sheet?)
+(reg-root-key-sub :wallet-connect/sessions :wallet-connect/sessions)
+(reg-root-key-sub :wallet-connect/session-managed :wallet-connect/session-managed)
+
 (re-frame/reg-sub
  :communities
  :<- [:raw-communities]
@@ -640,9 +648,11 @@
  :bottom-sheet
  :<- [:bottom-sheet/show?]
  :<- [:bottom-sheet/view]
- (fn [[show? view]]
+ :<- [:bottom-sheet/options]
+ (fn [[show? view options]]
    {:show? show?
-    :view  view}))
+    :view view
+    :options options}))
 
 (re-frame/reg-sub
  :is-contact-selected?

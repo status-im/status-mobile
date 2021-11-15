@@ -13,7 +13,8 @@
             [quo.design-system.colors :as colors]
             [status-im.utils.config :as config]
             [status-im.keycard.test-menu :as keycard.test-menu]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]))
 
 (defn get-screens []
   (reduce
@@ -112,7 +113,7 @@
 (def signing-comp
   (reagent/reactify-component
    (fn []
-     ^{:key (str "signing-seet" @reloader/cnt)}
+     ^{:key (str "signing-sheet" @reloader/cnt)}
      [react/safe-area-provider
       [inactive]
       [signing/signing]
@@ -126,5 +127,35 @@
      [react/safe-area-provider
       [inactive]
       [wallet.send.views/select-account]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))
+
+(def wallet-connect-comp
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "wallet-connect-sheet" @reloader/cnt)}
+     [react/safe-area-provider
+      [inactive]
+      [wallet-connect/wallet-connect-proposal-sheet]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))
+
+(def wallet-connect-success-comp
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "wallet-connect-success-sheet" @reloader/cnt)}
+     [react/safe-area-provider
+      [inactive]
+      [wallet-connect/wallet-connect-success-sheet-view]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))
+
+(def wallet-connect-app-management-comp
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "wallet-connect-app-management-sheet" @reloader/cnt)}
+     [react/safe-area-provider
+      [inactive]
+      [wallet-connect/wallet-connect-app-management-sheet-view]
       (when js/goog.DEBUG
         [reloader/reload-view])])))

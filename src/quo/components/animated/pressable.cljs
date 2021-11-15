@@ -57,6 +57,8 @@
 (defn pressable-hooks [props]
   (let [{background-color    :bgColor
          border-radius       :borderRadius
+         border-color        :borderColor
+         border-width        :borderWidth
          type                :type
          disabled            :disabled
          on-press            :onPress
@@ -121,7 +123,9 @@
          [animated/view {:style (merge absolute-fill
                                        background
                                        {:background-color background-color
-                                        :border-radius    border-radius})}]
+                                        :border-radius    border-radius
+                                        :border-color     border-color
+                                        :border-width     border-width})}]
          (into [animated/view {:style foreground}]
                (react/get-children children))]]]])))
 

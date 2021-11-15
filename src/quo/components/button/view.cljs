@@ -28,27 +28,31 @@
 
 (defn themes [theme]
   (case theme
-    :main     {:icon-color       (:icon-04 @colors/theme)
-               :background-color (:interactive-02 @colors/theme)
-               :text-color       (:text-04 @colors/theme)}
-    :icon     {:icon-color       (:icon-01 @colors/theme)
-               :background-color (:interactive-02 @colors/theme)
-               :text-color       (:text-01 @colors/theme)}
-    :negative {:icon-color       (:negative-01 @colors/theme)
-               :background-color (:negative-02 @colors/theme)
-               :text-color       (:negative-01 @colors/theme)}
-    :positive {:icon-color       (:positive-01 @colors/theme)
-               :background-color (:positive-02 @colors/theme)
-               :text-color       (:positive-01 @colors/theme)}
-    :accent   {:icon-color       (:icon-05 @colors/theme)
-               :background-color (:interactive-01 @colors/theme)
-               :text-color       (:text-05 @colors/theme)}
-    :secondary {:icon-color       (:icon-02 @colors/theme)
-                :background-color (:interactive-02 @colors/theme)
-                :text-color       (:text-02 @colors/theme)}
-    :disabled {:icon-color       (:icon-02 @colors/theme)
-               :background-color (:ui-01 @colors/theme)
-               :text-color       (:text-02 @colors/theme)}))
+    :main         {:icon-color       (:icon-04 @colors/theme)
+                   :background-color (:interactive-02 @colors/theme)
+                   :text-color       (:text-04 @colors/theme)}
+    :icon         {:icon-color       (:icon-01 @colors/theme)
+                   :background-color (:interactive-02 @colors/theme)
+                   :text-color       (:text-01 @colors/theme)}
+    :negative     {:icon-color       (:negative-01 @colors/theme)
+                   :background-color (:negative-02 @colors/theme)
+                   :text-color       (:negative-01 @colors/theme)}
+    :positive     {:icon-color       (:positive-01 @colors/theme)
+                   :background-color (:positive-02 @colors/theme)
+                   :text-color       (:positive-01 @colors/theme)}
+    :accent       {:icon-color       (:icon-05 @colors/theme)
+                   :background-color (:interactive-01 @colors/theme)
+                   :text-color       (:text-05 @colors/theme)}
+    :secondary    {:icon-color       (:icon-02 @colors/theme)
+                   :background-color (:interactive-02 @colors/theme)
+                   :text-color       (:text-02 @colors/theme)}
+    :disabled     {:icon-color       (:icon-02 @colors/theme)
+                   :background-color (:ui-01 @colors/theme)
+                   :text-color       (:text-02 @colors/theme)}
+    :monocromatic {:icon-color       (:icon-01 @colors/theme)
+                   :background-color (:ui-background @colors/theme)
+                   :text-color       (:text-01 @colors/theme)
+                   :border-color     (:ui-01 @colors/theme)}))
 
 (defn button [{:keys [on-press disabled type theme before after
                       haptic-feedback haptic-type on-long-press on-press-start
@@ -62,7 +66,7 @@
   (let [theme' (cond
                  disabled :disabled
                  :else    theme)
-        {:keys [icon-color background-color text-color]}
+        {:keys [icon-color background-color text-color border-color]}
         (themes theme')
 
         optional-haptic (fn []
@@ -73,6 +77,9 @@
                                  :type                type
                                  :disabled            disabled
                                  :accessibility-label accessibility-label}
+                                (when border-color
+                                  {:border-color border-color
+                                   :border-width 1})
                                 (when on-press
                                   {:on-press (fn []
                                                (optional-haptic)

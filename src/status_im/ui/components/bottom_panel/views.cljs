@@ -43,7 +43,7 @@
                                :duration        500
                                :useNativeDriver true})])))
 
-(defn bottom-panel [_ render window-height on-close]
+(defn bottom-panel [_ render window-height on-close on-touch-outside show-overlay?]
   (let [bottom-anim-value (anim/create-value window-height)
         alpha-value       (anim/create-value 0)
         clear-timeout     (atom nil)
@@ -97,8 +97,12 @@
                                                                      :ignore-offset true}
 
                                        [react/view {:flex 1}
-                                        (when platform/ios?
+                                        (when (and platform/ios? show-overlay?)
                                           [react/animated-view {:flex 1 :background-color colors/black-persist :opacity alpha-value}])
+                                        (when on-touch-outside
+                                          [react/touchable-opacity {:active-opacity 0
+                                                                    :on-press on-touch-outside
+                                                                    :style {:flex 1}}])
                                         [react/animated-view {:style {:position  :absolute
                                                                       :transform [{:translateY bottom-anim-value}]
                                                                       :bottom    0 :left 0 :right 0}}
@@ -108,6 +112,6 @@
                                       #(do (on-close)
                                            nil)))})))
 
-(views/defview animated-bottom-panel [val signing-view on-close]
+(views/defview animated-bottom-panel [val view on-close on-touch-outside show-overlay?]
   (views/letsubs [{window-height :height} [:dimensions/window]]
-    [bottom-panel (when val (select-keys val [:from :contact :amount :token :approve? :message :cancel? :hash])) signing-view window-height on-close]))
+    [bottom-panel (when val (select-keys val [:from :contact :amount :token :approve? :message :cancel? :hash :name :url :icons :description :topic :relay :self :peer :permissions :state])) view window-height on-close on-touch-outside (if-not (nil? show-overlay?) show-overlay? true)]))
