@@ -774,6 +774,10 @@
                    {:address  "0xba5BDe662c17e2aDFF1075610382B9B691296350"
                     :symbol   :RARE
                     :name     "SuperRare"
+                    :decimals 18}
+                   {:address  "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72"
+                    :symbol   :ENS
+                    :name     "Ethereum Name Service"
                     :decimals 18}])
    :testnet
    (resolve-icons :testnet
