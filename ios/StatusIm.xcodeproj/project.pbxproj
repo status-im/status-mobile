@@ -53,6 +53,8 @@
 		D1786306E0184916B11F4C37 /* Inter-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B2A38FC3D3954DE7B2B171F8 /* Inter-Medium.otf */; };
 		D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */; };
 		D99C50E5E18942A39C8DDF61 /* Inter-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B321D25F4493470980039457 /* Inter-BoldItalic.otf */; };
+		F6750FB22744031B00C7FDB2 /* bw_logo.json in Resources */ = {isa = PBXBuildFile; fileRef = F6750FB12744031B00C7FDB2 /* bw_logo.json */; };
+		F6750FB32744031B00C7FDB2 /* bw_logo.json in Resources */ = {isa = PBXBuildFile; fileRef = F6750FB12744031B00C7FDB2 /* bw_logo.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -142,6 +144,7 @@
 		CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.otf"; path = "../resources/fonts/Inter-Bold.otf"; sourceTree = "<group>"; };
 		CE4E31B21D8695250033ED64 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Statusgo.framework; path = "../modules/react-native-status/ios/RCTStatus/Statusgo.framework"; sourceTree = "<group>"; };
 		DB52D45D10528E6992A83A71 /* libPods-Status-StatusIm-StatusImTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Status-StatusIm-StatusImTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6750FB12744031B00C7FDB2 /* bw_logo.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = bw_logo.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -219,6 +222,7 @@
 		1E7837547A9A40E18AD63CF3 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F6750FB12744031B00C7FDB2 /* bw_logo.json */,
 				74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */,
 				CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */,
 				B321D25F4493470980039457 /* Inter-BoldItalic.otf */,
@@ -482,6 +486,7 @@
 				D1786306E0184916B11F4C37 /* Inter-Medium.otf in Resources */,
 				57C854A7993C47A3B1AECD32 /* Inter-MediumItalic.otf in Resources */,
 				70ADBB5ECF934DCF8A0E4919 /* Inter-Regular.otf in Resources */,
+				F6750FB22744031B00C7FDB2 /* bw_logo.json in Resources */,
 				3870E1E692E24133A80B07DE /* Inter-SemiBold.otf in Resources */,
 				8391E8E0E93C41A98AAA6631 /* Inter-SemiBoldItalic.otf in Resources */,
 			);
@@ -500,6 +505,7 @@
 				3AAD2AD024A3A60E0075D594 /* Inter-Medium.otf in Resources */,
 				3AAD2AD124A3A60E0075D594 /* Inter-MediumItalic.otf in Resources */,
 				3AAD2AD224A3A60E0075D594 /* Inter-Regular.otf in Resources */,
+				F6750FB32744031B00C7FDB2 /* bw_logo.json in Resources */,
 				3AAD2AD324A3A60E0075D594 /* Inter-SemiBold.otf in Resources */,
 				3AAD2AD424A3A60E0075D594 /* Inter-SemiBoldItalic.otf in Resources */,
 			);
@@ -929,7 +935,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
@@ -994,7 +1000,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Debug;
 		};
@@ -1052,7 +1058,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
@@ -1134,8 +1140,8 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "arm64";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64";
+				VALID_ARCHS = arm64;
+				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
 			};
 			name = Debug;
 		};
@@ -1208,7 +1214,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
