@@ -3,7 +3,8 @@
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.chat.models :as chat]
-            [status-im.contact.core :as contact]))
+            [status-im.contact.core :as contact]
+            [status-im.notifications-center.core :as notification-center]))
 
 (fx/defn send-message-pressed
   {:events       [:contact.ui/send-message-pressed]
@@ -11,6 +12,7 @@
   [cofx {:keys [public-key]}]
   (fx/merge cofx
             {:dispatch-later [{:ms 1000 :dispatch [:chat.ui/start-chat public-key]}]}
+            (notification-center/accept-all-activity-center-notifications-from-chat public-key)
             (navigation/pop-to-root-tab :chat-stack)))
 
 (fx/defn contact-code-submitted
