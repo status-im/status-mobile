@@ -107,6 +107,9 @@
                          :on-press (fn []
                                      (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false] 3000)
                                      (re-frame/dispatch [:search/home-filter-changed nil]))}])
+       
+       ;; Open public chat
+       
        (when valid-public?
          [quo/list-item {:theme    :accent
                          :icon     :main-icons/public-chat
@@ -115,7 +118,27 @@
                          :on-press (fn []
                                      (re-frame/dispatch [:chat.ui/start-public-chat search-value])
                                      (re-frame/dispatch [:set :public-group-topic nil])
-                                     (re-frame/dispatch [:search/home-filter-changed nil]))}])])))
+                                     (re-frame/dispatch [:search/home-filter-changed nil]))}])
+       
+       ;; Search DuckDuckGo
+
+       [quo/list-item {:theme    :accent
+                         :icon     :main-icons/private-chat
+                         :title    search-value
+                         :subtitle (str "Search DuckDuckGo") ;; Needs translation
+                         :on-press (fn []
+                                     (re-frame/dispatch [:browser.ui/open-url (str "https://duckduckgo.com/?q="search-value)])
+                                     (re-frame/dispatch [:search/home-filter-changed nil]))}]
+       
+       ;; Go to URL
+
+       [quo/list-item {:theme    :accent
+                       :icon     :main-icons/private-chat
+                       :title    (str search-value ".com")
+                       :subtitle (str "Go to URL") ;; Needs translation
+                       :on-press (fn []
+                                   (re-frame/dispatch [:browser.ui/open-url (str search-value ".com")])
+                                   (re-frame/dispatch [:search/home-filter-changed nil]))}]])))
 
 (defn render-fn [{:keys [chat-id] :as home-item}]
   ;; We use `chat-id` to distinguish communities from chats
