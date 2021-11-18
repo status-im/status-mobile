@@ -15,7 +15,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
 
         sign_in.just_fyi("Creating multiaccount with special char password")
-        password=basic_user['special_chars_password']
+        password = basic_user['special_chars_password']
         home = sign_in.create_user(password=password)
         public_key, default_username = home.get_public_key_and_username(return_username=True)
         profile = home.get_profile_view()
@@ -66,7 +66,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         passphrase = fill_string_with_char(passphrase.upper(), ' ', 3, True, True)
         sign_in = SignInView(self.driver)
 
-        sign_in.just_fyi("Restore multiaccount from uppercase seed phrase with whitespaces and set password with special chars")
+        sign_in.just_fyi(
+            "Restore multiaccount from uppercase seed phrase with whitespaces and set password with special chars")
         sign_in.recover_access(passphrase, password=password)
         profile = sign_in.profile_button.click()
         username = profile.default_username_text.text
@@ -99,7 +100,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.get_started_button.click_until_presence_of_element(sign_in.generate_key_button)
         sign_in.generate_key_button.click()
         from views.sign_in_view import MultiAccountButton
-        account_button = sign_in.get_multiaccount_by_position(position=random.randint(1, 4), element_class=MultiAccountButton)
+        account_button = sign_in.get_multiaccount_by_position(position=random.randint(1, 4),
+                                                              element_class=MultiAccountButton)
         username = account_button.username.text
         account_button.click()
         sign_in.next_button.click()
@@ -130,7 +132,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         if home.element_by_text(texts[0]).is_element_displayed():
             self.errors.append("'%s' text is shown after relogin, but welcome view was closed" % texts[0])
         if not home.element_by_translation_id("welcome-blank-message").is_element_displayed():
-            self.errors.append("'%s' text is not shown after welcome view was closed" %  home.get_translation_by_key("welcome-blank-message"))
+            self.errors.append("'%s' text is not shown after welcome view was closed" % home.get_translation_by_key(
+                "welcome-blank-message"))
 
         self.errors.verify_no_errors()
 
@@ -154,7 +157,7 @@ class TestCreateAccount(SingleDeviceTestCase):
                 'phrase': 'a',
                 'validation message': '',
                 'words count': 1,
-                'popup' : False
+                'popup': False
             },
             {
                 'case': 'mnemonic but checksum validation fails',
@@ -173,9 +176,9 @@ class TestCreateAccount(SingleDeviceTestCase):
         for validation in validations:
             sign_in.just_fyi("Checking %s" % validation.get('case'))
             phrase, msg, words_count, popup = validation.get('phrase'), \
-                                            validation.get('validation message'), \
-                                            validation.get('words count'),\
-                                            validation.get('popup')
+                                              validation.get('validation message'), \
+                                              validation.get('words count'), \
+                                              validation.get('popup')
             if sign_in.access_key_button.is_element_displayed():
                 sign_in.access_key_button.click()
             if sign_in.enter_seed_phrase_button.is_element_displayed():
@@ -230,7 +233,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         if sign_in.maybe_later_button.is_element_displayed(10):
             self.driver.fail('%s  %s' % (error, cases[0]))
 
-        sign_in.just_fyi('Checking case when %s'% cases[1])
+        sign_in.just_fyi('Checking case when %s' % cases[1])
         sign_in.create_password_input.send_keys('123456')
         [field.send_keys('123456') for field in (sign_in.create_password_input, sign_in.confirm_your_password_input)]
         sign_in.confirm_your_password_input.delete_last_symbols(1)
@@ -267,6 +270,3 @@ class TestCreateAccount(SingleDeviceTestCase):
             profile.delete_profile_button.click()
             profile.ok_button.click()
         self.errors.verify_no_errors()
-
-
-

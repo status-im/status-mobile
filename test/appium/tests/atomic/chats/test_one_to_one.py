@@ -1,9 +1,6 @@
-import time
-
 import emoji
 import random
 import string
-from selenium.common.exceptions import TimeoutException
 
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
@@ -216,9 +213,10 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if not public_chat_1.element_by_text_part("⌫ Edited").is_element_displayed():
             self.errors.append('No mark in message bubble about this message was edited')
 
-        device_2.just_fyi("Device 1 sends text message and edits it in 1-1 chat. Device2 checks edited message is shown")
+        device_2.just_fyi(
+            "Device 1 sends text message and edits it in 1-1 chat. Device2 checks edited message is shown")
         chat_private_2 = home_2.add_contact(public_key_1)
-        message_before_edit_1_1, message_after_edit_1_1= "Message before edit 1-1", "AFTER"
+        message_before_edit_1_1, message_after_edit_1_1 = "Message before edit 1-1", "AFTER"
         chat_private_2.send_message(message_before_edit_1_1)
         home_1.home_button.click()
 
@@ -261,7 +259,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         chat_private_2.just_fyi("Check for that edited message is shown for Device 2 and delete message in public chat")
         [home.home_button.double_click() for home in (home_1, home_2)]
-        public_chat_1, public_chat_2 = home_1.get_chat('#%s' %chat_name).click(), home_2.join_public_chat(chat_name)
+        public_chat_1, public_chat_2 = home_1.get_chat('#%s' % chat_name).click(), home_2.join_public_chat(chat_name)
         if not public_chat_2.element_by_text_part("⌫ Edited").is_element_displayed():
             self.errors.append('No mark in message bubble about this message was edited')
         if not public_chat_2.element_by_text_part(message_after_edit).is_element_displayed():
@@ -484,7 +482,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1 = home_1.add_contact(public_key_2)
 
         home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
-        message_1, message_2, message_3 ,message_4 = "Message1", "Message2", "Message3", "Message4",
+        message_1, message_2, message_3, message_4 = "Message1", "Message2", "Message3", "Message4",
         chat_1.send_message(message_1)
         chat_1.send_message(message_2)
         chat_1.pin_message(message_1)
@@ -506,15 +504,15 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.view_profile_button.click()
         chat_1.pinned_messages_button.click()
         if not (chat_1.chat_element_by_text(message_1).pinned_by_label.is_element_present() and
-        chat_1.chat_element_by_text(message_2).pinned_by_label.is_element_present() and
-        chat_1.chat_element_by_text(message_1).is_element_present() and
-        chat_1.chat_element_by_text(message_2).is_element_present()):
+                chat_1.chat_element_by_text(message_2).pinned_by_label.is_element_present() and
+                chat_1.chat_element_by_text(message_1).is_element_present() and
+                chat_1.chat_element_by_text(message_2).is_element_present()):
             self.drivers[0].fail("Something missed on Pinned messaged on Device 1!")
         chat_2.pinned_messages_button.click()
         if not (chat_1.chat_element_by_text(message_1).pinned_by_label.is_element_present() and
-        chat_2.chat_element_by_text(message_2).pinned_by_label.is_element_present() and
-        chat_2.chat_element_by_text(message_1).is_element_present() and
-        chat_2.chat_element_by_text(message_2).is_element_present()):
+                chat_2.chat_element_by_text(message_2).pinned_by_label.is_element_present() and
+                chat_2.chat_element_by_text(message_1).is_element_present() and
+                chat_2.chat_element_by_text(message_2).is_element_present()):
             self.drivers[0].fail("Something missed on Pinned messaged on Device 2!")
         chat_1.close_button.click()
 
@@ -629,7 +627,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
                             'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
                             'txt': 'Status & Keycard – Hardware-Enforced Security',
                             'subtitle': 'YouTube'},
-                        'twitter':{
+                        'twitter': {
                             'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
                             'txt': "We've rethought how we translate content, allowing us to translate",
                             'subtitle': 'Twitter'
@@ -741,7 +739,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             "audio": device_2_sends_audio,
         }
 
-
         for key, value in sending_list.items():
             navigate_to_start_state_of_both_devices()
             sending_list[key]()
@@ -760,7 +757,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
                 self.errors.append("Counter of reaction is not re-set on %s for message receiver!" % key)
 
         chat_2.just_fyi("Sending Emoji/Tag/Links in chat")
-        ## TODO: add link and tag messages after #11168 is fixed
+        # TODO: add link and tag messages after #11168 is fixed
         navigate_to_start_state_of_both_devices()
 
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
@@ -1165,7 +1162,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 wallet.home_button.click()
             if 'dapp' in key:
                 home.open_in_status_button.click()
-                if not (chat.allow_button.is_element_displayed() or chat.element_by_text("Can't find web3 library").is_element_displayed()):
+                if not (chat.allow_button.is_element_displayed() or chat.element_by_text(
+                        "Can't find web3 library").is_element_displayed()):
                     self.errors.append('No allow button is shown in case of navigating to Status dapp!')
                 chat.dapp_tab_button.click()
                 chat.home_button.click()

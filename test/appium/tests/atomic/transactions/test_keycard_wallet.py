@@ -1,5 +1,5 @@
 from support.utilities import get_merged_txs_list
-from tests import marks, pin, puk, pair_code
+from tests import marks
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import transaction_senders, basic_user, wallet_users
 from views.sign_in_view import SignInView
@@ -13,21 +13,16 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     def test_keycard_send_eth_from_wallet_to_address(self):
         recipient = basic_user
         sender = transaction_senders['P']
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(sender['passphrase'], keycard=True)
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.wait_balance_is_changed()
-        wallet_view.accounts_status_account.click()
-        transaction_amount = wallet_view.get_unique_amount()
-        wallet_view.send_transaction(amount=transaction_amount,
-                                     sign_transaction=True,
-                                     keycard=True,
-                                     recipient='0x%s'%recipient['address'])
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(sender['passphrase'], keycard=True)
+        wallet = home.wallet_button.click()
+        wallet.wait_balance_is_changed()
+        transaction_amount = wallet.get_unique_amount()
+        wallet.send_transaction(amount=transaction_amount, sign_transaction=True, keycard=True, recipient='0x%s' % recipient['address'])
 
-        wallet_view.just_fyi('Check that transaction is appeared in transaction history')
-        transaction = wallet_view.find_transaction_in_history(amount=transaction_amount, return_hash=True)
+        wallet.just_fyi('Check that transaction is appeared in transaction history')
+        transaction = wallet.find_transaction_in_history(amount=transaction_amount, return_hash=True)
         self.network_api.find_transaction_by_hash(transaction)
-
 
     @marks.testrail_id(6291)
     @marks.critical
@@ -88,17 +83,13 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet.click_system_back_button()
 
         wallet.just_fyi("Send transaction to new account")
-        wallet.accounts_status_account.wait_and_click()
         transaction_amount = '0.004'
         initial_balance = self.network_api.get_balance(status_account_address)
-        wallet.send_transaction(account_name=account_name,
-                                     amount=transaction_amount,
-                                     keycard=True)
+        wallet.send_transaction(account_name=account_name, amount=transaction_amount, keycard=True)
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
         self.network_api.verify_balance_is_updated(str(initial_balance), status_account_address)
 
         wallet.just_fyi("Verifying previously sent transaction in new account")
-        wallet.close_button.click()
         wallet.get_account_by_name(account_name).click()
         wallet.send_transaction_button.click()
         wallet.close_send_transaction_view_button.click()
@@ -113,13 +104,12 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         transaction_amount_1 = round(float(transaction_amount) * 0.2, 11)
         wallet.wait_balance_is_changed()
         wallet.get_account_by_name(account_name).click()
-        send_transaction = wallet.send_transaction(account_name=wallet.status_account_name,
-                                                        amount=transaction_amount_1,
-                                                        keycard=True)
+        send_transaction = wallet.send_transaction(from_main_wallet=False, account_name=wallet.status_account_name,
+                                                   amount=transaction_amount_1, keycard=True)
         wallet.close_button.click()
         sub_account_address = wallet.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(sub_account_address, transaction_amount_1)
-        wallet.find_transaction_in_history(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
+        wallet.find_transaction_in_history(amount=format(float(transaction_amount_1), '.11f').rstrip('0'))
 
         wallet.just_fyi("Check transactions on subaccount")
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)

@@ -21,7 +21,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         send_transaction_view = wallet.send_transaction_button.click()
         send_transaction_view.amount_edit_box.click()
         send_transaction_view.amount_edit_box.set_value("0")
-        send_transaction_view.set_recipient_address("0x"+transaction_senders['A']['address'])
+        send_transaction_view.set_recipient_address("0x" + transaction_senders['A']['address'])
         send_transaction_view.sign_transaction_button.click()
 
         texts = list(map(sign_in.get_translation_by_key,
@@ -135,7 +135,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.close_send_transaction_view_button.double_click()
 
         wallet.just_fyi('Check "Open in OpenSea" (that user is signed in)')
-        wallet.element_by_translation_id("check-on-opensea").click_until_presence_of_element((web_view.browser_previous_page_button))
+        wallet.element_by_translation_id("check-on-opensea").click_until_presence_of_element(web_view.browser_previous_page_button)
         web_view.wait_for_d_aap_to_load(10)
         wallet.element_by_text('e2ecryptokitty').wait_for_element(60)
 
@@ -208,7 +208,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         for asset in user['collectibles']:
             wallet.get_collectibles_amount(asset).scroll_to_element()
             if wallet.get_collectibles_amount(asset).text != user['collectibles'][asset]:
-                self.errors.append('%s %s is not shown in Collectibles for Rinkeby!' % (user['collectibles'][asset], asset))
+                self.errors.append(
+                    '%s %s is not shown in Collectibles for Rinkeby!' % (user['collectibles'][asset], asset))
 
     @marks.testrail_id(6224)
     @marks.critical
@@ -226,7 +227,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.enter_your_password_input.send_keys('000000')
         wallet.add_account_generate_account_button.click()
         if not wallet.element_by_text_part('Password seems to be incorrect').is_element_displayed():
-             self.driver.fail("Incorrect password validation is not performed")
+            self.driver.fail("Incorrect password validation is not performed")
         wallet.enter_your_password_input.clear()
         wallet.enter_your_password_input.send_keys(common_password)
         wallet.add_account_generate_account_button.click()
@@ -271,7 +272,8 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.errors.append('No "Watch-only" label is shown on watch-only wallet')
         wallet.receive_transaction_button.click_until_presence_of_element(wallet.address_text)
         if wallet.address_text.text[2:] != basic_user['address']:
-            self.errors.append('Wrong address %s is shown in "Receive" popup for watch-only account ' % wallet.address_text.text)
+            self.errors.append(
+                'Wrong address %s is shown in "Receive" popup for watch-only account ' % wallet.address_text.text)
         wallet.close_share_popup()
         wallet.get_account_options_by_name(account_name).click()
         wallet.account_settings_button.click()
@@ -314,7 +316,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.just_fyi('Check that overall balance is changed after adding account from private key')
         for asset in ('ETH', 'ADI', 'LXS', 'STT'):
             wallet.wait_balance_is_changed(asset)
-        initial_STT = wallet.get_asset_amount_by_name('STT')
+        initial_stt = wallet.get_asset_amount_by_name('STT')
 
         wallet.just_fyi('Check individual account view (imported from private key), receive option')
         wallet.get_account_by_name(account_name_private).scroll_and_click(direction="up")
@@ -347,7 +349,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('Account was not added')
 
         wallet.just_fyi('Check that overall balance is changed after adding account from seed phrase')
-        wallet.wait_balance_is_changed('STT', initial_balance=initial_STT)
+        wallet.wait_balance_is_changed('STT', initial_balance=initial_stt)
         wallet.wait_balance_is_changed('MDS')
 
         wallet.just_fyi('Check account view and send option (imported from seed phrase)')
@@ -373,13 +375,15 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.show_account_by_name_button(account_name_seed).click()
         wallet.wallet_button.double_click()
         if wallet.get_account_by_name(account_name_seed).is_element_displayed():
-            self.errors.append("Hidden %s is shown on main wallet view after hiding via 'Show icon'" % account_name_seed)
+            self.errors.append(
+                "Hidden %s is shown on main wallet view after hiding via 'Show icon'" % account_name_seed)
         wallet.multiaccount_more_options.click()
         wallet.manage_accounts_button.click()
         wallet.hidden_account_by_name_button(account_name_seed).click()
         wallet.wallet_button.double_click()
         if not wallet.get_account_by_name(account_name_seed).is_element_displayed():
-            self.errors.append("Unhidden %s is shown on main wallet view after hiding via 'Show icon'" % account_name_seed)
+            self.errors.append(
+                "Unhidden %s is shown on main wallet view after hiding via 'Show icon'" % account_name_seed)
 
         wallet.just_fyi("Delete unhidden account in wallet")
         wallet.get_account_by_name(account_name_seed).click()
@@ -389,7 +393,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.password_delete_account_input.wait_for_element(30)
         wallet.password_delete_account_input.set_value(common_password)
         wallet.delete_account_confirm_button.click()
-        if  wallet.get_account_by_name(account_name_seed).is_element_displayed():
+        if wallet.get_account_by_name(account_name_seed).is_element_displayed():
             self.errors.append("Deleted %s is shown on main wallet view" % account_name_seed)
 
         self.errors.verify_no_errors()
@@ -421,7 +425,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             search_results = [element.text for element in search_elements]
             if search_results != search_list_assets[keyword]:
                 self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
-                                                                    (', '.join(search_results), keyword))
+                                   (', '.join(search_results), keyword))
             home.cancel_button.click()
         wallet.close_button.click()
 
@@ -439,8 +443,8 @@ class TestWalletManagement(SingleDeviceTestCase):
                 self.errors.append('No search results after searching by %s keyword' % keyword)
             search_results = [element.text for element in search_elements]
             if search_results != search_list_currencies[keyword]:
-                 self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
-                                                                     (', '.join(search_results), keyword))
+                self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
+                                   (', '.join(search_results), keyword))
             home.cancel_button.click()
 
         self.errors.verify_no_errors()

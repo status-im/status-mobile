@@ -4,7 +4,8 @@ import string
 from support.utilities import get_merged_txs_list
 from tests import marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten, transaction_recipients, ens_user
+from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten, transaction_recipients, \
+    ens_user
 from views.send_transaction_view import SendTransactionView
 from views.sign_in_view import SignInView
 
@@ -103,14 +104,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         home = SignInView(self.driver).recover_access(sender['passphrase'])
         wallet = home.wallet_button.click()
         wallet.wait_balance_is_changed(asset='ADI', scan_tokens=True)
-        wallet.accounts_status_account.click()
         amount = '0.000%s' % str(random.randint(100, 999)) + '1'
-        wallet.send_transaction(amount=amount,
-                                recipient='0x%s' % recipient['address'],
-                                asset_name='ADI')
+        wallet.send_transaction(amount=amount, recipient='0x%s' % recipient['address'], asset_name='ADI')
         transaction = wallet.find_transaction_in_history(amount=amount, asset='ADI', return_hash=True)
         self.network_api.find_transaction_by_hash(transaction)
-
 
     @marks.testrail_id(5412)
     @marks.high
@@ -215,7 +212,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         home.home_button.wait_for_visibility_of_element()
         home.connection_offline_icon.wait_for_visibility_of_element(20)
 
-
     @marks.testrail_id(6225)
     @marks.transaction
     @marks.medium
@@ -231,17 +227,14 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet.add_account(account_name)
 
         wallet.just_fyi("Send transaction to new account")
-        wallet.accounts_status_account.click()
         initial_balance = self.network_api.get_balance(status_account_address)
 
         transaction_amount = '0.003%s' % str(random.randint(10000, 99999)) + '1'
-        wallet.send_transaction(account_name=account_name,
-                                     amount=transaction_amount)
+        wallet.send_transaction(account_name=account_name, amount=transaction_amount)
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
         self.network_api.verify_balance_is_updated(str(initial_balance), status_account_address)
 
         wallet.just_fyi("Verifying previously sent transaction in new account")
-        wallet.close_button.click()
         wallet.get_account_by_name(account_name).click()
         wallet.send_transaction_button.click()
         wallet.close_send_transaction_view_button.click()
@@ -254,14 +247,14 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet.just_fyi("Sending eth from new account to main account")
         updated_balance = self.network_api.get_balance(status_account_address)
         transaction_amount_1 = round(float(transaction_amount) * 0.2, 12)
-        wallet.send_transaction(account_name=wallet.status_account_name,
-                                                        amount=transaction_amount_1)
+        wallet.send_transaction(from_main_wallet=False, account_name=wallet.status_account_name,
+                                amount=transaction_amount_1)
         wallet.close_button.click()
         sub_account_address = wallet.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
         wallet.find_transaction_in_history(amount=transaction_amount)
-        wallet.find_transaction_in_history(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
+        wallet.find_transaction_in_history(amount=format(float(transaction_amount_1), '.11f').rstrip('0'))
 
         wallet.just_fyi("Check transactions on subaccount")
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
@@ -338,7 +331,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         url_data = {
             'ens_for_receiver': {
                 'url': 'ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=nastya.stateofus.eth&uint256=1e-1',
-                'data':{
+                'data': {
                     'asset': 'STT',
                     'amount': '0.1',
                     'address': '0x58d8…F2ff',
@@ -429,7 +422,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.high
     @marks.transaction
     def test_send_transaction_with_custom_token(self):
-        contract_address, name, symbol, decimals = '0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA',  'Weenus 💪', 'WEENUS', '18'
+        contract_address, name, symbol, decimals = '0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA', 'Weenus 💪', 'WEENUS', '18'
         home = SignInView(self.driver).recover_access(wallet_users['B']['passphrase'])
         wallet = home.wallet_button.click()
         wallet.multiaccount_more_options.click()
@@ -447,8 +440,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet.asset_by_name(symbol).scroll_to_element()
         if not wallet.asset_by_name(symbol).is_element_displayed():
             self.errors.append('Custom token is not shown on Wallet view')
-        wallet.accounts_status_account.scroll_to_element(direction='up')
-        wallet.accounts_status_account.click()
         recipient = "0x" + basic_user['address']
         amount = '0.000%s' % str(random.randint(10000, 99999)) + '1'
         wallet.send_transaction(asset_name=symbol, amount=amount, recipient=recipient)
@@ -547,11 +538,11 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             if not send_tr.element_by_text(name).is_element_displayed():
                 self.errors.append('%s is not shown in search when searching by namepart' % name)
         send_tr.element_by_text(basic_add_to_fav_name).click()
-        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address('0x' + basic_user['address']):
+        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(
+                '0x' + basic_user['address']):
             self.errors.append('QR scanned address that was added to favourites was not resolved correctly')
 
         self.errors.verify_no_errors()
-
 
     @marks.testrail_id(5437)
     @marks.medium
@@ -560,14 +551,14 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
 
         errors = {'send_transaction_screen': {
-                    'too_precise': 'Amount is too precise. Max number of decimals is 7.',
-                    'insufficient_funds': 'Insufficient funds'
-                    },
-                  'sending_screen': {
-                    'Amount': 'Insufficient funds',
-                    'Network fee': 'Not enough ETH for gas'
-                    },
-                  }
+            'too_precise': 'Amount is too precise. Max number of decimals is 7.',
+            'insufficient_funds': 'Insufficient funds'
+        },
+            'sending_screen': {
+                'Amount': 'Insufficient funds',
+                'Network fee': 'Not enough ETH for gas'
+            },
+        }
         warning = 'Warning %s is not shown on %s'
 
         sign_in.recover_access(sender['passphrase'])
@@ -577,21 +568,24 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         screen = 'send transaction screen from wallet'
         sign_in.just_fyi('Checking %s on %s' % (errors['send_transaction_screen']['too_precise'], screen))
-        initial_amount_ADI = wallet.get_asset_amount_by_name('ADI')
+        initial_amount_adi = wallet.get_asset_amount_by_name('ADI')
         send_transaction = wallet.send_transaction_button.click()
         adi_button = send_transaction.asset_by_name('ADI')
-        send_transaction.select_asset_button.click_until_presence_of_element(send_transaction.eth_asset_in_select_asset_bottom_sheet_button)
+        send_transaction.select_asset_button.click_until_presence_of_element(
+            send_transaction.eth_asset_in_select_asset_bottom_sheet_button)
         adi_button.click()
         send_transaction.amount_edit_box.click()
         amount = '0.000%s' % str(random.randint(100000, 999999)) + '1'
         send_transaction.amount_edit_box.set_value(amount)
-        if not send_transaction.element_by_text(errors['send_transaction_screen']['too_precise']).is_element_displayed():
+        if not send_transaction.element_by_text(
+                errors['send_transaction_screen']['too_precise']).is_element_displayed():
             self.errors.append(warning % (errors['send_transaction_screen']['too_precise'], screen))
 
         sign_in.just_fyi('Checking %s on %s' % (errors['send_transaction_screen']['insufficient_funds'], screen))
         send_transaction.amount_edit_box.clear()
-        send_transaction.amount_edit_box.set_value(str(initial_amount_ADI) + '1')
-        if not send_transaction.element_by_text(errors['send_transaction_screen']['insufficient_funds']).is_element_displayed():
+        send_transaction.amount_edit_box.set_value(str(initial_amount_adi) + '1')
+        if not send_transaction.element_by_text(
+                errors['send_transaction_screen']['insufficient_funds']).is_element_displayed():
             self.errors.append(warning % (errors['send_transaction_screen']['insufficient_funds'], screen))
         wallet.close_send_transaction_view_button.click()
         wallet.close_button.click()
@@ -607,7 +601,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.next_button.click()
         wallet.ok_got_it_button.wait_and_click(30)
         if not send_transaction.validation_error_element.is_element_displayed(10):
-            self.errors.append('Validation icon is not shown when testing %s on %s' % (errors['sending_screen']['Network fee'],screen))
+            self.errors.append('Validation icon is not shown when testing %s on %s' % (errors['sending_screen']['Network fee'], screen))
         if not wallet.element_by_translation_id("tx-fail-description2").is_element_displayed():
             self.errors.append("No warning about failing tx is shown!")
         send_transaction.cancel_button.click()
@@ -625,7 +619,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             status_test_dapp.send_two_tx_in_batch_button)
         status_test_dapp.send_two_tx_in_batch_button.click()
         if not send_transaction.validation_error_element.is_element_displayed(10):
-            self.errors.append(warning % (errors['sending_screen']['Network fee'],screen))
+            self.errors.append(warning % (errors['sending_screen']['Network fee'], screen))
         self.errors.verify_no_errors()
 
     @marks.testrail_id(695855)
@@ -648,31 +642,29 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.network_fee_button.click()
         send_transaction = wallet.get_send_transaction_view()
         fee_fields = (send_transaction.per_gas_tip_limit_input, send_transaction.per_gas_price_limit_input)
-        [default_tip, default_price] = [input.text for input in fee_fields]
+        [default_tip, default_price] = [field.text for field in fee_fields]
         default_limit = '21000'
-
-
 
         wallet.just_fyi("Check basic validation")
         values = {
-            send_transaction.gas_limit_input :
+            send_transaction.gas_limit_input:
                 {
                     'default': default_limit,
-                    'value' : '22000',
-                    '20999' : 'wallet-send-min-units',
+                    'value': '22000',
+                    '20999': 'wallet-send-min-units',
                     '@!': 'invalid-number',
-                 },
+                },
             send_transaction.per_gas_tip_limit_input:
                 {
                     'default': default_tip,
                     'value': '2.5',
-                    'aaaa' : 'invalid-number',
+                    'aaaa': 'invalid-number',
                 },
             send_transaction.per_gas_price_limit_input:
                 {
                     'default': default_price,
                     'value': '4,000000001',
-                    '-2' : 'invalid-number',
+                    '-2': 'invalid-number',
                 }
         }
         for field in values:
@@ -685,18 +677,18 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                     field.clear()
                     field.set_value(values[field]['value'])
 
-
         wallet.just_fyi("Set custom fee and check that it will be applied")
         send_transaction.save_fee_button.scroll_and_click()
         if send_transaction.get_network_fee_from_bottom_sheet() != '0.000088':
-            self.driver.fail("Custom fee is not applied, in fact it is %s " % send_transaction.get_network_fee_from_bottom_sheet())
+            self.driver.fail(
+                "Custom fee is not applied, in fact it is %s " % send_transaction.get_network_fee_from_bottom_sheet())
         send_transaction.sign_transaction()
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=3)
         transaction = wallet.find_transaction_in_history(amount=amount, return_hash=True)
-        expected_params =  {
-            'fee_cap' : '4.000000001',
+        expected_params = {
+            'fee_cap': '4.000000001',
             'tip_cap': '2.5',
-            'gas_limit' : '22000'
+            'gas_limit': '22000'
         }
         actual_params = self.network_api.get_custom_fee_tx_params(transaction)
         if actual_params != expected_params:
@@ -747,10 +739,7 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
         receiver = transaction_recipients['K']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-
-        home_1, home_2 = device_1.recover_access(sender['passphrase']), \
-                                       device_2.recover_access(receiver['passphrase'])
-
+        home_1, home_2 = device_1.recover_access(sender['passphrase']), device_2.recover_access(receiver['passphrase'])
         wallet_sender = home_1.wallet_button.click()
         wallet_receiver = home_2.wallet_button.click()
 
@@ -761,7 +750,6 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi("Sending token amount to device who will use Set Max option for token")
         amount = '0.012345678912345678'
-        wallet_sender.accounts_status_account.click()
         wallet_sender.send_transaction(asset_name='STT', amount=amount, recipient=receiver['address'])
         wallet_receiver.wait_balance_is_changed(asset='STT', initial_balance=initial_balance, scan_tokens=True)
         wallet_receiver.accounts_status_account.click()

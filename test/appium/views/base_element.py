@@ -25,7 +25,7 @@ class BaseElement(object):
         self.accessibility_id = None
         self.translation_id = None
         self.uppercase = None
-        self.prefix=''
+        self.prefix = ''
         self.suffix = None
         self.id = None
         self.class_name = None
@@ -77,7 +77,8 @@ class BaseElement(object):
                 return self.driver.find_element(self.by, self.locator)
             except NoSuchElementException:
                 raise NoSuchElementException(
-                    "Device %s: %s by %s: `%s` is not found on the screen" % (self.driver.number, self.name, self.by, self.locator)) from None
+                    "Device %s: %s by %s: `%s` is not found on the screen" % (
+                        self.driver.number, self.name, self.by, self.locator)) from None
             except Exception as exception:
                 if 'Internal Server Error' in str(exception):
                     continue
@@ -100,7 +101,8 @@ class BaseElement(object):
                 .until(expected_conditions.presence_of_element_located((self.by, self.locator)))
         except TimeoutException:
             raise TimeoutException(
-                "Device %s: %s by %s: `%s` is not found on the screen" % (self.driver.number, self.name, self.by, self.locator))  from None
+                "Device %s: %s by %s: `%s` is not found on the screen" % (
+                    self.driver.number, self.name, self.by, self.locator)) from None
 
     def wait_for_elements(self, seconds=10):
         try:
@@ -108,7 +110,8 @@ class BaseElement(object):
                 .until(expected_conditions.presence_of_all_elements_located((self.by, self.locator)))
         except TimeoutException:
             raise TimeoutException(
-                "Device %s:  %s by %s:`%s` is not found on the screen" % (self.driver.number, self.name, self.by, self.locator)) from None
+                "Device %s:  %s by %s:`%s` is not found on the screen" % (
+                    self.driver.number, self.name, self.by, self.locator)) from None
 
     def wait_for_visibility_of_element(self, seconds=10, ignored_exceptions=None):
         try:
@@ -116,7 +119,8 @@ class BaseElement(object):
                 .until(expected_conditions.visibility_of_element_located((self.by, self.locator)))
         except TimeoutException:
             raise TimeoutException(
-                "Device %s: %s by %s:`%s` is not found on the screen" % (self.driver.number, self.name, self.by, self.locator)) from None
+                "Device %s: %s by %s:`%s` is not found on the screen" % (
+                    self.driver.number, self.name, self.by, self.locator)) from None
 
     def wait_for_invisibility_of_element(self, seconds=10):
         try:
@@ -148,12 +152,13 @@ class BaseElement(object):
             except NoSuchElementException:
                 size = self.driver.get_window_size()
                 if direction == 'down':
-                    self.driver.swipe(500, size["height"]*0.4, 500, size["height"]*0.05)
+                    self.driver.swipe(500, size["height"] * 0.4, 500, size["height"] * 0.05)
                 else:
-                    self.driver.swipe(500, size["height"]*0.25, 500, size["height"]*0.8)
+                    self.driver.swipe(500, size["height"] * 0.25, 500, size["height"] * 0.8)
         else:
             raise NoSuchElementException(
-                "Device %s: %s by %s: `%s` is not found on the screen" % (self.driver.number, self.name,  self.by, self.locator)) from None
+                "Device %s: %s by %s: `%s` is not found on the screen" % (
+                    self.driver.number, self.name, self.by, self.locator)) from None
 
     def scroll_and_click(self, direction='down'):
         self.scroll_to_element(direction=direction)
@@ -212,7 +217,7 @@ class BaseElement(object):
         screen = Image.open(BytesIO(base64.b64decode(self.find_element().screenshot_as_base64)))
         screen.save(full_path_to_file)
 
-    def is_element_image_equals_template(self, file_name: str = '',  diff: int = 0):
+    def is_element_image_equals_template(self, file_name: str = ''):
         if file_name:
             self.template = file_name
         return not ImageChops.difference(self.image, self.template).getbbox()
@@ -224,8 +229,8 @@ class BaseElement(object):
         difference = ImageChops.difference(self.image, self.template)
         stat = ImageStat.Stat(difference)
         diff_ratio = sum(stat.mean) / (len(stat.mean) * 255)
-        if diff_ratio*100 >  diff:
-            self.driver.info('Image differs from template to %s percents' % str(diff_ratio*100))
+        if diff_ratio * 100 > diff:
+            self.driver.info('Image differs from template to %s percents' % str(diff_ratio * 100))
             result = True
         return result
 
@@ -233,7 +238,7 @@ class BaseElement(object):
         image_template = os.sep.join(__file__.split(os.sep)[:-1]) + '/elements_templates/%s' % template_path
         template = imagehash.average_hash(Image.open(image_template))
         element_image = imagehash.average_hash(self.image)
-        return not bool(template-element_image)
+        return not bool(template - element_image)
 
     def swipe_left_on_element(self):
         element = self.find_element()
@@ -337,20 +342,20 @@ class Text(BaseElement):
         return text
 
 
-
 class Button(BaseElement):
 
     def __init__(self, driver, **kwargs):
         super(Button, self).__init__(driver, **kwargs)
 
-    def wait_and_click(self, time=30):
-        self.driver.info("Wait for element '%s' for max %ss and click when it is available" % (self.name, time))
-        self.wait_for_visibility_of_element(time)
+    def wait_and_click(self, sec=30):
+        self.driver.info("Wait for element '%s' for max %ss and click when it is available" % (self.name, sec))
+        self.wait_for_visibility_of_element(sec)
         self.click()
 
     def click_until_presence_of_element(self, desired_element, attempts=4):
         counter = 0
-        self.driver.info("Click until '%s' by '%s': `%s` will be presented" % (desired_element.name, desired_element.by, desired_element.locator))
+        self.driver.info("Click until '%s' by '%s': `%s` will be presented" % (
+            desired_element.name, desired_element.by, desired_element.locator))
         while not desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.find_element().click()
@@ -363,13 +368,15 @@ class Button(BaseElement):
 
     def click_until_absense_of_element(self, desired_element, attempts=3):
         counter = 0
-        self.driver.info("Click until '%s' by '%s': `%s` is NOT presented" % (desired_element.name, desired_element.by, desired_element.locator))
+        self.driver.info("Click until '%s' by '%s': `%s` is NOT presented" % (
+            desired_element.name, desired_element.by, desired_element.locator))
         while desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.find_element().click()
                 counter += 1
             except (NoSuchElementException, TimeoutException):
                 return self.navigate()
+
 
 class SilentButton(Button):
     def find_element(self):
@@ -378,7 +385,8 @@ class SilentButton(Button):
                 return self.driver.find_element(self.by, self.locator)
             except NoSuchElementException:
                 raise NoSuchElementException(
-                    "Device %s: '%s' by %s:'%s' not found on the screen" % (self.driver.number, self.name, self.by, self.locator)) from None
+                    "Device %s: '%s' by %s:'%s' not found on the screen" % (
+                        self.driver.number, self.name, self.by, self.locator)) from None
             except Exception as exception:
                 if 'Internal Server Error' in str(exception):
                     continue

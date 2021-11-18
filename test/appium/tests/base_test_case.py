@@ -19,6 +19,7 @@ from tests import test_suite_data, start_threads, appium_container, pytest_confi
 import base64
 from re import findall
 
+
 class AbstractTestCase:
     __metaclass__ = ABCMeta
 
@@ -38,12 +39,14 @@ class AbstractTestCase:
     def executor_local(self):
         return 'http://localhost:4723/wd/hub'
 
-    def print_sauce_lab_info(self, driver):
+    @staticmethod
+    def print_sauce_lab_info(driver):
         sys.stdout = sys.stderr
         print("SauceOnDemandSessionID=%s job-name=%s" % (driver.session_id,
                                                          pytest_config_global['build']))
 
-    def get_translation_by_key(self, key):
+    @staticmethod
+    def get_translation_by_key(key):
         return transl[key]
 
     def add_local_devices_to_capabilities(self):
@@ -59,7 +62,9 @@ class AbstractTestCase:
 
     @property
     def app_path(self):
-        app_path='/storage/emulated/0/Android/data/im.status.ethereum.pr/files/Download/' if findall(r'pr\d\d\d\d\d', pytest_config_global['apk']) else '/storage/emulated/0/Android/data/im.status.ethereum/files/Download/'
+        app_path = '/storage/emulated/0/Android/data/im.status.ethereum.pr/files/Download/' if findall(r'pr\d\d\d\d\d',
+                                                                                                       pytest_config_global[
+                                                                                                           'apk']) else '/storage/emulated/0/Android/data/im.status.ethereum/files/Download/'
         return app_path
 
     @property
@@ -132,20 +137,21 @@ class AbstractTestCase:
     network_api = NetworkApi()
     github_report = GithubHtmlReport()
 
-    def is_alert_present(self, driver):
+    @staticmethod
+    def is_alert_present(driver):
         try:
             return driver.find_element(MobileBy.ID, 'android:id/message')
         except NoSuchElementException:
             return False
 
-    def get_alert_text(self, driver):
+    @staticmethod
+    def get_alert_text(driver):
         return driver.find_element(MobileBy.ID, 'android:id/message').text
 
     def add_alert_text_to_report(self, driver):
         if self.is_alert_present(driver):
             test_suite_data.current_test.testruns[-1].error += "; also Unexpected Alert is shown: '%s'" \
-                                                                       % self.get_alert_text(driver)
-
+                                                               % self.get_alert_text(driver)
 
     def pull_geth(self, driver):
         result = ""
@@ -167,7 +173,6 @@ class Driver(webdriver.Remote):
             text = 'Device %s: %s ' % (self.number, text)
         logging.info(text)
         test_suite_data.current_test.testruns[-1].steps.append(text)
-
 
     def fail(self, text: str):
         pytest.fail('Device %s: %s' % (self.number, text))
@@ -216,7 +221,8 @@ class SingleDeviceTestCase(AbstractTestCase):
         except (WebDriverException, AttributeError):
             pass
         finally:
-            self.github_report.save_test(test_suite_data.current_test, {'%s_geth.log' % test_suite_data.current_test.name: geth_content})
+            self.github_report.save_test(test_suite_data.current_test,
+                                         {'%s_geth.log' % test_suite_data.current_test.name: geth_content})
 
 
 class LocalMultipleDeviceTestCase(AbstractTestCase):
@@ -270,14 +276,14 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
             try:
                 self.print_sauce_lab_info(self.drivers[driver])
                 self.add_alert_text_to_report(self.drivers[driver])
-                geth_names.append('%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
+                geth_names.append(
+                    '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
                 geth_contents.append(self.pull_geth(self.drivers[driver]))
                 self.drivers[driver].quit()
             except (WebDriverException, AttributeError):
                 pass
         geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
         self.github_report.save_test(test_suite_data.current_test, geth)
-
 
     @classmethod
     def teardown_class(cls):

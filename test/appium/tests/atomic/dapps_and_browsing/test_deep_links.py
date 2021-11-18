@@ -28,7 +28,7 @@ class TestDeepLinks(SingleDeviceTestCase):
     def test_open_user_profile_using_deep_link(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
-        for user_ident in ens_user['ens'], ens_user['ens_another'], ens_user['public_key'],:
+        for user_ident in ens_user['ens'], ens_user['ens_another'], ens_user['public_key']:
             self.driver.close_app()
             deep_link = 'status-im://u/%s' % user_ident
             sign_in.open_weblink_and_login(deep_link)
@@ -53,7 +53,6 @@ class TestDeepLinks(SingleDeviceTestCase):
         except NoSuchElementException:
             self.driver.fail("DApp '%s' is not opened!" % dapp_name)
 
-
     @marks.testrail_id(5781)
     @marks.medium
     def test_deep_link_with_invalid_user_public_key_own_profile_key(self):
@@ -67,7 +66,8 @@ class TestDeepLinks(SingleDeviceTestCase):
         home_view = sign_in_view.get_home_view()
         home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
         if not home_view.start_new_chat_button.is_element_present():
-            self.errors.append("Can't navigate to start new chat after app opened from deep link with invalid public key")
+            self.errors.append(
+                "Can't navigate to start new chat after app opened from deep link with invalid public key")
         self.driver.close_app()
 
         sign_in_view.just_fyi('Check that no error when opening invalid deep link')

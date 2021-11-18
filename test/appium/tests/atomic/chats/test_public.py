@@ -48,7 +48,8 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             chat.verify_message_is_under_today_text(message, self.errors)
             timestamp = chat.chat_element_by_text(message).timestamp_message.text
             if timestamp not in sent_time_variants:
-                self.errors.append("Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time_variants.join(','), timestamp))
+                self.errors.append(
+                    "Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time_variants.join(','), timestamp))
         if chat_2.chat_element_by_text(message).username.text != default_username_1:
             self.errors.append("Default username '%s' is not shown next to the received message" % default_username_1)
 
@@ -76,7 +77,8 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         message, message_2 = 'test message', 'test message2'
         chat_2.send_message(message)
 
-        home_1.just_fyi("Check unread message indicator on home, on chat element and that it is not shown after reading messages")
+        home_1.just_fyi(
+            "Check unread message indicator on home, on chat element and that it is not shown after reading messages")
         if not home_1.home_button.public_unread_messages.is_element_displayed():
             self.errors.append('New messages public chat badge is not shown on Home button')
         chat_element = home_1.get_chat('#' + chat_name)
@@ -97,7 +99,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('New messages public chat badge is shown on Home button')
         if chat_element.new_messages_public_chat.is_element_displayed():
             self.errors.append('Unread messages badge is shown in public chat while there are no unread messages')
-        [home.get_chat('#' + chat_name).click() for home in (home_1,home_2)]
+        [home.get_chat('#' + chat_name).click() for home in (home_1, home_2)]
         chat_1.send_message(message_2)
         chat_2.chat_element_by_text(message_2).wait_for_element(20)
 
@@ -138,7 +140,6 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('Unread messages badge is shown in public chat while while there are no unread messages')
 
         self.errors.verify_no_errors()
-
 
     @marks.testrail_id(6275)
     @marks.medium
@@ -192,9 +193,9 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         home_1.just_fyi('Set status in profile')
         statuses = {
-            '*formatted text*':'formatted text',
-            'https://www.youtube.com/watch?v=JjPWmEh2KhA' : 'Status Town Hall',
-            emoji.emojize(emoji_message) : emoji_unicode,
+            '*formatted text*': 'formatted text',
+            'https://www.youtube.com/watch?v=JjPWmEh2KhA': 'Status Town Hall',
+            emoji.emojize(emoji_message): emoji_unicode,
 
         }
         timeline_1 = device_1.status_button.click()
@@ -228,7 +229,8 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             chat_2.element_by_text_part(statuses['*formatted text*']).scroll_to_element()
             expected_value = statuses[status]
             if not chat_2.element_by_text_part(expected_value).is_element_displayed():
-                self.errors.append("Expected value %s is not shown in other user profile without adding to contacts" % expected_value)
+                self.errors.append(
+                    "Expected value %s is not shown in other user profile without adding to contacts" % expected_value)
 
         home_2.just_fyi('Add device1 to contacts and check that status will be shown in timeline_1')
         chat_2.close_button.scroll_and_click(direction='up')
@@ -237,10 +239,11 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         for status in statuses:
             expected_value = statuses[status]
             if not timeline_2.element_by_text_part(expected_value).is_element_displayed():
-                self.errors.append("Expected value %s is not shown in timeline_1 after adding user to contacts" % expected_value)
+                self.errors.append(
+                    "Expected value %s is not shown in timeline_1 after adding user to contacts" % expected_value)
 
         profile_1.just_fyi('Checking message tag and reactions on statuses')
-        #TODO: no way to tap into tag message from timeline_1
+        # TODO: no way to tap into tag message from timeline_1
         # tag_status = '#public-chat-to-redirect-long-name'
         # timeline_1.set_new_status(tag_status)
         # #timeline_2 = profile_1.get_chat_view()
@@ -267,10 +270,12 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         timeline_1.set_reaction(text_status)
         status_with_reaction_1 = timeline_1.chat_element_by_text(text_status)
         if status_with_reaction_1.emojis_below_message() != 0:
-            self.errors.append("Counter of reaction is not updated after removing reaction on your own status in timeline_1!")
+            self.errors.append(
+                "Counter of reaction is not updated after removing reaction on your own status in timeline_1!")
         status_with_reaction_2 = chat_2.chat_element_by_text(text_status)
         if status_with_reaction_2.emojis_below_message(own=False) != 0:
-            self.errors.append("Counter of reaction is not updated after removing on status of another user in profile!")
+            self.errors.append(
+                "Counter of reaction is not updated after removing on status of another user in profile!")
 
         profile_1.just_fyi("Remove user from contacts and check there is no his status in timeline_1 anymore")
         chat_2.remove_from_contacts.click()
@@ -320,9 +325,9 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         if not home_view.element_by_text(tag_message).is_element_displayed():
             self.errors.append('Could not find the public chat in user chat list.')
         times = {
-            "three-days" : '5 days',
-            "one-week" : '12 days',
-            "one-month" : ['43 days', '42 days', '41 days', '40 days'],
+            "three-days": '5 days',
+            "one-week": '12 days',
+            "one-month": ['43 days', '42 days', '41 days', '40 days'],
         }
 
         signin.just_fyi("Check that can fetch more history")
@@ -343,7 +348,7 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
                 chat.element_by_text_part(fetch_more).wait_for_invisibility_of_element(120)
                 res = any(profile.element_by_text_part(variant).is_element_displayed(30) for variant in variants)
                 if not res:
-                    self.errors.append("History is not fetched for one month!" )
+                    self.errors.append("History is not fetched for one month!")
             home_view.profile_button.click(desired_element_text=profile.get_translation_by_key("default-sync-period"))
 
         self.errors.verify_no_errors()

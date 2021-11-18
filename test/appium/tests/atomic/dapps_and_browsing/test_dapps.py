@@ -1,4 +1,4 @@
-from tests import marks, test_dapp_name, test_dapp_url
+from tests import marks, test_dapp_name
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import basic_user
 from views.sign_in_view import SignInView
@@ -141,4 +141,3 @@ class TestDApps(SingleDeviceTestCase):
         if not profile.element_by_text(account_name).is_element_displayed():
             self.errors.append("Subaccount is not selected after relogin in Dapps!")
         self.errors.verify_no_errors()
-

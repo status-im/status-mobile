@@ -4,11 +4,13 @@ from tests import common_password, appium_root_project_path
 from views.base_element import Button, EditBox, Text
 from views.base_view import BaseView
 
+
 class MultiAccountButton(Button):
     class Username(Text):
         def __init__(self, driver, locator_value):
             super(MultiAccountButton.Username, self).__init__(driver,
                                                               xpath="%s//android.widget.TextView[@content-desc='username']" % locator_value)
+
     def __init__(self, driver, position=1):
         super(MultiAccountButton, self).__init__(driver,
                                                  xpath="//*[@content-desc='select-account-button-%s']" % position)
@@ -106,7 +108,7 @@ class TermsOfUseLink(Button):
             try:
                 self.click_inside_element_by_coordinate(times_to_click=2)
                 counter += 1
-            except (NoSuchElementException):
+            except NoSuchElementException:
                 return self.navigate()
         self.driver.info('Click on link %s' % self.name)
         return self.navigate()
@@ -144,7 +146,7 @@ class SignInView(BaseView):
         self.get_keycard_banner = Button(self.driver, translation_id="get-a-keycard")
         self.accept_tos_checkbox = Button(self.driver, xpath="//android.widget.CheckBox[@content-desc='checkbox']")
 
-        #keycard recovery
+        # keycard recovery
         self.recover_with_keycard_button = Button(self.driver, accessibility_id="recover-with-keycard-button")
         self.begin_recovery_button = BeginRecoveryButton(self.driver)
         self.pair_to_this_device_button = Button(self.driver, translation_id="pair-card")
@@ -158,7 +160,7 @@ class SignInView(BaseView):
         self.options_button = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
         self.manage_keys_and_storage_button = Button(self.driver, accessibility_id="manage-keys-and-storage-button")
         self.multi_account_on_login_button = MultiAccountOnLoginButton(self.driver)
-        self.move_keystore_file_option =  Button(self.driver, accessibility_id="move-keystore-file")
+        self.move_keystore_file_option = Button(self.driver, accessibility_id="move-keystore-file")
         self.reset_database_checkbox = Button(self.driver, translation_id="reset-database")
         self.move_and_reset_button = MoveAndResetButton(self.driver)
         self.choose_storage_button = Button(self.driver, translation_id="choose-storage")
@@ -171,7 +173,8 @@ class SignInView(BaseView):
         self.cancel_custom_seed_phrase_button = Button(self.driver, accessibility_id="cancel-custom-seed-phrase")
 
     def create_user(self, password=common_password, keycard=False, enable_notifications=False, second_user=False):
-        self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s')" % (password, str(keycard)), device=False)
+        self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s')" % (password, str(keycard)),
+                         device=False)
         if not second_user:
             self.accept_tos_checkbox.click()
             self.get_started_button.click_until_presence_of_element(self.generate_key_button)
@@ -200,7 +203,8 @@ class SignInView(BaseView):
         self.driver.info("## New multiaccount is created successfully!", device=False)
         return self.get_home_view()
 
-    def recover_access(self, passphrase: str, password: str = common_password, keycard=False, enable_notifications=False, second_user=False):
+    def recover_access(self, passphrase: str, password: str = common_password, keycard=False,
+                       enable_notifications=False, second_user=False):
         self.driver.info("## Recover access(password:%s, keycard:%s)" % (password, str(keycard)), device=False)
         if not second_user:
             self.accept_tos_checkbox.click()
@@ -250,7 +254,6 @@ class SignInView(BaseView):
         self.driver.info("## Signed in successfully!", device=False)
         return self.get_home_view()
 
-
     def get_multiaccount_by_position(self, position: int, element_class=MultiAccountOnLoginButton):
         account_button = element_class(self.driver, position)
         if account_button.is_element_displayed():
@@ -276,7 +279,8 @@ class SignInView(BaseView):
         self.multi_account_on_login_button.wait_for_visibility_of_element(30)
         self.get_multiaccount_by_position(1).click()
         self.password_input.set_value(common_password)
-        self.driver.push_file(source_path=full_path_to_file, destination_path='%s%s'% (AbstractTestCase().app_path, import_file_name))
+        self.driver.push_file(source_path=full_path_to_file,
+                              destination_path='%s%s' % (AbstractTestCase().app_path, import_file_name))
         self.options_button.click()
         self.element_by_text('Import unencrypted').click()
         self.element_by_text('Import unencrypted').wait_for_invisibility_of_element(40)

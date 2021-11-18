@@ -8,6 +8,7 @@ class OptionsButton(Button):
     def __init__(self, driver):
         super().__init__(driver, xpath="(//android.view.ViewGroup[@content-desc='icon'])[2]")
 
+
 class AddNewContactButton(Button):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="add-new-contact-button")
@@ -39,6 +40,7 @@ class LogoutDialog(BaseView):
             from views.sign_in_view import SignInView
             return SignInView(self.driver)
 
+
 class ENSusernames(Button):
     def __init__(self, driver):
         super().__init__(driver, translation_id="ens-usernames")
@@ -50,6 +52,7 @@ class ENSusernames(Button):
     def click(self):
         self.scroll_to_element().click()
         return self.navigate()
+
 
 class AdvancedButton(Button):
     def __init__(self, driver):
@@ -73,6 +76,7 @@ class RecoveryPhraseTable(Text):
     def __init__(self, driver):
         super().__init__(driver, translation_id="your-recovery-phrase",
                          suffix="/following-sibling::android.view.ViewGroup[1]/android.widget.TextView")
+
 
 class RecoveryPhraseWordNumberText(Text):
     def __init__(self, driver):
@@ -113,7 +117,7 @@ class MailServerElement(Button):
 
     def click(self):
         size = self.driver.get_window_size()
-        self.driver.swipe(500, size["height"]*0.8, 500, size["height"]*0.05)
+        self.driver.swipe(500, size["height"] * 0.8, 500, size["height"] * 0.05)
         self.find_element().click()
 
 
@@ -164,6 +168,7 @@ class ProfilePictureElement(Button):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="chat-icon")
 
+
 class KeycardButton(Button):
 
     def navigate(self):
@@ -173,7 +178,6 @@ class KeycardButton(Button):
     def click(self):
         self.scroll_to_element().click()
         return self.navigate()
-
 
 
 class ProfileView(BaseView):
@@ -249,7 +253,7 @@ class ProfileView(BaseView):
                                       suffix="/following-sibling::android.widget.Switch[1]")
         self.ask_me_when_on_mobile_network = Button(self.driver, translation_id="mobile-network-ask-me",
                                                     suffix="/following-sibling::android.widget.Switch[1]")
-        ##Sync history data
+        ## Sync history data
         self.sync_history_for_button = Button(self.driver, accessibility_id="default-sync-period-button")
         ## History nodes
         self.mail_server_button = Button(self.driver, accessibility_id="offline-messages-settings-button")
@@ -261,7 +265,9 @@ class ProfileView(BaseView):
         self.use_history_node_button = Button(self.driver, translation_id="offline-messaging-use-history-nodes",
                                               suffix="/following-sibling::*[1]")
         self.mail_server_delete_button = Button(self.driver, accessibility_id="mailserver-delete-button")
-        self.mail_server_confirm_delete_button = Button(self.driver, xpath='//*[@text="%s"]' % self.get_translation_by_key("delete-mailserver").upper())
+        self.mail_server_confirm_delete_button = Button(self.driver,
+                                                        xpath='//*[@text="%s"]' % self.get_translation_by_key(
+                                                            "delete-mailserver").upper())
         ## Device syncing
         self.devices_button = Button(self.driver, accessibility_id="pairing-settings-button")
         self.device_name_input = EditBox(self.driver, accessibility_id="device-name")
@@ -270,26 +276,32 @@ class ProfileView(BaseView):
         self.advertise_device_button = Button(self.driver, accessibility_id="advertise-device")
         self.sync_all_button = Button(self.driver, translation_id="sync-all-devices")
 
-        #Keycard
-        self.keycard_button =  Button(self.driver, accessibility_id="keycard-button")
+        # Keycard
+        self.keycard_button = Button(self.driver, accessibility_id="keycard-button")
         self.change_pin_button = KeycardButton(self.driver, translation_id="change-pin")
         self.change_puk_button = KeycardButton(self.driver, translation_id="change-puk")
         self.change_pairing_code_button = KeycardButton(self.driver, translation_id="change-pairing")
         self.create_keycard_backup_button = KeycardButton(self.driver, translation_id="keycard-backup")
 
-
         # Advanced
         self.advanced_button = AdvancedButton(self.driver)
         ## Network
         self.network_settings_button = Button(self.driver, accessibility_id="network-button")
-        self.active_network_name = Text(self.driver, xpath="//android.widget.TextView[contains(@text,'with upstream RPC')]")
+        self.active_network_name = Text(self.driver,
+                                        xpath="//android.widget.TextView[contains(@text,'with upstream RPC')]")
         self.plus_button = Button(self.driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[2]")
         self.ropsten_chain_button = Button(self.driver, translation_id="ropsten-network")
         self.custom_network_url_input = EditBox(self.driver, translation_id="rpc-url",
                                                 suffix="/following-sibling::*[1]/android.widget.EditText")
+        self.custom_network_symbol_input = EditBox(self.driver, translation_id="specify-symbol")
         self.specify_name_input = EditBox(self.driver, translation_id="name",
                                           suffix="/following-sibling::*[1]/android.widget.EditText")
         self.connect_button = Button(self.driver, accessibility_id="network-connect-button")
+        ## Toggles
+        self.transaction_management_enabled_toggle = Button(self.driver,
+                                                            accessibility_id="transactions-management-enabled")
+        self.webview_debug_toggle = Button(self.driver, accessibility_id="webview-debug-switch")
+        self.waku_bloom_toggle = Button(self.driver, accessibility_id="waku-bloom-filter-mode-settings-switch")
         ## Log level
         self.log_level_setting_button = Button(self.driver, accessibility_id="log-level-settings-button")
         ## Fleet
@@ -300,13 +312,16 @@ class ProfileView(BaseView):
         self.enable_bootnodes = Button(self.driver, xpath="//android.widget.Switch")
         self.add_bootnode_button = Button(self.driver, accessibility_id="add-bootnode")
 
-        #Need help
+        # Need help
         self.help_button = HelpButton(self.driver)
         self.submit_bug_button = Button(self.driver, accessibility_id="submit-bug-button")
+        self.bug_description_edit_box = EditBox(self.driver, accessibility_id="bug-report-description")
+        self.bug_steps_edit_box = EditBox(self.driver, accessibility_id="bug-report-steps")
+        self.bug_submit_button = Button(self.driver, accessibility_id="bug-report-submit")
         self.request_a_feature_button = Button(self.driver, accessibility_id="request-a-feature-button")
         self.faq_button = FaqButton(self.driver)
 
-        #About
+        # About
         self.about_button = AboutButton(self.driver)
         self.privacy_policy_button = PrivacyPolicyButton(self.driver)
         self.terms_of_use_button = TermsOfUseButton(self.driver)
@@ -314,7 +329,7 @@ class ProfileView(BaseView):
         self.node_version_text = Text(self.driver,
                                       xpath="//*[@content-desc='node-version']//android.widget.TextView[2]")
 
-        #Logout
+        # Logout
         self.logout_button = LogoutButton(self.driver)
         self.logout_dialog = LogoutDialog(self.driver)
         self.confirm_logout_button = Button(self.driver, translation_id="logout", uppercase=True)
@@ -338,8 +353,8 @@ class ProfileView(BaseView):
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
-    def add_custom_network(self, rpc_url ='https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a',
-                                 name='custom_ropsten'):
+    def add_custom_network(self, rpc_url='https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a',
+                           name='custom_ropsten', symbol='ETHro'):
         self.driver.info("## Add predefined custom network", device=False)
         self.advanced_button.click()
         self.network_settings_button.scroll_to_element()
@@ -347,6 +362,7 @@ class ProfileView(BaseView):
         self.plus_button.click_until_presence_of_element(self.ropsten_chain_button)
         self.custom_network_url_input.send_keys(rpc_url)
         self.specify_name_input.send_keys(name)
+        self.custom_network_symbol_input.set_value(symbol)
         self.ropsten_chain_button.scroll_to_element()
         self.ropsten_chain_button.click()
         self.ropsten_chain_button.click()
@@ -378,7 +394,7 @@ class ProfileView(BaseView):
         self.driver.info("## Seed phrase is backed up!", device=False)
         return recovery_phrase
 
-    def edit_profile_picture(self, file_name: str, update_by = "Gallery"):
+    def edit_profile_picture(self, file_name: str, update_by="Gallery"):
         self.driver.info("## Setting custom profile image", device=False)
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
@@ -396,7 +412,6 @@ class ProfileView(BaseView):
             self.accept_photo_button.click()
         self.crop_photo_button.click()
         self.driver.info("## Custom profile image has been set", device=False)
-
 
     def take_photo(self):
         self.take_photo_button.click()
@@ -418,7 +433,6 @@ class ProfileView(BaseView):
                 self.element_by_text(element_text).click()
         image_full_content.click()
 
-
     def logout(self):
         self.driver.info("Logging out")
         self.logout_button.click()
@@ -433,7 +447,8 @@ class ProfileView(BaseView):
 
     def get_toggle_device_by_name(self, device_name):
         self.driver.info("Selecting device '%s' for sync" % device_name)
-        return SilentButton(self.driver, xpath="//android.widget.TextView[contains(@text,'%s')]/..//android.widget.CheckBox" % device_name)
+        return SilentButton(self.driver,
+                            xpath="//android.widget.TextView[contains(@text,'%s')]/..//android.widget.CheckBox" % device_name)
 
     def discover_and_advertise_device(self, device_name):
         self.driver.info("Discovering and advertising '%s'" % device_name)

@@ -4,18 +4,17 @@ from tests.users import transaction_senders
 from views.sign_in_view import SignInView
 
 
-
 class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5309)
     @marks.critical
     @marks.transaction
-    def test_request_stt_from_daap(self):
+    def test_request_stt_from_dapp(self):
         sender = transaction_senders['K']
         home = SignInView(self.driver).recover_access(sender['passphrase'], unique_password)
         wallet = home.wallet_button.click()
         wallet.scan_tokens()
-        initial_amount_STT = wallet.get_asset_amount_by_name('STT')
+        initial_amount_stt = wallet.get_asset_amount_by_name('STT')
         status_test_dapp = home.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
@@ -29,7 +28,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wallet_button.click()
 
         send_transaction.just_fyi('Verify that wallet balance is updated')
-        wallet.wait_balance_is_changed('STT', initial_amount_STT, scan_tokens=True)
+        wallet.wait_balance_is_changed('STT', initial_amount_stt, scan_tokens=True)
 
         send_transaction.just_fyi('Check logcat for sensitive data')
         values_in_logcat = send_transaction.find_values_in_logcat(password=unique_password)
@@ -42,7 +41,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
     def test_sign_message_and_2tx_in_batch_and_transactions_filters_from_daap(self):
         password = 'password_for_daap'
         home = SignInView(self.driver).recover_access(passphrase=transaction_senders['W']['passphrase'],
-                                                           password=password)
+                                                      password=password)
         wallet = home.wallet_button.click()
 
         status_test_dapp = home.open_status_test_dapp()
@@ -86,7 +85,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
                 self.driver.fail("'Test filters' button produced an error")
         self.errors.verify_no_errors()
 
-
     @marks.testrail_id(5784)
     @marks.medium
     @marks.transaction
@@ -106,7 +104,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             self.errors.append('Public key is not returned')
         status_test_dapp.get_empty_dapp_tab()
-        wallet = home.wallet_button.click()
+        home.wallet_button.click()
 
         home.just_fyi("Checking sign typed message")
         home.open_status_test_dapp(allow_all=True)
@@ -123,6 +121,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if not status_test_dapp.element_by_text('Contract deployed at: ').is_element_displayed(180):
             self.errors.append('Contract was not created')
         for text in ['Call contract get function',
-                    'Call contract set function', 'Call function 2 times in a row']:
+                     'Call contract set function', 'Call function 2 times in a row']:
             status_test_dapp.element_by_text(text).scroll_to_element()
         self.errors.verify_no_errors()

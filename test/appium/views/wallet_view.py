@@ -21,6 +21,7 @@ class AssetCheckBox(SilentButton):
     def click(self):
         self.scroll_to_element(12).click()
 
+
 class BackupRecoveryPhrase(Button):
     def __init__(self, driver):
         super().__init__(driver, translation_id="wallet-backup-recovery-title")
@@ -28,6 +29,7 @@ class BackupRecoveryPhrase(Button):
     def navigate(self):
         from views.profile_view import ProfileView
         return ProfileView(self.driver)
+
 
 class AccountElementButton(SilentButton):
     def __init__(self, driver, account_name):
@@ -42,6 +44,15 @@ class AccountElementButton(SilentButton):
 class SendTransactionButton(Button):
     def __init__(self, driver):
         super().__init__(driver, translation_id="wallet-send")
+
+    def navigate(self):
+        from views.send_transaction_view import SendTransactionView
+        return SendTransactionView(self.driver)
+
+
+class SendTransactionFromMainButton(Button):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="send-transaction-button")
 
     def navigate(self):
         from views.send_transaction_view import SendTransactionView
@@ -73,7 +84,7 @@ class AccountColorButton(Button):
     def select_color_by_position(self, position: int):
         self.click()
         self.driver.find_element_by_xpath(
-            "((//android.widget.ScrollView)[1]/*/*)[%s]" % str(position+1)).click()
+            "((//android.widget.ScrollView)[1]/*/*)[%s]" % str(position + 1)).click()
 
 
 class WalletView(BaseView):
@@ -81,6 +92,7 @@ class WalletView(BaseView):
         super().__init__(driver)
 
         self.send_transaction_button = SendTransactionButton(self.driver)
+        self.send_transaction_from_main_screen = SendTransactionFromMainButton(self.driver)
         self.transaction_history_button = TransactionHistoryButton(self.driver)
         self.usd_total_value = Text(self.driver, accessibility_id="total-amount-value-text")
 
@@ -89,9 +101,12 @@ class WalletView(BaseView):
         self.manage_assets_button = Button(self.driver, accessibility_id="wallet-manage-assets")
         self.manage_accounts_button = Button(self.driver, accessibility_id="wallet-manage-accounts")
         self.scan_tokens_button = Button(self.driver, accessibility_id="wallet-scan-token")
-        self.stt_check_box = Button(self.driver, xpath="//*[@text='STT']/../android.view.ViewGroup[@content-desc='checkbox']")
-        self.all_assets_full_names = Text(self.driver, xpath="//*[@content-desc='checkbox']/../android.widget.TextView[1]")
-        self.all_assets_symbols = Button(self.driver, xpath="//*[@content-desc='checkbox']/../android.widget.TextView[2]")
+        self.stt_check_box = Button(self.driver,
+                                    xpath="//*[@text='STT']/../android.view.ViewGroup[@content-desc='checkbox']")
+        self.all_assets_full_names = Text(self.driver,
+                                          xpath="//*[@content-desc='checkbox']/../android.widget.TextView[1]")
+        self.all_assets_symbols = Button(self.driver,
+                                         xpath="//*[@content-desc='checkbox']/../android.widget.TextView[2]")
         self.currency_item_text = Text(self.driver, xpath="//*[@content-desc='currency-item']//android.widget.TextView")
 
         self.address_text = Text(self.driver, accessibility_id="address-text")
@@ -101,7 +116,8 @@ class WalletView(BaseView):
         self.total_amount_text = Text(self.driver, accessibility_id="total-amount-value-text")
         self.currency_text = Text(self.driver, accessibility_id="total-amount-currency-text")
         self.backup_recovery_phrase = BackupRecoveryPhrase(self.driver)
-        self.backup_recovery_phrase_warning_text = Text(self.driver, accessibility_id="back-up-your-seed-phrase-warning")
+        self.backup_recovery_phrase_warning_text = Text(self.driver,
+                                                        accessibility_id="back-up-your-seed-phrase-warning")
 
         self.add_custom_token_button = AddCustomTokenButton(self.driver)
 
@@ -121,13 +137,15 @@ class WalletView(BaseView):
         self.enter_your_password_input = EditBox(self.driver, accessibility_id="add-account-enter-password")
         self.account_name_input = EditBox(self.driver, accessibility_id="enter-account-name")
         self.account_color_button = AccountColorButton(self.driver)
-        self.add_account_generate_account_button = Button(self.driver, accessibility_id="add-account-add-account-button")
+        self.add_account_generate_account_button = Button(self.driver,
+                                                          accessibility_id="add-account-add-account-button")
         self.status_account_total_usd_value = Text(self.driver, accessibility_id="account-total-value")
         self.scan_qr_button = Button(self.driver, accessibility_id="accounts-qr-code")
-        self.close_send_transaction_view_button = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
+        self.close_send_transaction_view_button = Button(self.driver,
+                                                         xpath="//androidx.appcompat.widget.LinearLayoutCompat")
         self.hide_account_button = Button(self.driver, accessibility_id="hide-account-button")
 
-        #collectibles
+        # collectibles
         self.collectibles_button = Button(self.driver, translation_id="wallet-collectibles")
         self.nft_asset_button = Button(self.driver, accessibility_id="nft-asset")
         self.set_collectible_as_profile_photo_button = Button(self.driver, accessibility_id="set-nft-as-pfp")
@@ -136,10 +154,11 @@ class WalletView(BaseView):
         # individual account settings
         self.account_settings_button = Button(self.driver, translation_id="account-settings")
         self.apply_settings_button = Button(self.driver, translation_id="apply")
-        self.password_delete_account_input = EditBox(self.driver, xpath='//*[@text="Password"]/following-sibling::*/android.widget.EditText')
+        self.password_delete_account_input = EditBox(self.driver,
+                                                     xpath='//*[@text="Password"]/following-sibling::*/android.widget.EditText')
         self.delete_account_confirm_button = Button(self.driver, accessibility_id="delete-account-confirm")
 
-    def wait_balance_is_equal_expected_amount(self, asset ='ETH', expected_balance=0.1, wait_time=300):
+    def wait_balance_is_equal_expected_amount(self, asset='ETH', expected_balance=0.1, wait_time=300):
         counter = 0
         while True:
             if counter >= wait_time:
@@ -148,42 +167,44 @@ class WalletView(BaseView):
                 counter += 10
                 time.sleep(10)
                 self.swipe_down()
-                self.driver.info('**Waiting %s seconds for %s balance update to be equal to %s**' % (counter,asset, expected_balance))
+                self.driver.info('Waiting %s seconds for %s balance update to be equal to %s' % (
+                    counter, asset, expected_balance))
             else:
                 self.driver.info('**Balance for %s is equal to %s**' % (asset, expected_balance))
                 return
 
-    def wait_balance_is_changed(self, asset ='ETH', initial_balance=0, wait_time=400, scan_tokens=False):
-        self.driver.info('**Waiting %ss for %s updated balance**' % (wait_time, asset))
+    def wait_balance_is_changed(self, asset='ETH', initial_balance=0, wait_time=400, scan_tokens=False):
+        self.driver.info('Waiting %ss for %s updated balance' % (wait_time, asset))
         counter = 0
         while True:
             if counter >= wait_time:
-                self.driver.fail('Balance %s %s is not changed during %s seconds!' % (asset, initial_balance,wait_time))
-            elif self.asset_by_name(asset).is_element_present() and self.get_asset_amount_by_name(asset) == initial_balance:
+                self.driver.fail(
+                    'Balance %s %s is not changed during %s seconds!' % (asset, initial_balance, wait_time))
+            elif self.asset_by_name(asset).is_element_present() and self.get_asset_amount_by_name(
+                    asset) == initial_balance:
                 if scan_tokens:
                     self.scan_tokens()
-                if (counter/60).is_integer():
+                if (counter / 60).is_integer():
                     self.pull_to_refresh()
-                    counter+=20
+                    counter += 20
                 counter += 10
                 time.sleep(10)
-                self.driver.info('*Waiting %ss for %s updated balance*' % (counter,asset))
+                self.driver.info('Waiting %ss for %s updated balance' % (counter, asset))
             elif not self.asset_by_name(asset).is_element_present(10):
                 if scan_tokens:
                     self.scan_tokens()
                 self.swipe_up()
                 counter += 10
                 time.sleep(10)
-                self.driver.info('*Waiting %s seconds for %s to display asset*' % (counter, asset))
+                self.driver.info('Waiting %s seconds for %s to display asset' % (counter, asset))
             else:
-                self.driver.info('**Balance is updated!**')
+                self.driver.info('Balance is updated!')
                 self.wallet_button.double_click()
                 self.element_by_translation_id("wallet-total-value").scroll_to_element(direction='up')
                 return self
 
     def get_sign_in_phrase(self):
         return ' '.join([element.text for element in self.sign_in_phrase.find_elements()])
-
 
     def set_up_wallet_when_sending_tx(self):
         self.driver.info("Setting up wallet")
@@ -201,14 +222,13 @@ class WalletView(BaseView):
         return address
 
     def wallet_account_by_name(self, account_name):
-        self.driver.info("*Getting '%s' wallet account*" % account_name)
+        self.driver.info("Getting '%s' wallet account" % account_name)
         return AccountElementButton(self.driver, account_name)
-
 
     def get_asset_amount_by_name(self, asset: str):
         self.driver.info("Getting %s amount" % asset)
         asset_value = SilentButton(self.driver, xpath="//android.view.ViewGroup[@content-desc=':%s-asset-value']"
-                                                   "//android.widget.TextView[1]" % asset)
+                                                      "//android.widget.TextView[1]" % asset)
         asset_value.scroll_to_element()
         try:
             return float(asset_value.text.split()[0])
@@ -231,16 +251,16 @@ class WalletView(BaseView):
     def get_account_options_from_main_screen(self, account_name=''):
         account_name = self.status_account_name if not account_name else account_name
         self.driver.info("Getting '%s'account options from main wallet screen" % account_name)
-        return SilentButton(self.driver, xpath="//*[@content-desc='accountcard%s']//*[@content-desc='icon']" % account_name)
+        return SilentButton(self.driver,
+                            xpath="//*[@content-desc='accountcard%s']//*[@content-desc='icon']" % account_name)
 
     def hidden_account_by_name_button(self, account_name=''):
         return SilentButton(self.driver,
-                            xpath="//*[@text='%s']/following-sibling::*[@content-desc='hide-icon']"% account_name)
+                            xpath="//*[@text='%s']/following-sibling::*[@content-desc='hide-icon']" % account_name)
 
     def show_account_by_name_button(self, account_name=''):
         return SilentButton(self.driver,
-                            xpath="//*[@text='%s']/following-sibling::*[@content-desc='show-icon']"% account_name)
-
+                            xpath="//*[@text='%s']/following-sibling::*[@content-desc='show-icon']" % account_name)
 
     def select_asset(self, *args):
         self.driver.info("Selecting asset(s)")
@@ -273,30 +293,32 @@ class WalletView(BaseView):
 
     def send_transaction(self, **kwargs):
         self.driver.info("## Sending transaction", device=False)
-        send_transaction_view = self.send_transaction_button.click()
-        send_transaction_view.select_asset_button.click()
+        send_tx = self.send_transaction_from_main_screen.click() if kwargs.get('from_main_wallet',
+                                                                               True) else self.send_transaction_button.click()
+        send_tx.select_asset_button.click()
         asset_name = kwargs.get('asset_name', 'ETH').upper()
-        asset_button = send_transaction_view.asset_by_name(asset_name)
-        send_transaction_view.select_asset_button.click_until_presence_of_element(send_transaction_view.eth_asset_in_select_asset_bottom_sheet_button)
+        asset_button = send_tx.asset_by_name(asset_name)
+        send_tx.select_asset_button.click_until_presence_of_element(
+            send_tx.eth_asset_in_select_asset_bottom_sheet_button)
         asset_button.click()
-        send_transaction_view.amount_edit_box.click()
+        send_tx.amount_edit_box.click()
 
-        transaction_amount = str(kwargs.get('amount', send_transaction_view.get_unique_amount()))
+        transaction_amount = str(kwargs.get('amount', send_tx.get_unique_amount()))
 
-        send_transaction_view.amount_edit_box.set_value(transaction_amount)
+        send_tx.amount_edit_box.set_value(transaction_amount)
         if kwargs.get('account_name'):
-            send_transaction_view.chose_recipient_button.click()
-            send_transaction_view.accounts_button.click()
-            send_transaction_view.element_by_text(kwargs.get('account_name')).click()
+            send_tx.chose_recipient_button.click()
+            send_tx.accounts_button.click()
+            send_tx.element_by_text(kwargs.get('account_name')).click()
         else:
-            send_transaction_view.set_recipient_address(kwargs.get('recipient'))
+            send_tx.set_recipient_address(kwargs.get('recipient'))
         if kwargs.get('sign_transaction', True):
-            send_transaction_view.sign_transaction_button.click()
+            send_tx.sign_transaction_button.click()
             if self.sign_in_phrase.is_element_displayed():
                 self.set_up_wallet_when_sending_tx()
-            send_transaction_view.sign_transaction(keycard=kwargs.get('keycard', False),
-                                                   sender_password=kwargs.get('sender_password', common_password))
-        return send_transaction_view
+            send_tx.sign_transaction(keycard=kwargs.get('keycard', False),
+                                     sender_password=kwargs.get('sender_password', common_password))
+        return send_tx
 
     def find_transaction_in_history(self, amount, asset='ETH', account_name=None, return_hash=False):
         if account_name is None:
@@ -313,7 +335,6 @@ class WalletView(BaseView):
             from views.transactions_view import TransactionTable
             result = TransactionTable.TransactionElement.TransactionDetailsView(self.driver).get_transaction_hash()
         return result
-
 
     def set_currency(self, desired_currency='EUR'):
         self.driver.info("Setting '%s' currency" % desired_currency)
@@ -344,4 +365,4 @@ class WalletView(BaseView):
 
     def get_collectibles_amount(self, collectibles='CryptoKitties'):
         self.driver.info("Getting '%s' Collectibles amount" % collectibles)
-        return Text(self.driver,xpath="//*[@text='%s']//following-sibling::android.widget.TextView" % collectibles)
+        return Text(self.driver, xpath="//*[@text='%s']//following-sibling::android.widget.TextView" % collectibles)

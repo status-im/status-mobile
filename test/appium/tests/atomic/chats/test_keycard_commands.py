@@ -1,9 +1,10 @@
 import time
 
 from tests import marks
-from tests.users import transaction_senders, transaction_recipients, ens_user_ropsten
+from tests.users import transaction_senders, ens_user_ropsten
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
+
 
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
@@ -50,7 +51,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
                 self.drivers[0].fail("Required options accept or share are not shown")
 
         select_account_bottom_sheet = receiver_message.accept_and_share_address.click()
-        if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button(account_name).is_element_displayed():
+        if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button(
+                account_name).is_element_displayed():
             self.errors.append('Not expected value in "From" in "Select account": "Status" is expected')
         select_account_bottom_sheet.select_button.click()
         receiver_message.transaction_status.wait_for_element_text(receiver_message.shared_account)
@@ -95,7 +97,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         home_2 = device_2.recover_access(passphrase=sender['passphrase'], keycard=True, enable_notifications=True)
         wallet_2 = home_2.wallet_button.click()
-        initial_amount_STT = wallet_2.get_asset_amount_by_name('STT')
+        initial_amount_stt = wallet_2.get_asset_amount_by_name('STT')
         wallet_2.home_button.click()
 
         device_2.just_fyi('Add recipient to contact and send 1 message')
@@ -127,7 +129,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         transaction_request_pn = 'Request transaction'
         device_2.open_notification_bar()
         if not device_2.element_by_text(transaction_request_pn).is_element_displayed(60):
-           self.errors.append("Push notification is not received after going back from offline")
+            self.errors.append("Push notification is not received after going back from offline")
         device_2.element_by_text(transaction_request_pn).click()
         home_2.connection_offline_icon.wait_for_invisibility_of_element(120)
         home_2.get_chat(recipient_username).click()
@@ -151,11 +153,10 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         home_1.just_fyi('Check that can find tx in history and balance is updated after offline')
         [home.wallet_button.click() for home in (home_1, home_2)]
-        wallet_2.wait_balance_is_changed('STT', initial_amount_STT)
+        wallet_2.wait_balance_is_changed('STT', initial_amount_stt)
         wallet_1.wait_balance_is_changed('STT', scan_tokens=True)
         [wallet.find_transaction_in_history(amount=amount, asset='STT') for wallet in (wallet_1, wallet_2)]
         self.errors.verify_no_errors()
-
 
 
 class TestCommandsSingleDevices(SingleDeviceTestCase):

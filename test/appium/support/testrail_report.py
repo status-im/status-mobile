@@ -8,6 +8,7 @@ from os import environ
 from support.base_test_report import BaseTestReport
 from sys import argv
 
+
 class TestrailReport(BaseTestReport):
 
     def __init__(self):
@@ -45,7 +46,8 @@ class TestrailReport(BaseTestReport):
 
     def add_attachment(self, method, path):
         files = {'attachment': (open(path, 'rb'))}
-        result = requests.post(self.api_url + method, headers={'Authorization': self.headers['Authorization']}, files=files)
+        result = requests.post(self.api_url + method, headers={'Authorization': self.headers['Authorization']},
+                               files=files)
         files['attachment'].close()
         return result.json()
 
@@ -84,7 +86,9 @@ class TestrailReport(BaseTestReport):
     def get_cases(self, section_ids):
         test_cases = list()
         for section_id in section_ids:
-            test_cases.append(self.get('get_cases/%s&suite_id=%s&section_id=%s' % (self.project_id, self.suite_id, section_id))['cases'])
+            test_cases.append(
+                self.get('get_cases/%s&suite_id=%s&section_id=%s' % (self.project_id, self.suite_id, section_id))[
+                    'cases'])
         return itertools.chain.from_iterable(test_cases)
 
     def get_regression_cases(self):
@@ -123,12 +127,14 @@ class TestrailReport(BaseTestReport):
             for i, device in enumerate(last_testrun.jobs):
                 devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(device))
             data = {'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
-                    'comment': '%s' % ('# Error: \n %s \n' % emoji.demojize(last_testrun.error)) + devices + test_steps if last_testrun.error
+                    'comment': '%s' % ('# Error: \n %s \n' % emoji.demojize(
+                        last_testrun.error)) + devices + test_steps if last_testrun.error
                     else devices + test_steps}
-            result_id =self.post(method, data=data)['id']
+            result_id = self.post(method, data=data)['id']
             if last_testrun.error:
                 for geth in test.geth_paths.keys():
-                    self.add_attachment(method='add_attachment_to_result/%s' % str(result_id), path=test.geth_paths[geth])
+                    self.add_attachment(method='add_attachment_to_result/%s' % str(result_id),
+                                        path=test.geth_paths[geth])
         self.change_test_run_description()
 
     def change_test_run_description(self):
@@ -153,12 +159,12 @@ class TestrailReport(BaseTestReport):
                     case_title = '\n'
                     case_title += '-------\n'
                     case_title += "## %s) ID %s: [%s](%s) \n" % (i + 1, test.testrail_case_id, test.name, test_rail_link)
-                    error ="```%s```\n" % last_testrun.error[:255]
+                    error = "```%s```\n" % last_testrun.error[:255]
                     for job_id, f in last_testrun.jobs.items():
-                             case_info = "Logs for device %d: [steps](%s), [failure screenshot](%s)"\
-                                         % (f,
-                                            self.get_sauce_job_url(job_id),
-                                            self.get_sauce_final_screenshot_url(job_id))
+                        case_info = "Logs for device %d: [steps](%s), [failure screenshot](%s)" \
+                                    % (f,
+                                       self.get_sauce_job_url(job_id),
+                                       self.get_sauce_final_screenshot_url(job_id))
 
                     description += case_title + error + case_info
             description_title += '## Failed tests: %s \n' % ','.join(map(str, ids_failed_test))
@@ -166,7 +172,6 @@ class TestrailReport(BaseTestReport):
 
         request_body = {'description': final_description}
         return self.post('update_run/%s' % self.run_id, request_body)
-
 
     def get_run_results(self):
         return self.get('get_results_for_run/%s' % self.run_id)['results']

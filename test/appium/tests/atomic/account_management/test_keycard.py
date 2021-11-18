@@ -71,13 +71,13 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.lets_go_button.wait_and_click(30)
 
         sign_in.just_fyi('Check that after migrating account with assets is restored')
-        wallet_view = sign_in.wallet_button.click()
+        wallet = sign_in.wallet_button.click()
         for asset in ['ETH', 'ADI', 'STT']:
-            if wallet_view.get_asset_amount_by_name(asset) == 0:
+            if wallet.get_asset_amount_by_name(asset) == 0:
                 self.errors.append('Asset %s was not restored' % asset)
 
         sign_in.just_fyi('Check that after migration wallet address matches expected')
-        address = wallet_view.get_wallet_address()
+        address = wallet.get_wallet_address()
         if address != '0x%s' % basic_user['address']:
             self.errors.append('Restored address %s does not match expected' % address)
 
@@ -90,7 +90,8 @@ class TestCreateAccount(SingleDeviceTestCase):
             self.errors.append('Default username %s does not match expected' % default_username)
         profile.logout()
 
-        sign_in.just_fyi('Check that can login with migrated account, keycard banner is not shown and no option to migrate')
+        sign_in.just_fyi(
+            'Check that can login with migrated account, keycard banner is not shown and no option to migrate')
         sign_in.get_multiaccount_by_position(1).click()
         if sign_in.get_keycard_banner.is_element_displayed():
             self.errors.append("Get a keycard banner is shown on migrated keycard multiaccount")
@@ -101,10 +102,10 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         sign_in.just_fyi('Check that can add another wallet account and send transaction')
         home.wallet_button.click()
-        wallet_view.add_account(account_name="another_keycard_account", keycard=True)
-        wallet_view.accounts_status_account.click()
-        transaction_amount_added = wallet_view.get_unique_amount()
-        wallet_view.send_transaction(amount=transaction_amount_added, recipient=transaction_senders['A']['address'], keycard=True, sign_transaction=True)
+        wallet.add_account(account_name="another_keycard_account", keycard=True)
+        transaction_amount_added = wallet.get_unique_amount()
+        wallet.send_transaction(amount=transaction_amount_added, recipient=transaction_senders['A']['address'],
+                                keycard=True, sign_transaction=True)
         self.driver.reset()
         home = sign_in.recover_access(passphrase=seed)
         contact, nickname, message = transaction_senders['A'], 'my_friend', 'some message'
@@ -380,7 +381,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-
     @marks.testrail_id(6311)
     @marks.medium
     def test_same_seed_added_inside_multiaccount_and_keycard(self):
@@ -406,30 +406,31 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.lets_go_button.click()
 
         sign_in.just_fyi('Add to wallet seed phrase for restored multiaccount')
-        wallet_view = sign_in.wallet_button.click()
-        wallet_view.add_account_button.click()
-        wallet_view.enter_a_seed_phrase_button.click()
-        wallet_view.enter_your_password_input.send_keys(common_password)
+        wallet = sign_in.wallet_button.click()
+        wallet.add_account_button.click()
+        wallet.enter_a_seed_phrase_button.click()
+        wallet.enter_your_password_input.send_keys(common_password)
         account_name = 'subacc'
-        wallet_view.account_name_input.send_keys(account_name)
-        wallet_view.enter_seed_phrase_input.set_value(basic_user['passphrase'])
-        wallet_view.add_account_generate_account_button.click()
-        wallet_view.get_account_by_name(account_name).click()
+        wallet.account_name_input.send_keys(account_name)
+        wallet.enter_seed_phrase_input.set_value(basic_user['passphrase'])
+        wallet.add_account_generate_account_button.click()
+        wallet.get_account_by_name(account_name).click()
 
         sign_in.just_fyi('Send transaction from added account and log out')
-        transaction_amount_added = wallet_view.get_unique_amount()
-        wallet_view.send_transaction(amount=transaction_amount_added, recipient=recipient, sign_transaction=True)
-        wallet_view.profile_button.click()
+        transaction_amount_added = wallet.get_unique_amount()
+        wallet.send_transaction(from_main_wallet=False, amount=transaction_amount_added, recipient=recipient,
+                                sign_transaction=True)
+        wallet.profile_button.click()
         profile_view.logout()
 
         sign_in.just_fyi('Login to keycard account and send another transaction')
         sign_in.back_button.click()
         sign_in.sign_in(position=2, keycard=True)
         sign_in.wallet_button.click()
-        wallet_view.wait_balance_is_changed('ETH')
-        wallet_view.accounts_status_account.click()
-        transaction_amount_keycard = wallet_view.get_unique_amount()
-        wallet_view.send_transaction(amount=transaction_amount_keycard, recipient=recipient, keycard=True, sign_transaction=True)
+        wallet.wait_balance_is_changed('ETH')
+        transaction_amount_keycard = wallet.get_unique_amount()
+        wallet.send_transaction(amount=transaction_amount_keycard, recipient=recipient, keycard=True,
+                                sign_transaction=True)
 
         sign_in.just_fyi('Check both transactions from keycard multiaccount and from added account in network')
         for amount in [transaction_amount_keycard, transaction_amount_added]:
@@ -463,7 +464,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard.enter_another_pin()
         if not keycard.element_by_translation_id("new-puk-description").is_element_displayed():
             self.driver.fail("Screen for setting new puk is not shown!")
-        [keycard.one_button.click()  for _ in range(12)]
+        [keycard.one_button.click() for _ in range(12)]
         if not keycard.element_by_translation_id("repeat-puk").is_element_displayed():
             self.driver.fail("Confirmation screen for setting new puk is not shown!")
         [keycard.one_button.click() for _ in range(12)]
@@ -475,7 +476,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         profile.change_pairing_code_button.click()
         keycard.enter_another_pin()
         sign_in.create_password_input.set_value(common_password)
-        sign_in.confirm_your_password_input.set_value(common_password+"1")
+        sign_in.confirm_your_password_input.set_value(common_password + "1")
         if not keycard.element_by_translation_id("pairing-code_error1").is_element_displayed():
             self.errors.append("No error is shown when pairing codes don't match")
         sign_in.confirm_your_password_input.delete_last_symbols(1)
@@ -507,7 +508,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         home.just_fyi('Set new PUK')
         keycard = profile.change_puk_button.click()
         keycard.enter_default_pin()
-        [keycard.enter_default_puk() for _ in range (2)]
+        [keycard.enter_default_puk() for _ in range(2)]
         keycard.ok_button.click()
 
         home.just_fyi("Checking reset with PUK when logged in")
@@ -629,10 +630,10 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard.enter_another_pin()
         home.element_by_translation_id("enter-puk-code").click()
 
-        for i in range(1,4):
+        for i in range(1, 4):
             keycard.enter_default_puk()
-            sign_in.wait_for_element_starts_with_text('%s attempts left' % str(5-i))
-            i+=1
+            sign_in.wait_for_element_starts_with_text('%s attempts left' % str(5 - i))
+            i += 1
         keycard.enter_default_puk()
         sign_in.element_by_text_part('one attempt').wait_for_element(30)
         keycard.enter_default_puk()
@@ -726,10 +727,10 @@ class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
         device_1.seedphrase_input.click()
         device_1.seedphrase_input.set_value(seed_phrase)
         device_1.next_button.click()
-        device_1.element_by_translation_id(id="unlock", uppercase=True).click()
+        device_1.element_by_translation_id("unlock", uppercase=True).click()
         keycard_flow.enter_default_pin()
         device_1_home = device_1.home_button.click()
         device_1_home.plus_button.click()
         if not device_1_home.start_new_chat_button.is_element_displayed():
-             self.errors.append("Can't proceed using account after it's re-recover twice.")
+            self.errors.append("Can't proceed using account after it's re-recover twice.")
         self.errors.verify_no_errors()

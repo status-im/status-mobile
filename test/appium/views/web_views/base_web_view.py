@@ -3,6 +3,7 @@ import time
 from views.base_element import EditBox, Button, BaseElement
 from views.base_view import BaseView
 
+
 class BaseWebView(BaseView):
 
     def __init__(self, driver):
@@ -10,7 +11,8 @@ class BaseWebView(BaseView):
 
         self.progress_bar_icon = Button(self.driver, xpath="//android.widget.ProgressBar")
         self.url_edit_box_lock_icon = Button(self.driver, xpath="'(//android.view.ViewGroup[@content-desc='icon'])[2]")
-        self.policy_summary = Button(self.driver, xpath="//*[@content-desc='Status Privacy Policy'] | //*[@text='Status Privacy Policy']")
+        self.policy_summary = Button(self.driver,
+                                     xpath="//*[@content-desc='Status Privacy Policy'] | //*[@text='Status Privacy Policy']")
         self.terms_of_use_summary = Button(self.driver, xpath="//*[@content-desc='Status App Terms of Use']")
 
         self.browser_previous_page_button = Button(self.driver, accessibility_id="previous-page-button")
@@ -61,7 +63,8 @@ class BaseWebView(BaseView):
             self.close_all_button.click()
         else:
             self.driver.info("**Removing '%s' from recent websites**")
-            close_button = Button(self.driver, xpath="//*[contains(@text, '%s')]/../../../../*[@content-desc='empty-tab']"% name)
+            close_button = Button(self.driver,
+                                  xpath="//*[contains(@text, '%s')]/../../../../*[@content-desc='empty-tab']" % name)
             close_button.scroll_to_element()
             close_button.click()
 
@@ -82,4 +85,3 @@ class BaseWebView(BaseView):
             bookmark_name = self.bookmark_name_input.text
             self.save_bookmark_button.click()
         return bookmark_name
-

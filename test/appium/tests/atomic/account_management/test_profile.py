@@ -3,7 +3,7 @@ import re
 from tests import marks, bootnode_address, mailserver_address, test_dapp_url, test_dapp_name, mailserver_ams, \
     mailserver_gc, mailserver_hk, used_fleet, common_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
+from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten, user_mainnet
 from views.sign_in_view import SignInView
 from time import time
 
@@ -43,7 +43,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if profile.element_by_translation_id("profile-deleted-title").is_element_displayed():
             self.driver.fail('Profile is deleted without confirmation with password')
         profile.delete_my_profile_password_input.set_value(common_password)
-        profile.delete_profile_button.click_until_presence_of_element(profile.element_by_translation_id("profile-deleted-title"))
+        profile.delete_profile_button.click_until_presence_of_element(
+            profile.element_by_translation_id("profile-deleted-title"))
         profile.ok_button.click()
 
         sign_in.just_fyi('Delete last multiaccount')
@@ -56,6 +57,55 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.ok_button.click()
         if not sign_in.get_started_button.is_element_displayed(20):
             self.errors.append('No redirected to carousel view after deleting last multiaccount')
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(695890)
+    @marks.medium
+    def test_can_use_another_fleets_and_networks_advanced(self):
+        user = user_mainnet
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(user['passphrase'])
+
+        home.just_fyi("Check that can enable all toggles and still login successfully")
+        profile = home.profile_button.click()
+        profile.advanced_button.click()
+        profile.transaction_management_enabled_toggle.click()
+        profile.webview_debug_toggle.click()
+        profile.waku_bloom_toggle.click()
+        sign_in.sign_in()
+
+        # home.just_fyi("Check tx management")
+        # TODO: blocked due to 12827
+        # wallet = home.wallet_button.click()
+        # send_tx = wallet.send_transaction_from_main_screen.click()
+        # from views.send_transaction_view import SendTransactionView
+        # send_tx = SendTransactionView(self.driver)
+        # send_tx.amount_edit_box.set_value('0')
+        # send_tx.set_recipient_address(ens_user['address'])
+        # send_tx.next_button.click()
+        # send_tx.advanced_button.click()
+        # send_tx.nonce_input.set_value('4')
+        # send_tx.nonce_save_button.click()
+
+        home.just_fyi("Check balance on mainnet")
+        profile = home.profile_button.click()
+        profile.switch_network()
+        wallet = home.wallet_button.click()
+        wallet.scan_tokens()
+        [wallet.wait_balance_is_equal_expected_amount(asset, value) for asset, value in user['mainnet'].items()]
+
+        home.just_fyi("Check balance on xDai and default network fee")
+        profile = home.profile_button.click()
+        profile.switch_network('xDai Chain')
+        home.wallet_button.click()
+        wallet.element_by_text(user['xdai']).wait_for_element(30)
+
+        home.just_fyi("Check balance on BSC and default network fee")
+        profile = home.profile_button.click()
+        profile.switch_network('BSC Network')
+        home.wallet_button.click()
+        wallet.element_by_text(user['bsc']).wait_for_element(30)
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5323)
@@ -162,7 +212,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.current_password_edit_box.clear()
         profile.current_password_edit_box.set_value(common_password)
         profile.new_password_edit_box.set_value(new_password)
-        profile.confirm_new_password_edit_box.set_value(new_password+'1')
+        profile.confirm_new_password_edit_box.set_value(new_password + '1')
         profile.next_button.click()
 
         profile.just_fyi("Delete last symbol and check that can reset password")
@@ -235,7 +285,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             'scanning_ens_with_stateofus_domain_deep_link': {
                 'contact_code': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_ropsten['ens'],
                 'username': ens_user_ropsten['username']
-             },
+            },
             'scanning_public_key': {
                 'contact_code': transaction_senders['A']['public_key'],
                 'username': transaction_senders['A']['username'],
@@ -272,7 +322,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
                 self.errors.append('In %s case username not found in contact view after scanning' % key)
             if 'nickname' in users[key]:
                 if not profile.element_by_text(users[key]['nickname']).is_element_displayed():
-                    self.errors.append('In %s case nickname %s not found in contact view after scanning' % (key, users[key]['nickname']))
+                    self.errors.append('In %s case nickname %s not found in contact view after scanning' % (key,
+                                                                                                            users[key]['nickname']))
 
         home.just_fyi('Remove contact and check that it disappeared')
         user_to_remove = '@%s' % ens_user['ens_another']
@@ -282,7 +333,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if profile.element_by_text(user_to_remove).is_element_displayed():
             self.errors.append('Removed user is still shown in contact view')
 
-        home.just_fyi('Relogin and open profile view of the contact removed from Contact list to ensure there is no crash')
+        home.just_fyi(
+            'Relogin and open profile view of the contact removed from Contact list to ensure there is no crash')
         profile.profile_button.click()
         profile.relogin()
         one_to_one_chat = home.add_contact(public_key=ens_user['ens_another'], add_in_contacts=False)
@@ -336,12 +388,13 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if home.profile_button.counter.is_element_displayed():
             self.errors.append('Profile button counter is shown after recovery phrase backup')
         values_in_logcat = profile.find_values_in_logcat(passphrase1=recovery_phrase[word_number],
-                                               passphrase2=recovery_phrase[word_number_1])
+                                                         passphrase2=recovery_phrase[word_number_1])
         if len(values_in_logcat) == 2:
             self.driver.fail(values_in_logcat)
         profile.profile_button.double_click()
 
-        home.just_fyi("Try to restore same account from seed phrase (should be possible only to unlock existing account)")
+        home.just_fyi(
+            "Try to restore same account from seed phrase (should be possible only to unlock existing account)")
         profile.logout()
         sign_in.back_button.click()
         sign_in.access_key_button.click()
@@ -349,7 +402,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in.seedphrase_input.click()
         sign_in.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
         sign_in.next_button.click()
-        sign_in.element_by_translation_id(id="unlock", uppercase=True).click()
+        sign_in.element_by_translation_id(translation_id="unlock", uppercase=True).click()
         sign_in.password_input.set_value(common_password)
         chat = sign_in.sign_in_button.click()
         chat.plus_button.click()
@@ -383,7 +436,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         profile.terms_of_use_button.click()
         web_page.wait_for_d_aap_to_load()
-        web_page.swipe_by_custom_coordinates(0.5,0.8,0.5,0.4)
+        web_page.swipe_by_custom_coordinates(0.5, 0.8, 0.5, 0.4)
         if not web_page.terms_of_use_summary.is_element_displayed(30):
             self.errors.append('%s Profile about view!' % no_link_tos_error_msg)
         web_page.click_system_back_button()
@@ -391,9 +444,9 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         signin.just_fyi("Checking that version match expected format and can be copied")
         app_version = profile.app_version_text.text
         node_version = profile.node_version_text.text
-        if not re.search(r'\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]', app_version):
+        if not re.search(r'\d[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]', app_version):
             self.errors.append("App version %s didn't match expected format" % app_version)
-        if not re.search(r'StatusIM\/v.*\/android-\d{3}\/go\d{1}[.]\d{1,}', node_version):
+        if not re.search(r'StatusIM/v.*/android-\d{3}/go\d[.]\d+', node_version):
             self.errors.append("Node version %s didn't match expected format" % node_version)
         profile.app_version_text.click()
         profile.back_button.click()
@@ -414,9 +467,21 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("FAQ is not shown")
         profile.click_system_back_button()
         profile.submit_bug_button.click()
+
+        signin.just_fyi("Checking bug submitting form")
+        profile.bug_description_edit_box.set_value('1234')
+        profile.bug_submit_button.click()
+        if not profile.element_by_translation_id("bug-report-too-short-description").is_element_displayed():
+            self.errors.append("Can submit big with too short description!")
+        profile.bug_description_edit_box.clear()
+        [field.set_value("Something wrong happened!!") for field in
+         (profile.bug_description_edit_box, profile.bug_steps_edit_box)]
+        profile.bug_submit_button.click()
         if not profile.element_by_text_part("Welcome to Gmail").is_element_displayed(30):
             self.errors.append("Mail client is not opened when submitting bug")
-        profile.click_system_back_button()
+        profile.click_system_back_button(2)
+
+        signin.just_fyi("Checking request feature")
         profile.request_a_feature_button.click()
         if not profile.element_by_text("#support").is_element_displayed(30):
             self.errors.append("Support channel is not suggested for requesting a feature")
@@ -487,7 +552,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         home.just_fyi('Set another fleet and check that changes are applied')
         profile.fleet_setting_button.click()
-        changed_fleet = 'eth.prod'
+        changed_fleet = 'wakuv2.prod'
         profile.element_by_text(changed_fleet).click_until_presence_of_element(profile.confirm_button)
         profile.confirm_button.click()
         SignInView(self.driver).sign_in()
@@ -509,7 +574,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         profile.just_fyi('pin history node')
         profile.sync_settings_button.click()
-        node_gc, node_ams, node_hk = [profile.return_mailserver_name(history_node_name, used_fleet) for history_node_name in (mailserver_gc, mailserver_ams, mailserver_hk)]
+        node_gc, node_ams, node_hk = [profile.return_mailserver_name(history_node_name, used_fleet) for
+                                      history_node_name in (mailserver_gc, mailserver_ams, mailserver_hk)]
         h_node = node_ams
         profile.mail_server_button.click()
         profile.mail_server_auto_selection_button.click()
@@ -557,14 +623,13 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         dapp.element_by_translation_id("ens-primary-username").click()
         message_to_check = 'Your messages are displayed to others with'
         if not dapp.element_by_text('%s\n@%s' % (message_to_check, ens_main)).is_element_displayed():
-             self.errors.append('%s ENS username is not set as primary by default' % ens_main)
+            self.errors.append('%s ENS username is not set as primary by default' % ens_main)
 
         home.just_fyi('check view in chat settings ENS from other domain: %s after set new primary ENS' % ens_second)
         dapp.set_primary_ens_username(ens_second).click()
         if profile.username_in_ens_chat_settings_text.text != '@' + ens_second:
             self.errors.append('ENS username %s is not shown in ENS username Chat Settings after enabling' % ens_second)
         self.errors.verify_no_errors()
-
 
 
 class TestProfileMultipleDevice(MultipleDeviceTestCase):
@@ -599,7 +664,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         public_chat_1 = home_1.join_public_chat(public_chat_name)
         public_chat_1.chat_message_input.send_keys(message)
         public_chat_1.send_message_button.click()
-        if not public_chat_2.chat_element_by_text(message).member_photo.is_element_image_similar_to_template('sauce_logo.png'):
+        if not public_chat_2.chat_element_by_text(message).member_photo.is_element_image_similar_to_template(
+                'sauce_logo.png'):
             self.drivers[0].fail('Profile picture was not updated in chat')
 
         profile_1.just_fyi("Set user Profile image by taking Photo")
@@ -609,7 +675,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         public_chat_1.chat_message_input.send_keys(message)
         public_chat_1.send_message_button.click()
 
-        if public_chat_2.chat_element_by_text(message).member_photo.is_element_image_similar_to_template('sauce_logo.png'):
+        if public_chat_2.chat_element_by_text(message).member_photo.is_element_image_similar_to_template(
+                'sauce_logo.png'):
             self.drivers[0].fail('Profile picture was not updated in chat after making photo')
 
     @marks.testrail_id(6636)
@@ -617,11 +684,12 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
     @marks.flaky
     def test_show_profile_picture_of_setting(self):
         self.create_drivers(2)
-        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user(enable_notifications=True)
+        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user(
+            enable_notifications=True)
         profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
         public_key_1, default_username_1 = profile_1.get_public_key_and_username(return_username=True)
         public_key_2, default_username_2 = profile_2.get_public_key_and_username(return_username=True)
-        logo_online, logo_default, logo_chats, logo_group= 'logo_new.png', 'sauce_logo.png', 'logo_chats_view.png', 'group_logo.png'
+        logo_online, logo_default, logo_chats, logo_group = 'logo_new.png', 'sauce_logo.png', 'logo_chats_view.png', 'group_logo.png'
 
         [profile.home_button.click() for profile in (profile_1, profile_2)]
         home_1.add_contact(public_key_2)
@@ -643,14 +711,16 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         one_to_one_chat_2 = home_2.add_contact(public_key_1, add_in_contacts=False)
         one_to_one_chat_2.chat_message_input.set_value('@' + default_username_1)
         one_to_one_chat_2.chat_message_input.click()
-        if one_to_one_chat_2.user_profile_image_in_mentions_list(default_username_1).is_element_image_similar_to_template(logo_default):
+        if one_to_one_chat_2.user_profile_image_in_mentions_list(
+                default_username_1).is_element_image_similar_to_template(logo_default):
             self.errors.append('Profile picture is updated in 1-1 chat mentions list of contact not in Contacts list')
 
         profile_1.just_fyi('Check profile image is in mentions because now user was added in contacts')
         one_to_one_chat_2.add_to_contacts.click()
         one_to_one_chat_2.chat_message_input.set_value('@' + default_username_1)
         one_to_one_chat_2.chat_message_input.click()
-        if not one_to_one_chat_2.user_profile_image_in_mentions_list(default_username_1).is_element_image_similar_to_template(logo_default):
+        if not one_to_one_chat_2.user_profile_image_in_mentions_list(
+                default_username_1).is_element_image_similar_to_template(logo_default):
             self.errors.append('Profile picture was not updated in 1-1 chat mentions list')
         one_to_one_chat_2.get_back_to_home_view()
 
@@ -667,20 +737,21 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('User profile picture was not updated on Chats view')
 
         profile_1.just_fyi('Check profile image updated in user profile view in Group chat views')
-        group_chat_name, group_chat_message = 'new_group_chat',  'Trololo'
+        group_chat_name, group_chat_message = 'new_group_chat', 'Trololo'
         group_chat_2 = home_2.create_group_chat(user_names_to_add=[default_username_1])
         group_chat_2.send_message('Message')
         group_chat_1 = home_1.get_chat(group_chat_name).click()
         group_chat_1.join_chat_button.click()
         group_chat_1.send_message(group_chat_message)
-        if not group_chat_2.chat_element_by_text(group_chat_message).member_photo.is_element_image_similar_to_template(logo_default):
+        if not group_chat_2.chat_element_by_text(group_chat_message).member_photo.is_element_image_similar_to_template(
+                logo_default):
             self.errors.append('User profile picture was not updated in message Group chat view')
         home_2.put_app_to_background()
 
         profile_1.just_fyi('Check profile image updated in group chat invite')
         home_1.get_back_to_home_view()
         new_group_chat = 'new_gr'
-        group_chat_1 = home_1.create_group_chat(user_names_to_add=[default_username_2], group_chat_name=new_group_chat)
+        home_1.create_group_chat(user_names_to_add=[default_username_2], group_chat_name=new_group_chat)
         home_2.click_system_back_button()
         home_2.open_notification_bar()
 
@@ -694,10 +765,12 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_1.profile_button.click()
         profile_1.logout()
         sign_in_1 = home_1.get_sign_in_view()
-        if not sign_in_1.get_multiaccount_by_position(1).account_logo.is_element_image_similar_to_template(logo_default):
+        if not sign_in_1.get_multiaccount_by_position(1).account_logo.is_element_image_similar_to_template(
+                logo_default):
             self.errors.append('User profile picture was not updated on Multiaccounts list select login view')
         sign_in_1.element_by_text(default_username_1).click()
-        if not sign_in_1.get_multiaccount_by_position(1).account_logo.is_element_image_similar_to_template(logo_default):
+        if not sign_in_1.get_multiaccount_by_position(1).account_logo.is_element_image_similar_to_template(
+                logo_default):
             self.errors.append('User profile picture was not updated on account login view')
         sign_in_1.password_input.set_value(common_password)
         sign_in_1.sign_in_button.click()
@@ -865,7 +938,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
     @marks.flaky
     def test_can_not_connect_to_mailserver(self):
         self.create_drivers(2)
-        home_1, home_2= SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
+        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
         profile_1 = home_1.profile_button.click()
 
         profile_1.just_fyi('add non-working mailserver and connect to it')
@@ -875,14 +948,14 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.plus_button.click()
         server_name = 'test'
         profile_1.specify_name_input.set_value(server_name)
-        profile_1.mail_server_address_input.set_value(mailserver_address.replace('4','5'))
+        profile_1.mail_server_address_input.set_value(mailserver_address.replace('4', '5'))
         profile_1.save_button.click()
         profile_1.mail_server_by_name(server_name).click()
         profile_1.mail_server_connect_button.click()
         profile_1.confirm_button.click()
 
         profile_1.just_fyi('check that popup "Error connecting" will not reappear if tap on "Cancel"')
-        profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(120)
+        profile_1.element_by_translation_id('mailserver-error-title').wait_for_element(120)
         profile_1.cancel_button.click()
         profile_1.home_button.click()
 
@@ -936,7 +1009,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         public_chat_2 = home_2.join_public_chat(public_chat_name)
         public_chat_2.send_message(message)
 
-        profile_1.just_fyi('disable use_history_node and check that no history is fetched but you can still send messages')
+        profile_1.just_fyi(
+            'disable use_history_node and check that no history is fetched but you can still send messages')
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
         profile_1.use_history_node_button.click()
@@ -949,7 +1023,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('Message sent when use_history_node is disabled was not received')
         public_chat_1.profile_button.click()
         profile_1.relogin()
-        home_1.get_chat('#%s'%public_chat_name).click()
+        home_1.get_chat('#%s' % public_chat_name).click()
         if public_chat_1.chat_element_by_text(message).is_element_displayed(30):
             self.drivers[0].fail('History was fetched after relogin when use_history_node is disabled')
 
@@ -979,7 +1053,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         home_1.just_fyi('check ENS name wallet address and public key')
         profile_1.element_by_text(user_1['ens']).click()
-        for text in (user_1['address'].lower(), user_1['public_key'] ):
+        for text in (user_1['address'].lower(), user_1['public_key']):
             if not profile_1.element_by_text_part(text).is_element_displayed(40):
                 self.errors.append('%s text is not shown' % text)
         profile_1.home_button.click()
@@ -992,27 +1066,29 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         ens_name = '@' + user_1['ens']
         profile_1.element_by_translation_id("ens-your-your-name").click()
         if profile_1.username_in_ens_chat_settings_text.text != ens_name:
-             self.errors.append('ENS username is not shown in ENS usernames Chat Settings after enabling')
+            self.errors.append('ENS username is not shown in ENS usernames Chat Settings after enabling')
         profile_1.back_button.click()
         profile_1.home_button.click()
         home_1.get_chat('#' + chat_name).click()
         message_text_2 = 'message test text 1'
         public_1.send_message(message_text_2)
         if not public_2.wait_for_element_starts_with_text(ens_name):
-             self.errors.append('ENS username is not shown in public chat')
+            self.errors.append('ENS username is not shown in public chat')
         home_1.put_app_to_background()
 
         home_2.just_fyi('check that can mention user with ENS name')
         public_2.select_mention_from_suggestion_list(user_1['ens'])
         if public_2.chat_message_input.text != ens_name + ' ':
-            self.errors.append('ENS username is not resolved in chat input after selecting it in mention suggestions list!')
+            self.errors.append(
+                'ENS username is not resolved in chat input after selecting it in mention suggestions list!')
         public_2.send_message_button.click()
-        public_2.element_starts_with_text(ens_name,'button').click()
+        public_2.element_starts_with_text(ens_name, 'button').click()
         for element in (public_2.element_by_text(user_1['username']), public_2.profile_add_to_contacts):
             if not element.is_element_displayed():
                 self.errors.append('Was not redirected to user profile after tapping on mention!')
 
-        home_1.just_fyi('check that PN is received and after tap you are redirected to public chat, mention is highligted')
+        home_1.just_fyi(
+            'check that PN is received and after tap you are redirected to public chat, mention is highligted')
         home_1.open_notification_bar()
         home_1.element_by_text_part(username_2).click()
         if home_1.element_starts_with_text(user_1['ens']).is_element_differs_from_template('mentioned.png', 2):
@@ -1021,7 +1097,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         # Close Device1 driver session since it's not needed anymore
         self.drivers[0].quit()
 
-        home_2.just_fyi('check that ENS name is shown in 1-1 chat without adding user as contact in header, profile, options')
+        home_2.just_fyi(
+            'check that ENS name is shown in 1-1 chat without adding user as contact in header, profile, options')
         one_to_one_2 = public_2.profile_send_message.click()
         if one_to_one_2.user_name_text.text != ens_name:
             self.errors.append('ENS username is not shown in 1-1 chat header')
@@ -1077,7 +1154,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_2.mobile_connection_off_icon.wait_for_visibility_of_element(20)
         for element in home_2.continue_syncing_button, home_2.stop_syncing_button, home_2.remember_my_choice_checkbox:
             if not element.is_element_displayed(10):
-               self.drivers[0].fail('Element %s is not not shown in "Syncing mobile" bottom sheet' % element.locator)
+                self.drivers[0].fail('Element %s is not not shown in "Syncing mobile" bottom sheet' % element.locator)
         home_2.stop_syncing_button.click()
         if not home_2.mobile_connection_off_icon.is_element_displayed():
             self.drivers[0].fail('No mobile connection OFF icon is shown')
@@ -1104,7 +1181,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_2.mobile_connection_on_icon.wait_for_visibility_of_element(10)
         if not home_2.mobile_connection_on_icon.is_element_displayed():
             self.errors.append('No mobile connection ON icon is shown')
-        home_2.get_chat('#%s'% public_chat_name).click()
+        home_2.get_chat('#%s' % public_chat_name).click()
         if not public_2.chat_element_by_text(public_chat_message).is_element_displayed(180):
             self.errors.append("Chat history was not fetched with mobile data fetching ON")
 
@@ -1113,7 +1190,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_2.mobile_connection_on_icon.click()
         home_2.connection_settings_button.click()
         if not home_2.element_by_translation_id("mobile-network-use-mobile").is_element_displayed():
-            self.errors.append("Was not redirected to sync settings after tapping on Settings in connection bottom sheet")
+            self.errors.append(
+                "Was not redirected to sync settings after tapping on Settings in connection bottom sheet")
 
         home_1.just_fyi("Check default preferences in Sync settings")
         profile_1 = home_1.profile_button.click()
@@ -1138,7 +1216,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append("'Ask me when on mobile network' is not enabled by default")
 
         self.errors.verify_no_errors()
-
 
     @marks.testrail_id(5680)
     @marks.high
