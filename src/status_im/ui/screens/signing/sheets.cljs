@@ -392,6 +392,7 @@
          :default-value       default-nonce
          :on-change-text      #(reset! nonce %)
          :show-cancel         false
+         :auto-focus          true
          :container-style {:margin-bottom 20}}]
        [react/view {:align-items :flex-end}
         [quo/button

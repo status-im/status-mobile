@@ -19,20 +19,11 @@
                     :restSpeedThreshold        0.1
                     :restDisplacementThreshold 0.1})
 
-;; NOTE(Ferossgp): RNGH does not work in modal react native
-(defn modal [{:keys [visible] :as props} & children]
-  (if platform/android?
-    (into [rn/view {:style          styles/container
-                    :pointer-events (if visible :box-none :none)}]
-          (when visible children))
-    (into [rn/modal props] children)))
-
 (defn bottom-sheet-hooks [props]
   (let [{on-cancel          :onCancel
          disable-drag?      :disableDrag?
          show-handle?       :showHandle?
          visible?           :visible?
-         transparent        :transparent
          backdrop-dismiss?  :backdropDismiss?
          back-button-cancel :backButtonCancel
          children           :children
@@ -50,7 +41,7 @@
         keyboard-height-android-delta (if (and platform/android? keyboard-shown) (+ keyboard-height 20) 0)
         safe-area                 (safe-area/use-safe-area)
         window-height             (- window-height (if platform/android?
-                                                     (+ 50 keyboard-height-android-delta)
+                                                     (+ 50 keyboard-height-android-delta) ;; TODO : remove 50 when react-native-navigation v8 will be implemented https://github.com/wix/react-native-navigation/issues/7225
                                                      0))
         min-height                (+ (* styles/vertical-padding 2) (:bottom safe-area))
         max-height                (- window-height (:top safe-area) styles/margin-top)
@@ -186,48 +177,42 @@
          (close-sheet)))
      [visible?])
     (reagent/as-element
-     [modal {:visible                @visible
-             :transparent            true
-             :presentation-style     :overFullScreen
-             :hardware-accelerated   true
-             :on-request-close       (fn []
-                                       (when back-button-cancel
-                                         (close-sheet)))}
-      [rn/view {:style          styles/container
-                :opacity        (if transparent 0 1)
-                :pointer-events :box-none}
-       [gesture-handler/tap-gesture-handler (merge {:enabled backdrop-dismiss?}
-                                                   tap-gesture-handler)
-        [animated/view {:style (merge (styles/backdrop)
-                                      (when platform/ios?
-                                        {:opacity          opacity
-                                         :background-color (:backdrop @colors/theme)}))}]]
-       [animated/view {:style (merge (styles/content-container window-height)
-                                     {:transform [{:translateY (animated/add translate-y keyboard-height-android-delta)}
-                                                  {:translateY (* window-height 2)}]})}
-        [gesture-handler/pan-gesture-handler (merge on-master-event
-                                                    {:ref      master-ref
-                                                     :wait-for body-ref
-                                                     :enabled  (not disable-drag?)})
-         [animated/view  {:style styles/content-header}
-          (when show-handle?
-            [rn/view {:style styles/handle}])]]
-        [gesture-handler/pan-gesture-handler (merge on-body-event
-                                                    {:ref      body-ref
-                                                     :wait-for master-ref
-                                                     :enabled  (and (not disable-drag?)
-                                                                    (not= sheet-height max-height))})
-         [animated/view {:height sheet-height}
-          [animated/scroll-view {:bounces        false
-                                 :flex           1
-                                 :scroll-enabled (= sheet-height max-height)}
-           [animated/view {:style     {:padding-top    styles/vertical-padding
-                                       :padding-bottom (+ styles/vertical-padding
-                                                          (if (and platform/ios? keyboard-shown)
-                                                            keyboard-height
-                                                            (:bottom safe-area)))}
-                           :on-layout #(reset! height (.-nativeEvent.layout.height ^js %))}
-            (into [:<>]
-                  (react/get-children children))]]]]]]])))
+     [rn/view {:style          styles/container
+               :pointer-events :box-none}
+      [gesture-handler/tap-gesture-handler (merge {:enabled backdrop-dismiss?}
+                                                  tap-gesture-handler)
+       [animated/view {:style (merge (styles/backdrop)
+                                     (when platform/ios?
+                                       {:opacity          opacity
+                                        :background-color (:backdrop @colors/theme)}))}]]
+      [animated/view {:style (merge (styles/content-container window-height)
+                                    {:transform [{:translateY (if (= sheet-height max-height)
+                                                                (animated/add translate-y keyboard-height-android-delta)
+                                                                translate-y)}
+                                                 {:translateY (* window-height 2)}]})}
+       [gesture-handler/pan-gesture-handler (merge on-master-event
+                                                   {:ref      master-ref
+                                                    :wait-for body-ref
+                                                    :enabled  (not disable-drag?)})
+        [animated/view  {:style styles/content-header}
+         (when show-handle?
+           [rn/view {:style styles/handle}])]]
+       [gesture-handler/pan-gesture-handler (merge on-body-event
+                                                   {:ref      body-ref
+                                                    :wait-for master-ref
+                                                    :enabled  (and (not disable-drag?)
+                                                                   (not= sheet-height max-height))})
+        [animated/view {:height sheet-height}
+         [animated/scroll-view {:bounces        false
+                                :flex           1
+                                :scroll-enabled (= sheet-height max-height)}
+          [animated/view {:style     {:padding-top    styles/vertical-padding
+                                      :padding-bottom (+ styles/vertical-padding
+                                                         (if (and platform/ios? keyboard-shown)
+                                                           keyboard-height
+                                                           (:bottom safe-area)))}
+                          :on-layout #(reset! height (.-nativeEvent.layout.height ^js %))}
+           (into [:<>]
+                 (react/get-children children))]]]]]])))
 
 (def bottom-sheet (reagent/adapt-react-class (react/memo bottom-sheet-hooks)))

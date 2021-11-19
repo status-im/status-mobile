@@ -234,7 +234,7 @@
                                   :keycard-step (when pinless? :connect)})
         :show-signing-sheet nil}
        #(when-not wallet-set-up-passed?
-          {:dispatch-n [[:show-popover {:view :signing-phrase}]]})
+          {:dispatch-later [{:dispatch [:show-popover {:view :signing-phrase}] :ms 200}]})
        (when pinless?
          (keycard.card/start-nfc {:on-success #(re-frame/dispatch [:keycard.callback/start-nfc-success])
                                   :on-failure #(re-frame/dispatch [:keycard.callback/start-nfc-failure])})
@@ -249,7 +249,7 @@
         :show-signing-sheet nil
         :dismiss-keyboard nil}
        #(when-not wallet-set-up-passed?
-          {:dispatch-n [[:show-popover {:view :signing-phrase}]]})
+          {:dispatch-later [{:dispatch [:show-popover {:view :signing-phrase}] :ms 200}]})
        (prices/update-prices)
        #(when-not gas
           {:db (assoc-in (:db %) [:signing/edit-fee :gas-loading?] true)
