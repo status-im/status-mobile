@@ -130,7 +130,10 @@ class TestrailReport(BaseTestReport):
                     'comment': '%s' % ('# Error: \n %s \n' % emoji.demojize(
                         last_testrun.error)) + devices + test_steps if last_testrun.error
                     else devices + test_steps}
-            result_id = self.post(method, data=data)['id']
+            try:
+                result_id = self.post(method, data=data)['id']
+            except KeyError:
+                result_id = ''
             if last_testrun.error:
                 for geth in test.geth_paths.keys():
                     self.add_attachment(method='add_attachment_to_result/%s' % str(result_id),
