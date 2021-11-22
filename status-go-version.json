@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.91.10",
-    "commit-sha1": "7ef2efaabd643a476699d545d22faf36ba066b08",
-    "src-sha256": "0rwpbkqwzk772advqs6g98bqrbcvhs25xwwnfci04pqycklh11zb"
+    "version": "feature/mark-p2p-messages-as-confirmed",
+    "commit-sha1": "205b33e5db9407ad891df96276fd885b74fa1c51",
+    "src-sha256": "0pyc9iv1aydig8rkqazz4fqdkdbf0qb7chiamw8fhz604rqih32g"
 }
