@@ -1359,6 +1359,7 @@
     "wrong-card": "Wrong card",
     "wrong-card-text": "Tapped card does not correspond to the keys you selected",
     "wrong-contract": "Wrong contract",
+    "contract-isnt-supported": "Contract is not supported",
     "wrong-keycard-text": "The Keycard you tapped is not associated with this phone",
     "wrong-keycard-title": "Looks like you’ve tapped \na wrong keycard",
     "wrong-password": "Wrong password",

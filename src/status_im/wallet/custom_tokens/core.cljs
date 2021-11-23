@@ -19,6 +19,7 @@
     {:contract contract
      :method "decimals()"
      :outputs ["uint256"]
+     :on-error #(re-frame/dispatch [:wallet.custom-token/not-supported])
      :on-success
      (fn [[contract-decimals]]
        (re-frame/dispatch [:wallet.custom-token/decimals-result
@@ -31,6 +32,7 @@
     {:contract contract
      :method "symbol()"
      :outputs ["string"]
+     :on-error #(re-frame/dispatch [:wallet.custom-token/not-supported])
      :on-success
      (fn [[contract-symbol]]
        (re-frame/dispatch [:wallet.custom-token/symbol-result
@@ -58,6 +60,7 @@
     {:contract contract
      :method "name()"
      :outputs ["string"]
+     :on-error #(re-frame/dispatch [:wallet.custom-token/not-supported])
      :on-success
      (fn [[contract-name]]
        (re-frame/dispatch [:wallet.custom-token/name-result
@@ -148,6 +151,12 @@
   {:db
    (update db :wallet/custom-token-screen merge {:name token-name})
    :wallet.custom-token/get-symbol contract})
+
+(fx/defn not-supported
+  {:events [:wallet.custom-token/not-supported]}
+  [{:keys [db]}]
+  {:db (assoc-in db [:wallet/custom-token-screen :in-progress?] nil)
+   :utils/show-popup {:content (i18n/label :t/contract-isnt-supported)}})
 
 (fx/defn balance-result
   {:events [:wallet.custom-token/balance-result]}
