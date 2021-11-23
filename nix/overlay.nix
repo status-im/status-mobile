@@ -42,6 +42,8 @@ in {
     allowHigher = true;
   };
   gomobile = super.gomobile.override {
+    # FIXME: No Android SDK packages for aarch64-darwin.
+    withAndroidPkgs = stdenv.system != "aarch64-darwin";
     androidPkgs = self.androidEnvCustom.compose;
   };
 
