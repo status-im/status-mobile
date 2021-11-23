@@ -399,6 +399,5 @@
          {:type                :primary
           :accessibility-label :save-nonce
           :theme               :accent
-          :disabled            (clojure.string/blank? @nonce)
           :on-press            #(re-frame/dispatch [:signing.nonce/submit @nonce])}
          (i18n/label :t/save)]]])))

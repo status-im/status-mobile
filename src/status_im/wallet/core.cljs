@@ -439,9 +439,7 @@
     (let [{:keys [slow-base-fee normal-base-fee fast-base-fee
                   current-base-fee max-priority-fee]}
           price
-          max-priority-fee-bn (money/with-precision
-                               (signing.gas/get-suggested-tip max-priority-fee)
-                                0)
+          max-priority-fee-bn (money/with-precision (signing.gas/get-suggested-tip max-priority-fee) 0)
           fee-cap  (-> normal-base-fee
                        money/bignumber
                        (money/add max-priority-fee-bn)

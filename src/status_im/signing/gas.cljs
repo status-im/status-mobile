@@ -7,7 +7,8 @@
             [status-im.utils.money :as money]
             [status-im.signing.eip1559 :as eip1559]
             [taoensso.timbre :as log]
-            [status-im.popover.core :as popover]))
+            [status-im.popover.core :as popover]
+            [clojure.string :as string]))
 
 (def min-gas-price-wei ^js (money/bignumber 1))
 
@@ -211,9 +212,7 @@
   [{db :db} price]
   (if (eip1559/sync-enabled?)
     (let [{:keys [normal-base-fee max-priority-fee]} price
-          max-priority-fee-bn (money/with-precision
-                               (get-suggested-tip max-priority-fee)
-                                0)]
+          max-priority-fee-bn (money/with-precision (get-suggested-tip max-priority-fee) 0)]
       {:db (-> db
                (assoc-in [:signing/tx :maxFeePerGas]
                          (money/to-hex (money/add max-priority-fee-bn
@@ -279,7 +278,7 @@
   {:events [:signing.nonce/submit]}
   [{db :db :as cofx} nonce]
   (fx/merge cofx
-            {:db (assoc-in db [:signing/tx :nonce] nonce)}
+            {:db (assoc-in db [:signing/tx :nonce] (if (string/blank? nonce) nil nonce))}
             (bottom-sheet/hide-bottom-sheet)))
 
 (re-frame/reg-fx
