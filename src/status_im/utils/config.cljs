@@ -143,7 +143,7 @@
     :config         {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
                      :DataDir        "/ethereum/goerli_rpc"
                      :UpstreamConfig {:Enabled true
-                                      :URL     "https://goerli.blockscout.com/"}}}])
+                                      :URL     (str "https://goerli.infura.io/v3/" INFURA_TOKEN)}}}])
 
 (def default-networks
   (concat testnet-networks mainnet-networks sidechain-networks))
