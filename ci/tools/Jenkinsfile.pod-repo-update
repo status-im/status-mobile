@@ -29,7 +29,7 @@ pipeline {
       name: 'HOST_LABEL',
       description: 'Label of host to run on',
       /* Using startTimeInMillis to randomize which host gets the update. */
-      defaultValue: "macos-0${(currentBuild.startTimeInMillis % 3) + 1}",
+      defaultValue: "maci7-0${(currentBuild.startTimeInMillis % 3) + 1}",
     )
   }
 
