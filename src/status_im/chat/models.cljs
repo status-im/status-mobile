@@ -129,11 +129,13 @@
                 (map (map-chats cofx) chats))]
     (fx/merge
      cofx
-     {:db (-> db
-              (update :chats merge all-chats)
-              (update :chats-home-list set/union chats-home-list)
-              (update :chats #(apply dissoc % removed-chats))
-              (update :chats-home-list set/difference removed-chats))}
+     (merge {:db (-> db
+                     (update :chats merge all-chats)
+                     (update :chats-home-list set/union chats-home-list)
+                     (update :chats #(apply dissoc % removed-chats))
+                     (update :chats-home-list set/difference removed-chats))}
+            (when (not-empty removed-chats)
+              {:clear-multiple-message-notifications removed-chats}))
      leave-removed-chat)))
 
 (fx/defn clear-history

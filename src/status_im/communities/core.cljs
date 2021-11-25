@@ -14,7 +14,8 @@
    [quo.design-system.colors :as colors]
    [status-im.navigation :as navigation]
    [status-im.utils.handlers :refer [>evt]]
-   [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]))
+   [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
+   [status-im.notifications-center.core :as notification-center]))
 
 (def crop-size 1000)
 
@@ -447,7 +448,8 @@
   [cofx response-js]
   (fx/merge cofx
             (bottom-sheet/hide-bottom-sheet)
-            (handle-response response-js)))
+            (handle-response response-js)
+            (notification-center/get-activity-center-notifications-count)))
 
 (fx/defn member-ban
   {:events [::member-ban]}

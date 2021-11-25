@@ -92,6 +92,13 @@
    (when platform/android?
      (pn-android/clear-message-notifications chat-id))))
 
+(re-frame/reg-fx
+ :clear-multiple-message-notifications
+ (fn [chat-ids]
+   (when platform/android?
+     (doseq [chat-id chat-ids]
+       (pn-android/clear-message-notifications chat-id)))))
+
 (fx/defn handle-enable-notifications-event
   {:events [::registered-for-push-notifications]}
   [cofx token]
