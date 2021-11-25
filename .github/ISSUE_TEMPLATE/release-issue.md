@@ -68,7 +68,7 @@ Upgrade (e2e):
 - [ ] 3. Upload builds for DO store,  https://dev.status.im/ (Jakub)
 
 #### 5) At time of publishing
-- [ ] 1. Notify marketing to push comms and blog post (Jonny)
+- [ ] 1. Notify marketing to push comms and blog post (Jonny + get review on blog from QA team)
 - [ ] 2. Publish release to app store and playstore
 - [ ] 3. Final push to update prod site https://status.im/,  [instructions](https://github.com/status-im/infra-docs/blob/master/articles/status_release_upload.md) (Jakub - requires credentials to upload) 
 - [ ] 4. Add the link to the post about the release and publish the release: https://github.com/status-im/status-react/releases (Jakub)
