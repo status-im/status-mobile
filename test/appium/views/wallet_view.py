@@ -170,7 +170,7 @@ class WalletView(BaseView):
                 self.driver.info('Waiting %s seconds for %s balance update to be equal to %s' % (
                     counter, asset, expected_balance))
             else:
-                self.driver.info('**Balance for %s is equal to %s**' % (asset, expected_balance))
+                self.driver.info('Balance for %s is equal to %s' % (asset, expected_balance))
                 return
 
     def wait_balance_is_changed(self, asset='ETH', initial_balance=0, wait_time=400, scan_tokens=False):
@@ -229,7 +229,9 @@ class WalletView(BaseView):
         self.driver.info("Getting %s amount" % asset)
         asset_value = SilentButton(self.driver, xpath="//android.view.ViewGroup[@content-desc=':%s-asset-value']"
                                                       "//android.widget.TextView[1]" % asset)
-        asset_value.scroll_to_element()
+        for _ in range(2):
+            if not asset_value.is_element_displayed():
+                self.element = asset_value.scroll_to_element()
         try:
             return float(asset_value.text.split()[0])
         except ValueError:

@@ -92,7 +92,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         [message.transaction_status.wait_for_element_text(message.confirmed, 60) for message in
          (sender_message, receiver_message)]
 
-        # TODO: should be added PNs for receiver after getting more stable feature
+        # TODO: should be added PNs for receiver after getting more stable feature (rechecked 23.11.21, valid)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6263)

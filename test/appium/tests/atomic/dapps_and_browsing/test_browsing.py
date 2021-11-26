@@ -244,7 +244,7 @@ class TestBrowsing(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    # TODO: waiting mode
+    # TODO: waiting mode (rechecked 23.11.21, valid)
     @marks.testrail_id(6300)
     @marks.skip
     @marks.medium
@@ -286,26 +286,27 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5456)
     @marks.medium
-    @marks.skip
-    # Decicded to leave for manual testing, as there is no simple way of comparing images depending on phone brightness
     def test_can_access_images_by_link(self):
         urls = {
             'https://cdn.dribbble.com/users/45534/screenshots/3142450/logo_dribbble.png':
-                'url_1.png',
+                'url1.png',
             'https://thebitcoinpub-91d3.kxcdn.com/uploads/default/original/2X/d/db97611b41a96cb7642b06636b82c0800678b140.jpg':
-                'url_2.png',
+                'url2.png',
             'https://steemitimages.com/DQmYEjeBuAKVRa3b3ZqwLicSHaPUm7WFtQqohGaZdA9ghjx/images%20(4).jpeg':
-                'url_3.png'
+                'url3.png'
         }
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
         dapp_view = home_view.dapp_tab_button.click()
+        from views.web_views.base_web_view import BaseWebView
+        base_web = BaseWebView(self.driver)
         for url in urls:
             self.driver.set_clipboard_text(url)
             dapp_view.enter_url_editbox.click()
             dapp_view.paste_text()
             dapp_view.confirm()
-            if not dapp_view.web_page.is_element_image_equals_template(urls[url]):
+            base_web.wait_for_d_aap_to_load(20)
+            if dapp_view.web_page.is_element_differs_from_template(urls[url], 5):
                 self.errors.append('Web page does not match expected template %s' % urls[url])
-            dapp_view.cross_icon.click()
+            base_web.browser_previous_page_button.click_until_presence_of_element(dapp_view.enter_url_editbox)
         self.errors.verify_no_errors()

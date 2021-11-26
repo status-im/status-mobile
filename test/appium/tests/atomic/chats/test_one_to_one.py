@@ -140,10 +140,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_home.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         profile_1.home_button.double_click()
-        # TODO: Skip until edit-profile feature returned
-        # profile_1 = device_1_home.profile_button.click()
-        # profile_1.edit_profile_picture('sauce_logo.png')
-        # profile_1.home_button.click()
+        profile_1 = device_1_home.profile_button.click()
+        profile_1.edit_profile_picture('sauce_logo.png')
+        profile_1.home_button.click()
         device_2_public_key, default_username_2 = device_2_home.get_public_key_and_username(return_username=True)
         device_2_home.home_button.click()
 
@@ -188,9 +187,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_options.click()
         device_1_chat.view_profile_button.click()
 
-        # TODO: skip until edit-profile feature returned
-        # if not device_2_chat.contact_profile_picture.is_element_image_equals_template('sauce_logo.png'):
-        #     self.errors.append("Updated profile picture is not shown in one-to-one chat")
+        if not device_2_chat.contact_profile_picture.is_element_image_equals_template('sauce_logo_profile_2.png'):
+            self.errors.append("Updated profile picture is not shown in one-to-one chat")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(695843)
@@ -661,7 +659,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5362)
     @marks.medium
-    def test_unread_messages_counter_1_1_chat(self):
+    def test_unread_messages_counter_preview_highlited_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
@@ -672,7 +670,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_1.home_button.click()
         chat_2 = home_2.add_contact(public_key_1)
 
-        message, message_2 = 'test message', 'test message2'
+        message, message_2, message_3 = 'test message', 'test message2', 'test'
         chat_2.send_message(message)
         chat_element = home_1.get_chat(default_username_2)
         home_1.dapp_tab_button.click()
@@ -683,13 +681,26 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1.home_button.click()
         if chat_element.new_messages_counter.text != '1':
             self.errors.append('New messages counter is not shown on chat element')
-        chat_element.click()
+        chat_1 = chat_element.click()
+        chat_1.add_to_contacts.click()
+
         home_1.home_button.double_click()
 
         if home_1.home_button.counter.is_element_displayed():
             self.errors.append('New messages counter is shown on Home button for already seen message')
         if chat_element.new_messages_counter.text == '1':
             self.errors.append('New messages counter is shown on chat element for already seen message')
+        home_1.delete_chat_long_press(default_username_2)
+
+        home_1.just_fyi("Checking preview of message and chat highlighting")
+        chat_2.send_message(message_3)
+        chat_1_element = home_1.get_chat(default_username_2)
+        if chat_1_element.chat_preview.is_element_differs_from_template('highligted_preview.png', 0):
+            self.errors.append("Preview message is not hightligted or text is not shown! ")
+        home_1.get_chat(default_username_2).click()
+        home_1.home_button.double_click()
+        if not home_1.get_chat(default_username_2).chat_preview.is_element_differs_from_template('highligted_preview.png', 0):
+            self.errors.append("Preview message is still highlighted after opening ")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6321)
@@ -757,7 +768,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
                 self.errors.append("Counter of reaction is not re-set on %s for message receiver!" % key)
 
         chat_2.just_fyi("Sending Emoji/Tag/Links in chat")
-        # TODO: add link and tag messages after #11168 is fixed
+        # TODO: add link and tag messages after #11168 is fixed(rechecked 23.11.21, valid)
         navigate_to_start_state_of_both_devices()
 
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
@@ -786,7 +797,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5425)
     @marks.medium
-    # TODO: should be completed with quoting after fix 9480
+    # TODO: should be completed with quoting after fix 9480 (rechecked 23.11.21, valid)
     def test_markdown_support_in_messages(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -853,7 +864,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat = sign_in.get_chat_view()
         message_text = {'text_message': 'mmmeowesage_text'}
         formatted_message = {'message_with_link': 'https://status.im',
-                             # TODO: blocked with 11161
+                             # TODO: blocked with 11161 (rechecked 23.11.21, valid)
                              # 'message_with_tag': '#successishere'
                              }
         message_input = chat.chat_message_input
@@ -1020,11 +1031,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 'url': 'https://join.status.im/u/%sinvalid' % ens_user['public_key'],
                 'error': 'Please enter or scan a valid chat key'
             },
-            # TODO: comment until clarification case with scanning QR with ENS names only
-            # 'ens_another_domain':{
-            #     'url': ens_user['ens_another'],
-            #     'username': ens_user['username']
-            # },
             'own_profile_key': {
                 'url': basic_user['public_key'],
                 'error': "That's you"

@@ -229,8 +229,8 @@ class BaseElement(object):
         difference = ImageChops.difference(self.image, self.template)
         stat = ImageStat.Stat(difference)
         diff_ratio = sum(stat.mean) / (len(stat.mean) * 255)
+        self.driver.info('Image differs from template to %s percents' % str(diff_ratio * 100))
         if diff_ratio * 100 > diff:
-            self.driver.info('Image differs from template to %s percents' % str(diff_ratio * 100))
             result = True
         return result
 

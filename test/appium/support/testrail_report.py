@@ -7,6 +7,7 @@ import base64
 from os import environ
 from support.base_test_report import BaseTestReport
 from sys import argv
+from json import JSONDecodeError
 
 
 class TestrailReport(BaseTestReport):
@@ -49,7 +50,10 @@ class TestrailReport(BaseTestReport):
         result = requests.post(self.api_url + method, headers={'Authorization': self.headers['Authorization']},
                                files=files)
         files['attachment'].close()
-        return result.json()
+        try:
+            return result.json()
+        except JSONDecodeError:
+            pass
 
     def get_suites(self):
         return self.get('get_suites/%s' % self.project_id)

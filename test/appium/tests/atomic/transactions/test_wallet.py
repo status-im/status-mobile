@@ -443,7 +443,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         recipient = "0x" + basic_user['address']
         amount = '0.000%s' % str(random.randint(10000, 99999)) + '1'
         wallet.send_transaction(asset_name=symbol, amount=amount, recipient=recipient)
-        # TODO: disabled due to 10838
+        # TODO: disabled due to 10838 (rechecked 23.11.21, valid)
         # transactions_view = wallet.transaction_history_button.click()
         # transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
 

@@ -61,7 +61,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(695890)
     @marks.medium
-    def test_can_use_another_fleets_and_networks_advanced(self):
+    def test_can_use_another_fleets_and_networks_advanced_set_nonce(self):
         user = user_mainnet
         sign_in = SignInView(self.driver)
         home = sign_in.recover_access(user['passphrase'])
@@ -74,18 +74,21 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.waku_bloom_toggle.click()
         sign_in.sign_in()
 
-        # home.just_fyi("Check tx management")
-        # TODO: blocked due to 12827
-        # wallet = home.wallet_button.click()
-        # send_tx = wallet.send_transaction_from_main_screen.click()
-        # from views.send_transaction_view import SendTransactionView
-        # send_tx = SendTransactionView(self.driver)
-        # send_tx.amount_edit_box.set_value('0')
-        # send_tx.set_recipient_address(ens_user['address'])
-        # send_tx.next_button.click()
-        # send_tx.advanced_button.click()
-        # send_tx.nonce_input.set_value('4')
-        # send_tx.nonce_save_button.click()
+        home.just_fyi("Check tx management")
+        wallet = home.wallet_button.click()
+        send_tx = wallet.send_transaction_from_main_screen.click()
+        from views.send_transaction_view import SendTransactionView
+        send_tx = SendTransactionView(self.driver)
+        send_tx.amount_edit_box.set_value('0')
+        send_tx.set_recipient_address(ens_user['address'])
+        send_tx.next_button.click()
+        send_tx.set_up_wallet_when_sending_tx()
+        send_tx.advanced_button.click()
+        send_tx.nonce_input.set_value('4')
+        send_tx.nonce_save_button.click()
+        error_text = send_tx.sign_transaction(error=True)
+        if error_text != 'nonce too low':
+            self.errors.append("%s is not expected error when signing tx with custom nonce" % error_text)
 
         home.just_fyi("Check balance on mainnet")
         profile = home.profile_button.click()
@@ -814,7 +817,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.bootnodes_button.click()
         profile_1.add_bootnode_button.click()
         profile_1.specify_name_input.set_value('test')
-        # TODO: blocked as validation is missing for bootnodes
+        # TODO: blocked as validation is missing for bootnodes (rechecked 23.11.21, valid)
         # profile_1.bootnode_address_input.set_value('invalid_bootnode_address')
         # if not profile_1.element_by_text_part('Invalid format').is_element_displayed():
         #      self.errors.append('Validation message about invalid format of bootnode is not shown')
@@ -972,7 +975,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         public_chat_1 = home_1.join_public_chat(public_chat_name)
         public_chat_1.relogin()
 
-        # TODO: blocked due to 11786
+        # TODO: blocked due to 11786 (rechecked 23.11.21, valid)
         # profile_1.just_fyi('check that still connected to custom mailserver after relogin')
         # home_1.profile_button.click()
         # profile_1.sync_settings_button.click()
@@ -992,7 +995,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         # profile_1.home_button.click()
         # home_1.get_chat('#%s' % public_chat_name).click()
         # if not public_chat_1.chat_element_by_text(message).is_element_displayed(60):
-        #     self.errors.append("Chat history wasn't fetched")
+        #    self.errors.append("Chat history wasn't fetched")
 
         self.errors.verify_no_errors()
 
@@ -1174,24 +1177,21 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_2.just_fyi('set mobile data to "ON"')
         home_2.home_button.click()
         home_2.mobile_connection_off_icon.click()
-        home_2.use_mobile_data_switch.click()
+        home_2.use_mobile_data_switch.wait_and_click(30)
         if not home_2.connected_to_node_text.is_element_displayed(10):
             self.errors.append("Not connected to history node after enabling fetching on mobile data")
         home_2.click_system_back_button()
         home_2.mobile_connection_on_icon.wait_for_visibility_of_element(10)
-        if not home_2.mobile_connection_on_icon.is_element_displayed():
-            self.errors.append('No mobile connection ON icon is shown')
         home_2.get_chat('#%s' % public_chat_name).click()
         if not public_2.chat_element_by_text(public_chat_message).is_element_displayed(180):
             self.errors.append("Chat history was not fetched with mobile data fetching ON")
 
-        home_2.just_fyi('check redirect to sync settings by tappin "Sync" in connection status bottom sheet')
+        home_2.just_fyi('check redirect to sync settings by tapping on "Sync" in connection status bottom sheet')
         home_2.home_button.click()
         home_2.mobile_connection_on_icon.click()
         home_2.connection_settings_button.click()
         if not home_2.element_by_translation_id("mobile-network-use-mobile").is_element_displayed():
-            self.errors.append(
-                "Was not redirected to sync settings after tapping on Settings in connection bottom sheet")
+            self.errors.append("Was not redirected to sync settings after tapping on Settings in connection bottom sheet")
 
         home_1.just_fyi("Check default preferences in Sync settings")
         profile_1 = home_1.profile_button.click()
@@ -1217,78 +1217,105 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5680)
-    @marks.high
-    @marks.skip
-    # TODO: skip until edit userpic is enabled back
-    def test_pair_devices_sync_name_photo_public_group_chats(self):
+    @marks.testrail_id(695856)
+    @marks.medium
+    @marks.flaky
+    def test_pair_devices_sync_photo_community_group_chats(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1 = device_1.create_user()
-        home_1.profile_button.click()
-        profile_1 = home_1.get_profile_view()
+        profile_1 = home_1.profile_button.click()
         profile_1.privacy_and_security_button.click()
         profile_1.backup_recovery_phrase_button.click()
         recovery_phrase = profile_1.backup_recovery_phrase()
-        profile_1.back_button.click()
-        profile_1.get_back_to_home_view()
-        device_1_name = 'device_%s' % device_1.driver.number
-        device_2_name = 'device_%s' % device_2.driver.number
-        public_chat_before_sync_name = 'b-public-%s' % home_1.get_random_chat_name()
-        public_chat_after_sync_name = 'a-public-%s' % home_1.get_random_chat_name()
+        profile_1.home_button.double_click()
+        name_1, name_2 = 'device_%s' % device_1.driver.number, 'device_%s' % device_2.driver.number
+        comm_before_sync_name, channel, message = 'b-%s' % home_1.get_random_chat_name(), 'some-rand-chann', 'comm_message'
+        comm_joined_name = 'Status'
+        comm_after_sync_name = 'a-public-%s' % home_1.get_random_chat_name()
         group_chat_name = 'group-%s' % home_1.get_random_chat_name()
-        message_after_sync = 'sent after sync'
+        channel_after_sync, message_after_sync = 'chann-after-sync', 'sent after sync'
 
-        device_1.just_fyi('join public chat, create group chat, edit user picture')
-        public_1 = home_1.join_public_chat(public_chat_before_sync_name)
-        public_1.back_button.click()
+        device_1.just_fyi('join Status community, create community, create group chat, edit user picture')
+        # Follow Status community
+        home_1.element_by_text(comm_joined_name).scroll_and_click()
+        from views.chat_view import CommunityView
+        comm_to_join_1 = CommunityView(self.drivers[0])
+        comm_to_join_1.follow_button.wait_and_click()
+        comm_to_join_1.home_button.double_click()
+        # Create community as admin, add channel, send message
+        comm_before_1 = home_1.create_community(comm_before_sync_name)
+        channel_before_1 = comm_before_1.add_channel(channel)
+        channel_before_1.send_message(message)
+        home_1.home_button.double_click()
+        # Starting group chat
         one_to_one_1 = home_1.add_contact(basic_user['public_key'])
-        one_to_one_1.back_button.click()
+        one_to_one_1.home_button.click()
         group_chat_1 = home_1.create_group_chat([basic_user['username']], group_chat_name)
-        group_chat_1.back_button.click()
+        group_chat_1.home_button.click()
+        # Editing profile picture
         home_1.profile_button.click()
-        profile_1 = home_1.get_profile_view()
         profile_1.edit_profile_picture('sauce_logo.png')
 
         device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
         home_2 = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
-        profile_2 = home_2.get_profile_view()
-        profile_2.discover_and_advertise_device(device_2_name)
+        profile_2 = home_2.profile_button.click()
 
-        device_1.just_fyi('enable pairing of device 2 and sync')
-        profile_1.discover_and_advertise_device(device_1_name)
-        profile_1.get_toggle_device_by_name(device_2_name).click()
+        device_2.just_fyi('Pair main and secondary devices')
+        profile_2.discover_and_advertise_device(name_2)
+        profile_1.discover_and_advertise_device(name_1)
+        profile_1.get_toggle_device_by_name(name_2).wait_and_click()
         profile_1.sync_all_button.click()
         profile_1.sync_all_button.wait_for_visibility_of_element(15)
+        [device.profile_button.click() for device in (profile_1, profile_2)]
 
-        device_2.just_fyi('check that public chat and profile details are updated')
+        device_2.just_fyi('check that created/joined community and profile details are updated')
         home_2 = profile_2.home_button.click()
-        if not home_2.element_by_text('#%s' % public_chat_before_sync_name).is_element_displayed():
-            self.errors.append('Public chat "%s" doesn\'t appear after initial sync'
-                               % public_chat_before_sync_name)
-        home_2.home_button.click()
-        home_2.profile_button.click()
-        if not profile_2.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
-            self.errors.append('Profile picture was not updated after initial sync')
-        profile_2.home_button.click()
+        for community in (comm_before_sync_name, comm_joined_name):
+            if not home_2.get_chat(community, community=True).is_element_displayed():
+                self.errors.append('Community %s was not appeared after initial sync' % community)
+        comm_before_2 = home_2.get_chat(comm_before_sync_name, community=True).click()
+        channel_2 = comm_before_2.get_chat(channel).click()
+        if not channel_2.chat_element_by_text(message).is_element_displayed(30):
+            self.errors.append("Message sent to community channel before sync is not shown!")
 
-        device_1.just_fyi('send message to group chat, and join to new public chat')
+        device_1.just_fyi("Send message, add new channel and check it will be synced")
+        home_1.home_button.click()
+        home_1.get_chat(comm_before_sync_name, community=True).click()
+        channel_1 = comm_before_1.get_chat(channel).click()
+        channel_1.send_message(message_after_sync)
+        if not channel_2.chat_element_by_text(message_after_sync).is_element_displayed(30):
+            self.errors.append("Message sent to community channel after sync is not shown!")
+        [channel.back_button.click() for channel in (channel_1, channel_2)]
+        comm_before_1.add_channel(channel_after_sync)
+        if not comm_before_2.get_chat(channel_after_sync).is_element_displayed(30):
+            self.errors.append("New added channel after sync is not shown!")
+
+        device_1.just_fyi("Leave community and check it will be synced")
+        [home.home_button.double_click() for home in (home_1, home_2)]
+        home_1.get_chat(comm_before_sync_name, community=True).click()
+        comm_before_1.leave_community()
+        if not home_2.get_chat(comm_before_sync_name).is_element_disappeared(30):
+            self.errors.append("Leaving community was not synced!")
+
+        device_1.just_fyi("Adding new community and check it will be synced")
+        home_1.create_community(comm_after_sync_name)
+        if not home_2.get_chat(comm_after_sync_name, community=True).is_element_displayed(30):
+            self.errors.append('Added community was not appeared after initial sync')
+
+        # TODO: skip until #11558 (rechecked 23.11.21, valid)
+        # home_2.profile_button.click()
+        # if not profile_2.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
+        #     self.errors.append('Profile picture was not updated after initial sync')
+        # profile_2.home_button.click()
+        #
+        device_1.just_fyi('send message to group chat, check that message in group chat is shown')
         home_1 = profile_1.home_button.click()
-        public_1 = home_1.join_public_chat(public_chat_after_sync_name)
-        public_1.back_button.click()
-        home_1.element_by_text(group_chat_name).click()
+        home_1.get_chat(group_chat_name).click()
         group_chat_1.send_message(message_after_sync)
         group_chat_1.back_button.click()
-
-        device_2.just_fyi('check that message in group chat is shown, public chats are synced')
-        if not home_2.element_by_text('#%s' % public_chat_after_sync_name).is_element_displayed():
-            self.errors.append('Public chat "%s" doesn\'t appear on other device when devices are paired'
-                               % public_chat_before_sync_name)
-
-        home_2.element_by_text(group_chat_name).click()
-        device_2_group_chat = home_2.get_chat_view()
-
-        if not device_2_group_chat.chat_element_by_text(message_after_sync).is_element_displayed():
+        group_chat_2 = home_2.get_chat(group_chat_name).click()
+        if not group_chat_2.chat_element_by_text(message_after_sync).is_element_displayed():
             self.errors.append('"%s" message in group chat is not synced' % message_after_sync)
 
         self.errors.verify_no_errors()

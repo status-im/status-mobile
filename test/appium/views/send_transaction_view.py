@@ -134,7 +134,7 @@ class SendTransactionView(BaseView):
         self.enter_recipient_address_input.click()
         self.done_button.click_until_absense_of_element(self.done_button)
 
-    def sign_transaction(self, sender_password: str = common_password, keycard=False):
+    def sign_transaction(self, sender_password: str = common_password, keycard=False, error=False):
         self.driver.info("Signing transaction, (keycard: %s)" % str(keycard), device=False)
         if self.sign_in_phrase.is_element_displayed(30):
             self.set_up_wallet_when_sending_tx()
@@ -146,10 +146,15 @@ class SendTransactionView(BaseView):
             self.enter_password_input.send_keys(sender_password)
             self.sign_button.click_until_absense_of_element(self.sign_button)
         self.ok_button.wait_for_element(120)
-        if self.element_by_text_part('Transaction failed').is_element_displayed():
-            self.driver.fail('Transaction failed')
+        error_text = ''
+        if error:
+            error_text = Text(self.driver, id='android:id/message').text
+        else:
+            if self.element_by_text_part('Transaction failed').is_element_displayed():
+                self.driver.fail('Transaction failed')
         self.driver.info("## Transaction is signed!", device=False)
         self.ok_button.click()
+        return error_text
 
     @staticmethod
     def get_formatted_recipient_address(address):

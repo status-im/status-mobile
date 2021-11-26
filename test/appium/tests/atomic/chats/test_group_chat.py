@@ -47,8 +47,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
                 self.errors.append('%s is not shown after invite to group chat' % pn)
         group_invite_pn = home_2.get_pn(pns[1])
 
-        # if not group_invite_pn.group_chat_icon.is_element_displayed(30):
-        #     self.drivers[0].fail('No icon is shown for PN for group invite')
+        if not group_invite_pn.group_chat_icon.is_element_displayed(30):
+            self.errors.append('No icon is shown for PN for group invite')
         group_invite_pn.click()
         create_system_message = chat_1.create_system_message(username_1, chat_name)
         invite_system_message = chat_1.invite_system_message(username_1, username_2)
@@ -99,8 +99,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(3997)
     @marks.medium
-    def test_leave_group_chat_via_group_info(self):
-
+    def test_leave_group_chat_highligted_via_group_info(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
@@ -108,12 +107,23 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         device_2.just_fyi('Create and join group chat')
         public_key_2, username_2 = device_2.get_public_key_and_username(True)
-        device_2.home_button.click()
+        public_key_1 = home_1.get_public_key_and_username()
+        [home.home_button.click() for home in (home_1, home_2)]
+        home_2.add_contact(public_key_1)
         home_1.add_contact(public_key_2)
-        home_1.get_back_to_home_view()
+        [home.home_button.click() for home in (home_1, home_2)]
         chat_1 = home_1.create_group_chat([username_2], chat_name)
+
+        home_2.just_fyi("Check that new group chat from contact is highlited")
+        chat_2_element = home_2.get_chat(chat_name)
+        if chat_2_element.no_message_preview.is_element_differs_from_template('highligted_preview_group.png', 0):
+            self.errors.append("Preview message is not hightligted or text is not shown! ")
         left_system_message = chat_1.leave_system_message(username_2)
         chat_2 = home_2.get_chat(chat_name).click()
+        chat_2.home_button.click()
+        if not chat_2_element.no_message_preview.is_element_differs_from_template('highligted_preview_group.png', 0):
+            self.errors.append("Preview message is still hightligted after opening! ")
+        home_2.get_chat(chat_name).click()
         chat_2.join_chat_button.click()
 
         device_2.just_fyi('Send several message and leave chat')

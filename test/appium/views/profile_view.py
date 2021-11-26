@@ -339,7 +339,7 @@ class ProfileView(BaseView):
         self.advanced_button.click()
         self.network_settings_button.click()
         network_button = Button(self.driver, xpath="//*[@text='%s']" % network)
-        network_button.click()
+        network_button.scroll_and_click()
         self.connect_button.click_until_presence_of_element(self.confirm_button)
         self.confirm_button.click_until_absense_of_element(self.confirm_button)
         from views.sign_in_view import SignInView

@@ -65,7 +65,14 @@ class ChatElement(SilentButton):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, xpath="%s//*[@content-desc='chat-message-text']" % parent_locator)
 
-        return PreveiewMessageText(self.driver, self.locator).text
+        return PreveiewMessageText(self.driver, self.locator)
+
+    @property
+    def no_message_preview(self):
+        class NoMessageText(Text):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, xpath="%s//*[@content-desc='no-messages-text']" % parent_locator)
+        return NoMessageText(self.driver, self.locator)
 
     @property
     def new_messages_public_chat(self):

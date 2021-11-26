@@ -33,8 +33,7 @@ class TestCommunitiesMultipleDevices(MultipleDeviceTestCase):
 
         home_2.just_fyi("Tapping on community link and request membership")
         pub_2 = home_2.join_public_chat(pub_chat_name)
-        # TODO: due to #12271
-        pub_2.element_by_text(community_name).wait_for_element(330)
+        pub_2.element_by_text(community_name).wait_for_element(100)
         community_message_2 = pub_2.get_community_link_preview_by_text(community_link_text)
         if community_message_2.community_description != community_description:
             self.errors.append(
@@ -64,9 +63,8 @@ class TestCommunitiesMultipleDevices(MultipleDeviceTestCase):
         if not community_2.community_info_picture.is_element_image_similar_to_template(community_pic):
             self.errors.append("Community image is different!")
         channel_2 = community_2.get_chat(channel_name).click()
-        # TODO: due to 12281
-        # if not channel_2.chat_element_by_text(message).is_element_displayed():
-        #     self.errors.append("Message was not received in community channel!")
+        if not channel_2.chat_element_by_text(message).is_element_displayed(30):
+            self.errors.append("Message was not received in community channel!")
         channel_2.send_message(message_member)
         community_1.home_button.double_click()
         home_1.get_chat(community_name, community=True).click()
@@ -113,11 +111,9 @@ class TestCommunitiesMultipleDevices(MultipleDeviceTestCase):
         pub_1.get_back_to_home_view()
 
         home_2.just_fyi("Tapping on community link and request membership")
-        # TODO: due to #12271
-        pub_2.element_by_text(community_name).wait_for_element(330)
+        pub_2.element_by_text(community_name).wait_for_element(60)
         community_message_2 = pub_2.get_community_link_preview_by_text(community_link_text)
-        community_message_2.view()
-        community_2 = CommunityView(self.drivers[1])
+        community_2 = community_message_2.view()
         community_2.request_access_button.click()
         if not community_2.membership_request_pending_text.is_element_displayed():
             self.errors.append("Membership request is not pending")

@@ -306,17 +306,21 @@ class CommunityView(HomeView):
                                                        suffix='/following-sibling::android.view.ViewGroup/android.widget.TextView')
         self.members_button = Button(self.driver, translation_id="members-label")
         self.community_info_picture = Button(self.driver, accessibility_id="chat-icon")
+        self.leave_community_button = Button(self.driver, translation_id="leave-community")
+        self.edit_community_button = Button(self.driver, translation_id="edit-community")
 
         # Members
         self.invite_people_button = Button(self.driver, accessibility_id="community-invite-people")
         self.membership_requests_button = Button(self.driver, translation_id="membership-requests")
 
-        # Requesting access to commmunity
+        # Requesting access to community / joining community
         self.request_access_button = Button(self.driver, translation_id="request-access")
         self.membership_request_pending_text = Text(self.driver, translation_id="membership-request-pending")
+        self.join_button = Button(self.driver, translation_id="join")
+        self.follow_button = Button(self.driver, translation_id="follow")
 
     def add_channel(self, name: str, description="Some new channel"):
-        self.driver.info("Adding channel")
+        self.driver.info("Adding channel in community")
         self.plus_button.click()
         self.community_create_a_channel_button.wait_and_click()
         self.channel_name_edit_box.set_value(name)
@@ -325,6 +329,12 @@ class CommunityView(HomeView):
         chat_view.confirm_create_in_community_button.click()
         self.get_chat(name).click()
         return chat_view
+
+    def leave_community(self):
+        self.driver.info("Leaving community")
+        self.community_options_button.wait_and_click()
+        self.community_info_button.wait_and_click()
+        self.leave_community_button.scroll_and_click()
 
     def copy_community_link(self):
         self.driver.info("Copy community link")

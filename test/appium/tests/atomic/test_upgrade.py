@@ -38,7 +38,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         home.just_fyi("Check chat previews")
         for chat in chats.keys():
             if 'preview' in chats.keys():
-                actual_chat_preview = home.get_chat(chat).chat_preview
+                actual_chat_preview = home.get_chat(chat).chat_preview.text
                 expected_chat_preview = chats[chat]['preview']
                 if actual_chat_preview != expected_chat_preview:
                     self.errors.append('Expected preview for %s is "%s", in fact "%s"' % (chat, expected_chat_preview, actual_chat_preview))
