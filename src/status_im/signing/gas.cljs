@@ -289,7 +289,9 @@
     (fn []
       (json-rpc/call
        {:method "eth_feeHistory"
-        :params [101 "latest" nil]
+        ;; NOTE(rasom): We don't need `reward` atm but if the last parameter is
+        ;; `nil` request fails on some chains (particularly on xDai).
+        :params [101 "latest" [100]]
         :on-success #(re-frame/dispatch [::header-fetched
                                          (assoc params :fee-history %)])}))
     (fn []
@@ -341,31 +343,44 @@
 
 (defn check-base-fee [{:keys [baseFeePerGas]}]
   (let [all-base-fees    (mapv money/bignumber baseFeePerGas)
-        current-base-fee (last all-base-fees)
+        next-base-fee    (peek all-base-fees)
         previous-fees    (subvec all-base-fees 0 101)
+        current-base-fee (peek previous-fees)
         percentiles      (calc-percentiles previous-fees [10 20 80])]
     {:normal-base-fee  (money/to-hex
                         (recommended-base-fee
-                         current-base-fee
+                         next-base-fee
                          (get percentiles 20)
                          (get percentiles 80)))
      :slow-base-fee    (money/to-hex
                         (slow-base-fee
-                         current-base-fee
+                         next-base-fee
                          (get percentiles 10)))
      :fast-base-fee    (money/to-hex
                         (fast-base-fee
-                         current-base-fee
+                         next-base-fee
                          (get percentiles 80)))
      :current-base-fee (money/to-hex current-base-fee)}))
+
+(defn max-priority-fee-hex [gas-price base-fee]
+  (money/to-hex
+   (money/sub (money/bignumber gas-price)
+              (money/bignumber base-fee))))
 
 (fx/defn header-fetched
   {:events [::header-fetched]}
   [_ {:keys [error-callback success-callback fee-history] :as params}]
   {::json-rpc/call
-   [{:method     "eth_maxPriorityFeePerGas"
-     :on-success #(success-callback (merge {:max-priority-fee %}
-                                           (check-base-fee fee-history)))
+   [;; NOTE(rasom): eth_maxPriorityFeePerGas is not supported by some networks
+    ;; so it is more reliable to calculate maxPriorityFeePerGas using the value
+    ;; returned by eth_gasPrice and current base fee.
+    {:method     "eth_gasPrice"
+     :on-success #(success-callback
+                   (let [{:keys [current-base-fee] :as base-fees}
+                         (check-base-fee fee-history)]
+                     (merge {:max-priority-fee
+                             (max-priority-fee-hex % current-base-fee)}
+                            base-fees)))
      :on-error   (if error-callback
                    #(error-callback %)
                    #(log/error "Can't fetch header" %))}]})
