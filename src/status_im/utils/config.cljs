@@ -1,8 +1,8 @@
 (ns status-im.utils.config
-  (:require [clojure.string :as string]
+  (:require ["react-native-config" :default react-native-config]
+            [clojure.string :as string]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.ens :as ens]
-            ["react-native-config" :default react-native-config]))
+            [status-im.ethereum.ens :as ens]))
 
 (def config
   (memoize
@@ -94,56 +94,65 @@
   (get-in default-multiaccount [:wallet/visible-tokens chain]))
 
 (def mainnet-networks
-  [{:id             "mainnet_rpc",
-    :etherscan-link "https://etherscan.io/address/",
-    :name           "Mainnet with upstream RPC",
-    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
-                     :DataDir        "/ethereum/mainnet_rpc"
-                     :UpstreamConfig {:Enabled true
-                                      :URL mainnet-rpc-url}}}])
+  [{:id                  "mainnet_rpc",
+    :chain-explorer-link "https://etherscan.io/address/",
+    :name                "Mainnet with upstream RPC",
+    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
+                          :DataDir        "/ethereum/mainnet_rpc"
+                          :UpstreamConfig {:Enabled true
+                                           :URL     mainnet-rpc-url}}}])
 
 (def sidechain-networks
-  [{:id     "xdai_rpc",
-    :name   "xDai Chain",
-    :config {:NetworkId      (ethereum/chain-keyword->chain-id :xdai)
-             :DataDir        "/ethereum/xdai_rpc"
-             :UpstreamConfig {:Enabled true
-                              :URL     "https://dai.poa.network"}}}
+  [{:id                  "xdai_rpc",
+    :name                "xDai Chain",
+    :chain-explorer-link "https://blockscout.com/xdai/mainnet/address/",
+    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :xdai)
+                          :DataDir        "/ethereum/xdai_rpc"
+                          :UpstreamConfig {:Enabled true
+                                           :URL     "https://dai.poa.network"}}}
    {:id     "poa_rpc",
     :name   "POA Network",
     :config {:NetworkId      (ethereum/chain-keyword->chain-id :poa)
              :DataDir        "/ethereum/poa_rpc"
              :UpstreamConfig {:Enabled true
                               :URL     "https://core.poa.network"}}}
-   {:id     "bsc_rpc",
-    :name   "BSC Network",
-    :config {:NetworkId      (ethereum/chain-keyword->chain-id :bsc)
-             :DataDir        "/ethereum/bsc_rpc"
-             :UpstreamConfig {:Enabled true
-                              :URL     "https://bsc-dataseed.binance.org"}}}])
+   {:id                  "bsc_rpc",
+    :chain-explorer-link "https://bscscan.com/address/",
+    :name                "BSC Network",
+    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :bsc)
+                          :DataDir        "/ethereum/bsc_rpc"
+                          :UpstreamConfig {:Enabled true
+                                           :URL     "https://bsc-dataseed.binance.org"}}}])
 
 (def testnet-networks
-  [{:id             "testnet_rpc",
-    :etherscan-link "https://ropsten.etherscan.io/address/",
-    :name           "Ropsten with upstream RPC",
-    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
-                     :DataDir        "/ethereum/testnet_rpc"
-                     :UpstreamConfig {:Enabled true
-                                      :URL testnet-rpc-url}}}
-   {:id             "rinkeby_rpc",
-    :etherscan-link "https://rinkeby.etherscan.io/address/",
-    :name           "Rinkeby with upstream RPC",
-    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
-                     :DataDir        "/ethereum/rinkeby_rpc"
-                     :UpstreamConfig {:Enabled true
-                                      :URL     (str "https://rinkeby.infura.io/v3/" INFURA_TOKEN)}}}
-   {:id             "goerli_rpc",
-    :etherscan-link "https://goerli.etherscan.io/address/",
-    :name           "Goerli with upstream RPC",
-    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
-                     :DataDir        "/ethereum/goerli_rpc"
-                     :UpstreamConfig {:Enabled true
-                                      :URL     (str "https://goerli.infura.io/v3/" INFURA_TOKEN)}}}])
+  [{:id                  "testnet_rpc",
+    :chain-explorer-link "https://ropsten.etherscan.io/address/",
+    :name                "Ropsten with upstream RPC",
+    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
+                          :DataDir        "/ethereum/testnet_rpc"
+                          :UpstreamConfig {:Enabled true
+                                           :URL     testnet-rpc-url}}}
+   {:id                  "rinkeby_rpc",
+    :chain-explorer-link "https://rinkeby.etherscan.io/address/",
+    :name                "Rinkeby with upstream RPC",
+    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
+                          :DataDir        "/ethereum/rinkeby_rpc"
+                          :UpstreamConfig {:Enabled true
+                                           :URL     (str "https://rinkeby.infura.io/v3/" INFURA_TOKEN)}}}
+   {:id                  "goerli_rpc",
+    :chain-explorer-link "https://goerli.etherscan.io/address/",
+    :name                "Goerli with upstream RPC",
+    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
+                          :DataDir        "/ethereum/goerli_rpc"
+                          :UpstreamConfig {:Enabled true
+                                           :URL     (str "https://goerli.infura.io/v3/" INFURA_TOKEN)}}}
+   {:id                  "bsc_testnet_rpc",
+    :chain-explorer-link "https://testnet.bscscan.com/address/",
+    :name                "BSC testnet",
+    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :bsc-testnet)
+                          :DataDir        "/ethereum/bsc_testnet_rpc"
+                          :UpstreamConfig {:Enabled true
+                                           :URL     "https://data-seed-prebsc-1-s1.binance.org:8545/"}}}])
 
 (def default-networks
   (concat testnet-networks mainnet-networks sidechain-networks))

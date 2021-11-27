@@ -767,12 +767,15 @@
    {:keys [force-restart? on-recent-history-fetching]
     :as   params}]
   (when (:multiaccount db)
-    (let [syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)]
+    (let [syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)
+          binance-chain?   (ethereum/binance-chain? db)]
       (log/info "restart-wallet-service"
                 "force-restart?" force-restart?
-                "syncing-allowed?" syncing-allowed?)
-      (if (or syncing-allowed?
-              force-restart?)
+                "syncing-allowed?" syncing-allowed?
+                "binance-chain?" binance-chain?)
+      (if (and (or syncing-allowed?
+                   force-restart?)
+               (not binance-chain?))
         (check-recent-history cofx params)
         (after-checking-history cofx)))))
 
@@ -791,6 +794,27 @@
   (restart-wallet-service
    cofx
    {:force-restart? force-restart?}))
+
+(re-frame/reg-fx
+ :load-transaction-by-hash
+ (fn [[address hash]]
+   (log/info "calling wallet_loadTransferByHash" address hash)
+   (json-rpc/call
+    {:method     "wallet_loadTransferByHash"
+     :params     [address hash]
+     :on-success #(re-frame/dispatch [:transaction/get-fetched-transfers])
+     :on-error   #(log/warn "Transfer loading failed" %)})))
+
+(fx/defn load-transaction-by-hash
+  [_ address hash]
+  {:load-transaction-by-hash [address hash]})
+
+(fx/defn transaction-included
+  {:events [::transaction-included]}
+  [{:keys [db] :as cofx} address hash]
+  (if (ethereum/binance-chain? db)
+    (load-transaction-by-hash cofx address hash)
+    (restart cofx true)))
 
 (def pull-to-refresh-cooldown-period (* 1 60 1000))
 
@@ -813,17 +837,17 @@
  ::start-watching
  (fn [hashes]
    (log/info "[wallet] watch transactions" hashes)
-   (doseq [hash hashes]
+   (doseq [[address hash] hashes]
      (json-rpc/call
       {:method     "wallet_watchTransaction"
        :params     [hash]
-       :on-success #(re-frame.core/dispatch [::restart true])
+       :on-success #(re-frame.core/dispatch [::transaction-included address hash])
        :on-error   #(log/info "[wallet] watch transaction error" % "hash" hash)}))))
 
 (fx/defn watch-tx
   {:events [:watch-tx]}
-  [{:keys [db] :as cofx} tx-id]
-  {::start-watching [tx-id]})
+  [{:keys [db] :as cofx} address tx-id]
+  {::start-watching [[address tx-id]]})
 
 (fx/defn watch-transsactions
   [_ hashes]
@@ -1020,7 +1044,7 @@
                  db)))
            db
            (map (partial normalize-transaction db) raw-transactions))
-   ::start-watching (map :hash raw-transactions)})
+   ::start-watching (map (juxt :from :hash) raw-transactions)})
 
 (re-frame/reg-fx
  :wallet/delete-pending-transactions
@@ -1037,3 +1061,20 @@
   [{:keys [db]} enabled?]
   {::async-storage/set! {:transactions-management-enabled? enabled?}
    :db (assoc db :wallet/transactions-management-enabled? enabled?)})
+
+(fx/defn update-curent-block
+  {:events [::update-current-block]}
+  [{:keys [db]} block]
+  {:db (assoc db :ethereum/current-block block)})
+
+(re-frame/reg-fx
+ ::request-current-block-update
+ (fn []
+   (json-rpc/call
+    {:method "eth_getBlockByNumber"
+     :params ["latest" false]
+     :on-success #(re-frame/dispatch [::update-current-block (get % :number)])})))
+
+(fx/defn request-current-block-update
+  [_]
+  {::request-current-block-update nil})

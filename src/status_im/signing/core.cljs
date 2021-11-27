@@ -304,13 +304,13 @@
 
 (fx/defn transaction-result
   [{:keys [db] :as cofx} result tx-obj]
-  (let [{:keys [on-result symbol amount]} (get db :signing/tx)]
+  (let [{:keys [on-result symbol amount from]} (get db :signing/tx)]
     (fx/merge cofx
               {:db (dissoc db :signing/tx :signing/sign)
                :signing/show-transaction-result nil}
               (prepare-unconfirmed-transaction result tx-obj symbol amount)
               (check-queue)
-              (wallet/watch-tx result)
+              (wallet/watch-tx (get from :address) result)
               #(when on-result
                  {:dispatch (conj on-result result)}))))
 
@@ -323,7 +323,7 @@
     (fx/merge
      cofx
      {:db (dissoc db :signing/tx :signing/sign)}
-     (wallet/watch-tx transaction-hash)
+     (wallet/watch-tx (get from :address) transaction-hash)
      (if (keycard.common/keycard-multiaccount? db)
        (signing.keycard/hash-message
         {:data data

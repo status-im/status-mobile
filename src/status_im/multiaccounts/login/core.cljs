@@ -122,8 +122,11 @@
          (wallet/get-cached-balances scan-all-tokens?))
    (when-not (get db :wallet/new-account)
      (wallet/restart-wallet-service nil))
-   (when-not (utils.mobile-sync/syncing-allowed? cofx)
+   (when (or (not (utils.mobile-sync/syncing-allowed? cofx))
+             (ethereum/binance-chain? db))
      (transactions/get-fetched-transfers))
+   (when (ethereum/binance-chain? db)
+     (wallet/request-current-block-update))
    (prices/update-prices)))
 
 (fx/defn login

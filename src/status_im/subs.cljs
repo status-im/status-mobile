@@ -1776,11 +1776,11 @@
    (get-in wallet [:fetching address :all-fetched?])))
 
 (re-frame/reg-sub
- :wallet/etherscan-link
+ :wallet/chain-explorer-link
  (fn [db [_ address]]
    (let [network (:networks/current-network db)
          link    (get-in config/default-networks-by-id
-                         [network :etherscan-link])]
+                         [network :chain-explorer-link])]
      (when link
        (str link address)))))
 
@@ -2108,8 +2108,8 @@
  (fn [[_ _ address] _]
    [(re-frame/subscribe [:wallet.transactions/transactions address])
     (re-frame/subscribe [:ethereum/native-currency])
-    (re-frame/subscribe [:ethereum/chain-keyword])])
- (fn [[transactions native-currency chain-keyword] [_ hash _]]
+    (re-frame/subscribe [:chain-id])])
+ (fn [[transactions native-currency chain-id] [_ hash _]]
    (let [{:keys [gas-used gas-price fee-cap tip-cap hash timestamp type]
           :as transaction}
          (get transactions hash)
@@ -2147,7 +2147,7 @@
                                          (money/fee-value gas-used gas-price)
                                          native-currency-text))
                  :url  (transactions/get-transaction-details-url
-                        chain-keyword
+                        chain-id
                         hash)}))))))
 
 (re-frame/reg-sub
@@ -2195,6 +2195,12 @@
  :wallet.request/transaction
  :<- [:wallet]
  :request-transaction)
+
+(re-frame/reg-sub
+ :wallet/binance-chain?
+ :<- [:current-network]
+ (fn [network]
+   (ethereum/binance-chain-id? (get-in network [:config :NetworkId]))))
 
 ;;UI ==============================================================================================================
 

@@ -17,16 +17,21 @@
     (.hexToUtf8 utils s)
     (catch :default _ nil)))
 
-;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
+(def BSC-mainnet-chain-id 56)
+(def BSC-testnet-chain-id 97)
 
+;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 (def chains
-  {:mainnet {:id 1 :name "Mainnet"}
-   :testnet {:id 3 :name "Ropsten"}
-   :rinkeby {:id 4 :name "Rinkeby"}
-   :xdai    {:id 100 :name "xDai"}
-   :poa     {:id 99 :name "POA"}
-   :goerli  {:id 5 :name "Goerli"}
-   :bsc     {:id 56 :name "BSC"}})
+  {:mainnet     {:id 1 :name "Mainnet"}
+   :testnet     {:id 3 :name "Ropsten"}
+   :rinkeby     {:id 4 :name "Rinkeby"}
+   :xdai        {:id 100 :name "xDai"}
+   :poa         {:id 99 :name "POA"}
+   :goerli      {:id 5 :name "Goerli"}
+   :bsc         {:id   BSC-mainnet-chain-id
+                 :name "BSC"}
+   :bsc-testnet {:id   BSC-testnet-chain-id
+                 :name "BSC tetnet"}})
 
 (defn chain-id->chain-keyword [i]
   (or (some #(when (= i (:id (val %))) (key %)) chains)
@@ -47,7 +52,8 @@
 (defn testnet? [id]
   (contains? #{(chain-keyword->chain-id :testnet)
                (chain-keyword->chain-id :rinkeby)
-               (chain-keyword->chain-id :goerli)} id))
+               (chain-keyword->chain-id :goerli)
+               (chain-keyword->chain-id :bsc-testnet)} id))
 
 (defn sidechain? [id]
   (contains? #{(chain-keyword->chain-id :xdai)
@@ -108,6 +114,16 @@
   (let [networks   (get db :networks/networks)
         network-id (get db :networks/current-network)]
     (get networks network-id)))
+
+(defn binance-chain-id? [chain-id]
+  (or (= BSC-mainnet-chain-id chain-id)
+      (= BSC-testnet-chain-id chain-id)))
+
+(defn binance-chain? [db]
+  (-> db
+      current-network
+      network->chain-id
+      binance-chain-id?))
 
 (def custom-rpc-node-id-len 45)
 

@@ -194,6 +194,7 @@
    "wallet_getCryptoOnRamps" {}
    "wallet_getOpenseaCollectionsByOwner" {}
    "wallet_getOpenseaAssetsByOwnerAndCollection" {}
+   "wallet_loadTransferByHash" {}
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}

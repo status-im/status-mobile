@@ -110,8 +110,7 @@
         [tabs/tab-title state :assets (i18n/label :t/wallet-assets) (= tab :assets)]
         (when ethereum-network?
           [tabs/tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)])
-        (when ethereum-network?
-          [tabs/tab-title state :history (i18n/label :t/history) (= tab :history)])]
+        [tabs/tab-title state :history (i18n/label :t/history) (= tab :history)]]
        (cond
          (= tab :assets)
          [:<>
