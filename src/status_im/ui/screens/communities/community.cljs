@@ -154,14 +154,14 @@
               :color :secondary}
     text]])
 
-(defn community-chat-item [{:keys [chat-id] :as home-item} _ _ {:keys [from-chat]}]
+(defn community-chat-item [{:keys [chat-id] :as home-item} _ _ _]
   [inner-item/home-list-item
    ;; We want communities to behave as public chats when it comes to
    ;; unread indicator
    (assoc home-item :public? true)
    {:on-press      (fn []
                      (re-frame/dispatch [:dismiss-keyboard])
-                     (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id (not from-chat)])
+                     (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
                      (re-frame/dispatch [:search/home-filter-changed nil])
                      (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
     :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet

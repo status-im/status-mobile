@@ -24,7 +24,8 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.screens.chat.sheets :as sheets]
-            [status-im.ui.components.tabbar.core :as tabbar])
+            [status-im.ui.components.tabbar.core :as tabbar]
+            ["react-native-navigation" :refer (Navigation)])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn home-tooltip-view []
@@ -199,13 +200,19 @@
                      :accessibility-label :notifications-unread-badge}]])]))
 
 (defn home []
-  [react/keyboard-avoiding-view {:style {:flex 1}
-                                 :ignore-offset true}
-   [topbar/topbar {:title           (i18n/label :t/chat)
-                   :navigation      :none
-                   :right-component [react/view {:flex-direction :row :margin-right 16}
-                                     [connectivity/connectivity-button]
-                                     [notifications-button]]}]
-   [chats-list]
-   [plus-button]
-   [tabbar/tabs-counts-subscriptions]])
+  (reagent/create-class
+   {:component-did-mount #(set! (.-navigationEventListener %) (.bindComponent (.events Navigation) % "home"))
+    :componentWillAppear #(do (re-frame/dispatch-sync [:set :view-id :home])
+                              (re-frame/dispatch [:close-chat]))
+    :reagent-render
+    (fn []
+      [react/keyboard-avoiding-view {:style {:flex 1}
+                                     :ignore-offset true}
+       [topbar/topbar {:title           (i18n/label :t/chat)
+                       :navigation      :none
+                       :right-component [react/view {:flex-direction :row :margin-right 16}
+                                         [connectivity/connectivity-button]
+                                         [notifications-button]]}]
+       [chats-list]
+       [plus-button]
+       [tabbar/tabs-counts-subscriptions]])}))

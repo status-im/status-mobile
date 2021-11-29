@@ -1197,19 +1197,6 @@
            (hydrate-messages messages))))))
 
 ;;we want to keep data unchanged so react doesn't change component when we leave screen
-(def memo-chat-messages-stream (atom nil))
-
-(re-frame/reg-sub
- :chats/chat-messages-stream
- (fn [[_ chat-id] _]
-   [(re-frame/subscribe [:chats/raw-chat-messages-stream chat-id])
-    (re-frame/subscribe [:chats/chat-no-messages? chat-id])
-    (re-frame/subscribe [:view-id])])
- (fn [[messages empty view-id]]
-   (when (or (= view-id :chat) empty)
-     (reset! memo-chat-messages-stream messages))
-   @memo-chat-messages-stream))
-
 (def memo-profile-messages-stream (atom nil))
 
 (re-frame/reg-sub

@@ -219,7 +219,8 @@
 
            ;Chat
            {:name          :chat
-            :options       {:topBar {:title        {:component {:name :chat-toolbar :id :chat-toolbar}
+            :options       {:popGesture false
+                            :topBar {:title        {:component {:name :chat-toolbar :id :chat-toolbar}
                                                     :alignment :fill}
                                      :rightButtons (right-button-options :chat :more)}}
             :right-handler chat/topbar-button

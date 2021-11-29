@@ -295,7 +295,7 @@
 
 (defn messages-view [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
   (let [{:keys [group-chat chat-id public? community-id admins]} chat
-        messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])]
+        messages @(re-frame/subscribe [:chats/raw-chat-messages-stream chat-id])]
     ;;do not use anonymous functions for handlers
     [list/flat-list
      (merge
@@ -343,8 +343,7 @@
      [toolbar-content/toolbar-content-view-inner chat-info]]))
 
 (defn chat []
-  (let [curr-chat-id (:chat-id @(re-frame/subscribe [:chats/current-chat-chat-view]))
-        bottom-space (reagent/atom 0)
+  (let [bottom-space (reagent/atom 0)
         panel-space (reagent/atom 52)
         active-panel (reagent/atom nil)
         position-y (animated/value 0)
@@ -355,48 +354,44 @@
         space-keeper (get-space-keeper-ios bottom-space panel-space active-panel text-input-ref)
         set-active-panel (get-set-active-panel active-panel)
         on-close #(set-active-panel nil)]
-    (reagent/create-class
-     {:component-will-unmount #(re-frame/dispatch-sync [:close-chat curr-chat-id])
-      :component-did-mount (fn [] (js/setTimeout #(re-frame/dispatch [:set :ignore-close-chat false]) 500))
-      :reagent-render
-      (fn []
-        (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as chat}
-              ;;we want to react only on these fields, do not use full chat map here
-              @(re-frame/subscribe [:chats/current-chat-chat-view])
-              max-bottom-space (max @bottom-space @panel-space)]
-          [:<>
-           [connectivity/loading-indicator]
-           (when chat-id
-             (if group-chat
-               [invitation-requests chat-id admins]
-               [add-contact-bar chat-id]))
-           ;;MESSAGES LIST
-           [messages-view {:chat          chat
-                           :bottom-space  max-bottom-space
-                           :pan-responder pan-responder
-                           :space-keeper  space-keeper
-                           :show-input?   show-input?}]
-           (when (and group-chat invitation-admin)
-             [accessory/view {:y               position-y
-                              :on-update-inset on-update}
-              [invitation-bar chat-id]])
-           [components/autocomplete-mentions text-input-ref max-bottom-space]
-           (when show-input?
-             ;; NOTE: this only accepts two children
-             [accessory/view {:y               position-y
-                              :pan-state       pan-state
-                              :has-panel       (boolean @active-panel)
-                              :on-close        on-close
-                              :on-update-inset on-update}
-              [react/view
-               [edit/edit-message-auto-focus-wrapper text-input-ref]
-               [reply/reply-message-auto-focus-wrapper text-input-ref]
-               ;; We set the key so we can force a re-render as
-               ;; it does not rely on ratom but just atoms
-               ^{:key (str @components/chat-input-key "chat-input")}
-               [components/chat-toolbar
-                {:chat-id          chat-id
-                 :active-panel     @active-panel
-                 :set-active-panel set-active-panel
-                 :text-input-ref   text-input-ref}]]
-              [bottom-sheet @active-panel]])]))})))
+    (fn []
+      (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as chat}
+            ;;we want to react only on these fields, do not use full chat map here
+            @(re-frame/subscribe [:chats/current-chat-chat-view])
+            max-bottom-space (max @bottom-space @panel-space)]
+        [:<>
+         [connectivity/loading-indicator]
+         (when chat-id
+           (if group-chat
+             [invitation-requests chat-id admins]
+             [add-contact-bar chat-id]))
+         ;;MESSAGES LIST
+         [messages-view {:chat          chat
+                         :bottom-space  max-bottom-space
+                         :pan-responder pan-responder
+                         :space-keeper  space-keeper
+                         :show-input?   show-input?}]
+         (when (and group-chat invitation-admin)
+           [accessory/view {:y               position-y
+                            :on-update-inset on-update}
+            [invitation-bar chat-id]])
+         [components/autocomplete-mentions text-input-ref max-bottom-space]
+         (when show-input?
+           ;; NOTE: this only accepts two children
+           [accessory/view {:y               position-y
+                            :pan-state       pan-state
+                            :has-panel       (boolean @active-panel)
+                            :on-close        on-close
+                            :on-update-inset on-update}
+            [react/view
+             [edit/edit-message-auto-focus-wrapper text-input-ref]
+             [reply/reply-message-auto-focus-wrapper text-input-ref]
+             ;; We set the key so we can force a re-render as
+             ;; it does not rely on ratom but just atoms
+             ^{:key (str @components/chat-input-key "chat-input")}
+             [components/chat-toolbar
+              {:chat-id          chat-id
+               :active-panel     @active-panel
+               :set-active-panel set-active-panel
+               :text-input-ref   text-input-ref}]]
+            [bottom-sheet @active-panel]])]))))

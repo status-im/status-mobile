@@ -199,15 +199,23 @@
 
 (fx/defn close-chat
   {:events [:close-chat]}
-  [{:keys [db] :as cofx} target-chat-id]
-  (let [chat-id (:current-chat-id db)]
-    (if (:ignore-close-chat db)
-      {:db (dissoc db :ignore-close-chat)}
-      (when (= target-chat-id chat-id)
-        (chat.state/reset-visible-item)
-        (fx/merge cofx
-                  {:db (dissoc db :current-chat-id)}
-                  (offload-messages chat-id))))))
+  [{:keys [db] :as cofx}]
+  (let [chat-id (:current-chat-id db)
+        navigate-after-home-to-chat (:navigate-after-home-to-chat db)]
+    (chat.state/reset-visible-item)
+    (if navigate-after-home-to-chat
+      {:db (dissoc db :navigate-after-home-to-chat)}
+      (fx/merge cofx
+                {:db (dissoc db :current-chat-id)}
+                (offload-messages chat-id)))))
+
+(fx/defn force-close-chat
+  [{:keys [db] :as cofx} chat-id]
+  (do
+    (chat.state/reset-visible-item)
+    (fx/merge cofx
+              {:db (dissoc db :current-chat-id)}
+              (offload-messages chat-id))))
 
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"
@@ -234,19 +242,21 @@
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
   {:events [:chat.ui/navigate-to-chat]}
-  [{db :db :as cofx} chat-id dont-reset?]
-  (fx/merge cofx
-            (close-chat (:current-chat-id db))
-            (fn [{:keys [db]}]
-              {:db (assoc db :current-chat-id chat-id :ignore-close-chat true)})
-            (preload-chat-data chat-id)
-            #(when (group-chat? cofx chat-id)
-               (loading/load-chat % chat-id))
-            #(when-not dont-reset?
-               (navigation/change-tab % :chat))
-            #(when-not dont-reset?
-               (navigation/pop-to-root-tab % :chat-stack))
-            (navigation/navigate-to-cofx :chat nil)))
+  [{db :db :as cofx} chat-id]
+  (let [home-view? (= (get db :view-id) :home)]
+    (fx/merge cofx
+              (close-chat)
+              (force-close-chat chat-id)
+              (fn [{:keys [db]}]
+                {:db (assoc db :current-chat-id chat-id :navigate-after-home-to-chat (not home-view?))})
+              (preload-chat-data chat-id)
+              #(when (group-chat? cofx chat-id)
+                 (loading/load-chat % chat-id))
+              #(when-not home-view?
+                 (navigation/change-tab % :chat))
+              #(when-not home-view?
+                 (navigation/pop-to-root-tab % :chat-stack))
+              (navigation/navigate-to-cofx :chat nil))))
 
 (fx/defn handle-clear-history-response
   {:events [::history-cleared]}
@@ -294,14 +304,11 @@
 
 (fx/defn handle-public-chat-created
   {:events [::public-chat-created]}
-  [{:keys [db]} chat-id {:keys [dont-navigate?]} response]
-  (let [chat (chats-store/<-rpc (first (:chats response)))
-        db-with-chat {:db (-> db
-                              (assoc-in [:chats chat-id] chat)
-                              (update :chats-home-list conj chat-id))}]
-    (if dont-navigate?
-      db-with-chat
-      (assoc db-with-chat :dispatch [:chat.ui/navigate-to-chat chat-id]))))
+  [{:keys [db]} chat-id _ response]
+  {:db (-> db
+           (assoc-in [:chats chat-id] (chats-store/<-rpc (first (:chats response))))
+           (update :chats-home-list conj chat-id))
+   :dispatch [:chat.ui/navigate-to-chat chat-id]})
 
 (fx/defn create-public-chat-go [_ chat-id opts]
   {::json-rpc/call [{:method "wakuext_createPublicChat"
@@ -312,11 +319,10 @@
 (fx/defn start-public-chat
   "Starts a new public chat"
   {:events [:chat.ui/start-public-chat]}
-  [cofx topic {:keys [dont-navigate? profile-public-key] :as opts}]
+  [cofx topic {:keys [profile-public-key] :as opts}]
   (if (or (new-public-chat.db/valid-topic? topic) profile-public-key)
     (if (active-chat? cofx topic)
-      (when-not dont-navigate?
-        (navigate-to-chat cofx topic false))
+      (navigate-to-chat cofx topic)
       (create-public-chat-go
        cofx
        topic

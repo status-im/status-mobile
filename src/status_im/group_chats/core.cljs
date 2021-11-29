@@ -61,7 +61,7 @@
   [cofx {:keys [chat-id invitation-admin chat-name]}]
   (if (get-in cofx [:db :chats chat-id])
     {:dispatch-n [[:accept-all-activity-center-notifications-from-chat chat-id]
-                  [:chat.ui/navigate-to-chat chat-id false]]}
+                  [:chat.ui/navigate-to-chat chat-id]]}
     {::json-rpc/call [{:method     (json-rpc/call-ext-method "createGroupChatFromInvitation")
                        :params     [chat-name chat-id invitation-admin]
                        :js-response true

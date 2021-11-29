@@ -72,7 +72,7 @@
 (fx/defn handle-community-chat [cofx {:keys [chat-id]}]
   (log/info "universal-links: handling community chat" chat-id)
   {:dispatch-n [[:accept-all-activity-center-notifications-from-chat chat-id]
-                [:chat.ui/navigate-to-chat chat-id true]]})
+                [:chat.ui/navigate-to-chat chat-id]]})
 
 (fx/defn handle-public-chat [cofx {:keys [topic]}]
   (log/info "universal-links: handling public chat" topic)
