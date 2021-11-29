@@ -73,6 +73,11 @@ def pytest_addoption(parser):
                      default=None,
                      help='Url or local path to apk for upgrade')
 
+    parser.addoption("--dist",
+                     action="store",
+                     default="loadscope",
+                     help='Url or local path to apk for upgrade')
+
     # chat bot
 
     parser.addoption('--messages_number',
