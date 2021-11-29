@@ -292,17 +292,20 @@ def create_shared_drivers(quantity):
             drivers[i] = driver
         loop = None
     else:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
+        # loop = asyncio.new_event_loop()
+        # asyncio.set_event_loop(loop)
         capabilities = {'maxDuration': 1800}
-        drivers = loop.run_until_complete(start_threads(quantity,
-                                                        Driver,
-                                                        drivers,
-                                                        executor_sauce_lab,
-                                                        update_capabilities_sauce_lab(capabilities)))
+        # drivers = loop.run_until_complete(start_threads(quantity,
+        #                                                 Driver,
+        #                                                 drivers,
+        #                                                 executor_sauce_lab,
+        #                                                 update_capabilities_sauce_lab(capabilities)))
         for i in range(quantity):
-            test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
-            drivers[i].implicitly_wait(implicit_wait)
+            driver = Driver(executor_sauce_lab, update_capabilities_sauce_lab(capabilities))
+            test_suite_data.current_test.testruns[-1].jobs[driver.session_id] = i + 1
+            driver.implicitly_wait(implicit_wait)
+            drivers[i] = driver
+        loop = None
     return drivers, loop
 
 
