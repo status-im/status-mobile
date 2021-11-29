@@ -341,14 +341,20 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
         self.errors = Errors()
 
     def teardown_method(self, method):
+        geth_names, geth_contents = [], []
         for driver in self.drivers:
             try:
                 self.print_sauce_lab_info(self.drivers[driver])
                 self.add_alert_text_to_report(self.drivers[driver])
+                geth_names.append(
+                    '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
+                geth_contents.append(self.pull_geth(self.drivers[driver]))
+
             except (WebDriverException, AttributeError):
                 pass
             finally:
-                self.github_report.save_test(test_suite_data.current_test)
+                geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
+                self.github_report.save_test(test_suite_data.current_test, geth)
 
     @classmethod
     def teardown_class(cls):
