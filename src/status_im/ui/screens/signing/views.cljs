@@ -410,7 +410,7 @@
   [{:keys [from contact amount token cancel?] :as tx}]
   (views/letsubs [fee                   [:signing/fee]
                   sign                  [:signing/sign]
-                  chain                 [:ethereum/chain-keyword]
+                  chain                 [:current-network]
                   {:keys [amount-error gas-error gas-error-state]}
                   [:signing/amount-errors (:address from)]
                   keycard-multiaccount? [:keycard-multiaccount?]

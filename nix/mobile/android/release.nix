@@ -75,7 +75,7 @@ in stdenv.mkDerivation rec {
   BUILD_ENV = buildEnv;
 
   # custom env variables derived from config
-  STATUS_GO_SRC_OVERRIDE = getConfig "nimbus.src-override" null;
+  STATUS_GO_SRC_OVERRIDE = getConfig "status-go.src-override" null;
   ANDROID_APK_SIGNED = getConfig "android.apk-signed" "true";
   ANDROID_ABI_SPLIT = getConfig "android.abi-split" "false";
   ANDROID_ABI_INCLUDE = androidAbiInclude;

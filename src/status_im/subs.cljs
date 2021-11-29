@@ -257,6 +257,11 @@
 (reg-root-key-sub :anon-metrics/data-visible? :anon-metrics/data-visible?)
 (reg-root-key-sub :anon-metrics/learn-more-visible? :anon-metrics/learn-more-visible?)
 
+(reg-root-key-sub :bug-report/description-error :bug-report/description-error)
+(reg-root-key-sub :bug-report/details :bug-report/details)
+
+(reg-root-key-sub :backup/performing-backup :backup/performing-backup)
+
 (re-frame/reg-sub
  :communities
  :<- [:raw-communities]
@@ -505,6 +510,12 @@
    (= 1 chain-id)))
 
 (re-frame/reg-sub
+ :ethereum-network?
+ :<- [:chain-id]
+ (fn [chain-id]
+   (< chain-id 6)))
+
+(re-frame/reg-sub
  :network-name
  :<- [:current-network]
  (fn [network]
@@ -649,9 +660,9 @@
 
 (re-frame/reg-sub
  :ethereum/native-currency
- :<- [:ethereum/chain-keyword]
- (fn [chain-keyword]
-   (tokens/native-currency chain-keyword)))
+ :<- [:current-network]
+ (fn [network]
+   (tokens/native-currency network)))
 
 ;;MULTIACCOUNT ==============================================================================================================
 
@@ -886,6 +897,13 @@
    [(re-frame/subscribe [:communities/community community-id])])
  (fn [[{:keys [categories]}] _]
    categories))
+
+(re-frame/reg-sub
+ :communities/sorted-categories
+ :<- [:communities]
+ (fn [communities [_ id]]
+   (->> (get-in communities [id :categories])
+        (sort-by #(:position (get % 1))))))
 
 (re-frame/reg-sub
  :chats/current-chat-ui-props
@@ -1287,7 +1305,6 @@
 
 (re-frame/reg-sub
  :chats/chat-toolbar
- :<- [:disconnected?]
  :<- [:multiaccounts/login]
  :<- [:chats/sending-image]
  :<- [:mainnet?]
@@ -1295,9 +1312,9 @@
  :<- [:current-chat/metadata]
  :<- [:chats/reply-message]
  :<- [:chats/edit-message]
- (fn [[disconnected? {:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit]]
+ (fn [[{:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit]]
    (let [sending-image (seq sending-image)]
-     {:send          (not (or processing disconnected?))
+     {:send          (not processing)
       :stickers      (and mainnet?
                           (not sending-image)
                           (not reply))
@@ -1759,11 +1776,11 @@
    (get-in wallet [:fetching address :all-fetched?])))
 
 (re-frame/reg-sub
- :wallet/etherscan-link
+ :wallet/chain-explorer-link
  (fn [db [_ address]]
    (let [network (:networks/current-network db)
          link    (get-in config/default-networks-by-id
-                         [network :etherscan-link])]
+                         [network :chain-explorer-link])]
      (when link
        (str link address)))))
 
@@ -1783,12 +1800,12 @@
 
 (re-frame/reg-sub
  :wallet/visible-assets
- :<- [:ethereum/chain-keyword]
+ :<- [:current-network]
  :<- [:wallet/visible-tokens-symbols]
  :<- [:wallet/sorted-tokens]
- (fn [[chain visible-tokens-symbols all-tokens-sorted]]
+ (fn [[network visible-tokens-symbols all-tokens-sorted]]
    (conj (filter #(contains? visible-tokens-symbols (:symbol %)) all-tokens-sorted)
-         (tokens/native-currency chain))))
+         (tokens/native-currency network))))
 
 (re-frame/reg-sub
  :wallet/visible-assets-with-amount
@@ -2091,8 +2108,8 @@
  (fn [[_ _ address] _]
    [(re-frame/subscribe [:wallet.transactions/transactions address])
     (re-frame/subscribe [:ethereum/native-currency])
-    (re-frame/subscribe [:ethereum/chain-keyword])])
- (fn [[transactions native-currency chain-keyword] [_ hash _]]
+    (re-frame/subscribe [:chain-id])])
+ (fn [[transactions native-currency chain-id] [_ hash _]]
    (let [{:keys [gas-used gas-price fee-cap tip-cap hash timestamp type]
           :as transaction}
          (get transactions hash)
@@ -2130,7 +2147,7 @@
                                          (money/fee-value gas-used gas-price)
                                          native-currency-text))
                  :url  (transactions/get-transaction-details-url
-                        chain-keyword
+                        chain-id
                         hash)}))))))
 
 (re-frame/reg-sub
@@ -2178,6 +2195,12 @@
  :wallet.request/transaction
  :<- [:wallet]
  :request-transaction)
+
+(re-frame/reg-sub
+ :wallet/binance-chain?
+ :<- [:current-network]
+ (fn [network]
+   (ethereum/binance-chain-id? (get-in network [:config :NetworkId]))))
 
 ;;UI ==============================================================================================================
 
@@ -2785,11 +2808,11 @@
  :<- [:wallet]
  :<- [:offline?]
  :<- [:wallet/all-tokens]
- :<- [:ethereum/chain-keyword]
+ :<- [:current-network]
  (fn [[{:keys [symbol from to amount-text] :as transaction}
-       wallet offline? all-tokens chain]]
+       wallet offline? all-tokens current-network]]
    (let [balance (get-in wallet [:accounts (:address from) :balance])
-         {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
+         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network symbol)
          {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
          amount  (money/formatted->internal value symbol decimals)
          {:keys [amount-error] :as transaction-new}
@@ -2812,11 +2835,11 @@
  :<- [:wallet]
  :<- [:offline?]
  :<- [:wallet/all-tokens]
- :<- [:ethereum/chain-keyword]
+ :<- [:current-network]
  (fn [[{:keys [symbol from to amount-text] :as transaction}
-       wallet offline? all-tokens chain]]
+       wallet offline? all-tokens current-network]]
    (let [balance (get-in wallet [:accounts (:address from) :balance])
-         {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
+         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network symbol)
          {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
          amount  (money/formatted->internal value symbol decimals)
          {:keys [amount-error] :as transaction-new}

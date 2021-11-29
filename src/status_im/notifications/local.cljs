@@ -66,7 +66,7 @@
                       (get-in tokens/all-tokens-normalized
                               [(keyword chain) (clojure.string/lower-case contract)]
                               default-erc20-token)
-                      (tokens/native-currency (keyword chain)))
+                      (tokens/native-currency network))
         amount      (money/wei->ether (decode/uint value))
         to          (or (:name toAccount) (utils/get-shortened-address to))
         from        (or (:name fromAccount) (utils/get-shortened-address from))

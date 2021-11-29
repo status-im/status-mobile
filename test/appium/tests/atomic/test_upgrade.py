@@ -1,4 +1,5 @@
-from tests import marks, pytest_config_global, test_dapp_name, staging_fleet, mailserver_hk, mailserver_ams, mailserver_gc
+from tests import marks, pytest_config_global, test_dapp_name, staging_fleet, mailserver_hk, mailserver_ams, \
+    mailserver_gc
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import upgrade_users, transaction_recipients, basic_user, ens_user
 from views.sign_in_view import SignInView
@@ -6,6 +7,7 @@ import views.upgrade_dbs.chats.data as chat_data
 import views.upgrade_dbs.dapps.data as dapp_data
 import views.upgrade_dbs.pairing.data as sync_data
 import views.upgrade_dbs.group.data as group
+
 
 @marks.upgrade
 class TestUpgradeApplication(SingleDeviceTestCase):
@@ -29,14 +31,14 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         new_version = profile.app_version_text.text
         if 'release' in pytest_config_global['apk_upgrade']:
             if new_version == old_version:
-                 self.errors.append('Upgraded app version is %s vs base version is %s ' % (new_version, old_version))
+                self.errors.append('Upgraded app version is %s vs base version is %s ' % (new_version, old_version))
 
         home.home_button.click()
 
         home.just_fyi("Check chat previews")
         for chat in chats.keys():
             if 'preview' in chats.keys():
-                actual_chat_preview = home.get_chat(chat).chat_preview
+                actual_chat_preview = home.get_chat(chat).chat_preview.text
                 expected_chat_preview = chats[chat]['preview']
                 if actual_chat_preview != expected_chat_preview:
                     self.errors.append('Expected preview for %s is "%s", in fact "%s"' % (chat, expected_chat_preview, actual_chat_preview))
@@ -72,7 +74,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         public_chat.scroll_to_start_of_history()
         for key in pub_chat_data['preview_messages']:
             home.just_fyi("Checking %s preview case in public chat" % key)
-            data =  pub_chat_data['preview_messages'][key]
+            data = pub_chat_data['preview_messages'][key]
             if not public_chat.element_by_text_part(data['txt']).is_element_displayed():
                 public_chat.element_by_text_part(data['txt']).scroll_to_element()
             message = public_chat.get_preview_message_by_text(data['txt'])
@@ -80,9 +82,10 @@ class TestUpgradeApplication(SingleDeviceTestCase):
                 self.errors.append('Preview message is not shown for %s' % key)
             if 'title' in data:
                 if message.preview_title.text != data['title']:
-                      self.errors.append("Title '%s' does not match expected '%s'" % (message.preview_title.text, data['title']))
+                    self.errors.append(
+                        "Title '%s' does not match expected '%s'" % (message.preview_title.text, data['title']))
                 if message.preview_subtitle.text != data['subtitle']:
-                      self.errors.append("Subtitle '%s' does not match expected '%s'" % (message.preview_subtitle.text, data['subtitle']))
+                    self.errors.append("Subtitle '%s' does not match expected '%s'" % (message.preview_subtitle.text, data['subtitle']))
         home.home_button.click()
 
         home.just_fyi("Checking markdown messages")
@@ -174,7 +177,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         profile = dapps.profile_button.click()
         profile.privacy_and_security_button.click()
         profile.dapp_permissions_button.click()
-        if profile.element_by_text_part( dapp_data.dapps['permissions']['deleted']).is_element_displayed():
+        if profile.element_by_text_part(dapp_data.dapps['permissions']['deleted']).is_element_displayed():
             self.errors.append('Deleted permissions reappear after upgrade!')
         profile.element_by_text(test_dapp_name).click()
         permissions = dapp_data.dapps['permissions']['added'][test_dapp_name]
@@ -220,12 +223,9 @@ class TestUpgradeApplication(SingleDeviceTestCase):
                 self.errors.append('Asset %s was not restored' % asset)
 
         home.just_fyi('Check that can sign transaction in STT from wallet')
-        wallet.accounts_status_account.click()
         transaction_amount = wallet.get_unique_amount()
-        wallet.send_transaction(amount=transaction_amount, asset_name='STT',
-                                     sign_transaction=True,
-                                     keycard=True,
-                                     recipient=transaction_recipients['I']['address'])
+        wallet.send_transaction(amount=transaction_amount, asset_name='STT', sign_transaction=True, keycard=True,
+                                recipient=transaction_recipients['I']['address'])
         self.network_api.find_transaction_by_unique_amount(user['address'], transaction_amount, token=True)
 
         wallet.just_fyi('Check that transaction is appeared in transaction history')
@@ -240,6 +240,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         send_transaction.sign_transaction(keycard=True)
         send_transaction.sign_transaction(keycard=True)
         self.errors.verify_no_errors()
+
 
 @marks.upgrade
 class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
@@ -284,7 +285,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
             if key == 'outgoing_STT_sign':
                 chat.swipe_up()
                 if not message.sign_and_send.is_element_displayed():
-                     self.errors.append('No "sign and send" option is shown for %s' % key)
+                    self.errors.append('No "sign and send" option is shown for %s' % key)
         chat.home_button.click()
 
         device_2.just_fyi("Create upgraded and non-upgraded app can exchange messages")
@@ -335,7 +336,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
                 self.error.append("Synced public chat '%s' is not shown on secondary device after upgrade!" % chat)
 
         device_1.just_fyi("Pairing: check that can send messages to chats and they will appear on secondary device")
-        main_1_1, secondary_1_1, group = synced['ens'], synced['username_ens'], sync_data.chats['group']
+        main_1_1, secondary_1_1, group_name = synced['ens'], synced['username_ens'], sync_data.chats['group']
         message = 'Device pairing check'
         device_1.home_button.click()
         chat_1 = home_1.get_chat(main_1_1).click()
@@ -343,14 +344,16 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         home_2.get_chat(secondary_1_1).wait_for_visibility_of_element()
         chat_2 = home_2.get_chat(secondary_1_1).click()
         if not chat_2.chat_element_by_text(message).is_element_displayed():
-            self.error.append("Message in 1-1 chat does not appear on device 2 after sending from main device after upgrade")
+            self.error.append(
+                "Message in 1-1 chat does not appear on device 2 after sending from main device after upgrade")
         [chat.home_button.click() for chat in (chat_1, chat_2)]
-        chat_1 = home_1.get_chat(group).click()
+        chat_1 = home_1.get_chat(group_name).click()
         chat_1.send_message(message)
-        home_2.get_chat(group).wait_for_visibility_of_element()
-        chat_2 = home_2.get_chat(group).click()
+        home_2.get_chat(group_name).wait_for_visibility_of_element()
+        chat_2 = home_2.get_chat(group_name).click()
         if not chat_2.chat_element_by_text(message).is_element_displayed():
-            self.error.append("Message in group chat does not appear on device 2 after sending from main device after upgrade")
+            self.error.append(
+                "Message in group chat does not appear on device 2 after sending from main device after upgrade")
         [chat.home_button.click() for chat in (chat_1, chat_2)]
 
         device_1.just_fyi("Pairing: add public chat and check it will appear on secondary device")
@@ -375,7 +378,8 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
                 "Message in new 1-1 chat does not appear on device 2 after sending from main device after upgrade")
 
         device_2.just_fyi("Pairing: check that contacts/nicknames are synced")
-        synced_secondary = {synced['nickname'], synced['username_nickname'], synced['username_ens'], added['name'], added['username']}
+        synced_secondary = {synced['nickname'], synced['username_nickname'], synced['username_ens'], added['name'],
+                            added['username']}
         profile_2 = chat_2.profile_button.click()
         profile_2.contacts_button.click()
         for username in synced_secondary:
@@ -399,17 +403,18 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
             device.sign_in()
 
         home_1.just_fyi("Check that all group chats are preserved after upgrade")
-        names = [sub["name"] for sub in (group.main, group.empty_invite, group.make_admin, group.to_join, group.to_remove)]
+        names = [sub["name"] for sub in
+                 (group.main, group.empty_invite, group.make_admin, group.to_join, group.to_remove)]
         for home in home_1, home_2:
             for name in names:
                 if not home.get_chat(name).is_element_displayed():
                     self.errors.append("%s is not shown on device %s" % (name, home.driver.number))
-        if  home_2.element_by_text(group.to_delete['name']).is_element_displayed():
+        if home_2.element_by_text(group.to_delete['name']).is_element_displayed():
             self.errors.append("Deleted group chat reappeared after upgrade")
 
         home_1.just_fyi("Check messages in main group chat and resolved ENS")
         chat_name, messages = group.main["name"], group.main["messages"]
-        [chat_1, chat_2]= [home.get_chat(chat_name).click() for home in (home_1, home_2)]
+        [chat_1, chat_2] = [home.get_chat(chat_name).click() for home in (home_1, home_2)]
         for chat in [chat_1, chat_2]:
             if not chat.chat_element_by_text(messages["text"]).is_element_displayed():
                 self.errors.append("Text message in group chat is not shown after upgrade")
@@ -457,7 +462,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         admins = chat_1.element_by_text('Admin').find_elements()
         if len(admins) != 2:
             self.errors.append('Not 2 admins in group chat')
-        [chat.home_button.double_click()for chat in [chat_1, chat_2]]
+        [chat.home_button.double_click() for chat in [chat_1, chat_2]]
 
         home_1.just_fyi("Check that can see invite and pending membership request after upgrade")
         chat_name = group.empty_invite['name']
@@ -483,7 +488,6 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         profile_2 = home_2.profile_button.click()
         public_key_2, username_2 = profile_2.get_public_key_and_username(return_username=True)
 
-
         device_1.just_fyi("Activity centre: send message to 1-1 and invite member to group chat")
         chat_1 = home_1.add_contact(public_key_2, add_in_contacts=False)
         message = home_1.get_random_message()
@@ -499,7 +503,8 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         device_1.just_fyi("Check status")
         timeline = home_1.status_button.click()
         statuses = group.timeline
-        for element in timeline.element_by_text(statuses['text']), timeline.image_message_in_chat, timeline.element_by_text(statuses['link']):
+        for element in timeline.element_by_text(
+                statuses['text']), timeline.image_message_in_chat, timeline.element_by_text(statuses['link']):
             if not element.is_element_displayed():
                 self.errors.append("Status is not shown after upgrade!")
         timeline.element_by_text(statuses['link']).click()

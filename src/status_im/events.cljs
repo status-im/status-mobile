@@ -7,6 +7,7 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]
             status-im.utils.logging.core
+            status-im.backup.core
             [status-im.wallet.core :as wallet]
             [status-im.keycard.core :as keycard]
             [status-im.utils.dimensions :as dimensions]

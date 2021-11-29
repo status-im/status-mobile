@@ -53,7 +53,7 @@
 
 (fx/defn process
   {:events [:signals/signal-received]}
-  [cofx event-str]
+  [{:keys [db] :as cofx} event-str]
   ;; We only convert to clojure when strictly necessary or we know it
   ;; won't impact performance, as it is a fairly costly operation on large-ish
   ;; data structures
@@ -62,6 +62,7 @@
         type (.-type data)]
     (case type
       "node.login"         (status-node-started cofx (js->clj event-js :keywordize-keys true))
+      "backup.performed"   {:db (assoc-in db [:multiaccount :last-backup] (.-lastBackup event-js))}
       "envelope.sent"      (transport.message/update-envelopes-status cofx (:ids (js->clj event-js :keywordize-keys true)) :sent)
       "envelope.expired"   (transport.message/update-envelopes-status cofx (:ids (js->clj event-js :keywordize-keys true)) :not-sent)
       "message.delivered"  (let [{:keys [chatID messageID]} (js->clj event-js :keywordize-keys true)]

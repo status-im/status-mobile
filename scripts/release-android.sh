@@ -26,9 +26,6 @@ config=''
 if [[ -n "${STATUS_GO_SRC_OVERRIDE}" ]]; then
   config+="status-im.status-go.src-override=\"${STATUS_GO_SRC_OVERRIDE}\";"
 fi
-if [[ -n "${NIMBUS_SRC_OVERRIDE}" ]]; then
-  config+="status-im.nimbus.src-override=\"${NIMBUS_SRC_OVERRIDE}\";"
-fi
 if [[ "${ANDROID_APK_SIGNED}" == "true" ]]; then
   config+="status-im.android.keystore-path=\"$(must_get_env KEYSTORE_PATH)\";"
 fi

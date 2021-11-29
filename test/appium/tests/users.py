@@ -16,20 +16,31 @@ ens_user['ens_upgrade'] = 'statuse2e'
 ens_user['ens_another'] = 'status-another-ens-e2e.eth'
 ens_user['address'] = '0x1eE3058Bd300246B4B20E687Efc9Eba81FF7814b'
 
+user_mainnet = dict()
+user_mainnet['passphrase'] = "gallery zoo inspire work used slush deliver surface adjust struggle lazy virtual"
+user_mainnet['mainnet'] = {
+    'ETH': 0.000372125264,
+    'SNT': 60,
+    'DGD': 0.00001
+}
+user_mainnet['xdai'] = '0.0002 xDAI'
+user_mainnet['bsc'] = '0.00001 BNB'
+
 ens_user_ropsten = dict()
 ens_user_ropsten['ens'] = 'nastya'
 ens_user_ropsten['username'] = 'Thoughtful Stupendous Graywolf'
 ens_user_ropsten['address'] = '0x58d8c3D70ce4FA4b9fb10a665C8712238746F2ff'
-ens_user_ropsten['public_key']  = '0x045efbcc044e5ae21ac3cf111ea6df6186e0cc50a2cd747f52a56d19ce516e683c66cb47f4b0a211108' \
-                                  '59aea9592dfba1e0bf4af11ff3eab995f844b3673643bf1'
+ens_user_ropsten['public_key'] = '0x045efbcc044e5ae21ac3cf111ea6df6186e0cc50a2cd747f52a56d19ce516e683c66cb47f4b0a211108' \
+                                 '59aea9592dfba1e0bf4af11ff3eab995f844b3673643bf1'
 
 ens_user_message_sender = dict()
 ens_user_message_sender['ens'] = 'ensmessenger'
 ens_user_message_sender['username'] = 'Glaring Plush Arkshell'
 ens_user_message_sender['passphrase'] = 'tribe life dune clog throw situate robust gospel panic blanket timber eagle'
 ens_user_message_sender['address'] = '0x75fF623fe856012b0667876582038A63F4004184'
-ens_user_message_sender['public_key']  = '0x0471e18b2a9867161383919d85741389a829299ae0833c23e003818c1222942f5dddcbb792daee7c88' \
-                                 'e8a30ee44c00d03240a971d90d76ed8200b75572241da9ef'
+ens_user_message_sender[
+    'public_key'] = '0x0471e18b2a9867161383919d85741389a829299ae0833c23e003818c1222942f5dddcbb792daee7c88' \
+                    'e8a30ee44c00d03240a971d90d76ed8200b75572241da9ef'
 
 dummy_user = dict()
 dummy_user['username'] = "Vain Wordy Hagfish"
@@ -44,7 +55,7 @@ upgrade_users['chats'] = dict()
 upgrade_users['chats']['passphrase'] = 'identify level pink lift choose winner hour onion style festival rather salmon'
 upgrade_users['chats']['public_key'] = '0x045d8a344ffee0c5ce187d0248a9b8ffc4a12493c9d9e8b9a395f38' \
                                        '825ebe55ac2350d9e7090e39e6c8d7020aaa799aefe563f1db5b6151370eae246558772ad9e'
-upgrade_users['chats']['username']= 'Rapid Gleeful Cheetah'
+upgrade_users['chats']['username'] = 'Rapid Gleeful Cheetah'
 
 wallet_users = dict()
 
@@ -61,7 +72,6 @@ wallet_users['B']['username'] = "Bulky Able Firecrest"
 wallet_users['B']['address'] = "0F3EFF5CacEe63045be97281316457fb78dd659E"
 wallet_users['B']['public_key'] = "0x04f3c372522a087bd6895a67b669601e6b6825b2ee7add5942d10efd1c3c836a1d9a677d94d33" \
                                   "895833b6ebe523f0fe5965f73558da58520a3f9c7a00e73f75d61"
-
 
 wallet_users['C'] = dict()
 wallet_users['C']['passphrase'] = "purchase ensure mistake crystal person similar shaft family shield clog risk market"
@@ -85,10 +95,10 @@ wallet_users['E']['address'] = "0x3e2e4077753d3c229a9ae332b9ca46958945e2f6"
 wallet_users['E']['public_key'] = "0x044cf0620ec3ea0aba9fb0e19cb42a6fbd6b4e74f234f0da82580564817b238cc6434745d31" \
                                   "fa1649927ba48adfa7c95991fd51940bc00a71e80b095db5b107f1b"
 wallet_users['E']['collectibles'] = {
-    'Coins & Steel Exclusive Item Skin V2' : '1',
-    'Coins & Steel Founder Aura' : '2',
-    'CryptoKittiesRinkeby' : '2',
-    'KudosToken V7' : '1',
+    'Coins & Steel Exclusive Item Skin V2': '1',
+    'Coins & Steel Founder Aura': '2',
+    'CryptoKittiesRinkeby': '2',
+    'KudosToken V7': '1',
 }
 wallet_users['F'] = dict()
 wallet_users['F']['passphrase'] = "jazz human replace save wreck merry evolve oval black expose clutch sword"
@@ -96,7 +106,6 @@ wallet_users['F']['username'] = "Dual Sour Galapagostortoise"
 wallet_users['F']['address'] = "0x8A4339aE98df2B2e51E37631C8B4F853048D4556"
 wallet_users['F']['public_key'] = "0x049d0b39d95b20114fac79c3173a36c60a126c060dce52bba4128ab9a3885f0f058f2af9c92099" \
                                   "315eb564412b718d8bfe697a4425e4bc603063abd4f5c45f8e57"
-
 
 # Users used in chats. E.g. as members of a group chat
 chat_users = dict()
@@ -148,7 +157,8 @@ transaction_senders['D']['public_key'] = "0x044764a9ba22bb4ae355619ca3824ee66b9f
                                          "d0dd570471986c229c077c8053ee47784416eb6604d52e41f8f9d566ef8"
 
 transaction_senders['E'] = dict()
-transaction_senders['E']['passphrase'] = "sea ill guard bounce gesture tomato walnut fitness plastic affair oven transfer"
+transaction_senders['E'][
+    'passphrase'] = "sea ill guard bounce gesture tomato walnut fitness plastic affair oven transfer"
 transaction_senders['E']['username'] = "Fatal Metallic Imperialeagle"
 transaction_senders['E']['address'] = "f7cb60839c0de25e37be0391c33bb34a8f0f8414"
 transaction_senders['E']['public_key'] = "0x04db6128352e5c2d05ee5a6556848453cf3a7af34e94b3e20a302de684e9906461e38adf" \
@@ -367,12 +377,12 @@ transaction_recipients['J']['public_key'] = "0x04e7e481932714c1a13ffb29fc79446ee
                                             "7a80804ff59a750693492a65be9682d0b850b4080d976cf9e43ff37ec841"
 
 transaction_recipients['K'] = dict()
-transaction_recipients['K']['passphrase'] = "core orphan clerk involve trade admit exhibit valid short canvas disorder world"
+transaction_recipients['K'][
+    'passphrase'] = "core orphan clerk involve trade admit exhibit valid short canvas disorder world"
 transaction_recipients['K']['username'] = "Upright Authorized Waterstrider"
 transaction_recipients['K']['address'] = "0x6a1aC3a7a5A064FF6E0f169E0d384703245556b4"
 transaction_recipients['K']['public_key'] = "0x04d1c98a6e25a7ea0241349a41709c5dc51c7c1d59224076d13d1ebe16671eedc8f" \
                                             "3b23ab95db679a9124752ed77339424034fd9a12f0184894c0d7a25710d2f3c"
-
 
 recovery_users = {
     "radar blur cabbage chef fix engine embark joy scheme fiction master release":

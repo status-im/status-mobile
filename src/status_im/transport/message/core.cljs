@@ -216,7 +216,7 @@
                                                  [{:ms 100 :dispatch [:process-statuses statuses]}])
                                                (when (seq transactions)
                                                  (for [transaction-hash transactions]
-                                                   {:ms 100 :dispatch [:watch-tx transaction-hash]})))}
+                                                   {:ms 100 :dispatch [:watch-tx nil transaction-hash]})))}
                 (process-response response-js process-async)))))
 
 (fx/defn remove-hash

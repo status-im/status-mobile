@@ -3,6 +3,7 @@ from views.base_element import Text, SilentButton
 from views.base_element import Button, EditBox
 from views.base_view import BaseView
 
+
 class AmountEditBox(EditBox, Button):
     def __init__(self, driver):
         super(AmountEditBox, self).__init__(driver, accessibility_id="amount-input")
@@ -21,7 +22,6 @@ class ChooseRecipientButton(Button):
         return self.navigate()
 
 
-
 class UpdateFeeButton(Button):
     def __init__(self, driver):
         super(UpdateFeeButton, self).__init__(driver, translation_id="update")
@@ -35,7 +35,8 @@ class UpdateFeeButton(Button):
 
 class ValidationErrorOnSendTransaction(Button):
     def __init__(self, driver, field):
-        super(ValidationErrorOnSendTransaction, self).__init__(driver, xpath="//*[@text='%s']/../*[@content-desc='icon']" % field)
+        super(ValidationErrorOnSendTransaction, self).__init__(driver,
+                                                               xpath="//*[@text='%s']/../*[@content-desc='icon']" % field)
 
 
 class NotEnoughEthForGas(Text):
@@ -50,7 +51,9 @@ class ValidationWarnings(object):
 
 class SignWithKeycardButton(Button):
     def __init__(self, driver):
-        super(SignWithKeycardButton, self).__init__(driver, xpath="//*[contains(@text,'%s')]" % self.get_translation_by_key("sign-with"))
+        super(SignWithKeycardButton, self).__init__(driver,
+                                                    xpath="//*[contains(@text,'%s')]" % self.get_translation_by_key(
+                                                        "sign-with"))
 
     def navigate(self):
         from views.keycard_view import KeycardView
@@ -72,21 +75,23 @@ class SendTransactionView(BaseView):
         self.scan_qr_code_button = Button(self.driver, accessibility_id="scan-contact-code-button")
         self.enter_recipient_address_input = EditBox(self.driver, accessibility_id="recipient-address-input")
         self.first_recipient_button = Button(self.driver, accessibility_id="chat-icon")
-        self.enter_recipient_address_text = Text(self.driver, xpath="//*[@content-desc='choose-recipient-button']//android.widget.TextView")
+        self.enter_recipient_address_text = Text(self.driver,
+                                                 xpath="//*[@content-desc='choose-recipient-button']//android.widget.TextView")
 
         self.recent_recipients_button = Button(self.driver, translation_id="recent-recipients")
         self.amount_edit_box = AmountEditBox(self.driver)
         self.set_max_button = Button(self.driver, translation_id="set-max")
-        self.validation_error_element = Text(self.driver, xpath="//*[@content-desc='custom-gas-fee']/../android.view.ViewGroup//*[@content-desc='icon']")
+        self.validation_error_element = Text(self.driver,
+                                             xpath="//*[@content-desc='custom-gas-fee']/../android.view.ViewGroup//*[@content-desc='icon']")
 
         # Network fee elements
         self.network_fee_button = Button(self.driver, accessibility_id="custom-gas-fee")
         self.gas_limit_input = EditBox(self.driver, accessibility_id="gas-amount-limit")
         self.per_gas_tip_limit_input = EditBox(self.driver, accessibility_id="per-gas-tip-limit")
         self.per_gas_price_limit_input = EditBox(self.driver, accessibility_id="per-gas-price-limit")
-        self.max_fee_text = Text(self.driver, xpath='//*[@text="Maximum fee:"]/following-sibling::android.widget.TextView[1]')
+        self.max_fee_text = Text(self.driver,
+                                 xpath='//*[@text="Maximum fee:"]/following-sibling::android.widget.TextView[1]')
         self.save_fee_button = Button(self.driver, accessibility_id="save-fees")
-
 
         self.sign_transaction_button = Button(self.driver, accessibility_id="send-transaction-bottom-sheet")
         self.sign_with_keycard_button = SignWithKeycardButton(self.driver)
@@ -98,7 +103,8 @@ class SendTransactionView(BaseView):
 
         self.select_asset_button = Button(self.driver, accessibility_id="choose-asset-button")
         self.asset_text = Text(self.driver, xpath="//*[@content-desc='choose-asset-button']//android.widget.TextView")
-        self.recipient_text = Text(self.driver, xpath="//*[@content-desc='choose-recipient-button']//android.widget.TextView")
+        self.recipient_text = Text(self.driver,
+                                   xpath="//*[@content-desc='choose-recipient-button']//android.widget.TextView")
 
         self.share_button = Button(self.driver, accessibility_id="share-address-button")
 
@@ -116,6 +122,10 @@ class SendTransactionView(BaseView):
         self.new_favorite_name_input = EditBox(self.driver, accessibility_id="fav-name")
         self.new_favorite_add_favorite = Button(self.driver, accessibility_id="add-fav")
 
+        # Transaction management
+        self.advanced_button = Button(self.driver, translation_id="advanced")
+        self.nonce_input = EditBox(self.driver, accessibility_id="nonce")
+        self.nonce_save_button = Button(self.driver, accessibility_id="save-nonce")
 
     def set_recipient_address(self, address):
         self.driver.info("Setting recipient address to '%s'" % address)
@@ -124,8 +134,8 @@ class SendTransactionView(BaseView):
         self.enter_recipient_address_input.click()
         self.done_button.click_until_absense_of_element(self.done_button)
 
-    def sign_transaction(self, sender_password: str = common_password, keycard=False):
-        self.driver.info("## Signing transaction, (keycard: %s)" % str(keycard), device=False)
+    def sign_transaction(self, sender_password: str = common_password, keycard=False, error=False):
+        self.driver.info("Signing transaction, (keycard: %s)" % str(keycard), device=False)
         if self.sign_in_phrase.is_element_displayed(30):
             self.set_up_wallet_when_sending_tx()
         if keycard:
@@ -136,11 +146,15 @@ class SendTransactionView(BaseView):
             self.enter_password_input.send_keys(sender_password)
             self.sign_button.click_until_absense_of_element(self.sign_button)
         self.ok_button.wait_for_element(120)
-        if self.element_by_text_part('Transaction failed').is_element_displayed():
-            self.driver.fail('Transaction failed')
+        error_text = ''
+        if error:
+            error_text = Text(self.driver, id='android:id/message').text
+        else:
+            if self.element_by_text_part('Transaction failed').is_element_displayed():
+                self.driver.fail('Transaction failed')
         self.driver.info("## Transaction is signed!", device=False)
         self.ok_button.click()
-
+        return error_text
 
     @staticmethod
     def get_formatted_recipient_address(address):
@@ -148,11 +162,13 @@ class SendTransactionView(BaseView):
 
     def get_username_in_transaction_bottom_sheet_button(self, username_part):
         self.driver.info("Getting username by '%s' in transaction fee bottom sheet" % username_part)
-        return SilentButton(self.driver, xpath="//*[@content-desc='amount-input']/..//*[starts-with(@text,'%s')]" % username_part)
+        return SilentButton(self.driver,
+                            xpath="//*[@content-desc='amount-input']/..//*[starts-with(@text,'%s')]" % username_part)
 
     def get_account_in_select_account_bottom_sheet_button(self, account_name):
         self.driver.info("Getting account by '%s' in transaction fee bottom sheet" % account_name)
-        return SilentButton(self.driver, translation_id="select-account", suffix="/..//*[starts-with(@text,'%s')]" % account_name)
+        return SilentButton(self.driver, translation_id="select-account",
+                            suffix="/..//*[starts-with(@text,'%s')]" % account_name)
 
     def get_validation_icon(self, field='Network fee'):
         return ValidationErrorOnSendTransaction(self.driver, field)
@@ -162,14 +178,13 @@ class SendTransactionView(BaseView):
         data = {
             'amount': self.amount_edit_box.text,
             'asset': self.asset_text.text,
-            'address':  self.enter_recipient_address_text.text
+            'address': self.enter_recipient_address_text.text
         }
         return data
 
     def get_network_fee_from_bottom_sheet(self):
         self.driver.info("Getting network fee from send transaction bottom sheet")
         return Text(self.driver, xpath="//*[@content-desc='custom-gas-fee']/android.widget.TextView[1]").text[0:-9]
-
 
     def add_to_favorites(self, name):
         self.driver.info("Adding '%s' to favorite recipients" % name)

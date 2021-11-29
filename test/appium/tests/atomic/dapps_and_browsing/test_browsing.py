@@ -48,7 +48,6 @@ class TestBrowsing(SingleDeviceTestCase):
         if not element_on_start_page.is_element_displayed(30):
             self.driver.fail("Page failed to be refreshed")
 
-
     @marks.testrail_id(6210)
     @marks.high
     def test_open_blocked_secure_not_secure_inlalid_offline_urls(self):
@@ -71,7 +70,8 @@ class TestBrowsing(SingleDeviceTestCase):
 
         dapp.just_fyi('Checking connection is not secure warning')
         web_page = dapp.open_url('http://www.dvwa.co.uk')
-        web_page.url_edit_box_lock_icon.click_until_presence_of_element(web_page.element_by_translation_id("browser-not-secure"))
+        web_page.url_edit_box_lock_icon.click_until_presence_of_element(
+            web_page.element_by_translation_id("browser-not-secure"))
         dapp_detail.open_tabs_button.click()
         dapp_detail.empty_tab_button.click()
 
@@ -79,7 +79,8 @@ class TestBrowsing(SingleDeviceTestCase):
             dapp.just_fyi('Checking connection is secure for %s' % url)
             web_page = dapp.open_url(url)
             web_page.wait_for_d_aap_to_load()
-            web_page.url_edit_box_lock_icon.click_until_presence_of_element(web_page.element_by_translation_id("browser-secure"))
+            web_page.url_edit_box_lock_icon.click_until_presence_of_element(
+                web_page.element_by_translation_id("browser-secure"))
             dapp_detail.open_tabs_button.click()
             dapp_detail.empty_tab_button.click()
 
@@ -111,7 +112,7 @@ class TestBrowsing(SingleDeviceTestCase):
         urls = {
             'google.com': 'Google',
             'status.im': 'Status - Private',
-            'bbc.com' : 'bbc.com'
+            'bbc.com': 'bbc.com'
         }
         for url in urls:
             browsing_view = dapp_view.open_url(url)
@@ -123,7 +124,7 @@ class TestBrowsing(SingleDeviceTestCase):
         home_view.dapp_tab_button.click()
         browsing_view.open_tabs_button.click()
         if browsing_view.element_by_text_part(urls['bbc.com']).is_element_displayed():
-             self.errors.append('Closed tab is present after re-login')
+            self.errors.append('Closed tab is present after re-login')
 
         home_view.just_fyi('Close all tabs via "Close all", relogin and check that it is not reappearing')
         browsing_view.close_all_button.click()
@@ -207,7 +208,7 @@ class TestBrowsing(SingleDeviceTestCase):
         profile.dapp_permissions_button.click()
         if not profile.element_by_text('wikipedia.org').is_element_displayed():
             self.errors.append("Permissions are not granted")
-        profile.dapp_tab_button.click(desired_element_text = wiki_texts[0])
+        profile.dapp_tab_button.click(desired_element_text=wiki_texts[0])
         browsing.options_button.click()
         browsing.connected_account_button.click()
         browsing.element_by_translation_id("revoke-access").click()
@@ -215,12 +216,12 @@ class TestBrowsing(SingleDeviceTestCase):
         if not browsing.connect_account_button.is_element_displayed():
             self.errors.append("Permission for account is not removed if using 'Revoke access' from dapp view")
         browsing.click_system_back_button()
-        browsing.profile_button.click(desired_element_text = 'DApp permissions')
+        browsing.profile_button.click(desired_element_text='DApp permissions')
         if profile.element_by_text('wikipedia.org').is_element_displayed():
             self.errors.append("Permissions are not revoked")
 
         web_view.just_fyi("Check that can open chat view and send some message")
-        profile.dapp_tab_button.click(desired_element_text = wiki_texts[0])
+        profile.dapp_tab_button.click(desired_element_text=wiki_texts[0])
         browsing.options_button.click()
         browsing.open_chat_from_dapp_button.click()
         public_chat = browsing.get_chat_view()
@@ -228,7 +229,7 @@ class TestBrowsing(SingleDeviceTestCase):
             self.driver.fail("No redirect to public chat")
         message = public_chat.get_random_message()
         public_chat.send_message(message)
-        public_chat.dapp_tab_button.click(desired_element_text = wiki_texts[0])
+        public_chat.dapp_tab_button.click(desired_element_text=wiki_texts[0])
         browsing.options_button.click()
         browsing.open_chat_from_dapp_button.click()
         if not public_chat.chat_element_by_text(message).is_element_displayed():
@@ -243,7 +244,7 @@ class TestBrowsing(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    #TODO: waiting mode
+    # TODO: waiting mode (rechecked 23.11.21, valid)
     @marks.testrail_id(6300)
     @marks.skip
     @marks.medium
@@ -285,26 +286,27 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5456)
     @marks.medium
-    @marks.skip
-    # Decicded to leave for manual testing, as there is no simple way of comparing images depending on phone brightness
     def test_can_access_images_by_link(self):
         urls = {
             'https://cdn.dribbble.com/users/45534/screenshots/3142450/logo_dribbble.png':
-                'url_1.png',
+                'url1.png',
             'https://thebitcoinpub-91d3.kxcdn.com/uploads/default/original/2X/d/db97611b41a96cb7642b06636b82c0800678b140.jpg':
-                'url_2.png',
+                'url2.png',
             'https://steemitimages.com/DQmYEjeBuAKVRa3b3ZqwLicSHaPUm7WFtQqohGaZdA9ghjx/images%20(4).jpeg':
-                'url_3.png'
+                'url3.png'
         }
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
         dapp_view = home_view.dapp_tab_button.click()
+        from views.web_views.base_web_view import BaseWebView
+        base_web = BaseWebView(self.driver)
         for url in urls:
             self.driver.set_clipboard_text(url)
             dapp_view.enter_url_editbox.click()
             dapp_view.paste_text()
             dapp_view.confirm()
-            if not dapp_view.web_page.is_element_image_equals_template(urls[url]):
+            base_web.wait_for_d_aap_to_load(20)
+            if dapp_view.web_page.is_element_differs_from_template(urls[url], 5):
                 self.errors.append('Web page does not match expected template %s' % urls[url])
-            dapp_view.cross_icon.click()
+            base_web.browser_previous_page_button.click_until_presence_of_element(dapp_view.enter_url_editbox)
         self.errors.verify_no_errors()

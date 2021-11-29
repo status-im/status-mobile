@@ -47,6 +47,8 @@ This way your shell and all other nix commands should run in a setup that is tai
 
 For valid values you can check the [`nix/shells.nix`](/nix/shells.nix) file.
 
+:warning: __WARNING__: To have Nix pick up all changes a new `nix-shell` needs to be spawned.
+
 ## Using a local status-go repository
 
 If you need to use a locally checked-out status-go repository, you can achieve that by defining the `STATUS_GO_SRC_OVERRIDE`

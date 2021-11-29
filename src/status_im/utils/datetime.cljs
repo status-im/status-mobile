@@ -140,6 +140,20 @@
         int
         (format-time-ago unit))))
 
+(defn time-ago-long [time]
+  (let [seconds-ago (seconds-ago time)
+        unit (first (drop-while #(and (>= seconds-ago (:limit %))
+                                      (:limit %))
+                                units))
+        diff  (-> (/ seconds-ago (:in-second unit))
+                  Math/floor
+                  int)
+
+        name (label-pluralize diff (:name unit))]
+    (label :t/datetime-ago-format {:ago (label :t/datetime-ago)
+                                   :number diff
+                                   :time-intervals name})))
+
 (defn to-date [ms]
   (from-long ms))
 

@@ -101,17 +101,21 @@
   (views/letsubs [{:keys [tokens]} [:wallet/visible-assets-with-values address]
                   currency [:wallet/currency]
                   opensea-enabled? [:opensea-enabled?]
-                  collectible-collection [:wallet/collectible-collection address]]
+                  collectible-collection [:wallet/collectible-collection address]
+                  mainnet? [:mainnet?]
+                  ethereum-network? [:ethereum-network?]]
     (let [{:keys [tab]} @state]
       [react/view {:flex 1}
        [react/view {:flex-direction :row :margin-bottom 8 :padding-horizontal 4}
         [tabs/tab-title state :assets (i18n/label :t/wallet-assets) (= tab :assets)]
-        [tabs/tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)]
+        (when ethereum-network?
+          [tabs/tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)])
         [tabs/tab-title state :history (i18n/label :t/history) (= tab :history)]]
        (cond
          (= tab :assets)
          [:<>
-          [buy-crypto/banner]
+          (when mainnet?
+            [buy-crypto/banner])
           (for [item tokens]
             ^{:key (:name item)}
             [accounts/render-asset item nil nil (:code currency)])]

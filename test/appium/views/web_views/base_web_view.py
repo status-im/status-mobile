@@ -3,6 +3,7 @@ import time
 from views.base_element import EditBox, Button, BaseElement
 from views.base_view import BaseView
 
+
 class BaseWebView(BaseView):
 
     def __init__(self, driver):
@@ -10,7 +11,8 @@ class BaseWebView(BaseView):
 
         self.progress_bar_icon = Button(self.driver, xpath="//android.widget.ProgressBar")
         self.url_edit_box_lock_icon = Button(self.driver, xpath="'(//android.view.ViewGroup[@content-desc='icon'])[2]")
-        self.policy_summary = Button(self.driver, xpath="//*[@content-desc='Status Privacy Policy'] | //*[@text='Status Privacy Policy']")
+        self.policy_summary = Button(self.driver,
+                                     xpath="//*[@content-desc='Status Privacy Policy'] | //*[@text='Status Privacy Policy']")
         self.terms_of_use_summary = Button(self.driver, xpath="//*[@content-desc='Status App Terms of Use']")
 
         self.browser_previous_page_button = Button(self.driver, accessibility_id="previous-page-button")
@@ -39,7 +41,7 @@ class BaseWebView(BaseView):
         self.save_bookmark_button = Button(self.driver, accessibility_id="save-bookmark")
 
     def wait_for_d_aap_to_load(self, wait_time=35):
-        self.driver.info("**Waiting %ss for dapp to load**" % wait_time)
+        self.driver.info("Waiting %ss for dapp to load" % wait_time)
         counter = 0
         while self.progress_bar_icon.is_element_present(5):
             time.sleep(1)
@@ -48,7 +50,7 @@ class BaseWebView(BaseView):
                 self.driver.fail("Page is not loaded during %s seconds" % wait_time)
 
     def open_in_webview(self):
-        self.driver.info("**Opening in webview**")
+        self.driver.info("Opening in webview")
         if self.web_view_browser.is_element_displayed():
             self.web_view_browser.click()
         if self.always_button.is_element_displayed():
@@ -57,22 +59,23 @@ class BaseWebView(BaseView):
     def remove_tab(self, name='', clear_all=False):
         self.open_tabs_button.click()
         if clear_all:
-            self.driver.info("**Closing all tabs**")
+            self.driver.info("Closing all tabs")
             self.close_all_button.click()
         else:
-            self.driver.info("**Removing '%s' from recent websites**")
-            close_button = Button(self.driver, xpath="//*[contains(@text, '%s')]/../../../../*[@content-desc='empty-tab']"% name)
+            self.driver.info("Removing '%s' from recent websites")
+            close_button = Button(self.driver,
+                                  xpath="//*[contains(@text, '%s')]/../../../../*[@content-desc='empty-tab']" % name)
             close_button.scroll_to_element()
             close_button.click()
 
     def edit_bookmark_name(self, name):
-        self.driver.info("**Editing bookmark name to '%s'**" % name)
+        self.driver.info("Editing bookmark name to '%s'" % name)
         self.bookmark_name_input.clear()
         self.bookmark_name_input.send_keys(name)
         self.save_bookmark_button.click()
 
     def add_to_bookmarks(self, name=''):
-        self.driver.info("**Adding '%s' to bookmarks**" % name)
+        self.driver.info("Adding '%s' to bookmarks" % name)
         self.options_button.click()
         self.add_remove_favorites_button.click()
         if name:
@@ -82,4 +85,3 @@ class BaseWebView(BaseView):
             bookmark_name = self.bookmark_name_input.text
             self.save_bookmark_button.click()
         return bookmark_name
-

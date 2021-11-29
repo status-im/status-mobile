@@ -197,7 +197,7 @@
                 :symbol  :ETH
                 :value   value
                 :amount  (str eth-amount)
-                :token   (tokens/asset-for (:wallet/all-tokens db) (ethereum/chain-keyword db) :ETH)}
+                :token   (tokens/asset-for (:wallet/all-tokens db) (ethereum/get-current-network db) :ETH)}
                (not (nil? token))
                token
                :else
@@ -234,7 +234,7 @@
                                   :keycard-step (when pinless? :connect)})
         :show-signing-sheet nil}
        #(when-not wallet-set-up-passed?
-          {:dispatch-n [[:show-popover {:view :signing-phrase}]]})
+          {:dispatch-later [{:dispatch [:show-popover {:view :signing-phrase}] :ms 200}]})
        (when pinless?
          (keycard.card/start-nfc {:on-success #(re-frame/dispatch [:keycard.callback/start-nfc-success])
                                   :on-failure #(re-frame/dispatch [:keycard.callback/start-nfc-failure])})
@@ -249,7 +249,7 @@
         :show-signing-sheet nil
         :dismiss-keyboard nil}
        #(when-not wallet-set-up-passed?
-          {:dispatch-n [[:show-popover {:view :signing-phrase}]]})
+          {:dispatch-later [{:dispatch [:show-popover {:view :signing-phrase}] :ms 200}]})
        (prices/update-prices)
        #(when-not gas
           {:db (assoc-in (:db %) [:signing/edit-fee :gas-loading?] true)
@@ -304,13 +304,13 @@
 
 (fx/defn transaction-result
   [{:keys [db] :as cofx} result tx-obj]
-  (let [{:keys [on-result symbol amount]} (get db :signing/tx)]
+  (let [{:keys [on-result symbol amount from]} (get db :signing/tx)]
     (fx/merge cofx
               {:db (dissoc db :signing/tx :signing/sign)
                :signing/show-transaction-result nil}
               (prepare-unconfirmed-transaction result tx-obj symbol amount)
               (check-queue)
-              (wallet/watch-tx result)
+              (wallet/watch-tx (get from :address) result)
               #(when on-result
                  {:dispatch (conj on-result result)}))))
 
@@ -323,7 +323,7 @@
     (fx/merge
      cofx
      {:db (dissoc db :signing/tx :signing/sign)}
-     (wallet/watch-tx transaction-hash)
+     (wallet/watch-tx (get from :address) transaction-hash)
      (if (keycard.common/keycard-multiaccount? db)
        (signing.keycard/hash-message
         {:data data

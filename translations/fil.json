@@ -1351,7 +1351,7 @@
     "repeat-pin": "Ulitin ang bagong 6-digit na passcode",
     "repeat-puk": "Ulitin ang bagong 12-digit PUK",
     "replying-to": "Tumugon kay {{author}}",
-    "report-bug-email-template": "1. Paglalarawan ng Isyu\n(Ilarawan ang tampok na nais mo, o maikli ang buod ng bug at kung ano ang iyong ginawa, kung ano ang inaasahan mong mangyari, at kung ano ang tunay na mangyayari. Mga seksyon sa ibaba)\n\n\n2. Mga hakbang upang makalikha\n(Ilarawan kung paano namin maaaring kopyahin ang sunud-sunod na hakbang.)\n-Buksan ang Status\n-...\n-Step 3, atbp.\n\n3. Inaasahang pag-uugali\n(Ilarawan kung ano ang inaasahan mong mangyari.)\n\n\n4. Aktwal na pag-uugali\n(Ilarawan kung ano talaga ang nangyari.)\n\n\n5. Ikabit ang mga screenshot na maaaring mag-demo sa problema, kung maaari sana",
+    "report-bug-email-template": "1. Paglalarawan ng Isyu\n{{description}}\n\n\n2. Mga hakbang upang makalikha\n{{steps}}\n\n\n3. Ikabit ang mga screenshot na maaaring mag-demo sa problema, kung maaari sana",
     "request-access": "Humiling ng pag-access",
     "request-feature": "Humiling ng isang tampok",
     "request-membership": "Humiling ng pagiging miyembro",

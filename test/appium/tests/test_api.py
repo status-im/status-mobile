@@ -2,11 +2,8 @@ import os
 import pytest
 import re
 import time
-
 from os import path
-
 from support.api.third_parties_api import get_token_info
-from tests import marks
 
 
 def get_parameters():

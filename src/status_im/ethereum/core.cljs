@@ -17,15 +17,21 @@
     (.hexToUtf8 utils s)
     (catch :default _ nil)))
 
-;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
+(def BSC-mainnet-chain-id 56)
+(def BSC-testnet-chain-id 97)
 
+;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 (def chains
-  {:mainnet {:id 1 :name "Mainnet"}
-   :testnet {:id 3 :name "Ropsten"}
-   :rinkeby {:id 4 :name "Rinkeby"}
-   :xdai    {:id 100 :name "xDai"}
-   :poa     {:id 99 :name "POA"}
-   :goerli  {:id 5 :name "Goerli"}})
+  {:mainnet     {:id 1 :name "Mainnet"}
+   :testnet     {:id 3 :name "Ropsten"}
+   :rinkeby     {:id 4 :name "Rinkeby"}
+   :xdai        {:id 100 :name "xDai"}
+   :poa         {:id 99 :name "POA"}
+   :goerli      {:id 5 :name "Goerli"}
+   :bsc         {:id   BSC-mainnet-chain-id
+                 :name "BSC"}
+   :bsc-testnet {:id   BSC-testnet-chain-id
+                 :name "BSC tetnet"}})
 
 (defn chain-id->chain-keyword [i]
   (or (some #(when (= i (:id (val %))) (key %)) chains)
@@ -46,11 +52,13 @@
 (defn testnet? [id]
   (contains? #{(chain-keyword->chain-id :testnet)
                (chain-keyword->chain-id :rinkeby)
-               (chain-keyword->chain-id :goerli)} id))
+               (chain-keyword->chain-id :goerli)
+               (chain-keyword->chain-id :bsc-testnet)} id))
 
 (defn sidechain? [id]
   (contains? #{(chain-keyword->chain-id :xdai)
-               (chain-keyword->chain-id :poa)} id))
+               (chain-keyword->chain-id :poa)
+               (chain-keyword->chain-id :bsc)} id))
 
 (defn network-with-upstream-rpc? [network]
   (get-in network [:config :UpstreamConfig :Enabled]))
@@ -107,6 +115,16 @@
         network-id (get db :networks/current-network)]
     (get networks network-id)))
 
+(defn binance-chain-id? [chain-id]
+  (or (= BSC-mainnet-chain-id chain-id)
+      (= BSC-testnet-chain-id chain-id)))
+
+(defn binance-chain? [db]
+  (-> db
+      current-network
+      network->chain-id
+      binance-chain-id?))
+
 (def custom-rpc-node-id-len 45)
 
 (defn custom-rpc-node? [{:keys [id]}]
@@ -120,13 +138,17 @@
       network->chain-keyword
       name))
 
-(defn chain-keyword
+(defn get-current-network
   [{:networks/keys [current-network networks]}]
-  (network->chain-keyword (get networks current-network)))
+  (get networks current-network))
+
+(defn chain-keyword
+  [db]
+  (network->chain-keyword (get-current-network db)))
 
 (defn chain-id
-  [{:networks/keys [current-network networks]}]
-  (network->chain-id (get networks current-network)))
+  [db]
+  (network->chain-id (get-current-network db)))
 
 (defn snt-symbol [db]
   (chain-keyword->snt-symbol (chain-keyword db)))

@@ -2,7 +2,8 @@ from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from tests.users import transaction_senders, ens_user
 from views.sign_in_view import SignInView
-import random, emoji
+import random
+import emoji
 
 
 class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
@@ -25,7 +26,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         home_1.just_fyi('Check default placeholder when trying to create group chat without contacts')
         home_1.new_group_chat_button.click()
         if not home_1.element_by_translation_id("invite-friends").is_element_displayed():
-             self.errors.append("No placeholder is shown when there are no contacts")
+            self.errors.append("No placeholder is shown when there are no contacts")
         home_1.get_back_to_home_view()
 
         device_2.just_fyi('Create group chat with new user, check system messages for sender')
@@ -39,14 +40,15 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         home_2.just_fyi('check that PN invite to group chat is received and after tap you are redirected to group chat')
         home_2.open_notification_bar()
-        pns = [chat_1.pn_invited_to_group_chat(username_1, chat_name), chat_1.pn_wants_you_to_join_to_group_chat(username_1, chat_name)]
+        pns = [chat_1.pn_invited_to_group_chat(username_1, chat_name),
+               chat_1.pn_wants_you_to_join_to_group_chat(username_1, chat_name)]
         for pn in pns:
             if not home_2.get_pn(pn).is_element_displayed(30):
                 self.errors.append('%s is not shown after invite to group chat' % pn)
         group_invite_pn = home_2.get_pn(pns[1])
 
-        # if not group_invite_pn.group_chat_icon.is_element_displayed(30):
-        #     self.drivers[0].fail('No icon is shown for PN for group invite')
+        if not group_invite_pn.group_chat_icon.is_element_displayed(30):
+            self.errors.append('No icon is shown for PN for group invite')
         group_invite_pn.click()
         create_system_message = chat_1.create_system_message(username_1, chat_name)
         invite_system_message = chat_1.invite_system_message(username_1, username_2)
@@ -68,7 +70,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
             if not chat_2.chat_element_by_text(message):
                 self.errors.append('%s system message is not shown' % message)
 
-        device_2.just_fyi('Join to group chat, check system messages and send messages to group chat, check message status is delivered')
+        device_2.just_fyi(
+            'Join to group chat, check system messages and send messages to group chat, check message status is delivered')
         chat_2.join_chat_button.click()
         for chat in (chat_1, chat_2):
             if not chat.chat_element_by_text(join_system_message).is_element_displayed(30):
@@ -77,7 +80,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         message_1 = "Message from device: %s" % chat_1.driver.number
         chat_1.send_message(message_1)
         if chat_1.chat_element_by_text(message_1).status != 'delivered':
-            self.errors.append('Message status is not delivered, it is %s!' % chat_1.chat_element_by_text(message_1).status)
+            self.errors.append(
+                'Message status is not delivered, it is %s!' % chat_1.chat_element_by_text(message_1).status)
 
         home_2.put_app_to_background()
 
@@ -95,8 +99,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(3997)
     @marks.medium
-    def test_leave_group_chat_via_group_info(self):
-
+    def test_leave_group_chat_highligted_via_group_info(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
@@ -104,12 +107,23 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         device_2.just_fyi('Create and join group chat')
         public_key_2, username_2 = device_2.get_public_key_and_username(True)
-        device_2.home_button.click()
+        public_key_1 = home_1.get_public_key_and_username()
+        [home.home_button.click() for home in (home_1, home_2)]
+        home_2.add_contact(public_key_1)
         home_1.add_contact(public_key_2)
-        home_1.get_back_to_home_view()
+        [home.home_button.click() for home in (home_1, home_2)]
         chat_1 = home_1.create_group_chat([username_2], chat_name)
+
+        home_2.just_fyi("Check that new group chat from contact is highlited")
+        chat_2_element = home_2.get_chat(chat_name)
+        if chat_2_element.no_message_preview.is_element_differs_from_template('highligted_preview_group.png', 0):
+            self.errors.append("Preview message is not hightligted or text is not shown! ")
         left_system_message = chat_1.leave_system_message(username_2)
         chat_2 = home_2.get_chat(chat_name).click()
+        chat_2.home_button.click()
+        if not chat_2_element.no_message_preview.is_element_differs_from_template('highligted_preview_group.png', 0):
+            self.errors.append("Preview message is still hightligted after opening! ")
+        home_2.get_chat(chat_name).click()
         chat_2.join_chat_button.click()
 
         device_2.just_fyi('Send several message and leave chat')
@@ -147,7 +161,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         chat_2.decline_invitation_button.click()
         left_system_message = chat_2.leave_system_message(username_2)
         if chat_1.chat_element_by_text(left_system_message).is_element_displayed():
-            self.errors.append('System message after user left the group chat is shown if declined before accepting in Activity Centre')
+            self.errors.append(
+                'System message after user left the group chat is shown if declined before accepting in Activity Centre')
         if home_2.element_by_text(chat_name).is_element_displayed():
             self.errors.append("Group chat '%s' is shown, but user has left" % chat_name)
 
@@ -233,9 +248,11 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         new_chat_name = device_1_chat.get_random_chat_name()
         device_1_chat.rename_chat_via_group_info(new_chat_name)
         for chat in (device_1_chat, device_2_chat):
-            if not chat.element_by_text(chat.create_system_message(device_1_username, initial_chat_name)).is_element_displayed():
+            if not chat.element_by_text(
+                    chat.create_system_message(device_1_username, initial_chat_name)).is_element_displayed():
                 self.errors.append('Initial system message about creating chta was changed!')
-            if not chat.element_by_text(chat.changed_group_name_system_message(device_1_username, new_chat_name)).is_element_displayed():
+            if not chat.element_by_text(
+                    chat.changed_group_name_system_message(device_1_username, new_chat_name)).is_element_displayed():
                 self.errors.append('Message about changing chat name is not shown')
 
         device_2.just_fyi('Check that you can navigate to renamed chat')
@@ -274,7 +291,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.element_by_text('Done').click()
         chat_1.close_button.click()
         if chat_1.user_name_text.text != full_ens:
-            self.errors.append('Nickname was not removed! real chat name is %s instead of %s' % (chat_1.user_name_text.text, full_ens))
+            self.errors.append(
+                'Nickname was not removed! real chat name is %s instead of %s' % (chat_1.user_name_text.text, full_ens))
 
         home_1.just_fyi('Adding ENS user to contacts and start group chat with him')
         group_name = 'ens_group'
@@ -315,18 +333,20 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         if not chat_1.chat_element_by_text(message_text).is_element_displayed():
             self.errors.append("ENS name was not replaced with nickname on sent message")
         chat_1.chat_message_input.send_keys('@')
-        if not chat_1.element_by_text('%s %s' %(nickname, full_ens)).is_element_displayed():
+        if not chat_1.element_by_text('%s %s' % (nickname, full_ens)).is_element_displayed():
             self.errors.append("ENS name with nickname is not shown in mention input after set")
         if not chat_1.element_by_text(username_2).is_element_displayed():
             self.errors.append("3-random name is not shown in mention input after set from group info")
         chat_1.chat_message_input.clear()
-        chat_1.select_mention_from_suggestion_list('%s %s' %(nickname, full_ens), typed_search_pattern=username_2[:2])
+        chat_1.select_mention_from_suggestion_list('%s %s' % (nickname, full_ens), typed_search_pattern=username_2[:2])
         if chat_1.chat_message_input.text != '@' + ens + ' ':
-            self.errors.append('ENS is not resolved in chat input after setting nickname in mention suggestions list (search by 3-random name)!')
+            self.errors.append(
+                'ENS is not resolved in chat input after setting nickname in mention suggestions list (search by 3-random name)!')
         chat_1.chat_message_input.clear()
         chat_1.select_mention_from_suggestion_list('%s %s' % (nickname, full_ens), typed_search_pattern=nickname[:2])
         if chat_1.chat_message_input.text != '@' + ens + ' ':
-            self.errors.append('ENS is not resolved in chat input after setting nickname in mention suggestions list (search by nickname)!')
+            self.errors.append(
+                'ENS is not resolved in chat input after setting nickname in mention suggestions list (search by nickname)!')
         chat_1.chat_message_input.clear()
 
         home_1.just_fyi('Can delete nickname via group info and recheck received messages')
@@ -388,6 +408,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('User was unblocked, but new messages are not received')
 
         self.errors.verify_no_errors()
+
 
 class TestCommandsSingleDevices(SingleDeviceTestCase):
 

@@ -56,7 +56,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
                 self.drivers[0].fail("Required options accept or share are not shown")
 
         select_account_bottom_sheet = receiver_message.accept_and_share_address.click()
-        if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button(account_name).is_element_displayed():
+        if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button(
+                account_name).is_element_displayed():
             self.errors.append('Not expected value in "From" in "Select account": "Status" is expected')
         select_account_bottom_sheet.select_button.click()
         receiver_message.transaction_status.wait_for_element_text(receiver_message.shared_account)
@@ -91,7 +92,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         [message.transaction_status.wait_for_element_text(message.confirmed, 60) for message in
          (sender_message, receiver_message)]
 
-        #TODO: should be added PNs for receiver after getting more stable feature
+        # TODO: should be added PNs for receiver after getting more stable feature (rechecked 23.11.21, valid)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6263)
@@ -112,7 +113,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         wallet_1.home_button.click()
         home_2 = device_2.recover_access(passphrase=sender['passphrase'])
         wallet_2 = home_2.wallet_button.click()
-        initial_amount_STT = wallet_2.get_asset_amount_by_name('STT')
+        initial_amount_stt = wallet_2.get_asset_amount_by_name('STT')
         wallet_2.home_button.click()
 
         device_2.just_fyi('Add recipient to contact and send 1 message')
@@ -157,11 +158,11 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1.get_chat(sender['username']).click()
         home_2.get_chat(recipient_username).click()
         [message.transaction_status.wait_for_element_text(message.confirmed, wait_time=120) for message in
-        (chat_2_sender_message, chat_1_request_message)]
+         (chat_2_sender_message, chat_1_request_message)]
 
         home_1.just_fyi('Check that can find tx in history and balance is updated after offline')
         home_2.wallet_button.click()
-        wallet_2.wait_balance_is_changed('STT', initial_amount_STT)
+        wallet_2.wait_balance_is_changed('STT', initial_amount_stt)
         wallet_2.find_transaction_in_history(amount=amount, asset='STT')
 
         self.errors.verify_no_errors()
@@ -201,7 +202,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         [message.transaction_status.wait_for_element_text(message.declined) for message in
          (chat_1_sender_message, chat_2_receiver_message)]
-
 
         home_1.just_fyi('Decline transaction request and check that state is changed')
         request_amount = chat_1.get_unique_amount()
@@ -274,7 +274,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         sender, reciever = transaction_senders['E'], ens_user
-        home_1, home_2 = sign_in_1.recover_access(sender['passphrase']), sign_in_2.recover_access(reciever['passphrase'])
+        home_1, home_2 = sign_in_1.recover_access(sender['passphrase']), sign_in_2.recover_access(
+            reciever['passphrase'])
 
         home_2.just_fyi("Start chat with sender")
         profile_2 = home_2.profile_button.click()

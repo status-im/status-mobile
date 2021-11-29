@@ -583,7 +583,7 @@
   {:db (-> db
            (assoc-in [:keycard :nfc-running?] false)
            (assoc-in [:keycard :card-connected?] false))
-   :keycard/start-nfc nil})
+   :dispatch-later [{:ms 500 :dispatch [:keycard.ui/start-nfc]}]})
 
 (fx/defn on-register-card-events
   {:events [:keycard.callback/on-register-card-events]}

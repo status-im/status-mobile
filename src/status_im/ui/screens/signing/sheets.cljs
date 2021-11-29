@@ -392,12 +392,12 @@
          :default-value       default-nonce
          :on-change-text      #(reset! nonce %)
          :show-cancel         false
+         :auto-focus          true
          :container-style {:margin-bottom 20}}]
        [react/view {:align-items :flex-end}
         [quo/button
          {:type                :primary
           :accessibility-label :save-nonce
           :theme               :accent
-          :disabled            (clojure.string/blank? @nonce)
           :on-press            #(re-frame/dispatch [:signing.nonce/submit @nonce])}
          (i18n/label :t/save)]]])))

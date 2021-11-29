@@ -8,9 +8,9 @@ chardet==3.0.4
 cycler==0.10.0
 cytoolz==0.11.0
 emoji==0.5.0
-eth-hash==0.2.0
+eth-hash==0.3.2
 eth-keys==0.3.3
-eth-utils==1.9.5
+eth-utils==1.10.0
 ethereum==2.3.2
 execnet==1.7.1
 future==0.18.2

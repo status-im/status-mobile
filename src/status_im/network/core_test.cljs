@@ -34,11 +34,13 @@
 (deftest new-network-test
   (let [actual (network.core/new-network "randomid"
                                          "network-name"
+                                         "network-symbol"
                                          "upstream-url"
                                          :mainnet
                                          nil)]
     (is (= {:id     "randomid"
             :name   "network-name"
+            :symbol "network-symbol"
             :config {:NetworkId      1
                      :DataDir        "/ethereum/mainnet_rpc"
                      :UpstreamConfig {:Enabled true
@@ -48,11 +50,13 @@
 (deftest new-network-id-test
   (let [actual (network.core/new-network "randomid"
                                          "network-name"
+                                         "network-symbol"
                                          "upstream-url"
                                          :mainnet
                                          "5777")]
     (is (= {:id     "randomid"
             :name   "network-name"
+            :symbol "network-symbol"
             :config {:NetworkId      5777
                      :DataDir        "/ethereum/mainnet_rpc"
                      :UpstreamConfig {:Enabled true
@@ -63,21 +67,31 @@
   (testing "a valid manage"
     (is (network.core/valid-manage? {:url   {:value "http://valid.com"}
                                      :name  {:value "valid"}
+                                     :symbol {:value "valid"}
                                      :chain {:value "valid"}})))
   (testing "invalid url"
     (is (not (network.core/valid-manage? {:url   {:value "invalid"}
                                           :name  {:value "valid"}
+                                          :symbol {:value "valid"}
                                           :chain {:value "valid"}}))))
 
   (testing "invalid name"
     (is (not (network.core/valid-manage? {:url   {:value "http://valid.com"}
                                           :name  {:value ""}
+                                          :symbol {:value "valid"}
                                           :chain {:value "valid"}}))))
 
   (testing "invalid chain"
     (is (not (network.core/valid-manage? {:url   {:value "http://valid.com"}
                                           :name  {:value "valid"}
-                                          :chain {:value ""}})))))
+                                          :symbol {:value "valid"}
+                                          :chain {:value ""}}))))
+
+  (testing "invalid symbol"
+    (is (not (network.core/valid-manage? {:url   {:value "http://valid.com"}
+                                          :name  {:value "valid"}
+                                          :symbol {:value ""}
+                                          :chain {:value "valid"}})))))
 
 (deftest set-input-test
   (testing "it updates and validate a field"
@@ -85,6 +99,8 @@
                                                 :error false}
                                    :name       {:value ""
                                                 :error true}
+                                   :symbol     {:value "symbol"
+                                                :error false}
                                    :chain      {:value "mainnet"
                                                 :error false}
                                    :network-id {:value nil
@@ -93,6 +109,8 @@
                                                                    :error true}
                                                            :name  {:value ""
                                                                    :error false}
+                                                           :symbol {:value "symbol"
+                                                                    :error false}
                                                            :chain {:value "mainnet"
                                                                    :error false}}}}
                                    :url "http://valid.com")))))
@@ -110,11 +128,13 @@
     (let [fx (network.core/save {:random-id-generator  (constantly "random-id")
                                  :db {:networks/manage {:url {:value "http://valid.com"}
                                                         :chain {:value :mainnet}
+                                                        :symbol {:value "symbol"}
                                                         :name {:value "valid"}}
                                       :multiaccount {}
                                       :networks/networks {"random2"
                                                           {:id     "random2"
                                                            :name   "network-name"
+                                                           :symbol "symbol"
                                                            :config {:NetworkId      1
                                                                     :DataDir        "/ethereum/mainnet_rpc"
                                                                     :UpstreamConfig {:Enabled true
@@ -147,11 +167,13 @@
                                  :db {:networks/manage {:url {:value "http://valid.com"}
                                                         :chain {:value :mainnet}
                                                         :name {:value "valid"}
+                                                        :symbol {:value "symbol"}
                                                         :network-id {:value 5}}
                                       :multiaccount {}
                                       :networks/networks {"randomid"
                                                           {:id     "randomid"
                                                            :name   "network-name"
+                                                           :symbol "symbol"
                                                            :config {:NetworkId      3
                                                                     :DataDir        "/ethereum/mainnet_rpc"
                                                                     :UpstreamConfig {:Enabled true

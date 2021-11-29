@@ -90,7 +90,6 @@ class ChatOptionsButton(Button):
     def __init__(self, driver):
         super().__init__(driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
 
-
     def click(self):
         self.click_until_presence_of_element(HomeView(self.driver).mark_all_messages_as_read_button)
 
@@ -137,6 +136,7 @@ class ChatElementByText(Text):
         class ImageInReply(BaseElement):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, prefix=parent_locator, xpath="//android.widget.ImageView")
+
         try:
             return ImageInReply(self.driver, self.locator)
         except NoSuchElementException:
@@ -150,7 +150,6 @@ class ChatElementByText(Text):
 
         return TimeStampText(self.driver, self.locator)
 
-
     @property
     def member_photo(self):
         class MemberPhoto(Button):
@@ -163,7 +162,7 @@ class ChatElementByText(Text):
     def username(self):
         class Username(Text):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="/*[2]/android.widget.TextView" )
+                super().__init__(driver, prefix=parent_locator, xpath="/*[2]/android.widget.TextView")
 
         return Username(self.driver, self.locator)
 
@@ -176,7 +175,8 @@ class ChatElementByText(Text):
     def uncollapse(self) -> bool:
         class Collapse(Button):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="/../../..//android.widget.ImageView[@content-desc='icon']")
+                super().__init__(driver, prefix=parent_locator,
+                                 xpath="/../../..//android.widget.ImageView[@content-desc='icon']")
 
         return Collapse(self.driver, self.locator).is_element_displayed()
 
@@ -195,7 +195,9 @@ class ChatElementByText(Text):
     def replied_message_text(self):
         class RepliedMessageText(Text):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="/preceding-sibling::*[1]/android.widget.TextView[2]")
+                super().__init__(driver, prefix=parent_locator,
+                                 xpath="/preceding-sibling::*[1]/android.widget.TextView[2]")
+
         try:
             return RepliedMessageText(self.driver, self.message_locator).text
         except NoSuchElementException:
@@ -207,6 +209,7 @@ class ChatElementByText(Text):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, prefix=parent_locator,
                                  xpath="/preceding-sibling::*[1]/android.widget.TextView[1]")
+
         try:
             return RepliedToUsernameText(self.driver, self.message_locator).text
         except NoSuchElementException:
@@ -228,6 +231,7 @@ class ChatElementByText(Text):
                     return text
                 except NoSuchElementException:
                     return 0
+
         return int(EmojisNumber(self.driver, self.locator).text)
 
     @property
@@ -236,7 +240,9 @@ class ChatElementByText(Text):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, prefix=parent_locator,
                                  xpath="/../..//android.view.ViewGroup[@content-desc='pinned-by']")
+
         return PinnedByLabelText(self.driver, self.locator)
+
 
 class UsernameOptions(Button):
     def __init__(self, driver, username):
@@ -258,9 +264,9 @@ class UsernameCheckbox(Button):
 
     def click(self):
         try:
-                self.scroll_to_element(20).click()
+            self.scroll_to_element(20).click()
         except NoSuchElementException:
-                self.scroll_to_element(direction='up', depth=20).click()
+            self.scroll_to_element(direction='up', depth=20).click()
 
 
 class GroupChatInfoView(BaseView):
@@ -273,7 +279,7 @@ class GroupChatInfoView(BaseView):
 
     def user_admin(self, username: str):
         admin = Button(self.driver,
-                      xpath="//*[@text='%s']/..//*[@text='%s']" % (username, self.get_translation_by_key("group-chat-admin")))
+                       xpath="//*[@text='%s']/..//*[@text='%s']" % (username, self.get_translation_by_key("group-chat-admin")))
         admin.scroll_to_element()
         return admin
 
@@ -300,18 +306,21 @@ class CommunityView(HomeView):
                                                        suffix='/following-sibling::android.view.ViewGroup/android.widget.TextView')
         self.members_button = Button(self.driver, translation_id="members-label")
         self.community_info_picture = Button(self.driver, accessibility_id="chat-icon")
+        self.leave_community_button = Button(self.driver, translation_id="leave-community")
+        self.edit_community_button = Button(self.driver, translation_id="edit-community")
 
         # Members
         self.invite_people_button = Button(self.driver, accessibility_id="community-invite-people")
         self.membership_requests_button = Button(self.driver, translation_id="membership-requests")
 
-        # Requesting access to commmunity
+        # Requesting access to community / joining community
         self.request_access_button = Button(self.driver, translation_id="request-access")
         self.membership_request_pending_text = Text(self.driver, translation_id="membership-request-pending")
-
+        self.join_button = Button(self.driver, translation_id="join")
+        self.follow_button = Button(self.driver, translation_id="follow")
 
     def add_channel(self, name: str, description="Some new channel"):
-        self.driver.info("Adding channel")
+        self.driver.info("Adding channel in community")
         self.plus_button.click()
         self.community_create_a_channel_button.wait_and_click()
         self.channel_name_edit_box.set_value(name)
@@ -321,6 +330,12 @@ class CommunityView(HomeView):
         self.get_chat(name).click()
         return chat_view
 
+    def leave_community(self):
+        self.driver.info("Leaving community")
+        self.community_options_button.wait_and_click()
+        self.community_info_button.wait_and_click()
+        self.leave_community_button.scroll_and_click()
+
     def copy_community_link(self):
         self.driver.info("Copy community link")
         self.community_options_button.click()
@@ -328,10 +343,10 @@ class CommunityView(HomeView):
         self.element_starts_with_text('join.status.im/c/').click()
         community_link_text = self.element_starts_with_text('join.status.im/c/').text
         self.home_button.double_click()
-        return 'https://%s'% community_link_text
+        return 'https://%s' % community_link_text
 
     def handle_membership_request(self, username: str, approve=True):
-        self.driver.info("Handling membership request of user '%s', approve='%s'" %(username, str(approve)))
+        self.driver.info("Handling membership request of user '%s', approve='%s'" % (username, str(approve)))
         self.members_button.click()
         self.membership_requests_button.click()
         approve_suffix, decline_suffix = '/following-sibling::android.view.ViewGroup[1]', '/following-sibling::android.view.ViewGroup[2]'
@@ -343,7 +358,7 @@ class CommunityView(HomeView):
 
 
 class PreviewMessage(ChatElementByText):
-    def __init__(self, driver, text:str):
+    def __init__(self, driver, text: str):
         super().__init__(driver, text=text)
         self.locator += "/android.view.ViewGroup/android.view.ViewGroup"
 
@@ -359,6 +374,7 @@ class PreviewMessage(ChatElementByText):
         class PreviewImage(SilentButton):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, prefix=parent_locator, xpath="/android.widget.ImageView")
+
         return PreviewMessage.return_element_or_empty(PreviewImage(self.driver, self.locator))
 
     @property
@@ -366,6 +382,7 @@ class PreviewMessage(ChatElementByText):
         class PreviewTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, prefix=parent_locator, xpath="/android.widget.TextView[1]")
+
         return PreviewMessage.return_element_or_empty(PreviewTitle(self.driver, self.locator))
 
     @property
@@ -373,13 +390,14 @@ class PreviewMessage(ChatElementByText):
         class PreviewSubTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, prefix=parent_locator, xpath="/android.widget.TextView[2]")
+
         return PreviewMessage.return_element_or_empty(PreviewSubTitle(self.driver, self.locator))
 
 
 class CommunityLinkPreviewMessage(ChatElementByText):
-    def __init__(self, driver, text:str):
+    def __init__(self, driver, text: str):
         super().__init__(driver, text=text)
-        self.locator+="//*[@text='%s']" % self.get_translation_by_key('community')
+        self.locator += "//*[@text='%s']" % self.get_translation_by_key('community')
 
     @property
     def community_name(self) -> str:
@@ -402,6 +420,7 @@ class CommunityLinkPreviewMessage(ChatElementByText):
         class CommunityMembers(SilentButton):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, prefix=parent_locator, xpath="/following-sibling::android.widget.TextView[3]")
+
         members_string = CommunityMembers(self.driver, self.locator).text
 
         return int(re.search(r'\d+', members_string).group())
@@ -409,18 +428,20 @@ class CommunityLinkPreviewMessage(ChatElementByText):
     def view(self) -> object:
         class CommunityViewButton(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="/..//*[@text='%s']" % self.get_translation_by_key("view"))
+                super().__init__(driver, prefix=parent_locator,
+                                 xpath="/..//*[@text='%s']" % self.get_translation_by_key("view"))
+
         CommunityViewButton(self.driver, self.locator).click()
         CommunityView(self.driver).request_access_button.wait_for_element(20)
         return CommunityView(self.driver)
 
 
-
 class TransactionMessage(ChatElementByText):
-    def __init__(self, driver, text:str, transaction_value):
+    def __init__(self, driver, text: str, transaction_value):
         super().__init__(driver, text=text)
         if transaction_value:
-            self.xpath = "//*[starts-with(@text,'%s')]/../*[@text='%s']/ancestor::android.view.ViewGroup[@content-desc='chat-item']" % (text, transaction_value)
+            self.xpath = "//*[starts-with(@text,'%s')]/../*[@text='%s']/ancestor::android.view.ViewGroup[@content-desc='chat-item']" % (
+            text, transaction_value)
         # Common statuses for incoming and outgoing transactions
         self.address_requested = self.get_translation_by_key("address-requested")
         self.confirmed = self.get_translation_by_key("status-confirmed")
@@ -510,13 +531,15 @@ class PinnedMessagesOnProfileButton(Button):
 
 class UnpinMessagePopUp(BaseElement):
     def __init__(self, driver):
-        #self.message_text = message_text
+        # self.message_text = message_text
         super().__init__(driver, translation_id="pin-limit-reached", suffix='/..')
 
     def click_unpin_message_button(self):
         class UnpinMessageButton(Button):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="//android.widget.TextView[starts-with(@text,'Unpin')]")
+                super().__init__(driver, prefix=parent_locator,
+                                 xpath="//android.widget.TextView[starts-with(@text,'Unpin')]")
+
         return UnpinMessageButton(self.driver, self.locator).click()
 
     def message_text(self, text):
@@ -547,7 +570,8 @@ class ChatView(BaseView):
         self.view_profile_by_avatar_button = Button(self.driver, accessibility_id="member-photo")
         self.user_options = Button(self.driver, accessibility_id="options")
         self.open_in_status_button = OpenInStatusButton(self.driver)
-        self.close_modal_view_from_chat_button = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
+        self.close_modal_view_from_chat_button = Button(self.driver,
+                                                        xpath="//androidx.appcompat.widget.LinearLayoutCompat")
 
         # Chat input
         self.chat_message_input = EditBox(self.driver, accessibility_id="chat-message-input")
@@ -564,7 +588,7 @@ class ChatView(BaseView):
         self.history_start_icon = Button(self.driver, accessibility_id="history-chat")
         self.unpin_message_popup = UnpinMessagePopUp(self.driver)
 
-        #Stickers
+        # Stickers
         self.show_stickers_button = Button(self.driver, accessibility_id="show-stickers-icon")
         self.get_stickers = Button(self.driver, translation_id="get-stickers")
         self.sticker_icon = Button(self.driver, accessibility_id="sticker-icon")
@@ -577,7 +601,7 @@ class ChatView(BaseView):
         self.first_image_from_gallery = Button(self.driver,
                                                xpath="//*[@content-desc='open-gallery']/following-sibling::android.view.ViewGroup[1]")
         self.images_area_in_gallery = Button(self.driver,
-                                               xpath="//*[@content-desc='open-gallery']/following-sibling::android.view.ViewGroup[1]")
+                                             xpath="//*[@content-desc='open-gallery']/following-sibling::android.view.ViewGroup[1]")
         self.image_message_in_chat = Button(self.driver, accessibility_id="image-message")
         self.save_image_button = Button(self.driver, translation_id="save")
         self.recent_image_in_gallery = Button(self.driver,
@@ -585,11 +609,11 @@ class ChatView(BaseView):
         self.cancel_send_image_button = Button(self.driver, accessibility_id="cancel-send-image")
         self.view_image_options = Button(self.driver,
                                          xpath="//*[@content-desc='icon']/android.widget.ImageView")
-        self.share_image_icon_button =  Button(self.driver, accessibility_id="share-button")
+        self.share_image_icon_button = Button(self.driver, accessibility_id="share-button")
         self.save_image_icon_button = Button(self.driver, accessibility_id="save-button")
         self.image_in_android_messenger = Button(self.driver, accessibility_id="Image")
 
-        #Audio
+        # Audio
         self.audio_message_in_chat = Button(self.driver, accessibility_id="audio-message")
         self.audio_message_button = Button(self.driver, accessibility_id="show-audio-message-icon")
         self.record_audio_button = Button(self.driver, accessibility_id="start-stop-audio-recording-button")
@@ -650,12 +674,11 @@ class ChatView(BaseView):
         self.create_community_button = Button(self.driver, translation_id="create-community")
         self.community_name_edit_box = EditBox(self.driver, translation_id="name-your-community-placeholder")
         self.community_description_edit_box = EditBox(self.driver, xpath='//android.widget.EditText[@text="%s"]' %
-                                                      self.get_translation_by_key("give-a-short-description-community"))
-        self.set_community_image_button = Button(self.driver, translation_id='community-thumbnail-image',suffix='/following-sibling::android.view.ViewGroup')
+                                                                         self.get_translation_by_key(
+                                                                             "give-a-short-description-community"))
+        self.set_community_image_button = Button(self.driver, translation_id='community-thumbnail-image',
+                                                 suffix='/following-sibling::android.view.ViewGroup')
         self.confirm_create_in_community_button = Button(self.driver, translation_id="create")
-
-
-
 
     def get_outgoing_transaction(self, account=None, transaction_value=None) -> object:
         if account is None:
@@ -693,7 +716,6 @@ class ChatView(BaseView):
         self.clear_history_button.click()
         self.clear_button.click()
 
-
     def leave_chat_via_group_info(self):
         self.driver.info("Leave group chat via group info")
         self.chat_options.click()
@@ -727,7 +749,7 @@ class ChatView(BaseView):
 
     def accept_membership_for_group_chat_via_chat_view(self, username, accept=True):
         info = "%s membership to group chat" % username
-        self.driver.info("Accept %s" % info) if accept else  self.driver.info("Decline %s" % info)
+        self.driver.info("Accept %s" % info) if accept else self.driver.info("Decline %s" % info)
         self.group_membership_request_button.click()
         self.element_by_text(username).click()
         self.accept_group_invitation_button.click() if accept else self.decline_group_invitation_button.click()
@@ -795,12 +817,12 @@ class ChatView(BaseView):
         self.element_by_text_part(message_text).long_press_element()
         self.element_by_translation_id("copy-to-clipboard").click()
 
-    def quote_message(self, message = str):
+    def quote_message(self, message=str):
         self.driver.info("Quoting '%s' message" % message)
         self.element_by_text_part(message).long_press_element()
         self.reply_message_button.click()
 
-    def set_reaction(self, message: str,  emoji: str = 'thumbs-up', emoji_message=False):
+    def set_reaction(self, message: str, emoji: str = 'thumbs-up', emoji_message=False):
         self.driver.info("Setting '%s' reaction" % emoji)
         key = emojis[emoji]
         # Audio message is obvious should be tapped not on audio-scroll-line
@@ -812,16 +834,16 @@ class ChatView(BaseView):
                 self.chat_element_by_text(message).long_press_element()
             else:
                 self.element_by_text_part(message).long_press_element()
-        element = Button(self.driver, accessibility_id ='pick-emoji-%s' % key)
+        element = Button(self.driver, accessibility_id='pick-emoji-%s' % key)
         element.click()
         element.wait_for_invisibility_of_element()
 
-    def view_profile_long_press(self, message = str):
+    def view_profile_long_press(self, message=str):
         self.chat_element_by_text(message).long_press_element()
         self.view_profile_by_avatar_button.click()
         self.profile_block_contact.wait_for_visibility_of_element(5)
 
-    def wait_ens_name_resolved_in_chat(self, message = str, username_value = str):
+    def wait_ens_name_resolved_in_chat(self, message=str, username_value=str):
         self.driver.info("Waiting ENS name '%s' is resolved in chat" % username_value)
         counter = 0
         while True:
@@ -835,7 +857,7 @@ class ChatView(BaseView):
 
     def move_to_messages_by_time_marker(self, marker='Today'):
         self.driver.info("Moving to messages by time marker: '%s'" % marker)
-        Button(self.driver, xpath="//*[@text='%s'']"  % marker).scroll_to_element(depth=50, direction='up')
+        Button(self.driver, xpath="//*[@text='%s'']" % marker).scroll_to_element(depth=50, direction='up')
 
     def install_sticker_pack_by_name(self, pack_name='Status Cat'):
         self.driver.info("## Installing '%s' stickerpack" % pack_name, device=False)
@@ -869,7 +891,7 @@ class ChatView(BaseView):
     def search_user_in_mention_suggestion_list(self, username):
         return Button(self.driver, xpath="//*[@content-desc='suggestions-list']//*[@text='%s']" % username)
 
-    def select_mention_from_suggestion_list(self, username_in_list, typed_search_pattern = ''):
+    def select_mention_from_suggestion_list(self, username_in_list, typed_search_pattern=''):
         self.driver.info("Selecting '%s' from suggestion list by '%s'" % (username_in_list, typed_search_pattern))
         self.chat_message_input.set_value('@' + typed_search_pattern)
         self.chat_message_input.click()
@@ -898,7 +920,6 @@ class ChatView(BaseView):
         chat_element.find_element()
         chat_element.member_photo.click()
 
-
     def set_nickname(self, nickname, close_profile=True):
         self.driver.info("Setting nickname:%s" % nickname)
         self.profile_nickname_button.click()
@@ -909,16 +930,18 @@ class ChatView(BaseView):
 
     def convert_device_time_to_chat_timestamp(self) -> list:
         sent_time_object = dateutil.parser.parse(self.driver.device_time)
-        timestamp = datetime.strptime("%s:%s" % (sent_time_object.hour, sent_time_object.minute), '%H:%M').strftime("%I:%M %p")
+        timestamp = datetime.strptime("%s:%s" % (sent_time_object.hour, sent_time_object.minute), '%H:%M').strftime(
+            "%I:%M %p")
         timestamp_obj = datetime.strptime(timestamp, '%I:%M %p')
-        possible_timestamps_obj = [timestamp_obj + timedelta(0,0,0,0,1), timestamp_obj, timestamp_obj - timedelta(0,0,0,0,1)]
-        timestamps = list(map(lambda x : x.strftime("%I:%M %p"), possible_timestamps_obj))
+        possible_timestamps_obj = [timestamp_obj + timedelta(0, 0, 0, 0, 1), timestamp_obj,
+                                   timestamp_obj - timedelta(0, 0, 0, 0, 1)]
+        timestamps = list(map(lambda x: x.strftime("%I:%M %p"), possible_timestamps_obj))
         final_timestamps = [t[1:] if t[0] == '0' else t for t in timestamps]
         return final_timestamps
 
-
     def set_new_status(self, status='something is happening', image=False):
-        self.driver.info("## Setting new status:'%s', image set is: '%s'" % (BaseElement(self.driver).exclude_emoji(status), str(image)), device=False)
+        self.driver.info("## Setting new status:'%s', image set is: '%s'" %
+                         (BaseElement(self.driver).exclude_emoji(status), str(image)), device=False)
         self.timeline_add_new_status_button.click_until_presence_of_element(self.timeline_my_status_editbox)
         self.timeline_my_status_editbox.set_value(status)
 
@@ -938,10 +961,10 @@ class ChatView(BaseView):
         return transaction_message
 
     def get_community_by_name(self, community_name: str):
-        community_button = Button(self.driver, xpath = "//*[@content-desc='community-name-text'][starts-with(@text,'%s')]/.." % community_name)
+        community_button = Button(self.driver,
+                                  xpath="//*[@content-desc='community-name-text'][starts-with(@text,'%s')]/.." % community_name)
         community_button.click()
         return CommunityView(self.driver)
-
 
     @staticmethod
     def get_resolved_chat_key(username, chat_key):

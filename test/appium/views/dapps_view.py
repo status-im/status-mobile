@@ -2,6 +2,7 @@ from views.base_element import Button, EditBox, BaseElement
 from views.base_view import BaseView
 from views.home_view import ChatElement
 
+
 class DiscoverDappsButton(Button):
     def __init__(self, driver):
         super().__init__(driver, translation_id="open-dapp-store")
@@ -14,6 +15,7 @@ class DiscoverDappsButton(Button):
         from views.web_views.base_web_view import BaseWebView
         self.click_until_presence_of_element(BaseWebView(self.driver).browser_refresh_page_button)
         return self.navigate()
+
 
 class EditUrlEditbox(EditBox):
     def __init__(self, driver):

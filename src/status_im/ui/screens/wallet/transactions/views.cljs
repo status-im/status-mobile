@@ -73,8 +73,8 @@
        {:on-press #(re-frame/dispatch [:signing.ui/cancel-transaction-pressed hash])}
        (i18n/label :t/cancel)]])])
 
-(defn etherscan-link [address]
-  (let [link @(re-frame/subscribe [:wallet/etherscan-link address])]
+(defn chain-explorer-link [address]
+  (let [link @(re-frame/subscribe [:wallet/chain-explorer-link address])]
     [react/touchable-highlight
      {:on-press #(when link
                    (.openURL ^js react/linking link))}
@@ -124,11 +124,12 @@
         keycard-account? @(re-frame/subscribe [:multiaccounts/keycard-account?])
         custom-rpc-node? @(re-frame/subscribe [:custom-rpc-node])
         non-archival-rpc-node? @(re-frame/subscribe [:wallet/non-archival-node])
+        binance-chain? @(re-frame/subscribe [:wallet/binance-chain?])
         all-fetched? @(re-frame/subscribe [:wallet/tx-history-fetched? address])
         syncing-allowed? @(re-frame/subscribe [:mobile-network/syncing-allowed?])]
     [react/view {:flex 1}
-     [etherscan-link address]
-     (cond non-archival-rpc-node?
+     [chain-explorer-link address]
+     (cond (or non-archival-rpc-node? binance-chain?)
            [non-archival-node]
            custom-rpc-node?
            [custom-node])

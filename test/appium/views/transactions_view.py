@@ -6,6 +6,7 @@ from views.base_view import BaseView
 class OptionsButton(Button):
     def __init__(self, driver):
         super().__init__(driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[2]")
+
     def click(self):
         self.click_until_presence_of_element(OptionsButton.CopyTransactionHashButton(self.driver))
 
@@ -16,6 +17,7 @@ class OptionsButton(Button):
     class OpenOnEtherscanButton(Button):
         def __init__(self, driver):
             super().__init__(driver, translation_id="open-on-etherscan")
+
 
 class TransactionTable(BaseElement):
     def __init__(self, driver):
@@ -78,7 +80,6 @@ class TransactionTable(BaseElement):
         self.driver.info('Finding transaction by index %s' % index)
         return self.TransactionElement.by_index(self.driver, index=index)
 
-
     def transaction_by_amount(self, amount: str, asset):
         self.driver.info('Finding transaction by amount %s' % amount)
         return self.TransactionElement.by_amount(self.driver, amount=amount.replace(',', '.'), asset=asset)
@@ -92,12 +93,13 @@ class TransactionTable(BaseElement):
             except NoSuchElementException:
                 from views.base_view import BaseView
                 BaseView(self.driver).pull_to_refresh()
-        self.driver.fail('Transaction %s %s was not found on Wallet/Transaction screen' %(amount, asset))
+        self.driver.fail('Transaction %s %s was not found on Wallet/Transaction screen' % (amount, asset))
 
     def get_transactions_number(self):
         element = self.TransactionElement(self.driver)
         element.locator = '//android.view.ViewGroup[@content-desc="transaction-item"]'
         return len(element.wait_for_elements())
+
 
 class TransactionsView(BaseView):
     def __init__(self, driver):

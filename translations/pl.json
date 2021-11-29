@@ -1231,7 +1231,7 @@
     "removed": "usunięci",
     "repeat-pin": "Powtórz nowy 6-cyfrowy kod dostępu.",
     "repeat-puk": "Powtórz nowy 12-cyfrowy PUK",
-    "report-bug-email-template": "1. Opis wydania\n(Opisz funkcję, którą chcesz, lub krótko podsumuj błąd i to, co zrobiłeś, co się spodziewałeś i co tak naprawdę się dzieje. Sekcje poniżej)\n\n2. Kroki do odtworzenia\n(Opisz, jak możemy odtworzyć błąd krok po kroku).\n-Otwórz Status\n-...\n-Krok 3 itp.\n\n3. Oczekiwane zachowanie\n(Opisz, czego się spodziewałeś).\n\n4. Rzeczywiste zachowanie\n(Opisz, co tak naprawdę się stało).\n\n5. Proszę, załącz zrzuty ekranu, które mogą przedstawić problem\n",
+    "report-bug-email-template": "1. Opis wydania\n {{description}}\n\n2. Kroki do odtworzenia\n {{steps}} \n\n\n3. Proszę, załącz zrzuty ekranu, które mogą przedstawić problem\n",
     "request-access": "Żądanie dostępu",
     "request-feature": "Poproś o funkcję",
     "request-membership": "Wnioskuj o członkostwo",

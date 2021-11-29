@@ -48,9 +48,9 @@ class KeycardView(BaseView):
 
     def get_seed_phrase(self):
         recovery_phrase = dict()
-        for i in range(0,12):
+        for i in range(0, 12):
             word = self.get_recovery_word(i)
-            recovery_phrase[str(i+1)] = word
+            recovery_phrase[str(i + 1)] = word
         return recovery_phrase
 
     def backup_seed_phrase(self):

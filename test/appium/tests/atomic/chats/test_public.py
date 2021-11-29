@@ -252,17 +252,15 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
                     "Expected value %s is not shown in timeline_1 after adding user to contacts" % expected_value)
 
         profile_1.just_fyi('Checking message tag and reactions on statuses')
-        # TODO: no way to tap into tag message from timeline_1
-        # tag_status = '#public-chat-to-redirect-long-name'
-        # timeline_1.set_new_status(tag_status)
-        # #timeline_2 = profile_1.get_chat_view()
-        # public_chat_2 = home_2.get_chat_view()
-        #
-        # public_chat_2.element_by_text(tag_status).wait_and_click()
-        # public_chat_2.user_name_text.wait_for_element(30)
-        # if not public_chat_2.user_name_text.text == tag_status[1:]:
-        #     self.errors.append('Could not redirect a user to a public chat tapping the tag message from timeline_1')
-        # public_chat_2.back_button.click()
+        tag_status = '#public-chat-to-redirect-long-name'
+        timeline_1.set_new_status(tag_status)
+        public_chat_2 = home_2.get_chat_view()
+
+        public_chat_2.element_by_text(tag_status).wait_and_click()
+        public_chat_2.user_name_text.wait_for_element(30)
+        if not public_chat_2.user_name_text.text == tag_status:
+            self.errors.append('Could not redirect a user to a public chat tapping the tag message from timeline_1')
+        public_chat_2.back_button.click()
 
         timeline_1.set_reaction(text_status)
         status_with_reaction_1 = timeline_1.chat_element_by_text(text_status)
@@ -290,7 +288,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_2.remove_from_contacts.click()
         chat_2.close_button.click()
         chat_2.status_button.click()
-        if timeline_2.chat_element_by_text(text_status).is_element_displayed(10):
+        if public_chat_2.chat_element_by_text(text_status).is_element_displayed(10):
             self.errors.append("Statuses of removed user are still shown in profile")
 
         self.errors.verify_no_errors()

@@ -67,7 +67,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
     @marks.high
     def test_pair_devices_sync_one_to_one_contacts_nicknames_public_chat(self):
         self.create_drivers(3)
-        device_1, device_2, device_3 = SignInView(self.drivers[0]), SignInView(self.drivers[1]), SignInView(self.drivers[2])
+        device_1, device_2, device_3 = SignInView(self.drivers[0]), SignInView(self.drivers[1]), SignInView(
+            self.drivers[2])
 
         no_contact_nickname = 'no_contact_nickname'
         name_1, name_2 = 'device_%s' % device_1.driver.number, 'device_%s' % device_2.driver.number
@@ -132,7 +133,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
                 self.errors.append('"%s" is not found in Contacts after initial sync' % name)
         profile_2.blocked_users_button.click()
         if not profile_2.element_by_text(no_contact_nickname).is_element_displayed():
-            self.errors.append("'%s' nickname without addeing to contacts is not synced after initial sync" % no_contact_nickname)
+            self.errors.append(
+                "'%s' nickname without addeing to contacts is not synced after initial sync" % no_contact_nickname)
         profile_2.profile_button.double_click()
 
         device_1.just_fyi("Contacts(main device): unblock user, send message from unblocked user")
@@ -220,7 +222,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-
     @marks.testrail_id(6324)
     @marks.medium
     def test_invite_to_group_chat_handling(self):
@@ -241,7 +242,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         chats[0].just_fyi('Member_1, member_2: both users send requests to join group chat')
         [sign_in.open_weblink_and_login(link) for sign_in in (sign_ins[1], sign_ins[2])]
         introduction_messages = ['message for retrying']
-        for i in range(1,3):
+        for i in range(1, 3):
             homes[i].element_by_text_part(chat_name).click()
             chats[i] = ChatView(self.drivers[i])
             introduction_messages.append('Please add me, member_%s to your gorgeous group chat' % str(i))
@@ -275,12 +276,13 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         chats[2].just_fyi('Double check after relogin')
         if chats[0].group_membership_request_button.is_element_displayed():
             self.errors.append('Group membership request is still shown when there are no pending requests anymore')
-        [homes[i].relogin() for i in range(0,3)]
+        [homes[i].relogin() for i in range(0, 3)]
         if homes[2].element_by_text_part(chat_name).is_element_displayed():
             self.errors.append('Group chat was not removed when removing after declining group invite')
         [home.get_chat(chat_name).click() for home in (homes[0], homes[1])]
         if chats[0].group_membership_request_button.is_element_displayed():
-            self.errors.append('Group membership request is shown after relogin when there are no pending requests anymore')
+            self.errors.append(
+                'Group membership request is shown after relogin when there are no pending requests anymore')
         join_system_message = chats[0].join_system_message(usernames[1])
         for chat in (chats[1], chats[0]):
             if not chat.chat_element_by_text(join_system_message).is_element_displayed():
@@ -298,13 +300,13 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
             public_keys[key], usernames[key] = sign_in_view.get_public_key_and_username(True)
             sign_in_view.home_button.click()
         chat_name = homes[0].get_random_chat_name()
-        for i in range(1,3):
+        for i in range(1, 3):
             homes[0].add_contact(public_keys[i])
             homes[0].get_back_to_home_view()
         chats[0] = homes[0].create_group_chat([usernames[1],
-                                                             usernames[2]], chat_name)
+                                               usernames[2]], chat_name)
         chats[0].just_fyi('Member_1, member_2: both users join to group chat')
-        for i in range(1,3):
+        for i in range(1, 3):
             chats[i] = homes[i].get_chat(chat_name).click()
             chats[i].join_chat_button.click()
         chats[0].just_fyi("Admin: get options for device 2 in group chat and remove him")
@@ -332,7 +334,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
     @marks.medium
     def test_pair_devices_group_chat_different_messages_nicknames(self):
         self.create_drivers(3)
-        device_1, device_2, device_3 = SignInView(self.drivers[0]), SignInView(self.drivers[1]), SignInView(self.drivers[2])
+        device_1, device_2, device_3 = SignInView(self.drivers[0]), SignInView(self.drivers[1]), SignInView(
+            self.drivers[2])
         home_1 = device_1.create_user()
         profile_1 = home_1.profile_button.click()
         profile_1.privacy_and_security_button.click()
@@ -347,7 +350,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_name, device_2_name, group_chat_name = 'creator', 'paired', 'some group chat'
         device_1.just_fyi('Add contact, start group chat')
         nickname = 'my_tester'
-        home_1.add_contact(public_key_3,nickname=nickname)
+        home_1.add_contact(public_key_3, nickname=nickname)
         home_1.get_back_to_home_view()
         chat_1 = home_1.create_group_chat([username_3], group_chat_name)
         chat_3 = home_3.get_chat(group_chat_name).click()
@@ -409,4 +412,3 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         if not chat_1.sticker_message.is_element_displayed(30):
             self.errors.append('Sticker was not sent')
         self.errors.verify_no_errors()
-

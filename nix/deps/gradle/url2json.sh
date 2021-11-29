@@ -55,26 +55,6 @@ fi
 # Get the relative path without full URL
 OBJ_REL_NAME="${OBJ_REL_URL#${REPO_URL}/}"
 
-OBJ_NIX_FETCH_OUT=$(nix_fetch "${OBJ_REL_URL}.jar")
-# Dependency might be a JAR or an AAR
-if [[ ${?} -eq 0 ]]; then
-    # Some deps have only a POM, nor JAR or AAR
-    OBJ_TYPE="jar"
-    OBJ_PATH=$(get_nix_path "${OBJ_NIX_FETCH_OUT}")
-    OBJ_SHA256=$(get_nix_sha "${OBJ_NIX_FETCH_OUT}")
-    OBJ_SHA1=$(get_sha1 "${OBJ_PATH}")
-else
-    OBJ_NIX_FETCH_OUT=$(nix_fetch "${OBJ_REL_URL}.aar")
-    if [[ ${?} -eq 0 ]]; then
-        OBJ_TYPE="aar"
-        OBJ_PATH=$(get_nix_path "${OBJ_NIX_FETCH_OUT}")
-        OBJ_SHA256=$(get_nix_sha "${OBJ_NIX_FETCH_OUT}")
-        OBJ_SHA1=$(get_sha1 "${OBJ_PATH}")
-    else
-        OBJ_TYPE="pom"
-    fi
-fi
-
 # Both JARs and AARs have a POM
 POM_NIX_FETCH_OUT=$(nix_fetch "${OBJ_REL_URL}.pom")
 POM_PATH=$(get_nix_path "${POM_NIX_FETCH_OUT}")
@@ -84,6 +64,23 @@ if [[ -z "${POM_PATH}" ]]; then
 fi
 POM_SHA256=$(get_nix_sha "${POM_NIX_FETCH_OUT}")
 POM_SHA1=$(get_sha1 "${POM_PATH}")
+
+# Identify packaging type, JAR, AAR, or just POM.
+OBJ_TYPE=$(grep -oP '<packaging>\K[^<]+' "${POM_PATH}")
+# Bundle is a JAR made using maven-bundle-plugin.
+case "${OBJ_TYPE}" in
+    ''|'bundle') OBJ_TYPE=jar;;
+    'aar.asc')   OBJ_TYPE=aar;;
+esac
+# Some dependencies have only a POM file.
+if [[ "${OBJ_TYPE}" != "pom" ]]; then
+    OBJ_NIX_FETCH_OUT=$(nix_fetch "${OBJ_REL_URL}.${OBJ_TYPE}")
+    if [[ ${?} -eq 0 ]]; then
+        OBJ_PATH=$(get_nix_path "${OBJ_NIX_FETCH_OUT}")
+        OBJ_SHA256=$(get_nix_sha "${OBJ_NIX_FETCH_OUT}")
+        OBJ_SHA1=$(get_sha1 "${OBJ_PATH}")
+    fi
+fi
 
 # Format into a Nix attrset entry
 echo -ne "

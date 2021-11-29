@@ -2,6 +2,7 @@
   (:require [cljs.spec.alpha :as spec]
             [re-frame.core :as re-frame]
             [status-im.ens.core :as ens]
+            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.encode :as encode]
@@ -13,16 +14,31 @@
 
 (def confirmations-count-threshold 12)
 
-(def etherscan-supported? #{:testnet :mainnet :rinkeby})
+(def etherscan-supported?
+  #{(ethereum/chain-keyword->chain-id :mainnet)
+    (ethereum/chain-keyword->chain-id :testnet)
+    (ethereum/chain-keyword->chain-id :rinkeby)})
 
-(let [network->subdomain {:testnet "ropsten" :rinkeby "rinkeby"}]
-  (defn get-transaction-details-url [chain hash]
-    {:pre [(keyword? chain) (string? hash)]
-     :post [(or (nil? %) (string? %))]}
-    (when (etherscan-supported? chain)
-      (let [network-subdomain (when-let [subdomain (network->subdomain chain)]
-                                (str subdomain "."))]
-        (str "https://" network-subdomain "etherscan.io/tx/" hash)))))
+(def binance-mainnet-chain-id (ethereum/chain-keyword->chain-id :bsc))
+(def binance-testnet-chain-id (ethereum/chain-keyword->chain-id :bsc-testnet))
+
+(def network->subdomain {3 "ropsten"
+                         4 "rinkeby"})
+
+(defn get-transaction-details-url [chain-id hash]
+  {:pre [(number? chain-id) (string? hash)]
+   :post [(or (nil? %) (string? %))]}
+  (cond
+    (etherscan-supported? chain-id)
+    (let [network-subdomain (when-let [subdomain (network->subdomain chain-id)]
+                              (str subdomain "."))]
+      (str "https://" network-subdomain "etherscan.io/tx/" hash))
+
+    (= chain-id binance-mainnet-chain-id)
+    (str "https://bscscan.com/tx/" hash)
+
+    (= chain-id binance-testnet-chain-id)
+    (str "https://testnet.bscscan.com/tx/" hash)))
 
 (def default-erc20-token
   {:symbol   :ERC20
@@ -358,6 +374,7 @@
      (tx-fetching-in-progress [address]))))
 
 (fx/defn get-fetched-transfers
+  {:events [:transaction/get-fetched-transfers]}
   [{:keys [db]}]
   {:transactions/get-transfers
    {:chain-tokens (:wallet/all-tokens db)

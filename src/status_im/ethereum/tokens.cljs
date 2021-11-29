@@ -1,46 +1,57 @@
 (ns status-im.ethereum.tokens
-  (:require [clojure.string :as string])
+  (:require [clojure.string :as string]
+            [status-im.ethereum.core :as ethereum])
   (:require-macros
    [status-im.ethereum.macros :as ethereum.macros :refer [resolve-icons]]))
 
 (def default-native-currency
   (memoize
-   (fn []
-     {:name     "Native"
-      :symbol   :ETH
-      :decimals 18
-      :icon     {:source (js/require "../resources/images/tokens/default-native.png")}})))
+   (fn [symbol]
+     {:name           "Native"
+      :symbol         :ETH
+      :symbol-display symbol
+      :decimals       18
+      :icon           {:source (js/require "../resources/images/tokens/default-token.png")}})))
 
 (def snt-icon-source (js/require "../resources/images/tokens/mainnet/SNT.png"))
 
 (def all-native-currencies
   (ethereum.macros/resolve-native-currency-icons
-   {:mainnet {:name     "Ether"
-              :symbol   :ETH
-              :decimals 18}
-    :testnet {:name           "Ropsten Ether"
-              :symbol         :ETH
-              :symbol-display :ETHro
-              :decimals       18}
-    :rinkeby {:name           "Rinkeby Ether"
-              :symbol         :ETH
-              :symbol-display :ETHri
-              :decimals       18}
-    :poa     {:name           "POA"
-              :symbol         :ETH
-              :symbol-display :POA
-              :decimals       18}
-    :xdai    {:name            "xDAI"
-              :symbol          :ETH
-              :symbol-display  :xDAI
-              :symbol-exchange :DAI
-              :decimals        18}}))
+   {:mainnet     {:name     "Ether"
+                  :symbol   :ETH
+                  :decimals 18}
+    :testnet     {:name           "Ropsten Ether"
+                  :symbol         :ETH
+                  :symbol-display :ETHro
+                  :decimals       18}
+    :rinkeby     {:name           "Rinkeby Ether"
+                  :symbol         :ETH
+                  :symbol-display :ETHri
+                  :decimals       18}
+    :poa         {:name           "POA"
+                  :symbol         :ETH
+                  :symbol-display :POA
+                  :decimals       18}
+    :xdai        {:name            "xDAI"
+                  :symbol          :ETH
+                  :symbol-display  :xDAI
+                  :symbol-exchange :DAI
+                  :decimals        18}
+    :bsc         {:name           "BSC"
+                  :symbol         :ETH
+                  :symbol-display :BNB
+                  :decimals       18}
+    :bsc-testnet {:name           "BSC test"
+                  :symbol         :ETH
+                  :symbol-display :BNBtest
+                  :decimals       18}}))
 
 (def native-currency-symbols
   (set (map #(-> % val :symbol) all-native-currencies)))
 
-(defn native-currency [chain]
-  (-> (get all-native-currencies chain (default-native-currency))))
+(defn native-currency [{:keys [symbol] :as current-network}]
+  (let [chain (ethereum/network->chain-keyword current-network)]
+    (get all-native-currencies chain (default-native-currency symbol))))
 
 (defn ethereum? [symbol]
   (native-currency-symbols symbol))
@@ -767,6 +778,10 @@
                    {:address  "0xba5BDe662c17e2aDFF1075610382B9B691296350"
                     :symbol   :RARE
                     :name     "SuperRare"
+                    :decimals 18}
+                   {:address  "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72"
+                    :symbol   :ENS
+                    :name     "Ethereum Name Service"
                     :decimals 18}])
    :testnet
    (resolve-icons :testnet
@@ -851,8 +866,8 @@
 (defn address->token [all-tokens address]
   (get all-tokens (string/lower-case address)))
 
-(defn asset-for [all-tokens chain symbol]
-  (let [native-coin (native-currency chain)]
+(defn asset-for [all-tokens current-network symbol]
+  (let [native-coin (native-currency current-network)]
     (if (or (= (:symbol-display native-coin) symbol)
             (= (:symbol native-coin) symbol))
       native-coin

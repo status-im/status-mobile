@@ -19,6 +19,7 @@
 (def default-manage
   {:name  {:value ""}
    :url   {:value ""}
+   :symbol {:value ""}
    :chain {:value :mainnet}})
 
 (defn validate-string [{:keys [value]}]
@@ -38,6 +39,7 @@
   (-> manage
       (update :url validate-url)
       (update :name validate-string)
+      (update :symbol validate-string)
       (update :chain validate-string)
       (update :network-id validate-network-id)))
 
@@ -151,7 +153,7 @@
                        :on-success #(re-frame/dispatch [:navigate-back])}]}))
 
 (defn new-network
-  [random-id network-name upstream-url chain-type chain-id]
+  [random-id network-name symbol upstream-url chain-type chain-id]
   (let [data-dir (str "/ethereum/" (name chain-type) "_rpc")
         config   {:NetworkId      (or (when chain-id (int chain-id))
                                       (ethereum/chain-keyword->chain-id chain-type))
@@ -160,6 +162,7 @@
                                    :URL     upstream-url}}]
     {:id         random-id
      :name       network-name
+     :symbol     symbol
      :config     config}))
 
 (fx/defn save
@@ -169,10 +172,11 @@
     random-id-generator :random-id-generator :as cofx}]
   (if (valid-manage? manage)
     ;; rename network-id from UI to chain-id
-    (let [{:keys [name url chain network-id]} manage
+    (let [{:keys [name url chain network-id symbol]} manage
           random-id (string/replace (random-id-generator) "-" "")
           network (new-network random-id
                                (:value name)
+                               (:value symbol)
                                (:value url)
                                (:value chain)
                                (:value network-id))

@@ -10,6 +10,7 @@
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
+            [status-im.utils.datetime :as utils.datetime]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.utils.platform :as platform]
             [status-im.popover.core :as popover]))
@@ -416,6 +417,14 @@
 
 ;; Get application info
 
+(fx/defn update-pairings
+  [{:keys [db]} instance-uid pairing]
+  (let  [paired-on (utils.datetime/timestamp)
+         pairings  (-> (get-in db [:keycard :pairings])
+                       (assoc  instance-uid {:pairing pairing :paired-on paired-on}))]
+    {:keycard/persist-pairings pairings
+     :db (assoc-in db [:keycard :pairings] pairings)}))
+
 (fx/defn get-application-info
   {:events [:keycard/get-application-info]}
   [{:keys [db]} on-card-read]
@@ -425,9 +434,8 @@
 (fx/defn on-get-application-info-success
   {:events [:keycard.callback/on-get-application-info-success]}
   [{:keys [db] :as cofx} info on-success]
-  (let [{:keys [pin-retry-counter puk-retry-counter]} info
+  (let [{:keys [pin-retry-counter puk-retry-counter instance-uid new-pairing]} info
         view-id (:view-id db)
-
         {:keys [on-card-read]} (:keycard db)
         on-success' (or on-success on-card-read)
         enter-step  (get-in db [:keycard :pin :enter-step])]
@@ -443,6 +451,8 @@
               (assoc-in [:keycard :application-info :applet-installed?] true)
               (assoc-in [:keycard :application-info-error] nil))}
      (stash-on-card-read)
+     (when new-pairing
+       (update-pairings instance-uid new-pairing))
      (when (and (zero? pin-retry-counter)
                 (pos? puk-retry-counter)
                 (not= enter-step :puk))
@@ -452,6 +462,7 @@
          (blocked-keycard-popup cofx)
          (when on-success'
            (dispatch-event cofx on-success')))))))
+
 (fx/defn on-get-application-info-error
   {:events [:keycard.callback/on-get-application-info-error]}
   [{:keys [db] :as cofx} error]

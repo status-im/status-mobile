@@ -26,7 +26,7 @@
   [cofx {:keys [key id]} public]
   (fx/merge cofx
             {::persistence/chat-initalized! true}
-            (chat/start-chat key)))
+            (chat/start-chat key nil)))
 
 (fx/defn start-public-chat
   {:events [::start-public-chat]}

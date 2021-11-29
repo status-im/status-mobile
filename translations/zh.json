@@ -1280,7 +1280,7 @@
     "repeat-pin": "重复新的6位数字密码",
     "repeat-puk": "重复新的12位PUK码",
     "replying-to": "回复{{author}}",
-    "report-bug-email-template": "1. 问题描述\n（描述您想要的功能，或简要说明发生的错误和您的操作，您预期的行为以及实际发生的行为。请在下方填写） \n\n\n 2. 操作步骤\n（描述我们如何一步一步复现这个错误。）\n - 打开Status\n- ...\n - 步骤 3 等。 \n\n\n 3. 预期行为\n（描述你期望发生的事情。） \n\n\n 4. 实际行为\n（描述实际发生的事情。） \n\n\n 5.请附上可以演示问题的截图\n",
+    "report-bug-email-template": "1. 问题描述\n {{description}} \n\n\n 2. 操作步骤\n {{steps}} \n\n\n 3.请附上可以演示问题的截图\n",
     "request-access": "申请加入",
     "request-feature": "请求功能",
     "request-membership": "申请进群",

@@ -45,12 +45,11 @@
 
 (fx/defn block-contact
   {:events [:contact.ui/block-contact-confirmed]}
-  [{:keys [db now] :as cofx} public-key]
+  [{:keys [db] :as cofx} public-key]
   (let [contact (-> (contact.db/public-key->contact
                      (:contacts/contacts db)
                      public-key)
-                    (assoc :last-updated now
-                           :blocked true
+                    (assoc :blocked true
                            :added false))
         from-one-to-one-chat? (not (get-in db [:chats (:current-chat-id db) :group-chat]))]
     (fx/merge cofx
@@ -59,20 +58,26 @@
                        (update :contacts/blocked (fnil conj #{}) public-key)
                        ;; update the contact in contacts list
                        (assoc-in [:contacts/contacts public-key] contact))}
-              (contacts-store/block contact #(do (re-frame/dispatch [::contact-blocked contact (map chats-store/<-rpc %)])
-                                                 (re-frame/dispatch [:hide-popover])))
+              (contacts-store/block public-key #(do (re-frame/dispatch [::contact-blocked contact (map chats-store/<-rpc %)])
+                                                    (re-frame/dispatch [:hide-popover])))
               ;; reset navigation to avoid going back to non existing one to one chat
               (if from-one-to-one-chat?
                 (navigation/pop-to-root-tab :chat-stack)
                 (navigation/navigate-back)))))
 
+(fx/defn contact-unblocked
+  {:events [::contact-unblocked]}
+  [{:keys [db]} contact-id]
+  (let [contact (-> (get-in db [:contacts/contacts contact-id])
+                    (assoc :blocked false))]
+    {:db (-> db
+             (update :contacts/blocked disj contact-id)
+             (assoc-in [:contacts/contacts contact-id] contact))}))
+
 (fx/defn unblock-contact
-  {:events [:contact.ui/unblock-contact-pressed ::contact-unblocked]}
-  [{:keys [db now] :as cofx} public-key]
-  (let [contact (-> (get-in db [:contacts/contacts public-key])
-                    (assoc :last-updated now :blocked false))]
-    (fx/merge cofx
-              {:db (-> db
-                       (update :contacts/blocked disj public-key)
-                       (assoc-in [:contacts/contacts public-key] contact))}
-              (contacts-store/save-contact contact nil))))
+  {:events [:contact.ui/unblock-contact-pressed]}
+  [cofx contact-id]
+  (contacts-store/unblock
+   cofx
+   contact-id
+   #(re-frame/dispatch [::contact-unblocked contact-id])))

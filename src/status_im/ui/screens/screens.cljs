@@ -1,121 +1,124 @@
 (ns status-im.ui.screens.screens
-  (:require [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
-            [status-im.ui.screens.wallet.recipient.views :as recipient]
-            [status-im.ui.screens.qr-scanner.views :as qr-scanner]
-            [status-im.ui.screens.stickers.views :as stickers]
-            [status-im.ui.screens.add-new.new-chat.views :as new-chat]
-            [status-im.add-new.core :as new-chat.events]
-            [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
-            [status-im.ui.screens.group.views :as group-chat]
-            [status-im.ui.components.invite.views :as invite]
+  (:require [quo.design-system.colors :as colors]
             [quo.previews.main :as quo.preview]
-            [status-im.ui.screens.profile.contact.views :as contact]
-            [status-im.ui.screens.notifications-settings.views :as notifications-settings]
-            [status-im.ui.screens.wallet.send.views :as wallet.send]
-            [status-im.ui.screens.status.new.views :as status.new]
-            [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
-            [status-im.ui.screens.communities.invite :as communities.invite]
-            [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
-            [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
-            [status-im.keycard.core :as keycard.core]
-            [status-im.ui.screens.keycard.views :as keycard]
-            [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage.views]
-            [status-im.ui.screens.home.views :as home]
-            [status-im.ui.screens.chat.views :as chat]
-            [status-im.ui.screens.referrals.public-chat :as referrals.public-chat]
-            [status-im.ui.screens.communities.views :as communities]
-            [status-im.ui.screens.communities.community :as community]
-            [status-im.ui.screens.communities.create :as communities.create]
-            [status-im.ui.screens.communities.import :as communities.import]
-            [status-im.ui.screens.communities.profile :as community.profile]
-            [status-im.ui.screens.communities.edit :as community.edit]
-            [status-im.ui.screens.communities.create-channel :as create-channel]
-            [status-im.ui.screens.communities.community-emoji-thumbnail-picker :as community-emoji-thumbnail-picker]
-            [status-im.ui.screens.communities.membership :as membership]
-            [status-im.ui.screens.communities.members :as members]
-            [status-im.ui.screens.communities.requests-to-join :as requests-to-join]
-            [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
-            [status-im.ui.screens.notifications-center.views :as notifications-center]
-            [status-im.ui.screens.browser.empty-tab.views :as empty-tab]
-            [status-im.ui.screens.browser.views :as browser]
-            [status-im.ui.screens.browser.tabs.views :as browser.tabs]
-            [status-im.ui.screens.multiaccounts.login.views :as login]
-            [status-im.ui.screens.progress.views :as progress]
-            [status-im.ui.screens.multiaccounts.views :as multiaccounts]
-            [status-im.ui.screens.keycard.authentication-method.views :as keycard.authentication]
-            [status-im.ui.screens.onboarding.intro.views :as onboarding.intro]
-            [status-im.ui.screens.onboarding.keys.views :as onboarding.keys]
-            [status-im.ui.screens.onboarding.password.views :as onboarding.password]
-            [status-im.ui.screens.onboarding.storage.views :as onboarding.storage]
-            [status-im.ui.screens.onboarding.notifications.views :as onboarding.notifications]
-            [status-im.ui.screens.onboarding.welcome.views :as onboarding.welcome]
-            [status-im.ui.screens.onboarding.phrase.view :as onboarding.phrase]
-            [status-im.ui.screens.currency-settings.views :as currency-settings]
-            [status-im.ui.screens.wallet.settings.views :as wallet-settings]
-            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-            [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
-            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
-            [status-im.ui.screens.wallet.collectibles.views :as wallet.collectibles]
-            [status-im.ui.screens.wallet.account.views :as wallet.account]
-            [status-im.ui.screens.wallet.add-new.views :as add-account]
-            [status-im.ui.screens.wallet.account-settings.views :as account-settings]
+            [status-im.add-new.core :as new-chat.events]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.screens.status.views :as status.views]
-            [status-im.ui.screens.profile.user.views :as profile.user]
-            [status-im.ui.screens.ens.views :as ens]
-            [status-im.ui.screens.contacts-list.views :as contacts-list]
+            [status-im.keycard.core :as keycard.core]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.invite.views :as invite]
+            [status-im.ui.screens.about-app.views :as about-app]
+            [status-im.ui.screens.add-new.new-chat.views :as new-chat]
+            [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
+            [status-im.ui.screens.advanced-settings.views :as advanced-settings]
+            [status-im.ui.screens.anonymous-metrics-settings.views :as anonymous-metrics-settings]
+            [status-im.ui.screens.appearance.views :as appearance]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.views
              :as
              edit-bootnode]
             [status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
-            [status-im.ui.screens.wakuv2-settings.views :as wakuv2-settings]
-            [status-im.ui.screens.wakuv2-settings.edit-node.views
+            [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
+            [status-im.ui.screens.browser.empty-tab.views :as empty-tab]
+            [status-im.ui.screens.browser.tabs.views :as browser.tabs]
+            [status-im.ui.screens.browser.views :as browser]
+            [status-im.ui.screens.bug-report :as bug-report]
+            [status-im.ui.screens.chat.pinned-messages :as pin-messages]
+            [status-im.ui.screens.chat.views :as chat]
+            [status-im.ui.screens.communities.channel-details :as communities.channel-details]
+            [status-im.ui.screens.communities.community :as community]
+            [status-im.ui.screens.communities.community-emoji-thumbnail-picker :as community-emoji-thumbnail-picker]
+            [status-im.ui.screens.communities.create :as communities.create]
+            [status-im.ui.screens.communities.create-category :as create-category]
+            [status-im.ui.screens.communities.create-channel :as create-channel]
+            [status-im.ui.screens.communities.edit :as community.edit]
+            [status-im.ui.screens.communities.edit-channel :as edit-channel]
+            [status-im.ui.screens.communities.import :as communities.import]
+            [status-im.ui.screens.communities.invite :as communities.invite]
+            [status-im.ui.screens.communities.members :as members]
+            [status-im.ui.screens.communities.membership :as membership]
+            [status-im.ui.screens.communities.profile :as community.profile]
+            [status-im.ui.screens.communities.reorder-categories :as reorder-categories]
+            [status-im.ui.screens.communities.requests-to-join :as requests-to-join]
+            [status-im.ui.screens.communities.select-category :as select-category]
+            [status-im.ui.screens.communities.views :as communities]
+            [status-im.ui.screens.contacts-list.views :as contacts-list]
+            [status-im.ui.screens.currency-settings.views :as currency-settings]
+            [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
+            [status-im.ui.screens.default-sync-period-settings.view :as default-sync-period-settings]
+            [status-im.ui.screens.ens.views :as ens]
+            [status-im.ui.screens.fleet-settings.views :as fleet-settings]
+            [status-im.ui.screens.glossary.view :as glossary]
+            [status-im.ui.screens.group.views :as group-chat]
+            [status-im.ui.screens.help-center.views :as help-center]
+            [status-im.ui.screens.home.views :as home]
+            [status-im.ui.screens.keycard.authentication-method.views :as keycard.authentication]
+            [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
+            [status-im.ui.screens.keycard.pairing.views :as keycard.pairing]
+            [status-im.ui.screens.keycard.pin.views :as keycard.pin]
+            [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
+            [status-im.ui.screens.keycard.settings.views :as keycard.settings]
+            [status-im.ui.screens.keycard.views :as keycard]
+            [status-im.ui.screens.link-previews-settings.views :as link-previews-settings]
+            [status-im.ui.screens.log-level-settings.views :as log-level-settings]
+            [status-im.ui.screens.mobile-network-settings.view
              :as
-             edit-wakuv2-node]
-            [status-im.ui.screens.pairing.views :as pairing]
+             mobile-network-settings]
+            [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage.views]
+            [status-im.ui.screens.multiaccounts.login.views :as login]
+            [status-im.ui.screens.multiaccounts.views :as multiaccounts]
+            [status-im.ui.screens.network-info.views :as network-info]
+            [status-im.ui.screens.network.edit-network.views :as edit-network]
+            [status-im.ui.screens.network.network-details.views :as network-details]
+            [status-im.ui.screens.network.views :as network]
+            [status-im.ui.screens.notifications-center.views :as notifications-center]
+            [status-im.ui.screens.notifications-settings.views :as notifications-settings]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views
              :as
              edit-mailserver]
             [status-im.ui.screens.offline-messaging-settings.views
              :as
              offline-messaging-settings]
-            [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
-            [status-im.ui.screens.link-previews-settings.views :as link-previews-settings]
-            [status-im.ui.screens.privacy-and-security-settings.views :as privacy-and-security]
-            [status-im.ui.screens.privacy-and-security-settings.messages-from-contacts-only :as messages-from-contacts-only]
-            [status-im.ui.screens.sync-settings.views :as sync-settings]
-            [status-im.ui.screens.advanced-settings.views :as advanced-settings]
-            [status-im.ui.screens.help-center.views :as help-center]
-            [status-im.ui.screens.glossary.view :as glossary]
-            [status-im.ui.screens.about-app.views :as about-app]
-            [status-im.ui.screens.mobile-network-settings.view
-             :as
-             mobile-network-settings]
-            [status-im.ui.screens.reset-password.views :as reset-password]
-            [status-im.ui.screens.network.edit-network.views :as edit-network]
-            [status-im.ui.screens.network.views :as network]
-            [status-im.ui.screens.network.network-details.views :as network-details]
-            [status-im.ui.screens.network-info.views :as network-info]
-            [status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
-            [status-im.ui.screens.log-level-settings.views :as log-level-settings]
-            [status-im.ui.screens.fleet-settings.views :as fleet-settings]
-            [status-im.ui.screens.profile.seed.views :as profile.seed]
-            [status-im.ui.screens.keycard.pin.views :as keycard.pin]
-            [status-im.ui.screens.keycard.pairing.views :as keycard.pairing]
-            [status-im.ui.screens.keycard.settings.views :as keycard.settings]
-            [status-im.ui.screens.appearance.views :as appearance]
-            [status-im.ui.screens.terms-of-service.views :as terms-of-service]
+            [status-im.ui.screens.onboarding.intro.views :as onboarding.intro]
+            [status-im.ui.screens.onboarding.keys.views :as onboarding.keys]
+            [status-im.ui.screens.onboarding.notifications.views :as onboarding.notifications]
+            [status-im.ui.screens.onboarding.password.views :as onboarding.password]
+            [status-im.ui.screens.onboarding.phrase.view :as onboarding.phrase]
+            [status-im.ui.screens.onboarding.storage.views :as onboarding.storage]
+            [status-im.ui.screens.onboarding.welcome.views :as onboarding.welcome]
+            [status-im.ui.screens.pairing.views :as pairing]
             [status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]
-            [status-im.ui.screens.default-sync-period-settings.view :as default-sync-period-settings]
-            [status-im.ui.screens.communities.channel-details :as communities.channel-details]
-            [status-im.ui.screens.communities.edit-channel :as edit-channel]
-            [status-im.ui.screens.anonymous-metrics-settings.views :as anonymous-metrics-settings]
-            [quo.design-system.colors :as colors]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.screens.chat.pinned-messages :as pin-messages]
-            [status-im.ui.screens.communities.create-category :as create-category]
-            [status-im.ui.screens.communities.select-category :as select-category]
-            [status-im.ui.screens.wallet.accounts-manage.views :as accounts-manage]))
+            [status-im.ui.screens.privacy-and-security-settings.messages-from-contacts-only :as messages-from-contacts-only]
+            [status-im.ui.screens.privacy-and-security-settings.views :as privacy-and-security]
+            [status-im.ui.screens.profile.contact.views :as contact]
+            [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
+            [status-im.ui.screens.profile.seed.views :as profile.seed]
+            [status-im.ui.screens.profile.user.views :as profile.user]
+            [status-im.ui.screens.progress.views :as progress]
+            [status-im.ui.screens.qr-scanner.views :as qr-scanner]
+            [status-im.ui.screens.referrals.public-chat :as referrals.public-chat]
+            [status-im.ui.screens.backup-settings.view :as backup-settings]
+            [status-im.ui.screens.reset-password.views :as reset-password]
+            [status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
+            [status-im.ui.screens.status.new.views :as status.new]
+            [status-im.ui.screens.status.views :as status.views]
+            [status-im.ui.screens.stickers.views :as stickers]
+            [status-im.ui.screens.sync-settings.views :as sync-settings]
+            [status-im.ui.screens.terms-of-service.views :as terms-of-service]
+            [status-im.ui.screens.wakuv2-settings.edit-node.views
+             :as
+             edit-wakuv2-node]
+            [status-im.ui.screens.wakuv2-settings.views :as wakuv2-settings]
+            [status-im.ui.screens.wallet.account-settings.views :as account-settings]
+            [status-im.ui.screens.wallet.account.views :as wallet.account]
+            [status-im.ui.screens.wallet.accounts-manage.views :as accounts-manage]
+            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
+            [status-im.ui.screens.wallet.add-new.views :as add-account]
+            [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
+            [status-im.ui.screens.wallet.collectibles.views :as wallet.collectibles]
+            [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
+            [status-im.ui.screens.wallet.recipient.views :as recipient]
+            [status-im.ui.screens.wallet.send.views :as wallet.send]
+            [status-im.ui.screens.wallet.settings.views :as wallet-settings]
+            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]))
 
 (def components
   [{:name      :chat-toolbar
@@ -289,6 +292,10 @@
             :insets    {:bottom true}
             :options   {:topBar {:visible false}}
             :component community/community-edit}
+           {:name      :community-reorder-categories
+            :insets    {:top false}
+            :options   {:topBar {:visible false}}
+            :component reorder-categories/view}
            {:name      :community-channel-details
             :insets    {:top false}
             ;;TODO custom
@@ -540,6 +547,9 @@
            {:name      :mobile-network-settings
             :options   {:topBar {:title {:text (i18n/label :t/mobile-network-settings)}}}
             :component mobile-network-settings/mobile-network-settings}
+           {:name      :backup-settings
+            :options   {:topBar {:title {:text (i18n/label :t/backup-settings)}}}
+            :component backup-settings/backup-settings}
            {:name      :backup-seed
             ;;TODO dynamic navigation
             :options   {:topBar {:visible false}}
@@ -863,7 +873,12 @@
             :options   {:topBar {:visible false}}
             :insets    {:bottom true}
             ;;TODO move to popover?
-            :component key-storage.views/storage}]
+            :component key-storage.views/storage}
+
+           ;; BUG REPORT
+           {:name      :bug-report
+            :options   {:topBar {:visible false}}
+            :component bug-report/bug-report}]
 
           (when js/goog.DEBUG
             quo.preview/screens)

@@ -3,7 +3,8 @@
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.chat.models :as chat]
-            [status-im.contact.core :as contact]))
+            [status-im.contact.core :as contact]
+            [status-im.notifications-center.core :as notification-center]))
 
 (fx/defn send-message-pressed
   {:events       [:contact.ui/send-message-pressed]
@@ -11,6 +12,7 @@
   [cofx {:keys [public-key]}]
   (fx/merge cofx
             {:dispatch-later [{:ms 1000 :dispatch [:chat.ui/start-chat public-key]}]}
+            (notification-center/accept-all-activity-center-notifications-from-chat public-key)
             (navigation/pop-to-root-tab :chat-stack)))
 
 (fx/defn contact-code-submitted
@@ -20,12 +22,10 @@
   (let [{:keys [public-key ens-name]} new-identity]
     (fx/merge cofx
               #(if new-contact?
-                 (contact/add-contact % public-key nickname)
-                 (chat/start-chat % public-key))
+                 (contact/add-contact % public-key nickname ens-name)
+                 (chat/start-chat % public-key ens-name))
               #(when new-contact?
-                 (navigation/navigate-back %))
-              #(when ens-name
-                 (contact/name-verified % public-key ens-name)))))
+                 (navigation/navigate-back %)))))
 
 (fx/defn pinned-messages-pressed
   {:events       [:contact.ui/pinned-messages-pressed]}

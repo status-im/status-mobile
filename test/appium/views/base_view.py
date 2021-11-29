@@ -12,7 +12,7 @@ from io import BytesIO
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from support.device_apps import start_web_browser
-from tests import common_password, pytest_config_global, geth_log_emulator_path, transl
+from tests import common_password, pytest_config_global, transl
 from views.base_element import Button, BaseElement, EditBox, Text
 
 
@@ -46,6 +46,7 @@ class TabButton(Button):
             def __init__(self, driver, parent_locator):
                 super().__init__(driver,
                                  xpath="%s/android.widget.TextView" % parent_locator)
+
         return Counter(self.driver, self.locator)
 
     @property
@@ -53,6 +54,7 @@ class TabButton(Button):
         class PublicChatUnreadMessages(BaseElement):
             def __init__(self, driver, parent_locator):
                 super().__init__(driver, xpath="%s/android.widget.TextView" % parent_locator)
+
         return PublicChatUnreadMessages(self.driver, self.locator)
 
 
@@ -122,7 +124,7 @@ class ProfileButton(TabButton):
         from views.profile_view import ProfileView
         return ProfileView(self.driver)
 
-    def click(self, desired_element_text = 'privacy'):
+    def click(self, desired_element_text='privacy'):
         from views.profile_view import ProfileView
         if desired_element_text == 'privacy':
             self.click_until_presence_of_element(ProfileView(self.driver).privacy_and_security_button)
@@ -157,6 +159,7 @@ class AssetButton(Button):
 
     def click(self):
         self.wait_for_element().click()
+
 
 class OpenInStatusButton(Button):
     def __init__(self, driver):
@@ -194,9 +197,11 @@ class AirplaneModeButton(Button):
         super(AirplaneModeButton, self).click()
         self.driver.press_keycode(4)
 
+
 class SignInPhraseText(Text):
     def __init__(self, driver):
-        super().__init__(driver, translation_id="this-is-you-signing", suffix="//following-sibling::*[2]/android.widget.TextView")
+        super().__init__(driver, translation_id="this-is-you-signing",
+                         suffix="//following-sibling::*[2]/android.widget.TextView")
 
     @property
     def list(self):
@@ -247,8 +252,6 @@ class BaseView(object):
         self.qr_code_image = Button(self.driver, accessibility_id="qr-code-image")
         self.sign_in_phrase = SignInPhraseText(self.driver)
 
-
-
         # external browser
         self.open_in_status_button = OpenInStatusButton(self.driver)
 
@@ -283,8 +286,8 @@ class BaseView(object):
             iterations += 1
 
     @staticmethod
-    def get_translation_by_key(id):
-        return transl[id]
+    def get_translation_by_key(translation_id):
+        return transl[translation_id]
 
     def rooted_device_continue(self):
         try:
@@ -321,8 +324,8 @@ class BaseView(object):
             except TimeoutException:
                 counter += 1
 
-    def just_fyi(self, string):
-        self.driver.info('# STEP: %s' % string, device=False)
+    def just_fyi(self, some_str):
+        self.driver.info('# STEP: %s' % some_str, device=False)
 
     def click_system_back_button(self, times=1):
         self.driver.info('Click system back button')
@@ -360,8 +363,8 @@ class BaseView(object):
         self.driver.info('Paste text')
         self.driver.press_keycode(279)
 
-    def send_as_keyevent(self, string):
-        self.driver.info("Sending as keyevent `%s`" % string)
+    def send_as_keyevent(self, keyevent):
+        self.driver.info("Sending as keyevent `%s`" % keyevent)
         keys = {'0': 7, '1': 8, '2': 9, '3': 10, '4': 11, '5': 12, '6': 13, '7': 14, '8': 15, '9': 16,
 
                 ',': 55, '-': 69, '+': 81, '.': 56, '/': 76, '\\': 73, ';': 74, ' ': 62,
@@ -371,7 +374,7 @@ class BaseView(object):
                 'k': 39, 'l': 40, 'm': 41, 'n': 42, 'o': 43, 'p': 44, 'q': 45, 'r': 46, 's': 47, 't': 48,
                 'u': 49, 'v': 50, 'w': 51, 'x': 52, 'y': 53, 'z': 54}
         time.sleep(3)
-        for i in string:
+        for i in keyevent:
             if i.isalpha() and i.isupper():
                 keycode, metastate = keys[i.lower()], 64  # META_SHIFT_LEFT_ON Constant Value: 64. Example: i='n' -> 'N'
             elif type(keys[i]) is list:
@@ -394,8 +397,8 @@ class BaseView(object):
         element = self.element_types[element_type](self.driver, xpath="//*[starts-with(@text,'%s')]" % text)
         return element
 
-    def element_by_translation_id(self, id, element_type='button', uppercase=False):
-        element = self.element_types[element_type](self.driver, translation_id=id, uppercase=uppercase)
+    def element_by_translation_id(self, translation_id, element_type='button', uppercase=False):
+        element = self.element_types[element_type](self.driver, translation_id=translation_id, uppercase=uppercase)
         return element
 
     def wait_for_element_starts_with_text(self, text, wait_time=60):
@@ -406,27 +409,28 @@ class BaseView(object):
         """Uses percentage values based on device width/height"""
         self.driver.info("Swiping based on custom coordinates relative to device height/width")
         size = self.driver.get_window_size()
-        self.driver.swipe(size["width"] * x_start, size["height"] * y_start, size["width"] * x_end, size["height"] * y_end)
+        self.driver.swipe(size["width"] * x_start, size["height"] * y_start, size["width"] * x_end,
+                          size["height"] * y_end)
 
     def swipe_up(self):
         self.driver.info("Swiping up")
         size = self.driver.get_window_size()
-        self.driver.swipe(size["width"]*0.5, size["height"]*0.8, size["width"]*0.5, size["height"]*0.2)
+        self.driver.swipe(size["width"] * 0.5, size["height"] * 0.8, size["width"] * 0.5, size["height"] * 0.2)
 
     def swipe_down(self):
         self.driver.info("Swiping down")
         size = self.driver.get_window_size()
-        self.driver.swipe(size["width"]*0.5, size["height"]*0.2, size["width"]*0.5, size["height"]*0.8)
+        self.driver.swipe(size["width"] * 0.5, size["height"] * 0.2, size["width"] * 0.5, size["height"] * 0.8)
 
     def swipe_left(self):
         self.driver.info("Swiping left")
         size = self.driver.get_window_size()
-        self.driver.swipe(size["width"]*0.8, size["height"]*0.8, size["width"]*0.2, size["height"]*0.8)
+        self.driver.swipe(size["width"] * 0.8, size["height"] * 0.8, size["width"] * 0.2, size["height"] * 0.8)
 
     def swipe_right(self):
         self.driver.info("Swiping right")
         size = self.driver.get_window_size()
-        self.driver.swipe(size["width"]*0.2, size["height"]*0.8, size["width"]*0.8, size["height"]*0.8)
+        self.driver.swipe(size["width"] * 0.2, size["height"] * 0.8, size["width"] * 0.8, size["height"] * 0.8)
 
     def switch_to_mobile(self, before_login=False, sync=False):
         self.driver.info("Turning on mobile data, syncing is %s" % str(sync))
@@ -520,7 +524,6 @@ class BaseView(object):
                 continue
         return self.get_home_view()
 
-
     def relogin(self, password=common_password):
         try:
             profile_view = self.profile_button.click()
@@ -535,7 +538,6 @@ class BaseView(object):
         self.driver.info("Closing share popup")
         TouchAction(self.driver).tap(None, 255, 104, 1).perform()
         time.sleep(3)
-
 
     def get_public_key_and_username(self, return_username=False):
         self.driver.info("Get public key and username")
@@ -573,7 +575,8 @@ class BaseView(object):
         return items_in_logcat
 
     def find_values_in_geth(self, *args):
-        b64_log = self.driver.pull_file(geth_log_emulator_path)
+        from tests.base_test_case import AbstractTestCase
+        b64_log = self.driver.pull_file(AbstractTestCase().geth_path)
         file = base64.b64decode(b64_log)
         result = False
         for value in args:
@@ -608,7 +611,7 @@ class BaseView(object):
         network_and_internet = self.element_by_text('Network & internet')
         network_and_internet.wait_for_visibility_of_element()
         network_and_internet.click()
-        toggle=Button(self.driver, accessibility_id='Wi‑Fi')
+        toggle = Button(self.driver, accessibility_id='Wi‑Fi')
         toggle.wait_for_visibility_of_element()
         toggle.click()
         self.driver.back()

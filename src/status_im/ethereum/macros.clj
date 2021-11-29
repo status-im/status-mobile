@@ -34,19 +34,20 @@
         tokens))
 
 (defn network->icon [network]
-  (let [s     (str "../resources/images/tokens/" (name network) "/0-native.png")
+  (let [s     (str "./resources/images/tokens/" (name network) "/0-native.png")
+        s-js  (str "." s)
         image (gensym)]
     (if (.exists (io/file s))
       `(let [~image (atom nil)]
          (fn []
            (or @~image
-               (reset! ~image (js/require ~s)))))
+               (reset! ~image (js/require ~s-js)))))
       `(let [~image (atom nil)]
          (fn []
            (or
             @~image
             (reset! ~image
-                    (js/require "../resources/images/tokens/default-native.png"))))))))
+                    (js/require "../resources/images/tokens/default-token.png"))))))))
 
 (defmacro resolve-native-currency-icons
   "In react-native arguments to require must be static strings.

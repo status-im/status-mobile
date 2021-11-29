@@ -3,7 +3,7 @@ import random
 import emoji
 
 from tests import marks, background_service_message
-from tests.users import basic_user, dummy_user, ens_user_ropsten, ens_user, ens_user_message_sender
+from tests.users import basic_user, dummy_user, ens_user_ropsten, ens_user
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 from views.chat_view import ChatView
@@ -32,7 +32,7 @@ class TestChatManagement(SingleDeviceTestCase):
             chat.send_message(messages[i])
             chat.get_back_to_home_view()
             home.leave_chat_long_press(chat_name) if chat_name == group else home.delete_chat_long_press(chat_name)
-            i+=1
+            i += 1
         home.relogin()
         for chat_name in one_to_one, public, group:
             if home.get_chat_from_home_view(chat_name).is_element_displayed():
@@ -56,7 +56,6 @@ class TestChatManagement(SingleDeviceTestCase):
         home.join_public_chat(public[1:])
         chat.get_back_to_home_view()
 
-
         home.just_fyi("Deleting 3 chats via delete button and check they will not reappear after relaunching app")
         i = 0
         for chat_name in one_to_one, public, group:
@@ -64,7 +63,7 @@ class TestChatManagement(SingleDeviceTestCase):
             chat = home.get_chat(chat_name).click()
             chat.send_message(message)
             chat.leave_chat() if chat_name == group else chat.delete_chat()
-            i+=1
+            i += 1
             chat.get_back_to_home_view()
         for chat_name in one_to_one, public, group:
             if home.get_chat_from_home_view(chat_name).is_element_displayed():
@@ -147,7 +146,8 @@ class TestChatManagement(SingleDeviceTestCase):
         chat = home.get_chat(public_options).click()
         chat.clear_history()
         if chat.element_by_text(message).is_element_displayed():
-            self.errors.append('Messages in %s chat are still shown after clearing history via options' % public_options)
+            self.errors.append(
+                'Messages in %s chat are still shown after clearing history via options' % public_options)
 
         home.just_fyi("Recheck that history won't reappear after relogin")
         home.relogin()
@@ -222,7 +222,7 @@ class TestChatManagement(SingleDeviceTestCase):
             if 'home_not_shown' in search_list[keyword]:
                 if home.element_by_text(search_list[keyword]['home_not_shown']).is_element_displayed():
                     self.errors.append('%s is shown on home view while searching for %s' % (
-                    search_list[keyword]['home_not_shown'], keyword))
+                        search_list[keyword]['home_not_shown'], keyword))
             for text in search_list[keyword]['home']:
                 if not home.element_by_text(text).is_element_displayed():
                     self.errors.append('%s is not shown on home view while searching for %s' % (text, keyword))
@@ -510,7 +510,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         expected_username = '%s %s' % (nickname, username_2)
         if chat_element.username.text != expected_username:
             self.errors.append('Username %s in public chat does not match expected %s' % (
-            chat_element.username.text, expected_username))
+                chat_element.username.text, expected_username))
 
         device_1.just_fyi('Add user to contacts, mention it by nickname check contact list in Profile')
         chat_element.member_photo.click()
@@ -688,7 +688,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_2.join_public_chat(chat_name)
         chat_public_2 = home_2.get_chat_view()
         [chat_public_2.send_message(message_after_block_2) for _ in range(2)]
-
 
         device_1.just_fyi("check that new messages and push notifications don't arrive from blocked user")
         device_1.open_notification_bar()
@@ -872,22 +871,22 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1_chat.just_fyi('Set several emojis as sender and receiver and check counters in public chat')
         message_sender = chat_public_1.chat_element_by_text(message_from_sender)
         emojis_from_sender = ['thumbs-down', 'love', 'laugh']
-        [chat_public_1.set_reaction(message_from_sender, emoji) for emoji in emojis_from_sender]
+        [chat_public_1.set_reaction(message_from_sender, reaction) for reaction in emojis_from_sender]
         emojis_from_receiver = ['angry', 'sad']
-        [chat_public_2.set_reaction(message_from_sender, emoji) for emoji in emojis_from_receiver]
+        [chat_public_2.set_reaction(message_from_sender, reaction) for reaction in emojis_from_receiver]
         message_receiver = chat_public_2.chat_element_by_text(message_from_sender)
-        for emoji in emojis_from_sender:
-            if message_sender.emojis_below_message(emoji) != 1:
+        for reaction in emojis_from_sender:
+            if message_sender.emojis_below_message(reaction) != 1:
                 self.errors.append(
-                    'Counter is not updated on own message after tapping %s for sender in pub chat' % emoji)
-            if message_receiver.emojis_below_message(emoji, own=False) != 1:
+                    'Counter is not updated on own message after tapping %s for sender in pub chat' % reaction)
+            if message_receiver.emojis_below_message(reaction, own=False) != 1:
                 self.errors.append(
-                    'Counter is not updated on received message after tapping %s for receiver in pub chat' % emoji)
-        for emoji in emojis_from_receiver:
-            if message_sender.emojis_below_message(emoji, own=False) != 1:
+                    'Counter is not updated on received message after tapping %s for receiver in pub chat' % reaction)
+        for reaction in emojis_from_receiver:
+            if message_sender.emojis_below_message(reaction, own=False) != 1:
                 self.errors.append(
                     'Counter is not updated on own message after tapping %s for receiver in pub chat' % emoji)
-            if message_receiver.emojis_below_message(emoji) != 1:
+            if message_receiver.emojis_below_message(reaction) != 1:
                 self.errors.append(
                     'Counter is not updated on received message after tapping %s for sender in pub chat' % emoji)
 
@@ -1030,8 +1029,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         message_from_sender = "Message sender"
-        GroupChat1Name = "GroupChat1"
-        GroupChat2Name = "GroupChat2"
+        group_chat_name_1 = "GroupChat1"
+        group_chat_name_2 = "GroupChat2"
         home_1, home_2 = device_1.create_user(), device_2.create_user()
 
         device_1.just_fyi('Device1 sets permissions to accept chat requests only from trusted contacts')
@@ -1048,15 +1047,17 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         one_to_one_device_2 = home_2.add_contact(public_key_user_1)
         one_to_one_device_2.send_message(message_from_sender)
         one_to_one_device_2.home_button.click()
-        home_2.create_group_chat([username_1], group_chat_name=GroupChat1Name)
+        home_2.create_group_chat([username_1], group_chat_name=group_chat_name_1)
 
         device_1.just_fyi('Device1 check there are no any chats in Activity Center nor Chats view')
 
         home_1.home_button.click()
-        if home_1.element_by_text_part(username_2).is_element_displayed() or home_1.element_by_text_part(GroupChat1Name).is_element_displayed():
+        if home_1.element_by_text_part(username_2).is_element_displayed() or home_1.element_by_text_part(
+                group_chat_name_1).is_element_displayed():
             self.errors.append("Chats are present on Chats view despite they created by non-contact")
         home_1.notifications_button.click()
-        if home_1.element_by_text_part(username_2).is_element_displayed() or home_1.element_by_text_part(GroupChat1Name).is_element_displayed():
+        if home_1.element_by_text_part(username_2).is_element_displayed() or home_1.element_by_text_part(
+                group_chat_name_1).is_element_displayed():
             self.errors.append("Chats are present in Activity Center view despite they created by non-contact")
 
         device_1.just_fyi('Device1 adds Device2 in Contacts so chat requests should be visible now')
@@ -1068,12 +1069,13 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_2.get_chat_from_home_view(username_1).click()
         one_to_one_device_2.send_message(message_from_sender)
         one_to_one_device_2.home_button.click()
-        home_2.create_group_chat([username_1], group_chat_name=GroupChat2Name)
+        home_2.create_group_chat([username_1], group_chat_name=group_chat_name_2)
 
         device_1.just_fyi('Device1 verifies 1-1 chat Group chats are visible')
 
         home_1.home_button.click()
-        if not home_1.element_by_text_part(username_2).is_element_displayed() or not home_1.element_by_text_part(GroupChat2Name).is_element_displayed():
+        if not home_1.element_by_text_part(username_2).is_element_displayed() or not home_1.element_by_text_part(
+                group_chat_name_2).is_element_displayed():
             self.errors.append("Chats are not present on Chats view while they have to!")
 
         self.errors.verify_no_errors()
@@ -1084,8 +1086,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         message_from_sender = "Message sender"
-        GroupChat1Name = "GroupChat1"
-        GroupChat2Name = "GroupChat2"
+        group_chat_name_1 = "GroupChat1"
+        group_chat_name_2 = "GroupChat2"
         home_1, home_2 = device_1.create_user(), device_2.create_user()
 
         device_1.just_fyi('Device1 adds Devices and creates 1-1 and Group chat with it')
@@ -1096,7 +1098,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1_one_to_one_chat.send_message(message_from_sender)
         device_1_one_to_one_chat.home_button.click()
 
-        home_1.create_group_chat([username_2], group_chat_name=GroupChat1Name)
+        home_1.create_group_chat([username_2], group_chat_name=group_chat_name_1)
         home_1.home_button.click()
         home_2.home_button.click()
 
@@ -1104,29 +1106,29 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_2.notifications_button.click()
         home_2.notifications_select_button.click()
         home_2.element_by_text_part(username_1[:10]).click()
-        home_2.element_by_text_part(GroupChat1Name).click()
+        home_2.element_by_text_part(group_chat_name_1).click()
         home_2.notifications_reject_and_delete_button.click()
 
         if home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
             self.errors.append("1-1 chat is on Activity Center view after action made on it")
-        if home_2.element_by_text_part(GroupChat1Name).is_element_displayed(2):
+        if home_2.element_by_text_part(group_chat_name_1).is_element_displayed(2):
             self.errors.append("Group chat is on Activity Center view after action made on it")
         home_2.home_button.click()
         if home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
             self.errors.append("1-1 chat is added on home after rejection")
-        if home_2.element_by_text_part(GroupChat1Name).is_element_displayed(2):
+        if home_2.element_by_text_part(group_chat_name_1).is_element_displayed(2):
             self.errors.append("Group chat is added on home after rejection")
 
         home_2.just_fyi("Verify there are still no chats after relogin")
         home_2.relogin()
         if home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
             self.errors.append("1-1 chat appears on Chats view after relogin")
-        if home_2.element_by_text_part(GroupChat1Name).is_element_displayed(2):
+        if home_2.element_by_text_part(group_chat_name_1).is_element_displayed(2):
             self.errors.append("Group chat appears on Chats view after relogin")
         home_2.notifications_button.click()
         if home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
             self.errors.append("1-1 chat request reappears back in Activity Center view after relogin")
-        if home_2.element_by_text_part(GroupChat1Name).is_element_displayed(2):
+        if home_2.element_by_text_part(group_chat_name_1).is_element_displayed(2):
             self.errors.append("Group chat request reappears back in Activity Center view after relogin")
         home_2.home_button.click()
 
@@ -1134,7 +1136,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_1.get_chat_from_home_view(username_2).click()
         device_1_one_to_one_chat.send_message('Some text here')
         device_1_one_to_one_chat.home_button.click()
-        home_1.create_group_chat([username_2], group_chat_name=GroupChat2Name)
+        home_1.create_group_chat([username_2], group_chat_name=group_chat_name_2)
 
         device_1.just_fyi('Device2 accepts both chats (via Select All button) and verifies they disappeared '
                           'from activity center view but present on Chats view')
@@ -1145,13 +1147,13 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         if home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
             self.errors.append("1-1 chat request stays on Activity Center view after it was accepted")
-        if home_2.element_by_text_part(GroupChat2Name).is_element_displayed(2):
+        if home_2.element_by_text_part(group_chat_name_2).is_element_displayed(2):
             self.errors.append("Group chat request stays on Activity Center view after it was accepted")
         home_2.home_button.click()
 
         if not home_2.element_by_text_part(username_1[:20]).is_element_displayed(2):
             self.errors.append("1-1 chat is not added on home after accepted from Activity Center")
-        if not home_2.element_by_text_part(GroupChat2Name).is_element_displayed(2):
+        if not home_2.element_by_text_part(group_chat_name_2).is_element_displayed(2):
             self.errors.append("Group chat is not added on home after accepted from Activity Center")
 
         self.errors.verify_no_errors()

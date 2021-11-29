@@ -16,6 +16,9 @@ from tests import transl
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from tests import test_suite_data, start_threads, appium_container, pytest_config_global
+import base64
+from re import findall
+
 
 sauce_username = environ.get('SAUCE_USERNAME')
 
@@ -99,6 +102,17 @@ class AbstractTestCase:
     def get_translation_by_key(self, key):
         return transl[key]
 
+    @property
+    def app_path(self):
+        app_path = '/storage/emulated/0/Android/data/im.status.ethereum.pr/files/Download/' if findall(r'pr\d\d\d\d\d',
+                                                                                                       pytest_config_global[
+                                                                                                           'apk']) else '/storage/emulated/0/Android/data/im.status.ethereum/files/Download/'
+        return app_path
+
+    @property
+    def geth_path(self):
+        return self.app_path + 'geth.log'
+
     @abstractmethod
     def setup_method(self, method):
         raise NotImplementedError('Should be overridden from a child class')
@@ -114,19 +128,29 @@ class AbstractTestCase:
     network_api = NetworkApi()
     github_report = GithubHtmlReport()
 
-    def is_alert_present(self, driver):
+    @staticmethod
+    def is_alert_present(driver):
         try:
             return driver.find_element(MobileBy.ID, 'android:id/message')
         except NoSuchElementException:
             return False
 
-    def get_alert_text(self, driver):
+    @staticmethod
+    def get_alert_text(driver):
         return driver.find_element(MobileBy.ID, 'android:id/message').text
 
     def add_alert_text_to_report(self, driver):
         if self.is_alert_present(driver):
             test_suite_data.current_test.testruns[-1].error += "; also Unexpected Alert is shown: '%s'" \
                                                                % self.get_alert_text(driver)
+
+    def pull_geth(self, driver):
+        result = ""
+        try:
+            result = driver.pull_file(self.geth_path)
+        except WebDriverException:
+            pass
+        return base64.b64decode(result)
 
 
 class Driver(webdriver.Remote):
@@ -181,13 +205,15 @@ class SingleDeviceTestCase(AbstractTestCase):
             self.print_sauce_lab_info(self.driver)
         try:
             self.add_alert_text_to_report(self.driver)
+            geth_content = self.pull_geth(self.driver)
             self.driver.quit()
             if pytest_config_global['docker']:
                 appium_container.stop_container()
         except (WebDriverException, AttributeError):
             pass
         finally:
-            self.github_report.save_test(test_suite_data.current_test)
+            self.github_report.save_test(test_suite_data.current_test,
+                                         {'%s_geth.log' % test_suite_data.current_test.name: geth_content})
 
 
 class LocalMultipleDeviceTestCase(AbstractTestCase):
@@ -236,15 +262,19 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
                 custom_implicitly_wait if custom_implicitly_wait else implicit_wait)
 
     def teardown_method(self, method):
+        geth_names, geth_contents = [], []
         for driver in self.drivers:
             try:
                 self.print_sauce_lab_info(self.drivers[driver])
                 self.add_alert_text_to_report(self.drivers[driver])
+                geth_names.append(
+                    '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
+                geth_contents.append(self.pull_geth(self.drivers[driver]))
                 self.drivers[driver].quit()
             except (WebDriverException, AttributeError):
                 pass
-            finally:
-                self.github_report.save_test(test_suite_data.current_test)
+        geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
+        self.github_report.save_test(test_suite_data.current_test, geth)
 
     @classmethod
     def teardown_class(cls):

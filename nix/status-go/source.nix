@@ -1,9 +1,9 @@
 { config, utils, lib, callPackage, fetchFromGitHub }:
 
 let
-  inherit (lib) strings traceValFn attrByPath importJSON;
+  inherit (lib) strings traceValFn attrByPath importJSON getConfig;
 
-  srcOverride = attrByPath [ "status-im" "status-go" "src-override" ] null config;
+  srcOverride = getConfig "status-go.src-override" null;
   # Warning message about using local sources
   localSrcWarn = (path: "Using local status-go sources from ${path}");
 
@@ -27,7 +27,7 @@ let
         include = [ ".*" ];
         exclude = [
           ".*/[.]git.*" ".*[.]md" ".*[.]yml" ".*/.*_test.go$"
-          "_assets/.*" "build/.*"
+          "VERSION" "_assets/.*" "build/.*"
           ".*/.*LICENSE.*" ".*/CONTRIB.*" ".*/AUTHOR.*"
         ];
       };
