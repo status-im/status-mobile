@@ -3,6 +3,7 @@ from datetime import timedelta
 from time import sleep
 
 import emoji
+import pytest
 from dateutil import parser
 
 from tests import marks
@@ -26,6 +27,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(5313)
     @marks.critical
+    @pytest.mark.bla
     def test_public_chat_messaging_emojis_timestamps(self):
         home_1, home_2 = HomeView(self.drivers[0]), HomeView(self.drivers[1])
         home_1.just_fyi("Check preselected chats, redirect to status chat")
@@ -69,6 +71,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(5360)
     @marks.critical
+    @pytest.mark.bla
     def test_unread_messages_counter_public_chat(self):
         home_1, home_2 = HomeView(self.drivers[0]), HomeView(self.drivers[1])
         home_1.get_back_to_home_view()
