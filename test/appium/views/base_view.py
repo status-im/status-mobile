@@ -648,10 +648,3 @@ class BaseView(object):
         string_source = self.driver.page_source
         source = open(full_path_to_file, "a+")
         source.write(string_source)
-
-    def double_tap(self):
-        actions = TouchAction(self.driver)
-        size = self.driver.get_window_size()
-        actions.tap(x=size["width"]/2, y=size["height"]/2, count=2)
-        actions.perform()
-
