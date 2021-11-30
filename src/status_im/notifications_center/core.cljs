@@ -6,15 +6,28 @@
             [status-im.data-store.activities :as data-store.activities]))
 
 (fx/defn handle-activities [{:keys [db]} activities]
-  {:db (-> db
-           (update-in [:activity.center/notifications :notifications] #(concat activities %))
-           (update :activity.center/notifications-count + (count activities)))
-   :dispatch (cond
-               (= (:view-id db) :notifications-center)
-               [:mark-all-activity-center-notifications-as-read]
+  (let [{:keys [unread-count notifications]}
+        (reduce (fn [acc {:keys [read dismissed accepted] :as notification}]
+                  (as-> acc a
+                    (if read
+                      (update a :unread-count dec)
+                      (update a :unread-count inc))
 
-               (= (:view-id db) :chat)
-               [:accept-all-activity-center-notifications-from-chat (:current-chat-id db)])})
+                    (if (or dismissed accepted)
+                      (update a :notifications (fn [items] (remove #(= (:id notification) (:id %)) items)))
+                      (update a :notifications conj notification))))
+                {:unread-count (get db :activity.center/notifications-count 0)
+                 :notifications (get-in db [:activity.center/notifications :notifications])}
+                activities)]
+    {:db (-> db
+             (assoc-in [:activity.center/notifications :notifications] notifications)
+             (assoc :activity.center/notifications-count (max 0 unread-count)))
+     :dispatch (cond
+                 (= (:view-id db) :notifications-center)
+                 [:mark-all-activity-center-notifications-as-read]
+
+                 (= (:view-id db) :chat)
+                 [:accept-all-activity-center-notifications-from-chat (:current-chat-id db)])}))
 
 (fx/defn get-activity-center-notifications-count
   {:events [:get-activity-center-notifications-count]}

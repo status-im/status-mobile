@@ -28,7 +28,10 @@
            :chat-type constants/one-to-one-chat-type
            :chat-name name
            :public? false
-           :group-chat false)))
+           :group-chat false)
+
+    :else
+    chat))
 
 (defn <-rpc [item]
   (-> item
