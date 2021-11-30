@@ -114,6 +114,8 @@
     "bug-report-description-placeholder": "Required, can't be empty",
     "bug-report-steps": "Steps to reproduce",
     "bug-report-steps-placeholder": "- open app\n- do something\n- and then somethig else...",
+    "bug-report-submit-email": "Submit by email with logs archive",
+    "bug-report-submit-gh-issue": "Submit a GitHub issue without logs",
     "bug-report-too-short-description": "Description is too short",
     "camera-access-error": "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected.",
     "can-not-add-yourself": "That's you, to start a chat choose someone else",

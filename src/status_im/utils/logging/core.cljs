@@ -1,6 +1,7 @@
 (ns status-im.utils.logging.core
   (:require ["react-native-mail" :default react-native-mail]
             [clojure.string :as string]
+            [goog.string :as gstring]
             [re-frame.core :as re-frame]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.i18n.i18n :as i18n]
@@ -227,3 +228,31 @@
      cofx
      (bottom-sheet/hide-bottom-sheet)
      (send-logs :email))))
+
+(re-frame/reg-fx
+ ::open-url
+ (fn [url]
+   (.openURL ^js react/linking url)))
+
+(def gh-issue-url "https://github.com/status-im/status-react/issues/new?labels=bug&title=%s&body=%s")
+
+(fx/defn submit-issue
+  [{:keys [db]}]
+  (let [{:keys [steps description]}
+        (get db :bug-report/details)
+
+        title (or description (i18n/label :t/bug-report-description-placeholder))
+        body  (str title
+                   "\n\n"
+                   (or steps (i18n/label :t/bug-report-steps-placeholder)))
+        url   (gstring/format gh-issue-url (js/escape title) (js/escape body))]
+    {::open-url url}))
+
+(fx/defn submit-gh-issue
+  {:events [:logging/submit-gh-issue]}
+  [{:keys [db] :as cofx} details steps]
+  (fx/merge
+   cofx
+   {:db (dissoc db :bug-report/details)}
+   (bottom-sheet/hide-bottom-sheet)
+   (submit-issue)))

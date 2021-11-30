@@ -35,6 +35,15 @@
        {:type                :primary
         :accessibility-label :bug-report-submit
         :theme               :accent
-        :on-press            #(re-frame/dispatch
-                               [:logging/submit-report])}
-       (i18n/label :t/submit)]]]))
+        :on-press            #(re-frame/dispatch [:logging/submit-report])}
+       (i18n/label :t/bug-report-submit-email)]
+      [react-native/view
+       {:style {:margin-vertical 16
+                :align-items :center}}
+       [quo/text (i18n/label :t/or)]]
+      [quo/button
+       {:type                :primary
+        :accessibility-label :bug-report-submit-gh-issue
+        :theme               :accent
+        :on-press            #(re-frame/dispatch [:logging/submit-gh-issue])}
+       (i18n/label :t/bug-report-submit-gh-issue)]]]))
