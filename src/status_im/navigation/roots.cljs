@@ -35,6 +35,7 @@
 
 (defn default-root []
   {:layout {:componentBackgroundColor colors/white
+            :orientation              "portrait"
             :backgroundColor          colors/white}})
 
 (defn merge-top-bar [root-options options]
