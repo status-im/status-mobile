@@ -1,65 +1,64 @@
 (ns status-im.events
-  (:require [re-frame.core :as re-frame]
-            [status-im.chat.models :as chat]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.fx :as fx]
-            status-im.utils.logging.core
-            status-im.backup.core
-            [status-im.wallet.core :as wallet]
-            [status-im.keycard.core :as keycard]
-            [status-im.utils.dimensions :as dimensions]
-            [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.constants :as constants]
-            [status-im.native-module.core :as status]
-            [status-im.ui.components.permissions :as permissions]
-            [status-im.utils.utils :as utils]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.anon-metrics.core :as anon-metrics]
-            [status-im.utils.universal-links.core :as universal-links]
-            clojure.set
-            status-im.currency.core
-            status-im.navigation
-            status-im.utils.universal-links.core
-            status-im.wallet.custom-tokens.core
-            status-im.waku.core
-            status-im.wallet.choose-recipient.core
-            status-im.wallet.accounts.core
-            status-im.popover.core
-            status-im.visibility-status-popover.core
-            status-im.visibility-status-updates.core
-            status-im.bottom-sheet.core
+  (:require clojure.set
+            [re-frame.core :as re-frame]
             status-im.add-new.core
-            status-im.search.core
-            status-im.http.core
-            status-im.profile.core
+            [status-im.anon-metrics.core :as anon-metrics]
+            [status-im.async-storage.core :as async-storage]
+            status-im.backup.core
+            status-im.bootnodes.core
+            status-im.bottom-sheet.core
+            status-im.browser.core
+            status-im.browser.permissions
+            [status-im.chat.models :as chat]
             status-im.chat.models.images
-            status-im.ui.screens.privacy-and-security-settings.events
+            status-im.chat.models.input
+            status-im.chat.models.loading
+            status-im.chat.models.transport
+            [status-im.constants :as constants]
+            status-im.contact.block
+            status-im.contact.chat
+            status-im.contact.core
+            status-im.currency.core
+            [status-im.ethereum.json-rpc :as json-rpc]
+            status-im.ethereum.subscriptions
+            status-im.fleet.core
+            status-im.http.core
+            [status-im.i18n.i18n :as i18n]
+            status-im.init.core
+            [status-im.keycard.core :as keycard]
+            status-im.log-level.core
+            status-im.mailserver.constants
+            [status-im.mailserver.core :as mailserver]
+            [status-im.multiaccounts.biometric.core :as biometric]
+            [status-im.multiaccounts.core :as multiaccounts]
             status-im.multiaccounts.login.core
             status-im.multiaccounts.logout.core
             status-im.multiaccounts.update.core
+            [status-im.native-module.core :as status]
+            [status-im.navigation :as navigation]
+            status-im.notifications-center.core
             status-im.pairing.core
+            status-im.popover.core
+            status-im.profile.core
+            status-im.search.core
             status-im.signals.core
             status-im.stickers.core
             status-im.transport.core
-            status-im.init.core
-            status-im.log-level.core
-            status-im.mailserver.constants
-            status-im.ethereum.subscriptions
-            status-im.fleet.core
-            status-im.contact.block
-            status-im.contact.core
-            status-im.contact.chat
-            status-im.chat.models.input
-            status-im.chat.models.loading
-            status-im.bootnodes.core
-            status-im.browser.core
-            status-im.browser.permissions
-            status-im.chat.models.transport
-            status-im.notifications-center.core
-            [status-im.navigation :as navigation]))
+            [status-im.ui.components.permissions :as permissions]
+            [status-im.ui.components.react :as react]
+            status-im.ui.screens.privacy-and-security-settings.events
+            [status-im.utils.dimensions :as dimensions]
+            [status-im.utils.fx :as fx]
+            status-im.utils.logging.core
+            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.utils :as utils]
+            status-im.visibility-status-popover.core
+            status-im.visibility-status-updates.core
+            status-im.waku.core
+            status-im.wallet.accounts.core
+            status-im.wallet.choose-recipient.core
+            [status-im.wallet.core :as wallet]
+            status-im.wallet.custom-tokens.core))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -193,8 +192,24 @@
 (fx/defn on-will-focus
   {:events [:screens/on-will-focus]
    :interceptors [anon-metrics/interceptor]}
-  [cofx view-id]
+  [{:keys [db] :as cofx} view-id]
   (fx/merge cofx
+            (cond
+              (= :chat view-id)
+              {::async-storage/set! {:chat-id (get-in cofx [:db :current-chat-id])
+                                     :key-uid (get-in cofx [:db :multiaccount :key-uid])}
+               :db (assoc db :screens/was-focused-once? true)}
+
+              (= :login view-id)
+              {}
+
+              (not (get db :screens/was-focused-once?))
+              {:db (assoc db :screens/was-focused-once? true)}
+
+              :else
+              {::async-storage/set! {:chat-id nil
+                                     :key-uid nil}
+               :db (assoc db :screens/was-focused-once? true)})
             #(case view-id
                :keycard-settings (keycard/settings-screen-did-load %)
                :reset-card (keycard/reset-card-screen-did-load %)

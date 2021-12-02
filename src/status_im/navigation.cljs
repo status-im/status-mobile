@@ -1,6 +1,6 @@
 (ns status-im.navigation
-  (:require [status-im.utils.fx :as fx]
-            [status-im.anon-metrics.core :as anon-metrics]))
+  (:require [status-im.anon-metrics.core :as anon-metrics]
+            [status-im.utils.fx :as fx]))
 
 (defn- all-screens-params [db view screen-params]
   (cond-> db

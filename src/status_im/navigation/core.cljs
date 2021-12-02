@@ -1,17 +1,18 @@
 (ns status-im.navigation.core
   (:require
-   [re-frame.core :as re-frame]
-   [status-im.ui.screens.views :as views]
-   [status-im.utils.platform :as platform]
-   [status-im.navigation.roots :as roots]
-   [status-im.ui.components.react :as react]
-   [quo.components.text-input :as quo.text-input]
-   [status-im.ui.components.icons.icons :as icons]
-   [quo.design-system.colors :as quo.colors]
-   [status-im.utils.fx :as fx]
-   ["react-native-navigation" :refer (Navigation)]
+   ["react-native" :as rn]
    ["react-native-gesture-handler" :refer (gestureHandlerRootHOC)]
-   ["react-native" :as rn]))
+   ["react-native-navigation" :refer (Navigation)]
+   [quo.components.text-input :as quo.text-input]
+   [quo.design-system.colors :as quo.colors]
+   [re-frame.core :as re-frame]
+   [status-im.navigation.roots :as roots]
+   [status-im.ui.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.views :as views]
+   [status-im.utils.fx :as fx]
+   [status-im.utils.platform :as platform]
+   [taoensso.timbre :as log]))
 
 (def debug? ^boolean js/goog.DEBUG)
 
@@ -26,6 +27,7 @@
 
 ;; REGISTER COMPONENT (LAZY)
 (defn reg-comp [key]
+  (log/debug "reg-comp" key)
   (if-let [comp (get views/components (keyword key))]
     (.registerComponent Navigation key (fn [] (views/component comp)))
     (let [screen (views/screen key)]
@@ -35,6 +37,7 @@
   (.setLazyComponentRegistrator Navigation reg-comp))
 
 (defn dismiss-all-modals []
+  (log/debug "dissmiss-all-modals")
   (when @curr-modal
     (reset! curr-modal false)
     (reset! dissmissing true)
@@ -44,6 +47,7 @@
 
 ;; PUSH SCREEN
 (defn navigate [comp]
+  (log/debug "NAVIGATE" comp)
   (let [{:keys [options]} (get views/screens comp)]
     (.push Navigation
            (name @root-comp-id)
@@ -57,6 +61,7 @@
 
 ;; OPEN MODAL
 (defn update-modal-topbar-options [options]
+  (log/debug "update-modal-topbar-options" options)
   (merge options
          (roots/merge-top-bar {:elevation       0
                                :noBorder        true
@@ -68,6 +73,7 @@
                               options)))
 
 (defn open-modal [comp]
+  (log/debug "open-modal" comp)
   (let [{:keys [options]} (get views/screens comp)]
     (if @dissmissing
       (reset! dissmissing comp)
@@ -88,6 +94,7 @@
 
 ;; DISSMISS MODAL
 (defn dissmissModal []
+  (log/debug "dissmissModal")
   (reset! dissmissing true)
   (.dismissModal Navigation (name (last @modals))))
 
@@ -105,6 +112,7 @@
            (handler)))))))
 
 (defn set-view-id [view-id]
+  (log/debug "set-view-id" view-id)
   (when-let [{:keys [on-focus]} (get views/screens view-id)]
     (re-frame/dispatch [:set :view-id view-id])
     (re-frame/dispatch [:screens/on-will-focus view-id])
@@ -135,6 +143,7 @@
    (.events Navigation)
    (fn [^js evn]
      (let [view-id (keyword (.-componentName evn))]
+       (log/debug "screen-appear-reg" view-id)
        (when (get views/screens view-id)
          (when (and (not= view-id :bottom-sheet)
                     (not= view-id :popover)
@@ -159,6 +168,7 @@
 (re-frame/reg-fx
  :init-root-fx
  (fn [new-root-id]
+   (log/debug :init-root-fx new-root-id)
    (reset! root-comp-id new-root-id)
    (reset! root-id @root-comp-id)
    (.setRoot Navigation (clj->js (get (roots/roots) new-root-id)))))
@@ -166,6 +176,7 @@
 (re-frame/reg-fx
  :init-root-with-component-fx
  (fn [[new-root-id new-root-comp-id]]
+   (log/debug :init-root-with-component-fx new-root-id new-root-comp-id)
    (reset! root-comp-id new-root-comp-id)
    (reset! root-id @root-comp-id)
    (.setRoot Navigation (clj->js (get (roots/roots) new-root-id)))))
@@ -173,6 +184,7 @@
 (fx/defn set-multiaccount-root
   {:events [::set-multiaccount-root]}
   [{:keys [db]}]
+  (log/debug :set-multiaccounts-root)
   (let [key-uid          (get-in db [:multiaccounts/login :key-uid])
         keycard-account? (boolean (get-in db [:multiaccounts/multiaccounts
                                               key-uid
@@ -192,6 +204,7 @@
                                   (.hide ^js splash-screen))))
 
 (defn get-screen-component [comp]
+  (log/debug :get-screen-component comp)
   (let [{:keys [options]} (get views/screens comp)]
     {:component {:id      comp
                  :name    comp
@@ -203,6 +216,7 @@
 (re-frame/reg-fx
  :set-stack-root-fx
  (fn [[stack comp]]
+   (log/debug :set-stack-root-fx stack comp)
    (.setStackRoot Navigation
                   (name stack)
                   (clj->js (if (vector? comp)
@@ -225,6 +239,7 @@
 (re-frame/reg-fx
  :change-tab-fx
  (fn [tab]
+   (log/debug :change-tab-fx)
    (reset! root-comp-id (get tab-root-ids (get tab-key-idx tab)))
    (.mergeOptions Navigation "tabs-stack" (clj->js {:bottomTabs {:currentTabIndex (get tab-key-idx tab)}}))
    ;;when we change tab we want to dismiss all modals
@@ -234,6 +249,7 @@
 (re-frame/reg-fx
  :change-tab-count-fx
  (fn [[tab cnt]]
+   (log/debug :change-tab-count-fx tab cnt)
    (.mergeOptions Navigation
                   (name (get tab-root-ids (get tab-key-idx tab)))
                   (clj->js {:bottomTab (cond
@@ -253,6 +269,7 @@
 (re-frame/reg-fx
  :pop-to-root-tab-fx
  (fn [comp]
+   (log/debug :pop-to-root-tab-fx comp)
    (dismiss-all-modals)
    (.popToRoot Navigation (name comp))))
 
@@ -343,11 +360,13 @@
 (re-frame/reg-fx
  :navigate-to-fx
  (fn [key]
+   (log/debug :navigate-to-fx key)
    (navigate key)))
 
 (re-frame/reg-fx
  :navigate-back-fx
  (fn []
+   (log/debug :navigate-back-fx)
    (if @curr-modal
      (dissmissModal)
      (.pop Navigation (name @root-comp-id)))))
@@ -355,5 +374,6 @@
 (re-frame/reg-fx
  :navigate-replace-fx
  (fn [view-id]
+   (log/debug :navigate-replace-fx view-id)
    (.pop Navigation (name @root-comp-id))
    (navigate view-id)))

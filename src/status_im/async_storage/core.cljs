@@ -9,7 +9,7 @@
 
 (def key->string str)
 
-(defn- set-item! [key value]
+(defn set-item! [key value]
   (-> ^js async-storage
       (.setItem (key->string key)
                 (clj->transit value))
