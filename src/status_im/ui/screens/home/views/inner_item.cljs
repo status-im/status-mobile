@@ -149,13 +149,16 @@
     :else
     [icons/icon :main-icons/tiny-new-contact (icon-style)]))
 
-(defn chat-item-title [chat-id muted group-chat chat-name]
+(defn chat-item-title [chat-id muted group-chat chat-name edit?]
   [quo/text {:weight              :medium
              :color               (when muted :secondary)
              :accessibility-label :chat-name-text
              :ellipsize-mode      :tail
              :number-of-lines     1
-             :style               {:position :absolute :left 92 :top 10 :right 90}}
+             :style               {:position :absolute
+                                   :left     92
+                                   :top      10
+                                   :right    (if edit? 50 90)}}
    (if group-chat
      (utils/truncate-str chat-name 30)
      ;; This looks a bit odd, but I would like only to subscribe
@@ -164,7 +167,7 @@
      (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))])
 
 (defn home-list-item [home-item opts]
-  (let [{:keys [chat-id chat-name color group-chat public? timestamp last-message muted emoji highlight]} home-item
+  (let [{:keys [chat-id chat-name color group-chat public? timestamp last-message muted emoji highlight edit?]} home-item
         background-color (when highlight (colors/get-color :interactive-02))]
     [react/touchable-opacity (merge {:style {:height 64 :background-color background-color}} opts)
      [:<>
@@ -178,13 +181,15 @@
         :default-chat-icon-text (if (string/blank? emoji)
                                   (chat-icon.styles/default-chat-icon-text 40)
                                   (chat-icon.styles/emoji-chat-icon-text 40))}]
-      [chat-item-title chat-id muted group-chat chat-name]
-      [react/text {:style               styles/datetime-text
-                   :number-of-lines     1
-                   :accessibility-label :last-message-time-text}
-       ;;TODO (perf) move to event
-       (memo-timestamp (if (pos? (:whisper-timestamp last-message))
-                         (:whisper-timestamp last-message)
-                         timestamp))]
-      [message-content-text (select-keys last-message [:content :content-type :community-id]) true]
-      [unviewed-indicator home-item]]]))
+      [chat-item-title chat-id muted group-chat chat-name edit?]
+      (when-not edit?
+        [:<>
+         [react/text {:style               styles/datetime-text
+                      :number-of-lines     1
+                      :accessibility-label :last-message-time-text}
+          ;;TODO (perf) move to event
+          (memo-timestamp (if (pos? (:whisper-timestamp last-message))
+                            (:whisper-timestamp last-message)
+                            timestamp))]
+         [unviewed-indicator home-item]])
+      [message-content-text (select-keys last-message [:content :content-type :community-id]) true]]]))

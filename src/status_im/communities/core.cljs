@@ -288,7 +288,7 @@
 (fx/defn edit-channel
   {:events [::edit-channel-confirmation-pressed]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [name description color community-id emoji edit-channel-id category-id]}
+  (let [{:keys [name description color community-id emoji edit-channel-id category-id position]}
         (get db :communities/create-channel)]
     {::json-rpc/call [{:method     "wakuext_editCommunityChat"
                        :params     [community-id
@@ -298,6 +298,7 @@
                                                    :color        color
                                                    :emoji        emoji}
                                      :category_id  category-id
+                                     :position     position
                                      :permissions {:access constants/community-channel-access-no-membership}}]
                        :js-response true
                        :on-success #(re-frame/dispatch [::community-channel-edited %])
@@ -345,7 +346,7 @@
 
 (fx/defn edit-channel-pressed
   {:events [::edit-channel-pressed]}
-  [{:keys [db] :as cofx} community-id chat-name description color emoji chat-id category-id]
+  [{:keys [db] :as cofx} community-id chat-name description color emoji chat-id category-id position]
   (let [{:keys [color emoji]} (if (string/blank? emoji)
                                 (rand-nth emoji-thumbnail-styles/emoji-picker-default-thumbnails)
                                 {:color color :emoji emoji})]
@@ -356,7 +357,8 @@
                                                           :community-id    community-id
                                                           :emoji           emoji
                                                           :edit-channel-id chat-id
-                                                          :category-id     category-id})}
+                                                          :category-id     category-id
+                                                          :position        position})}
               (navigation/open-modal :edit-community-channel nil))))
 
 (fx/defn community-created
@@ -591,6 +593,18 @@
     (fx/merge cofx
               (navigation/navigate-back)
               (remove-chat-from-category community-id id categoryID))))
+
+(fx/defn reorder-category-chat
+  {:events [::reorder-community-category-chat]}
+  [_ community-id category-id chat-id new-position]
+  {::json-rpc/call [{:method     "wakuext_reorderCommunityChat"
+                     :params     [{:communityId community-id
+                                   :categoryId  category-id
+                                   :chatId      chat-id
+                                   :position    new-position}]
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                     :on-error   #(log/error "failed to reorder community category chat" %)}]})
 
 (fx/defn reorder-category
   {:events [::reorder-community-category]}

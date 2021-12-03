@@ -39,6 +39,7 @@
     "react-native-dark-mode": "^0.2.2",
     "react-native-device-info": "^7.4.0",
     "react-native-dialogs": "^1.0.4",
+    "react-native-draggable-flatlist": "^3.0.3",
     "react-native-fast-image": "8.5.11",
     "react-native-fetch-polyfill": "^1.1.2",
     "react-native-fs": "^2.14.1",

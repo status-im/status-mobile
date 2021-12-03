@@ -55,13 +55,13 @@
     :small :base
     :large))
 
-(defn container [{:keys [size]} & children]
+(defn container [{:keys [size container-style]} & children]
   (into [rn/view {:style (merge (:tiny spacing/padding-horizontal)
                                 {:min-height       (size->container-size size)
                                  :padding-vertical 8
                                  :flex-direction   :row
                                  :align-items      :center
-                                 :justify-content  :space-between})}]
+                                 :justify-content  :space-between} container-style)}]
         children))
 
 (defn icon-column
@@ -197,7 +197,7 @@
            left-side-alignment icon-color icon-bg-color
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label accessory-style
-           haptic-feedback haptic-type error animated animated-accessory? title-text-weight]
+           haptic-feedback haptic-type error animated animated-accessory? title-text-weight container-style]
     :or   {subtitle-max-lines 1
            theme              :main
            haptic-feedback    true
@@ -233,7 +233,7 @@
                {:on-long-press (fn []
                                  (optional-haptic)
                                  (on-long-press))}))
-      [container {:size size}
+      [container {:size size :container-style container-style}
        [left-side {:icon-color                icon-color
                    :text-color                (if on-press
                                                 text-color

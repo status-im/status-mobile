@@ -878,6 +878,22 @@
                                 chats)))))
 
 (re-frame/reg-sub
+ :chats/sorted-categories-by-community-id
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:chats/by-community-id community-id])
+    (re-frame/subscribe [:communities/community-chats community-id])])
+ (fn [[chats comm-chats] [_ community-id]]
+   (let [chat-cat (into {} (map (fn [{:keys [id categoryID position]}]
+                                  {(str community-id id) {:categoryID categoryID
+                                                          :position   position}})
+                                (vals comm-chats)))]
+     (group-by :categoryID (sort-by :position
+                                    (map #(cond-> (merge % (chat-cat (:chat-id %)))
+                                            (= community-id constants/status-community-id)
+                                            (assoc :color colors/blue))
+                                         chats))))))
+
+(re-frame/reg-sub
  :chats/category-by-chat-id
  (fn [[_ community-id _]]
    [(re-frame/subscribe [:communities/community community-id])])
@@ -903,7 +919,9 @@
  :<- [:communities]
  (fn [communities [_ id]]
    (->> (get-in communities [id :categories])
-        (sort-by #(:position (get % 1))))))
+        (map #(assoc (get % 1) :community-id id))
+        (sort-by :position)
+        (into []))))
 
 (re-frame/reg-sub
  :chats/current-chat-ui-props
