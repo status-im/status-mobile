@@ -45,6 +45,7 @@
 (fx/defn block [_ contact-id on-success]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "blockContact")
                      :params [contact-id]
+                     :js-response true
                      :on-success on-success
                      :on-failure #(log/error "failed to block contact" % contact-id)}]})
 

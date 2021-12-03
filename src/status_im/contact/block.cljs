@@ -5,6 +5,8 @@
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.navigation :as navigation]
+            [status-im.utils.types :as types]
+            [status-im.notifications-center.core :as notification-center]
             [status-im.utils.fx :as fx]))
 
 (fx/defn clean-up-chat
@@ -34,13 +36,16 @@
 (fx/defn contact-blocked
   {:events [::contact-blocked]}
   [{:keys [db] :as cofx} {:keys [public-key]} chats]
-  (let [fxs (map #(clean-up-chat public-key %) chats)]
+  (let [fxs (when chats
+              (map #(->> (chats-store/<-rpc %)
+                         (clean-up-chat public-key)) (types/js->clj chats)))]
     (apply fx/merge
            cofx
            {:db (-> db
                     (update :chats dissoc public-key)
                     (update :chats-home-list disj public-key)
                     (assoc-in [:contacts/contacts public-key :added] false))}
+           (notification-center/get-activity-center-notifications-count)
            fxs)))
 
 (fx/defn block-contact
@@ -58,8 +63,10 @@
                        (update :contacts/blocked (fnil conj #{}) public-key)
                        ;; update the contact in contacts list
                        (assoc-in [:contacts/contacts public-key] contact))}
-              (contacts-store/block public-key #(do (re-frame/dispatch [::contact-blocked contact (map chats-store/<-rpc %)])
-                                                    (re-frame/dispatch [:hide-popover])))
+              (contacts-store/block
+               public-key #(do (re-frame/dispatch [::contact-blocked contact (.-chats %)])
+                               (re-frame/dispatch [:sanitize-messages-and-process-response %])
+                               (re-frame/dispatch [:hide-popover])))
               ;; reset navigation to avoid going back to non existing one to one chat
               (if from-one-to-one-chat?
                 (navigation/pop-to-root-tab :chat-stack)

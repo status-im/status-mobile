@@ -81,9 +81,7 @@
         (fx/merge cofx
                   (process-next response-js sync-handler)
                   (models.contact/ensure-contacts
-                   (map data-store.contacts/<-rpc contacts-clj)
-                   (when chats
-                     (map data-store.chats/<-rpc (types/js->clj chats))))))
+                   (map data-store.contacts/<-rpc contacts-clj) chats)))
 
       (seq communities)
       (let [communities-clj (types/js->clj communities)]
