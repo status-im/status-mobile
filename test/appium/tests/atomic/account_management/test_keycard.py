@@ -61,7 +61,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.confirm_button.click()
         keycard = sign_in.move_and_reset_button.click()
         keycard.begin_setup_button.click()
-        keycard.connect_card_button.click()
+        keycard.connect_card_button.wait_and_click()
         keycard.enter_default_pin()
         keycard.enter_default_pin()
         if not sign_in.element_by_translation_id("migration-successful").is_element_displayed(30):
@@ -126,7 +126,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.migration_password_input.set_value(common_password)
         sign_in.confirm_button.click()
         keycard.begin_setup_button.click()
-        keycard.connect_card_button.click()
+        keycard.connect_card_button.wait_and_click()
         keycard.enter_default_pin()
         keycard.enter_default_pin()
         if not sign_in.element_by_translation_id("migration-successful").is_element_displayed(30):
@@ -187,7 +187,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard_flow = sign_in.keycard_storage_button.click()
         keycard_flow.next_button.click()
         keycard_flow.begin_setup_button.click()
-        keycard_flow.connect_card_button.click()
+        keycard_flow.connect_card_button.wait_and_click()
         keycard_flow.enter_another_pin()
         keycard_flow.cancel_button.click()
 
@@ -246,7 +246,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.just_fyi('Cancel on PIN code setup stage')
         keycard_flow.next_button.click()
         keycard_flow.begin_setup_button.click()
-        keycard_flow.connect_card_button.click()
+        keycard_flow.connect_card_button.wait_and_click()
         keycard_flow.enter_another_pin()
         keycard_flow.cancel_button.click()
 

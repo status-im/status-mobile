@@ -165,7 +165,7 @@ class PushNotificationElement(SilentButton):
         class GroupChatIconElement(BaseElement):
             def __init__(self, driver, parent_locator):
                 super().__init__(driver,
-                                 xpath="%s/../../../*[@resource-id='android:id/right_icon_container']" % parent_locator)
+                                 xpath="%s/../../../../*[@resource-id='android:id/right_icon_container']" % parent_locator)
 
         return GroupChatIconElement(self.driver, self.locator)
 
@@ -316,6 +316,7 @@ class HomeView(BaseView):
         self.plus_button.click_until_presence_of_element(self.join_public_chat_button, attempts=5)
         self.join_public_chat_button.wait_for_visibility_of_element(5)
         chat_view = self.join_public_chat_button.click()
+        chat_view.chat_name_editbox.wait_for_visibility_of_element(20)
         chat_view.chat_name_editbox.click()
         chat_view.chat_name_editbox.send_keys(chat_name)
         time.sleep(2)

@@ -35,17 +35,16 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         home_1.add_contact(key_2)
         home_1.get_back_to_home_view()
         home_2.put_app_to_background()
-
+        home_2.open_notification_bar()
         chat_1 = home_1.create_group_chat([username_2], chat_name)
 
         home_2.just_fyi('check that PN invite to group chat is received and after tap you are redirected to group chat')
-        home_2.open_notification_bar()
         pns = [chat_1.pn_invited_to_group_chat(username_1, chat_name),
                chat_1.pn_wants_you_to_join_to_group_chat(username_1, chat_name)]
         for pn in pns:
             if not home_2.get_pn(pn).is_element_displayed(30):
                 self.errors.append('%s is not shown after invite to group chat' % pn)
-        group_invite_pn = home_2.get_pn(pns[1])
+        group_invite_pn = home_2.get_pn(pns[0])
 
         if not group_invite_pn.group_chat_icon.is_element_displayed(30):
             self.errors.append('No icon is shown for PN for group invite')
@@ -255,9 +254,9 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
                     chat.changed_group_name_system_message(device_1_username, new_chat_name)).is_element_displayed():
                 self.errors.append('Message about changing chat name is not shown')
 
-        device_2.just_fyi('Check that you can navigate to renamed chat')
+        device_2.just_fyi('Check that you can see renamed chat')
         device_2_chat.back_button.click()
-        home_2.get_chat(new_chat_name).click()
+        home_2.get_chat(new_chat_name).wait_for_visibility_of_element(60)
 
         self.errors.verify_no_errors()
 

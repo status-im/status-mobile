@@ -290,8 +290,6 @@ class TestBrowsing(SingleDeviceTestCase):
         urls = {
             'https://cdn.dribbble.com/users/45534/screenshots/3142450/logo_dribbble.png':
                 'url1.png',
-            'https://thebitcoinpub-91d3.kxcdn.com/uploads/default/original/2X/d/db97611b41a96cb7642b06636b82c0800678b140.jpg':
-                'url2.png',
             'https://steemitimages.com/DQmYEjeBuAKVRa3b3ZqwLicSHaPUm7WFtQqohGaZdA9ghjx/images%20(4).jpeg':
                 'url3.png'
         }

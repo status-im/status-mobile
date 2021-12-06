@@ -754,9 +754,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.just_fyi('Check profile image updated in group chat invite')
         home_1.get_back_to_home_view()
         new_group_chat = 'new_gr'
-        home_1.create_group_chat(user_names_to_add=[default_username_2], group_chat_name=new_group_chat)
         home_2.click_system_back_button()
         home_2.open_notification_bar()
+        home_1.create_group_chat(user_names_to_add=[default_username_2], group_chat_name=new_group_chat)
 
         invite = group_chat_2.pn_invited_to_group_chat(default_username_1, new_group_chat)
         home_2.get_pn(invite).wait_for_visibility_of_element(30)

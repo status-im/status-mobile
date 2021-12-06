@@ -67,6 +67,6 @@ class KeycardView(BaseView):
     def confirm_pin_and_proceed(self):
         self.next_button.click()
         self.begin_setup_button.click()
-        self.connect_card_button.click()
+        self.connect_card_button.wait_and_click()
         self.enter_default_pin()
         self.enter_default_pin()

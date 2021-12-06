@@ -324,7 +324,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         message = 'after removing member'
         chats[0].send_message(message)
         for chat in (chats[0], chats[2]):
-            if not chat.chat_element_by_text(message).is_element_displayed():
+            if not chat.chat_element_by_text(message).is_element_displayed(30):
                 self.errors.append("Message '%s' was not received after removing member" % message)
         if chats[1].chat_element_by_text(message).is_element_displayed():
             self.errors.append("Message '%s' was received by removed member" % message)
