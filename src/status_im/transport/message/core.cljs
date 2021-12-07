@@ -255,7 +255,9 @@
 
 (fx/defn update-envelopes-status
   [{:keys [db] :as cofx} message-id status]
-  (apply fx/merge cofx (map #(update-envelope-status % status) message-id)))
+  (when (or (not= status :not-sent)
+            (= :online (:network db)))
+    (apply fx/merge cofx (map #(update-envelope-status % status) message-id))))
 
 (fx/defn set-message-envelope-hash
   "message-type is used for tracking"
