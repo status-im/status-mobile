@@ -566,6 +566,15 @@
                        :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
                        :on-error   #(log/error "failed to remove chat from community" %)}]}))
 
+(fx/defn delete-community-chat
+  {:events [:delete-community-chat]}
+  [_ community-id chat-id]
+  {::json-rpc/call [{:method     "wakuext_deleteCommunityChat"
+                     :params     [community-id chat-id]
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                     :on-error   #(log/error "failed to delete community chat" %)}]})
+
 (fx/defn delete-category
   {:events [:delete-community-category]}
   [_ community-id category-id]

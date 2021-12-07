@@ -6,6 +6,7 @@
             [clojure.string :as string]
             [clojure.set :as clojure.set]
             [status-im.i18n.i18n :as i18n]
+            [status-im.utils.utils :as utils]
             [status-im.constants :as constants]
             [quo.design-system.colors :as colors]
             [status-im.utils.platform :as platform]
@@ -20,39 +21,31 @@
 (def collapse-chats? (reagent/atom false))
 (def data (reagent/atom []))
 
+(defn show-delete-chat-confirmation [community-id chat-id]
+  (utils/show-confirmation
+   {:title               (i18n/label :t/delete-confirmation)
+    :content             (i18n/label :t/delete-chat-confirmation)
+    :confirm-button-text (i18n/label :t/delete)
+    :on-accept           #(>evt [:delete-community-chat community-id chat-id])}))
+
 (defn chat-item
-  [{:keys [id categoryID community-id] :as home-item} is-active? drag]
+  [{:keys [id community-id] :as home-item} is-active? drag]
   (let [chat-id          (string/replace id community-id "")
-        category-none?   (string/blank? categoryID)
         background-color (if is-active? colors/gray-lighter colors/white)
         home-item        (clojure.set/rename-keys home-item {:id :chat-id})]
     [rn/view {:accessibility-label :chat-item
               :style               (merge styles/category-item
                                           {:background-color background-color})}
-     (if category-none?
-       [rn/touchable-opacity ;; green add to category button
-        {:accessibility-label :add-chat-to-category
-         :style               {:background-color colors/green
-                               :width            24
-                               :height           24
-                               :border-radius    12}
-         :on-press #(>evt [:open-modal
-                           :select-category {:chat         home-item
-                                             :category     categoryID
-                                             :community-id community-id}])}
-        [icons/icon :main-icons/add {:color :white}]]
-       [rn/touchable-opacity ;; red remove from category button
-        {:accessibility-label :remove-chat-from-category
-         :on-press            #(>evt [:remove-chat-from-community-category
-                                      community-id chat-id categoryID])}
-        [icons/icon :main-icons/delete-circle {:no-color true}]])
+     [rn/touchable-opacity
+      {:accessibility-label :delete-community-chat
+       :on-press            #(show-delete-chat-confirmation community-id chat-id)}
+      [icons/icon :main-icons/delete-circle {:no-color true}]]
      [rn/view {:flex 1}
       [inner-item/home-list-item (assoc home-item :edit? true) {:active-opacity 1}]]
      [rn/touchable-opacity {:on-long-press       drag
                             :delay-long-press    100
                             :accessibility-label :chat-drag-handle
-                            :style               {:padding 10
-                                                  :padding-right 20}}
+                            :style               {:padding 20}}
       [icons/icon :main-icons/reorder-handle {:no-color true :width 18 :height 12}]]]))
 
 (defn category-item
@@ -166,7 +159,7 @@
        [community/blank-page (i18n/label :t/welcome-community-blank-message-edit-chats)]
        [:<>
         [quo/list-item {:size            :small
-                        :title           (i18n/label :t/collapse-chats)
+                        :title           (i18n/label :t/rearrange-categories)
                         :active          @collapse-chats?
                         :accessory       :switch
                         :container-style {:padding-left 10}
