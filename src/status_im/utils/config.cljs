@@ -110,12 +110,6 @@
                           :DataDir        "/ethereum/xdai_rpc"
                           :UpstreamConfig {:Enabled true
                                            :URL     "https://dai.poa.network"}}}
-   {:id     "poa_rpc",
-    :name   "POA Network",
-    :config {:NetworkId      (ethereum/chain-keyword->chain-id :poa)
-             :DataDir        "/ethereum/poa_rpc"
-             :UpstreamConfig {:Enabled true
-                              :URL     "https://core.poa.network"}}}
    {:id                  "bsc_rpc",
     :chain-explorer-link "https://bscscan.com/address/",
     :name                "BSC Network",

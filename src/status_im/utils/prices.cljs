@@ -22,7 +22,7 @@
 
 (defn- format-price-resp [resp mainnet?]
   ;;NOTE(this check is to allow value conversion for sidechains with native currencies listed on cryptocompare
-  ;; under a symbol different than display symbol. Specific use case xDAI and POA.
+  ;; under a symbol different than display symbol. Specific use case xDAI.
   (if mainnet?
     (when-let [RAW (:RAW (types/json->clj resp))]
       (into {} (for [[from entries] RAW]

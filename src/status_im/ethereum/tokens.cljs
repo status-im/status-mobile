@@ -28,10 +28,6 @@
                   :symbol         :ETH
                   :symbol-display :ETHri
                   :decimals       18}
-    :poa         {:name           "POA"
-                  :symbol         :ETH
-                  :symbol-display :POA
-                  :decimals       18}
     :xdai        {:name            "xDAI"
                   :symbol          :ETH
                   :symbol-display  :xDAI
