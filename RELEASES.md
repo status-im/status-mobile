@@ -1,3 +1,38 @@
+## 1.18.0 Release notes :package:
+
+### Features
+* 🚦Online status indicator <https://github.com/status-im/status-react/issues/12547>
+* 👛 Add possibility to select wallet for ENS names <https://github.com/status-im/status-react/pull/12761>
+* 🐞 Bug reporting and logs sharing improvements <https://github.com/status-im/status-react/pull/12773>
+* 🍳 Simplify Keycard onboarding by using defaults for pairing password <https://github.com/status-im/status-react/issues/12685>
+* 💾 Backup contacts via Waku <https://github.com/status-im/status-react/issues/12550>
+* 🪙 Added ENS token <https://github.com/status-im/status-react/issues/12807>
+* 🌠 Using react-native-fast-image for stickers <https://github.com/status-im/status-react/pull/12769>
+#### Message reliability improvements
+* 𝌗 Show loading until all messages are processed <https://github.com/status-im/status-react/pull/12834>
+* 💪🏼 More robust message confirmations handling <https://github.com/status-im/status-react/pull/12824>
+* 📶 Allow sending messages when offline <https://github.com/status-im/status-react/issues/11889>
+#### Improvements on device pairing 
+* 🔔💻 Notification in activity centre now sync across devices <https://github.com/status-im/status-react/issues/12571>
+* ✅💻 Sync read messages across devices <https://github.com/status-im/status-react/pull/12698>
+#### Network settings improvements
+* ✨ Add Binance Smart chain <https://github.com/status-im/status-react/pull/12809>
+* ♏︎ Added custom network symbol <https://github.com/status-im/status-react/commit/c16b0860ec921a61c119857de27c6f29e301e4f6>
+* 💰 Network fee on xDai chain <https://github.com/status-im/status-react/pull/12845>
+* 📇 Support tx history (in a way) when on BSC chains <https://github.com/status-im/status-react/pull/12843>
+* 🙅🏻 Remove POA network from the list <https://github.com/status-im/status-react/pull/12887>
+
+### Bug Fixes
+* Fix activity center community invite preview <https://github.com/status-im/status-react/pull/12803>
+* Missing notifications for some contacts <https://github.com/status-im/status-react/issues/12776>
+* Fixes scrolling issues on the 'Max priority fee' bottom sheet <https://github.com/status-im/status-react/issues/12530>
+* Handle Keycard timeout on iOS 15 <https://github.com/status-im/status-react/pull/12826>
+* Allow user to be reinvited to the same group after leaving <https://github.com/status-im/status-react/pull/12814>
+* Fix for "TypeError: Network request failed" when switching to Goerli network <https://github.com/status-im/status-react/issues/11964>
+* Fix for Spin of death on adding custom NFT token contract <https://github.com/status-im/status-react/issues/12365>
+* Changing screen orientation results in breaking images / layout <https://github.com/status-im/status-react/issues/12858>
+
+
 ## 1.17
 
 ### For iOS and Android
