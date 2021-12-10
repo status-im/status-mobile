@@ -70,7 +70,9 @@
                   (mnemonic/set-mnemonic))
                 (when (= flow :recovery)
                   (onboarding/proceed-with-generating-key)))
-      (recovery/load-pair-screen cofx))))
+      (if (get-in db [:keycard :secrets :password])
+        (onboarding/load-pairing-screen cofx)
+        (recovery/load-pair-screen cofx)))))
 
 (fx/defn navigate-to-keycard-settings
   {:events [:profile.ui/keycard-settings-button-pressed]}
