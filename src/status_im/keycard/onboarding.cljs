@@ -236,7 +236,10 @@
                        (assoc-in [:keycard :card-state] :init)
                        (assoc-in [:keycard :setup-step] :secret-keys)
                        (update-in [:keycard :secrets] merge secrets'))}
-              (load-pairing-screen))))
+              (common/show-connection-sheet
+               {:on-card-connected :keycard/get-application-info
+                :on-card-read      :keycard/check-card-state
+                :handler           (common/get-application-info :keycard/check-card-state)}))))
 
 (fx/defn on-install-applet-and-init-card-error
   {:events [:keycard.callback/on-install-applet-and-init-card-error
