@@ -103,4 +103,5 @@
                              (conj chats lang-topic)
                              chats)]
             (for [chat chats]
-              (render-topic chat)))]])]]))
+              ^{:key chat}
+              [render-topic chat]))]])]]))
