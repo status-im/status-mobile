@@ -184,8 +184,9 @@
 
 (fx/defn handle-successful-request
   {:events [::request-success]}
-  [{:keys [db]} response-js]
-  {:db (dissoc db :mailserver/current-request)})
+  [{:keys [db] :as cofx} response-js]
+  {:db       (dissoc db :mailserver/current-request)
+   :dispatch [:sanitize-messages-and-process-response response-js]})
 
 (fx/defn process-next-messages-request
   {:events [::request-messages]}
