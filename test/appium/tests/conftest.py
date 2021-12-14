@@ -32,7 +32,7 @@ def pytest_addoption(parser):
                      help="Specify build name")
     parser.addoption('--apk',
                      action='store',
-                     default=None,
+                     default="https://status-im-nightlies.ams3.digitaloceanspaces.com/StatusIm-Mobile-211203-055900-46c023-nightly-x86.apk",
                      help='Url or local path to apk')
     parser.addoption('--env',
                      action='store',
@@ -71,11 +71,6 @@ def pytest_addoption(parser):
                      action="store",
                      metavar="NAME",
                      default=None,
-                     help='Url or local path to apk for upgrade')
-
-    parser.addoption("--dist",
-                     action="store",
-                     default="loadscope",
                      help='Url or local path to apk for upgrade')
 
     # chat bot
@@ -283,15 +278,14 @@ def pytest_runtest_setup(item):
 
 
 def pytest_runtest_protocol(item, nextitem):
-    pass
-    # rerun_count = int(item.config.getoption('rerun_count'))
-    # for i in range(rerun_count):
-    #     reports = runtestprotocol(item, nextitem=nextitem)
-    #     for report in reports:
-    #         if report.failed and should_rerun_test(report.longreprtext):
-    #             break  # rerun
-    #     else:
-    #         return True  # no need to rerun
+    rerun_count = int(item.config.getoption('rerun_count'))
+    for i in range(rerun_count):
+        reports = runtestprotocol(item, nextitem=nextitem)
+        for report in reports:
+            if report.failed and should_rerun_test(report.longreprtext):
+                break  # rerun
+        else:
+            return True  # no need to rerun
 
 
 @pytest.fixture(scope="session", autouse=False)
