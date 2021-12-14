@@ -181,7 +181,7 @@
                    :message-id @current-player-message-id}))
   nil)
 
-(defview message-content [{:keys [audio audio-duration-ms message-id outgoing]} timestamp-view]
+(defview message-content [{:keys [audio audio-duration-ms message-id outgoing]}]
   (letsubs [state        (reagent/atom nil)
             progress     (reagent/atom 0)
             progress-anim (anim/create-value 0)
@@ -223,5 +223,4 @@
                         (#{:playing :paused :seeking}  (:general @state)) @progress
                         :else (:duration @state))
                  s (quot time 1000)]
-             (gstring/format "%02d:%02d" (quot s 60) (mod s 60)))]
-          timestamp-view]]))))
+             (gstring/format "%02d:%02d" (quot s 60) (mod s 60)))]]]))))

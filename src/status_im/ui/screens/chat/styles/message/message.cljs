@@ -29,11 +29,33 @@
 (def message-timestamp
   {:font-size  10})
 
-(defn message-timestamp-placeholder
+(defn message-status-placeholder
   []
   (merge message-timestamp {:opacity 0 :color "rgba(0,0,0,0)"}))
 
-(defn message-timestamp-text
+(defn message-timestamp-wrapper [{:keys [last-in-group? outgoing group-chat]}]
+  {:justify-content :center
+   (if outgoing :margin-right :margin-left) 12 ;; horizontal margin is only required at the adjust side of the message.
+   :margin-top (if (and last-in-group?
+                        (or outgoing
+                            (not group-chat)))
+                 16
+                 0) ;; Add gap between message groups
+   :opacity 0})
+
+(defn message-timestamp-text []
+  (merge message-timestamp
+         {:color       colors/gray
+          :text-align :center}))
+
+(defn message-status-text [outgoing]
+  {:font-size 10
+   :line-height 10
+   :color       (if outgoing
+                  colors/white-transparent-70-persist
+                  colors/gray)})
+
+(defn audio-message-timestamp-text
   [outgoing]
   (merge message-timestamp
          {:line-height 10
@@ -44,7 +66,7 @@
 (defn message-wrapper [{:keys [outgoing in-popover?]}]
   (if (and outgoing (not in-popover?))
     {:margin-left 96}
-    {:margin-right 52}))
+    {:margin-right 96}))
 
 (defn message-author-wrapper
   [outgoing display-photo? in-popover?]
@@ -156,10 +178,10 @@
    :padding-left 3})
 
 (defn emoji-message
-  [{:keys [incoming-group]}]
+  [{:keys [incoming-group outgoing]}]
   {:font-size    28
    :line-height  34                     ;TODO: Smaller crops the icon on the top
-   :margin-right 12
+   :margin-right (if outgoing 18 0) ;; Margin to display outgoing message status
    :margin-top   (if incoming-group 4 0)})
 
 (defn collapse-button []
@@ -170,6 +192,10 @@
    :shadow-radius  16
    :shadow-color   (:shadow-01 @colors/theme)
    :shadow-offset  {:width 0 :height 4}})
+
+(defn message-view-wrapper [outgoing]
+  {:align-self :flex-end
+   :flex-direction (if outgoing :row :row-reverse)})
 
 (defn message-view
   [{:keys [content-type outgoing group-chat last-in-group? mentioned pinned]}]

@@ -43,5 +43,5 @@
    :justify-content :space-between})
 
 (defn timestamp [outgoing]
-  (merge (message.style/message-timestamp-text outgoing)
+  (merge (message.style/audio-message-timestamp-text outgoing)
          {:margin-left 40}))
