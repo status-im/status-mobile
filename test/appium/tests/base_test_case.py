@@ -366,7 +366,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 cls.drivers[driver].quit()
             except WebDriverException:
                 pass
-        # cls.loop.close()
+        cls.loop.close()
 
 
 if pytest_config_global['env'] == 'local':
