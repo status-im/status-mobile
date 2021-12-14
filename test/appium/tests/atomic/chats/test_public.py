@@ -13,7 +13,6 @@ from views.home_view import HomeView
 from views.sign_in_view import SignInView
 
 
-@pytest.mark.bla
 @pytest.mark.xdist_group(name="public_chat")
 class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 

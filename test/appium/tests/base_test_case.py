@@ -301,10 +301,8 @@ def create_shared_drivers(quantity):
                                                         executor_sauce_lab,
                                                         update_capabilities_sauce_lab(capabilities)))
         for i in range(quantity):
-            # driver = Driver(executor_sauce_lab, update_capabilities_sauce_lab(capabilities))
             test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
             drivers[i].implicitly_wait(implicit_wait)
-            # drivers[i] = driver
     return drivers, loop
 
 

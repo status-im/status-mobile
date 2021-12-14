@@ -27,7 +27,7 @@ RERUN_ERRORS = [
 
 
 def should_rerun_test(test_error):
-    # for rerun_error in RERUN_ERRORS:
-    #     if rerun_error in test_error:
-    #         return True
+    for rerun_error in RERUN_ERRORS:
+        if rerun_error in test_error:
+            return True
     return False

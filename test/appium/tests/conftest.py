@@ -32,7 +32,7 @@ def pytest_addoption(parser):
                      help="Specify build name")
     parser.addoption('--apk',
                      action='store',
-                     default="https://status-im-nightlies.ams3.digitaloceanspaces.com/StatusIm-Mobile-211203-055900-46c023-nightly-x86.apk",
+                     default=None,
                      help='Url or local path to apk')
     parser.addoption('--env',
                      action='store',
@@ -282,7 +282,8 @@ def pytest_runtest_protocol(item, nextitem):
     for i in range(rerun_count):
         reports = runtestprotocol(item, nextitem=nextitem)
         for report in reports:
-            if report.failed and should_rerun_test(report.longreprtext):
+            is_in_group = [i for i in item.iter_markers(name='xdist_group')]
+            if report.failed and should_rerun_test(report.longreprtext) and not is_in_group:
                 break  # rerun
         else:
             return True  # no need to rerun
