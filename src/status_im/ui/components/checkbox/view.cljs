@@ -13,7 +13,9 @@
    (merge {:style               (merge
                                  styles/wrapper
                                  style)
-           :accessibility-label accessibility-label}
+           :accessibility-label (str accessibility-label
+                                     "-"
+                                     (if checked? "on" "off"))}
           (when on-value-change
             {:on-press #(on-value-change (not checked?))}))
    (if checked?

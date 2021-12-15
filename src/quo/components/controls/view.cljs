@@ -49,15 +49,15 @@
                      :hold       hold
                      :disabled   disabled}]]]))))
 
-(defn switch-view [{:keys [transition hold disabled]}]
+(defn switch-view [{:keys [transition hold disabled value]}]
   [animated/view {:style               (styles/switch-style transition disabled)
-                  :accessibility-label :switch
+                  :accessibility-label (str "switch-" (if value "on" "off"))
                   :accessibility-role  :switch}
    [animated/view {:style (styles/switch-bullet-style transition hold)}]])
 
-(defn radio-view [{:keys [transition hold disabled]}]
+(defn radio-view [{:keys [transition hold disabled value]}]
   [animated/view {:style (styles/radio-style transition disabled)
-                  :accessibility-label :radio
+                  :accessibility-label (str "radio-" (if value "on" "off"))
                   :accessibility-role  :radio}
    [animated/view {:style (styles/radio-bullet-style transition hold)}]])
 
@@ -67,15 +67,15 @@
      [rn/touchable-without-feedback
       {:on-press (when (and onChange (not disabled)) onChange)}
       [rn/view {:style               (styles/checkbox-style value disabled)
-                :accessibility-label :checkbox
+                :accessibility-label (str "checkbox-" (if value "on" "off"))
                 :accessibility-role  :checkbox}
        [rn/view {:style (styles/check-icon-style value)}
         [icons/tiny-icon :tiny-icons/tiny-check {:color colors/white}]]]])))
 
-(defn animated-checkbox-view [{:keys [transition hold disabled]}]
+(defn animated-checkbox-view [{:keys [transition hold disabled value]}]
   [animated/view
    {:style               (styles/animated-checkbox-style transition disabled)
-    :accessibility-label :checkbox
+    :accessibility-label (str "checkbox-" (if value "on" "off"))
     :accessibility-role  :checkbox}
    [animated/view {:style (styles/animated-check-icon-style transition hold)}
     [icons/tiny-icon :tiny-icons/tiny-check {:color colors/white}]]])
