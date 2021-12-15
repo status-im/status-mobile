@@ -412,6 +412,7 @@
     "delete-bootnode-title": "Delete bootnode",
     "delete-chat": "Delete chat",
     "delete-chat-confirmation": "Are you sure you want to delete this chat?",
+    "delete-category-confirmation": "Are you sure you want to delete this category?",
     "delete-confirmation": "Delete?",
     "delete-mailserver": "Delete Status node",
     "delete-mailserver-are-you-sure": "Are you sure you want to delete this Status node?",

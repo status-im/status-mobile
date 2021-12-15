@@ -28,6 +28,13 @@
     :confirm-button-text (i18n/label :t/delete)
     :on-accept           #(>evt [:delete-community-chat community-id chat-id])}))
 
+(defn show-delete-catgory-confirmation [community-id category-id]
+  (utils/show-confirmation
+   {:title               (i18n/label :t/delete-confirmation)
+    :content             (i18n/label :t/delete-category-confirmation)
+    :confirm-button-text (i18n/label :t/delete)
+    :on-accept           #(>evt [:delete-community-category community-id category-id])}))
+
 (defn chat-item
   [{:keys [id community-id] :as home-item} is-active? drag]
   (let [chat-id          (string/replace id community-id "")
@@ -61,7 +68,7 @@
         [icons/icon :main-icons/channel-category {:color colors/gray}]
         [rn/touchable-opacity
          {:accessibility-label :delete-category-button
-          :on-press            #(>evt [:delete-community-category community-id id])}
+          :on-press            #(show-delete-catgory-confirmation community-id id)}
          [icons/icon :main-icons/delete-circle {:no-color true}]])
       [rn/view {:flex 1}
        [rn/text {:style {:font-size 17 :margin-left 10 :color colors/black}} name]]
