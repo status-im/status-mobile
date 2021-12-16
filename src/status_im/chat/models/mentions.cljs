@@ -173,8 +173,10 @@
 (defn get-mentionable-users
   [{{:keys          [current-chat-id]
      :contacts/keys [contacts] :as db} :db}]
-  (let [{:keys [chat-type users] :as chat}
+  (let [{:keys [chat-type community-id users] :as chat}
         (get-in db [:chats current-chat-id])
+        mentionable-commmunity-members @(re-frame/subscribe
+                                         [:communities/mentionable-community-members community-id])
         chat-specific-suggestions
         (cond
           (= chat-type constants/private-group-chat-type)
@@ -199,6 +201,9 @@
           (assoc users
                  current-chat-id
                  (contact.db/public-key->contact contacts current-chat-id))
+
+          (= chat-type constants/community-chat-type)
+          (merge users mentionable-commmunity-members)
 
           :else users)
         {:keys [name preferred-name public-key]}
@@ -646,6 +651,22 @@
          (update user :searchable-phrases (fnil concat []) new-words))))
    user
    [alias name nickname]))
+
+(defn add-searchable-phrases-to-contact
+  [{:keys [alias name added? blocked? identicon public-key nickname]} community-chat?]
+  (when (and alias
+             (not (string/blank? alias))
+             (or name
+                 nickname
+                 added?
+                 community-chat?)
+             (not blocked?))
+    (add-searchable-phrases
+     {:alias      alias
+      :name       (or (utils/safe-replace name ".stateofus.eth" "") alias)
+      :identicon  identicon
+      :nickname   nickname
+      :public-key public-key})))
 
 (defn is-valid-terminating-character? [c]
   (case c

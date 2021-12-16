@@ -34,7 +34,6 @@
             [status-im.utils.security :as security]
             [status-im.wallet.db :as wallet.db]
             [status-im.wallet.utils :as wallet.utils]
-            [status-im.utils.utils :as utils]
             status-im.ui.screens.keycard.subs
             [status-im.chat.models.mentions :as mentions]
             [status-im.notifications.core :as notifications]
@@ -1400,24 +1399,35 @@
  :<- [:contacts/contacts]
  (fn [contacts]
    (reduce
-    (fn [acc [key {:keys [alias name added? blocked? identicon public-key nickname]}]]
-      (if (and alias
-               (not= alias "")
-               (or name
-                   nickname
-                   added?)
-               (not blocked?))
-        (let [name (utils/safe-replace name ".stateofus.eth" "")]
-          (assoc acc public-key
-                 (mentions/add-searchable-phrases
-                  {:alias      alias
-                   :name       (or name alias)
-                   :identicon  identicon
-                   :nickname   nickname
-                   :public-key key})))
-        acc))
+    (fn [acc [key contact]]
+      (let [mentionable-contact (mentions/add-searchable-phrases-to-contact
+                                 contact false)]
+        (if (nil? mentionable-contact) acc
+            (assoc acc key mentionable-contact))))
     {}
     contacts)))
+
+(re-frame/reg-sub
+ :communities/mentionable-community-members
+ :<- [:contacts/contacts]
+ :<- [:multiaccount]
+ (fn [[contacts {:keys [public-key]}] [_ community-id]]
+   (let [community-members  @(re-frame/subscribe
+                              [:communities/community-members community-id])
+         members-identities (keys (dissoc community-members public-key))]
+     (reduce (fn [acc identity]
+               (let [contact             (multiaccounts/contact-by-identity
+                                          contacts identity)
+                     contact             (if (string/blank? (:alias contact))
+                                           (assoc contact :alias
+                                                  (get-in contact [:names :three-words-name]))
+                                           contact)
+                     mentionable-contact (mentions/add-searchable-phrases-to-contact
+                                          contact true)]
+                 (if (nil? mentionable-contact) acc
+                     (assoc acc identity mentionable-contact))))
+             {}
+             members-identities))))
 
 (re-frame/reg-sub
  :chats/mentionable-users
@@ -1425,7 +1435,8 @@
  :<- [:chats/mentionable-contacts]
  :<- [:contacts/blocked-set]
  :<- [:multiaccount]
- (fn [[{:keys [chat-id users contacts community-id chat-type] :as chat} mentionable-contacts blocked {:keys [name preferred-name public-key]}]]
+ (fn [[{:keys [chat-id users contacts community-id chat-type] :as chat}
+       mentionable-contacts blocked {:keys [public-key]}]]
    (let [community-members @(re-frame/subscribe [:communities/community-members
                                                  community-id])
          contacts-with-one-to-one (if (= chat-type constants/one-to-one-chat-type)
@@ -1436,14 +1447,13 @@
          members-left (into #{} (filter #(group-chat/member-removed? chat %) (keys users)))
          filtered-contacts (select-keys contacts-with-one-to-one (if (nil? community-id)
                                                                    (distinct (concat (seq contacts) (keys users) [chat-id]))
-                                                                   (keys community-members)))]
+                                                                   (keys community-members)))
+         mentionable-commmunity-members @(re-frame/subscribe
+                                          [:communities/mentionable-community-members community-id])]
      (apply dissoc
             (-> users
                 (merge filtered-contacts)
-                (assoc public-key (mentions/add-searchable-phrases
-                                   {:alias      name
-                                    :name       (or preferred-name name)
-                                    :public-key public-key})))
+                (merge mentionable-commmunity-members))
             (conj (concat blocked members-left) public-key)))))
 
 (re-frame/reg-sub
