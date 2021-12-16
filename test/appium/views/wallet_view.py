@@ -1,7 +1,7 @@
 import time
 
 from tests import common_password
-from views.base_element import Button, Text, EditBox, SilentButton
+from views.base_element import Button, Text, EditBox, SilentButton, CheckBox
 from views.base_view import BaseView
 
 
@@ -14,12 +14,13 @@ class TransactionHistoryButton(Button):
         return TransactionsView(self.driver)
 
 
-class AssetCheckBox(SilentButton):
+class AssetCheckBox(CheckBox):
     def __init__(self, driver, asset_name):
         super().__init__(driver, xpath="//*[@text='%s']" % asset_name)
 
     def click(self):
-        self.scroll_to_element(12).click()
+        self.scroll_to_element(12)
+        self.click()
 
 
 class BackupRecoveryPhrase(Button):
@@ -101,12 +102,12 @@ class WalletView(BaseView):
         self.manage_assets_button = Button(self.driver, accessibility_id="wallet-manage-assets")
         self.manage_accounts_button = Button(self.driver, accessibility_id="wallet-manage-accounts")
         self.scan_tokens_button = Button(self.driver, accessibility_id="wallet-scan-token")
-        self.stt_check_box = Button(self.driver,
-                                    xpath="//*[@text='STT']/../android.view.ViewGroup[@content-desc='checkbox']")
+        self.stt_check_box = CheckBox(self.driver,
+                                    xpath="//*[@text='STT']/../android.view.ViewGroup[@content-desc='checkbox-off']")
         self.all_assets_full_names = Text(self.driver,
-                                          xpath="//*[@content-desc='checkbox']/../android.widget.TextView[1]")
+                                          xpath="//*[@content-desc='checkbox-off']/../android.widget.TextView[1]")
         self.all_assets_symbols = Button(self.driver,
-                                         xpath="//*[@content-desc='checkbox']/../android.widget.TextView[2]")
+                                         xpath="//*[@content-desc='checkbox-off']/../android.widget.TextView[2]")
         self.currency_item_text = Text(self.driver, xpath="//*[@content-desc='currency-item']//android.widget.TextView")
 
         self.address_text = Text(self.driver, accessibility_id="address-text")

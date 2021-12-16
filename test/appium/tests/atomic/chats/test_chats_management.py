@@ -616,7 +616,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi('check that new messages from blocked user are not delivered')
         self.drivers[0].launch_app()
         device_1.sign_in()
-        home_1.join_public_chat(chat_name)
         for message in message_before_block_2, message_after_block_2:
             if chat_public_1.chat_element_by_text(message).is_element_displayed():
                 self.errors.append(
@@ -1019,7 +1018,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         public_1.chat_message_input.send_keys('@')
         if (chat_1.search_user_in_mention_suggestion_list(ens_nickname_value).is_element_displayed() or
                 chat_1.search_user_in_mention_suggestion_list(sender['username']).is_element_displayed()):
-            self.errors.append('Blcoked user is available in mention suggestion list')
+            self.errors.append('Blocked user is available in mention suggestion list')
 
         self.errors.verify_no_errors()
 

@@ -13,6 +13,7 @@ import views.upgrade_dbs.group.data as group
 class TestUpgradeApplication(SingleDeviceTestCase):
 
     @marks.testrail_id(6284)
+    @marks.flaky
     def test_unread_previews_public_chat_version_upgrade(self):
         sign_in = SignInView(self.driver)
         unread_one_to_one_name, unread_public_name = 'All Whopping Dassierat', '#before-upgrade'
@@ -117,8 +118,8 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         public_chat = home.get_chat(mention).click()
         public_chat.scroll_to_start_of_history()
         pub_chat_data = chats[mention]
+        public_chat.element_starts_with_text(pub_chat_data['reply']).scroll_to_element()
         public_replied_message = public_chat.chat_element_by_text(pub_chat_data['reply'])
-        public_replied_message.scroll_to_element()
         if pub_chat_data['long'] not in public_replied_message.replied_message_text:
             self.errors.append("Reply is not present in message received in public chat %s after upgrade" % mention)
         public_chat.element_starts_with_text(pub_chat_data['mention']).scroll_to_element()
@@ -477,6 +478,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(695812)
+    @marks.flaky
     def test_devices_activity_centre_profile_settings_upgrade(self):
         self.create_drivers(2)
         user = ens_user
@@ -524,7 +526,8 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         if not profile_1.accept_new_chats_from_contacts_only.is_element_displayed():
             self.errors.append("Accept contacts from setting is not preserved after upgrade!")
         profile_1.profile_button.click()
-        profile_1.appearance_button.click()
+        profile_1.privacy_and_security_button.click()
+        profile_1.show_profile_pictures_of.scroll_to_element()
         if not profile_1.show_profile_pictures_of.is_element_image_similar_to_template('block_dark.png'):
             self.errors.append('Dark mode is not applied!')
         if not profile_1.element_by_translation_id("everyone").is_element_displayed():

@@ -55,21 +55,21 @@ chats = {
         'preview':'Request address for transaction accepted',
         'messages': {
             'audio': {
-                'length':'00:10',
-                'timestamp' : '1:02 PM'
+                'length': '00:10',
+                'timestamp': '1:02 PM'
             },
         },
         'commands':{
-            'incoming_ETH_shared':{
-                'value':'0.01 ETH',
+            'incoming_ETH_shared': {
+                'value': '0.01 ETHro',
                 'status': "Shared 'Ethereum account'"
             },
             'incoming_ETH_confirmed': {
-                'value': '0.1 ETH',
+                'value': '0.1 ETHro',
                 'status': transl["status-confirmed"]
             },
             'incoming_ETH_declined': {
-                'value': '20 ETH',
+                'value': '20 ETHro',
                 'status': transl["transaction-declined"]
             },
             'incoming_STT_confirmed': {

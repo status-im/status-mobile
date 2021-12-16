@@ -13,7 +13,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from support.device_apps import start_web_browser
 from tests import common_password, pytest_config_global, transl
-from views.base_element import Button, BaseElement, EditBox, Text
+from views.base_element import Button, BaseElement, EditBox, Text, CheckBox
 
 
 class BackButton(Button):
@@ -24,6 +24,7 @@ class BackButton(Button):
         for _ in range(times_to_click):
             self.find_element().click()
         return self.navigate()
+
 
 
 class AllowButton(Button):
@@ -191,9 +192,21 @@ class AirplaneModeButton(Button):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="Airplane mode")
 
-    def click(self):
+    def open_quick_action_menu(self):
         action = TouchAction(self.driver)
         action.press(None, 200, 0).move_to(None, 200, 300).perform()
+
+    def click(self):
+        counter = 0
+        desired_element = AirplaneModeButton(self.driver)
+        while not desired_element.is_element_present() and counter <= 3:
+            try:
+                self.open_quick_action_menu()
+                desired_element.wait_for_element(5)
+            except (NoSuchElementException, TimeoutException):
+                counter += 1
+        else:
+            self.driver.info("%s element not found" % desired_element.name)
         super(AirplaneModeButton, self).click()
         self.driver.press_keycode(4)
 
@@ -251,6 +264,9 @@ class BaseView(object):
         self.share_button = Button(self.driver, accessibility_id="share-my-contact-code-button")
         self.qr_code_image = Button(self.driver, accessibility_id="qr-code-image")
         self.sign_in_phrase = SignInPhraseText(self.driver)
+
+        # checkboxes and toggles
+        self.checkbox_button = CheckBox(self.driver, accessibility_id="checkbox-off")
 
         # external browser
         self.open_in_status_button = OpenInStatusButton(self.driver)

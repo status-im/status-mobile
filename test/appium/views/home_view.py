@@ -1,6 +1,6 @@
 import time
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from views.base_element import Button, Text, BaseElement, SilentButton
+from views.base_element import Button, Text, BaseElement, SilentButton, CheckBox
 from views.base_view import BaseView
 from tests import test_dapp_url
 
@@ -211,8 +211,7 @@ class HomeView(BaseView):
         # Sync using mobile data bottom sheet
         self.continue_syncing_button = Button(self.driver, accessibility_id="mobile-network-continue-syncing")
         self.stop_syncing_button = Button(self.driver, accessibility_id="mobile-network-stop-syncing")
-        self.remember_my_choice_checkbox = Button(self.driver, xpath="//*[@content-desc='remember-choice']"
-                                                                     "//*[@content-desc='checkbox']")
+        self.remember_my_choice_checkbox = CheckBox(self.driver, accessibility_id=":checkbox-on")
 
         # Connection status bottom sheet
         self.connected_to_n_peers_text = Text(self.driver, accessibility_id="connected-to-n-peers")

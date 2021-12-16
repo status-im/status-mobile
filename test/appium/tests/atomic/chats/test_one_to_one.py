@@ -208,7 +208,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         message_before_edit, message_after_edit = "Message BEFORE edit 1", "Message AFTER edit 2"
         public_chat_1.send_message(message_before_edit)
         public_chat_1.edit_message_in_chat(message_before_edit, message_after_edit)
-        if not public_chat_1.element_by_text_part("⌫ Edited").is_element_displayed():
+        if not public_chat_1.element_by_text_part("⌫ Edited").is_element_displayed(60):
             self.errors.append('No mark in message bubble about this message was edited')
 
         device_2.just_fyi(
@@ -223,9 +223,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if not home_1.element_by_text_part(message_after_edit_1_1).is_element_present():
             self.errors.append('UNedited message version displayed on preview')
         chat_private_1 = device_1_one_to_one_chat_element.click()
-        if not home_1.element_by_text_part(message_after_edit_1_1).is_element_present():
+        if not home_1.element_by_text_part(message_after_edit_1_1).is_element_present(30):
             self.errors.append('No edited message in 1-1 chat displayed')
-        if not home_1.element_by_text_part("⌫ Edited").is_element_present():
+        if not home_1.element_by_text_part("⌫ Edited").is_element_present(30):
             self.errors.append('No mark in message bubble about this message was edited on receiver side')
 
         device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
@@ -238,10 +238,10 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2.just_fyi("Delete message and check it is not shown in chat preview on home")
         chat_private_2.delete_message_in_chat(message_after_edit_1_1)
         for chat in (chat_private_2, chat_private_1):
-            if chat.chat_element_by_text(message_after_edit_1_1).is_element_displayed():
+            if chat.chat_element_by_text(message_after_edit_1_1).is_element_displayed(30):
                 self.errors.append("Deleted message is shown in chat view for 1-1 chat")
         chat_private_1.home_button.double_click()
-        if home_1.element_by_text(message_after_edit_1_1).is_element_displayed():
+        if home_1.element_by_text(message_after_edit_1_1).is_element_displayed(30):
             self.errors.append("Deleted message is shown on chat element on home screen")
 
         device_2.just_fyi("Send one more message and check that PN will be deleted with message deletion")
@@ -258,13 +258,13 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_private_2.just_fyi("Check for that edited message is shown for Device 2 and delete message in public chat")
         [home.home_button.double_click() for home in (home_1, home_2)]
         public_chat_1, public_chat_2 = home_1.get_chat('#%s' % chat_name).click(), home_2.join_public_chat(chat_name)
-        if not public_chat_2.element_by_text_part("⌫ Edited").is_element_displayed():
+        if not public_chat_2.element_by_text_part("⌫ Edited").is_element_displayed(60):
             self.errors.append('No mark in message bubble about this message was edited')
-        if not public_chat_2.element_by_text_part(message_after_edit).is_element_displayed():
+        if not public_chat_2.element_by_text_part(message_after_edit).is_element_displayed(60):
             self.errors.append('Message is not edited.')
         public_chat_1.delete_message_in_chat(message_after_edit)
         for chat in (public_chat_1, public_chat_2):
-            if chat.chat_element_by_text(message_after_edit).is_element_displayed():
+            if chat.chat_element_by_text(message_after_edit).is_element_displayed(30):
                 self.errors.append("Deleted message is shown in chat view for public chat")
 
         self.errors.verify_no_errors()

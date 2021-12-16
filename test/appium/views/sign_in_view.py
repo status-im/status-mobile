@@ -144,7 +144,7 @@ class SignInView(BaseView):
         self.first_username_on_choose_chat_name = Text(self.driver,
                                                        xpath="//*[@content-desc='select-account-button-0']//android.widget.TextView[1]")
         self.get_keycard_banner = Button(self.driver, translation_id="get-a-keycard")
-        self.accept_tos_checkbox = Button(self.driver, xpath="//android.widget.CheckBox[@content-desc='checkbox']")
+        self.accept_tos_checkbox = self.checkbox_button
 
         # keycard recovery
         self.recover_with_keycard_button = Button(self.driver, accessibility_id="recover-with-keycard-button")
@@ -178,9 +178,6 @@ class SignInView(BaseView):
         if not second_user:
             self.accept_tos_checkbox.click()
             self.get_started_button.click_until_presence_of_element(self.generate_key_button)
-            if not self.generate_key_button.is_element_displayed():
-                [button.click() for button in
-                 [self.accept_tos_checkbox, self.get_started_button, self.generate_key_button]]
             self.generate_key_button.click()
 
         self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
@@ -209,9 +206,6 @@ class SignInView(BaseView):
         if not second_user:
             self.accept_tos_checkbox.click()
         self.get_started_button.click_until_presence_of_element(self.access_key_button)
-        if not self.access_key_button.is_element_displayed():
-            self.accept_tos_checkbox.click()
-            self.get_started_button.click()
         self.access_key_button.click()
         self.enter_seed_phrase_button.click()
         self.seedphrase_input.click()

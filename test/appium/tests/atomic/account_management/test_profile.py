@@ -1036,7 +1036,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.mail_server_button.click()
         profile_1.use_history_node_button.click()
         profile_1.home_button.click(desired_view='chat')
-        if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
+        if not public_chat_1.chat_element_by_text(message).is_element_displayed(60):
             self.errors.append('History was not fetched after enabling use_history_node')
         self.errors.verify_no_errors()
 
@@ -1287,6 +1287,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not channel_2.chat_element_by_text(message_after_sync).is_element_displayed(30):
             self.errors.append("Message sent to community channel after sync is not shown!")
         [channel.back_button.click() for channel in (channel_1, channel_2)]
+        [home.get_chat(comm_before_sync_name, community=True).click() for home in (home_1, home_2)]
         comm_before_1.add_channel(channel_after_sync)
         if not comm_before_2.get_chat(channel_after_sync).is_element_displayed(30):
             self.errors.append("New added channel after sync is not shown!")

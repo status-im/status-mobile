@@ -11,7 +11,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.critical
     @marks.transaction
     def test_send_eth_in_1_1_chat_transaction_push(self):
-        sender = transaction_senders['A']
+        sender = transaction_senders['B']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1 = device_1.recover_access(passphrase=sender['passphrase'], enable_notifications=True)

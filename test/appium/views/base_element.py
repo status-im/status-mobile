@@ -399,3 +399,9 @@ class SilentButton(Button):
     def text(self):
         text = self.find_element().text
         return text
+
+
+class CheckBox(Button):
+    def click(self):
+        super(CheckBox, self).click_until_presence_of_element(Button(self.driver, accessibility_id="checkbox-on"))
+        return self.navigate()
