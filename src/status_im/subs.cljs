@@ -1408,35 +1408,14 @@
     contacts)))
 
 (re-frame/reg-sub
- :communities/mentionable-community-members
- :<- [:contacts/contacts]
- :<- [:multiaccount]
- (fn [[contacts {:keys [public-key]}] [_ community-id]]
-   (let [community-members  @(re-frame/subscribe
-                              [:communities/community-members community-id])
-         members-identities (keys (dissoc community-members public-key))]
-     (reduce (fn [acc identity]
-               (let [contact             (multiaccounts/contact-by-identity
-                                          contacts identity)
-                     contact             (if (string/blank? (:alias contact))
-                                           (assoc contact :alias
-                                                  (get-in contact [:names :three-words-name]))
-                                           contact)
-                     mentionable-contact (mentions/add-searchable-phrases-to-contact
-                                          contact true)]
-                 (if (nil? mentionable-contact) acc
-                     (assoc acc identity mentionable-contact))))
-             {}
-             members-identities))))
-
-(re-frame/reg-sub
  :chats/mentionable-users
  :<- [:chats/current-chat]
  :<- [:chats/mentionable-contacts]
  :<- [:contacts/blocked-set]
  :<- [:multiaccount]
+ :<- [:contacts/contacts]
  (fn [[{:keys [chat-id users contacts community-id chat-type] :as chat}
-       mentionable-contacts blocked {:keys [public-key]}]]
+       mentionable-contacts blocked {:keys [public-key]} my-contacts]]
    (let [community-members @(re-frame/subscribe [:communities/community-members
                                                  community-id])
          contacts-with-one-to-one (if (= chat-type constants/one-to-one-chat-type)
@@ -1448,8 +1427,8 @@
          filtered-contacts (select-keys contacts-with-one-to-one (if (nil? community-id)
                                                                    (distinct (concat (seq contacts) (keys users) [chat-id]))
                                                                    (keys community-members)))
-         mentionable-commmunity-members @(re-frame/subscribe
-                                          [:communities/mentionable-community-members community-id])]
+         mentionable-commmunity-members (mentions/mentionable-commmunity-members
+                                         my-contacts public-key community-members)]
      (apply dissoc
             (-> users
                 (merge filtered-contacts)
