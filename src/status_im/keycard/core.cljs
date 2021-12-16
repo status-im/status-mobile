@@ -525,14 +525,14 @@
     (fx/merge cofx
               {:db (assoc-in db [:keycard :card-state] card-state)}
               (set-setup-step card-state)
-              (common/hide-connection-sheet)
 
               (when paired?
                 (load-pairing))
 
-              (when (and flow
-                         (= card-state :init))
-                (proceed-setup-with-initialized-card flow instance-uid paired?))
+              (if (and flow
+                       (= card-state :init))
+                (proceed-setup-with-initialized-card flow instance-uid paired?)
+                (common/hide-connection-sheet))
 
               (when (= card-state :pre-init)
                 (if (= flow :import)
