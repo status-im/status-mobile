@@ -21,6 +21,7 @@
               (assoc-in [:keycard :setup-step] :recovery-phrase)
               (assoc-in [:keycard :secrets :mnemonic] mnemonic))}
      (common/clear-on-card-connected)
+     (common/hide-connection-sheet)
      (navigation/navigate-replace :keycard-onboarding-recovery-phrase nil))))
 
 (fx/defn load-loading-keys-screen
