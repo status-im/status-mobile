@@ -20,7 +20,7 @@ class AssetCheckBox(CheckBox):
 
     def click(self):
         self.scroll_to_element(12)
-        self.click()
+        super().click()
 
 
 class BackupRecoveryPhrase(Button):
