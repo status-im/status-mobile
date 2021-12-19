@@ -13,7 +13,7 @@
             [status-im.utils.debounce :as debounce]))
 
 (def max-name-length 30)
-(def max-description-length 140)
+(def max-description-length 600)
 
 (defn valid? [community-name community-description]
   (and (not (str/blank? community-name))
