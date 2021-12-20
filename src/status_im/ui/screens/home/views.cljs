@@ -3,7 +3,6 @@
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im.communities.core :as communities]
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
@@ -13,7 +12,6 @@
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.screens.referrals.home-item :as referral-item]
             [quo.design-system.colors :as colors]
-            [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
             [quo.core :as quo]
             [status-im.add-new.core :as new-chat]
             [status-im.ui.components.search-input.view :as search-input]
@@ -41,30 +39,10 @@
      :accessibility-label :hide-home-button}
     [icons/icon :main-icons/close-circle {:color colors/gray}]]
    [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]
-   [invite/button]
-   [react/view {:align-items :center :margin-bottom 16}
-    [react/view {:style (styles/hr-wrapper)}]
-    [react/i18n-text {:style (styles/or-text) :key :or}]]
-   [react/i18n-text {:style {:margin-horizontal 16
-                             :text-align        :center}
-                     :key   :follow-your-interests}]
-   [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center
-                :margin-top      10
-                :margin-bottom   18}
-    (for [chat (new-public-chat/featured-public-chats)]
-      ^{:key chat}
-      [new-public-chat/render-topic chat])]
-   (when @(re-frame/subscribe [:communities/enabled?])
-     [:<>
-      [react/i18n-text {:style {:margin-horizontal 16
-                                :text-align        :center}
-                        :key   :join-a-community}]
-      [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center
-                   :margin-top      10
-                   :margin-bottom   18}
-       (for [{:keys [id] :as community} communities/featured]
-         ^{:key id}
-         [communities.views/render-featured-community community])]])])
+   [react/view {:align-items   :center
+                :margin-top    8
+                :margin-bottom 12}
+    [invite/button]]])
 
 (defn welcome-blank-page []
   [react/view {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :center}}

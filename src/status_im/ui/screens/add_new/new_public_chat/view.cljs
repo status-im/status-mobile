@@ -86,22 +86,4 @@
                      :style  {:width 160 :height 160}}]]
       [react/text {:style {:text-align :center :margin-bottom 16 :line-height 22}}
        (i18n/label :t/public-chat-description)]
-      [chat-name-input topic error]]
-     [react/view {:margin-top 32}
-      (for [[section chats] (chat.models/chats)]
-        ^{:key section}
-        [react/view
-         [react/view {:margin-right               16 :padding-left            16 :padding-vertical 3
-                      :border-bottom-width        1  :border-bottom-color     colors/gray-lighter
-                      :border-top-width           1  :border-top-color        colors/gray-lighter
-                      :border-right-width         1  :border-right-color      colors/gray-lighter
-                      :border-bottom-right-radius 14 :border-top-right-radius 14}
-          [quo/text {:weight :medium} section]]
-         [react/view {:flex-direction :row :flex-wrap :wrap :margin-vertical 8 :padding-horizontal 16}
-          (let [lang-topic (get-language-topic)
-                chats      (if (and (= section-featured section) lang-topic)
-                             (conj chats lang-topic)
-                             chats)]
-            (for [chat chats]
-              ^{:key chat}
-              [render-topic chat]))]])]]))
+      [chat-name-input topic error]]]))
