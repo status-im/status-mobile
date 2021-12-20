@@ -115,7 +115,10 @@
                                        (vals (:static current-fleet))))
                              :RelayNodes wakuv2-nodes
                              :StoreNodes wakuv2-nodes
-                             :RendezvousNodes    (if wakuv2-enabled [] rendezvous-nodes)})
+                             :FilterNodes wakuv2-nodes
+                             :LightpushNodes wakuv2-nodes
+                             :RendezvousNodes    (if wakuv2-enabled [] rendezvous-nodes)
+                             :WakuRendezvousNodes wakuv2-nodes})
 
       :always
       (assoc :WalletConfig {:Enabled true}
@@ -129,7 +132,11 @@
               :BloomFilterMode waku-bloom-filter-mode
               :LightClient true
               :MinimumPoW 0.000001}
-             :WakuV2Config (assoc wakuv2-config :Enabled wakuv2-enabled :Host "0.0.0.0")
+             :WakuV2Config (assoc wakuv2-config
+                                  :Enabled wakuv2-enabled
+                                  :Rendezvous true
+                                  :PeerExchange true
+                                  :Host "0.0.0.0")
              :ShhextConfig
              {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
               :InstallationID             installation-id

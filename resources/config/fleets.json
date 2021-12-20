@@ -99,6 +99,18 @@
                 "node-01.gc-us-central1-a.eth.test": "enode://f593a27731bc0f8eb088e2d39222c2d59dfb9bf0b3950d7a828d51e8ab9e08fffbd9916a82fd993c1a080c57c2bd70ed6c36f489a969de697aff93088dbee1a9@35.194.31.108:443"
             }
         },
+        "go-waku.test": {
+            "waku": {
+                "node-01.ac-cn-hongkong-c.go-waku.test": "/ip4/8.218.2.110/tcp/30303/p2p/16Uiu2HAmBDbMWFiG9ki8sDw6fYtraSxo4oHU9HbuN43S2HVyq1FD",
+                "node-01.do-ams3.go-waku.test": "/ip4/134.209.134.63/tcp/30303/p2p/16Uiu2HAm9vnvCQgCDrynDK1h7GJoEZVGvnuzq84RyDQ3DEdXmcX7",
+                "node-01.gc-us-central1-a.go-waku.test": "/ip4/35.223.183.91/tcp/30303/p2p/16Uiu2HAmPz63Xc6AuVkDeujz7YeZta18rcdau3Y1BzaxKAfDrBqz"
+            },
+            "websocket": {
+                "node-01.ac-cn-hongkong-c.go-waku.test": "/dns4/node-01.ac-cn-hongkong-c.go-waku.test.statusim.net/tcp/443/wss/p2p/16Uiu2HAmBDbMWFiG9ki8sDw6fYtraSxo4oHU9HbuN43S2HVyq1FD",
+                "node-01.do-ams3.go-waku.test": "/dns4/node-01.do-ams3.go-waku.test.statusim.net/tcp/443/wss/p2p/16Uiu2HAm9vnvCQgCDrynDK1h7GJoEZVGvnuzq84RyDQ3DEdXmcX7",
+                "node-01.gc-us-central1-a.go-waku.test": "/dns4/node-01.gc-us-central1-a.go-waku.test.statusim.net/tcp/443/wss/p2p/16Uiu2HAmPz63Xc6AuVkDeujz7YeZta18rcdau3Y1BzaxKAfDrBqz"
+            }
+        },
         "wakuv2.prod": {
             "waku": {
                 "node-01.ac-cn-hongkong-c.wakuv2.prod": "/ip4/8.210.222.231/tcp/30303/p2p/16Uiu2HAm4v86W3bmT1BiH6oSPzcsSr24iDQpSN5Qa992BCjjwgrD",
@@ -125,7 +137,7 @@
         }
     },
     "meta": {
-        "hostname": "node-01.do-ams3.proxy.misc",
-        "timestamp": "2021-06-07T00:00:09.836740"
+        "hostname": "node-01.do-ams3.sites.misc",
+        "timestamp": "2021-12-06T00:00:15.242413"
     }
 }

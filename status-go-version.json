@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.92.6",
-    "commit-sha1": "36b4ecabbf76bf32397f4ccfe9a923967996b72d",
-    "src-sha256": "108hgl284q4n46bxklr8h2ijgmz76xrdmmsqb4l1nxblbajkm0bf"
+    "version": "feat/wakuv2-rendezvous",
+    "commit-sha1": "2062cfa40075ab72fb4e7d6d6dd6d4a96093d901",
+    "src-sha256": "0bpcswrzp8dyp6mniajyjiszbvkzilvqnkh3pp6vjlj4pjj7ba12"
 }
