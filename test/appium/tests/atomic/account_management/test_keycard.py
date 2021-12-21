@@ -179,7 +179,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
 
         sign_in.just_fyi('Cancel on PIN code setup stage')
-        sign_in.accept_tos_checkbox.click()
+        sign_in.accept_tos_checkbox.enable()
         sign_in.get_started_button.click()
         sign_in.generate_key_button.click()
         username = sign_in.first_username_on_choose_chat_name.text
@@ -232,7 +232,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.flaky
     def test_keycard_interruption_access_key_onboarding_flow(self):
         sign_in = SignInView(self.driver)
-        sign_in.accept_tos_checkbox.click()
+        sign_in.accept_tos_checkbox.enable()
         sign_in.get_started_button.click()
 
         sign_in.access_key_button.click()
@@ -277,7 +277,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         recovered_user = transaction_senders['A']
 
         sign_in.just_fyi('Recover multiaccount')
-        sign_in.accept_tos_checkbox.click()
+        sign_in.accept_tos_checkbox.enable()
         sign_in.get_started_button.click_until_presence_of_element(sign_in.access_key_button)
         sign_in.access_key_button.click()
         sign_in.recover_with_keycard_button.click()
@@ -324,7 +324,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.toggle_airplane_mode()
 
         sign_in.just_fyi('Recover multiaccount offline')
-        sign_in.accept_tos_checkbox.click()
+        sign_in.accept_tos_checkbox.enable()
         sign_in.get_started_button.click_until_presence_of_element(sign_in.access_key_button)
         sign_in.access_key_button.click()
         sign_in.recover_with_keycard_button.click()
@@ -673,7 +673,7 @@ class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
         device_1.just_fyi("Create keycard account and save seed phrase")
-        device_1.accept_tos_checkbox.click()
+        device_1.accept_tos_checkbox.enable()
         device_1.get_started_button.click()
         device_1.generate_key_button.click_until_presence_of_element(device_1.next_button)
         device_1.next_button.click_until_absense_of_element(device_1.element_by_translation_id("intro-wizard-title2"))

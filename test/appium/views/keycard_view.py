@@ -38,6 +38,7 @@ class KeycardView(BaseView):
 
     def get_recovery_word(self, word_id):
         word_element = SilentButton(self.driver, accessibility_id="word%s" % word_id)
+        word_element.wait_for_visibility_of_element()
         return word_element.text
 
     def get_required_word_number(self):

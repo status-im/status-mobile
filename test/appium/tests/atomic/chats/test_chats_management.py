@@ -696,7 +696,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         if public_chat_after_block_1.chat_element_by_text(message_after_block_2).is_element_displayed():
             self.errors.append("Message from blocked user '%s' is received" % device_2.driver.number)
-        public_chat_after_block_1.get_back_to_home_view()
         if home_1.notifications_unread_badge.is_element_displayed():
             device_1.driver.fail("Unread badge is shown after receiving new message from blocked user")
         if blocked_chat_user.is_element_displayed():
@@ -718,6 +717,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.click_system_home_button()
         self.drivers[0].launch_app()
         device_1.sign_in()
+        public_chat_after_block_1.home_button.double_click()
         if home_1.notifications_unread_badge.is_element_displayed():
             device_1.driver.fail("Unread badge is shown after after fetching new messages from offline")
         if blocked_chat_user.is_element_displayed():

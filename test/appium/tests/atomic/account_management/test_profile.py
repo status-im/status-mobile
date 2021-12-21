@@ -1219,7 +1219,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(695856)
     @marks.medium
-    @marks.flaky
+    #@marks.flaky
     def test_pair_devices_sync_photo_community_group_chats(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -1296,12 +1296,12 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         [home.home_button.double_click() for home in (home_1, home_2)]
         home_1.get_chat(comm_before_sync_name, community=True).click()
         comm_before_1.leave_community()
-        if not home_2.get_chat(comm_before_sync_name).is_element_disappeared(30):
+        if not home_2.element_by_text_part(comm_before_sync_name).is_element_disappeared(30):
             self.errors.append("Leaving community was not synced!")
 
         device_1.just_fyi("Adding new community and check it will be synced")
         home_1.create_community(comm_after_sync_name)
-        if not home_2.get_chat(comm_after_sync_name, community=True).is_element_displayed(30):
+        if not home_2.element_by_text(comm_after_sync_name).is_element_displayed(30):
             self.errors.append('Added community was not appeared after initial sync')
 
         # TODO: skip until #11558 (rechecked 23.11.21, valid)

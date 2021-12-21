@@ -109,8 +109,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         home_1.just_fyi('go back online and check that 1-1 chat will be fetched')
         home_1.toggle_airplane_mode()
-        chat_element = home_1.get_chat(username_2)
-        chat_element.wait_for_visibility_of_element(30)
+        chat_element = home_1.get_chat(username_2, wait_time=60)
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element(2)
 
@@ -162,13 +161,14 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if device_2_chat.user_name_text.text != default_username_1:
             self.errors.append("Default username '%s' is not shown in one-to-one chat" % default_username_1)
 
-        profile_1.just_fyi("Check timestamps for sender and receiver")
-        for chat in device_1_chat, device_2_chat:
-            chat.verify_message_is_under_today_text(timestamp_message, self.errors)
-            timestamp = chat.chat_element_by_text(timestamp_message).timestamp_message.text
-            if timestamp not in sent_time_variants:
-                self.errors.append(
-                    "Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time_variants.join(","), timestamp))
+        # TODO: disabled until https://github.com/status-im/status-react/issues/12936 fix
+        # profile_1.just_fyi("Check timestamps for sender and receiver")
+        # for chat in device_1_chat, device_2_chat:
+        #     chat.verify_message_is_under_today_text(timestamp_message, self.errors)
+        #     timestamp = chat.chat_element_by_text(timestamp_message).timestamp_message.text
+        #     if timestamp not in sent_time_variants:
+        #         self.errors.append(
+        #             "Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time_variants.join(","), timestamp))
 
         device_2_home.just_fyi("Add user to contact and verify his default username")
         device_2_chat.add_to_contacts.click()
@@ -883,7 +883,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             chat.send_message_button.click()
 
             message_bubble = chat.chat_element_by_text(formatted_message[message])
-            message_bubble.timestamp_message.long_press_element()
+            message_bubble.sent_status_checkmark.long_press_element()
             chat.element_by_text('Copy').click()
 
             message_input.paste_text_from_clipboard()
@@ -964,13 +964,10 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             self.errors.append('"%s" is not show in chat preview on home screen!' % message)
         home.get_chat('@%s' % ens).click()
 
-        home.just_fyi('Check redirect to user profile on mention by ENS tap')
-        chat.chat_element_by_text(message).click()
-        if not chat.profile_block_contact.is_element_displayed():
-            self.errors.append('No redirect to user profile after tapping on message with mention (ENS) in 1-1 chat')
-
         home.just_fyi('Set nickname and mention user by nickname in 1-1 chat')
         russian_nickname = 'МОЙ дорогой ДРУх'
+        chat.chat_options.click()
+        chat.view_profile_button.click()
         chat.set_nickname(russian_nickname)
         chat.select_mention_from_suggestion_list(russian_nickname + ' @' + ens)
 

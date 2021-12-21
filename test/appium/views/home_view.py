@@ -195,7 +195,7 @@ class HomeView(BaseView):
         self.notifications_accept_and_add_button = Button(self.driver,
                                                           accessibility_id="accept-and-add-activity-center")
         self.notifications_select_all = Button(self.driver, xpath="(//android.widget.CheckBox["
-                                                                  "@content-desc='checkbox'])[1]")
+                                                                  "@content-desc='checkbox-off'])[1]")
 
         # Options on long tap
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")
@@ -231,11 +231,11 @@ class HomeView(BaseView):
             except TimeoutException:
                 break
 
-    def get_chat(self, username, community=False):
+    def get_chat(self, username, community=False,wait_time=30):
         self.driver.info("Looking for chat: '%s'" % username)
         chat_element = ChatElement(self.driver, username[:25], community=community)
         if not chat_element.is_element_displayed():
-            self.notifications_unread_badge.wait_and_click(30)
+            self.notifications_unread_badge.wait_and_click(wait_time)
             chat_in_ac = ActivityCenterChatElement(self.driver, username[:25])
             chat_in_ac.wait_for_element(20)
             chat_in_ac.click()

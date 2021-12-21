@@ -168,7 +168,10 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.errors.append('%s asset is not shown in wallet after relogin' % asset)
 
         sign_in.just_fyi("Deselecting asset")
-        wallet.select_asset(asset)
+        wallet.multiaccount_more_options.click()
+        wallet.manage_assets_button.click()
+        wallet.asset_checkbox_by_name(asset).click()
+        wallet.cross_icon.click()
         if wallet.asset_by_name(asset).is_element_displayed():
             self.errors.append('%s asset is shown in wallet but was deselected' % asset)
         self.errors.verify_no_errors()

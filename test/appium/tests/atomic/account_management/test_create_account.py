@@ -96,7 +96,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.get_started_button.click()
         if sign_in.generate_key_button.is_element_displayed():
             self.errors.append("Agree with ToS is not mandatory to proceed onboarding!")
-        sign_in.accept_tos_checkbox.click()
+        sign_in.accept_tos_checkbox.enable()
         sign_in.get_started_button.click_until_presence_of_element(sign_in.generate_key_button)
         sign_in.generate_key_button.click()
         from views.sign_in_view import MultiAccountButton
@@ -141,7 +141,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.high
     def test_pass_phrase_validation(self):
         sign_in = SignInView(self.driver)
-        sign_in.accept_tos_checkbox.click()
+        sign_in.accept_tos_checkbox.enable()
         sign_in.get_started_button.click_until_presence_of_element(sign_in.access_key_button)
         sign_in.access_key_button.click()
         validations = [
@@ -219,7 +219,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.medium
     def test_create_account_short_and_mismatch_password(self):
         sign_in = SignInView(self.driver)
-        sign_in.accept_tos_checkbox.click()
+        sign_in.accept_tos_checkbox.enable()
         sign_in.get_started_button.click()
         sign_in.generate_key_button.click()
         sign_in.next_button.click()

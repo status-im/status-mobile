@@ -42,11 +42,11 @@ rlp==1.2.0
 sauceclient==1.0.0
 scrypt==0.8.17
 selenium==3.14.1
-six==1.10.0
+six==1.11.0
 urllib3==1.26.3
 yarl==1.6.3
 zbarlight==3.0
 docker==4.4.0
 influxdb==5.3.1
-web3
+web3==5.25.0
 imagehash

@@ -144,7 +144,8 @@ class ChatElementByText(Text):
 
     @property
     def timestamp_message(self):
-        class TimeStampText(Text):
+
+        class TimeStampText(Button):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, xpath="(%s//android.widget.TextView)[last()]" % parent_locator)
 
@@ -190,6 +191,10 @@ class ChatElementByText(Text):
         if delivered.is_element_displayed(30, ignored_exceptions=NoSuchElementException):
             status = 'delivered'
         return status
+
+    @property
+    def sent_status_checkmark(self) -> object:
+        return Text(self.driver, prefix=self.locator, xpath="//*[@content-desc='sent']")
 
     @property
     def replied_message_text(self):

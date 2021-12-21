@@ -402,6 +402,13 @@ class SilentButton(Button):
 
 
 class CheckBox(Button):
-    def click(self):
+    def __init__(self, driver, **kwargs):
+        super(Button, self).__init__(driver, **kwargs)
+
+    def enable(self):
         super(CheckBox, self).click_until_presence_of_element(Button(self.driver, accessibility_id="checkbox-on"))
+        return self.navigate()
+
+    def disable(self):
+        super(CheckBox, self).click_until_presence_of_element(Button(self.driver, accessibility_id="checkbox-off"))
         return self.navigate()

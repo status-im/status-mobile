@@ -28,6 +28,8 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(5313)
     @marks.critical
+    @marks.skip
+    #TODO: should be updated after https://github.com/status-im/status-react/issues/12936
     def test_public_chat_messaging_emojis_timestamps(self):
         home_1, home_2 = HomeView(self.drivers[0]), HomeView(self.drivers[1])
         home_1.just_fyi("Check preselected chats, redirect to status chat")

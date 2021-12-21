@@ -18,9 +18,9 @@ class AssetCheckBox(CheckBox):
     def __init__(self, driver, asset_name):
         super().__init__(driver, xpath="//*[@text='%s']" % asset_name)
 
-    def click(self):
+    def enable(self):
         self.scroll_to_element(12)
-        super().click()
+        super().enable()
 
 
 class BackupRecoveryPhrase(Button):
@@ -102,8 +102,6 @@ class WalletView(BaseView):
         self.manage_assets_button = Button(self.driver, accessibility_id="wallet-manage-assets")
         self.manage_accounts_button = Button(self.driver, accessibility_id="wallet-manage-accounts")
         self.scan_tokens_button = Button(self.driver, accessibility_id="wallet-scan-token")
-        self.stt_check_box = CheckBox(self.driver,
-                                    xpath="//*[@text='STT']/../android.view.ViewGroup[@content-desc='checkbox-off']")
         self.all_assets_full_names = Text(self.driver,
                                           xpath="//*[@content-desc='checkbox-off']/../android.widget.TextView[1]")
         self.all_assets_symbols = Button(self.driver,
@@ -270,7 +268,7 @@ class WalletView(BaseView):
         self.multiaccount_more_options.click()
         self.manage_assets_button.click()
         for asset in args:
-            self.asset_checkbox_by_name(asset).click()
+            self.asset_checkbox_by_name(asset).enable()
         self.cross_icon.click()
 
     def scan_tokens(self, *args):

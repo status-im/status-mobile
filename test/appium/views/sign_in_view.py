@@ -176,7 +176,7 @@ class SignInView(BaseView):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s')" % (password, str(keycard)),
                          device=False)
         if not second_user:
-            self.accept_tos_checkbox.click()
+            self.accept_tos_checkbox.enable()
             self.get_started_button.click_until_presence_of_element(self.generate_key_button)
             self.generate_key_button.click()
 
@@ -204,7 +204,7 @@ class SignInView(BaseView):
                        enable_notifications=False, second_user=False):
         self.driver.info("## Recover access(password:%s, keycard:%s)" % (password, str(keycard)), device=False)
         if not second_user:
-            self.accept_tos_checkbox.click()
+            self.accept_tos_checkbox.enable()
         self.get_started_button.click_until_presence_of_element(self.access_key_button)
         self.access_key_button.click()
         self.enter_seed_phrase_button.click()
