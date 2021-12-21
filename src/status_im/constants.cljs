@@ -146,6 +146,7 @@
 
 (def ^:const timeline-chat-id "@timeline70bd746ddcc12beb96b2c9d572d0784ab137ffc774f5383e50585a932080b57cca0484b259e61cecbaa33a4c98a300a")
 
+(def ^:const two-mins (* 2 60))
 (def ^:const one-day (* 60 60 24))
 (def ^:const three-days (* one-day 3))
 (def ^:const one-week (* one-day 7))

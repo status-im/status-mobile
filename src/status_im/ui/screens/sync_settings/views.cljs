@@ -40,6 +40,8 @@
                      :chevron             true
                      :accessory           :text
                      :accessory-text      (cond
+                                            (= default-sync-period constants/two-mins)
+                                            (i18n/label :t/two-minutes)
                                             (= default-sync-period constants/one-day)
                                             (i18n/label :t/one-day)
                                             (= default-sync-period constants/three-days)

@@ -52,6 +52,7 @@
 (def delete-message-enabled? (enabled? (get-config :DELETE_MESSAGE_ENABLED "0")))
 (def collectibles-enabled? (enabled? (get-config :COLLECTIBLES_ENABLED "1")))
 (def test-stateofus? (enabled? (get-config :TEST_STATEOFUS "0")))
+(def two-minutes-syncing? (enabled? (get-config :TWO_MINUTES_SYNCING "0")))
 
 ;; CONFIG VALUES
 (def log-level

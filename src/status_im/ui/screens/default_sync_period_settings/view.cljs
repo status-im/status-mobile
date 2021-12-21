@@ -3,10 +3,12 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.i18n.i18n :as i18n]
             [status-im.constants :as constants]
+            [status-im.utils.config :as config]
             [quo.core :as quo]
             [re-frame.core :as re-frame]))
 
-(def titles {constants/one-day (i18n/label :t/one-day)
+(def titles {constants/two-mins (i18n/label :t/two-minutes)
+             constants/one-day (i18n/label :t/one-day)
              constants/three-days (i18n/label :t/three-days)
              constants/one-week (i18n/label :t/one-week)
              constants/one-month (i18n/label :t/one-month)})
@@ -21,6 +23,8 @@
 (views/defview default-sync-period-settings []
   (views/letsubs [{:keys [default-sync-period]} [:multiaccount]]
     [react/view {:margin-top 8}
+     (when config/two-minutes-syncing?
+       [radio-item constants/two-mins default-sync-period])
      [radio-item constants/one-day default-sync-period]
      [radio-item constants/three-days default-sync-period]
      [radio-item constants/one-week default-sync-period]
