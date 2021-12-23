@@ -2,6 +2,7 @@ import os
 from support.base_test_report import BaseTestReport
 from support.testrail_report import TestrailReport
 
+
 class GithubHtmlReport(BaseTestReport):
     TEST_REPORT_DIR = "%s/../report" % os.path.dirname(os.path.abspath(__file__))
 
@@ -52,7 +53,9 @@ class GithubHtmlReport(BaseTestReport):
             pr_id = pytest_config_global['pr_number']
             apk_name = pytest_config_global['apk']
             tr_case_ids = self.list_of_failed_testrail_ids(self.get_failed_tests())
-            html += "<li><a href=\"%s\">Rerun tests</a></li>" % self.get_jenkins_link_to_rerun_e2e(pr_id=pr_id, apk_name=apk_name, tr_case_ids=tr_case_ids)
+            html += "<li><a href=\"%s\">Rerun tests</a></li>" % self.get_jenkins_link_to_rerun_e2e(pr_id=pr_id,
+                                                                                                   apk_name=apk_name,
+                                                                                                   tr_case_ids=tr_case_ids)
 
         html += "<br/>"
         html += "<table style=\"width: 100%\">"
@@ -73,7 +76,8 @@ class GithubHtmlReport(BaseTestReport):
     def build_test_row_html(self, index, test, run_id):
         test_rail_link = TestrailReport().get_test_result_link(run_id, test.testrail_case_id)
         if test_rail_link:
-            html = "<tr><td><b>%s. <a href=\"%s\">%s</a>, id: %s </b></td></tr>" % (index + 1, test_rail_link, test.name, test.testrail_case_id)
+            html = "<tr><td><b>%s. <a href=\"%s\">%s</a>, id: %s </b></td></tr>" % (
+            index + 1, test_rail_link, test.name, test.testrail_case_id)
         else:
             html = "<tr><td><b>%d. %s</b> (TestRail link is not found)</td></tr>" % (index + 1, test.name)
         html += "<tr><td>"
@@ -92,18 +96,23 @@ class GithubHtmlReport(BaseTestReport):
             html += "<code>%s</code>" % last_testrun.error[:255]
             html += "<br/><br/>"
         if last_testrun.jobs:
-            html += self.build_device_sessions_html(last_testrun.jobs, last_testrun)
+            html += self.build_device_sessions_html(last_testrun)
         html += "</td></tr>"
         return html
 
-    def build_device_sessions_html(self, jobs, test_run):
+    def build_device_sessions_html(self, test_run):
         html = "<ins>Device sessions</ins>"
         html += "<p><ul>"
-        for job_id, i in jobs.items():
+        for job_id, i in test_run.jobs.items():
             html += "<p>"
             html += "Device %d:" % i
             html += "<ul>"
-            html += "<li><a href=\"%s\">Steps, video, logs</a></li>" % self.get_sauce_job_url(job_id)
+            if test_run.first_commands:
+                html += "<li><a href=\"%s\">Steps, video, logs</a></li>" % self.get_sauce_job_url(job_id,
+                                                                                                  test_run.first_commands[
+                                                                                                      job_id])
+            else:
+                html += "<li><a href=\"%s\">Steps, video, logs</a></li>" % self.get_sauce_job_url(job_id)
             if test_run.error:
                 html += "<li><a href=\"%s\">Failure screenshot</a></li>" % self.get_sauce_final_screenshot_url(job_id)
             html += "</ul></p>"

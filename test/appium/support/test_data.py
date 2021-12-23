@@ -1,3 +1,4 @@
+from typing import Dict
 
 
 class SingleTestData(object):
@@ -8,13 +9,14 @@ class SingleTestData(object):
         self.geth_paths = geth_paths
 
     class TestRunData(object):
-        def __init__(self, steps, jobs, error):
+        def __init__(self, steps, jobs, error, first_commands: Dict[str, int]):
             self.steps = steps
             self.jobs = jobs
             self.error = error
+            self.first_commands = first_commands
 
     def create_new_testrun(self):
-        self.testruns.append(SingleTestData.TestRunData(list(), dict(), None))
+        self.testruns.append(SingleTestData.TestRunData(list(), dict(), None, dict()))
 
 
 class TestSuiteData(object):

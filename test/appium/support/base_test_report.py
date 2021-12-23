@@ -28,8 +28,7 @@ class BaseTestReport:
         file_name = "%s.json" % test_name
         return os.path.join(self.TEST_REPORT_DIR, file_name)
 
-    def save_test(self, test, geth: dict):
-        file_path = self.get_test_report_file_path(test.name)
+    def save_geth(self, geth: dict):
         geth_paths = {}
         for log in geth.keys():
             geth_path = os.path.join(self.TEST_REPORT_DIR, log)
@@ -37,10 +36,15 @@ class BaseTestReport:
             result.write(geth[log])
             result.close()
             geth_paths[log] = geth_path
+
+    def save_test(self, test, geth: dict = None):
+        if geth:
+            self.save_geth(geth)
+        file_path = self.get_test_report_file_path(test.name)
         test_dict = {
             'testrail_case_id': test.testrail_case_id,
             'name': test.name,
-            'geth_paths': geth_paths,
+            'geth_paths': test.geth_paths,
             'testruns': list()
         }
         for testrun in test.testruns:
@@ -58,7 +62,8 @@ class BaseTestReport:
                 testruns.append(SingleTestData.TestRunData(
                     steps=testrun_data['steps'],
                     jobs=testrun_data['jobs'],
-                    error=testrun_data['error']))
+                    error=testrun_data['error'],
+                    first_commands=testrun_data['first_commands']))
             tests.append(SingleTestData(name=test_data['name'],
                                         geth_paths=test_data['geth_paths'],
                                         testruns=testruns,
@@ -85,9 +90,12 @@ class BaseTestReport:
         return hmac.new(bytes(self.sauce_username + ":" + self.sauce_access_key, 'latin-1'),
                         bytes(job_id, 'latin-1'), md5).hexdigest()
 
-    def get_sauce_job_url(self, job_id):
+    def get_sauce_job_url(self, job_id, first_command=0):
         token = self.get_sauce_token(job_id)
-        return 'https://saucelabs.com/jobs/%s?auth=%s' % (job_id, token)
+        url = 'https://saucelabs.com/jobs/%s?auth=%s' % (job_id, token)
+        if first_command > 0:
+            url += "#%s" % first_command
+        return url
 
     @staticmethod
     def get_jenkins_link_to_rerun_e2e(branch_name="develop", pr_id="", apk_name="", tr_case_ids=""):
