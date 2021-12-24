@@ -288,11 +288,6 @@
             ;;TODO custom
             :options   {:topBar {:visible false}}
             :component select-category/view}
-           {:name      :community-edit-chats
-            ;;TODO custom
-            :insets    {:bottom true}
-            :options   {:topBar {:visible false}}
-            :component community/community-edit}
            {:name      :community-reorder-categories
             :insets    {:top false}
             :options   {:topBar {:visible false}}

@@ -165,6 +165,7 @@
    "wakuext_reorderCommunityChat" {}
    "wakuext_editCommunityCategory" {}
    "wakuext_deleteCommunityCategory" {}
+   "wakuext_deleteCommunityChat" {}
    "wakuext_ensVerified" {}
    "wakuext_dismissActivityCenterNotifications" {}
    "wakuext_acceptActivityCenterNotifications" {}

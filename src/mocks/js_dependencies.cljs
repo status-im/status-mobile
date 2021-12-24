@@ -206,6 +206,9 @@
 (def rn-emoji-keyboard
   #js {:EmojiKeyboard #js {}})
 
+(def react-native-draggable-flatlist
+  #js {:default #js {}})
+
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -239,6 +242,7 @@
     "@react-native-community/push-notification-ios" push-notification-ios
     "react-native-camera-kit" react-native-camera-kit
     "rn-emoji-keyboard" rn-emoji-keyboard
+    "react-native-draggable-flatlist" react-native-draggable-flatlist
     "./fleets.js" default-fleets
     "./chats.js" default-chats
     "../translations/ar.json" (js/JSON.parse (slurp "./translations/ar.json"))

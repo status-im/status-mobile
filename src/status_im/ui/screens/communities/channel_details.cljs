@@ -12,6 +12,7 @@
     (fn []
       (let [current-chat (<sub [:chat-by-id chat-id])
             {:keys [chat-name color description community-id emoji]} current-chat
+            {:keys [position]} (<sub [:chats/community-chat-by-id community-id chat-id])
             category (<sub [:chats/category-by-chat-id community-id chat-id])
             {:keys [admin]} (<sub [:communities/community community-id])
             pinned-messages (<sub [:chats/pinned chat-id])]
@@ -27,7 +28,8 @@
                                                                                             color
                                                                                             emoji
                                                                                             chat-id
-                                                                                            (:id category)])}])
+                                                                                            (:id category)
+                                                                                            position])}])
                               :extended-header   (profile-header/extended-header
                                                   {:title    chat-name
                                                    :color    color
