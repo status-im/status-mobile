@@ -17,7 +17,6 @@
 (defn emoji-thumbnail-icon-text [size]
   {:font-size           (emoji-utils/emoji-font-size size)
    :line-height         size
-   :accessibility-label :thumbnail-emoji
    :margin-top          (emoji-utils/emoji-top-margin-for-vertical-alignment size)})  ;; Required for vertical alignment bug - Check function defination for more info
 
 
