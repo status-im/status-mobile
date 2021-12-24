@@ -19,15 +19,16 @@
                 {:unread-count (get db :activity.center/notifications-count 0)
                  :notifications (get-in db [:activity.center/notifications :notifications])}
                 activities)]
-    {:db (-> db
-             (assoc-in [:activity.center/notifications :notifications] notifications)
-             (assoc :activity.center/notifications-count (max 0 unread-count)))
-     :dispatch (cond
-                 (= (:view-id db) :notifications-center)
-                 [:mark-all-activity-center-notifications-as-read]
+    (merge
+     {:db (-> db
+              (assoc-in [:activity.center/notifications :notifications] notifications)
+              (assoc :activity.center/notifications-count (max 0 unread-count)))}
+     (cond
+       (= (:view-id db) :notifications-center)
+       {:dispatch [:mark-all-activity-center-notifications-as-read]}
 
-                 (= (:view-id db) :chat)
-                 [:accept-all-activity-center-notifications-from-chat (:current-chat-id db)])}))
+       (= (:view-id db) :chat)
+       {:dispatch [:accept-all-activity-center-notifications-from-chat (:current-chat-id db)]}))))
 
 (fx/defn get-activity-center-notifications-count
   {:events [:get-activity-center-notifications-count]}
