@@ -116,7 +116,7 @@
 
 (defn on-drag-end-category [from to data-js]
   (let [{:keys [id community-id position]} (get @data from)]
-    (when (and (< to (dec (count @data))) (not= position to) (not= id ""))
+    (when (and (< to (count @data)) (not= position to) (not= id ""))
       (update-local-atom data-js)
       (>evt [::communities/reorder-community-category community-id id to]))))
 
@@ -149,11 +149,12 @@
         {:keys [id name images members permissions color]}
         (<sub [:communities/community community-id])
         sorted-categories (<sub [:communities/sorted-categories community-id])
-        categories        (conj sorted-categories
-                                {:id           ""
-                                 :position     (count sorted-categories)
-                                 :name         (i18n/label :t/none)
-                                 :community-id community-id})
+        categories        (if @collapse-chats? sorted-categories
+                              (conj sorted-categories
+                                    {:id           ""
+                                     :position     (count sorted-categories)
+                                     :name         (i18n/label :t/none)
+                                     :community-id community-id}))
         chats             (<sub [:chats/sorted-categories-by-community-id community-id])]
     (reset-data categories chats)
     [:<>
