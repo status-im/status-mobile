@@ -4,11 +4,12 @@
             [status-im.ui.screens.chat.styles.photos :as style]
             [status-im.profile.db :as profile.db]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.utils.image :as utils.image]))
+            [status-im.utils.image :as utils.image]
+            [quo.design-system.colors :as colors]))
 
 (def memo-photo-rend
   (memoize
-   (fn [photo-path size accessibility-label]
+   (fn [photo-path size accessibility-label _]
      (let [identicon? (when photo-path (profile.db/base64-png? photo-path))]
        [react/view {:style (style/photo-container size)}
         [react/image {:source              (utils.image/source photo-path)
@@ -18,8 +19,9 @@
         (when identicon?
           [react/view {:style (style/photo-border size)}])]))))
 
+;; "(colors/dark?)" is passed to memoized function to avoid previous themes cache
 (defn photo [photo-path {:keys [size accessibility-label]}]
-  [memo-photo-rend photo-path size accessibility-label])
+  [memo-photo-rend photo-path size accessibility-label (colors/dark?)])
 
 ;; We optionally pass identicon for perfomance reason, so it does not have to be calculated for each message
 (defn member-photo [pub-key identicon]
