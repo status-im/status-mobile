@@ -66,7 +66,7 @@
                          :error nil
                          :status nil))
       :hide-popover nil})
-   (when-not (:multiaccounts/login db)
+   (when (:multiaccount db)
      (navigation/change-tab :profile))
    (when-not (:multiaccounts/login db)
      (if (:popover/popover db)

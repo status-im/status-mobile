@@ -109,12 +109,15 @@
                    types/json->clj
                    :error
                    string/blank?
-                   not)]
+                   not)
+        onboarding? (not (or (:multiaccounts/login db) (:multiaccount db)))]
     (if error?
       (popover/show-popover cofx {:view :custom-seed-phrase})
       {::validate-seed-against-key-uid {:seed-phrase (-> db :multiaccounts/key-storage :seed-phrase)
                                         ;; Unique key-uid of the account for which we are going to move keys
-                                        :key-uid (or (-> db :multiaccounts/login :key-uid) (-> db :multiaccount :key-uid))}})))
+                                        :key-uid (or (-> db :multiaccounts/login :key-uid)
+                                                     (-> db :multiaccount :key-uid)
+                                                     (and onboarding? (-> db :keycard :application-info :key-uid)))}})))
 
 (fx/defn choose-storage-pressed
   {:events [::choose-storage-pressed]}
