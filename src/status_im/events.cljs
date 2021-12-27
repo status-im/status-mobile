@@ -6,7 +6,7 @@
             [status-im.async-storage.core :as async-storage]
             status-im.backup.core
             status-im.bootnodes.core
-            status-im.bottom-sheet.core
+            [status-im.bottom-sheet.core :as bottom-sheet]
             status-im.browser.core
             status-im.browser.permissions
             [status-im.chat.models :as chat]
@@ -58,7 +58,9 @@
             status-im.wallet.accounts.core
             status-im.wallet.choose-recipient.core
             [status-im.wallet.core :as wallet]
-            status-im.wallet.custom-tokens.core))
+            status-im.wallet.custom-tokens.core
+            [status-im.navigation.core :as navigation.core]
+            [status-im.multiaccounts.login.core :as login.core]))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -112,10 +114,35 @@
 
 (fx/defn system-theme-mode-changed
   {:events [:system-theme-mode-changed]}
-  [{:keys [db]} theme]
-  (let [cur-theme (get-in db [:multiaccount :appearance])]
+  [{:keys [db] :as cofx} theme]
+  (let [cur-theme     (get-in db [:multiaccount :appearance])
+        current-tab   (get db :current-tab :chat)
+        view-id       (:view-id db)
+        screen-params (get-in db [:navigation/screen-params view-id])
+        root-id       @navigation.core/root-id]
+    (navigation.core/dismiss-all-modals)
     (when (or (nil? cur-theme) (zero? cur-theme))
-      {::multiaccounts/switch-theme (if (= :dark theme) 2 1)})))
+      (fx/merge cofx
+                {::multiaccounts/switch-theme (if (= :dark theme) 2 1)
+                 :utils/dispatch-later
+                 (cond-> [{:ms 2000 :dispatch
+                           (if (= view-id :chat)
+                             [:chat.ui/navigate-to-chat (:current-chat-id db)]
+                             [:navigate-to view-id screen-params])}]
+
+                   (some #(= view-id %) navigation.core/community-screens)
+                   (conj {:ms 1000 :dispatch
+                          [:navigate-to :community
+                           (get-in db [:navigation/screen-params :community])]})
+
+                   (= view-id :community-emoji-thumbnail-picker)
+                   (conj {:ms 1500 :dispatch
+                          [:navigate-to :create-community-channel
+                           (get-in db [:navigation/screen-params :create-community-channel])]}))}
+                (bottom-sheet/hide-bottom-sheet)
+                (navigation/init-root root-id)
+                (when (= root-id :chat-stack)
+                  (navigation/change-tab current-tab))))))
 
 (def authentication-options
   {:reason (i18n/label :t/biometric-auth-reason-login)})

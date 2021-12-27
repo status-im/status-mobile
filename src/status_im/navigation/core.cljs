@@ -1,6 +1,7 @@
 (ns status-im.navigation.core
   (:require
    ["react-native" :as rn]
+   [clojure.set :as clojure.set]
    ["react-native-gesture-handler" :refer (gestureHandlerRootHOC)]
    ["react-native-navigation" :refer (Navigation)]
    [quo.components.text-input :as quo.text-input]
@@ -157,12 +158,14 @@
   (.registerComponentDidDisappearListener
    (.events Navigation)
    (fn [^js evn]
-     (when-not (#{"popover" "bottom-sheet" "signing-sheet" "visibility-status-popover"}
-                (.-componentName evn))
-       (doseq [[_ {:keys [ref value]}] @quo.text-input/text-input-refs]
-         (.setNativeProps ^js ref (clj->js {:text value})))
-       (doseq [[^js text-input default-value] @react/text-input-refs]
-         (.setNativeProps text-input (clj->js {:text default-value})))))))
+     (let [view-id (keyword (.-componentName evn))]
+       (when-not (#{"popover" "bottom-sheet" "signing-sheet" "visibility-status-popover"}
+                  (.-componentName evn))
+         (re-frame/dispatch [::view-disappeared view-id])
+         (doseq [[_ {:keys [ref value]}] @quo.text-input/text-input-refs]
+           (.setNativeProps ^js ref (clj->js {:text value})))
+         (doseq [[^js text-input default-value] @react/text-input-refs]
+           (.setNativeProps text-input (clj->js {:text default-value}))))))))
 
 ;; SET ROOT
 (re-frame/reg-fx
@@ -277,7 +280,10 @@
   (.registerBottomTabSelectedListener
    (.events Navigation)
    (fn [^js evn]
-     (let [comp (get tab-root-ids (.-selectedTabIndex evn))]
+     (let [selected-tab-index (.-selectedTabIndex evn)
+           comp               (get tab-root-ids selected-tab-index)
+           tab-key            (get (clojure.set/map-invert tab-key-idx) selected-tab-index)]
+       (re-frame/dispatch [:set :current-tab tab-key])
        (when (and platform/android? (= @root-comp-id comp))
          (.popToRoot Navigation (name comp)))
        (reset! root-comp-id comp)))))
@@ -377,3 +383,27 @@
    (log/debug :navigate-replace-fx view-id)
    (.pop Navigation (name @root-comp-id))
    (navigate view-id)))
+
+(def community-screens '(:community-management
+                         :community-members
+                         :community-requests-to-join
+                         :create-community-channel
+                         :community-emoji-thumbnail-picker
+                         :create-community-category
+                         :community-edit-chats))
+
+;; change view-id if it is still same after component is disappeared
+;; https://github.com/wix/react-native-navigation/issues/5744#issuecomment-563226820
+(fx/defn view-disappeared
+  {:events [::view-disappeared]}
+  [{:keys [db]} view-id]
+  (when (= view-id (:view-id db))
+    {:db (assoc db :view-id (cond
+                              (= view-id :community-emoji-thumbnail-picker)
+                              :create-community-channel
+
+                              (some #(= view-id %) community-screens)
+                              :community
+
+                              :else
+                              :home))}))
