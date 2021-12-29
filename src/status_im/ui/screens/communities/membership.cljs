@@ -10,13 +10,6 @@
 (def options {constants/community-on-request-access
               {:title       :t/membership-approval
                :description :t/membership-approval-description}
-              constants/community-invitation-only-access
-              {:title       :t/membership-invite
-               :description :t/membership-invite-description}
-; disabled for now
-;              constants/community-rule-ens-only
-;              {:title       :t/membership-ens
-;               :description :t/membership-ens-description}
               constants/community-no-membership-access
               {:title       :t/membership-free
                :description :t/membership-free-description}})
