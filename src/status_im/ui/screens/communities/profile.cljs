@@ -23,6 +23,7 @@
             roles                false
             notifications        false
             show-members-count?  (not= (:access permissions) constants/community-no-membership-access)
+            request-membership?  (= (:access permissions) constants/community-on-request-access)
             members-count        (count members)]
         [:<>
          [quo/animated-header {:left-accessories  [{:icon                :main-icons/arrow-left
@@ -39,6 +40,9 @@
                                                                  (rn/resolve-asset-source
                                                                   (resources/get-image :status-logo)))
                                                                 (get-in community [:images :large :uri]))
+                                                    :membership #_{:clj-kondo/ignore [:missing-else-branch]}
+                                                                (if request-membership?
+                                                                  (i18n/label :t/request-membership))
                                                     :subtitle (if show-members-count?
                                                                 (i18n/label-pluralize members-count :t/community-members {:count members-count})
                                                                 (i18n/label :t/open-membership))

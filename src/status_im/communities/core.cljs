@@ -221,12 +221,10 @@
 (fx/defn create
   {:events [::create-confirmation-pressed]}
   [{:keys [db]}]
-  (let [{:keys [name description image]} (get db :communities/create)]
-    ;; If access is ENS only, we set the access to require approval and set the rule
-    ;; of ens only
+  (let [{:keys [name description membership image]} (get db :communities/create)]
     (let [params {:name name
                   :description description
-                  :membership constants/community-on-request-access
+                  :membership (or membership constants/community-no-membership-access)
                   :color (rand-nth colors/chat-colors)
                   :image (string/replace-first (str image) #"file://" "")
                   :imageAx 0

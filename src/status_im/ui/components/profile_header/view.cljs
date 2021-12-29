@@ -38,7 +38,7 @@
            {:padding-top    subtitle-margin})))
 
 (defn extended-header
-  [{:keys [title photo color subtitle subtitle-icon on-edit on-press monospace
+  [{:keys [title photo color membership subtitle subtitle-icon on-edit on-press monospace
            bottom-separator emoji public-key community?]
     :or   {bottom-separator true}}]
   (fn [{:keys [animation minimized]}]
@@ -70,6 +70,12 @@
                       :accessibility-role  :text
                       :accessibility-label :default-username}
             title]
+           (when membership [quo/text {:number-of-lines 1
+                         :ellipsize-mode  :middle
+                         :monospace       monospace
+                         :size            (if minimized :small :base)
+                         :color           :secondary}
+               membership])
            (when subtitle
              [animated/view {:style          (header-subtitle {:minimized minimized})
                              :pointer-events :box-none}
