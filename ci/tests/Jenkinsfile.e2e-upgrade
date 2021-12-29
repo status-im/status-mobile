@@ -4,17 +4,22 @@ pipeline {
 
   parameters {
     string(
-      name: 'NETWORK',
-      description: 'Name of test network to use',
-      defaultValue: 'ropsten',
-    )
-    string(
       name: 'APK_NAME',
       description: 'Filename of APK uploaded to SauceLabs (base for upgrade, usually release build)',
     )
      string(
       name: 'APK_NAME_UPGRADE',
       description: 'Filename of APK of upgraded application (installed on top of base)',
+    )
+     string(
+      name: 'KEYWORD_EXPRESSION',
+      description: 'This will run tests which contain names that match the given string expression  (Optional)',
+      defaultValue: '',
+    )
+     string(
+      name: 'TR_CASE_IDS',
+      description: 'IDs of the TestRail case, separated by a comma (Optional)',
+      defaultValue: '',
     )
   }
 
@@ -32,7 +37,12 @@ pipeline {
       } }
     }
     stage('Test') {
-      steps {
+      steps { script {
+       /* for managing optional arguments */
+        def extraPytestOpts = ''
+        if (params.TR_CASE_IDS != '') {
+          extraPytestOpts = "--run_testrail_ids='${params.TR_CASE_IDS}'"
+        }
         withCredentials([
           usernamePassword(
             credentialsId:  'test-rail-api',
@@ -56,18 +66,19 @@ pipeline {
           dir('test/appium/tests') {
             sh """
               python3 -m pytest \
-                -m upgrade \
+                -m "upgrade" \
+                -k \"${params.KEYWORD_EXPRESSION}\" \
                 --numprocesses 15 \
                 --rerun_count=2 \
                 --testrail_report=True \
-                --network=${params.NETWORK} \
                 --apk=${params.APK_NAME} \
-                --apk_upgrade=${params.APK_NAME_UPGRADE}
+                --apk_upgrade=${params.APK_NAME_UPGRADE} \
+                 ${extraPytestOpts}
             """
           }
         }
       }
-    }
+    } }
   }
 
   post {

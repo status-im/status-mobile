@@ -84,6 +84,7 @@ class HomeButton(TabButton):
         return self.navigate()
 
 
+
 class DappTabButton(TabButton):
     def __init__(self, driver):
         super().__init__(driver, xpath="//*[contains(@content-desc,'tab, 2 out of 5')]")

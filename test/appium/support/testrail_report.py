@@ -97,10 +97,11 @@ class TestrailReport(BaseTestReport):
 
     def get_regression_cases(self):
         test_cases = dict()
-        test_cases['critical'] = 734
-        test_cases['high'] = 735
+        test_cases['critical'] = 730
         test_cases['medium'] = 736
         test_cases['upgrade'] = 881
+        test_cases['public_chat'] = 50654
+        test_cases['one_to_one_chat'] = 50655
         case_ids = list()
         for arg in argv:
             if "run_testrail_ids" in arg:
@@ -108,7 +109,7 @@ class TestrailReport(BaseTestReport):
                 case_ids = value.split(',')
         if len(case_ids) == 0:
             if 'critical or high' in argv:
-                for case in self.get_cases([test_cases['critical'], test_cases['high']]):
+                for case in self.get_cases([test_cases['critical'],  test_cases['public_chat'], test_cases['one_to_one_chat']]):
                     case_ids.append(case['id'])
             elif 'upgrade' in argv and 'not upgrade' not in argv:
                 for case in self.get_cases([test_cases['upgrade']]):

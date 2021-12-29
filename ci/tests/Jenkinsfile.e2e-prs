@@ -9,14 +9,9 @@ pipeline {
       defaultValue: 'develop',
     )
     string(
-      name: 'NETWORK',
-      description: 'Name of test network to use.',
-      defaultValue: 'ropsten',
-    )
-    string(
       name: 'TEST_MARKERS',
       description: 'Marker expression for matching tests to run.',
-      defaultValue: 'critical or high',
+      defaultValue: '',
     )
     string(
       name: 'APK_NAME',
@@ -27,8 +22,13 @@ pipeline {
       description: 'ID of the Pull Request triggering this build.',
     )
     string(
+      name: 'KEYWORD_EXPRESSION',
+      description: 'This will run tests which contain names that match the given string expression  (Optional)',
+      defaultValue: '',
+    )
+    string(
       name: 'TR_CASE_IDS',
-      description: 'IDs of the TestRail case, separated by a comma. (Optional)',
+      description: 'IDs of the TestRail case, separated by a comma (Optional)',
       defaultValue: '',
     )
   }
@@ -91,8 +91,8 @@ pipeline {
                 --numprocesses 15 \
                 --rerun_count=2 \
                 --testrail_report=True \
-                -m "${params.TEST_MARKERS}" \
-                --network=${params.NETWORK} \
+                -m \"${params.TEST_MARKERS}\" \
+                -k \"${params.KEYWORD_EXPRESSION}\" \
                 --apk=${params.APK_NAME} \
                 --build=PR-${params.PR_ID} \
                 --pr_number=${params.PR_ID} \

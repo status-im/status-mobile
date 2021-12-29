@@ -91,6 +91,20 @@ class BaseElement(object):
         self.driver.info('Tap on found: %s' % self.name)
         return self.navigate()
 
+    def click_until_presence_of_element(self, desired_element, attempts=4):
+        counter = 0
+        self.driver.info("Click until '%s' by '%s': `%s` will be presented" % (
+            desired_element.name, desired_element.by, desired_element.locator))
+        while not desired_element.is_element_present(1) and counter <= attempts:
+            try:
+                self.find_element().click()
+                desired_element.wait_for_element(5)
+                return self.navigate()
+            except (NoSuchElementException, TimeoutException):
+                counter += 1
+        else:
+            self.driver.info("%s element not found" % desired_element.name)
+
     def double_click(self):
         self.driver.info('Double tap on: %s' % self.name)
         [self.find_element().click() for _ in range(2)]
@@ -352,19 +366,6 @@ class Button(BaseElement):
         self.wait_for_visibility_of_element(sec)
         self.click()
 
-    def click_until_presence_of_element(self, desired_element, attempts=4):
-        counter = 0
-        self.driver.info("Click until '%s' by '%s': `%s` will be presented" % (
-            desired_element.name, desired_element.by, desired_element.locator))
-        while not desired_element.is_element_present(1) and counter <= attempts:
-            try:
-                self.find_element().click()
-                desired_element.wait_for_element(5)
-                return self.navigate()
-            except (NoSuchElementException, TimeoutException):
-                counter += 1
-        else:
-            self.driver.info("%s element not found" % desired_element.name)
 
     def click_until_absense_of_element(self, desired_element, attempts=3):
         counter = 0

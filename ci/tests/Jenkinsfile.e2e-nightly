@@ -4,13 +4,13 @@ pipeline {
 
   parameters {
     string(
-      name: 'NETWORK',
-      description: 'Name of test network to use.',
-      defaultValue: 'ropsten',
-    )
-    string(
       name: 'APK_NAME',
       description: 'Filename of APK uploaded to SauceLabs.',
+    )
+    string(
+      name: 'KEYWORD_EXPRESSION',
+      description: 'This will run tests which contain names that match the given string expression  (Optional)',
+      defaultValue: '',
     )
   }
 
@@ -56,8 +56,8 @@ pipeline {
                 --rerun_count=2 \
                 --testrail_report=True \
                 -m testrail_id \
-                -m "not upgrade" \
-                --network=${params.NETWORK} \
+                -m \"not upgrade\" \
+                -k \"${params.KEYWORD_EXPRESSION}\" \
                 --apk=${params.APK_NAME}
             """
           }
