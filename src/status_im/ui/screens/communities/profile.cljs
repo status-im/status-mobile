@@ -40,9 +40,8 @@
                                                                  (rn/resolve-asset-source
                                                                   (resources/get-image :status-logo)))
                                                                 (get-in community [:images :large :uri]))
-                                                    :membership #_{:clj-kondo/ignore [:missing-else-branch]}
-                                                    (if request-membership?
-                                                      (i18n/label :t/request-membership))
+                                                    :membership (when request-membership?
+                                                                  (i18n/label :t/request-membership))
                                                     :subtitle (if show-members-count?
                                                                 (i18n/label-pluralize members-count :t/community-members {:count members-count})
                                                                 (i18n/label :t/open-membership))
