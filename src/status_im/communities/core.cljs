@@ -224,7 +224,7 @@
   (let [{:keys [name description membership image]} (get db :communities/create)]
     (let [params {:name name
                   :description description
-                  :membership (or membership constants/community-no-membership-access)
+                  :membership membership
                   :color (rand-nth colors/chat-colors)
                   :image (string/replace-first (str image) #"file://" "")
                   :imageAx 0

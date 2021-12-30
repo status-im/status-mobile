@@ -205,7 +205,6 @@
                                         :title    first-name
                                         :photo    (multiaccounts/displayed-photo contact)
                                         :monospace (not ens-verified)
-                                        :access second-name
                                         :subtitle second-name
                                         :public-key public-key})]
                                      [react/view {:height 1 :background-color colors/gray-lighter :margin-top 8}]
