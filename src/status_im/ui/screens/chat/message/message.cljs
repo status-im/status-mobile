@@ -374,7 +374,9 @@
            [react/image {:style       (dissoc style-opts :outgoing)
                          :resize-mode :cover
                          :source      {:uri uri}}
-            [react/view {:style (style/image-message-border style-opts)}]]]]]))))
+            [react/view {:style (style/image-message-border style-opts)}]]
+           [react/view {:margin-horizontal 12}
+            [message-status message]]]]]))))
 
 (defmulti ->message :content-type)
 
@@ -566,7 +568,8 @@
                                                                :label    (i18n/label :t/view-details)}])))})
       [react/fast-image {:style  {:margin 10 :width 140 :height 140}
                          ;;TODO (perf) move to event
-                         :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
+                         :source {:uri (contenthash/url (-> content :sticker :hash))}}
+       [message-status message]]]
      reaction-picker]))
 
 (defmethod ->message constants/content-type-image [{:keys [content in-popover?] :as message} {:keys [on-long-press modal]
