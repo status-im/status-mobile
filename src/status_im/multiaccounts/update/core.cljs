@@ -60,3 +60,8 @@
              ;; need to add fully qualified namespace to counter circular deps
              :dispatch [:status-im.wallet.core/fetch-collectibles-collection]}
             (multiaccount-update :opensea-enabled? visible? {})))
+
+(fx/defn toggle-read-receipts
+  {:events [::switch-read-receipts]}
+  [cofx value]
+  (multiaccount-update cofx :read-receipts-enabled? value {}))
