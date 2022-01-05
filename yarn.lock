@@ -1243,7 +1243,7 @@
   dependencies:
     deep-assign "^3.0.0"
 
-"@react-native-community/audio-toolkit@git+https://github.com/tbenr/react-native-audio-toolkit.git#v2.0.3-status-v6":
+"@react-native-community/audio-toolkit@git+https://github.com/tbenr/react-native-audio-toolkit.git#refs/tags/v2.0.3-status-v6":
   version "2.0.3"
   resolved "git+https://github.com/tbenr/react-native-audio-toolkit.git#7ae9055cf6169b30f5089bda7bfcfc1c40a715e5"
   dependencies:
@@ -1258,7 +1258,7 @@
   dependencies:
     prop-types "^15.5.10"
 
-"@react-native-community/cameraroll@git+https://github.com/status-im/react-native-cameraroll.git#v4.0.4-status.0":
+"@react-native-community/cameraroll@git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.0":
   version "4.0.4"
   resolved "git+https://github.com/status-im/react-native-cameraroll.git#337c5a515e9b0f0728882f73568075553415f523"
 
@@ -2321,7 +2321,7 @@ big-integer@^1.6.44:
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.48.tgz#8fd88bd1632cba4a1c8c3e3d7159f08bb95b4b9e"
   integrity sha512-j51egjPa7/i+RdiRuJbPdJ2FIUYYPhvYLjzoYbcMMm62ooO6F94fETG4MTs46zPAF9Brs04OajboA/qTGuz78w==
 
-"bignumber.js@git+https://github.com/status-im/bignumber.js.git#v4.0.2-status":
+"bignumber.js@git+https://github.com/status-im/bignumber.js.git#refs/tags/v4.0.2-status":
   version "4.0.2"
   resolved "git+https://github.com/status-im/bignumber.js.git#cc066a0a3d6bfe0c436c9957f4ea8344bf963c89"
 
@@ -7326,7 +7326,7 @@ react-native-camera-kit@^8.0.4:
   dependencies:
     lodash "^4.14.2"
 
-"react-native-config@git+https://github.com/status-im/react-native-config.git#v1.4.2-status":
+"react-native-config@git+https://github.com/status-im/react-native-config.git#refs/tags/v1.4.2-status":
   version "1.4.2"
   resolved "git+https://github.com/status-im/react-native-config.git#c3e58d76fed923aaf88eadc5073099fab5ecb346"
 
@@ -7394,7 +7394,7 @@ react-native-haptic-feedback@^1.9.0:
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.9.0.tgz#7d62c54536f04dd5d8f1c2bb8ee444009f2294b9"
   integrity sha512-tIRbq8k7HK9AoyvXrOHUEFmJd65ZAh1HP9mDyD/gDisG1ApY4Im9UKn0q0of9z7s8AJY3sZA9GMuSKdSBGdKKQ==
 
-"react-native-image-crop-picker@git+https://github.com/status-im/react-native-image-crop-picker.git#v0.36.2-status.0":
+"react-native-image-crop-picker@git+https://github.com/status-im/react-native-image-crop-picker.git#refs/tags/v0.36.2-status.0":
   version "0.36.2"
   resolved "git+https://github.com/status-im/react-native-image-crop-picker.git#d14a68dcb643328b91e783d3a83561e7d6e0bd25"
 
@@ -7403,11 +7403,11 @@ react-native-image-resizer@^1.2.3:
   resolved "https://registry.yarnpkg.com/react-native-image-resizer/-/react-native-image-resizer-1.2.3.tgz#21cb2b158ff950e55a0fc01c2cb61375bd5a03ba"
   integrity sha512-RDPNJglRmWDZ/7hvu+CbpsKYl6AQmseL8cWX4UkLAHxQWNc5ZdYhP/9avC5xCfyiwkRw+Zmkmv78HO0kt0ewhQ==
 
-"react-native-image-viewing@git+https://github.com/status-im/react-native-image-viewing.git#v0.2.1.status":
+"react-native-image-viewing@git+https://github.com/status-im/react-native-image-viewing.git#refs/tags/v0.2.1.status":
   version "0.2.1"
   resolved "git+https://github.com/status-im/react-native-image-viewing.git#94af89356f2e4e08f462370c77e4778d7626ce2f"
 
-"react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-5-status":
+"react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#refs/tags/v.3.0.0-5-status":
   version "3.0.0-rc.3"
   resolved "git+https://github.com/status-im/react-native-keychain.git#9b0d9b283116947cf125e12b6d1d17203604f0d9"
 
@@ -7496,7 +7496,7 @@ react-native-splash-screen@^3.2.0:
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz#d47ec8557b1ba988ee3ea98d01463081b60fff45"
   integrity sha512-Ls9qiNZzW/OLFoI25wfjjAcrf2DZ975hn2vr6U9gyuxi2nooVbzQeFoQS5vQcbCt9QX5NY8ASEEAtlLdIa6KVg==
 
-"react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git#v2.5.37":
+"react-native-status-keycard@git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.5.37":
   version "2.5.37"
   resolved "git+https://github.com/status-im/react-native-status-keycard.git#af61b0213adbf4b5a6bae97c85496d95007d5acb"
 
@@ -7513,7 +7513,7 @@ react-native-touch-id@^4.4.1:
   resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.4.1.tgz#8b1bb2d04c30bac36bb9696d2d723e719c4a8b08"
   integrity sha512-1jTl8fC+0fxvqegy/XXTyo6vMvPhjzkoDdaqoYZx0OH8AT250NuXnNPyKktvigIcys3+2acciqOeaCall7lrvg==
 
-"react-native-webview@git+https://github.com/status-im/react-native-webview.git#v11.16.0-status":
+"react-native-webview@git+https://github.com/status-im/react-native-webview.git#refs/tags/v11.16.0-status":
   version "11.16.0"
   resolved "git+https://github.com/status-im/react-native-webview.git#9d554dd25b33d799c37eb356c0dfa42ca8bd4ff7"
   dependencies:
@@ -7860,11 +7860,11 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-"rn-emoji-keyboard@git+https://github.com/status-im/rn-emoji-keyboard.git#v0.4.2":
+"rn-emoji-keyboard@git+https://github.com/status-im/rn-emoji-keyboard.git#refs/tags/v0.4.2":
   version "0.4.2"
   resolved "git+https://github.com/status-im/rn-emoji-keyboard.git#969814269cc51fae2c1fd0375e8509fa066cdc7f"
 
-"rn-snoopy@git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status":
+"rn-snoopy@git+https://github.com/status-im/rn-snoopy.git#refs/tags/v2.0.2-status":
   version "2.0.2"
   resolved "git+https://github.com/status-im/rn-snoopy.git#f23dc13469c6c2a694649f658cdc1d1eaf8def64"
   dependencies:

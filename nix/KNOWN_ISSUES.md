@@ -1,35 +1,33 @@
 # Known Issues
 
-## MacOS 10.15 "Catalina"
+## Too many open files
 
-There is an unsolved issue with the root(`/`) file system in `10.15` being read-only:
-https://github.com/NixOS/nix/issues/2925
+### Single-User Installation
 
-Our current recommended workaround is putting `/nix` under `/opt/nix` and symlinking it via `/etc/synthetic.conf`:
-
-```bash
-sudo mkdir /opt/nix
-sudo chown ${USER} /opt/nix
-sudo sh -c "echo 'nix\t/opt/nix' >> /etc/synthetic.conf"
-reboot
+Nix can open a lot of files when fetching things for `/nix/store` which can cause
 ```
-
-After the system reboots you should see the `/nix` symlink in place:
-
-```bash
- % ls -l /nix
-lrwxr-xr-x  1 root  wheel  8 Oct 11 13:53 /nix -> /opt/nix
+Too many open files"
 ```
-
-In order to be able to use Nix with a symlinked `/nix` you need to include this in your shell:
-
-```bash
-export NIX_IGNORE_SYMLINK_STORE=1
+The temporary way to fix this is set a new limit for current session using `ulimit`:
+```sh
+ulimit -n 131072
 ```
+To increase limit permanently system-wide edit `/etc/sysctl.conf`:
+```
+fs.file-max = 131072
+```
+And use `sudo sysctl --system` to load these new settings.
 
-Add it to your `.bashrc` or any other shell config file.
+### Multi-User Installation
 
-__NOTE__: Your old `/nix` directory will end up in `/Users/Shared/Relocated Items/Security/nix` after OS upgrade.
+The other reason why this error could appear are limits fo `nix-daemon` service:
+https://github.com/NixOS/nix/issues/6007
+
+Since Systemd services ignore system-wide limits you will have to add the following line:
+```
+LimitNOFILE=4096:1048576
+```
+To the `/etc/systemd/system/nix-daemon.service` service definition.
 
 ## Cache Downloads Timing Out
 
@@ -69,3 +67,11 @@ Currently on NixOS `NIX_CONF_DIR` is being ignored in favor of the default `/etc
 This will be possible to fix once Nix `2.4` comes out with support for `NIX_USER_CONF_FILES`.
 
 For more details see https://github.com/NixOS/nix/issues/3723.
+
+## Extra Sandbox Files Not Available
+
+It's possible that on a multi-user installation files provided to the build sandbox using the `extra-sandbox-paths` option will ne be available, unless the current user is added to `trusted-users` in `nix.conf` file.
+
+Issues:
+* https://github.com/NixOS/nix/issues/6115
+* https://github.com/NixOS/nix/issues/6217

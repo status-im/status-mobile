@@ -1,7 +1,7 @@
-library 'status-jenkins-lib@v1.3.5'
+library 'status-jenkins-lib@v1.4.0'
 
 pipeline {
-  agent { label 'macos && x86_64 && nix-2.3 && xcode-12.5' }
+  agent { label 'macos && x86_64 && nix-2.6 && xcode-12.5' }
 
   parameters {
     string(

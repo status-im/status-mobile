@@ -5,16 +5,16 @@ set -e
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 source "${GIT_ROOT}/nix/scripts/source.sh"
 
-function log() { echo "$@" 1>&2; }
+log() { echo "$@" 1>&2; }
 
 # helpers for getting related paths in Nix store
-function getSources()   { nix-store --query --binding src "${1}"; }
-function getOutputs()   { nix-store --query --outputs "${1}"; }
-function getDrvFiles()  { nix-store --query --deriver "${1}"; }
-function getReferrers() { nix-store --query --referrers "${1}"; }
-function getRoots()     { nix-store --query --roots "${1}"; }
+getSources()   { nix-store --query --binding src "${1}"; }
+getOutputs()   { nix-store --query --outputs "${1}"; }
+getDrvFiles()  { nix-store --query --deriver "${1}"; }
+getReferrers() { nix-store --query --referrers "${1}"; }
+getRoots()     { nix-store --query --roots "${1}"; }
 
-function findRelated() {
+findRelated() {
     path="${1}"
     found+=("${path}")
     if [[ "${path}" =~ .*.chroot ]]; then
@@ -51,7 +51,7 @@ function findRelated() {
 }
 
 # used to find things to delete based on a regex
-function findByRegex() {
+findByRegex() {
     regex="${1}"
 
     log "Searching by regex: '${regex}'"
@@ -70,7 +70,7 @@ function findByRegex() {
 }
 
 # used to find things to delete based on a given path
-function findByResult() {
+findByResult() {
     mainPath="${1}"
     log "Searching by result: '${mainPath}'"
 
