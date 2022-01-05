@@ -778,6 +778,10 @@
                    {:address  "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72"
                     :symbol   :ENS
                     :name     "Ethereum Name Service"
+                    :decimals 18}
+                   {:address  "0xDd1Ad9A21Ce722C151A836373baBe42c868cE9a4"
+                    :symbol   :UBI
+                    :name     "Universal Basic Income"
                     :decimals 18}])
    :testnet
    (resolve-icons :testnet
