@@ -67,6 +67,8 @@
       "envelope.expired"   (transport.message/update-envelopes-status cofx (:ids (js->clj event-js :keywordize-keys true)) :not-sent)
       "message.delivered"  (let [{:keys [chatID messageID]} (js->clj event-js :keywordize-keys true)]
                              (models.message/update-db-message-status cofx chatID messageID :delivered))
+     ;; "message.seen"       (let [{:keys [chatID messageID]} (js->clj event-js :keywordize-keys true)]
+     ;;                        (models.message/update-db-message-status cofx chatID messageID :seen))
       "discovery.summary"  (summary cofx (js->clj event-js :keywordize-keys true))
       "wakuv2.peerstats"  (wakuv2-peer-stats cofx (js->clj event-js :keywordize-keys true))
       "subscriptions.data" (ethereum.subscriptions/handle-signal cofx (js->clj event-js :keywordize-keys true))
@@ -75,4 +77,4 @@
       "wallet" (ethereum.subscriptions/new-wallet-event cofx (js->clj event-js :keywordize-keys true))
       "local-notifications" (local-notifications/process cofx (js->clj event-js :keywordize-keys true))
       "community.found" (link.preview/cache-community-preview-data (js->clj event-js :keywordize-keys true))
-      (log/debug "Event " type " not handled"))))
+      (log/debug "Event " type " not handled "))))
