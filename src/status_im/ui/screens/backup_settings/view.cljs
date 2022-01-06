@@ -47,6 +47,6 @@
         :title                  (i18n/label :t/last-backup-performed)
         :accessory              :text
         :subtitle                   (if (pos? last-backup)
-                                      (datetime/time-ago-long (datetime/to-date last-backup))
+                                      (datetime/time-ago-long (datetime/to-date (* 1000 last-backup)))
                                       (i18n/label :t/never))}]]
      [footer performing-backup?]]))
