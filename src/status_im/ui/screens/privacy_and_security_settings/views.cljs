@@ -92,12 +92,12 @@
                                                         :t/anyone))
                      :on-press            #(re-frame/dispatch [:navigate-to :messages-from-contacts-only])
                      :accessibility-label :accept-new-chats-from}]
-    [quo/list-item {:size                :small
-                    :container-margin-bottom 8
-                    :title               (i18n/label :t/read-receipts)
-                    :active              read-receipts-enabled?
-                    :on-press            #(re-frame/dispatch [::multiaccounts.update/switch-read-receipts (not read-receipts-enabled?)])
-                    :accessory           :switch}]
+     [quo/list-item {:size                :small
+                     :container-margin-bottom 8
+                     :title               (i18n/label :t/read-receipts)
+                     :active              read-receipts-enabled?
+                     :on-press            #(re-frame/dispatch [::multiaccounts.update/switch-read-receipts (not read-receipts-enabled?)])
+                     :accessory           :switch}]
      (when (not keycard?)
        [quo/list-item {:size                :small
                        :title               (i18n/label :t/reset-password)
