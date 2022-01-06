@@ -418,12 +418,19 @@
                               :result    {:jsonrpc "2.0"
                                           :id      (int id)
                                           :result  (if (= method "eth_coinbase") dapps-address [dapps-address])}})
-        {:browser/call-rpc [payload
-                            #(re-frame/dispatch [:browser.callback/call-rpc
-                                                 {:type      constants/web3-send-async-callback
-                                                  :messageId message-id
-                                                  :error     %1
-                                                  :result    %2}])]}))))
+        (if (= method "personal_ecRecover")
+          {:signing.fx/recover-message {:params       {:message (first params)
+                                                       :signature (second params)}
+                                        :on-completed #(re-frame/dispatch [:browser.callback/call-rpc
+                                                                           {:type      constants/web3-send-async-callback
+                                                                            :messageId message-id
+                                                                            :result    (types/json->clj %)}])}}
+          {:browser/call-rpc [payload
+                              #(re-frame/dispatch [:browser.callback/call-rpc
+                                                   {:type      constants/web3-send-async-callback
+                                                    :messageId message-id
+                                                    :error     %1
+                                                    :result    %2}])]})))))
 
 (fx/defn handle-no-permissions [cofx {:keys [method id]} message-id]
   (if (= method "eth_accounts")

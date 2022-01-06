@@ -48,6 +48,12 @@
                         on-completed)))
 
 (re-frame/reg-fx
+ :signing.fx/recover-message
+ (fn [{:keys [params on-completed]}]
+   (status/recover-message (types/clj->json params)
+                           on-completed)))
+
+(re-frame/reg-fx
  :signing.fx/sign-typed-data
  (fn [{:keys [v4 data account on-completed hashed-password]}]
    (if v4

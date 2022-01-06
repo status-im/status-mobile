@@ -663,6 +663,18 @@ RCT_EXPORT_METHOD(signMessage:(NSString *)message
 }
 
 ////////////////////////////////////////////////////////////////////
+#pragma mark - Recover
+//////////////////////////////////////////////////////////////////// recover
+RCT_EXPORT_METHOD(recover:(NSString *)message
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"Recover() method called");
+#endif
+    NSString *result = StatusgoRecover(message);
+    callback(@[result]);
+}
+
+////////////////////////////////////////////////////////////////////
 #pragma mark - SignTypedData
 //////////////////////////////////////////////////////////////////// signTypedData
 RCT_EXPORT_METHOD(signTypedData:(NSString *)data

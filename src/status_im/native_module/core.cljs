@@ -253,6 +253,11 @@
   (log/debug "[native-module] sign-message")
   (.signMessage ^js (status) rpcParams callback))
 
+(defn recover-message
+  [rpcParams callback]
+  (log/debug "[native-module] recover")
+  (.recover ^js (status) rpcParams callback))
+
 (defn send-transaction
   "NOTE: beware, the password has to be sha3 hashed"
   [rpcParams hashed-password callback]
