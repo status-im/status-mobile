@@ -28,12 +28,12 @@ function install_nix() {
   fi
 }
 
-if [[ ! -x "$(command -v git)" ]]; then
+if [[ ! -x "$(command -v curl)" ]]; then
   echo -e "${RED}The 'curl' utility is required for Nix installation.${RST}" >&2
   exit 1
 fi
 
-if [[ "$(source /etc/os-release && echo "${NAME}")" == *NixOS* ]]; then
+if [[ "$(source /etc/os-release 2>/dev/null && echo "${NAME}")" == *NixOS* ]]; then
   echo -e "${GRN}Already running NixOS.${RST}"
   exit
 fi
