@@ -511,9 +511,9 @@
  :browser/send-to-bridge
  (fn [message]
    (let [^js webview @webview-ref/webview-ref
-         msg (str "ReactNativeWebView.onMessage('"
+         msg (str "(function() { var __send = function() { if (ReactNativeWebView.onMessage) { ReactNativeWebView.onMessage('"
                   (types/clj->json message)
-                  "');")]
+                  "');} else {setTimeout(__send, 0)}}; __send();})();")]
      (when (and message webview)
        (.injectJavaScript webview msg)))))
 

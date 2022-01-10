@@ -63,7 +63,7 @@
     "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#v2.5.37",
     "react-native-svg": "^9.8.4",
     "react-native-touch-id": "^4.4.1",
-    "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#v11.3.0-status",
+    "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#v11.16.0-status",
     "rn-emoji-keyboard": "git+https://github.com/status-im/rn-emoji-keyboard.git#v0.4.2",
     "tdigest": "^0.1.1",
     "web3-utils": "^1.2.1"
