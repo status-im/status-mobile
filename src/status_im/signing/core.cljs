@@ -236,7 +236,9 @@
                    :signing/sign {:type           (cond pinless? :pinless
                                                         keycard-multiaccount? :keycard
                                                         :else :password)
-                                  :formatted-data (if typed? (types/json->clj data) (ethereum/hex->text data))
+                                  :formatted-data (if typed?
+                                                    (types/js->pretty-json (types/json->js data))
+                                                    (ethereum/hex->text data))
                                   :keycard-step (when pinless? :connect)})
         :show-signing-sheet nil}
        #(when-not wallet-set-up-passed?

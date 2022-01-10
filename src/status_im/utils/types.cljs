@@ -13,6 +13,9 @@
 (defn clj->pretty-json [data spaces]
   (.stringify js/JSON (clj-bean/->js data) nil spaces))
 
+(defn js->pretty-json [data]
+  (.stringify js/JSON data nil 2))
+
 (defn clj->json [data]
   (clj->pretty-json data 0))
 
