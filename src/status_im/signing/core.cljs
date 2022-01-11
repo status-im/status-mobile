@@ -272,14 +272,13 @@
                                           :success-event :signing/update-estimated-gas-success
                                           :error-event :signing/update-estimated-gas-error}})
        (fn [cofx]
-         (when-not (or maxFeePerGas gasPrice)
-           {:db (assoc-in (:db cofx) [:signing/edit-fee :gas-price-loading?] true)
-            :signing/update-gas-price
-            {:success-callback #(re-frame/dispatch
-                                 [:wallet.send/update-gas-price-success :signing/tx %])
-             :error-callback   #(re-frame/dispatch [:signing/update-gas-price-error %])
-             :network-id       (get-in (ethereum/current-network db)
-                                       [:config :NetworkId])}}))))))
+         {:db (assoc-in (:db cofx) [:signing/edit-fee :gas-price-loading?] true)
+          :signing/update-gas-price
+          {:success-callback #(re-frame/dispatch
+                               [:wallet.send/update-gas-price-success :signing/tx % tx-obj])
+           :error-callback   #(re-frame/dispatch [:signing/update-gas-price-error %])
+           :network-id       (get-in (ethereum/current-network db)
+                                     [:config :NetworkId])}})))))
 
 (fx/defn check-queue [{:keys [db] :as cofx}]
   (let [{:signing/keys [tx queue]} db]
