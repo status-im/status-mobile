@@ -41,7 +41,7 @@
                                                                   (resources/get-image :status-logo)))
                                                                 (get-in community [:images :large :uri]))
                                                     :membership (when request-membership?
-                                                                  (i18n/label :t/request-membership))
+                                                                  (i18n/label :t/membership-approval))
                                                     :subtitle (if show-members-count?
                                                                 (i18n/label-pluralize members-count :t/community-members {:count members-count})
                                                                 (i18n/label :t/open-membership))
