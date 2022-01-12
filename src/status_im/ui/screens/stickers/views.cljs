@@ -4,29 +4,11 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.image-with-loader :refer [image-with-loader]]
             [status-im.ui.screens.stickers.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.utils.money :as money]
-            [reagent.core :as reagent])
+            [status-im.utils.money :as money])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
-
-(defn- image-with-loader [props]
-  (let [loaded? (reagent/atom nil)
-        {:keys [source style]} props]
-    (fn []
-      [react/view
-       (when (or (nil? @loaded?) @loaded?)
-         [react/fast-image {:onLoad #(reset! loaded? true)
-                            :style (if @loaded?
-                                     style
-                                     {})
-                            :source source}])
-       (when-not @loaded?
-         [react/view {:style (merge style
-                                    {:align-items :center
-                                     :justify-content :center
-                                     :background-color colors/gray-lighter})}
-          [react/activity-indicator {:animating true}]])])))
 
 (defn- thumbnail-icon [uri size]
   [image-with-loader {:style  {:width size :height size :border-radius (/ size 2)}
