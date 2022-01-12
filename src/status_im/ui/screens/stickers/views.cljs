@@ -6,7 +6,8 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.stickers.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.utils.money :as money])
+            [status-im.utils.money :as money]
+            [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- thumbnail-icon [uri size]
@@ -69,6 +70,23 @@
 
 (def sticker-icon-size 60)
 
+(defn- sticker-image [hash]
+  (let [loaded? (reagent/atom nil)]
+    (fn []
+      [react/view
+       (when (or (nil? @loaded?) @loaded?)
+         [react/fast-image {:onLoad #(reset! loaded? true)
+                            :style (if @loaded?
+                                     (styles/sticker-image sticker-icon-size)
+                                     {})
+                            :source {:uri (contenthash/url hash)}}])
+       (when-not @loaded?
+         [react/view {:style (merge (styles/sticker-image sticker-icon-size)
+                                    {:align-items :center
+                                     :justify-content :center
+                                     :background-color colors/gray-lighter})}
+          [react/activity-indicator {:animating true}]])])))
+
 (defview pack-main []
   (letsubs [{:keys [id name author price thumbnail
                     stickers installed owned pending]
@@ -90,8 +108,7 @@
           [react/view {:flex-direction :row :flex-wrap :wrap}
            (for [{:keys [hash]} stickers]
              ^{:key hash}
-             [react/fast-image {:style (styles/sticker-image sticker-icon-size)
-                                :source {:uri (contenthash/url hash)}}])]]]]
+             [sticker-image hash])]]]]
        [react/view {:flex 1 :align-items :center :justify-content :center}
         [react/activity-indicator {:animating true}]])]))
 
