@@ -92,7 +92,7 @@
                     stickers installed owned pending]
              :as pack}
             [:stickers/get-current-pack]]
-    [react/keyboard-avoiding-view {:flex 1}
+    [react/keyboard-avoiding-view {:flex 1 :margin-top 18}
      (if pack
        [react/view {:flex 1}
         [react/view {:height 74 :align-items :center :flex-direction :row :padding-horizontal 16}
