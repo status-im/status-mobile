@@ -10,9 +10,27 @@
             [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
+(defn- image-with-loader [props]
+  (let [loaded? (reagent/atom nil)
+        {:keys [source style]} props]
+    (fn []
+      [react/view
+       (when (or (nil? @loaded?) @loaded?)
+         [react/fast-image {:onLoad #(reset! loaded? true)
+                            :style (if @loaded?
+                                     style
+                                     {})
+                            :source source}])
+       (when-not @loaded?
+         [react/view {:style (merge style
+                                    {:align-items :center
+                                     :justify-content :center
+                                     :background-color colors/gray-lighter})}
+          [react/activity-indicator {:animating true}]])])))
+
 (defn- thumbnail-icon [uri size]
-  [react/fast-image {:style  {:width size :height size :border-radius (/ size 2)}
-                     :source {:uri uri}}])
+  [image-with-loader {:style  {:width size :height size :border-radius (/ size 2)}
+                      :source {:uri uri}}])
 
 (defn- installed-icon []
   [react/view styles/installed-icon
@@ -44,7 +62,7 @@
 (defn pack-badge [{:keys [name author price thumbnail preview id installed owned pending]}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :stickers-pack {:id id}])}
    [react/view {:margin-bottom 27}
-    [react/fast-image {:style {:height 200 :border-radius 20} :source {:uri (contenthash/url preview)}}]
+    [image-with-loader {:style {:height 200 :border-radius 20} :source {:uri (contenthash/url preview)}}]
     [react/view {:height 64 :align-items :center :flex-direction :row}
      [thumbnail-icon (contenthash/url thumbnail) 40]
      [react/view {:padding-horizontal 16 :flex 1}
@@ -70,23 +88,6 @@
 
 (def sticker-icon-size 60)
 
-(defn- sticker-image [hash]
-  (let [loaded? (reagent/atom nil)]
-    (fn []
-      [react/view
-       (when (or (nil? @loaded?) @loaded?)
-         [react/fast-image {:onLoad #(reset! loaded? true)
-                            :style (if @loaded?
-                                     (styles/sticker-image sticker-icon-size)
-                                     {})
-                            :source {:uri (contenthash/url hash)}}])
-       (when-not @loaded?
-         [react/view {:style (merge (styles/sticker-image sticker-icon-size)
-                                    {:align-items :center
-                                     :justify-content :center
-                                     :background-color colors/gray-lighter})}
-          [react/activity-indicator {:animating true}]])])))
-
 (defview pack-main []
   (letsubs [{:keys [id name author price thumbnail
                     stickers installed owned pending]
@@ -108,7 +109,8 @@
           [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :space-between}
            (for [{:keys [hash]} stickers]
              ^{:key hash}
-             [sticker-image hash])]]]]
+             [image-with-loader {:style (styles/sticker-image sticker-icon-size)
+                                 :source {:uri (contenthash/url hash)}}])]]]]
        [react/view {:flex 1 :align-items :center :justify-content :center}
         [react/activity-indicator {:animating true}]])]))
 
