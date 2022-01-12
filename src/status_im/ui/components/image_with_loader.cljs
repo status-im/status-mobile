@@ -17,7 +17,7 @@
         loaded? (reagent/atom nil)
         error? (reagent/atom false)]
     (fn []
-      [react/view
+      [:<>
        (when @error?
          [placeholder {:style style}
           [icons/icon :main-icons/cancel]])
