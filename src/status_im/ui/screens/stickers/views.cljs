@@ -105,7 +105,7 @@
            [price-badge price id owned pending])]
         [react/view {:style {:padding-top 8 :flex 1}}
          [react/scroll-view {:keyboard-should-persist-taps :handled :style {:flex 1}}
-          [react/view {:flex-direction :row :flex-wrap :wrap}
+          [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center}
            (for [{:keys [hash]} stickers]
              ^{:key hash}
              [sticker-image hash])]]]]
