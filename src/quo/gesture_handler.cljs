@@ -10,7 +10,7 @@
                                        createNativeWrapper State NativeViewGestureHandler
                                        FlatList ScrollView)]))
 
-(def flat-list-raw FlatList)
+(def flat-list-raw ^js FlatList)
 
 (def flat-list (reagent/adapt-react-class FlatList))
 
@@ -25,9 +25,9 @@
 (def long-press-gesture-handler
   (reagent/adapt-react-class LongPressGestureHandler))
 
-(def pure-native-button PureNativeButton)
+(def pure-native-button ^js PureNativeButton)
 
-(def touchable-without-feedback-class TouchableWithoutFeedback)
+(def touchable-without-feedback-class ^js TouchableWithoutFeedback)
 
 (def touchable-without-feedback
   (reagent/adapt-react-class touchable-without-feedback-class))
@@ -41,12 +41,6 @@
 
 (def touchable-opacity
   (reagent/adapt-react-class TouchableOpacity))
-
-(def raw-button
-  (reagent/adapt-react-class
-   (createNativeWrapper (.createAnimatedComponent animated PureNativeButton)
-                        #js {:shouldActivateOnStart   true
-                             :shouldCancelWhenOutside true})))
 
 (def native-view-gesture-handler (reagent/adapt-react-class NativeViewGestureHandler))
 

@@ -5,7 +5,7 @@
   (:require-macros [quo.react :refer [with-deps-check
                                       maybe-js-deps]]))
 
-(def create-ref react/createRef)
+(def create-ref ^js react/createRef)
 
 (defn current-ref [ref]
   (oget ref "current"))
@@ -18,7 +18,7 @@
 
 (defn set-native-props [^js ref ^js props]
   (when-let [curr-ref ^js (current-ref ref)]
-    (.setNativeProps curr-ref props)))
+    (.setNativeProps ^js curr-ref props)))
 
 (deftype StateHook [value set-value]
   cljs.core/IHash
@@ -46,8 +46,8 @@
   (let [[value set-value] (react/useState value)
         sh                (react/useMemo #(StateHook. value set-value) #js [])]
     (react/useMemo (fn []
-                     (set! (.-value sh) value)
-                     (set! (.-set-value sh) set-value)
+                     (set! (.-value ^js sh) value)
+                     (set! (.-set-value ^js sh) set-value)
                      sh)
                    #js [value set-value])))
 
@@ -126,6 +126,6 @@
 (def memo react/memo)
 
 (defn get-children [^js children]
-  (->> children
+  (->> ^js children
        (react/Children.toArray)
        (into [])))

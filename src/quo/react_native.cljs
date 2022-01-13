@@ -12,14 +12,14 @@
 
 (def emoji-keyboard (reagent/adapt-react-class EmojiKeyboard))
 
-(def app-registry (.-AppRegistry rn))
+(def app-registry (.-AppRegistry ^js rn))
 
 (def platform (.-Platform ^js rn))
 
 (def find-node-handle (.-findNodeHandle ^js rn))
 
 (def view (reagent/adapt-react-class (.-View ^js rn)))
-(def image (reagent/adapt-react-class (.-Image rn)))
+(def image (reagent/adapt-react-class (.-Image ^js rn)))
 (def text (reagent/adapt-react-class (.-Text ^js rn)))
 
 (defn resolve-asset-source [uri] (js->clj (.resolveAssetSource ^js (.-Image ^js rn) uri) :keywordize-keys true))
@@ -37,11 +37,11 @@
 
 (def navigation-const (atom nil))
 
-(.then (.constants Navigation)
+(.then (.constants ^js Navigation)
        (fn [^js consts]
-         (reset! navigation-const {:top-bar-height (.-topBarHeight consts)
-                                   :bottom-tabs-height (.-bottomTabsHeight consts)
-                                   :status-bar-height (.-statusBarHeight consts)})))
+         (reset! navigation-const {:top-bar-height (.-topBarHeight ^js consts)
+                                   :bottom-tabs-height (.-bottomTabsHeight ^js consts)
+                                   :status-bar-height (.-statusBarHeight ^js consts)})))
 
 (defn keyboard-avoiding-view []
   (let [this  (reagent/current-component)
@@ -64,7 +64,7 @@
 (defn create-pan-responder [opts]
   (.create ^js pan-responder (clj->js opts)))
 
-(def animated (.-Animated rn))
+(def animated (.-Animated ^js rn))
 
 (def subtract (.-subtract ^js animated))
 
@@ -147,20 +147,20 @@
 
 (defn use-window-dimensions []
   (let [window (rn/useWindowDimensions)]
-    {:font-scale (.-fontScale window)
+    {:font-scale (.-fontScale ^js window)
      :height     (.-height ^js window)
      :scale      (.-scale ^js window)
      :width      (.-width ^js window)}))
 
-(def use-back-handler (.-useBackHandler hooks))
+(def use-back-handler (.-useBackHandler ^js hooks))
 
 (defn use-keyboard []
-  (let [kb (.useKeyboard hooks)]
+  (let [kb (.useKeyboard ^js hooks)]
     {:keyboard-shown  (.-keyboardShown ^js kb)
      :keyboard-height (.-keyboardHeight ^js kb)}))
 
 (defn use-layout []
-  (let [{:keys [onLayout x y height width]} (bean/bean (.useLayout hooks))]
+  (let [{:keys [onLayout x y height width]} (bean/bean (.useLayout ^js hooks))]
     {:on-layout onLayout
      :x         x
      :y         y
