@@ -70,9 +70,7 @@
                      :tiny-icons/tiny-pending)
         {:width               16
          :height              12
-         :color               (if pinned
-                                colors/gray
-                                colors/white)
+         :color               (if pinned colors/gray colors/white)
          :accessibility-label (name outgoing-status)}])
      (when edited-at [react/text {:style (style/message-status-text (and outgoing (not pinned)))} edited-at-text])]))
 

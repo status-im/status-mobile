@@ -67,8 +67,6 @@
       "envelope.expired"   (transport.message/update-envelopes-status cofx (:ids (js->clj event-js :keywordize-keys true)) :not-sent)
       "message.delivered"  (let [{:keys [chatID messageID]} (js->clj event-js :keywordize-keys true)]
                              (models.message/update-db-message-status cofx chatID messageID :delivered))
-     ;; "message.seen"       (let [{:keys [chatID messageID]} (js->clj event-js :keywordize-keys true)]
-     ;;                        (models.message/update-db-message-status cofx chatID messageID :seen))
       "discovery.summary"  (summary cofx (js->clj event-js :keywordize-keys true))
       "wakuv2.peerstats"  (wakuv2-peer-stats cofx (js->clj event-js :keywordize-keys true))
       "subscriptions.data" (ethereum.subscriptions/handle-signal cofx (js->clj event-js :keywordize-keys true))

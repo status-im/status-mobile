@@ -2262,12 +2262,6 @@
    (get multiaccount :profile-pictures-visibility)))
 
 (re-frame/reg-sub
- :read-receipts-enabled?
- :<- [:multiaccount]
- (fn [{:keys [read-receipts-enabled?]}]
-   (boolean read-receipts-enabled?)))
-
-(re-frame/reg-sub
  :contacts/contacts
  :<- [::contacts]
  :<- [::profile-pictures-visibility]
