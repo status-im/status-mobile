@@ -75,4 +75,4 @@
       "wallet" (ethereum.subscriptions/new-wallet-event cofx (js->clj event-js :keywordize-keys true))
       "local-notifications" (local-notifications/process cofx (js->clj event-js :keywordize-keys true))
       "community.found" (link.preview/cache-community-preview-data (js->clj event-js :keywordize-keys true))
-      (log/debug "Event " type " not handled "))))
+      (log/debug "Event " type " not handled"))))
