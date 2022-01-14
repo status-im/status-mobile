@@ -1,13 +1,12 @@
 (ns quo.gesture-handler
   (:require [oops.core :refer [oget]]
-            ["react-native-reanimated" :default animated]
             [reagent.core :as reagent]
             [quo.design-system.colors :as colors]
             ["react-native-gesture-handler"
              :refer (TapGestureHandler PanGestureHandler LongPressGestureHandler
                                        PureNativeButton TouchableWithoutFeedback TouchableOpacity
                                        TouchableHighlight
-                                       createNativeWrapper State NativeViewGestureHandler
+                                       State NativeViewGestureHandler
                                        FlatList ScrollView)]))
 
 (def flat-list-raw ^js FlatList)
