@@ -102,6 +102,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         from views.sign_in_view import MultiAccountButton
         account_button = sign_in.get_multiaccount_by_position(position=random.randint(1, 4),
                                                               element_class=MultiAccountButton)
+        pub_chat = 'status'
         username = account_button.username.text
         account_button.click()
         sign_in.next_button.click()
@@ -111,21 +112,18 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
         [element.wait_and_click(10) for element in (sign_in.maybe_later_button, sign_in.lets_go_button)]
         home = sign_in.get_home_view()
-        texts = ["chat-and-transact", "follow-your-interests"]
+        texts = ["chat-and-transact", "invite-friends"]
         for text in texts:
             if not home.element_by_translation_id(text).is_element_displayed():
                 self.errors.append("'%s' text is not shown" % self.get_translation_by_key(text))
-        for chat in ('#status', '#crypto'):
-            sign_in.element_by_text(chat).click()
-            sign_in.back_button.click_until_presence_of_element(home.search_input)
+        home.join_public_chat(pub_chat)
         profile = home.profile_button.click()
         shown_username = profile.default_username_text.text
         if shown_username != username:
             self.errors.append("Default username '%s' doesn't match '%s'" % (shown_username, username))
-        profile.home_button.click_until_presence_of_element(home.element_by_text('#status'))
+        profile.home_button.double_click()
         home.cross_icon_inside_welcome_screen_button.click()
-        for chat in ('#status', '#crypto'):
-            home.delete_chat_long_press(chat)
+        home.delete_chat_long_press('#%s' % pub_chat)
         if home.element_by_text(texts[0]).is_element_displayed():
             self.errors.append("'%s' text is shown, but welcome view was closed" % texts[0])
         home.relogin()

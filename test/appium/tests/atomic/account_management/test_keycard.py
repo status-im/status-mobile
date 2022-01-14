@@ -489,8 +489,10 @@ class TestCreateAccount(SingleDeviceTestCase):
         profile.create_keycard_backup_button.scroll_and_click()
         sign_in.seedphrase_input.set_value(seed)
         sign_in.next_button.click()
+        keycard.return_card_to_factory_settings_checkbox.enable()
         keycard.begin_setup_button.click()
-        keycard.enter_another_pin()
+        keycard.yes_button.wait_and_click()
+        [keycard.enter_another_pin() for _ in range(2)]
         keycard.element_by_translation_id("keycard-backup-success-title").wait_for_element(30)
         keycard.ok_button.click()
 

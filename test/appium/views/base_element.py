@@ -406,10 +406,15 @@ class CheckBox(Button):
     def __init__(self, driver, **kwargs):
         super(Button, self).__init__(driver, **kwargs)
 
+    def __define_desired_element(self, elem_accessibility):
+        return ':%s' % elem_accessibility if ':' in self.accessibility_id else elem_accessibility
+
     def enable(self):
-        super(CheckBox, self).click_until_presence_of_element(Button(self.driver, accessibility_id="checkbox-on"))
+        self.click_until_presence_of_element(Button(self.driver,
+                                                    accessibility_id=self.__define_desired_element("checkbox-on")))
         return self.navigate()
 
     def disable(self):
-        super(CheckBox, self).click_until_presence_of_element(Button(self.driver, accessibility_id="checkbox-off"))
+        self.click_until_presence_of_element(Button(self.driver,
+                                                    accessibility_id=self.__define_desired_element("checkbox-off")))
         return self.navigate()

@@ -1219,7 +1219,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(695856)
     @marks.medium
-    #@marks.flaky
     def test_pair_devices_sync_photo_community_group_chats(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -1238,11 +1237,12 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('join Status community, create community, create group chat, edit user picture')
         # Follow Status community
-        home_1.element_by_text(comm_joined_name).scroll_and_click()
-        from views.chat_view import CommunityView
-        comm_to_join_1 = CommunityView(self.drivers[0])
-        comm_to_join_1.follow_button.wait_and_click()
-        comm_to_join_1.home_button.double_click()
+        # TODO: no predefined community to follow now
+        # home_1.element_by_text(comm_joined_name).scroll_and_click()
+        # from views.chat_view import CommunityView
+        # comm_to_join_1 = CommunityView(self.drivers[0])
+        # comm_to_join_1.follow_button.wait_and_click()
+        # comm_to_join_1.home_button.double_click()
         # Create community as admin, add channel, send message
         comm_before_1 = home_1.create_community(comm_before_sync_name)
         channel_before_1 = comm_before_1.add_channel(channel)
@@ -1271,9 +1271,10 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         device_2.just_fyi('check that created/joined community and profile details are updated')
         home_2 = profile_2.home_button.click()
-        for community in (comm_before_sync_name, comm_joined_name):
-            if not home_2.get_chat(community, community=True).is_element_displayed():
-                self.errors.append('Community %s was not appeared after initial sync' % community)
+        # TODO: no predefined community to follow
+        # for community in (comm_before_sync_name, comm_joined_name):
+        if not home_2.get_chat(comm_before_sync_name, community=True).is_element_displayed():
+            self.errors.append('Community %s was not appeared after initial sync' % comm_before_sync_name)
         comm_before_2 = home_2.get_chat(comm_before_sync_name, community=True).click()
         channel_2 = comm_before_2.get_chat(channel).click()
         if not channel_2.chat_element_by_text(message).is_element_displayed(30):

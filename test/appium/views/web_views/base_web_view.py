@@ -30,6 +30,7 @@ class BaseWebView(BaseView):
         self.new_tab_button = Button(self.driver, accessibility_id="new-tab")
         self.continue_anyway_button = Button(self.driver, translation_id="continue-anyway")
         self.open_tabs_button = Button(self.driver, accessibility_id="browser-open-tabs")
+        self.open_new_tab_plus_button = Button(self.driver, accessibility_id="plus-button")
         self.close_all_button = Button(self.driver, accessibility_id="close-all")
         self.empty_tab_button = Button(self.driver, accessibility_id="tab-itemEmpty tab")
         self.camera_image_in_dapp = BaseElement(self.driver, class_name="android.widget.Image")

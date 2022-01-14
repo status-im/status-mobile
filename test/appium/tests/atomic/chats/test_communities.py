@@ -81,7 +81,7 @@ class TestCommunitiesMultipleDevices(MultipleDeviceTestCase):
     def test_notification_in_activity_center_for_mention_in_community_and_group_chat(self):
         self.create_drivers(2)
         home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
-        community_name, pub_chat_name, channel_name = "some name", home_1.get_random_chat_name(), "first_channel"
+        community_name, gr_chat_name, channel_name = "some name", home_1.get_random_chat_name(), "first_channel"
         community_description = "something in community"
         message, message_member = "message", "from member"
         userkey_2, username_2 = home_2.get_public_key_and_username(return_username=True)
@@ -102,9 +102,9 @@ class TestCommunitiesMultipleDevices(MultipleDeviceTestCase):
         one_to_one_2.home_button.click()
         community_1 = home_1.get_chat(community_name, community=True).click()
         community_link_text = community_1.copy_community_link()
-        pub_1 = home_1.create_group_chat(user_names_to_add=[username_2], group_chat_name=pub_chat_name)
+        pub_1 = home_1.create_group_chat(user_names_to_add=[username_2], group_chat_name=gr_chat_name)
 
-        pub_2 = home_2.get_chat(pub_chat_name).click()
+        pub_2 = home_2.get_chat(gr_chat_name).click()
         pub_2.join_chat_button.click()
         pub_1.chat_message_input.paste_text_from_clipboard()
         pub_1.send_message_button.click()
@@ -133,7 +133,7 @@ class TestCommunitiesMultipleDevices(MultipleDeviceTestCase):
         channel_2.send_message_button.click()
         community_1.home_button.double_click()
         channel_2.home_button.click()
-        home_2.get_chat_from_home_view(pub_chat_name).click()
+        home_2.get_chat_from_home_view(gr_chat_name).click()
         pub_2.select_mention_from_suggestion_list(username_1, username_1[:2])
         pub_2.send_as_keyevent("group")
         group_chat_message = username_1 + " group"
@@ -161,7 +161,7 @@ class TestCommunitiesMultipleDevices(MultipleDeviceTestCase):
 
         home_1.just_fyi("Check there are no unread messages counters on chats after message read")
         if (home_1.notifications_unread_badge.is_element_present() or
-                home_1.get_chat_from_home_view(pub_chat_name).new_messages_counter.text == "1" or
+                home_1.get_chat_from_home_view(gr_chat_name).new_messages_counter.text == "1" or
                 home_1.get_chat_from_home_view(community_name).new_messages_counter.text == "1"):
             self.errors.append("Unread message indicator is kept after all messages read in chats")
 
