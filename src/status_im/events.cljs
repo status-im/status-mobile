@@ -62,7 +62,8 @@
             [status-im.navigation.core :as navigation.core]
             [status-im.multiaccounts.login.core :as login.core]
             [status-im.signing.core :as signing]
-            status-im.wallet-connect.core))
+            status-im.wallet-connect.core
+            status-im.wallet-connect-legacy.core))
 
 (re-frame/reg-fx
  :dismiss-keyboard

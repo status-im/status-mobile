@@ -115,7 +115,7 @@
      :accessory               :switch
      :active                  waku-bloom-filter-mode}
     {:size                    :small
-     :title                   (i18n/label :t/wallet-connect-2.0)
+     :title                   (i18n/label :t/wallet-connect)
      :accessibility-label     :wallet-connect-settings-switch
      :container-margin-bottom 8
      :on-press

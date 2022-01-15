@@ -12,7 +12,8 @@
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.navigation :as navigation]
             [status-im.utils.http :as http]
-            [status-im.utils.universal-links.utils :as links]))
+            [status-im.utils.universal-links.utils :as links]
+            [status-im.utils.wallet-connect :as wallet-connect]))
 
 ;; FIXME(Ferossgp): Should be part of QR scanner not wallet
 (fx/defn toggle-flashlight
@@ -124,7 +125,9 @@
       (if (links/universal-link? uri)
         {:dispatch [:universal-links/handle-url uri]}
         {:browser/show-browser-selection uri})
-      {:ui/show-error (i18n/label :t/wallet-invalid-address {:data uri})})))
+      (if (wallet-connect/url? uri)
+        {:dispatch [::qr-scaner/handle-wallet-connect-uri {:data uri}]}
+        {:ui/show-error (i18n/label :t/wallet-invalid-address {:data uri})}))))
 
 (fx/defn qr-scanner-result
   {:events [:wallet.send/qr-scanner-result]}

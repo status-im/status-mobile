@@ -169,3 +169,6 @@
 (def ^:const visibility-status-dnd 2)
 (def ^:const visibility-status-always-online 3)
 (def ^:const visibility-status-inactive 4)
+
+(def ^:const wallet-connect-version-1 1)
+(def ^:const wallet-connect-version-2 2)

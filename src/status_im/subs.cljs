@@ -274,6 +274,7 @@
 (reg-root-key-sub :wallet-connect/session-connected :wallet-connect/session-connected)
 (reg-root-key-sub :wallet-connect/showing-app-management-sheet? :wallet-connect/showing-app-management-sheet?)
 (reg-root-key-sub :wallet-connect/sessions :wallet-connect/sessions)
+(reg-root-key-sub :wallet-connect-legacy/sessions :wallet-connect-legacy/sessions)
 (reg-root-key-sub :wallet-connect/session-managed :wallet-connect/session-managed)
 
 (re-frame/reg-sub
