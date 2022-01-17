@@ -200,7 +200,17 @@
       :nickname   nickname
       :public-key public-key})))
 
-(defn mentionable-commmunity-members [contacts my-public-key community-members]
+(defn mentionable-contacts [contacts]
+  (reduce
+   (fn [acc [key contact]]
+     (let [mentionable-contact (add-searchable-phrases-to-contact contact false)]
+       (if (nil? mentionable-contact)
+         acc
+         (assoc acc key mentionable-contact))))
+   {}
+   contacts))
+
+(defn mentionable-contacts-from-identites [contacts my-public-key identities]
   (reduce (fn [acc identity]
             (let [contact             (multiaccounts/contact-by-identity
                                        contacts identity)
@@ -213,58 +223,31 @@
               (if (nil? mentionable-contact) acc
                   (assoc acc identity mentionable-contact))))
           {}
-          (keys (dissoc community-members my-public-key))))
+          (remove #(= my-public-key %) identities)))
 
-(defn get-mentionable-users
-  [{{:keys          [current-chat-id]
-     :contacts/keys [contacts] :as db} :db}]
-  (let [{:keys [chat-type community-id users] :as chat} (get-in db [:chats current-chat-id])
-        {:keys [name preferred-name public-key]}        (:multiaccount db)
-        chat-specific-suggestions
-        (cond
-          (= chat-type constants/private-group-chat-type)
-          (let [{:keys [public-key]} (:multiaccount db)
-                all-contacts (:contacts/contacts db)
-                group-contacts
-                (contact.db/get-all-contacts-in-group-chat
-                 (disj (:contacts chat) public-key)
-                 nil
-                 all-contacts
-                 nil)]
-            (reduce
-             (fn [acc {:keys [alias public-key identicon name]}]
-               (assoc acc public-key
-                      {:alias      alias
-                       :identicon  identicon
-                       :public-key public-key
-                       :name       name}))
-             {}
-             group-contacts))
-          (= chat-type constants/one-to-one-chat-type)
-          (assoc users
-                 current-chat-id
-                 (contact.db/public-key->contact contacts current-chat-id))
+(defn get-mentionable-users [chat all-contacts current-multiaccount community-members]
+  (let [{:keys [name preferred-name public-key]} current-multiaccount
+        {:keys [chat-id users contacts chat-type]} chat
+        mentionable-contacts (mentionable-contacts all-contacts)
+        mentionable-users (assoc users public-key {:alias      name
+                                                   :name       (or preferred-name name)
+                                                   :public-key public-key})]
+    (cond
+      (= chat-type constants/private-group-chat-type)
+      (merge mentionable-users
+             (mentionable-contacts-from-identites all-contacts public-key contacts))
 
-          (= chat-type constants/community-chat-type)
-          (merge users (mentionable-commmunity-members
-                        contacts public-key
-                        (get-in db [:communities community-id :members])))
+      (= chat-type constants/one-to-one-chat-type)
+      (assoc mentionable-users chat-id (get mentionable-contacts chat-id
+                                            (-> chat-id
+                                                contact.db/public-key->new-contact
+                                                contact.db/enrich-contact)))
 
-          :else users)]
-    (reduce
-     (fn [acc [key {:keys [alias name identicon]}]]
-       (let [name (utils/safe-replace name ".stateofus.eth" "")]
-         (assoc acc key
-                {:alias      alias
-                 :name       (or name alias)
-                 :identicon  identicon
-                 :public-key key})))
-     (assoc chat-specific-suggestions
-            public-key
-            {:alias      name
-             :name       (or preferred-name name)
-             :public-key public-key})
-     contacts)))
+      (= chat-type constants/community-chat-type)
+      (merge mentionable-users
+             (mentionable-contacts-from-identites all-contacts public-key (keys community-members)))
+
+      :else (merge mentionable-users mentionable-contacts))))
 
 (def ending-chars "[\\s\\.,;:]")
 (def ending-chars-regex (re-pattern ending-chars))
@@ -376,8 +359,14 @@
                  (recur new-text users (rest idxs)
                         (+ diff (- (count text) (count new-text)))))))))))))
 
-(defn check-mentions [cofx text]
-  (replace-mentions text (get-mentionable-users cofx)))
+(defn check-mentions [{:keys [db]} text]
+  (let [current-chat-id      (:current-chat-id db)
+        chat                 (get-in db [:chats current-chat-id])
+        all-contacts         (:contacts/contacts db)
+        current-multiaccount (:multiaccount db)
+        community-members    (get-in db [:communities (:community-id chat) :members])
+        mentionable-users    (get-mentionable-users chat all-contacts current-multiaccount community-members)]
+    (replace-mentions text mentionable-users)))
 
 (defn get-at-sign-idxs
   ([text start]

@@ -1419,45 +1419,17 @@
           (>= transactions/confirmations-count-threshold))})))
 
 (re-frame/reg-sub
- :chats/mentionable-contacts
- :<- [:contacts/contacts]
- (fn [contacts]
-   (reduce
-    (fn [acc [key contact]]
-      (let [mentionable-contact (mentions/add-searchable-phrases-to-contact
-                                 contact false)]
-        (if (nil? mentionable-contact) acc
-            (assoc acc key mentionable-contact))))
-    {}
-    contacts)))
-
-(re-frame/reg-sub
  :chats/mentionable-users
  :<- [:chats/current-chat]
- :<- [:chats/mentionable-contacts]
  :<- [:contacts/blocked-set]
- :<- [:multiaccount]
  :<- [:contacts/contacts]
- (fn [[{:keys [chat-id users contacts community-id chat-type] :as chat}
-       mentionable-contacts blocked {:keys [public-key]} my-contacts]]
-   (let [community-members @(re-frame/subscribe [:communities/community-members
-                                                 community-id])
-         contacts-with-one-to-one (if (= chat-type constants/one-to-one-chat-type)
-                                    (assoc mentionable-contacts chat-id (get mentionable-contacts chat-id (-> chat-id
-                                                                                                              contact.db/public-key->new-contact
-                                                                                                              contact.db/enrich-contact)))
-                                    mentionable-contacts)
-         members-left (into #{} (filter #(group-chat/member-removed? chat %) (keys users)))
-         filtered-contacts (select-keys contacts-with-one-to-one (if (nil? community-id)
-                                                                   (distinct (concat (seq contacts) (keys users) [chat-id]))
-                                                                   (keys community-members)))
-         mentionable-commmunity-members (mentions/mentionable-commmunity-members
-                                         my-contacts public-key community-members)]
-     (apply dissoc
-            (-> users
-                (merge filtered-contacts)
-                (merge mentionable-commmunity-members))
-            (conj (concat blocked members-left) public-key)))))
+ :<- [:multiaccount]
+ (fn [[{:keys [users community-id] :as chat} blocked all-contacts
+       {:keys [public-key] :as current-multiaccount}]]
+   (let [community-members @(re-frame/subscribe [:communities/community-members community-id])
+         mentionable-users (mentions/get-mentionable-users chat all-contacts current-multiaccount community-members)
+         members-left      (into #{} (filter #(group-chat/member-removed? chat %) (keys users)))]
+     (apply dissoc mentionable-users (conj (concat blocked members-left) public-key)))))
 
 (re-frame/reg-sub
  :chat/mention-suggestions
