@@ -74,6 +74,8 @@ class TestDApps(SingleDeviceTestCase):
 
     @marks.testrail_id(6232)
     @marks.medium
+    @marks.flaky
+    # TODO: due to 13011
     def test_switching_accounts_in_dapp(self):
         home = SignInView(self.driver).create_user()
         wallet = home.wallet_button.click()

@@ -279,7 +279,7 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         quiet_time_yesterday, quiet_time_before_yesterday = '24 hours', '2 days'
         fetch_more = signin.get_translation_by_key("load-more-messages")
         for message in (yesterday, quiet_time_yesterday):
-            if not chat.element_by_text_part(message).is_element_displayed():
+            if not chat.element_by_text_part(message).is_element_displayed(120):
                 self.driver.fail('"%s" is not shown' % message)
         chat.element_by_text_part(fetch_more).wait_and_click(120)
         chat.element_by_text_part(fetch_more).wait_for_visibility_of_element(180)

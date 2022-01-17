@@ -407,7 +407,10 @@ class CheckBox(Button):
         super(Button, self).__init__(driver, **kwargs)
 
     def __define_desired_element(self, elem_accessibility):
-        return ':%s' % elem_accessibility if ':' in self.accessibility_id else elem_accessibility
+        desired_element_accessibility_id = elem_accessibility
+        if self.accessibility_id is not None and ':' in self.accessibility_id:
+            desired_element_accessibility_id = ':%s' % elem_accessibility
+        return desired_element_accessibility_id
 
     def enable(self):
         self.click_until_presence_of_element(Button(self.driver,

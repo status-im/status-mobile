@@ -663,7 +663,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             send_transaction.per_gas_price_limit_input:
                 {
                     'default': default_price,
-                    'value': '24,000000001',
+                    'value': str(round(float(default_price)+3, 9)),
                     '-2': 'invalid-number',
                 }
         }
@@ -681,20 +681,17 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.save_fee_button.scroll_and_click()
         if wallet.element_by_translation_id("change-tip").is_element_displayed():
             wallet.element_by_translation_id("continue-anyway").click()
-        if send_transaction.get_network_fee_from_bottom_sheet() != '0.000528':
-            self.driver.fail(
-                "Custom fee is not applied, in fact it is %s " % send_transaction.get_network_fee_from_bottom_sheet())
         send_transaction.sign_transaction()
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=3)
         transaction = wallet.find_transaction_in_history(amount=amount, return_hash=True)
         expected_params = {
-            'fee_cap': '24.000000001',
+            'fee_cap': values[send_transaction.per_gas_price_limit_input]['value'],
             'tip_cap': '2.5',
             'gas_limit': '22000'
         }
         actual_params = self.network_api.get_custom_fee_tx_params(transaction)
         if actual_params != expected_params:
-            self.errors.append('Real params %s for tx do not match expected ' % str(actual_params))
+            self.errors.append('Real params %s for tx do not match expected %s' % (str(actual_params), str(expected_params)))
 
         wallet.just_fyi('Verify custom fee data on tx screen')
         wallet.swipe_up()
