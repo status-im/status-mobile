@@ -14,7 +14,6 @@
             [status-im.ui.screens.chat.message.gap :as message.gap]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
-            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.security :as security]
             [status-im.ui.screens.chat.message.reactions :as reactions]
             [status-im.ui.screens.chat.image.preview.views :as preview]

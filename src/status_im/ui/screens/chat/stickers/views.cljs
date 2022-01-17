@@ -9,7 +9,6 @@
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [status-im.ui.screens.chat.stickers.styles :as styles]
-            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.debounce :as debounce]
             [status-im.ui.components.image-with-loader :as image-with-loader]))
 
@@ -122,30 +121,30 @@
 (defview stickers-view []
   (letsubs [selected-pack     [:stickers/selected-pack]
             installed-packs   [:stickers/installed-packs-vals]]
-           [react/view {:style {:background-color colors/white
-                                :flex             1}}
-            (cond
-              (= selected-pack :recent)   [stickers-paging-panel installed-packs selected-pack]
-              (not (seq installed-packs)) [no-stickers-yet-panel]
-              :else                       [stickers-paging-panel installed-packs selected-pack])
-            [react/view {:style {:flex-direction :row :padding-horizontal 4}}
-             [pack-icon {:on-press  #(do
-                                       (re-frame/dispatch [:stickers/load-packs])
-                                       (re-frame/dispatch [:navigate-to :stickers]))
-                         :selected? false :background-color colors/blue}
-              [icons/icon :main-icons/add {:width 20 :height 20 :color colors/white-persist}]]
-             [react/view {:width 2}]
-             [react/scroll-view {:horizontal true :style {:padding-left 2}}
-              [react/view
-               [react/view {:style {:flex-direction :row}}
-                [pack-icon {:id :recent :background-color colors/white}
-                 [icons/icon :stickers-icons/recent {:color  colors/gray
-                                                     :width  44
-                                                     :height 44}]]
-                (for [{:keys [id thumbnail]} installed-packs]
-                  ^{:key id}
-                  [pack-icon {:id               id
-                              :background-color colors/white}
-                   [image-with-loader/ipfs {:style  {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
-                                            :hash thumbnail}]])]
-               [scroll-indicator]]]]]))
+    [react/view {:style {:background-color colors/white
+                         :flex             1}}
+     (cond
+       (= selected-pack :recent)   [stickers-paging-panel installed-packs selected-pack]
+       (not (seq installed-packs)) [no-stickers-yet-panel]
+       :else                       [stickers-paging-panel installed-packs selected-pack])
+     [react/view {:style {:flex-direction :row :padding-horizontal 4}}
+      [pack-icon {:on-press  #(do
+                                (re-frame/dispatch [:stickers/load-packs])
+                                (re-frame/dispatch [:navigate-to :stickers]))
+                  :selected? false :background-color colors/blue}
+       [icons/icon :main-icons/add {:width 20 :height 20 :color colors/white-persist}]]
+      [react/view {:width 2}]
+      [react/scroll-view {:horizontal true :style {:padding-left 2}}
+       [react/view
+        [react/view {:style {:flex-direction :row}}
+         [pack-icon {:id :recent :background-color colors/white}
+          [icons/icon :stickers-icons/recent {:color  colors/gray
+                                              :width  44
+                                              :height 44}]]
+         (for [{:keys [id thumbnail]} installed-packs]
+           ^{:key id}
+           [pack-icon {:id               id
+                       :background-color colors/white}
+            [image-with-loader/ipfs {:style  {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
+                                     :hash thumbnail}]])]
+        [scroll-indicator]]]]]))

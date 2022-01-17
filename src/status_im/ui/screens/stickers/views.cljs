@@ -6,7 +6,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.image-with-loader :as image-with-loader]
             [status-im.ui.screens.stickers.styles :as styles]
-            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.money :as money])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
