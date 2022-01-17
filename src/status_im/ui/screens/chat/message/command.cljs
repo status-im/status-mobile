@@ -166,7 +166,6 @@
                          :margin-bottom 12}}
      (if icon
        [react/image (-> icon
-                        (update :source #(%))
                         (assoc-in [:style :height] 24)
                         (assoc-in [:style :width] 24))]
        [react/view {:style {:margin-right     14

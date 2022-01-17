@@ -8,7 +8,6 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.types :as types]
             [status-im.utils.money :as money]
-            [status-im.ethereum.core :as ethereum]
             [status-im.i18n.i18n :as i18n]
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
@@ -60,13 +59,13 @@
                       (handle-notification-press (types/json->clj (.-dataJSON data))))))))
 
 (defn create-transfer-notification
-  [{{:keys [state from to fromAccount toAccount value erc20 contract network]}
+  [{db :db}
+   {{:keys [state from to fromAccount toAccount value erc20 contract network]}
     :body
     :as notification}]
-  (let [chain       (ethereum/chain-id->chain-keyword network)
-        token       (if erc20
-                      (get-in tokens/all-tokens-normalized
-                              [(keyword chain) (clojure.string/lower-case contract)]
+  (let [token       (if erc20
+                      (get-in db
+                              [:wallet/all-tokens (clojure.string/lower-case contract)]
                               default-erc20-token)
                       (tokens/native-currency network))
         amount      (money/wei->ether (decode/uint value))
@@ -112,7 +111,7 @@
    (assoc
     (case bodyType
       "message"     (when (show-message-pn? cofx notification) notification)
-      "transaction" (create-transfer-notification notification)
+      "transaction" (create-transfer-notification cofx notification)
       nil)
     :body-type bodyType)))
 

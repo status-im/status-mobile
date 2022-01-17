@@ -273,16 +273,14 @@
           tokens))
 
 (fx/defn initialize-tokens
-  [{:keys [db]} custom-tokens]
-  (let [all-default-tokens (get tokens/all-default-tokens
-                                (ethereum/chain-keyword db))
-        default-tokens (utils.core/index-by :address all-default-tokens)
+  [{:keys [db]} tokens custom-tokens]
+  (let [default-tokens (utils.core/index-by :address tokens)
         ;;we want to override custom-tokens by default
         all-tokens     (merge (rpc->token custom-tokens) default-tokens)]
     (merge
      {:db (assoc db :wallet/all-tokens all-tokens)}
      (when config/erc20-contract-warnings-enabled?
-       {:wallet/validate-tokens [default-tokens all-default-tokens]}))))
+       {:wallet/validate-tokens [default-tokens tokens]}))))
 
 (fx/defn initialize-favourites
   [{:keys [db]} favourites]

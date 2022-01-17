@@ -196,6 +196,8 @@
    "wallet_getOpenseaCollectionsByOwner" {}
    "wallet_getOpenseaAssetsByOwnerAndCollection" {}
    "wallet_loadTransferByHash" {}
+   "wallet_getTokens" {};, %* [chainId]}
+   "wallet_getTokensBalancesForChainIDs" {};, %* [@[chainId], accounts, tokens]
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}

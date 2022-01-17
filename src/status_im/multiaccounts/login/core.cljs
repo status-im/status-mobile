@@ -40,7 +40,8 @@
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
             [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ethereum.tokens :as tokens]))
 
 (re-frame/reg-fx
  ::initialize-communities-enabled
@@ -98,7 +99,7 @@
 
 (fx/defn initialize-wallet
   {:events [::initialize-wallet]}
-  [{:keys [db] :as cofx} accounts custom-tokens
+  [{:keys [db] :as cofx} accounts tokens custom-tokens
    favourites scan-all-tokens? new-account?]
   (fx/merge
    cofx
@@ -106,7 +107,7 @@
                                         (rpc->accounts accounts))
     ;; NOTE: Local notifications should be enabled only after wallet was started
     ::enable-local-notifications nil}
-   (wallet/initialize-tokens custom-tokens)
+   (wallet/initialize-tokens tokens custom-tokens)
    (wallet/initialize-favourites favourites)
    (wallet/get-pending-transactions)
    (wallet/fetch-collectibles-collection)
@@ -233,15 +234,42 @@
                        :fetched-network-id fetched-network-id})
           #(re-frame/dispatch [::close-app-confirmed]))))}]})
 
+(defn normalize-tokens [network-id tokens]
+  (mapv #(-> %
+             (update :symbol keyword)
+             ((partial tokens/update-icon (ethereum/chain-id->chain-keyword (int network-id)))))
+        tokens))
+
+(re-frame/reg-fx
+ ::get-tokens
+ (fn [[network-id accounts recovered-account?]]
+   (utils/set-timeout
+    (fn []
+      (json-rpc/call {:method "wallet_getTokens"
+                      :params [(int network-id)]
+                      :on-success #(re-frame/dispatch [::initialize-wallet
+                                                       accounts
+                                                       (normalize-tokens network-id %)
+                                                       nil nil
+                                                       recovered-account?
+                                                       true])}))
+    2000)))
+
 (re-frame/reg-fx
  ;;TODO: this could be replaced by a single API call on status-go side
  ::initialize-wallet
- (fn [callback]
+ (fn [[network-id callback]]
    (-> (js/Promise.all
         (clj->js
          [(js/Promise.
            (fn [resolve reject]
              (json-rpc/call {:method "accounts_getAccounts"
+                             :on-success resolve
+                             :on-error reject})))
+          (js/Promise.
+           (fn [resolve reject]
+             (json-rpc/call {:method "wallet_getTokens"
+                             :params [(int network-id)]
                              :on-success resolve
                              :on-error reject})))
           (js/Promise.
@@ -254,8 +282,9 @@
              (json-rpc/call {:method "wallet_getFavourites"
                              :on-success resolve
                              :on-error reject})))]))
-       (.then (fn [[accounts custom-tokens favourites]]
+       (.then (fn [[accounts tokens custom-tokens favourites]]
                 (callback accounts
+                          (normalize-tokens network-id tokens)
                           (mapv #(update % :symbol keyword) custom-tokens)
                           favourites)))
        (.catch (fn [_]
@@ -350,9 +379,10 @@
                         :on-enabled  #(log/info "eip1550 is activated")
                         :on-disabled #(log/info "eip1559 is not activated")}
                        ::initialize-wallet
-                       (fn [accounts custom-tokens favourites]
-                         (re-frame/dispatch [::initialize-wallet
-                                             accounts custom-tokens favourites]))
+                       [network-id
+                        (fn [accounts tokens custom-tokens favourites]
+                          (re-frame/dispatch [::initialize-wallet
+                                              accounts tokens custom-tokens favourites]))]
                        ::open-last-chat (get-in db [:multiaccount :key-uid])}
                 notifications-enabled?
                 (assoc ::notifications/enable nil))
@@ -416,23 +446,22 @@
               (keychain/save-auth-method key-uid (or new-auth-method auth-method keychain/auth-method-none)))))
 
 (fx/defn create-only-events
-  [{:keys [db] :as cofx}]
+  [{:keys [db] :as cofx} recovered-account?]
   (let [{:keys [multiaccount
                 :multiaccounts/multiaccounts
                 :multiaccount/accounts]} db
         {:keys [creating?]}              (:multiaccounts/login db)
         first-account?                   (and creating?
                                               (empty? multiaccounts))
-        tos-accepted?                    (get db :tos/accepted?)]
+        tos-accepted?                    (get db :tos/accepted?)
+        {:networks/keys [current-network networks]} db
+        network-id (str (get-in networks [current-network :config :NetworkId]))]
     (fx/merge cofx
               {:db             (-> db
                                    (dissoc :multiaccounts/login)
                                    (assoc :tos/next-root :onboarding-notification :chats/loading? false)
                                    (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
-               :dispatch-later [{:ms 2000 :dispatch [::initialize-wallet
-                                                     accounts nil nil
-                                                     (or (get db :recovered-account?) (:recovered multiaccount))
-                                                     true]}]}
+               ::get-tokens [network-id accounts recovered-account?]}
               (finish-keycard-setup)
               (transport/start-messenger)
               (communities/fetch)
@@ -501,7 +530,7 @@
                 (utils/show-popup (i18n/label :t/migration-successful) (i18n/label :t/migration-successful-text)))
               (if login-only?
                 (login-only-events key-uid password save-password?)
-                (create-only-events)))))
+                (create-only-events recovered-account?)))))
 
 ;; FIXME(Ferossgp): We should not copy keys as we denormalize the database,
 ;; this create desync between actual accounts and the one on login causing broken state
