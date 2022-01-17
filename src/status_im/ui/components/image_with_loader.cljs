@@ -5,27 +5,31 @@
             [status-im.ui.components.icons.icons :as icons]))
 
 (defn- placeholder [props child]
-  (let [{:keys [style]} props]
-    [react/view {:style (merge style
+  (let [{:keys [accessibility-label style]} props]
+    [react/view {:accessibility-label accessibility-label
+                 :style (merge style
                                {:align-items :center
                                 :justify-content :center
                                 :background-color colors/gray-lighter})}
      child]))
 
 (defn image-with-loader [props]
-  (let [{:keys [source style]} props
+  (let [{:keys [source style accessibility-labels]} props
         loaded? (reagent/atom false)
         error? (reagent/atom false)]
     (fn []
       [react/view
        (when @error?
-         [placeholder {:style style}
+         [placeholder {:accessibility-label (:error accessibility-labels)
+                       :style style}
           [icons/icon :main-icons/cancel]])
        (when-not (or @loaded? @error?)
-         [placeholder {:style style}
+         [placeholder {:accessibility-label (:loading accessibility-labels)
+                       :style style}
           [react/activity-indicator {:animating true}]])
        (when (not @error?)
-         [react/fast-image {:onError #(reset! error? true)
+         [react/fast-image {:accessibility-label (:success accessibility-labels)
+                            :onError #(reset! error? true)
                             :onLoad #(reset! loaded? true)
                             :style (if @loaded? style {})
                             :source source}])])))

@@ -41,7 +41,9 @@
        [react/touchable-highlight {:style    {:height 75 :width 75 :margin 5}
                                    :on-press #(debounce/dispatch-and-chill [:chat/send-sticker sticker] 1000)}
         [image-with-loader {:style {:width "100%" :height "100%" :border-radius 8}
-                            :accessibility-label :sticker-icon
+                            :accessibility-labels {:success :sticker-icon
+                                                   :loading :sticker-icon-loading
+                                                   :error :sticker-icon-error}
                             :source {:uri (contenthash/url (str "0x" hash))}}]])]]])
 
 (defview recent-stickers-panel [window-width]
