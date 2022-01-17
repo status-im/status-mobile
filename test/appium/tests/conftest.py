@@ -32,7 +32,7 @@ def pytest_addoption(parser):
                      help="Specify build name")
     parser.addoption('--apk',
                      action='store',
-                     default=None,
+                     default="https://status-im-nightlies.ams3.digitaloceanspaces.com/StatusIm-Mobile-220117-055900-04b735-nightly-x86.apk",
                      help='Url or local path to apk')
     parser.addoption('--env',
                      action='store',
@@ -48,7 +48,7 @@ def pytest_addoption(parser):
                      help='Display each test step in terminal as plain text: True/False')
     parser.addoption('--pr_number',
                      action='store',
-                     default=None,
+                     default="12951",
                      help='Pull Request number')
     parser.addoption('--testrail_report',
                      action='store',

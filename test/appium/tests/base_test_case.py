@@ -371,7 +371,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 pass
             session_id = driver.session_id
             url = sauce.jobs.get_job_asset_url(job_id=session_id, filename="log.json")
-            WebDriverWait(driver, 60, 2).until(lambda _: requests.get(url).status_code == 200)
+            WebDriverWait(driver, 120, 2).until(lambda _: requests.get(url).status_code == 200)
             commands = requests.get(url).json()
             for command in commands:
                 try:
