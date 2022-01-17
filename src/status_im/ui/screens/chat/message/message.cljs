@@ -26,7 +26,7 @@
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.ui.components.animation :as animation]
             [status-im.chat.models.pin-message :as models.pin-message]
-            [status-im.ui.components.image-with-loader :refer [image-with-loader]])
+            [status-im.ui.components.image-with-loader :as image-with-loader])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn message-timestamp-anim
@@ -568,9 +568,9 @@
                                                              [{:on-press #(when pack
                                                                             (re-frame/dispatch [:chat.ui/show-profile from]))
                                                                :label    (i18n/label :t/view-details)}])))})
-      [image-with-loader {:style  {:margin 10 :width 140 :height 140 :border-radius 16}
-                          ;;TODO (perf) move to event
-                          :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
+      [image-with-loader/ipfs {:style  {:margin 10 :width 140 :height 140 :border-radius 16}
+                               ;;TODO (perf) move to event
+                               :hash (-> content :sticker :hash)}]]
      reaction-picker]))
 
 (defmethod ->message constants/content-type-image [{:keys [content in-popover?] :as message} {:keys [on-long-press modal]

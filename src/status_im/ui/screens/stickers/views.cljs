@@ -4,15 +4,15 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.image-with-loader :refer [image-with-loader]]
+            [status-im.ui.components.image-with-loader :as image-with-loader]
             [status-im.ui.screens.stickers.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.money :as money])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn- thumbnail-icon [uri size]
-  [image-with-loader {:style  {:width size :height size :border-radius (/ size 2)}
-                      :source {:uri uri}}])
+(defn- thumbnail-icon [hash size]
+  [image-with-loader/ipfs {:style  {:width size :height size :border-radius (/ size 2)}
+                           :hash hash}])
 
 (defn- installed-icon []
   [react/view styles/installed-icon
@@ -44,9 +44,9 @@
 (defn pack-badge [{:keys [name author price thumbnail preview id installed owned pending]}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :stickers-pack {:id id}])}
    [react/view {:margin-bottom 27}
-    [image-with-loader {:style {:height 200 :border-radius 20} :source {:uri (contenthash/url preview)}}]
+    [image-with-loader/ipfs {:style {:height 200 :border-radius 20} :hash preview}]
     [react/view {:height 64 :align-items :center :flex-direction :row}
-     [thumbnail-icon (contenthash/url thumbnail) 40]
+     [thumbnail-icon thumbnail 40]
      [react/view {:padding-horizontal 16 :flex 1}
       [react/text {:accessibility-label :sticker-pack-name} name]
       [react/text {:style {:color colors/gray :margin-top 6}
@@ -79,7 +79,7 @@
      (if pack
        [react/view {:flex 1}
         [react/view {:height 74 :align-items :center :flex-direction :row :padding-horizontal 16}
-         [thumbnail-icon (contenthash/url thumbnail) 64]
+         [thumbnail-icon thumbnail 64]
          [react/view {:padding-horizontal 16 :flex 1}
           [react/text {:style {:typography :header}} name]
           [react/text {:style {:color colors/gray :margin-top 6}} author]]
@@ -91,8 +91,8 @@
           [react/view {:flex-direction :row :flex-wrap :wrap}
            (for [{:keys [hash]} stickers]
              ^{:key hash}
-             [image-with-loader {:style (styles/sticker-image sticker-icon-size)
-                                 :source {:uri (contenthash/url hash)}}])]]]]
+             [image-with-loader/ipfs {:style (styles/sticker-image sticker-icon-size)
+                                      :hash hash}])]]]]
        [react/view {:flex 1 :align-items :center :justify-content :center}
         [react/activity-indicator {:animating true}]])]))
 

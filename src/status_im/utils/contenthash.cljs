@@ -46,3 +46,16 @@
       "")))
 
 (def url (memoize url-fn))
+
+(defn ipfs-alternatives [hash]
+  [(str "https://" hash ".ipfs.cf-ipfs.com")
+   (str "https://" hash ".ipfs.dweb.link")
+   (str "https://ipfs.io/ipfs/" hash)])
+
+(defn alternatives-fn [hex]
+  (let [{:keys [namespace hash]} (decode (ethereum/normalized-hex hex))]
+    (case namespace
+      :ipfs (ipfs-alternatives hash)
+      "")))
+
+(def alternatives (memoize alternatives-fn))

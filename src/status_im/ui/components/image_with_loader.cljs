@@ -2,7 +2,8 @@
   (:require [reagent.core :as reagent]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.icons :as icons]))
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.utils.contenthash :as contenthash]))
 
 (defn- placeholder [props child]
   (let [{:keys [accessibility-label style]} props]
@@ -13,10 +14,13 @@
                                 :background-color colors/gray-lighter})}
      child]))
 
-(defn image-with-loader [props]
+(defn source [props]
   (let [{:keys [source style accessibility-labels]} props
         loaded? (reagent/atom false)
-        error? (reagent/atom false)]
+        error? (reagent/atom false)
+        current-source (reagent/atom (if (seq? source)
+                                       source
+                                       [source]))]
     (fn []
       [react/view
        (when @error?
@@ -29,7 +33,16 @@
           [react/activity-indicator {:animating true}]])
        (when (not @error?)
          [react/fast-image {:accessibility-label (:success accessibility-labels)
-                            :onError #(reset! error? true)
+                            :onError #(if (empty? (rest @current-source))
+                                        (reset! error? true)
+                                        (reset! current-source
+                                                (rest @current-source)))
                             :onLoad #(reset! loaded? true)
                             :style (if @loaded? style {})
-                            :source source}])])))
+                            :source (first @current-source)}])])))
+
+(defn ipfs [props]
+  (let [{:keys [hash]} props]
+    (source (merge (dissoc props :hash)
+                   {:source (map (fn [u] {:uri u})
+                                 (contenthash/alternatives hash))}))))
