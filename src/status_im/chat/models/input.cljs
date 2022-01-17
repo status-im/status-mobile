@@ -174,7 +174,7 @@
             {:chat-id      chat-id
              :content-type constants/content-type-image
              :image-path   (utils/safe-replace uri #"file://" "")
-             :text         (i18n/label :t/update-to-see-image)})
+             :text         (i18n/label :t/update-to-see-image {"locale" "en"})})
           images)))
 
 (fx/defn clean-input [{:keys [db] :as cofx} current-chat-id]
@@ -227,7 +227,7 @@
                                      :content-type      constants/content-type-audio
                                      :audio-path        audio-path
                                      :audio-duration-ms duration
-                                     :text              (i18n/label :t/update-to-listen-audio)})))
+                                     :text              (i18n/label :t/update-to-listen-audio {"locale" "en"})})))
 
 (fx/defn send-sticker-message
   [cofx {:keys [hash pack]} current-chat-id]
@@ -236,7 +236,7 @@
                                      :content-type constants/content-type-sticker
                                      :sticker {:hash hash
                                                :pack pack}
-                                     :text    (i18n/label :t/update-to-see-sticker)})))
+                                     :text    (i18n/label :t/update-to-see-sticker {"locale" "en"})})))
 
 (fx/defn send-edited-message [{:keys [db] :as cofx} text {:keys [message-id]}]
   (fx/merge
