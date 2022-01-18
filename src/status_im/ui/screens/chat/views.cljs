@@ -243,7 +243,8 @@
 (defn render-fn [{:keys [outgoing type] :as message}
                  idx
                  _
-                 {:keys [group-chat public? current-public-key space-keeper chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
+                 {:keys [group-chat public? community? current-public-key space-keeper
+                         chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
   [react/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
      [message-datemark/chat-datemark (:value message)]
@@ -255,6 +256,7 @@
                :incoming-group (and group-chat (not outgoing))
                :group-chat group-chat
                :public? public?
+               :community? community?
                :current-public-key current-public-key
                :show-input? show-input?
                :message-pin-enabled message-pin-enabled
@@ -285,6 +287,7 @@
                                               community-admin?))))]
     {:group-chat          group-chat
      :public?             public?
+     :community?          (not (nil? community-id))
      :current-public-key  current-public-key
      :space-keeper        space-keeper
      :chat-id             chat-id

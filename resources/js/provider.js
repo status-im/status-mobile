@@ -107,6 +107,7 @@
                     }
                     else
                     {
+                        if (window.statusAppDebug) { console.log("resolve " + callback.method + " :" + JSON.stringify(data.result.result)); }
                         callback.resolve(data.result.result);
                     }
                 }
@@ -239,6 +240,7 @@
 
          return new Promise(function (resolve, reject) {
                                 callbacks[messageId] = {beta:    true,
+                                                        method:  method,
                                                         resolve: resolve,
                                                         reject:  reject};
                             });

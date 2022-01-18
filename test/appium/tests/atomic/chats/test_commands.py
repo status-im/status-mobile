@@ -45,7 +45,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         chat_2 = home_2.get_chat(sender['username']).click()
         receiver_message = chat_2.get_incoming_transaction(account_name)
-        timestamp_sender = sender_message.timestamp_message.text
+        timestamp_sender = sender_message.timestamp_command_message.text
         if not receiver_message.is_element_displayed():
             self.drivers[0].fail('No message about incoming transaction in 1-1 chat is shown for receiver')
         receiver_message.transaction_status.wait_for_element_text(receiver_message.address_requested)
@@ -68,7 +68,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_bottom_sheet = sender_message.sign_and_send.click()
         send_bottom_sheet.next_button.click()
         send_bottom_sheet.sign_transaction()
-        updated_timestamp_sender = sender_message.timestamp_message.text
+        updated_timestamp_sender = sender_message.timestamp_command_message.text
         if updated_timestamp_sender == timestamp_sender:
             self.errors.append("Timestamp of message is not updated after signing transaction")
         chat_1.wallet_button.click()

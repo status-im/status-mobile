@@ -7,16 +7,17 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
+            [quo.design-system.spacing :as spacing]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.utils.config :as config]
             [status-im.ui.screens.wallet.account.styles :as styles]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ui.screens.wallet.accounts.views :as accounts]
-            [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
             [status-im.ui.screens.wallet.transactions.views :as history]
             [status-im.ui.components.tabs :as tabs]
-            [status-im.ui.screens.wallet.collectibles.views :as collectibles.views])
+            [status-im.ui.screens.wallet.collectibles.views :as collectibles.views]
+            [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto])
   (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
@@ -102,7 +103,6 @@
                   currency [:wallet/currency]
                   opensea-enabled? [:opensea-enabled?]
                   collectible-collection [:wallet/collectible-collection address]
-                  mainnet? [:mainnet?]
                   ethereum-network? [:ethereum-network?]]
     (let [{:keys [tab]} @state]
       [react/view {:flex 1}
@@ -111,11 +111,10 @@
         (when ethereum-network?
           [tabs/tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)])
         [tabs/tab-title state :history (i18n/label :t/history) (= tab :history)]]
+       [quo/separator {:style {:margin-top -8}}]
        (cond
          (= tab :assets)
          [:<>
-          (when mainnet?
-            [buy-crypto/banner])
           (for [item tokens]
             ^{:key (:name item)}
             [accounts/render-asset item nil nil (:code currency)])]
@@ -181,10 +180,31 @@
             (styles/bottom-send-recv-buttons-lower anim-y button-group-height)
             #(reset! to-show false))))))))
 
+(defn round-action-button [{:keys [icon title on-press]}]
+  [react/view {:style {:flex            1
+                       :align-items     :center
+                       :margin-vertical (:large spacing/spacing)}}
+   [react/touchable-opacity {:style    styles/round-action-button
+                             :on-press on-press}
+    (icons/icon icon {:color colors/white})]
+   [quo/text {:color :secondary
+              :size  :small
+              :style {:margin-top (:tiny spacing/spacing)}}
+    title]])
+
+(defn top-actions []
+  [react/view {:style styles/top-actions}
+   [round-action-button {:icon     :main-icons/add
+                         :title    (i18n/label :t/buy-crypto)
+                         :on-press #(re-frame/dispatch [:buy-crypto.ui/open-screen])}]
+   [round-action-button {:icon  :main-icons/change
+                         :title (i18n/label :t/swap)
+                         :on-press #(re-frame/dispatch [:open-modal :token-swap])}]])
+
 (views/defview account []
   (views/letsubs [{:keys [name address] :as account} [:multiaccount/current-account]
                   fetching-error [:wallet/fetching-error]]
-    (let [anim-y (animation/create-value button-group-height)
+    (let [anim-y   (animation/create-value button-group-height)
           scroll-y (animation/create-value 0)]
       (anim-listener anim-y scroll-y)
       [:<>
@@ -206,9 +226,9 @@
                                   @accounts/updates-counter
                                   @(re-frame/subscribe [:wallet/refreshing-history?])))}
         (when fetching-error
-          [react/view {:style {:flex 1
+          [react/view {:style {:flex        1
                                :align-items :center
-                               :margin 8}}
+                               :margin      8}}
            [icons/icon
             :main-icons/warning
             {:color           :red
@@ -233,5 +253,8 @@
          [react/scroll-view {:horizontal true}
           [react/view {:flex-direction :row :padding-top 8 :padding-bottom 12}
            [account-card account]]]]
+        (if config/swap-enabled?
+          [top-actions]
+          [buy-crypto/banner])
         [assets-and-collections address]]
        [bottom-send-recv-buttons account anim-y]])))

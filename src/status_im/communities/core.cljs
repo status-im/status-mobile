@@ -221,12 +221,10 @@
 (fx/defn create
   {:events [::create-confirmation-pressed]}
   [{:keys [db]}]
-  (let [{:keys [name description image]} (get db :communities/create)]
-    ;; If access is ENS only, we set the access to require approval and set the rule
-    ;; of ens only
+  (let [{:keys [name description membership image]} (get db :communities/create)]
     (let [params {:name name
                   :description description
-                  :membership constants/community-on-request-access
+                  :membership membership
                   :color (rand-nth colors/chat-colors)
                   :image (string/replace-first (str image) #"file://" "")
                   :imageAx 0
@@ -288,7 +286,7 @@
 (fx/defn edit-channel
   {:events [::edit-channel-confirmation-pressed]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [name description color community-id emoji edit-channel-id category-id]}
+  (let [{:keys [name description color community-id emoji edit-channel-id category-id position]}
         (get db :communities/create-channel)]
     {::json-rpc/call [{:method     "wakuext_editCommunityChat"
                        :params     [community-id
@@ -298,6 +296,7 @@
                                                    :color        color
                                                    :emoji        emoji}
                                      :category_id  category-id
+                                     :position     position
                                      :permissions {:access constants/community-channel-access-no-membership}}]
                        :js-response true
                        :on-success #(re-frame/dispatch [::community-channel-edited %])
@@ -345,7 +344,7 @@
 
 (fx/defn edit-channel-pressed
   {:events [::edit-channel-pressed]}
-  [{:keys [db] :as cofx} community-id chat-name description color emoji chat-id category-id]
+  [{:keys [db] :as cofx} community-id chat-name description color emoji chat-id category-id position]
   (let [{:keys [color emoji]} (if (string/blank? emoji)
                                 (rand-nth emoji-thumbnail-styles/emoji-picker-default-thumbnails)
                                 {:color color :emoji emoji})]
@@ -356,7 +355,8 @@
                                                           :community-id    community-id
                                                           :emoji           emoji
                                                           :edit-channel-id chat-id
-                                                          :category-id     category-id})}
+                                                          :category-id     category-id
+                                                          :position        position})}
               (navigation/open-modal :edit-community-channel nil))))
 
 (fx/defn community-created
@@ -564,6 +564,15 @@
                        :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
                        :on-error   #(log/error "failed to remove chat from community" %)}]}))
 
+(fx/defn delete-community-chat
+  {:events [:delete-community-chat]}
+  [_ community-id chat-id]
+  {::json-rpc/call [{:method     "wakuext_deleteCommunityChat"
+                     :params     [community-id chat-id]
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                     :on-error   #(log/error "failed to delete community chat" %)}]})
+
 (fx/defn delete-category
   {:events [:delete-community-category]}
   [_ community-id category-id]
@@ -591,6 +600,18 @@
     (fx/merge cofx
               (navigation/navigate-back)
               (remove-chat-from-category community-id id categoryID))))
+
+(fx/defn reorder-category-chat
+  {:events [::reorder-community-category-chat]}
+  [_ community-id category-id chat-id new-position]
+  {::json-rpc/call [{:method     "wakuext_reorderCommunityChat"
+                     :params     [{:communityId community-id
+                                   :categoryId  category-id
+                                   :chatId      chat-id
+                                   :position    new-position}]
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                     :on-error   #(log/error "failed to reorder community category chat" %)}]})
 
 (fx/defn reorder-category
   {:events [::reorder-community-category]}

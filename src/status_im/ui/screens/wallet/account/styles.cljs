@@ -42,3 +42,19 @@
     :duration 200
     :easing (.-ease ^js animation/easing)
     :useNativeDriver true}))
+
+(def round-action-button
+  {:background-color colors/blue
+   :height           44
+   :flex             1
+   :justify-content  :center
+   :align-items      :center
+   :width            44
+   :border-radius    44})
+
+(def top-actions
+  {:flex            1
+   :flex-direction  :row
+   :justify-content :space-between
+   :width           "60%"
+   :align-self      :center})

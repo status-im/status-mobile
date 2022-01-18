@@ -22,7 +22,6 @@
             [re-frame.core :as re-frame]
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.components.accordion :as accordion]
-            [clojure.string :as string]
             [status-im.ui.screens.communities.styles :as styles]))
 
 (def request-cooldown-ms (* 60 1000))
@@ -139,12 +138,6 @@
           :title               (i18n/label :t/edit-chats)
           :accessibility-label :community-edit-chats
           :icon                :main-icons/edit
-          :on-press            #(hide-sheet-and-dispatch [:open-modal :community-edit-chats {:community-id id}])}]
-        [quo/list-item
-         {:theme               :accent
-          :title               (i18n/label :t/reorder-categories)
-          :accessibility-label :community-reorder-categories
-          :icon                :main-icons/channel-category
           :on-press            #(hide-sheet-and-dispatch
                                  [:open-modal :community-reorder-categories {:community-id id}])}]])]))
 
@@ -168,46 +161,28 @@
                                         {:content (fn []
                                                     [sheets/actions home-item])}])}])
 
-(defn categories-accordion [community-id chats categories edit data]
+(defn categories-accordion [community-id chats categories data]
   [:<>
-   (for [{:keys [name id state]} (vals categories)]
+   (for [{:keys [name id state]} categories]
      ^{:key (str "cat" name id)}
      [:<>
       [accordion/section
        {:on-open  #(>evt [::communities/store-category-state community-id id true])
         :on-close #(>evt [::communities/store-category-state community-id id false])
         :default  state
-        :opened   edit
-        :disabled edit
         :title    [rn/view styles/category-item
-                   (if edit
-                     [rn/touchable-opacity {:on-press #(>evt [:delete-community-category community-id id])}
-                      [icons/icon :main-icons/delete-circle {:no-color true}]]
-                     [icons/icon :main-icons/channel-category {:color colors/gray}])
+                   [icons/icon :main-icons/channel-category {:color colors/gray}]
                    [rn/text {:style {:font-size 17 :margin-left 10 :color colors/black}} name]]
-        :content  [rn/view
+        :content  [:<>
                    (for [chat (get chats id)]
-                     (if edit
-                       ^{:key (str "chat" chat id)}
-                       [rn/view styles/category-item
-                        [rn/touchable-opacity {:on-press #(>evt [:remove-chat-from-community-category
-                                                                 community-id
-                                                                 (string/replace (:chat-id chat) community-id "")
-                                                                 (:categoryID chat)])}
-                         [icons/icon :main-icons/delete-circle {:no-color true}]]
-                        [rn/view {:flex 1}
-                         [inner-item/home-list-item
-                          (assoc chat :public? true)]]]
-                       ^{:key (str "chat" chat id)}
-                       [community-chat-item chat nil nil data]))]}]
+                     ^{:key (str "chat" chat id)}
+                     [community-chat-item chat nil nil data])]}]
       [quo/separator]])])
 
-(defn community-chat-list [community-id categories edit from-chat]
-  (let [chats (<sub [:chats/categories-by-community-id community-id])]
+(defn community-chat-list [community-id categories from-chat]
+  (let [chats (<sub [:chats/sorted-categories-by-community-id community-id])]
     (if (and (empty? categories) (empty? chats))
-      (if edit
-        [blank-page (i18n/label :t/welcome-community-blank-message-edit-chats)]
-        [blank-page (i18n/label :t/welcome-community-blank-message)])
+      [blank-page (i18n/label :t/welcome-community-blank-message)]
       [list/flat-list
        {:key-fn                       :chat-id
         :content-container-style      {:padding-bottom 8}
@@ -215,7 +190,7 @@
         :data                         (get chats "")
         :render-data                  {:from-chat from-chat}
         :render-fn                    community-chat-item
-        :header                       [categories-accordion community-id chats categories edit {:from-chat from-chat}]
+        :header                       [categories-accordion community-id chats categories {:from-chat from-chat}]
         :footer                       [rn/view {:height 68}]}])))
 
 (defn channel-preview-item [{:keys [id name]}]
@@ -266,23 +241,6 @@
        (if fetching
          [components.react/small-loading-indicator]
          (i18n/label :t/fetch-community))]]]))
-
-(defn community-edit []
-  (let [{:keys [community-id]} (<sub [:get-screen-params])]
-    (fn []
-      (let [{:keys [id name images members permissions color]} (<sub [:communities/community community-id])
-            categories (<sub [:communities/sorted-categories community-id])]
-        [:<>
-         [topbar/topbar
-          {:modal?  true
-           :content [toolbar-content
-                     id
-                     name
-                     color
-                     images
-                     (not= (:access permissions) constants/community-no-membership-access)
-                     (count members)]}]
-         [community-chat-list id categories true false]]))))
 
 (defn community []
   (let [{:keys [community-id from-chat]} (<sub [:get-screen-params])]

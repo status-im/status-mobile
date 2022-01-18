@@ -164,3 +164,7 @@ used for some abi encoding primitives
 ## "rn-emoji-keyboard": "https://github.com/status-im/rn-emoji-keyboard"
 
 Used for taking emoji input, for custom emoji thumbnails for community channels
+
+## "react-native-draggable-flatlist": "https://github.com/computerjazz/react-native-draggable-flatlist"
+
+A drag-and-drop-enabled FlatList component for React Native

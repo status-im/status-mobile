@@ -12,8 +12,9 @@ import support.api.web3_api as w3
 
 class NetworkApi(object):
 
+
     def __init__(self):
-        self.network_url = 'http://api-%s.etherscan.io/api?' % tests.pytest_config_global['network']
+        self.network_url = 'http://api-ropsten.etherscan.io/api?'
         self.faucet_url = 'https://faucet-ropsten.status.im/donate'
         self.faucet_backup_address = w3.account_address
         self.headers = {
@@ -179,13 +180,8 @@ class NetworkApi(object):
         return rounded_balance
 
     def get_custom_fee_tx_params(self, hash: str):
-        price_limit = int(w3.get_tx_param_by_hash(hash, 'maxFeePerGas'),16)/1000000000
-        tip_limit = int(w3.get_tx_param_by_hash(hash, 'maxPriorityFeePerGas'),16)/1000000000
-        gas_limit = w3.get_tx_param_by_hash(hash, 'gas')
         return {
-            'fee_cap' : str(price_limit),
-            'tip_cap': str(tip_limit),
-            'gas_limit' : str(gas_limit)
+            'fee_cap': str(w3.get_tx_param_by_hash(hash, 'maxFeePerGas')/1000000000),
+            'tip_cap': str(w3.get_tx_param_by_hash(hash, 'maxPriorityFeePerGas')/1000000000),
+            'gas_limit': str(w3.get_tx_param_by_hash(hash, 'gas'))
         }
-
-

@@ -1,7 +1,7 @@
 library 'status-jenkins-lib@v1.3.3'
 
 pipeline {
-  agent { label 'linux' }
+  agent { label 'linux && x86_64 && nix-2.3' }
 
   options {
     timestamps()

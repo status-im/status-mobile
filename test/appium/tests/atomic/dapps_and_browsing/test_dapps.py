@@ -74,6 +74,8 @@ class TestDApps(SingleDeviceTestCase):
 
     @marks.testrail_id(6232)
     @marks.medium
+    @marks.flaky
+    # TODO: due to 13011
     def test_switching_accounts_in_dapp(self):
         home = SignInView(self.driver).create_user()
         wallet = home.wallet_button.click()
@@ -107,8 +109,6 @@ class TestDApps(SingleDeviceTestCase):
 
         home.just_fyi('check that can change account')
         profile.dapp_tab_button.click()
-        if profile.element_by_text("Can't find web3 library").is_element_displayed():
-            status_test_dapp.browser_refresh_page_button.wait_and_click()
         if not status_test_dapp.element_by_text_part(account_name).is_element_displayed():
             self.errors.append("No expected account %s is shown in authorize web3 popup for wallet" % account_name)
         status_test_dapp.allow_button.click()

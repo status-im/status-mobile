@@ -986,10 +986,10 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_1.get_back_to_home_view()
         home_1.add_contact(public_key=basic_user['public_key'])
         chat_1.chat_message_input.send_keys('@')
-        if not (chat_1.search_user_in_mention_suggestion_list(ens_nickname_value).is_element_displayed() or
+        if (chat_1.search_user_in_mention_suggestion_list(ens_nickname_value).is_element_displayed() or
                 chat_1.search_user_in_mention_suggestion_list(
                     sender['username']).is_element_displayed()):
-            self.errors.append('ENS-owner user is not available in mention suggestion list')
+            self.errors.append('ENS-owner user who is not in 1-1 chat is  available in mention suggestion list')
 
         device_1.just_fyi('Check there is no random user in different public chat')
         chat_1.get_back_to_home_view()

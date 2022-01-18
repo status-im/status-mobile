@@ -91,6 +91,8 @@ class TestWalletManagement(SingleDeviceTestCase):
     @marks.testrail_id(5346)
     @marks.flaky
     @marks.high
+    @marks.skip
+    # TODO: skipped due to 13016
     def test_collectible_from_wallet(self):
         passphrase = wallet_users['F']['passphrase']
         home = SignInView(self.driver).recover_access(passphrase=passphrase)
@@ -115,7 +117,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.errors.append(
                 'Wrong number is shown on CK assets: %s' % wallet.get_collectibles_amount().text)
         wallet.get_collectibles_amount().click()
-        if not wallet.nft_asset_button.is_element_displayed():
+        if not wallet.nft_asset_button.is_element_displayed(60):
             self.driver.fail("Kitty is not shown after opening it from collectibles!")
         wallet.nft_asset_button.click()
         wallet.set_collectible_as_profile_photo_button.scroll_and_click()

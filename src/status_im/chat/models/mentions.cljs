@@ -9,7 +9,8 @@
             [status-im.utils.utils :as utils]
             [status-im.native-module.core :as status]
             [quo.react-native :as rn]
-            [quo.react :as react]))
+            [quo.react :as react]
+            [status-im.multiaccounts.core :as multiaccounts]))
 
 (def at-sign "@")
 
@@ -170,53 +171,83 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-mentionable-users
-  [{{:keys          [current-chat-id]
-     :contacts/keys [contacts] :as db} :db}]
-  (let [{:keys [chat-type users] :as chat}
-        (get-in db [:chats current-chat-id])
-        chat-specific-suggestions
-        (cond
-          (= chat-type constants/private-group-chat-type)
-          (let [{:keys [public-key]} (:multiaccount db)
-                all-contacts (:contacts/contacts db)
-                group-contacts
-                (contact.db/get-all-contacts-in-group-chat
-                 (disj (:contacts chat) public-key)
-                 nil
-                 all-contacts
-                 nil)]
-            (reduce
-             (fn [acc {:keys [alias public-key identicon name]}]
-               (assoc acc public-key
-                      {:alias      alias
-                       :identicon  identicon
-                       :public-key public-key
-                       :name       name}))
-             {}
-             group-contacts))
-          (= chat-type constants/one-to-one-chat-type)
-          (assoc users
-                 current-chat-id
-                 (contact.db/public-key->contact contacts current-chat-id))
+(defn add-searchable-phrases
+  [{:keys [alias name nickname] :as user}]
+  (reduce
+   (fn [user s]
+     (if (nil? s)
+       user
+       (let [new-words (concat
+                        [s]
+                        (rest (string/split s " ")))]
+         (update user :searchable-phrases (fnil concat []) new-words))))
+   user
+   [alias name nickname]))
 
-          :else users)
-        {:keys [name preferred-name public-key]}
-        (:multiaccount db)]
-    (reduce
-     (fn [acc [key {:keys [alias name identicon]}]]
-       (let [name (utils/safe-replace name ".stateofus.eth" "")]
-         (assoc acc key
-                {:alias      alias
-                 :name       (or name alias)
-                 :identicon  identicon
-                 :public-key key})))
-     (assoc chat-specific-suggestions
-            public-key
-            {:alias      name
-             :name       (or preferred-name name)
-             :public-key public-key})
-     contacts)))
+(defn add-searchable-phrases-to-contact
+  [{:keys [alias name added? blocked? identicon public-key nickname]} community-chat?]
+  (when (and alias
+             (not (string/blank? alias))
+             (or name
+                 nickname
+                 added?
+                 community-chat?)
+             (not blocked?))
+    (add-searchable-phrases
+     {:alias      alias
+      :name       (or (utils/safe-replace name ".stateofus.eth" "") alias)
+      :identicon  identicon
+      :nickname   nickname
+      :public-key public-key})))
+
+(defn mentionable-contacts [contacts]
+  (reduce
+   (fn [acc [key contact]]
+     (let [mentionable-contact (add-searchable-phrases-to-contact contact false)]
+       (if (nil? mentionable-contact)
+         acc
+         (assoc acc key mentionable-contact))))
+   {}
+   contacts))
+
+(defn mentionable-contacts-from-identites [contacts my-public-key identities]
+  (reduce (fn [acc identity]
+            (let [contact             (multiaccounts/contact-by-identity
+                                       contacts identity)
+                  contact             (if (string/blank? (:alias contact))
+                                        (assoc contact :alias
+                                               (get-in contact [:names :three-words-name]))
+                                        contact)
+                  mentionable-contact (add-searchable-phrases-to-contact
+                                       contact true)]
+              (if (nil? mentionable-contact) acc
+                  (assoc acc identity mentionable-contact))))
+          {}
+          (remove #(= my-public-key %) identities)))
+
+(defn get-mentionable-users [chat all-contacts current-multiaccount community-members]
+  (let [{:keys [name preferred-name public-key]} current-multiaccount
+        {:keys [chat-id users contacts chat-type]} chat
+        mentionable-contacts (mentionable-contacts all-contacts)
+        mentionable-users (assoc users public-key {:alias      name
+                                                   :name       (or preferred-name name)
+                                                   :public-key public-key})]
+    (cond
+      (= chat-type constants/private-group-chat-type)
+      (merge mentionable-users
+             (mentionable-contacts-from-identites all-contacts public-key contacts))
+
+      (= chat-type constants/one-to-one-chat-type)
+      (assoc mentionable-users chat-id (get mentionable-contacts chat-id
+                                            (-> chat-id
+                                                contact.db/public-key->new-contact
+                                                contact.db/enrich-contact)))
+
+      (= chat-type constants/community-chat-type)
+      (merge mentionable-users
+             (mentionable-contacts-from-identites all-contacts public-key (keys community-members)))
+
+      :else (merge mentionable-users mentionable-contacts))))
 
 (def ending-chars "[\\s\\.,;:]")
 (def ending-chars-regex (re-pattern ending-chars))
@@ -328,8 +359,14 @@
                  (recur new-text users (rest idxs)
                         (+ diff (- (count text) (count new-text)))))))))))))
 
-(defn check-mentions [cofx text]
-  (replace-mentions text (get-mentionable-users cofx)))
+(defn check-mentions [{:keys [db]} text]
+  (let [current-chat-id      (:current-chat-id db)
+        chat                 (get-in db [:chats current-chat-id])
+        all-contacts         (:contacts/contacts db)
+        current-multiaccount (:multiaccount db)
+        community-members    (get-in db [:communities (:community-id chat) :members])
+        mentionable-users    (get-mentionable-users chat all-contacts current-multiaccount community-members)]
+    (replace-mentions text mentionable-users)))
 
 (defn get-at-sign-idxs
   ([text start]
@@ -633,19 +670,6 @@
 (fx/defn reset-text-input-cursor
   [_ ref cursor]
   {::reset-text-input-cursor [ref cursor]})
-
-(defn add-searchable-phrases
-  [{:keys [alias name nickname] :as user}]
-  (reduce
-   (fn [user s]
-     (if (nil? s)
-       user
-       (let [new-words (concat
-                        [s]
-                        (rest (string/split s " ")))]
-         (update user :searchable-phrases (fnil concat []) new-words))))
-   user
-   [alias name nickname]))
 
 (defn is-valid-terminating-character? [c]
   (case c

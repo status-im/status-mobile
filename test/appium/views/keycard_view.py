@@ -1,4 +1,4 @@
-from views.base_element import Button, Text, EditBox, SilentButton
+from views.base_element import Button, Text, EditBox, SilentButton, CheckBox
 from views.base_view import BaseView
 
 
@@ -14,6 +14,7 @@ class KeycardView(BaseView):
         self.pair_code_input = EditBox(self.driver, xpath="//android.widget.EditText")
         self.pair_to_this_device_button = Button(self.driver, translation_id="pair-card")
         self.connect_pairing_card_button = Button(self.driver, accessibility_id="connect-pairing-card")
+        self.return_card_to_factory_settings_checkbox = CheckBox(self.driver, accessibility_id=":checkbox-off")
 
         # Keyboard
         self.zero_button = SilentButton(self.driver, accessibility_id="numpad-button-0")

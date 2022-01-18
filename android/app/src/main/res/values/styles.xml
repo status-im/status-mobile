@@ -8,6 +8,7 @@
         <item name="android:forceDarkAllowed">true</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:statusBarColor">?attr/backgroundColor</item>
+	<item name="android:alertDialogTheme">@style/AlertDialogTheme</item>
     </style>
 
     <style name="LightTheme" parent="AppTheme">
@@ -20,5 +21,11 @@
         <item name="textColor">#ffffff</item>
         <item name="backgroundColor">#000000</item>
         <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+      <item name="android:textColor">@color/alert_text</item>
+      <item name="android:textColorPrimary">@color/alert_text</item>
+      <item name="android:background">@color/alert_background</item>
     </style>
 </resources>

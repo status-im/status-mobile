@@ -42,11 +42,15 @@
   [{:keys [db]} community-id]
   {:db (community-failed-to-resolve db community-id)})
 
+(defn community-link [id]
+  (str "https://join.status.im/c/" id))
+
 (fx/defn handle-community-resolved
   {:events [::community-resolved]}
   [{:keys [db] :as cofx} community-id community]
   (fx/merge cofx
-            {:db (community-resolved db community-id)}
+            {:db       (community-resolved db community-id)
+             :dispatch [::cache-link-preview-data (community-link community-id) community]}
             (models.communities/handle-community community)))
 
 (fx/defn resolve-community-info
@@ -77,9 +81,6 @@
    cofx
    :link-previews-cache
    (assoc (get multiaccount :link-previews-cache {}) site data)))
-
-(defn community-link [id]
-  (str "https://join.status.im/c/" id))
 
 (defn cache-community-preview-data
   [{:keys [id] :as community}]

@@ -217,9 +217,15 @@
                                                          :t/keycard-access-reset :t/keycard-backup-success-title))
                                   :content (i18n/label (if (= backup-type :recovery-card)
                                                          :t/keycard-can-use-with-new-passcode :t/keycard-backup-success-body))}}
-            (if (multiaccounts.model/logged-in? cofx)
+            (cond
+              (multiaccounts.model/logged-in? cofx)
               (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])
-              (return-to-keycard-login))))
+
+              (:multiaccounts/login db)
+              (return-to-keycard-login)
+
+              :else
+              (navigation/set-stack-root :onboarding [:get-your-keys]))))
 
 (re-frame/reg-fx
  ::finish-migration

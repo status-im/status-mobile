@@ -44,6 +44,17 @@
             [status-im.ui.screens.currency-settings.views :as currency-settings]
             [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
             [status-im.ui.screens.default-sync-period-settings.view :as default-sync-period-settings]
+            [status-im.ui.screens.wallet.settings.views :as wallet-settings]
+            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
+            [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
+            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
+            [status-im.ui.screens.wallet.collectibles.views :as wallet.collectibles]
+            [status-im.ui.screens.wallet.account.views :as wallet.account]
+            [status-im.ui.screens.wallet.add-new.views :as add-account]
+            [status-im.ui.screens.wallet.account-settings.views :as account-settings]
+            [status-im.ui.screens.wallet.swap.views :as wallet.swap]
+            [status-im.ui.screens.status.views :as status.views]
+            [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.ens.views :as ens]
             [status-im.ui.screens.fleet-settings.views :as fleet-settings]
             [status-im.ui.screens.glossary.view :as glossary]
@@ -91,7 +102,6 @@
             [status-im.ui.screens.profile.contact.views :as contact]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.screens.profile.seed.views :as profile.seed]
-            [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.progress.views :as progress]
             [status-im.ui.screens.qr-scanner.views :as qr-scanner]
             [status-im.ui.screens.referrals.public-chat :as referrals.public-chat]
@@ -99,7 +109,6 @@
             [status-im.ui.screens.reset-password.views :as reset-password]
             [status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
             [status-im.ui.screens.status.new.views :as status.new]
-            [status-im.ui.screens.status.views :as status.views]
             [status-im.ui.screens.stickers.views :as stickers]
             [status-im.ui.screens.sync-settings.views :as sync-settings]
             [status-im.ui.screens.terms-of-service.views :as terms-of-service]
@@ -107,18 +116,10 @@
              :as
              edit-wakuv2-node]
             [status-im.ui.screens.wakuv2-settings.views :as wakuv2-settings]
-            [status-im.ui.screens.wallet.account-settings.views :as account-settings]
-            [status-im.ui.screens.wallet.account.views :as wallet.account]
             [status-im.ui.screens.wallet.accounts-manage.views :as accounts-manage]
-            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
-            [status-im.ui.screens.wallet.add-new.views :as add-account]
             [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
-            [status-im.ui.screens.wallet.collectibles.views :as wallet.collectibles]
-            [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
             [status-im.ui.screens.wallet.recipient.views :as recipient]
-            [status-im.ui.screens.wallet.send.views :as wallet.send]
-            [status-im.ui.screens.wallet.settings.views :as wallet-settings]
-            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]))
+            [status-im.ui.screens.wallet.send.views :as wallet.send]))
 
 (def components
   [{:name      :chat-toolbar
@@ -220,9 +221,9 @@
            ;Chat
            {:name          :chat
             :options       {:popGesture false
-                            :topBar {:title        {:component {:name :chat-toolbar :id :chat-toolbar}
-                                                    :alignment :fill}
-                                     :rightButtons (right-button-options :chat :more)}}
+                            :topBar     {:title        {:component {:name :chat-toolbar :id :chat-toolbar}
+                                                        :alignment :fill}
+                                         :rightButtons (right-button-options :chat :more)}}
             :right-handler chat/topbar-button
             :component     chat/chat}
 
@@ -288,11 +289,6 @@
             ;;TODO custom
             :options   {:topBar {:visible false}}
             :component select-category/view}
-           {:name      :community-edit-chats
-            ;;TODO custom
-            :insets    {:bottom true}
-            :options   {:topBar {:visible false}}
-            :component community/community-edit}
            {:name      :community-reorder-categories
             :insets    {:top false}
             :options   {:topBar {:visible false}}
@@ -399,6 +395,32 @@
            {:name      :manage-accounts
             :options   {:topBar {:title {:text (i18n/label :t/wallet-manage-accounts)}}}
             :component accounts-manage/manage}
+
+           {:name      :token-swap
+            ;;TODO dynamic title
+            :options   {:topBar {:visible false}}
+            :component wallet.swap/swap}
+
+           {:name      :token-swap-advanced-nonce
+            :options   {:topBar {:title {:text (i18n/label :t/nonce)}}}
+            :component wallet.swap/nonce-modal}
+
+           {:name      :token-swap-advanced-approve-token
+            :options   {:topBar {:title {:text (i18n/label :t/approve-token)}}}
+            :component wallet.swap/approve-token-modal}
+
+           {:name      :token-swap-advanced-transaction-fee
+            :options   {:topBar {:title {:text (i18n/label :t/transaction-fee)}}}
+            :component wallet.swap/transaction-fee-modal}
+
+           {:name      :token-swap-advanced-swap-details
+            :options   {:topBar {:title {:text (i18n/label :t/swap-details)}}}
+            :component wallet.swap/swap-details-modal}
+
+           {:name      :swap-asset-selector
+            ;;TODO dynamic title
+            :options   {:topBar {:visible false}}
+            :component wallet.swap/asset-selector}
 
            ;;MY STATUS
 
@@ -708,8 +730,8 @@
             :options   {:topBar {:visible false}}
             :component wallet.buy-crypto/website}
 
-           {:name   :nft-details
-            :insets {:bottom true}
+           {:name      :nft-details
+            :insets    {:bottom true}
             ;;TODO dynamic title
             :options   {:topBar {:visible false}}
             :component wallet.collectibles/nft-details-modal}

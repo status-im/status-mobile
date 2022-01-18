@@ -1012,6 +1012,25 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void recover(final String rpcParams, final Callback callback) {
+        Log.d(TAG, "recover");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.recover(rpcParams);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void signTypedData(final String data, final String account, final String password, final Callback callback) {
         Log.d(TAG, "signTypedData");
         if (!checkAvailability()) {

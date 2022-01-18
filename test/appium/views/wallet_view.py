@@ -361,7 +361,7 @@ class WalletView(BaseView):
             keycard_view.enter_default_pin()
         else:
             self.enter_your_password_input.send_keys(password)
-            self.add_account_generate_account_button.click()
+            self.add_account_generate_account_button.click_until_presence_of_element(self.accounts_status_account)
         self.driver.info("## Account is added!", device=False)
 
     def get_collectibles_amount(self, collectibles='CryptoKitties'):

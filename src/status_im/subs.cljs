@@ -34,7 +34,6 @@
             [status-im.utils.security :as security]
             [status-im.wallet.db :as wallet.db]
             [status-im.wallet.utils :as wallet.utils]
-            [status-im.utils.utils :as utils]
             status-im.ui.screens.keycard.subs
             [status-im.chat.models.mentions :as mentions]
             [status-im.notifications.core :as notifications]
@@ -181,6 +180,12 @@
 (reg-root-key-sub :wallet/fetching-collection-assets :wallet/fetching-collection-assets)
 (reg-root-key-sub :wallet/collectible-assets :wallet/collectible-assets)
 (reg-root-key-sub :wallet/selected-collectible :wallet/selected-collectible)
+(reg-root-key-sub :wallet/modal-selecting-source-token? :wallet/modal-selecting-source-token?)
+(reg-root-key-sub :wallet/swap-from-token :wallet/swap-from-token)
+(reg-root-key-sub :wallet/swap-to-token :wallet/swap-to-token)
+(reg-root-key-sub :wallet/swap-from-token-amount :wallet/swap-from-token-amount)
+(reg-root-key-sub :wallet/swap-to-token-amount :wallet/swap-to-token-amount)
+(reg-root-key-sub :wallet/swap-advanced-mode? :wallet/swap-advanced-mode?)
 
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)
@@ -878,6 +883,22 @@
                                 chats)))))
 
 (re-frame/reg-sub
+ :chats/sorted-categories-by-community-id
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:chats/by-community-id community-id])
+    (re-frame/subscribe [:communities/community-chats community-id])])
+ (fn [[chats comm-chats] [_ community-id]]
+   (let [chat-cat (into {} (map (fn [{:keys [id categoryID position]}]
+                                  {(str community-id id) {:categoryID categoryID
+                                                          :position   position}})
+                                (vals comm-chats)))]
+     (group-by :categoryID (sort-by :position
+                                    (map #(cond-> (merge % (chat-cat (:chat-id %)))
+                                            (= community-id constants/status-community-id)
+                                            (assoc :color colors/blue))
+                                         chats))))))
+
+(re-frame/reg-sub
  :chats/category-by-chat-id
  (fn [[_ community-id _]]
    [(re-frame/subscribe [:communities/community community-id])])
@@ -903,7 +924,9 @@
  :<- [:communities]
  (fn [communities [_ id]]
    (->> (get-in communities [id :categories])
-        (sort-by #(:position (get % 1))))))
+        (map #(assoc (get % 1) :community-id id))
+        (sort-by :position)
+        (into []))))
 
 (re-frame/reg-sub
  :chats/current-chat-ui-props
@@ -1396,55 +1419,17 @@
           (>= transactions/confirmations-count-threshold))})))
 
 (re-frame/reg-sub
- :chats/mentionable-contacts
- :<- [:contacts/contacts]
- (fn [contacts]
-   (reduce
-    (fn [acc [key {:keys [alias name added? blocked? identicon public-key nickname]}]]
-      (if (and alias
-               (not= alias "")
-               (or name
-                   nickname
-                   added?)
-               (not blocked?))
-        (let [name (utils/safe-replace name ".stateofus.eth" "")]
-          (assoc acc public-key
-                 (mentions/add-searchable-phrases
-                  {:alias      alias
-                   :name       (or name alias)
-                   :identicon  identicon
-                   :nickname   nickname
-                   :public-key key})))
-        acc))
-    {}
-    contacts)))
-
-(re-frame/reg-sub
  :chats/mentionable-users
  :<- [:chats/current-chat]
- :<- [:chats/mentionable-contacts]
  :<- [:contacts/blocked-set]
+ :<- [:contacts/contacts]
  :<- [:multiaccount]
- (fn [[{:keys [chat-id users contacts community-id chat-type] :as chat} mentionable-contacts blocked {:keys [name preferred-name public-key]}]]
-   (let [community-members @(re-frame/subscribe [:communities/community-members
-                                                 community-id])
-         contacts-with-one-to-one (if (= chat-type constants/one-to-one-chat-type)
-                                    (assoc mentionable-contacts chat-id (get mentionable-contacts chat-id (-> chat-id
-                                                                                                              contact.db/public-key->new-contact
-                                                                                                              contact.db/enrich-contact)))
-                                    mentionable-contacts)
-         members-left (into #{} (filter #(group-chat/member-removed? chat %) (keys users)))
-         filtered-contacts (select-keys contacts-with-one-to-one (if (nil? community-id)
-                                                                   (distinct (concat (seq contacts) (keys users) [chat-id]))
-                                                                   (keys community-members)))]
-     (apply dissoc
-            (-> users
-                (merge filtered-contacts)
-                (assoc public-key (mentions/add-searchable-phrases
-                                   {:alias      name
-                                    :name       (or preferred-name name)
-                                    :public-key public-key})))
-            (conj (concat blocked members-left) public-key)))))
+ (fn [[{:keys [users community-id] :as chat} blocked all-contacts
+       {:keys [public-key] :as current-multiaccount}]]
+   (let [community-members @(re-frame/subscribe [:communities/community-members community-id])
+         mentionable-users (mentions/get-mentionable-users chat all-contacts current-multiaccount community-members)
+         members-left      (into #{} (filter #(group-chat/member-removed? chat %) (keys users)))]
+     (apply dissoc mentionable-users (conj (concat blocked members-left) public-key)))))
 
 (re-frame/reg-sub
  :chat/mention-suggestions

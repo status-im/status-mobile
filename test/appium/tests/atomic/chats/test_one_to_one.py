@@ -381,9 +381,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         private_chat_2.chat_options.click()
         timeline_device_1 = private_chat_2.view_profile_button.click()
         for element in timeline_device_1.element_by_text(status_1), timeline_device_1.image_message_in_chat:
-            element.scroll_to_element()
-            if not element.is_element_displayed():
-                self.drivers[0].fail('Status of another user not shown when open another user profile')
+            if not element.is_element_displayed(40):
+                self.errors.append('Status of another user not shown when open another user profile')
         private_chat_2.close_button.click()
 
         home_2.just_fyi('check options on long-press image for receiver')
@@ -411,6 +410,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("Image is not displayed in reply")
 
         home_2.just_fyi('check share and save options on opened image')
+        private_chat_2.image_message_in_chat.scroll_to_element(direction='up')
         private_chat_2.image_message_in_chat.click()
         private_chat_2.share_image_icon_button.click()
         private_chat_2.share_via_messenger()

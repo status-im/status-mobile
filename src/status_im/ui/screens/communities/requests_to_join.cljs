@@ -11,7 +11,8 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.topbar :as topbar]
             [status-im.i18n.i18n :as i18n]
-            [status-im.communities.core :as communities]))
+            [status-im.communities.core :as communities]
+            [quo.components.animated.pressable :as animation]))
 
 (defn hide-sheet-and-dispatch [event]
   (>evt [:bottom-sheet/hide])
@@ -19,11 +20,11 @@
 
 (defn request-actions [community-id request-id]
   [react/view {:flex-direction :row}
-   [react/touchable-highlight {:on-press #(re-frame/dispatch [:communities.ui/accept-request-to-join-pressed community-id request-id])}
+   [animation/pressable {:on-press #(re-frame/dispatch [:communities.ui/accept-request-to-join-pressed community-id request-id])}
     [icons/icon :main-icons/checkmark-circle {:width 35
                                               :height 35
                                               :color colors/green}]]
-   [react/touchable-highlight {:on-press #(re-frame/dispatch [:communities.ui/decline-request-to-join-pressed community-id request-id])}
+   [animation/pressable {:on-press #(re-frame/dispatch [:communities.ui/decline-request-to-join-pressed community-id request-id])}
     [icons/icon :main-icons/cancel {:width 35
                                     :height 35
                                     :container-style {:margin-left 16}
@@ -41,7 +42,8 @@
       :accessory           (when can-manage-users?
                              [request-actions community-id id])
       :icon                [chat-icon/contact-icon-contacts-tab
-                            (multiaccounts/displayed-photo member)]}]))
+                            (multiaccounts/displayed-photo member)]
+      :on-press            #(re-frame/dispatch [:chat.ui/show-profile public-key])}]))
 
 (defn requests-to-join []
   (let [{:keys [community-id]} (<sub [:get-screen-params])]

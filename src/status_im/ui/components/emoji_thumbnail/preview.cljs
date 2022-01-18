@@ -6,7 +6,8 @@
 (defn emoji-thumbnail [emoji color size]
   (when-not (string/blank? emoji)
     [react/view (styles/emoji-thumbnail-icon color size)
-     [react/text {:style (styles/emoji-thumbnail-icon-text size)} emoji]]))
+     [react/text {:style               (styles/emoji-thumbnail-icon-text size)
+                  :accessibility-label :thumbnail-emoji} emoji]]))
 
 (defn emoji-thumbnail-touchable [emoji color size func]
   (when-not (string/blank? emoji)

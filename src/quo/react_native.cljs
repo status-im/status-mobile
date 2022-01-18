@@ -5,7 +5,10 @@
             ["react-native" :as rn]
             ["@react-native-community/hooks" :as hooks]
             ["react-native-navigation" :refer (Navigation)]
-            ["rn-emoji-keyboard" :refer (EmojiKeyboard)]))
+            ["rn-emoji-keyboard" :refer (EmojiKeyboard)]
+            ["react-native-draggable-flatlist" :default DraggableFlatList]))
+
+(def rn-draggable-flatlist (reagent/adapt-react-class DraggableFlatList))
 
 (def emoji-keyboard (reagent/adapt-react-class EmojiKeyboard))
 
@@ -107,7 +110,13 @@
 
 (defn- wrap-render-fn [f render-data]
   (fn [data]
-    (reagent/as-element [f (.-item ^js data) (.-index ^js data) (.-separators ^js data) render-data])))
+    (reagent/as-element [f (.-item ^js data) (.-index ^js data)
+                         (.-separators ^js data) render-data
+                         (.-isActive ^js data) (.-drag ^js data)])))
+
+(defn- wrap-on-drag-end-fn [f]
+  (fn [data]
+    (f (.-from ^js data) (.-to ^js data) (.-data ^js data))))
 
 (defn- wrap-key-fn [f]
   (fn [data index]
@@ -115,18 +124,22 @@
     (f data index)))
 
 (defn base-list-props
-  [{:keys [key-fn render-fn empty-component header footer separator data render-data] :as props}]
+  [{:keys [key-fn render-fn empty-component header footer separator data render-data on-drag-end-fn] :as props}]
   (merge {:data (to-array data)}
-         (when key-fn            {:keyExtractor (wrap-key-fn key-fn)})
-         (when render-fn         {:renderItem (wrap-render-fn render-fn render-data)})
-         (when separator         {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
-         (when empty-component   {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
-         (when header            {:ListHeaderComponent (reagent/as-element header)})
-         (when footer            {:ListFooterComponent (reagent/as-element footer)})
-         (dissoc props :data :header :footer :empty-component :separator :render-fn :key-fn)))
+         (when key-fn          {:keyExtractor (wrap-key-fn key-fn)})
+         (when render-fn       {:renderItem (wrap-render-fn render-fn render-data)})
+         (when separator       {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
+         (when empty-component {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
+         (when header          {:ListHeaderComponent (reagent/as-element header)})
+         (when footer          {:ListFooterComponent (reagent/as-element footer)})
+         (when on-drag-end-fn  {:onDragEnd (wrap-on-drag-end-fn on-drag-end-fn)})
+         (dissoc props :data :header :footer :empty-component :separator :render-fn :key-fn :on-drag-end-fn)))
 
 (defn flat-list [props]
   [rn-flat-list (base-list-props props)])
+
+(defn draggable-flat-list [props]
+  [rn-draggable-flatlist (base-list-props props)])
 
 (defn animated-flat-list [props]
   [animated-flat-list-class (base-list-props props)])

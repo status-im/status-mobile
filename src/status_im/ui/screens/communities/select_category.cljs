@@ -25,6 +25,7 @@
   (let [{:keys [community-id chat]} (<sub [:get-screen-params])]
     (fn []
       (let [categories (<sub [:communities/sorted-categories community-id])
+            chats      (<sub [:chats/sorted-categories-by-community-id community-id])
             comm-chat (<sub [:chats/community-chat-by-id community-id (:chat-id chat)])
             _ (reset! selected-item (:categoryID comm-chat))]
         [:<>
@@ -44,7 +45,7 @@
                                                               :create-community-category
                                                               {:community-id community-id}])
                                             :title (i18n/label :t/create-category)}]
-            :data                         (conj (vec (vals categories)) {:name (i18n/label :t/none) :id ""})
+            :data                         (conj categories {:name (i18n/label :t/none) :id ""})
             :render-fn                    render-fn}]]
          [toolbar/toolbar
           {:show-border? true
@@ -54,6 +55,7 @@
                                     [::communities/change-category-confirmation-pressed
                                      community-id
                                      @selected-item
-                                     comm-chat]
+                                     (assoc comm-chat :position
+                                            (count (get chats @selected-item)))] ;; Add as last item in new category
                                     3000)}
             (i18n/label :t/done)]}]]))))

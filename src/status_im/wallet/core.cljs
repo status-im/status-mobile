@@ -434,7 +434,7 @@
 
 (fx/defn wallet-send-gas-price-success
   {:events [:wallet.send/update-gas-price-success]}
-  [{db :db} tx-entry price]
+  [{db :db} tx-entry price {:keys [maxFeePerGas maxPriorityFeePerGas gasPrice]}]
   (if (eip1559/sync-enabled?)
     (let [{:keys [slow-base-fee normal-base-fee fast-base-fee
                   current-base-fee max-priority-fee]}
@@ -447,8 +447,8 @@
           tip-cap (money/to-hex max-priority-fee-bn)]
       {:db (-> db
                (update tx-entry assoc
-                       :maxFeePerGas fee-cap
-                       :maxPriorityFeePerGas tip-cap)
+                       :maxFeePerGas (or maxFeePerGas fee-cap)
+                       :maxPriorityFeePerGas (or maxPriorityFeePerGas tip-cap))
                (assoc :wallet/current-base-fee current-base-fee
                       :wallet/normal-base-fee normal-base-fee
                       :wallet/slow-base-fee slow-base-fee
@@ -456,7 +456,7 @@
                       :wallet/current-priority-fee max-priority-fee)
                (assoc-in [:signing/edit-fee :gas-price-loading?] false))})
     {:db (-> db
-             (assoc-in [:wallet/prepare-transaction :gasPrice] price)
+             (assoc-in [:wallet/prepare-transaction :gasPrice] (or gasPrice price))
              (assoc-in [:signing/edit-fee :gas-price-loading?] false))}))
 
 (fx/defn set-max-amount
