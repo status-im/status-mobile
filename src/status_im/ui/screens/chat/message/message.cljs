@@ -24,7 +24,7 @@
             [status-im.ui.screens.chat.components.reply :as components.reply]
             [status-im.ui.screens.chat.message.link-preview :as link-preview]
             [status-im.ui.screens.communities.icon :as communities.icon]
-            [status-im.communities.core :as communities]
+            [status-im.chat.models.message :as message]
             [status-im.utils.handlers :refer [>evt]]
             [status-im.ui.components.animation :as animation]
             [status-im.chat.models.pin-message :as models.pin-message])
@@ -582,7 +582,7 @@
                                                      [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
                                                        :id       :reply
                                                        :label    (i18n/label :t/message-reply)}
-                                                      {:on-press            #(>evt [::communities/share-to-contacts-pressed message])
+                                                      {:on-press            #(>evt [::message/share-to-contacts-pressed message])
                                                        :id                :share
                                                        :label               (i18n/label :t/share)}
                                                       {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])

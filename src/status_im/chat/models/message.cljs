@@ -6,6 +6,8 @@
             [status-im.data-store.messages :as data-store.messages]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.transport.message.protocol :as protocol]
+            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.chat.models.mentions :as mentions]
@@ -196,6 +198,13 @@
                          :on-error   #(do
                                         (log/error "failed to share image message" %)
                                         (re-frame/dispatch [::failed-to-share-image %]))}]})))
+
+(fx/defn share-to-contacts-pressed
+  {:events [::share-to-contacts-pressed]}
+  [cofx message]
+  (fx/merge cofx
+            (bottom-sheet/hide-bottom-sheet)
+            (navigation/open-modal :share-to-contacts {:message message})))
 
 
 (fx/defn delete-message
