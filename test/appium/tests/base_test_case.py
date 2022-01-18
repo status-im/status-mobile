@@ -4,12 +4,14 @@ import re
 import subprocess
 import sys
 from abc import ABCMeta, abstractmethod
+from http.client import RemoteDisconnected
 from os import environ
 
 import pytest
 import requests
 from appium import webdriver
 from appium.webdriver.common.mobileby import MobileBy
+from sauceclient import SauceException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.wait import WebDriverWait
@@ -367,11 +369,15 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
         requests_session = requests.Session()
         requests_session.auth = (sauce_username, sauce_access_key)
         for _, driver in cls.drivers.items():
+            session_id = driver.session_id
+            try:
+                sauce.jobs.update_job(job_id=session_id, name=cls.__name__)
+            except (RemoteDisconnected, SauceException):
+                pass
             try:
                 driver.quit()
             except WebDriverException as e:
                 pass
-            session_id = driver.session_id
             url = sauce.jobs.get_job_asset_url(job_id=session_id, filename="log.json")
             WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
             commands = requests_session.get(url).json()
