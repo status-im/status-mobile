@@ -181,6 +181,23 @@
                                :on-error #(log/error "failed to re-send message" %)}]}
             (update-message-status chat-id message-id :sending)))
 
+(fx/defn share-image-message
+  {:events [::share-community-confirmation-pressed]}
+  [cofx user-pk contacts message-id]
+  (let [pks (if (seq user-pk)
+              (conj contacts user-pk)
+              contacts)]
+    (when (seq pks)
+      {::json-rpc/call [{:method     "wakuext_shareImageMessage"
+                         :params     [{:id message-id
+                                       :users pks}]
+                         :js-response true
+                         :on-success #(re-frame/dispatch [::people-shared-to %])
+                         :on-error   #(do
+                                        (log/error "failed to share image message" %)
+                                        (re-frame/dispatch [::failed-to-share-image %]))}]})))
+
+
 (fx/defn delete-message
   "Deletes chat message, rebuild message-list"
   {:events [:chat.ui/delete-message]}

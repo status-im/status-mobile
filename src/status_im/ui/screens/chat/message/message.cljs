@@ -24,6 +24,8 @@
             [status-im.ui.screens.chat.components.reply :as components.reply]
             [status-im.ui.screens.chat.message.link-preview :as link-preview]
             [status-im.ui.screens.communities.icon :as communities.icon]
+            [status-im.communities.core :as communities]
+            [status-im.utils.handlers :refer [>evt]]
             [status-im.ui.components.animation :as animation]
             [status-im.chat.models.pin-message :as models.pin-message])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -48,7 +50,7 @@
 
 (defview mention-element [from]
   (letsubs [contact-name [:contacts/contact-name-by-identity from]]
-    contact-name))
+           contact-name))
 
 (def edited-at-text (str " ⌫ " (i18n/label :t/edited)))
 
@@ -88,25 +90,25 @@
 (defview quoted-message
   [_ {:keys [from parsed-text image]} outgoing current-public-key public? pinned]
   (letsubs [contact-name [:contacts/contact-name-by-identity from]]
-    [react/view {:style (style/quoted-message-container (and outgoing (not pinned)))}
-     [react/view {:style style/quoted-message-author-container}
-      [chat.utils/format-reply-author
-       from
-       contact-name
-       current-public-key
-       (partial style/quoted-message-author (and outgoing (not pinned)))
-       (and outgoing (not pinned))]]
-     (if (and image
+           [react/view {:style (style/quoted-message-container (and outgoing (not pinned)))}
+            [react/view {:style style/quoted-message-author-container}
+             [chat.utils/format-reply-author
+              from
+              contact-name
+              current-public-key
+              (partial style/quoted-message-author (and outgoing (not pinned)))
+              (and outgoing (not pinned))]]
+            (if (and image
               ;; Disabling images for public-chats
-              (not public?))
-       [react/image {:style  {:width            56
-                              :height           56
-                              :background-color :black
-                              :border-radius    4}
-                     :source {:uri image}}]
-       [react/text {:style           (style/quoted-message-text (and outgoing (not pinned)))
-                    :number-of-lines 5}
-        (components.reply/get-quoted-text-with-mentions parsed-text)])]))
+                     (not public?))
+              [react/image {:style  {:width            56
+                                     :height           56
+                                     :background-color :black
+                                     :border-radius    4}
+                            :source {:uri image}}]
+              [react/text {:style           (style/quoted-message-text (and outgoing (not pinned)))
+                           :number-of-lines 5}
+               (components.reply/get-quoted-text-with-mentions parsed-text)])]))
 
 (defn render-inline [message-text outgoing pinned content-type acc {:keys [type literal destination]}]
   (case type
@@ -269,42 +271,42 @@
 
 (defview message-author-name [from opts]
   (letsubs [contact-with-names [:contacts/contact-by-identity from]]
-    (chat.utils/format-author contact-with-names opts)))
+           (chat.utils/format-author contact-with-names opts)))
 
 (defview message-my-name [opts]
   (letsubs [contact-with-names [:multiaccount/contact]]
-    (chat.utils/format-author contact-with-names opts)))
+           (chat.utils/format-author contact-with-names opts)))
 
 (defview community-content [{:keys [community-id] :as message}]
   (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]
             communities-enabled? [:communities/enabled?]]
-    (when (and communities-enabled? community)
-      [react/view {:style (assoc (style/message-wrapper message)
-                                 :margin-vertical 10
-                                 :margin-left 8
-                                 :width 271)}
-       (when verified
-         [react/view (style/community-verified)
-          [react/text {:style {:font-size 13
-                               :color colors/blue}} (i18n/label :t/communities-verified)]])
-       [react/view (style/community-message verified)
-        [react/view {:width 62
-                     :padding-left 14}
-         (if (= community-id constants/status-community-id)
-           [react/image {:source (resources/get-image :status-logo)
-                         :style {:width 40
-                                 :height 40}}]
-           [communities.icon/community-icon community])]
-        [react/view {:padding-right 14 :flex 1}
-         [react/text {:style {:font-weight "700" :font-size 17}}
-          name]
-         [react/text description]]]
-       [react/view (style/community-view-button)
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
-                                                                   :community
-                                                                   {:community-id (:id community)}])}
-         [react/text {:style {:text-align :center
-                              :color colors/blue}} (i18n/label :t/view)]]]])))
+           (when (and communities-enabled? community)
+             [react/view {:style (assoc (style/message-wrapper message)
+                                        :margin-vertical 10
+                                        :margin-left 8
+                                        :width 271)}
+              (when verified
+                [react/view (style/community-verified)
+                 [react/text {:style {:font-size 13
+                                      :color colors/blue}} (i18n/label :t/communities-verified)]])
+              [react/view (style/community-message verified)
+               [react/view {:width 62
+                            :padding-left 14}
+                (if (= community-id constants/status-community-id)
+                  [react/image {:source (resources/get-image :status-logo)
+                                :style {:width 40
+                                        :height 40}}]
+                  [communities.icon/community-icon community])]
+               [react/view {:padding-right 14 :flex 1}
+                [react/text {:style {:font-weight "700" :font-size 17}}
+                 name]
+                [react/text description]]]
+              [react/view (style/community-view-button)
+               [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
+                                                                          :community
+                                                                          {:community-id (:id community)}])}
+                [react/text {:style {:text-align :center
+                                     :color colors/blue}} (i18n/label :t/view)]]]])))
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
@@ -580,6 +582,9 @@
                                                      [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
                                                        :id       :reply
                                                        :label    (i18n/label :t/message-reply)}
+                                                      {:on-press            #(>evt [::communities/share-to-contacts-pressed message])
+                                                       :id                :share
+                                                       :label               (i18n/label :t/share)}
                                                       {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
                                                        :id       :save
                                                        :label    (i18n/label :t/save)}]))}]
