@@ -380,7 +380,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                     if command['message'].startswith("Started "):
                         for test in test_suite_data.tests:
                             if command['message'] == "Started %s" % test.name:
-                                test.testruns[-1].first_commands[session_id] = commands.index(command)
+                                test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
                             cls.github_report.save_test(test)
                 except KeyError:
                     continue
