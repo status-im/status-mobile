@@ -8,6 +8,7 @@
             [status-im.signing.eip1559 :as eip1559]
             [taoensso.timbre :as log]
             [status-im.popover.core :as popover]
+            [status-im.ethereum.core :as ethereum]
             [clojure.string :as string]))
 
 (def min-gas-price-wei ^js (money/bignumber 1))
@@ -318,48 +319,42 @@
 ;; fee might be very small and using this value might slow transaction
 (def minimum-base-fee (money/->wei :gwei (money/bignumber 1)))
 
-(defn recommended-base-fee [current perc20 perc80]
+(defn recommended-base-fee [current perc20]
   (let [fee
-        (cond (and (money/greater-than-or-equals current perc20)
-                   (money/greater-than-or-equals perc80 current))
+        (cond (money/greater-than-or-equals current perc20)
               current
 
               (money/greater-than perc20 current)
-              perc20
-
-              :else
-              perc80)]
+              perc20)]
     (if (money/greater-than minimum-base-fee fee)
       minimum-base-fee
       fee)))
 
 (defn slow-base-fee [_ perc10] perc10)
 
-(defn fast-base-fee [current _]
+(defn fast-base-fee [current]
   (let [fee (money/mul current 2)]
     (if (money/greater-than minimum-base-fee fee)
       (money/mul minimum-base-fee 2)
       fee)))
 
-(defn check-base-fee [{:keys [baseFeePerGas]}]
+(defn check-base-fee [{:keys [baseFeePerGas testnet?]}]
   (let [all-base-fees    (mapv money/bignumber baseFeePerGas)
         next-base-fee    (peek all-base-fees)
         previous-fees    (subvec all-base-fees 0 101)
         current-base-fee (peek previous-fees)
         percentiles      (calc-percentiles previous-fees [10 20 80])]
     {:normal-base-fee  (money/to-hex
-                        (recommended-base-fee
-                         next-base-fee
-                         (get percentiles 20)
-                         (get percentiles 80)))
+                        (if testnet?
+                          (fast-base-fee next-base-fee)
+                          (recommended-base-fee
+                           next-base-fee
+                           (get percentiles 20))))
      :slow-base-fee    (money/to-hex
                         (slow-base-fee
                          next-base-fee
                          (get percentiles 10)))
-     :fast-base-fee    (money/to-hex
-                        (fast-base-fee
-                         next-base-fee
-                         (get percentiles 80)))
+     :fast-base-fee    (money/to-hex (fast-base-fee next-base-fee))
      :current-base-fee (money/to-hex current-base-fee)}))
 
 (defn max-priority-fee-hex [gas-price base-fee]
@@ -369,7 +364,8 @@
 
 (fx/defn header-fetched
   {:events [::header-fetched]}
-  [_ {:keys [error-callback success-callback fee-history] :as params}]
+  [{{:networks/keys [current-network networks]} :db}
+   {:keys [error-callback success-callback fee-history] :as params}]
   {::json-rpc/call
    [;; NOTE(rasom): eth_maxPriorityFeePerGas is not supported by some networks
     ;; so it is more reliable to calculate maxPriorityFeePerGas using the value
@@ -377,7 +373,10 @@
     {:method     "eth_gasPrice"
      :on-success #(success-callback
                    (let [{:keys [current-base-fee] :as base-fees}
-                         (check-base-fee fee-history)]
+                         (check-base-fee
+                          (assoc fee-history
+                                 :testnet? (ethereum/testnet?
+                                            (get-in networks [current-network :config :NetworkId]))))]
                      (merge {:max-priority-fee
                              (max-priority-fee-hex % current-base-fee)}
                             base-fees)))
