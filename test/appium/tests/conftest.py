@@ -16,9 +16,9 @@ from support.testrail_report import TestrailReport
 from tests.users import transaction_senders
 import tests
 
-sauce_username = environ.get('SAUCE_USERNAME')
-sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
-github_token = environ.get('GIT_HUB_TOKEN')
+sauce_username = "anton-status" #environ.get('SAUCE_USERNAME')
+sauce_access_key = "0a8c5013-d483-4872-a894-9b62d6391892" #environ.get('SAUCE_ACCESS_KEY')
+github_token = "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" #environ.get('GIT_HUB_TOKEN')
 
 sauce = SauceClient(sauce_username, sauce_access_key)
 github_report = GithubHtmlReport()
@@ -167,7 +167,7 @@ def pytest_configure(config):
                 testrail_report.add_run(run_name)
             if pr_number:
                 from github import Github
-                repo = Github(github_token).get_user('status-im').get_repo('status-react')
+                repo = Github(github_token).get_user('yevh-berdnyk').get_repo('status-react')
                 pull = repo.get_pull(int(pr_number))
                 pull.get_commits()[0].create_status(state='pending', context='Mobile e2e tests',
                                                     description='e2e tests are running')
@@ -193,7 +193,7 @@ def pytest_unconfigure(config):
             testrail_report.add_results()
         if config.getoption('pr_number'):
             from github import Github
-            repo = Github(github_token).get_user('status-im').get_repo('status-react')
+            repo = Github(github_token).get_user('yevh-berdnyk').get_repo('status-react')
             pull = repo.get_pull(int(config.getoption('pr_number')))
             comment = pull.create_issue_comment(github_report.build_html_report(testrail_report.run_id))
             if not testrail_report.is_run_successful():
