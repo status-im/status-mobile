@@ -32,7 +32,7 @@ def pytest_addoption(parser):
                      help="Specify build name")
     parser.addoption('--apk',
                      action='store',
-                     default="https://status-im-nightlies.ams3.digitaloceanspaces.com/StatusIm-Mobile-220117-055900-04b735-nightly-x86.apk",
+                     default=None,
                      help='Url or local path to apk')
     parser.addoption('--env',
                      action='store',
