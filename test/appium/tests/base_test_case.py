@@ -364,15 +364,17 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
 
     @classmethod
     def teardown_class(cls):
+        requests_session = requests.Session()
+        requests_session.auth = (sauce_username, sauce_access_key)
         for _, driver in cls.drivers.items():
             try:
                 driver.quit()
-            except WebDriverException:
+            except WebDriverException as e:
                 pass
             session_id = driver.session_id
             url = sauce.jobs.get_job_asset_url(job_id=session_id, filename="log.json")
-            WebDriverWait(driver, 120, 2).until(lambda _: requests.get(url).status_code == 200)
-            commands = requests.get(url).json()
+            WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
+            commands = requests_session.get(url).json()
             for command in commands:
                 try:
                     if command['message'].startswith("Started "):
