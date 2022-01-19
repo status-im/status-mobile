@@ -8,7 +8,8 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list-selection :as list-selection]
             [quo.design-system.colors :as colors]
-            [status-im.utils.debounce :as debounce])
+            [status-im.utils.debounce :as debounce]
+            [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn join-chat-button [chat-id]
@@ -25,8 +26,11 @@
     :on-press            #(debounce/dispatch-and-chill [:group-chats.ui/leave-chat-confirmed chat-id] 2000)}
    (i18n/label :t/group-chat-decline-invitation)])
 
+(def message-max-length 100)
+
 (defn request-membership [{:keys [state introduction-message] :as invitation}]
-  (let [{:keys [message retry?]} @(re-frame/subscribe [:chats/current-chat-membership])]
+  (let [{:keys [message retry?]} @(re-frame/subscribe [:chats/current-chat-membership])
+        message-length (count message)]
     [react/view {:margin-horizontal 16 :margin-top 10}
      (cond
        (and invitation (= constants/invitation-state-requested state) (not retry?))
@@ -52,7 +56,10 @@
         [react/text (i18n/label :t/introduce-yourself)]
         [quo/text-input {:placeholder         (i18n/label :t/message)
                          :on-change-text      #(re-frame/dispatch [:group-chats.ui/update-membership-message %])
-                         :max-length          100
+                         :max-length          (if platform/android?
+                                                message-max-length
+                                                (when (>= message-length message-max-length)
+                                                  message-length))
                          :multiline           true
                          :default-value       message
                          :accessibility-label :introduce-yourself-input

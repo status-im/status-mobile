@@ -162,7 +162,8 @@
 (defn invitation-bar [chat-id]
   (let [{:keys [state chat-id] :as invitation}
         (first @(re-frame/subscribe [:group-chat/invitations-by-chat-id chat-id]))
-        {:keys [retry? message]} @(re-frame/subscribe [:chats/current-chat-membership])]
+        {:keys [retry? message]} @(re-frame/subscribe [:chats/current-chat-membership])
+        message-length (count message)]
     [react/view {:margin-horizontal 16 :margin-top 10}
      (cond
        (and invitation (= constants/invitation-state-requested state) (not retry?))
@@ -193,7 +194,8 @@
                          [quo/button
                           {:type                :secondary
                            :accessibility-label :introduce-yourself-button
-                           :disabled            (string/blank? message)
+                           :disabled            (or (string/blank? message)
+                                                    (> message-length chat.group/message-max-length))
                            :on-press            #(re-frame/dispatch [:send-group-chat-membership-request])}
                           (i18n/label :t/request-membership)]}])]))
 
