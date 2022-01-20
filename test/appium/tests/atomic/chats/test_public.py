@@ -107,6 +107,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
         self.chat_1.send_message(message)
         self.chat_2.chat_element_by_text(message).wait_for_element(20)
+        self.errors.append("Expected to fail")
 
         self.chat_2.just_fyi("Check that unread messages counter doesn't reappear after relogin")
         driver_2 = self.drivers[1]
