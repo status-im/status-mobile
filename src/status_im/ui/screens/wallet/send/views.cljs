@@ -206,20 +206,29 @@
         [react/scroll-view {:style                        {:flex 1}
                             :keyboard-should-persist-taps :handled}
          [react/view {:style (styles/sheet)}
-          [react/view {:flex-direction :row :padding-horizontal 16 :align-items :center
-                       :margin-top     12 :margin-bottom 4}
-           [react/text-input
-            {:style               {:font-size 38
-                                   :max-width (- (* (/ window-width 4) 3) 106)
-                                   :color     (if amount-error colors/red colors/black)}
-             :keyboard-type       :decimal-pad
-             :auto-capitalize     :words
-             :accessibility-label :amount-input
-             :default-value       amount-text
-             :editable            (not request?)
-             :auto-focus          true
-             :on-change-text      #(re-frame/dispatch [:wallet.send/set-amount-text %])
-             :placeholder         "0.0 "}]
+          [react/view {:style {:flex-direction :row
+                               :padding-horizontal 16
+                               :align-items :center
+                               :margin-top     12
+                               :margin-bottom 4
+                               :height 46}}
+           (let [amount-length (count amount-text)
+                 font-size (cond
+                             (> amount-length 13) 18
+                             (> amount-length 9) 26
+                             :else 38)]
+             [react/text-input
+              {:style               {:font-size font-size
+                                     :max-width (- (* (/ window-width 4) 3) 76)
+                                     :color     (if amount-error colors/red colors/black)}
+               :keyboard-type       :decimal-pad
+               :auto-capitalize     :words
+               :accessibility-label :amount-input
+               :default-value       amount-text
+               :editable            (not request?)
+               :auto-focus          true
+               :on-change-text      #(re-frame/dispatch [:wallet.send/set-amount-text %])
+               :placeholder         "0.0 "}])
            [asset-selector tx window-width]
            (when amount-error
              [tooltip/tooltip (if from
