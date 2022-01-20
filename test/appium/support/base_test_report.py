@@ -36,15 +36,18 @@ class BaseTestReport:
             result.write(geth[log])
             result.close()
             geth_paths[log] = geth_path
+        return geth_paths
 
     def save_test(self, test, geth: dict = None):
         if geth:
-            self.save_geth(geth)
+            geth_paths = self.save_geth(geth)
+        else:
+            geth_paths = test.geth_paths
         file_path = self.get_test_report_file_path(test.name)
         test_dict = {
             'testrail_case_id': test.testrail_case_id,
             'name': test.name,
-            'geth_paths': test.geth_paths,
+            'geth_paths': geth_paths,
             'testruns': list()
         }
         for testrun in test.testruns:

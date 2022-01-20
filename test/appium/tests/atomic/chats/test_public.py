@@ -76,6 +76,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.critical
     def test_public_unread_messages_counter(self):
         self.chat_1.send_message('пиу')
+        assert self.chat_1.chat_element_by_text("856588 ggggg").is_element_displayed(10)
         home_1 = self.chat_1.home_button.click()
         message = 'test message'
         self.chat_2.send_message(message)

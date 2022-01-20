@@ -362,7 +362,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 pass
             finally:
                 geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
-                self.github_report.save_geth(geth)
+                test_suite_data.current_test.geth_paths = self.github_report.save_geth(geth)
 
     @classmethod
     def teardown_class(cls):
@@ -376,7 +376,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 pass
             try:
                 driver.quit()
-            except WebDriverException as e:
+            except WebDriverException:
                 pass
             url = sauce.jobs.get_job_asset_url(job_id=session_id, filename="log.json")
             WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
@@ -387,7 +387,6 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                         for test in test_suite_data.tests:
                             if command['message'] == "Started %s" % test.name:
                                 test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
-                            cls.github_report.save_test(test)
                 except KeyError:
                     continue
         cls.loop.close()
