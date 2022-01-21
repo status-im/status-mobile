@@ -512,7 +512,7 @@
             :options   {:topBar {:title {:text (i18n/label :t/notification-settings)}}}
             :component notifications-settings/notifications-settings}
            {:name      :notifications-servers
-            :options   {:topBar {:title {:text (i18n/label :t/notification-servers)}}}
+            :options   {:topBar {:title {:text (i18n/label :t/notifications-servers)}}}
             :component notifications-settings/notifications-servers}
            {:name      :sync-settings
             :options   {:topBar {:title {:text (i18n/label :t/sync-settings)}}}
