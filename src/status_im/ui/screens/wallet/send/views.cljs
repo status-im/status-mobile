@@ -219,7 +219,7 @@
                              :else 38)]
              [react/text-input
               {:style               {:font-size font-size
-                                     :max-width (- (* (/ window-width 4) 3) 76)
+                                     :width (- (* (/ window-width 4) 3) 76)
                                      :color     (if amount-error colors/red colors/black)}
                :keyboard-type       :decimal-pad
                :auto-capitalize     :words
