@@ -7,7 +7,6 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.resolver :as resolver]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.signing.core :as signing]
@@ -22,6 +21,26 @@
   (if custom-domain?
     username
     (stateofus/subdomain username)))
+
+(re-frame/reg-fx
+ ::resolve-address
+ (fn [[chain-id name cb]]
+   (ens/address chain-id name cb)))
+
+(re-frame/reg-fx
+ ::resolve-owner
+ (fn [[chain-id name cb]]
+   (ens/owner chain-id name cb)))
+
+(re-frame/reg-fx
+ ::resolve-pubkey
+ (fn [[chain-id name cb]]
+   (ens/pubkey chain-id name cb)))
+
+(re-frame/reg-fx
+ ::get-expiration-time
+ (fn [[chain-id name cb]]
+   (ens/expire-at chain-id name cb)))
 
 (fx/defn update-ens-tx-state
   {:events [:update-ens-tx-state]}
@@ -51,29 +70,6 @@
   {:events [:clear-ens-registration]}
   [{:keys [db]} tx-hash]
   {:db (update db :ens/registrations dissoc tx-hash)})
-
-(re-frame/reg-fx
- ::resolve-address
- (fn [[registry name cb]]
-   (ens/get-addr registry name cb)))
-
-(re-frame/reg-fx
- ::resolve-owner
- (fn [[registry name cb]]
-   (ens/get-owner registry name cb)))
-
-(re-frame/reg-fx
- ::resolve-pubkey
- (fn [[registry name cb]]
-   (resolver/pubkey registry name cb)))
-
-(re-frame/reg-fx
- ::get-expiration-time
- (fn [[chain label-hash cb]]
-   (stateofus/get-registrar
-    chain
-    (fn [registrar]
-      (stateofus/get-expiration-time registrar label-hash cb)))))
 
 (fx/defn set-state
   {:events [::name-resolved]}
@@ -135,7 +131,7 @@
       nil)))
 
 (defn- on-resolve-owner
-  [registry custom-domain? username addresses public-key response resolve-last-id* resolve-last-id]
+  [chain-id custom-domain? username addresses public-key response resolve-last-id* resolve-last-id]
   (when (= @resolve-last-id* resolve-last-id)
     (cond
 
@@ -146,14 +142,15 @@
       ;; if we get an address back, we try to get the public key associated
       ;; with the username as well
       (get addresses (eip55/address->checksum response))
-      (resolver/pubkey registry (fullname custom-domain? username)
-                       #(re-frame/dispatch [::name-resolved username
-                                            (cond
-                                              (not public-key) :owned
-                                              (= % public-key) :connected
-                                              :else :connected-with-different-key)
-                                            (eip55/address->checksum response)]))
-
+      (ens/pubkey
+       chain-id
+       (fullname custom-domain? username)
+       #(re-frame/dispatch [::name-resolved username
+                            (cond
+                              (not public-key) :owned
+                              (= % public-key) :connected
+                              :else :connected-with-different-key)
+                            (eip55/address->checksum response)]))
       :else
       (re-frame/dispatch [::name-resolved username :taken]))))
 
@@ -163,6 +160,9 @@
     3 50
     1 10))
 
+;; (andrey) there is the method "register" in status-go, but im not sure how we could use it
+;; because we still need to prepare tx and show it to user, and then have a condition to do not sign tx but
+;; call register method instead, doesn't look like a good solution
 (fx/defn register-name
   {:events [::register-name-pressed]}
   [{:keys [db] :as cofx}]
@@ -225,11 +225,11 @@
        (let [{:keys [multiaccount]} db
              {:keys [public-key]} multiaccount
              addresses (ethereum/addresses-without-watch db)
-             registry (get ens/ens-registries (ethereum/chain-keyword db))]
-         {::resolve-owner [registry
+             chain-id (ethereum/chain-id db)]
+         {::resolve-owner [chain-id
                            (fullname custom-domain? username)
                            #(on-resolve-owner
-                             registry custom-domain? username addresses public-key %
+                             chain-id custom-domain? username addresses public-key %
                              resolve-last-id @resolve-last-id)]})))))
 
 (fx/defn return-to-ens-main-screen
@@ -260,7 +260,7 @@
 
 (fx/defn save-preferred-name
   {:events [::save-preferred-name]}
-  [{:keys [db] :as cofx} name]
+  [cofx name]
   (multiaccounts.update/multiaccount-update cofx
                                             :preferred-name name
                                             {}))
@@ -270,7 +270,7 @@
    it should only be called if the user cancels the signing
    Actual registration failure has not been implemented properly"
   {:events [::on-registration-failure]}
-  [{:keys [db]} username])
+  [_ _])
 
 (fx/defn store-name-address
   {:events [::address-resolved]}
@@ -293,20 +293,17 @@
 (fx/defn navigate-to-name
   {:events [::navigate-to-name]}
   [{:keys [db] :as cofx} username]
-  (let [chain (ethereum/chain-keyword db)
-        registry (get ens/ens-registries chain)]
+  (let [chain-id (ethereum/chain-id db)]
     (fx/merge cofx
               {::get-expiration-time
-               [chain
-                (-> username
-                    stateofus/username
-                    ethereum/sha3)
+               [chain-id
+                (stateofus/username username)
                 #(re-frame/dispatch [::get-expiration-time-success username %])]
                ::resolve-address
-               [registry username
+               [chain-id username
                 #(re-frame/dispatch [::address-resolved username %])]
                ::resolve-pubkey
-               [registry username
+               [chain-id username
                 #(re-frame/dispatch [::public-key-resolved username %])]}
               (navigation/navigate-to-cofx :ens-name-details username))))
 

@@ -18,8 +18,8 @@
 
 (re-frame/reg-fx
  ::resolve-address
- (fn [{:keys [registry ens-name cb]}]
-   (ens/get-addr registry ens-name cb)))
+ (fn [{:keys [chain-id ens-name cb]}]
+   (ens/address chain-id ens-name cb)))
 
 (re-frame/reg-fx
  :wallet.recipient/address-paste
@@ -37,8 +37,7 @@
   [{:keys [db] :as cofx} raw-recipient id]
   (when (or (not id) (= id @resolve-last-id))
     (reset! resolve-last-id nil)
-    (let [chain (ethereum/chain-keyword db)
-          recipient (utils/safe-trim raw-recipient)]
+    (let [recipient (utils/safe-trim raw-recipient)]
       (cond
         (ethereum/address? recipient)
         (let [checksum (eip55/address->checksum recipient)]
@@ -65,7 +64,7 @@
             (do
               (reset! resolve-last-id (random/id))
               {::resolve-address
-               {:registry (get ens/ens-registries chain)
+               {:chain-id (ethereum/chain-id db)
                 :ens-name ens-name
                 :cb       #(re-frame/dispatch [::recipient-address-resolved % @resolve-last-id])}})
             {:db (assoc-in db [:wallet/recipient :searching] false)}))

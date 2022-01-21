@@ -19,6 +19,7 @@
 (def default-namehash "0000000000000000000000000000000000000000000000000000000000000000")
 (def default-address "0x0000000000000000000000000000000000000000")
 (def default-key "0x0400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+(def default-hash "0x0000000000000000000000000000000000000000000000000000000000000000")
 
 (defn namehash
   [s]
@@ -33,8 +34,6 @@
          (ethereum/sha3 (str (namehash remainder)
                              (subs (ethereum/sha3 label) 2))))))))
 
-;; Registry contract
-
 (defn resolver
   [registry ens-name cb]
   (json-rpc/eth-call
@@ -46,113 +45,6 @@
     :on-success
     (fn [[address]]
       (cb (when-not (= address default-address) address)))}))
-
-(defn owner
-  [registry ens-name cb]
-  (json-rpc/eth-call
-   {:contract registry
-    :method "owner(bytes32)"
-    :params [(namehash ens-name)]
-    :outputs ["address"]
-    :on-error #(cb "0x")
-    :on-success
-    (fn [[address]]
-      (cb address))}))
-
-(defn ttl
-  [registry ens-name cb]
-  (json-rpc/eth-call
-   {:contract registry
-    :method "ttl(bytes32)"
-    :params [(namehash ens-name)]
-    :outputs ["uint256"]
-    :on-success
-    (fn [[ttl]]
-      (cb ttl))}))
-
-;; Resolver contract
-;; Resolver must implement EIP65 (supportsInterface). When interacting with an unknown resolver it's safer to rely on it.
-
-(def addr-hash "0x3b3b57de")
-
-(defn addr
-  [resolver ens-name cb]
-  (json-rpc/eth-call
-   {:contract resolver
-    :method "addr(bytes32)"
-    :params [(namehash ens-name)]
-    :outputs ["address"]
-    :on-error #(cb "0x")
-    :on-success
-    (fn [[address]]
-      (cb address))}))
-
-(def name-hash "0x691f3431")
-
-;; Defined by https://eips.ethereum.org/EIPS/eip-181
-
-(defn name
-  [resolver ens-name cb]
-  (json-rpc/eth-call
-   {:contract resolver
-    :method "name(bytes32)"
-    :params [(namehash ens-name)]
-    :outputs ["string"]
-    :on-error #(cb "0x")
-    :on-success
-    (fn [[name]]
-      (cb name))}))
-
-(defn cleanup-hash [raw-hash]
-  ;; NOTE: it would be better if our abi-spec/decode was able to do that
-  (let [;; ignore hex prefix
-        [_ raw-hash-rest] (split-at 2 raw-hash)
-        ;; the first field gives us the length of the next one in hex and has
-        ;; a length of 32 bytes
-        ;; 1 byte is 2 chars here
-        [next-field-length-hex raw-hash-rest] (split-at 64 raw-hash-rest)
-        next-field-length (* ^number (abi-spec/hex-to-number (string/join next-field-length-hex)) 2)
-        ;; we get the next field which is the length of the hash and is
-        ;; expected to be 32 bytes as well
-        [hash-field-length-hex raw-hash-rest]  (split-at next-field-length
-                                                         raw-hash-rest)
-        hash-field-length (* ^number (abi-spec/hex-to-number (string/join hash-field-length-hex)) 2)
-        ;; we get the hash
-        [hash _] (split-at hash-field-length raw-hash-rest)]
-    (str "0x" (string/join hash))))
-
-(defn contenthash
-  [resolver ens-name cb]
-  (json-rpc/eth-call
-   {:contract resolver
-    :method "contenthash(bytes32)"
-    :params [(namehash ens-name)]
-    :on-error #(cb "0x")
-    :on-success
-    (fn [raw-hash]
-      ;; NOTE: it would be better if our abi-spec/decode was able to do that
-      (cb (cleanup-hash raw-hash)))}))
-
-(defn content
-  [resolver ens-name cb]
-  (json-rpc/eth-call
-   {:contract resolver
-    :method "content(bytes32)"
-    :params [(namehash ens-name)]
-    :on-success
-    (fn [hash]
-      (cb hash))
-    ;;at some point infura started to return execution reverted error instead of "0x" result
-    ;;our code expects "0x" result
-    :on-error #(cb "0x")}))
-
-(def ABI-hash "0x2203ab56")
-(def pubkey-hash "0xc8690233")
-
-(defn uncompressed-public-key
-  [x y]
-  (when (and x y)
-    (str "0x04" x y)))
 
 (defn valid-eth-name-prefix?
   [prefix]
@@ -167,29 +59,43 @@
        (string? ens-name)
        (string/ends-with? ens-name ".eth")))
 
+(defn address
+  [chain-id ens-name cb]
+  {:pre [(is-valid-eth-name? ens-name)]}
+  (json-rpc/call {:method     "ens_addressOf"
+                  :params     [chain-id ens-name]
+                  :on-success cb
+                  :on-error   #(cb "0x")}))
+
 (defn pubkey
-  [resolver ens-name cb]
-  (json-rpc/eth-call
-   {:contract resolver
-    :method "pubkey(bytes32)"
-    :params [(namehash ens-name)]
-    :outputs ["bytes32" "bytes32"]
-    :on-success
-    (fn [[x y]]
-      (let [public-key (uncompressed-public-key x y)]
-        (cb public-key)))
-    ;;at some point infura started to return execution reverted error instead of "0x" result
-    ;;our code expects "0x" result
-    :on-error #(cb "0x")}))
-
-(defn get-addr
-  [registry ens-name cb]
+  [chain-id ens-name cb]
   {:pre [(is-valid-eth-name? ens-name)]}
-  (resolver registry
-            ens-name
-            #(addr % ens-name cb)))
+  (json-rpc/call {:method     "ens_publicKeyOf"
+                  :params     [chain-id ens-name]
+                  :on-success (fn [result]
+                                (cb (str "0x04" (subs result 2))))
+                  ;;at some point infura started to return execution reverted error instead of "0x" result
+                  ;;our code expects "0x" result
+                  :on-error #(cb "0x")}))
 
-(defn get-owner
-  [registry ens-name cb]
-  {:pre [(is-valid-eth-name? ens-name)]}
-  (owner registry ens-name cb))
+(defn owner
+  [chain-id ens-name cb]
+  (json-rpc/call {:method     "ens_ownerOf"
+                  :params     [chain-id ens-name]
+                  :on-success cb
+                  :on-error   #(cb "0x")}))
+
+(defn resource-url
+  [chain-id ens-name cb]
+  (json-rpc/call {:method     "ens_resourceURL"
+                  :params     [chain-id ens-name]
+                  :on-success #(cb (str "https://" (:Host %)))
+                  :on-error   #(cb "0x")}))
+
+(defn expire-at
+  [chain-id ens-name cb]
+  (json-rpc/call {:method "ens_expireAt"
+                  :params [chain-id ens-name]
+                  :on-success
+                  ;;NOTE: returns a timestamp in s and we want ms
+                  #(cb (* (js/Number (abi-spec/hex-to-number %)) 1000))}))

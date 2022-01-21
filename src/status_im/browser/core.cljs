@@ -6,7 +6,6 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.ethereum.resolver :as resolver]
             [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.ui.components.list-selection :as list-selection]
@@ -14,7 +13,6 @@
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
-            [status-im.utils.multihash :as multihash]
             [status-im.utils.platform :as platform]
             [status-im.utils.random :as random]
             [status-im.utils.types :as types]
@@ -73,22 +71,10 @@
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
     (cond-> browser history-host (assoc :unsafe? (eth-phishing-detect history-host)))))
 
-(defn- content->hash [hex]
-  (when (and hex (not= hex "0x"))
-    ;; TODO(julien) Remove once our ENS DApp are migrated
-    (multihash/base58 (multihash/create :sha2-256 (subs hex 2)))))
-
-(defn resolve-ens-content-callback [hex]
-  (let [hash (content->hash hex)]
-    (if (and hash (not= hash resolver/default-hash))
-      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success {:namespace :ipfs :hash hash}])
-      (re-frame/dispatch [:browser.callback/resolve-ens-contenthash]))))
-
-(defn resolve-ens-contenthash-callback [hex]
-  (let [{:keys [hash] :as m} (contenthash/decode hex)]
-    (if (and hash (not= hash resolver/default-hash))
-      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success m])
-      (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error]))))
+(defn resolve-ens-contenthash-callback [url]
+  (if (not (string/blank? url))
+    (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success url])
+    (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error])))
 
 (fx/defn resolve-url
   [{:keys [db]} {:keys [error? resolved-url]}]
@@ -96,25 +82,11 @@
     (let [current-url (get-current-url (get-current-browser db))
           host (http/url-host current-url)]
       (if (and (not resolved-url) (ens/is-valid-eth-name? host))
-        (let [chain   (ethereum/chain-keyword db)]
-          {:db                            (update db :browser/options assoc :resolving? true)
-           :browser/resolve-ens-content {:registry (get ens/ens-registries
-                                                        chain)
-                                         :ens-name host
-                                         :cb       resolve-ens-content-callback}})
+        {:db                            (update db :browser/options assoc :resolving? true)
+         :browser/resolve-ens-contenthash {:chain-id (ethereum/chain-id db)
+                                           :ens-name host
+                                           :cb       resolve-ens-contenthash-callback}}
         {:db (update db :browser/options assoc :url (or resolved-url current-url) :resolving? false)}))))
-
-(fx/defn resolve-ens-contenthash
-  {:events [:browser.callback/resolve-ens-contenthash]}
-  [{:keys [db]}]
-  (let [current-url (get-current-url (get-current-browser db))
-        host (http/url-host current-url)
-        chain   (ethereum/chain-keyword db)]
-    {:db                            (update db :browser/options assoc :resolving? true)
-     :browser/resolve-ens-contenthash {:registry (get ens/ens-registries
-                                                      chain)
-                                       :ens-name host
-                                       :cb       resolve-ens-contenthash-callback}}))
 
 (fx/defn update-browser
   [{:keys [db]}
@@ -217,11 +189,11 @@
 
 (fx/defn resolve-ens-multihash-success
   {:events [:browser.callback/resolve-ens-multihash-success]}
-  [{:keys [db] :as cofx} m]
+  [{:keys [db] :as cofx} url]
   (let [current-url (get-current-url (get-current-browser db))
         host        (http/url-host current-url)
         path        (subs current-url (+ (.indexOf ^js current-url host) (count host)))
-        gateway     (storage-gateway m)]
+        gateway     url]
     (fx/merge cofx
               {:db (-> (update db :browser/options
                                assoc
@@ -498,14 +470,9 @@
       (browser.permissions/process-permission cofx dapp-name permission messageId params))))
 
 (re-frame/reg-fx
- :browser/resolve-ens-content
- (fn [{:keys [registry ens-name cb]}]
-   (resolver/content registry ens-name cb)))
-
-(re-frame/reg-fx
  :browser/resolve-ens-contenthash
- (fn [{:keys [registry ens-name cb]}]
-   (resolver/contenthash registry ens-name cb)))
+ (fn [{:keys [chain-id ens-name cb]}]
+   (ens/resource-url chain-id ens-name cb)))
 
 (re-frame/reg-fx
  :browser/send-to-bridge

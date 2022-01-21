@@ -3,7 +3,6 @@
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.resolver :as resolver]
             [status-im.add-new.db :as db]
             [status-im.utils.random :as random]
             [status-im.utils.utils :as utils]
@@ -13,14 +12,14 @@
             [status-im.contact.core :as contact]
             [status-im.router.core :as router]
             [status-im.navigation :as navigation]
+            [status-im.ethereum.stateofus :as stateofus]
             [status-im.utils.db :as utils.db]))
 
 (re-frame/reg-fx
  :resolve-public-key
- (fn [{:keys [chain contact-identity cb]}]
-   (let [registry (get ens/ens-registries chain)
-         ens-name (resolver/ens-name-parse contact-identity)]
-     (resolver/pubkey registry ens-name cb))))
+ (fn [{:keys [chain-id contact-identity cb]}]
+   (let [ens-name (stateofus/ens-name-parse contact-identity)]
+     (ens/pubkey chain-id ens-name cb))))
 
 ;;NOTE we want to handle only last resolve
 (def resolve-last-id (atom nil))
@@ -53,17 +52,16 @@
                                                 :else
                                                 :valid)
                               :error      error
-                              :ens-name   (resolver/ens-name-parse new-ens-name)})}
+                              :ens-name   (stateofus/ens-name-parse new-ens-name)})}
                  (when is-ens?
                    (reset! resolve-last-id (random/id))
-                   (let [chain (ethereum/chain-keyword db)]
-                     {:resolve-public-key
-                      {:chain            chain
-                       :contact-identity new-identity
-                       :cb               #(re-frame/dispatch [:new-chat/set-new-identity
-                                                              %
-                                                              new-identity
-                                                              @resolve-last-id])}}))))))))
+                   {:resolve-public-key
+                    {:chain-id         (ethereum/chain-id db)
+                     :contact-identity new-identity
+                     :cb               #(re-frame/dispatch [:new-chat/set-new-identity
+                                                            %
+                                                            new-identity
+                                                            @resolve-last-id])}})))))))
 
 (fx/defn clear-new-identity
   {:events [::clear-new-identity ::new-chat-focus]}

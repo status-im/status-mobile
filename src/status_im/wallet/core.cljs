@@ -538,8 +538,8 @@
 
 (re-frame/reg-fx
  ::resolve-address
- (fn [{:keys [registry ens-name cb]}]
-   (ens/get-addr registry ens-name cb)))
+ (fn [{:keys [chain-id ens-name cb]}]
+   (ens/address chain-id ens-name cb)))
 
 (fx/defn on-recipient-address-resolved
   {:events [::recipient-address-resolved]}
@@ -554,8 +554,7 @@
 (fx/defn prepare-transaction-from-chat
   {:events [:wallet/prepare-transaction-from-chat]}
   [{:keys [db]}]
-  (let [chain (ethereum/chain-keyword db)
-        identity (:current-chat-id db)
+  (let [identity (:current-chat-id db)
         {:keys [ens-verified name] :as contact}
         (or (get-in db [:contacts/contacts identity])
             (-> identity
@@ -571,7 +570,7 @@
              :dispatch [:open-modal :prepare-send-transaction]}
       ens-verified
       (assoc ::resolve-address
-             {:registry (get ens/ens-registries chain)
+             {:chain-id (ethereum/chain-id db)
               :ens-name (if (= (.indexOf ^js name ".") -1)
                           (stateofus/subdomain name)
                           name)

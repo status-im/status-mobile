@@ -36,14 +36,14 @@
 
 (re-frame/reg-fx
  ::resolve-addresses
- (fn [{:keys [registry ens-names callback]}]
+ (fn [{:keys [chain-id ens-names callback]}]
    ;; resolve all addresses then call the callback function with the array of
    ;;addresses as parameter
    (-> (js/Promise.all
         (clj->js (mapv (fn [ens-name]
                          (js/Promise.
                           (fn [resolve _]
-                            (ens/get-addr registry ens-name resolve))))
+                            (ens/address chain-id ens-name resolve))))
                        ens-names)))
        (.then callback)
        (.catch (fn [error]
@@ -108,7 +108,7 @@
       ;; if there are no ens-names, we dispatch request-uri-parsed immediately
       (request-uri-parsed cofx message uri)
       {::resolve-addresses
-       {:registry (get ens/ens-registries (ethereum/chain-keyword db))
+       {:chain-id (ethereum/chain-id db)
         :ens-names ens-names
         :callback
         (fn [addresses]

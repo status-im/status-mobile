@@ -7,12 +7,12 @@
             [status-im.utils.security :as security]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.resolver :as resolver]
             [cljs.spec.alpha :as spec]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.db :as utils.db]
             [status-im.utils.http :as http]
-            [status-im.chat.models :as chat.models]))
+            [status-im.chat.models :as chat.models]
+            [status-im.ethereum.stateofus :as stateofus]))
 
 (def ethereum-scheme "ethereum:")
 
@@ -61,12 +61,6 @@
 (defn match-uri [uri]
   (assoc (bidi/match-route routes uri) :uri uri :query-params (parse-query-params uri)))
 
-(defn resolve-public-key
-  [{:keys [chain contact-identity cb]}]
-  (let [registry (get ens/ens-registries chain)
-        ens-name (resolver/ens-name-parse contact-identity)]
-    (resolver/pubkey registry ens-name cb)))
-
 (defn match-contact-async
   [chain {:keys [user-id]} callback]
   (let [valid-key (and (spec/valid? :global/public-key user-id)
@@ -78,10 +72,10 @@
 
       (and (not valid-key) (string? user-id) (not (string/blank? user-id))
            (not= user-id "0x"))
-      (let [registry   (get ens/ens-registries chain)
-            ens-name   (resolver/ens-name-parse user-id)
+      (let [chain-id   (ethereum/chain-keyword->chain-id chain)
+            ens-name   (stateofus/ens-name-parse user-id)
             on-success #(match-contact-async chain {:user-id %} callback)]
-        (resolver/pubkey registry ens-name on-success))
+        (ens/pubkey chain-id ens-name on-success))
 
       :else
       (callback {:type  :contact

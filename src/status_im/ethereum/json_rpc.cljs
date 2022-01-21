@@ -29,6 +29,12 @@
    "eth_getCode" {}
    "eth_syncing" {}
    "eth_feeHistory" {}
+   "ens_publicKeyOf" {}
+   "ens_addressOf" {}
+   "ens_expireAt" {}
+   "ens_ownerOf" {}
+   "ens_contentHash" {}
+   "ens_resourceURL" {}
    "net_version" {}
    "web3_clientVersion" {}
    "shh_generateSymKeyFromPassword" {}

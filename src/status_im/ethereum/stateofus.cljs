@@ -1,8 +1,8 @@
 (ns status-im.ethereum.stateofus
   (:require [clojure.string :as string]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.config :as config]
-            [status-im.ethereum.ens :as ens]))
+            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.core :as ethereum]))
 
 (def domain "stateofus.eth")
 
@@ -37,14 +37,13 @@
 (defn get-registrar [chain callback]
   (if-let [contract (get @registrars-cache chain)]
     (callback contract)
-    (let [registry (get ens/ens-registries chain)]
-      (ens/get-owner
-       registry
-       domain
-       (fn [addr]
-         (let [addr (or addr (get old-registrars chain))]
-           (swap! registrars-cache assoc chain addr)
-           (callback addr)))))))
+    (ens/owner
+     (ethereum/chain-keyword->chain-id chain)
+     domain
+     (fn [addr]
+       (let [addr (or addr (get old-registrars chain))]
+         (swap! registrars-cache assoc chain addr)
+         (callback addr))))))
 
 (defn get-cached-registrar [chain]
   (get @registrars-cache chain (get old-registrars chain)))
@@ -58,14 +57,9 @@
    (and (lower-case? username)
         (re-find #"^[a-z0-9]+$" username))))
 
-(defn get-expiration-time
-  [registrar label-hash cb]
-  (json-rpc/eth-call
-   {:contract registrar
-    :method "getExpirationTime(bytes32)"
-    :params [label-hash]
-    :outputs ["uint256"]
-    :on-success
-    (fn [[release-time]]
-      ;;NOTE: returns a timestamp in s and we want ms
-      (cb (* release-time 1000)))}))
+(defn ens-name-parse [contact-identity]
+  (when (string? contact-identity)
+    (string/lower-case
+     (if (ens/is-valid-eth-name? contact-identity)
+       contact-identity
+       (subdomain contact-identity)))))

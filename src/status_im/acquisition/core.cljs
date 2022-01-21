@@ -101,23 +101,22 @@
 
 (re-frame/reg-fx
  ::resolve-contract
- (fn [{:keys [chain contract on-success]}]
-   (let [register (get ens/ens-registries chain)]
-     (when contract
-       (if (string/starts-with? contract "0x")
-         (on-success contract)
-         (ens/get-addr register contract on-success))))))
+ (fn [{:keys [chain-id contract on-success]}]
+   (when contract
+     (if (string/starts-with? contract "0x")
+       (on-success contract)
+       (ens/address chain-id contract on-success)))))
 
 (fx/defn create [{:keys [db]}]
   (when-not config/google-free
-    {::resolve-contract {:chain      (ethereum/chain-keyword db)
+    {::resolve-contract {:chain      (ethereum/chain-id db)
                          :contract   (contracts/get-address db :status/acquisition)
                          :on-success #(re-frame/dispatch [:set-in [:acquisition :contract] %])}
      ::get-referrer     nil}))
 
 (fx/defn login [{:keys [db]}]
   (when-not config/google-free
-    {::resolve-contract {:chain      (ethereum/chain-keyword db)
+    {::resolve-contract {:chain      (ethereum/chain-id db)
                          :contract   (contracts/get-address db :status/acquisition)
                          :on-success #(re-frame/dispatch [:set-in [:acquisition :contract] %])}
      ::check-referrer   nil}))

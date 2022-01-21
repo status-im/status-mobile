@@ -21,11 +21,10 @@
             [taoensso.timbre :as log]
             [status-im.wallet.prices :as prices]
             [status-im.utils.hex :as hex]
-            [status-im.ethereum.ens :as ens]
             [status-im.ens.core :as ens.core]
-            [status-im.ethereum.resolver :as resolver]
             [status-im.utils.mobile-sync :as utils.mobile-sync]
-            [status-im.multiaccounts.key-storage.core :as key-storage]))
+            [status-im.multiaccounts.key-storage.core :as key-storage]
+            [status-im.ethereum.stateofus :as stateofus]))
 
 (fx/defn start-adding-new-account
   {:events [:wallet.accounts/start-adding-new-account]}
@@ -242,21 +241,18 @@
 
 (fx/defn set-account-to-watch
   {:events [:wallet.accounts/set-account-to-watch]}
-  [{:keys [db] :as cofx} account]
+  [{:keys [db]} account]
   (let [name? (and (>= (count account) 3)
-                   (not (hex/valid-hex? account)))
-        chain (ethereum/chain-keyword db)]
+                   (not (hex/valid-hex? account)))]
     (log/debug "[wallet] set-account-to-watch" account
                "name?" name?)
     (cond-> {:db (assoc-in db [:add-account :address] account)}
       name?
       (assoc ::ens.core/resolve-address
-             (let [registry (get ens/ens-registries chain)
-                   ens-name (resolver/ens-name-parse account)]
-               [registry
-                ens-name
-                #(re-frame/dispatch
-                  [:wallet.accounts/set-account-to-watch %])])))))
+             [(ethereum/chain-id db)
+              (stateofus/ens-name-parse account)
+              #(re-frame/dispatch
+                [:wallet.accounts/set-account-to-watch %])]))))
 
 (fx/defn add-new-account
   {:events [:wallet.accounts/add-new-account]}

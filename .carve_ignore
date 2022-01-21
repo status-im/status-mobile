@@ -1,6 +1,5 @@
 status-im.utils.build/warning-handler
 status-im.utils.build/get-current-sha
-status-im.ethereum.resolver/name
 status-im.chat.constants/spacing-char
 status-im.chat.constants/arg-wrapping-char
 status-im.ios.core/init
