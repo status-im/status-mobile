@@ -130,7 +130,11 @@ class TestrailReport(BaseTestReport):
             for step in last_testrun.steps:
                 test_steps += step + "\n"
             for i, device in enumerate(last_testrun.jobs):
-                devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(device))
+                if last_testrun.first_commands:
+                    devices += "# [Device %d](%s) \n" % (
+                        i + 1, self.get_sauce_job_url(job_id=device, first_command=last_testrun.first_commands[device]))
+                else:
+                    devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(job_id=device))
             data = {'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
                     'comment': '%s' % ('# Error: \n %s \n' % emoji.demojize(
                         last_testrun.error)) + devices + test_steps if last_testrun.error
@@ -166,13 +170,17 @@ class TestrailReport(BaseTestReport):
                     ids_failed_test.append(test.testrail_case_id)
                     case_title = '\n'
                     case_title += '-------\n'
-                    case_title += "## %s) ID %s: [%s](%s) \n" % (i + 1, test.testrail_case_id, test.name, test_rail_link)
+                    case_title += "## %s) ID %s: [%s](%s) \n" % (
+                    i + 1, test.testrail_case_id, test.name, test_rail_link)
                     error = "```%s```\n" % last_testrun.error[:255]
                     for job_id, f in last_testrun.jobs.items():
+                        if last_testrun.first_commands:
+                            job_url = self.get_sauce_job_url(job_id=job_id,
+                                                             first_command=last_testrun.first_commands[job_id])
+                        else:
+                            job_url = self.get_sauce_job_url(job_id=job_id)
                         case_info = "Logs for device %d: [steps](%s), [failure screenshot](%s)" \
-                                    % (f,
-                                       self.get_sauce_job_url(job_id),
-                                       self.get_sauce_final_screenshot_url(job_id))
+                                    % (f, job_url, self.get_sauce_final_screenshot_url(job_id))
 
                     description += case_title + error + case_info
             description_title += '## Failed tests: %s \n' % ','.join(map(str, ids_failed_test))

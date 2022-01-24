@@ -4,13 +4,18 @@ import re
 import subprocess
 import sys
 from abc import ABCMeta, abstractmethod
+from http.client import RemoteDisconnected
 from os import environ
 
 import pytest
+import requests
 from appium import webdriver
 from appium.webdriver.common.mobileby import MobileBy
+from sauceclient import SauceException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.support.wait import WebDriverWait
+
 from tests import transl
 
 from support.api.network_api import NetworkApi
@@ -19,8 +24,9 @@ from tests import test_suite_data, start_threads, appium_container, pytest_confi
 import base64
 from re import findall
 
-sauce_username = environ.get('SAUCE_USERNAME')
+from tests.conftest import sauce
 
+sauce_username = environ.get('SAUCE_USERNAME')
 
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
 
@@ -334,6 +340,8 @@ class LocalSharedMultipleDeviceTestCase(AbstractTestCase):
 class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method):
+        for _, driver in self.drivers.items():
+            driver.execute_script("sauce:context=Started %s" % method.__name__)
         jobs = test_suite_data.current_test.testruns[-1].jobs
         if not jobs:
             for index, driver in self.drivers.items():
@@ -354,16 +362,36 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 pass
             finally:
                 geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
-                self.github_report.save_test(test_suite_data.current_test, geth)
+                test_suite_data.current_test.geth_paths = self.github_report.save_geth(geth)
 
     @classmethod
     def teardown_class(cls):
-        for driver in cls.drivers:
+        requests_session = requests.Session()
+        requests_session.auth = (sauce_username, sauce_access_key)
+        for _, driver in cls.drivers.items():
+            session_id = driver.session_id
             try:
-                cls.drivers[driver].quit()
+                sauce.jobs.update_job(job_id=session_id, name=cls.__name__)
+            except (RemoteDisconnected, SauceException):
+                pass
+            try:
+                driver.quit()
             except WebDriverException:
                 pass
+            url = sauce.jobs.get_job_asset_url(job_id=session_id, filename="log.json")
+            WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
+            commands = requests_session.get(url).json()
+            for command in commands:
+                try:
+                    if command['message'].startswith("Started "):
+                        for test in test_suite_data.tests:
+                            if command['message'] == "Started %s" % test.name:
+                                test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
+                except KeyError:
+                    continue
         cls.loop.close()
+        for test in test_suite_data.tests:
+            cls.github_report.save_test(test)
 
 
 if pytest_config_global['env'] == 'local':
