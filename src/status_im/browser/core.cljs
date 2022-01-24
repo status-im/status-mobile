@@ -108,27 +108,36 @@
   {:db            (assoc-in db [:bookmarks/bookmarks url] bookmark)
    ::json-rpc/call [{:method "browsers_storeBookmark"
                      :params [bookmark]
+                     :on-success #(re-frame/dispatch [:browser/sync-bookmark %1])}]})
+
+(fx/defn sync-bookmark
+  {:events [:browser/sync-bookmark]}
+  [_ bookmark]
+  {::json-rpc/call [{:method "wakuext_syncBookmark"
+                     :params [bookmark]
                      :on-success #()}]})
 
 (fx/defn update-bookmark
   {:events [:browser/update-bookmark]}
-  [{:keys [db]}
+  [{:keys [db] :as cofx}
    {:keys [url] :as bookmark}]
-  {:db            (update-in db
-                             [:bookmarks/bookmarks url]
-                             merge bookmark)
-   ::json-rpc/call [{:method "browsers_updateBookmark"
-                     :params [url bookmark]
-                     :on-success #()}]})
+  (let [old-bookmark (get-in db [:bookmarks/bookmarks url])
+        new-bookmark (merge old-bookmark bookmark)]
+    (fx/merge cofx {:db            (assoc-in db [:bookmarks/bookmarks url] new-bookmark)
+                    ::json-rpc/call [{:method "browsers_updateBookmark"
+                                      :params [url bookmark]
+                                      :on-success #(re-frame/dispatch [:browser/sync-bookmark new-bookmark])}]})))
 
 (fx/defn delete-bookmark
   {:events [:browser/delete-bookmark]}
-  [{:keys [db]}
+  [{:keys [db] :as cofx}
    url]
-  {:db            (update db :bookmarks/bookmarks dissoc url)
-   ::json-rpc/call [{:method "browsers_deleteBookmark"
-                     :params [url]
-                     :on-success #()}]})
+  (let [old-bookmark (get-in db [:bookmarks/bookmarks url])
+        removed-bookmark (merge old-bookmark {:removed true})]
+    (fx/merge cofx {:db            (update db :bookmarks/bookmarks dissoc url)
+                    ::json-rpc/call [{:method "browsers_removeBookmark"
+                                      :params [url]
+                                      :on-success #(re-frame/dispatch [:browser/sync-bookmark removed-bookmark])}]})))
 
 (defn can-go-back? [{:keys [history-index]}]
   (pos? history-index))
@@ -558,3 +567,12 @@
   {:events [:browser/loading-started]}
   [cofx]
   (update-browser-options cofx {:error? false :loading? true}))
+
+(fx/defn handle-bookmarks
+  [{:keys [db]} bookmarks]
+  (let [changed-bookmarks (reduce (fn [acc {:keys [url] :as bookmark}]
+                                    (assoc acc url bookmark))
+                                  {}
+                                  bookmarks)
+        stored-bookmarks (get-in db [:bookmarks/bookmarks])]
+    {:db (assoc-in db [:bookmarks/bookmarks] (merge stored-bookmarks changed-bookmarks))}))

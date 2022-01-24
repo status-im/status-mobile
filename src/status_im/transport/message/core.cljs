@@ -20,6 +20,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.notifications-center.core :as notifications-center]
             [status-im.visibility-status-updates.core :as models.visibility-status-updates]
+            [status-im.browser.core :as browser]
             [clojure.string :as string]))
 
 (fx/defn process-next
@@ -45,6 +46,7 @@
         ^js removed-messages           (.-removedMessages response-js)
         ^js visibility-status-updates  (.-statusUpdates response-js)
         ^js current-visibility-status  (.-currentStatus response-js)
+        ^js bookmarks                  (.-bookmarks response-js)
         ^js cleared-histories          (.-clearedHistories response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
@@ -90,6 +92,13 @@
         (fx/merge cofx
                   (process-next response-js sync-handler)
                   (models.communities/handle-communities communities-clj)))
+
+      (seq bookmarks)
+      (let [bookmarks-clj (types/js->clj bookmarks)]
+        (js-delete response-js "bookmarks")
+        (fx/merge cofx
+                  (process-next response-js sync-handler)
+                  (browser/handle-bookmarks cofx bookmarks-clj)))
 
       (seq pin-messages)
       (let [pin-messages (types/js->clj pin-messages)]

@@ -108,7 +108,7 @@
        [icons/icon :main-icons/dropdown {:color colors/white-transparent-persist}]]]]))
 
 (views/defview empty-tab []
-  (views/letsubs [bookmarks [:bookmarks]
+  (views/letsubs [bookmarks [:bookmarks/active]
                   dapps-account [:dapps-account]
                   url-text (atom nil)]
     (let [bookmarks (vals bookmarks)]

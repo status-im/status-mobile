@@ -39,7 +39,7 @@
 (defn browser-options [url account empty-tab name]
   (fn []
     (let [topic (http/topic-from-url url)
-          bookmarks @(re-frame/subscribe [:bookmarks])
+          bookmarks @(re-frame/subscribe [:bookmarks/active])
           permissions @(re-frame/subscribe [:dapps/permissions])
           fav? (get bookmarks url)
           connected? (some #{constants/dapp-permission-web3} (get-in permissions [(http/url-host url) :permissions]))]

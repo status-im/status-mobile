@@ -55,6 +55,7 @@
    "wakuext_startMessenger" {}
    "wakuext_sendPairInstallation" {}
    "wakuext_syncDevices" {}
+   "wakuext_syncBookmark" {}
    "wakuext_requestMessages" {}
    "wakuext_sendDirectMessage" {}
    "wakuext_sendPublicMessage" {}
@@ -210,7 +211,7 @@
    "browsers_getBookmarks" {}
    "browsers_storeBookmark" {}
    "browsers_updateBookmark" {}
-   "browsers_deleteBookmark" {}
+   "browsers_removeBookmark" {}
    "mailservers_getMailserverRequestGaps" {}
    "mailservers_addMailserverRequestGaps" {}
    "mailservers_deleteMailserverRequestGaps" {}

@@ -2941,3 +2941,9 @@
            (>= (count new-password) 6)
            (>= (count current-password) 6)
            (= new-password confirm-new-password))})))
+
+(re-frame/reg-sub
+ :bookmarks/active
+ :<- [:bookmarks]
+ (fn [bookmarks]
+   (into {} (remove #(:removed (second %)) bookmarks))))
