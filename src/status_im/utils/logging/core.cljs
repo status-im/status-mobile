@@ -153,6 +153,13 @@
                                      ::share-logs-file)]})
     (send-email-event cofx nil)))
 
+(fx/defn send-logs-on-error
+  {:events [:logging/send-logs-on-error]}
+  [{:keys [db]} error-message]
+  (fx/merge
+   {:db (assoc-in db [:bug-report/details :description] error-message)}
+   (send-logs :email)))
+
 (fx/defn show-client-error
   {:events [:show-client-error]}
   [_]

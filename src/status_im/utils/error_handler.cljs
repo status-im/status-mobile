@@ -60,4 +60,4 @@
             {:title               "Error"
              :content             (.-message e)
              :confirm-button-text (i18n/label :t/send-logs)
-             :on-accept           #(re-frame/dispatch [:logging.ui/send-logs-pressed :email])})))))))
+             :on-accept           #(re-frame/dispatch [:logging/send-logs-on-error (.-message e)])})))))))
