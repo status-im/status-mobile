@@ -12,10 +12,9 @@
    (fn [photo-path size accessibility-label _]
      (let [identicon? (when photo-path (profile.db/base64-png? photo-path))]
        [react/view {:style (style/photo-container size)}
-        [react/image {:source              (utils.image/source photo-path)
-                      :style               (style/photo size)
-                      :resize-mode         :cover
-                      :accessibility-label (or accessibility-label :chat-icon)}]
+        [react/fast-image {:source              (utils.image/source photo-path)
+                           :style               (style/photo size)
+                           :accessibility-label (or accessibility-label :chat-icon)}]
         (when identicon?
           [react/view {:style (style/photo-border size)}])]))))
 
@@ -37,8 +36,7 @@
 (defn member-identicon [identicon]
   (let [size style/default-size]
     [react/view {:style (style/photo-container size)}
-     [react/image {:source              {:uri identicon}
-                   :style               (style/photo size)
-                   :resize-mode         :cover
-                   :accessibility-label :member-photo}]
+     [react/fast-image {:source              {:uri identicon}
+                        :style               (style/photo size)
+                        :accessibility-label :member-photo}]
      [react/view {:style (style/photo-border size)}]]))

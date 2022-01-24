@@ -10,9 +10,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import statusgo.Statusgo;
+
 public class StatusPackage implements ReactPackage {
 
     private boolean rootedDevice;
+
+    public static String getImageTLSCert() {
+        return Statusgo.imageServerTLSCert();
+    }
 
     public StatusPackage(boolean rootedDevice) {
         this.rootedDevice = rootedDevice;

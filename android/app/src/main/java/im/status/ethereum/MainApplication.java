@@ -15,12 +15,14 @@ import com.reactnativenavigation.NavigationApplication;
 import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.modules.network.OkHttpClientProvider;
 
 import java.util.List;
 
 import im.status.ethereum.keycard.RNStatusKeycardPackage;
 import im.status.ethereum.module.StatusPackage;
 import im.status.ethereum.pushnotifications.PushNotificationPackage;
+import im.status.ethereum.StatusOkHttpClientFactory;
 
 public class MainApplication extends NavigationApplication {
 
@@ -56,7 +58,9 @@ public class MainApplication extends NavigationApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        
+
+        OkHttpClientProvider.setOkHttpClientFactory(new StatusOkHttpClientFactory());
+
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG_WEBVIEW == "1");
         initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
     }

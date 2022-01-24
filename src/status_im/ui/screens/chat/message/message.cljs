@@ -99,11 +99,11 @@
      (if (and image
               ;; Disabling images for public-chats
               (not public?))
-       [react/image {:style  {:width            56
-                              :height           56
-                              :background-color :black
-                              :border-radius    4}
-                     :source {:uri image}}]
+       [react/fast-image {:style  {:width            56
+                                   :height           56
+                                   :background-color :black
+                                   :border-radius    4}
+                          :source {:uri image}}]
        [react/text {:style           (style/quoted-message-text (and outgoing (not pinned)))
                     :number-of-lines 5}
         (components.reply/get-quoted-text-with-mentions parsed-text)])]))
@@ -341,24 +341,27 @@
 (def image-max-height 192)
 
 (defn image-set-size [dimensions]
-  (fn [width height]
-    (when (< width height)
-      ;; if width less than the height we reduce width proportionally to height
-      (let [k (/ height image-max-height)]
-        (when (not= (/ width k) (first @dimensions))
-          (reset! dimensions [(/ width k) image-max-height]))))))
+  (fn [evt]
+    (let [width (.-width (.-nativeEvent evt))
+          height (.-height (.-nativeEvent evt))]
+      (if (< width height)
+        ;; if width less than the height we reduce width proportionally to height
+        (let [k (/ height image-max-height)]
+          (when (not= (/ width k) (first @dimensions))
+            (reset! dimensions {:width (/ width k) :height image-max-height :loaded true})))
+        (swap! dimensions assoc :loaded true)))))
 
 (defn message-content-image
   [{:keys [content outgoing in-popover?] :as message}
    {:keys [on-long-press]}]
-  (let [dimensions (reagent/atom [image-max-width image-max-height])
+  (let [dimensions (reagent/atom {:width image-max-width :height image-max-height :loaded false})
         visible (reagent/atom false)
         uri (:image content)]
-    (react/image-get-size uri (image-set-size dimensions))
     (fn []
       (let [style-opts {:outgoing outgoing
-                        :width    (first @dimensions)
-                        :height   (second @dimensions)}]
+                        :opacity (if (:loaded @dimensions) 1 0)
+                        :width   (:width @dimensions)
+                        :height  (:height @dimensions)}]
         [:<>
          [preview/preview-image {:message  message
                                  :visible  @visible
@@ -371,10 +374,10 @@
                                      :disabled      in-popover?}
           [react/view {:style               (style/image-message style-opts)
                        :accessibility-label :image-message}
-           [react/image {:style       (dissoc style-opts :outgoing)
-                         :resize-mode :cover
-                         :source      {:uri uri}}
-            [react/view {:style (style/image-message-border style-opts)}]]]]]))))
+           [react/fast-image {:style       (dissoc style-opts :outgoing)
+                              :on-load     (image-set-size dimensions)
+                              :source      {:uri uri}}]
+           [react/view {:style (style/image-message-border style-opts)}]]]]))))
 
 (defmulti ->message :content-type)
 

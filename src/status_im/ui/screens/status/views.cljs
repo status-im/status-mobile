@@ -24,40 +24,29 @@
 
 (defonce messages-list-ref (atom nil))
 (def image-max-dimension 192)
-(def image-sizes (atom {}))
 
-(defn image-set-size [dimensions uri]
-  (fn [width height]
-    (swap! image-sizes assoc uri {:initialized? true})
-    (when (< width height)
-      ;; if width less than the height we reduce width proportionally to height
-      (let [k (/ height image-max-dimension)]
-        (when (not= (/ width k) (first @dimensions))
-          (swap! image-sizes assoc uri {:width (/ width k)})
-          (reset! dimensions [(/ width k) image-max-dimension]))))))
+(defn image-set-size [width]
+  (fn [evt]
+    (reset! width (/ (.-width (.-nativeEvent evt)) (/ (.-height (.-nativeEvent evt)) image-max-dimension)))))
 
-(defn message-content-image [uri _]
-  (let [stored-image (get @image-sizes uri)
-        dimensions (reagent/atom [nil image-max-dimension])]
-    (if stored-image
-      (reset! dimensions [(:width stored-image) image-max-dimension])
-      (js/setTimeout #(react/image-get-size uri (image-set-size dimensions uri)) 20))
+(defn message-content-image [_ _]
+  (let [width (reagent/atom nil)]
     (fn [uri show-close?]
-      [react/view {:style               {:width         (first @dimensions)
+      [react/view {:style               {:width         @width
                                          :height        image-max-dimension
                                          :overflow      :hidden
+                                         :opacity       (if @width 1 0)
                                          :border-radius 16
                                          :margin-top    8}
                    :accessibility-label :image-message}
-       [react/image {:style       {:width  (first @dimensions)
-                                   :height image-max-dimension}
-                     :cache       :force-cache
-                     :resize-mode :cover
-                     :source      {:uri uri}}]
+       [react/fast-image {:style       {:width  @width
+                                        :height image-max-dimension}
+                          :on-load     (image-set-size width)
+                          :source      {:uri uri}}]
        [react/view {:border-width     1
                     :top              0
                     :left             0
-                    :width            (first @dimensions)
+                    :width            @width
                     :height           image-max-dimension
                     :border-radius    16
                     :position         :absolute

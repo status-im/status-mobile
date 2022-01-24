@@ -9,13 +9,10 @@
             ["react-native-image-viewing" :default image-viewing]
             [status-im.utils.share :as share]
             [taoensso.timbre :as log]
-            [status-im.utils.fs :as fs]
-            [clojure.string :as string]))
+            [status-im.chat.models.images :as images]))
 
-(def temp-image-url (str (fs/cache-dir) "/image.jpeg"))
-
-(defn share []
-  (share/open {:url (str (when platform/android? "file://") temp-image-url)
+(defn share [path]
+  (share/open {:url (str (when platform/android? "file://") path)
                :type "image/jpeg"}
               #(log/debug "image shared successfully")
               #(log/error "could not share image")))
@@ -40,12 +37,7 @@
                                                           :height 24}
                                         :color           colors/white-persist}]]
      [react/touchable-opacity
-      {:on-press (fn []
-                   (fs/write-file
-                    temp-image-url
-                    (last (string/split (get-in message [:content :image]) ",")) "base64"
-                    #(share)
-                    #(log/error "error writing image to cache dir")))
+      {:on-press #(images/download-image-http (get-in message [:content :image]) share)
        :style    {:margin-left 10}
        :accessibility-label :share-button}
       [icons/icon :main-icons/share-default {:container-style {:width  24

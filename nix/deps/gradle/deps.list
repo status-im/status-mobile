@@ -390,6 +390,7 @@ com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0
 com.parse.bolts:bolts-applinks:1.4.0
 com.parse.bolts:bolts-tasks:1.4.0
 com.squareup.assertj:assertj-android:1.1.1
+com.squareup.okhttp3:okhttp-tls:3.12.12
 com.squareup.okhttp3:okhttp-urlconnection:3.12.12
 com.squareup.okhttp3:okhttp:3.12.12
 com.squareup.okio:okio:1.15.0

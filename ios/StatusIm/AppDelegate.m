@@ -19,9 +19,22 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTHTTPRequestHandler.h>
 
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
+
+#import <SDWebImage/SDWebImageDownloaderConfig.h>
+#import <SDWebImage/SDWebImageDownloaderOperation.h>
+
+#import <Security/Security.h>
+
+//TODO: properly import the framework
+extern NSString* StatusgoImageServerTLSCert();
+
+@interface StatusDownloaderOperation : SDWebImageDownloaderOperation
+  + (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler;
+@end
 
  /*
 #if DEBUG
@@ -45,7 +58,7 @@ static void InitializeFlipper(UIApplication *application) {
 #endif
   */
 
-@implementation AppDelegate 
+@implementation AppDelegate
 {
     UIView *_blankView;
 }
@@ -83,6 +96,8 @@ static void InitializeFlipper(UIApplication *application) {
 
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
+
+  SDWebImageDownloaderConfig.defaultDownloaderConfig.operationClass = [StatusDownloaderOperation class];
 
   return YES;
 }
@@ -124,7 +139,7 @@ static void InitializeFlipper(UIApplication *application) {
     [UIView animateWithDuration:0.5 animations:^{
       _blankView.alpha = 1;
     }];
-  } 
+  }
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -169,14 +184,67 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
   NSDictionary *userInfo = notification.request.content.userInfo;
-  
+
   NSString *notificationType = userInfo[@"notificationType"]; // check your notification type
   if (![notificationType  isEqual: @"local-notification"]) { // we silence all notifications which are not local
     completionHandler(UNNotificationPresentationOptionNone);
     return;
   }
- 
+
   completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+}
+
+@end
+
+@implementation StatusDownloaderOperation
+
++ (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
+  NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+  __block NSURLCredential *credential = nil;
+
+  NSString *pemCert = StatusgoImageServerTLSCert();
+  pemCert = [pemCert stringByReplacingOccurrencesOfString:@"-----BEGIN CERTIFICATE-----\n" withString:@""];
+  pemCert = [pemCert stringByReplacingOccurrencesOfString:@"\n-----END CERTIFICATE-----" withString:@""];
+  NSData *derCert = [[NSData alloc] initWithBase64EncodedString:pemCert options:NSDataBase64DecodingIgnoreUnknownCharacters];
+  SecCertificateRef certRef = SecCertificateCreateWithData(NULL, (__bridge_retained CFDataRef) derCert);
+  CFArrayRef certArrayRef = CFArrayCreate(NULL, (void *)&certRef, 1, NULL);
+  SecTrustSetAnchorCertificates(challenge.protectionSpace.serverTrust, certArrayRef);
+
+  SecTrustResultType trustResult;
+  SecTrustEvaluate(challenge.protectionSpace.serverTrust, &trustResult);
+
+  if ((trustResult == kSecTrustResultProceed) || (trustResult == kSecTrustResultUnspecified)) {
+    disposition = NSURLSessionAuthChallengeUseCredential;
+    credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+  }
+
+  if (completionHandler) {
+    completionHandler(disposition, credential);
+  }
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
+  if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust] &&
+      [challenge.protectionSpace.host isEqualToString:@"localhost"]) {
+    [StatusDownloaderOperation URLSession:session task:task didReceiveChallenge:challenge completionHandler:completionHandler];
+  } else {
+    [super URLSession:session task:task didReceiveChallenge:challenge completionHandler:completionHandler];
+  }
+}
+
+@end
+
+@implementation RCTHTTPRequestHandler (SelfSigned)
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
+  if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust] &&
+      [challenge.protectionSpace.host isEqualToString:@"localhost"]) {
+    [StatusDownloaderOperation URLSession:session task:task didReceiveChallenge:challenge completionHandler:completionHandler];
+  } else {
+    if (completionHandler) {
+      completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
+    }
+  }
 }
 
 @end

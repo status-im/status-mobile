@@ -1,5 +1,6 @@
 app
 react-native-background-timer
+react-native-blob-util
 react-native-camera-kit
 react-native-community_async-storage
 react-native-community_audio-toolkit

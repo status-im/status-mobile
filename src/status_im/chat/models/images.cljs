@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.utils.fx :as fx]
             ["@react-native-community/cameraroll" :as CameraRoll]
+            ["react-native-blob-util" :default ReactNativeBlobUtil]
             [status-im.utils.types :as types]
             [status-im.utils.config :as config]
             [status-im.ui.components.permissions :as permissions]
@@ -12,6 +13,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.utils :as utils]
             [status-im.utils.platform :as platform]
+            [status-im.utils.fs :as fs]
             [status-im.chat.models :as chat]))
 
 (def maximum-image-size-px 2000)
@@ -37,31 +39,27 @@
     (.-localIdentifier result)
     (.-path result)))
 
-(defn android-save-image-to-gallery [base64-uri]
-  (react/image-get-size
-   base64-uri
-   (fn [width height]
-     (image-processing/resize
-      base64-uri
-      width
-      height
-      100
-      (fn [^js resized-image]
-        (let [path (.-path resized-image)
-              path (if (string/starts-with? path "file") path (str "file://" path))]
-          (.save CameraRoll path)))
-      #(log/error "could not resize image" %)))))
+(def temp-image-url (str (fs/cache-dir) "/StatusIm_Image.jpeg"))
+
+(defn download-image-http [base64-uri on-success]
+  (-> (.config ReactNativeBlobUtil (clj->js {:trusty platform/ios?
+                                             :path temp-image-url}))
+      (.fetch "GET" base64-uri)
+      (.then #(on-success (.path %)))
+      (.catch #(log/error "could not save image"))))
+
+(defn save-to-gallery [path] (.save CameraRoll path))
 
 (re-frame/reg-fx
  ::save-image-to-gallery
  (fn [base64-uri]
    (if platform/ios?
-     (-> (.save CameraRoll base64-uri)
+     (-> (download-image-http base64-uri save-to-gallery)
          (.catch #(utils/show-popup (i18n/label :t/error)
                                     (i18n/label :t/external-storage-denied))))
      (permissions/request-permissions
       {:permissions [:write-external-storage]
-       :on-allowed  #(android-save-image-to-gallery base64-uri)
+       :on-allowed  #(download-image-http base64-uri save-to-gallery)
        :on-denied   (fn []
                       (utils/set-timeout
                        #(utils/show-popup (i18n/label :t/error)
