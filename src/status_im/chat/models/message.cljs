@@ -183,8 +183,8 @@
                                :on-error #(log/error "failed to re-send message" %)}]}
             (update-message-status chat-id message-id :sending)))
 
-(fx/defn share-image-message
-  {:events [::share-community-confirmation-pressed]}
+(fx/defn share-image-to-contacts-pressed
+  {:events [::share-image-to-contacts-pressed]}
   [cofx user-pk contacts message-id]
   (let [pks (if (seq user-pk)
               (conj contacts user-pk)
@@ -194,18 +194,22 @@
                          :params     [{:id message-id
                                        :users pks}]
                          :js-response true
-                         :on-success #(re-frame/dispatch [::people-shared-to %])
+                         :on-success #(re-frame/dispatch [::home %])
                          :on-error   #(do
                                         (log/error "failed to share image message" %)
                                         (re-frame/dispatch [::failed-to-share-image %]))}]})))
 
 (fx/defn share-to-contacts-pressed
   {:events [::share-to-contacts-pressed]}
-  [cofx message]
-  (fx/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
-            (navigation/open-modal :share-to-contacts {:message message})))
+  [{:keys [db] :as cofx} chat-id message-id]
+  (fx/merge cofx 
+            (navigation/open-modal :share-to-contacts {:chat-id chat-id :message-id message-id})))
 
+;;(fx/defn reset-image-id-input [{:keys [db]} id]
+;;{:db (assoc db :messages/messages-input-id id)})
+
+;;(defn fetch-image-id-input [{:keys [db]}]
+;;(:messages/messages-input-id db))
 
 (fx/defn delete-message
   "Deletes chat message, rebuild message-list"

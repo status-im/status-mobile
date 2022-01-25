@@ -5,10 +5,10 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.utils.handlers :refer [<sub >evt-once]]
-            [status-im.contact.chat :as chat]
+            [status-im.chat.models.message :as chat-model]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.multiaccounts.core :as multiaccounts]            
             [clojure.string :as str]))
 
 (defn header [user-pk]
@@ -41,7 +41,7 @@
 (defn invite []
   (let [user-pk           (reagent/atom "")
         contacts-selected (reagent/atom #{})
-        {:keys [message]} (<sub [:get-screen-params])]
+        {:keys [message-id]} (<sub [:get-screen-params])]
     (fn []
       (let [contacts-data               (<sub [:contacts/active])
             selected                    @contacts-selected
@@ -65,5 +65,6 @@
            [quo/button {:disabled (and (str/blank? @user-pk)
                                        (zero? (count selected)))
                         :type     :secondary
-                        :on-press #(>evt-once [::chat/share-image-to-contacts-pressed @user-pk selected message])}
+                        :on-press #(>evt-once [::chat-model/share-image-to-contacts-pressed
+                                               @user-pk selected message-id])}
             (i18n/label :t/share)]}]]))))

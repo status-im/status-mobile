@@ -222,6 +222,7 @@
 (reg-root-key-sub ::pagination-info :pagination-info)
 (reg-root-key-sub ::pin-message-lists :pin-message-lists)
 (reg-root-key-sub ::pin-messages :pin-messages)
+(reg-root-key-sub :messages/messages-input-id :messages/messages-input-id)
 
 (reg-root-key-sub :tos-accept-next-root :tos-accept-next-root)
 
