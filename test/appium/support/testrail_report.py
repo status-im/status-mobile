@@ -144,9 +144,12 @@ class TestrailReport(BaseTestReport):
             except KeyError:
                 result_id = ''
             if last_testrun.error:
-                for geth in test.geth_paths.keys():
-                    self.add_attachment(method='add_attachment_to_result/%s' % str(result_id),
-                                        path=test.geth_paths[geth])
+                try:
+                    for geth in test.geth_paths.keys():
+                        self.add_attachment(method='add_attachment_to_result/%s' % str(result_id),
+                                            path=test.geth_paths[geth])
+                except AttributeError:
+                    pass
         self.change_test_run_description()
 
     def change_test_run_description(self):
