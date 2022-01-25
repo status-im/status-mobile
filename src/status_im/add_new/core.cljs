@@ -12,7 +12,8 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.contact.core :as contact]
             [status-im.router.core :as router]
-            [status-im.navigation :as navigation]))
+            [status-im.navigation :as navigation]
+            [status-im.utils.db :as utils.db]))
 
 (re-frame/reg-fx
  :resolve-public-key
@@ -27,37 +28,42 @@
 (fx/defn new-chat-set-new-identity
   {:events [:new-chat/set-new-identity]}
   [{db :db} new-identity-raw new-ens-name id]
-  (when (or (not id) (= id @resolve-last-id))
-    (let [new-identity (utils/safe-trim new-identity-raw)
-          is-public-key? (and (string? new-identity)
-                              (string/starts-with? new-identity "0x"))
-          is-ens? (and (not is-public-key?)
-                       (ens/valid-eth-name-prefix? new-identity))
-          error (db/validate-pub-key db new-identity)]
-      (reset! resolve-last-id nil)
-      (merge {:db (assoc db
-                         :contacts/new-identity
-                         {:public-key new-identity
-                          :state      (cond is-ens?
-                                            :searching
-                                            (and (string/blank? new-identity) (not new-ens-name))
-                                            :empty
-                                            error
-                                            :error
-                                            :else
-                                            :valid)
-                          :error      error
-                          :ens-name   (resolver/ens-name-parse new-ens-name)})}
-             (when is-ens?
-               (reset! resolve-last-id (random/id))
-               (let [chain (ethereum/chain-keyword db)]
-                 {:resolve-public-key
-                  {:chain            chain
-                   :contact-identity new-identity
-                   :cb               #(re-frame/dispatch [:new-chat/set-new-identity
-                                                          %
-                                                          new-identity
-                                                          @resolve-last-id])}}))))))
+  (let [new-identity (utils/safe-trim new-identity-raw)
+        ens-error (and (= new-identity-raw "0x") (not (string/blank? new-ens-name)))]
+    (when (and (or (not id) (= id @resolve-last-id))
+               (or ens-error (> (count new-identity) 4)))
+      (if ens-error
+        {:db (assoc-in db [:contacts/new-identity :state] :error)}
+        (let [new-identity (utils/safe-trim new-identity-raw)
+              is-public-key? (and (string? new-identity)
+                                  (utils.db/valid-public-key? new-identity))
+              is-ens? (and (not is-public-key?)
+                           (ens/valid-eth-name-prefix? new-identity))
+              error (db/validate-pub-key db new-identity)]
+          (reset! resolve-last-id nil)
+          (merge {:db (assoc db
+                             :contacts/new-identity
+                             {:public-key new-identity
+                              :state      (cond is-ens?
+                                                :searching
+                                                (and (string/blank? new-identity) (not new-ens-name))
+                                                :empty
+                                                error
+                                                :error
+                                                :else
+                                                :valid)
+                              :error      error
+                              :ens-name   (resolver/ens-name-parse new-ens-name)})}
+                 (when is-ens?
+                   (reset! resolve-last-id (random/id))
+                   (let [chain (ethereum/chain-keyword db)]
+                     {:resolve-public-key
+                      {:chain            chain
+                       :contact-identity new-identity
+                       :cb               #(re-frame/dispatch [:new-chat/set-new-identity
+                                                              %
+                                                              new-identity
+                                                              @resolve-last-id])}}))))))))
 
 (fx/defn clear-new-identity
   {:events [::clear-new-identity ::new-chat-focus]}

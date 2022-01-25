@@ -142,7 +142,7 @@
          {:on-change-text
           #(do
              (reset! search-value %)
-             (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
+             (re-frame/dispatch [:set-in [:contacts/new-identity :state] :empty])
              (debounce/debounce-and-dispatch [:new-chat/set-new-identity %] 600))
           :on-submit-editing
           #(when (= state :valid)

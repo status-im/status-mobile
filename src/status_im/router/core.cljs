@@ -69,16 +69,14 @@
 
 (defn match-contact-async
   [chain {:keys [user-id]} callback]
-  (let [public-key? (and (string? user-id)
-                         (string/starts-with? user-id "0x"))
-        valid-key   (and (spec/valid? :global/public-key user-id)
+  (let [valid-key   (and (spec/valid? :global/public-key user-id)
                          (not= user-id ens/default-key))]
     (cond
-      (and public-key? valid-key)
+      (and valid-key)
       (callback {:type       :contact
                  :public-key user-id})
 
-      (and (not public-key?) (string? user-id))
+      (and (not valid-key) (string? user-id))
       (let [registry   (get ens/ens-registries chain)
             ens-name   (resolver/ens-name-parse user-id)
             on-success #(match-contact-async chain {:user-id %} callback)]
