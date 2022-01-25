@@ -8,7 +8,7 @@
             [status-im.chat.models.message :as chat-model]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.multiaccounts.core :as multiaccounts]            
+            [status-im.multiaccounts.core :as multiaccounts]
             [clojure.string :as str]))
 
 (defn header [user-pk]

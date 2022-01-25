@@ -621,6 +621,8 @@
 
 
            ;[Chat] Link preview settings
+
+
            {:name      :link-preview-settings
             :options   {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}}
             :component link-previews-settings/link-previews-settings}
