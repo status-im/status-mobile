@@ -91,7 +91,7 @@
         :container-style {:margin-right 5}}]
       [react/text
        {:style {:color colors/blue}}
-       (i18n/label :t/check-on-etherscan)]]]))
+       (i18n/label :t/check-on-block-explorer)]]]))
 
 (defn custom-node []
   [react/view
@@ -255,7 +255,7 @@
 (defn details-action [hash url]
   [{:label  (i18n/label :t/copy-transaction-hash)
     :action #(react/copy-to-clipboard hash)}
-   {:label  (i18n/label :t/open-on-etherscan)
+   {:label  (i18n/label :t/open-on-block-explorer)
     :action #(.openURL ^js react/linking url)}])
 
 (defview transaction-details-view [hash address]

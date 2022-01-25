@@ -677,7 +677,7 @@
     :open-dapp
     :open-dapp-store
     :open-nfc-settings
-    :open-on-etherscan
+    :open-on-block-explorer
     :optional
     :outgoing
     :pair
