@@ -472,7 +472,11 @@
                         (str (wallet.utils/format-amount (.minus amount fee) decimals)))
                       (str (wallet.utils/format-amount amount decimals)))]
     (when amount-text
-      {:db (assoc-in db [:wallet/prepare-transaction :amount-text] amount-text)})))
+      {:db (cond-> db
+             :always
+             (assoc-in [:wallet/prepare-transaction :amount-text] amount-text)
+             (= :ETH symbol)
+             (assoc-in [:wallet/prepare-transaction :gas] gas))})))
 
 (fx/defn set-and-validate-request-amount
   {:events [:wallet.request/set-amount-text]}

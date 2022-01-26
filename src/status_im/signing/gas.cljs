@@ -387,10 +387,7 @@
 (re-frame/reg-fx
  :signing/update-estimated-gas
  (fn [{:keys [obj success-event error-event]}]
-   (let [value (:value obj)]
-     (json-rpc/call {:method     "eth_estimateGas"
-                     :params     [(if value
-                                    (assoc obj :value "0x0")
-                                    obj)]
-                     :on-success #(re-frame/dispatch [success-event %])
-                     :on-error   #(re-frame/dispatch [error-event %])}))))
+   (json-rpc/call {:method     "eth_estimateGas"
+                   :params     [obj]
+                   :on-success #(re-frame/dispatch [success-event %])
+                   :on-error   #(re-frame/dispatch [error-event %])})))
