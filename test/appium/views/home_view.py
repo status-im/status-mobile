@@ -357,5 +357,5 @@ class HomeView(BaseView):
 
     def get_pn(self, pn_text: str):
         self.driver.info("Getting PN by '%s'" % pn_text)
-        PushNotificationElement(self.driver, pn_text).wait_for_element(60)
-        return PushNotificationElement(self.driver, pn_text)
+        expected_element = PushNotificationElement(self.driver, pn_text)
+        return expected_element if expected_element.is_element_displayed(60) else False

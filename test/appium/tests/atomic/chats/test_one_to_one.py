@@ -193,7 +193,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(695843)
     @marks.high
-    def test_edit_delete_message_in_one_to_one_and_public_chats(self):
+    def test_edit_delete_message_in_one_to_one_(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(enable_notifications=True), device_2.create_user()
@@ -202,14 +202,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         public_key_1, username_1 = home_1.get_public_key_and_username(return_username=True)
         public_key_2, username_2 = home_2.get_public_key_and_username(return_username=True)
         [home.home_button.click() for home in (home_1, home_2)]
-        chat_name = home_1.get_random_chat_name()
-        home_1.join_public_chat(chat_name)
-        public_chat_1 = home_1.get_chat_view()
-        message_before_edit, message_after_edit = "Message BEFORE edit 1", "Message AFTER edit 2"
-        public_chat_1.send_message(message_before_edit)
-        public_chat_1.edit_message_in_chat(message_before_edit, message_after_edit)
-        if not public_chat_1.element_by_text_part("⌫ Edited").is_element_displayed(60):
-            self.errors.append('No mark in message bubble about this message was edited')
 
         device_2.just_fyi(
             "Device 1 sends text message and edits it in 1-1 chat. Device2 checks edited message is shown")
@@ -254,18 +246,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if not home_1.get_pn(message_to_delete).is_element_disappeared(30):
             self.errors.append("Push notification was not removed after initial message deletion")
         home_1.click_system_back_button(2)
-
-        chat_private_2.just_fyi("Check for that edited message is shown for Device 2 and delete message in public chat")
-        [home.home_button.double_click() for home in (home_1, home_2)]
-        public_chat_1, public_chat_2 = home_1.get_chat('#%s' % chat_name).click(), home_2.join_public_chat(chat_name)
-        if not public_chat_2.element_by_text_part("⌫ Edited").is_element_displayed(60):
-            self.errors.append('No mark in message bubble about this message was edited')
-        if not public_chat_2.element_by_text_part(message_after_edit).is_element_displayed(60):
-            self.errors.append('Message is not edited.')
-        public_chat_1.delete_message_in_chat(message_after_edit)
-        for chat in (public_chat_1, public_chat_2):
-            if chat.chat_element_by_text(message_after_edit).is_element_displayed(30):
-                self.errors.append("Deleted message is shown in chat view for public chat")
 
         self.errors.verify_no_errors()
 
@@ -575,7 +555,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5373)
     @marks.high
-    def test_send_and_open_links_with_previews(self):
+    def test_send_and_open_emoji_link_in_one_to_one(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
@@ -604,58 +584,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         web_view = chat_2.open_in_status_button.click()
         if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
             self.errors.append('URL was not opened from 1-1 chat')
-        home_2.dapp_tab_button.double_click()
-        chat_2.home_button.click()
-
-        home_1.just_fyi("Check that link can be opened from public chat")
-        chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
-        chat_1 = home_1.join_public_chat(chat_name)
-        chat_2 = home_2.join_public_chat(chat_name)
-        chat_2.send_message(url_message)
-        chat_1.element_starts_with_text(url_message, 'button').click()
-        web_view = chat_1.open_in_status_button.click()
-        if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
-            self.errors.append('URL was not opened from 1-1 chat')
-        home_1.home_button.click(desired_view='chat')
-
-        preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-react/pull/11707',
-                                      'txt': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-react',
-                                      'subtitle': 'GitHub'},
-                        'yotube': {
-                            'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
-                            'txt': 'Status & Keycard – Hardware-Enforced Security',
-                            'subtitle': 'YouTube'},
-                        'twitter': {
-                            'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
-                            'txt': "We've rethought how we translate content, allowing us to translate",
-                            'subtitle': 'Twitter'
-                        }}
-
-        home_1.just_fyi("Check enabling and sending first gif")
-        giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
-        chat_2.send_message(giphy_url)
-        chat_2.element_by_translation_id("dont-ask").click()
-        chat_1.element_by_translation_id("enable").wait_and_click()
-        chat_1.element_by_translation_id("enable-all").wait_and_click()
-        chat_1.close_modal_view_from_chat_button.click()
-        if not chat_1.get_preview_message_by_text(giphy_url).preview_image:
-            self.errors.append("No preview is shown for %s" % giphy_url)
-        for key in preview_urls:
-            home_2.just_fyi("Checking %s preview case" % key)
-            data = preview_urls[key]
-            chat_2.send_message(data['url'])
-            message = chat_1.get_preview_message_by_text(data['url'])
-            if data['txt'] not in message.preview_title.text:
-                self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
-            if message.preview_subtitle.text != data['subtitle']:
-                self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
-
-        home_2.just_fyi("Check if after do not ask again previews are not shown and no enable button appear")
-        if chat_2.element_by_translation_id("enable").is_element_displayed():
-            self.errors.append("Enable button is still shown after clicking on 'Den't ask again'")
-        if chat_2.get_preview_message_by_text(giphy_url).preview_image:
-            self.errors.append("Preview is shown for sender without permission")
         self.errors.verify_no_errors()
+
 
     @marks.testrail_id(5362)
     @marks.medium

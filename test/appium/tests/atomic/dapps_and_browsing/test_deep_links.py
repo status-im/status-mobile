@@ -8,20 +8,6 @@ from views.sign_in_view import SignInView
 
 class TestDeepLinks(SingleDeviceTestCase):
 
-    @marks.testrail_id(5396)
-    @marks.high
-    def test_open_public_chat_using_deep_link(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        self.driver.close_app()
-        chat_name = sign_in_view.get_random_chat_name()
-        deep_link = 'status-im://%s' % chat_name
-        sign_in_view.open_weblink_and_login(deep_link)
-        chat_view = sign_in_view.get_chat_view()
-        try:
-            assert chat_view.user_name_text.text == '#' + chat_name
-        except (AssertionError, NoSuchElementException):
-            self.driver.fail("Public chat '%s' is not opened" % chat_name)
 
     @marks.testrail_id(5441)
     @marks.medium

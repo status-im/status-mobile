@@ -7,62 +7,6 @@ from views.chat_view import ChatView
 
 class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
-    @marks.testrail_id(3998)
-    @marks.high
-    def test_offline_add_new_group_chat_member(self):
-        message_before_adding = 'message before adding new user'
-        message_after_adding = 'message from new member'
-        message_from_old_member_after_adding = 'message from old member'
-        self.create_drivers(3)
-        homes, public_keys, usernames, chats = {}, {}, {}, {}
-        for key in self.drivers:
-            sign_in_view = SignInView(self.drivers[key])
-            homes[key] = sign_in_view.create_user()
-            public_keys[key], usernames[key] = sign_in_view.get_public_key_and_username(True)
-            sign_in_view.home_button.click()
-        chat_name = homes[0].get_random_chat_name()
-        for i in range(1, 3):
-            homes[0].add_contact(public_keys[i])
-            homes[0].get_back_to_home_view()
-        chats[0] = homes[0].create_group_chat([usernames[1]], chat_name)
-        chats[0].send_message(message_before_adding)
-
-        homes[1].just_fyi('Join to chat as chat member')
-        chats[1] = homes[1].get_chat(chat_name).click()
-        chats[1].join_chat_button.click()
-
-        homes[2].just_fyi('Put not added member device to offline and check that invite will be fetched')
-        invite_system_message = chats[0].invite_system_message(usernames[0], usernames[1])
-        homes[2].toggle_airplane_mode()
-        chats[0].add_members_to_group_chat([usernames[2]])
-        homes[2].toggle_airplane_mode()
-        homes[2].connection_offline_icon.wait_for_invisibility_of_element(60)
-
-        if not homes[2].get_chat(chat_name).is_element_displayed():
-            self.drivers[0].fail('Invite to group chat was not fetched from offline')
-        chats[2] = homes[2].get_chat(chat_name).click()
-        if not chats[2].element_by_text(invite_system_message).is_element_displayed():
-            self.errors.append('Message about adding first chat member is not shown for new added member')
-        if chats[2].element_by_text(message_before_adding).is_element_displayed():
-            self.errors.append('Message sent before adding user is shown')
-
-        chats[0].just_fyi('Put admin device to offline and check that message from new member will be fetched')
-        chats[0].toggle_airplane_mode()
-        chats[2].join_chat_button.click()
-        chats[2].send_message(message_after_adding)
-        chats[0].toggle_airplane_mode()
-        for key in chats:
-            if not chats[key].chat_element_by_text(message_after_adding).is_element_displayed(40):
-                self.errors.append("Message with text '%s' was not received" % message_after_adding)
-
-        chats[0].just_fyi('Send message from old member and check that it is fetched')
-        chats[1].send_message(message_from_old_member_after_adding)
-        for key in chats:
-            if not chats[key].chat_element_by_text(message_from_old_member_after_adding).is_element_displayed(20):
-                self.errors.append("Message with text '%s' was not received" % message_from_old_member_after_adding)
-
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(5762)
     @marks.high
     def test_pair_devices_sync_one_to_one_contacts_nicknames_public_chat(self):

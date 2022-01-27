@@ -759,10 +759,13 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_1.create_group_chat(user_names_to_add=[default_username_2], group_chat_name=new_group_chat)
 
         invite = group_chat_2.pn_invited_to_group_chat(default_username_1, new_group_chat)
-        home_2.get_pn(invite).wait_for_visibility_of_element(30)
-        if not home_2.get_pn(invite).group_chat_icon.is_element_image_similar_to_template(logo_group):
-            self.errors.append("Group chat invite is not updated with custom logo!")
-        home_2.get_pn(invite).click()
+        pn = home_2.get_pn(invite)
+        if pn:
+            if not pn.group_chat_icon.is_element_image_similar_to_template(logo_group):
+                self.errors.append("Group chat invite is not updated with custom logo!")
+            pn.click()
+        else:
+            home_2.click_system_back_button(2)
 
         profile_1.just_fyi('Check profile image updated in on login view')
         home_1.profile_button.click()

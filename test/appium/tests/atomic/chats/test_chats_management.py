@@ -10,33 +10,6 @@ from views.chat_view import ChatView
 
 
 class TestChatManagement(SingleDeviceTestCase):
-    @marks.testrail_id(5319)
-    @marks.critical
-    def test_long_press_to_delete_chat(self):
-        home = SignInView(self.driver).create_user()
-        messages = [home.get_random_message() for _ in range(3)]
-
-        home.just_fyi("Creating 3 types of chats")
-        chat = home.add_contact(basic_user['public_key'])
-        one_to_one, public, group = basic_user['username'], '#public-delete-long-press', 'group'
-        chat.get_back_to_home_view()
-        home.create_group_chat([basic_user['username']], group)
-        chat.get_back_to_home_view()
-        home.join_public_chat(public[1:])
-        chat.get_back_to_home_view()
-
-        home.just_fyi("Deleting all types of chats and check that they will not reappear after relogin")
-        i = 0
-        for chat_name in one_to_one, public, group:
-            chat = home.get_chat(chat_name).click()
-            chat.send_message(messages[i])
-            chat.get_back_to_home_view()
-            home.leave_chat_long_press(chat_name) if chat_name == group else home.delete_chat_long_press(chat_name)
-            i += 1
-        home.relogin()
-        for chat_name in one_to_one, public, group:
-            if home.get_chat_from_home_view(chat_name).is_element_displayed():
-                self.driver.fail('Deleted %s is present after relaunch app' % chat_name)
 
     @marks.testrail_id(5387)
     @marks.high

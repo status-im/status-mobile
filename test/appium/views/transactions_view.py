@@ -16,7 +16,7 @@ class OptionsButton(Button):
 
     class OpenOnEtherscanButton(Button):
         def __init__(self, driver):
-            super().__init__(driver, translation_id="open-on-etherscan")
+            super().__init__(driver, translation_id="open-on-block-explorer")
 
 
 class TransactionTable(BaseElement):

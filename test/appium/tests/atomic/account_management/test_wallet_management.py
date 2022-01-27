@@ -91,8 +91,6 @@ class TestWalletManagement(SingleDeviceTestCase):
     @marks.testrail_id(5346)
     @marks.flaky
     @marks.high
-    @marks.skip
-    # TODO: skipped due to 13016
     def test_collectible_from_wallet(self):
         passphrase = wallet_users['F']['passphrase']
         home = SignInView(self.driver).recover_access(passphrase=passphrase)

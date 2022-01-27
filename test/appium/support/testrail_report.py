@@ -102,6 +102,12 @@ class TestrailReport(BaseTestReport):
         test_cases['upgrade'] = 881
         test_cases['public_chat'] = 50654
         test_cases['one_to_one_chat'] = 50655
+        test_cases['group_chat'] = 50656
+        test_pr = list()
+        for key in test_cases:
+            if key != 'medium' and key != 'upgrade':
+                test_pr.append(test_cases[key])
+
         case_ids = list()
         for arg in argv:
             if "run_testrail_ids" in arg:
@@ -109,7 +115,7 @@ class TestrailReport(BaseTestReport):
                 case_ids = value.split(',')
         if len(case_ids) == 0:
             if 'critical or high' in argv:
-                for case in self.get_cases([test_cases['critical'],  test_cases['public_chat'], test_cases['one_to_one_chat']]):
+                for case in self.get_cases(test_pr):
                     case_ids.append(case['id'])
             elif 'upgrade' in argv and 'not upgrade' not in argv:
                 for case in self.get_cases([test_cases['upgrade']]):

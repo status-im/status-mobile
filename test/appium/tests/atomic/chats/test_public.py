@@ -10,9 +10,10 @@ from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase, create_shared_drivers, \
     MultipleSharedDeviceTestCase
 from views.sign_in_view import SignInView
+from selenium.common.exceptions import NoSuchElementException
 
 
-@pytest.mark.xdist_group(name="public_chat")
+@pytest.mark.xdist_group(name="public_chat_2")
 class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod
@@ -23,16 +24,19 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         profile_1 = cls.home_1.profile_button.click()
         cls.username_1 = profile_1.default_username_text.text
         profile_1.home_button.click()
-        cls.home_2.home_button.click()
+        cls.pub_chat_delete_long_press = 'pub-chat'
+        cls.text_message = 'hello'
+        cls.home_1.join_public_chat(cls.pub_chat_delete_long_press)
+        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
         cls.public_chat_name = cls.home_1.get_random_chat_name()
         cls.chat_1, cls.chat_2 = cls.home_1.join_public_chat(cls.public_chat_name), cls.home_2.join_public_chat(cls.public_chat_name)
+        cls.chat_1.send_message(cls.text_message)
 
     @marks.testrail_id(5313)
     @marks.critical
-    def test_public_chat_text_timestamps_while_on_different_tab(self):
-        message = 'hello'
+    def test_public_message_send_check_timestamps_while_on_different_tab(self):
+        message = self.text_message
         self.chat_2.dapp_tab_button.click()
-        self.chat_1.send_message(message)
         sent_time_variants = self.chat_1.convert_device_time_to_chat_timestamp()
         timestamp = self.chat_1.chat_element_by_text(message).timestamp_on_tap
         if timestamp not in sent_time_variants:
@@ -44,9 +48,32 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Default username '%s' is not shown next to the received message" % self.username_1)
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(700734)
+    @marks.critical
+    def test_public_message_edit(self):
+        message_before_edit, message_after_edit = self.text_message, "Message AFTER edit 2"
+        self.chat_1.edit_message_in_chat(message_before_edit, message_after_edit)
+        for chat in (self.chat_1, self.chat_2):
+            if not chat.element_by_text_part("⌫ Edited").is_element_displayed(60):
+                self.errors.append('No mark in message bubble about this message was edited')
+        if not self.chat_2.element_by_text_part(message_after_edit).is_element_displayed(60):
+            self.errors.append('Message is not edited')
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(700735)
+    @marks.critical
+    def test_public_message_delete(self):
+        message_to_delete = 'delete me, please'
+        self.chat_1.send_message(message_to_delete)
+        self.chat_1.delete_message_in_chat(message_to_delete)
+        for chat in (self.chat_1, self.chat_2):
+            if not chat.chat_element_by_text(message_to_delete).is_element_disappeared(30):
+                self.errors.append("Deleted message is shown in chat view for public chat")
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(700719)
     @marks.critical
-    def test_public_emoji(self):
+    def test_public_emoji_send_copy_paste_reply(self):
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
         emoji_message = emoji.emojize(emoji_name)
@@ -106,48 +133,203 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
         self.chat_1.send_message(message)
         self.chat_2.chat_element_by_text(message).wait_for_element(20)
-
-        self.chat_2.just_fyi("Check that unread messages counter doesn't reappear after relogin")
-        driver_2 = self.drivers[1]
-        driver_2.close_app()
-        driver_2.launch_app()
-        SignInView(driver_2).sign_in()
+        self.home_2.reopen_app()
         chat_element = self.home_2.get_chat('#' + self.public_chat_name)
         if chat_element.new_messages_public_chat.is_element_displayed():
             self.drivers[0].fail('New messages counter is shown after relogin')
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(5319)
+    @marks.critical
+    def test_public_delete_chat_long_press(self):
+        [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
+        self.home_1.delete_chat_long_press('#%s' % self.pub_chat_delete_long_press)
+        self.home_2.just_fyi("Send message to deleted chat")
+        self.deleted_chat_2 = self.home_2.join_public_chat(self.pub_chat_delete_long_press)
+        self.deleted_chat_2.send_message()
+        if self.home_1.get_chat_from_home_view('#%s' % self.pub_chat_delete_long_press).is_element_displayed():
+            self.drivers[0].fail('Deleted public chat reappears after sending message to it')
+        self.home_1.reopen_app()
+        if self.home_1.get_chat_from_home_view('#%s' % self.pub_chat_delete_long_press).is_element_displayed():
+            self.drivers[0].fail('Deleted public chat reappears after relogin')
 
-class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
+    @marks.testrail_id(700736)
+    @marks.critical
+    def test_public_link_send_open(self):
+        [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
+        [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
+        url_message = 'http://status.im'
+        self.chat_2.send_message(url_message)
+        self.chat_1.element_starts_with_text(url_message, 'button').click()
+        web_view = self.chat_1.open_in_status_button.click()
+        if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
+            self.drivers[0].fail('URL was not opened from public chat')
+
+    @marks.testrail_id(700737)
+    @marks.critical
+    def test_public_links_with_previews_github_youtube_twitter_gif_send_enable(self):
+        [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
+        [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
+        giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
+        preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-react/pull/11707',
+                                      'txt': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-react',
+                                      'subtitle': 'GitHub'},
+                        'yotube': {
+                            'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
+                            'txt': 'Status & Keycard – Hardware-Enforced Security',
+                            'subtitle': 'YouTube'},
+                        'twitter': {
+                            'url': 'https://twitter.com/ethdotorg/status/1445161651771162627?s=20',
+                            'txt': "We've rethought how we translate content, allowing us to translate",
+                            'subtitle': 'Twitter'
+                        }}
+
+        self.home_1.just_fyi("Check enabling and sending first gif")
+        self.chat_2.send_message(giphy_url)
+        self.chat_2.element_by_translation_id("dont-ask").click()
+        self.chat_1.element_by_translation_id("enable").wait_and_click()
+        self.chat_1.element_by_translation_id("enable-all").wait_and_click()
+        self.chat_1.close_modal_view_from_chat_button.click()
+        if not self.chat_1.get_preview_message_by_text(giphy_url).preview_image:
+            self.errors.append("No preview is shown for %s" % giphy_url)
+        for key in preview_urls:
+            self.home_2.just_fyi("Checking %s preview case" % key)
+            data = preview_urls[key]
+            self.chat_2.send_message(data['url'])
+            message = self.chat_1.get_preview_message_by_text(data['url'])
+            if data['txt'] not in message.preview_title.text:
+                self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
+            if message.preview_subtitle.text != data['subtitle']:
+                self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
+
+        self.home_2.just_fyi("Check if after do not ask again previews are not shown and no enable button appear")
+        if self.chat_2.element_by_translation_id("enable").is_element_displayed():
+            self.errors.append("Enable button is still shown after clicking on 'Den't ask again'")
+        if self.chat_2.get_preview_message_by_text(giphy_url).preview_image:
+            self.errors.append("Preview is shown for sender without permission")
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(6270)
-    @marks.medium
-    def test_mark_all_messages_as_read_public_chat(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-        chat_name = home_1.get_random_chat_name()
-        chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
-        home_1.get_back_to_home_view()
-        message = 'test message'
-        chat_2.send_message(message)
+    @marks.critical
+    def test_public_mark_all_messages_as_read(self):
+        [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
+        self.home_2.get_chat('#' + self.public_chat_name).click()
+        self.chat_2.send_message(self.text_message)
 
-        if not home_1.home_button.public_unread_messages.is_element_displayed():
+        if not self.home_1.home_button.public_unread_messages.is_element_displayed():
             self.errors.append('New messages public chat badge is not shown on Home button')
-        chat_element = home_1.get_chat('#' + chat_name)
+        chat_element = self.home_1.get_chat('#' + self.public_chat_name)
         if not chat_element.new_messages_public_chat.is_element_displayed():
             self.errors.append('New messages counter is not shown in public chat')
-
         chat_element.long_press_element()
-        home_1.mark_all_messages_as_read_button.click()
-        home_1.get_back_to_home_view()
-
-        if home_1.home_button.public_unread_messages.is_element_displayed():
-            self.errors.append('New messages public chat badge is shown on Home button')
+        self.home_1.mark_all_messages_as_read_button.click()
+        self.home_1.home_button.double_click()
+        if self.home_1.home_button.public_unread_messages.is_element_displayed():
+            self.errors.append('New messages public chat badge is shown on Home button after marking messages as read')
         if chat_element.new_messages_public_chat.is_element_displayed():
             self.errors.append('Unread messages badge is shown in public chat while while there are no unread messages')
 
         self.errors.verify_no_errors()
+
+
+@pytest.mark.xdist_group(name="public_chat_1")
+class TestPublicChatOneDeviceMerged(MultipleSharedDeviceTestCase):
+
+    @classmethod
+    def setup_class(cls):
+        cls.drivers, cls.loop = create_shared_drivers(1)
+        cls.sign_in = SignInView(cls.drivers[0])
+
+        cls.home = cls.sign_in.create_user()
+        cls.public_chat_name = cls.home.get_random_chat_name()
+        cls.chat = cls.home.join_public_chat(cls.public_chat_name)
+
+    @marks.testrail_id(5675)
+    @marks.critical
+    def test_public_fetch_more_history(self):
+        self.home.just_fyi("Check that can fetch previous history for several days")
+        device_time = parser.parse(self.drivers[0].device_time)
+        yesterday = (device_time - timedelta(days=1)).strftime("%b %-d, %Y")
+        before_yesterday = (device_time - timedelta(days=2)).strftime("%b %-d, %Y")
+        quiet_time_yesterday, quiet_time_before_yesterday = '24 hours', '2 days'
+        fetch_more = self.home.get_translation_by_key("load-more-messages")
+        for message in (yesterday, quiet_time_yesterday):
+            if not self.chat.element_by_text_part(message).is_element_displayed(120):
+                self.drivers[0].fail('"%s" is not shown' % message)
+        self.chat.element_by_text_part(fetch_more).wait_and_click(120)
+        self.chat.element_by_text_part(fetch_more).wait_for_visibility_of_element(180)
+        for message in (before_yesterday, quiet_time_before_yesterday):
+            if not self.chat.element_by_text_part(message).is_element_displayed():
+                self.drivers[0].fail('"%s" is not shown' % message)
+        self.home.just_fyi("Check that can fetch previous history for month")
+        times = {
+            "three-days": '5 days',
+            "one-week": '12 days',
+            "one-month": ['43 days', '42 days', '41 days', '40 days'],
+        }
+        profile = self.home.profile_button.click()
+        profile.sync_settings_button.click()
+        profile.sync_history_for_button.click()
+        for period in times:
+            profile.just_fyi("Checking %s period" % period)
+            profile.element_by_translation_id(period).click()
+            profile.home_button.click(desired_view='chat')
+            self.chat.element_by_text_part(fetch_more).wait_and_click(120)
+            if period != "one-month":
+                if not profile.element_by_text_part(times[period]).is_element_displayed(30):
+                    self.errors.append("'Quiet here for %s' is not shown after fetching more history" % times[period])
+            else:
+                variants = times[period]
+                self.chat.element_by_text_part(fetch_more).wait_for_invisibility_of_element(120)
+                res = any(profile.element_by_text_part(variant).is_element_displayed(30) for variant in variants)
+                if not res:
+                    self.errors.append("History is not fetched for one month!")
+            self.home.profile_button.click(desired_element_text=profile.get_translation_by_key("default-sync-period"))
+            self.errors.verify_no_errors()
+
+    @marks.testrail_id(5396)
+    @marks.critical
+    def test_public_navigate_to_chat_when_relaunch(self):
+        text_message = 'some_text'
+        self.home.home_button.double_click()
+        self.home.get_chat('#%s' % self.public_chat_name).click()
+        self.chat.send_message(text_message)
+        self.chat.reopen_app()
+        if not self.chat.chat_element_by_text(text_message).is_element_displayed(30):
+            self.drivers[0].fail("Not navigated to chat view after reopening app")
+
+    @marks.testrail_id(700738)
+    @marks.critical
+    def test_public_tag_message(self):
+        tag_message = '#wuuut'
+        self.home.home_button.double_click()
+        self.home.get_chat('#%s' % self.public_chat_name).click()
+        self.home.just_fyi("Check that will be redirected to chat view on tap on tag message")
+        self.chat.send_message(tag_message)
+        self.chat.element_starts_with_text(tag_message).click()
+        self.chat.element_by_text_part(self.public_chat_name).wait_for_invisibility_of_element()
+        if not self.chat.user_name_text.text == tag_message:
+            self.errors.append('Could not redirect a user to a public chat tapping the tag message.')
+        self.home.just_fyi("Check that chat is added to home view")
+        self.chat.home_button.double_click()
+        if not self.home.element_by_text(tag_message).is_element_displayed():
+            self.errors.append('Could not find the public chat in user chat list.')
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(700739)
+    @marks.critical
+    def test_public_chat_open_using_deep_link(self):
+        self.drivers[0].close_app()
+        chat_name = self.home.get_random_chat_name()
+        deep_link = 'status-im://%s' % chat_name
+        self.sign_in.open_weblink_and_login(deep_link)
+        try:
+            assert self.chat.user_name_text.text == '#' + chat_name
+        except (AssertionError, NoSuchElementException):
+            self.driver.fail("Public chat '%s' is not opened" % chat_name)
+
+
+class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6342)
     @marks.medium
@@ -254,68 +436,9 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-class TestPublicChatSingleDevice(SingleDeviceTestCase):
 
-    @marks.testrail_id(5675)
-    @marks.high
-    def test_redirect_to_public_chat_tapping_tag_message_fetch_more_history(self):
-        signin = SignInView(self.driver)
-        home_view = signin.create_user()
-        chat_name = 'montagne-angerufen'
-        chat = home_view.join_public_chat(chat_name)
-        tag_message = '#spectentur'
 
-        signin.just_fyi("Check that will be redirected to chat view on tap on tag message")
-        chat.send_message(tag_message)
-        chat.element_starts_with_text(tag_message).click()
-        chat.element_by_text_part(chat_name).wait_for_invisibility_of_element()
-        if not chat.user_name_text.text == tag_message:
-            self.errors.append('Could not redirect a user to a public chat tapping the tag message.')
 
-        signin.just_fyi("Check that can fetch previous history")
-        device_time = parser.parse(signin.driver.device_time)
-        yesterday = (device_time - timedelta(days=1)).strftime("%b %-d, %Y")
-        before_yesterday = (device_time - timedelta(days=2)).strftime("%b %-d, %Y")
-        quiet_time_yesterday, quiet_time_before_yesterday = '24 hours', '2 days'
-        fetch_more = signin.get_translation_by_key("load-more-messages")
-        for message in (yesterday, quiet_time_yesterday):
-            if not chat.element_by_text_part(message).is_element_displayed(120):
-                self.driver.fail('"%s" is not shown' % message)
-        chat.element_by_text_part(fetch_more).wait_and_click(120)
-        chat.element_by_text_part(fetch_more).wait_for_visibility_of_element(180)
-        for message in (before_yesterday, quiet_time_before_yesterday):
-            if not chat.element_by_text_part(message).is_element_displayed():
-                self.driver.fail('"%s" is not shown' % message)
 
-        signin.just_fyi("Check that chat is added to home view")
-        home_view = chat.get_back_to_home_view()
-        if not home_view.element_by_text(tag_message).is_element_displayed():
-            self.errors.append('Could not find the public chat in user chat list.')
-        times = {
-            "three-days": '5 days',
-            "one-week": '12 days',
-            "one-month": ['43 days', '42 days', '41 days', '40 days'],
-        }
 
-        signin.just_fyi("Check that can fetch more history")
-        home_view.element_by_text(tag_message).click()
-        profile = home_view.profile_button.click()
-        profile.sync_settings_button.click()
-        profile.sync_history_for_button.click()
-        for period in times:
-            profile.just_fyi("Checking %s period" % period)
-            profile.element_by_translation_id(period).click()
-            profile.home_button.click(desired_view='chat')
-            chat.element_by_text_part(fetch_more).wait_and_click(120)
-            if period != "one-month":
-                if not profile.element_by_text_part(times[period]).is_element_displayed(30):
-                    self.errors.append("'Quiet here for %s' is not shown after fetching more history" % times[period])
-            else:
-                variants = times[period]
-                chat.element_by_text_part(fetch_more).wait_for_invisibility_of_element(120)
-                res = any(profile.element_by_text_part(variant).is_element_displayed(30) for variant in variants)
-                if not res:
-                    self.errors.append("History is not fetched for one month!")
-            home_view.profile_button.click(desired_element_text=profile.get_translation_by_key("default-sync-period"))
 
-        self.errors.verify_no_errors()

@@ -551,6 +551,12 @@ class BaseView(object):
         sign_in_view = self.get_sign_in_view()
         sign_in_view.sign_in(password)
 
+    def reopen_app(self, password=common_password):
+        self.driver.close_app()
+        self.driver.launch_app()
+        sign_in_view = self.get_sign_in_view()
+        sign_in_view.sign_in(password)
+
     def close_share_popup(self):
         self.driver.info("Closing share popup")
         TouchAction(self.driver).tap(None, 255, 104, 1).perform()
