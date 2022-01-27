@@ -28,6 +28,13 @@ There are three steps necessary to start development, in this case for Android:
 The first two will continue watching for changes and keep re-building the app. They need to be ready first.
 The last one will exit once the app is up and ready.
 
+# Updating Dependencies
+
+* `make nix-update-pods` - iOS CocoaPods dependencies (updates `ios/Podfile` and `ios/Podfile.loc`)
+* `make nix-update-gradle` - Android Gradle/Maven dependencies (updates `nix/deps/gradle/deps.json`)
+* `make nix-update-clojure` - Clojure Maven dependencies (updates `nix/deps/clojure/deps.json`)
+* `make nix-update-gems` - Fastlane Ruby dependencies (updates `fastlane/Gemfile.lock` and `fastlane/gemset.nix`)
+
 # Manual Steps
 
 There are a few manual steps you might want to do in order to start contributing.
