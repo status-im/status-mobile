@@ -14,6 +14,7 @@
             [status-im.data-store.activities :as data-store.activities]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.group-chats.core :as models.group]
+            [status-im.multiaccounts.update.core :as update.core]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
             [status-im.constants :as constants]
@@ -47,6 +48,7 @@
         ^js visibility-status-updates  (.-statusUpdates response-js)
         ^js current-visibility-status  (.-currentStatus response-js)
         ^js bookmarks                  (.-bookmarks response-js)
+        ^js settings                   (.-settings response-js)
         ^js cleared-histories          (.-clearedHistories response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
@@ -155,6 +157,9 @@
                   (process-next response-js sync-handler)
                   (models.visibility-status-updates/handle-visibility-status-updates
                    visibility-status-updates-clj)))
+
+      (seq settings)
+      (update.core/set-many-js cofx settings)
 
       (some? current-visibility-status)
       (let [current-visibility-status-clj (types/js->clj current-visibility-status)]

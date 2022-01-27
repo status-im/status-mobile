@@ -47,6 +47,16 @@
            (assoc-in db [:multiaccount setting] setting-value)
            (update db :multiaccount dissoc setting))}))
 
+(fx/defn set-many-js
+  [cofx settings-js]
+  (apply fx/merge
+         cofx
+         (map
+          #(optimistic
+            (keyword (.-name %))
+            (.-value %))
+          settings-js)))
+
 (fx/defn toggle-backup-enabled
   {:events [:multiaccounts.ui/switch-backup-enabled]}
   [cofx enabled?]
