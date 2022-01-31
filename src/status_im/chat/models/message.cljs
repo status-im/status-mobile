@@ -169,8 +169,7 @@
 (fx/defn update-message-status
   [{:keys [db] :as cofx} chat-id message-id status]
   (fx/merge cofx
-            (update-db-message-status chat-id message-id status)
-            (data-store.messages/update-outgoing-status message-id status)))
+            (update-db-message-status chat-id message-id status)))
 
 (fx/defn resend-message
   [{:keys [db] :as cofx} chat-id message-id]

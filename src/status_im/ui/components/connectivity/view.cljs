@@ -155,7 +155,9 @@
          (i18n/label :t/status-mobile-descr)]])]))
 
 (defn get-icon [{:keys [peers node mobile sync]}]
-  (if (= peers :offline)
+  (if (or (= peers :offline)
+          (= node :offline)
+          (= node :connecting))
     :main-icons/offline
     (if mobile
       (if sync :main-icons/mobile-sync :main-icons/mobile-sync-off)

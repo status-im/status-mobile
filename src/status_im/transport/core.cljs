@@ -2,12 +2,10 @@
  status-im.transport.core
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.mailserver.core :as mailserver]
             [status-im.native-module.core :as status]
             [status-im.pairing.core :as pairing]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.publisher :as publisher]
             status-im.transport.shh
             [taoensso.timbre :as log]
             [status-im.utils.universal-links.core :as universal-links]))
@@ -34,19 +32,19 @@
 (fx/defn fetch-node-info-fx [cofx]
   {::fetch-node-info []})
 
-(defn add-custom-mailservers
-  [db custom-mailservers]
-  (reduce (fn [db {:keys [fleet] :as mailserver}]
-            (let [{:keys [id] :as mailserver}
+(defn add-mailservers
+  [db mailservers]
+  (reduce (fn [db {:keys [fleet id name] :as mailserver}]
+            (let [updated-mailserver
                   (-> mailserver
                       (update :id keyword)
-                      (dissoc :fleet)
-                      (assoc :user-defined true))]
+                      (assoc :name (if (seq name) name id))
+                      (dissoc :fleet))]
               (assoc-in db
-                        [:mailserver/mailservers (keyword fleet) id]
-                        mailserver)))
+                        [:mailserver/mailservers (keyword fleet) (keyword id)]
+                        updated-mailserver)))
           db
-          custom-mailservers))
+          mailservers))
 
 (fx/defn start-messenger
   "We should only start receiving messages/processing topics once all the
@@ -64,14 +62,7 @@
   (fx/merge cofx
             {:db (-> db
                      (assoc :messenger/started? true)
-                     (add-custom-mailservers mailservers))}
+                     (add-mailservers mailservers))}
             (fetch-node-info-fx)
             (pairing/init)
-            (publisher/start-fx)
-            (mailserver/initialize-mailserver)
             (universal-links/process-stored-event)))
-
-(fx/defn stop-whisper
-  "Stops whisper protocol"
-  [cofx]
-  (publisher/stop-fx cofx))

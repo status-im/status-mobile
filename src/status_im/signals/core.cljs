@@ -42,7 +42,6 @@
               {:db (assoc db
                           :peers-summary peers-summary
                           :peers-count peers-count)}
-              (mailserver/peers-summary-change previous-summary)
               (visibility-status-updates/peers-summary-change peers-count))))
 
 (fx/defn wakuv2-peer-stats
@@ -67,6 +66,9 @@
       "envelope.expired"   (transport.message/update-envelopes-status cofx (:ids (js->clj event-js :keywordize-keys true)) :not-sent)
       "message.delivered"  (let [{:keys [chatID messageID]} (js->clj event-js :keywordize-keys true)]
                              (models.message/update-db-message-status cofx chatID messageID :delivered))
+      "mailserver.changed" (mailserver/handle-mailserver-changed cofx (.-id event-js))
+      "mailserver.available" (mailserver/handle-mailserver-available cofx (.-id event-js))
+      "mailserver.not.working" (mailserver/handle-mailserver-not-working cofx)
       "discovery.summary"  (summary cofx (js->clj event-js :keywordize-keys true))
       "wakuv2.peerstats"  (wakuv2-peer-stats cofx (js->clj event-js :keywordize-keys true))
       "subscriptions.data" (ethereum.subscriptions/handle-signal cofx (js->clj event-js :keywordize-keys true))

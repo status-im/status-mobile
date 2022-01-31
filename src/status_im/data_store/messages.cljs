@@ -49,12 +49,6 @@
              :outgoing (boolean (:outgoingStatus message)))
       (dissoc :ensName :chatId :text :rtl :responseTo :image :sticker :lineCount :parsedText :links)))
 
-(defn update-outgoing-status-rpc [message-id status]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "updateMessageOutgoingStatus")
-                     :params [message-id status]
-                     :on-success #(log/debug "updated message outgoing stauts" message-id status)
-                     :on-failure #(log/error "failed to update message outgoing status" message-id status %)}]})
-
 (defn messages-by-chat-id-rpc [chat-id
                                cursor
                                limit
@@ -100,9 +94,6 @@
 
 (fx/defn mark-messages-seen [cofx chat-id ids on-success]
   (mark-seen-rpc chat-id ids on-success))
-
-(fx/defn update-outgoing-status [cofx message-id status]
-  (update-outgoing-status-rpc message-id status))
 
 (fx/defn delete-messages-by-chat-id [cofx chat-id]
   (delete-messages-by-chat-id-rpc chat-id))

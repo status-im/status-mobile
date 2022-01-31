@@ -24,7 +24,7 @@
     [react/text {:style styles/explanation-text}
      (i18n/label :t/mailserver-automatic-switch-explanation)]]])
 
-(defn render-row [{:keys [name id user-defined]} _ _ {:keys [current-mailserver-id preferred-mailserver-id]}]
+(defn render-row [{:keys [name id custom]} _ _ {:keys [current-mailserver-id preferred-mailserver-id]}]
   (let [pinned? preferred-mailserver-id
         connected? (= id current-mailserver-id)
         visible? (or pinned? ; show everything when auto selection is turned off
@@ -33,8 +33,8 @@
 
     (when visible?
       [react/touchable-highlight
-       {:on-press (when pinned? #(if user-defined
-                                   (re-frame/dispatch [:mailserver.ui/user-defined-mailserver-selected id])
+       {:on-press (when pinned? #(if custom
+                                   (re-frame/dispatch [:mailserver.ui/custom-mailserver-selected id])
                                    (re-frame/dispatch [:mailserver.ui/default-mailserver-selected id])))
         :accessibility-label :mailserver-item}
        [react/view (styles/mailserver-item)

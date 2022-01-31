@@ -10,13 +10,6 @@ make shell TARGET=android
 ```
 This step will take a while the first time as it will download all dependencies.
 
-To build the app, your can simply run on of the following:
-```
-make release-android
-make release-ios
-```
-For more `make` targets run `make help`.
-
 # Development
 
 There are three steps necessary to start development, in this case for Android:
@@ -27,6 +20,18 @@ There are three steps necessary to start development, in this case for Android:
 
 The first two will continue watching for changes and keep re-building the app. They need to be ready first.
 The last one will exit once the app is up and ready.
+
+You need to have your emulator or real devices running and visible to adb, before you run `make run-android`.
+
+# Build release
+
+To build the app, your can simply run on of the following:
+```
+make release-android
+make release-ios
+```
+
+For more `make` targets run `make help`.
 
 # Updating Dependencies
 
