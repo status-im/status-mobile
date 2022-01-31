@@ -31,7 +31,7 @@ Upgrade (e2e):
 - [ ] 3. Update [RELEASES.md](https://github.com/status-im/status-react/blob/develop/RELEASES.md) with release notes (make PR based on previous step)
 - [ ] 4. Create release branch using this [guide](https://github.com/status-im/status-react/blob/develop/doc/RELEASE_GUIDE.md), bump VERSION (merge created PR ([example](https://github.com/status-im/status-react/pull/12504) ) to develop) and get successful release builds (so, testing can be started)
 - [ ] 5. Based on release scope, ask for comms (Jonny) 
-- [ ] 6. Make sure that assets (screenshots, video) in stores are up to date. If should be updated, ask @cammellos  for help
+- [ ] 6. Make sure that assets (screenshots, video) in stores are up-to-date, more info [here](https://notes.status.im/how-to-update-assets)
 
 #### 2) Testing
 [comment]: # (Section will be maintained by QA)
@@ -53,14 +53,15 @@ Upgrade (e2e):
 
 #### 3) Submission
 
-- [ ] 1. Release notes written and added (500 character limit for updates (Android) and PR for [RELEASES.md](https://github.com/status-im/status-react/blob/develop/RELEASES.md) is ready to be merged (from 1.3 step)
-- [ ] 2. Submit beta version for Android (Open Testing in Play Store)
-- [ ] 3. Submit iOS build to Apple review ([instruction](https://drive.google.com/file/d/10Cl7PBB7TFPkZiVbfzdFGpfMRP9bxXuq/view?usp=sharing), be careful - low quality of audio)
-- [ ] 4. Play store content reviewed and updated
-- [ ] 5. Privacy policy reviewed and updated (ask in channel)
-- [ ] 6. Countries to be excluded (ask in channel) 
-- [ ] 7. Changes to our FAQ made (should be checked and if any changes needed, ask Jakub to made them)
-- [ ] 8. Prepare PR for F-droid build ([instruction]( https://github.com/status-im/status-react/blob/develop/doc/FDROID.md))
+- [ ] 1. Prepare PR for F-droid build ([instruction]( https://github.com/status-im/status-react/blob/develop/doc/FDROID.md))
+- [ ] 2. Release notes written and added (500 character limit for updates (Android) and PR for [RELEASES.md](https://github.com/status-im/status-react/blob/develop/RELEASES.md) is ready to be merged (from 1.3 step)
+- [ ] 3. Submit beta version for Android (Open Testing in Play Store)
+- [ ] 4. Submit iOS build to Apple review ([instruction](https://drive.google.com/file/d/10Cl7PBB7TFPkZiVbfzdFGpfMRP9bxXuq/view?usp=sharing), be careful - low quality of audio)
+- [ ] 5. Play store content reviewed and updated
+- [ ] 6. Privacy policy reviewed and updated (ask in channel)
+- [ ] 7. Countries to be excluded (ask in channel) 
+- [ ] 8. Changes to our FAQ made (should be checked and if any changes needed, ask Jakub to made them)
+
 
 #### 4) Before publishing
 - [ ] 1. Translations for comms available (marketing, ask in the channel)

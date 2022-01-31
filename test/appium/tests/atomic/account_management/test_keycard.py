@@ -455,7 +455,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         if not keycard.element_by_translation_id("new-pin-description").is_element_displayed():
             self.driver.fail("Screen for setting new pin is not shown!")
         [keycard.enter_another_pin() for _ in range(2)]
-        if not keycard.element_by_translation_id("pin-changed").is_element_displayed():
+        if not keycard.element_by_translation_id("pin-changed").is_element_displayed(30):
             self.driver.fail("Popup about successful setting new PIN is not shown!")
         keycard.ok_button.click()
 
@@ -468,7 +468,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         if not keycard.element_by_translation_id("repeat-puk").is_element_displayed():
             self.driver.fail("Confirmation screen for setting new puk is not shown!")
         [keycard.one_button.click() for _ in range(12)]
-        if not keycard.element_by_translation_id("puk-changed").is_element_displayed():
+        if not keycard.element_by_translation_id("puk-changed").is_element_displayed(30):
             self.driver.fail("Popup about successful setting new PUK is not shown!")
         keycard.ok_button.click()
 
@@ -481,7 +481,7 @@ class TestCreateAccount(SingleDeviceTestCase):
             self.errors.append("No error is shown when pairing codes don't match")
         sign_in.confirm_your_password_input.delete_last_symbols(1)
         sign_in.element_by_translation_id("change-pairing").click()
-        if not keycard.element_by_translation_id("pairing-changed").is_element_displayed():
+        if not keycard.element_by_translation_id("pairing-changed").is_element_displayed(30):
             self.driver.fail("Popup about successful setting new pairing is not shown!")
         keycard.ok_button.click()
 

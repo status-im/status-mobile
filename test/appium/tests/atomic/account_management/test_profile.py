@@ -128,8 +128,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.share_via_messenger()
         if not profile.element_by_text_part(public_key).is_element_present():
             self.errors.append("Can't share public key")
-        [profile.click_system_back_button() for _ in range(2)]
-        profile.close_share_popup()
+        profile.click_system_back_button()
 
         home.just_fyi("Check that can paste contact code in chat message input")
         home = profile.home_button.click()
@@ -140,7 +139,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if input_text not in public_key or len(input_text) < 1:
             self.errors.append('Public key was not copied')
         chat.chat_message_input.clear()
-        chat.get_back_to_home_view()
+        chat.home_button.click()
 
         home.just_fyi("Copying wallet address")
         wallet = profile.wallet_button.click()
@@ -155,8 +154,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         wallet.share_via_messenger()
         if not wallet.element_by_text_part(address).is_element_present():
             self.errors.append("Can't share address")
-        [wallet.click_system_back_button() for _ in range(2)]
-        wallet.close_share_popup()
+        wallet.click_system_back_button()
 
         home.just_fyi("Check that can paste wallet address in chat message input")
         wallet.home_button.click()
