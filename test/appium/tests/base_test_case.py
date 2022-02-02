@@ -110,9 +110,11 @@ class AbstractTestCase:
 
     @property
     def app_path(self):
-        app_path = '/storage/emulated/0/Android/data/im.status.ethereum.pr/files/Download/' if findall(r'pr\d\d\d\d\d',
-                                                                                                       pytest_config_global[
-                                                                                                           'apk']) else '/storage/emulated/0/Android/data/im.status.ethereum/files/Download/'
+        app_folder = 'im.status.ethereum'
+        apk = pytest_config_global['apk']
+        if findall(r'pr\d\d\d\d\d', apk) or findall(r'\d\d\d\d\d.apk', apk):
+            app_folder += '.pr'
+        app_path = '/storage/emulated/0/Android/data/%s/files/Download/' % app_folder
         return app_path
 
     @property
