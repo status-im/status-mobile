@@ -27,10 +27,8 @@
 (fx/defn new-chat-set-new-identity
   {:events [:new-chat/set-new-identity]}
   [{db :db} new-identity-raw new-ens-name id]
-  (let [new-identity (utils/safe-trim new-identity-raw)
-        ens-error (and (= new-identity-raw "0x") (not (string/blank? new-ens-name)))]
-    (when (and (or (not id) (= id @resolve-last-id))
-               (or ens-error (> (count new-identity) 4)))
+  (let [ens-error (and (= new-identity-raw "0x") (not (string/blank? new-ens-name)))]
+    (when (or (not id) (= id @resolve-last-id))
       (if ens-error
         {:db (assoc-in db [:contacts/new-identity :state] :error)}
         (let [new-identity (utils/safe-trim new-identity-raw)
