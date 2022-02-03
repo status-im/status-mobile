@@ -50,3 +50,4 @@ docker==4.4.0
 influxdb==5.3.1
 web3==5.25.0
 imagehash
+eth-keyfile>=0.6.0 # not directly required, pinned by Snyk to avoid a vulnerability
