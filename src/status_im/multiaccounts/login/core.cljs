@@ -267,11 +267,11 @@
                              :on-success resolve
                              :on-error reject})))
           (js/Promise.
-           (fn [resolve reject]
+           (fn [resolve _]
              (json-rpc/call {:method "wallet_getTokens"
                              :params [(int network-id)]
                              :on-success resolve
-                             :on-error reject})))
+                             :on-error #(resolve nil)})))
           (js/Promise.
            (fn [resolve reject]
              (json-rpc/call {:method "wallet_getCustomTokens"
