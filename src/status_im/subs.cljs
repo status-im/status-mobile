@@ -2752,6 +2752,11 @@
   (when-not (money/sufficient-funds? amount (get balance symbol))
     {:amount-error (i18n/label :t/wallet-insufficient-funds)}))
 
+(defn gas-required-exceeds-allowance? [gas-error-message]
+  (and gas-error-message (string/starts-with?
+                          gas-error-message
+                          "gas required exceeds allowance")))
+
 (defn get-sufficient-gas-error
   [gas-error-message balance symbol amount ^js gas ^js gasPrice]
   (if (and gas gasPrice)
@@ -2763,8 +2768,13 @@
       (merge {:gas-error-state (when gas-error-message :gas-is-set)}
              (when-not (money/sufficient-funds? fee (money/bignumber available-for-gas))
                {:gas-error (i18n/label :t/wallet-insufficient-gas)})))
-    {:gas-error-state (when gas-error-message :gas-isnt-set)
-     :gas-error       (or gas-error-message (i18n/label :t/invalid-number))}))
+    (let [insufficient-balance? (gas-required-exceeds-allowance? gas-error-message)]
+      {:gas-error-state       (when gas-error-message :gas-isnt-set)
+       :insufficient-balalce? insufficient-balance?
+       :gas-error             (if insufficient-balance?
+                                (i18n/label :t/insufficient-balance-to-cover-fee)
+                                (or gas-error-message
+                                    (i18n/label :t/invalid-number)))})))
 
 (re-frame/reg-sub
  :signing/amount-errors

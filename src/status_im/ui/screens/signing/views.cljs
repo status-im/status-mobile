@@ -350,7 +350,8 @@
                          (i18n/format-currency converted-value (:code wallet-currency))])
                       [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]]}]))))
 
-(views/defview fee-item [prices wallet-currency fee-display-symbol fee gas-error gas-error-state prices-loading?]
+(views/defview fee-item [prices wallet-currency fee-display-symbol fee
+                         insufficient-balance? gas-error gas-error-state prices-loading?]
   (views/letsubs [{:keys [gas-price-loading? gas-loading?]} [:signing/edit-fee]
                   show-error (reagent/atom false)]
     (let [converted-fee-value (* fee (get-in prices [(keyword fee-display-symbol) (keyword (:code wallet-currency)) :price]))]
@@ -361,27 +362,28 @@
                      (i18n/label :t/network-fee))
         :error     (when (and (not (or gas-price-loading? gas-loading?)) gas-error @show-error)
                      gas-error)
-        :disabled  (or gas-price-loading? gas-loading?)
-        :chevron   true
+        :disabled  (or insufficient-balance? gas-price-loading? gas-loading?)
+        :chevron   (not insufficient-balance?)
         :animated  false
-        :accessory (if (or gas-price-loading? gas-loading?)
-                     [react/small-loading-indicator]
-                     (if (= :gas-isnt-set gas-error-state)
-                       [react/text {:style               {:color colors/blue}
-                                    :accessibility-label :custom-gas-fee}
-                        (i18n/label :t/set-custom-fee)]
-                       [react/view {:style               {:flex-direction :row}
-                                    :accessibility-label :custom-gas-fee}
-                        [react/nested-text {:style {:color colors/gray}}
-                         [{:style {:color colors/black}} (utils/format-decimals fee 6)]
-                         " "
-                         fee-display-symbol
-                         " • "]
-                        (if prices-loading?
-                          [react/small-loading-indicator]
-                          [react/text {:style {:color colors/black}}
-                           (i18n/format-currency converted-fee-value (:code wallet-currency))])
-                        [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]]))
+        :accessory (when-not insufficient-balance?
+                     (if (or gas-price-loading? gas-loading?)
+                       [react/small-loading-indicator]
+                       (if (= :gas-isnt-set gas-error-state)
+                         [react/text {:style               {:color colors/blue}
+                                      :accessibility-label :custom-gas-fee}
+                          (i18n/label :t/set-custom-fee)]
+                         [react/view {:style               {:flex-direction :row}
+                                      :accessibility-label :custom-gas-fee}
+                          [react/nested-text {:style {:color colors/gray}}
+                           [{:style {:color colors/black}} (utils/format-decimals fee 6)]
+                           " "
+                           fee-display-symbol
+                           " • "]
+                          (if prices-loading?
+                            [react/small-loading-indicator]
+                            [react/text {:style {:color colors/black}}
+                             (i18n/format-currency converted-fee-value (:code wallet-currency))])
+                          [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]])))
         :on-press #(re-frame/dispatch
                     [:signing.ui/open-fee-sheet
                      {:content        (fn []
@@ -411,7 +413,7 @@
   (views/letsubs [fee                   [:signing/fee]
                   sign                  [:signing/sign]
                   chain                 [:current-network]
-                  {:keys [amount-error gas-error gas-error-state]}
+                  {:keys [amount-error gas-error gas-error-state insufficient-balalce?]}
                   [:signing/amount-errors (:address from)]
                   keycard-multiaccount? [:keycard-multiaccount?]
                   prices                [:prices]
@@ -442,7 +444,7 @@
           (when-not cancel?
             [amount-item prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?])
           [separator]
-          [fee-item prices wallet-currency fee-display-symbol fee gas-error gas-error-state prices-loading?]
+          [fee-item prices wallet-currency fee-display-symbol fee insufficient-balalce? gas-error gas-error-state prices-loading?]
           (when (and management-enabled? (not keycard-multiaccount?))
             [advanced-item])
           (when (= :gas-is-set gas-error-state)
