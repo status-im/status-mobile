@@ -9,57 +9,6 @@ from views.sign_in_view import SignInView
 
 class TestWalletManagement(SingleDeviceTestCase):
 
-    @marks.testrail_id(5335)
-    @marks.high
-    def test_wallet_set_up(self):
-        sign_in = SignInView(self.driver)
-        sign_in.recover_access(transaction_senders['A']['passphrase'])
-        wallet = sign_in.wallet_button.click()
-
-        wallet.just_fyi("Initiating some transaction so the wallet signing phrase pop-up appears")
-        wallet.accounts_status_account.click()
-        send_transaction_view = wallet.send_transaction_button.click()
-        send_transaction_view.amount_edit_box.click()
-        send_transaction_view.amount_edit_box.set_value("0")
-        send_transaction_view.set_recipient_address("0x" + transaction_senders['A']['address'])
-        send_transaction_view.sign_transaction_button.click()
-
-        texts = list(map(sign_in.get_translation_by_key,
-                         ["this-is-you-signing", "three-words-description", "three-words-description-2"]))
-        wallet.just_fyi('Check tests in set up wallet popup')
-        for text in texts:
-            if not wallet.element_by_text_part(text).is_element_displayed():
-                self.errors.append("'%s' text is not displayed" % text)
-        phrase = wallet.sign_in_phrase.list
-        if len(phrase) != 3:
-            self.errors.append('Transaction phrase length is %s' % len(phrase))
-
-        wallet.just_fyi('Check popup will reappear if tap on "Remind me later"')
-        wallet.remind_me_later_button.click()
-        send_transaction_view.cancel_button.click()
-        wallet.wallet_button.click()
-        wallet.accounts_status_account.click()
-        send_transaction = wallet.send_transaction_button.click()
-        send_transaction.amount_edit_box.set_value('0')
-        send_transaction.set_recipient_address('0x%s' % basic_user['address'])
-        send_transaction.next_button.click_until_presence_of_element(send_transaction.sign_transaction_button)
-        send_transaction.sign_transaction_button.click()
-        for text in texts:
-            if not wallet.element_by_text_part(text).is_element_displayed():
-                self.errors.append("'%s' text is not displayed" % text)
-        phrase_1 = wallet.sign_in_phrase.list
-        if phrase_1 != phrase:
-            self.errors.append("Transaction phrase '%s' doesn't match expected '%s'" % (phrase_1, phrase))
-        wallet.ok_got_it_button.click()
-        wallet.cancel_button.click()
-        wallet.home_button.click()
-        wallet.wallet_button.click()
-        for text in texts:
-            if wallet.element_by_text_part(text).is_element_displayed():
-                self.errors.append('Signing phrase pop up appears after wallet set up')
-                break
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(5384)
     @marks.critical
     def test_open_transaction_on_etherscan_copy_tx_hash(self):

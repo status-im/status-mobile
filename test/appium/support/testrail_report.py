@@ -103,6 +103,8 @@ class TestrailReport(BaseTestReport):
         test_cases['public_chat'] = 50654
         test_cases['one_to_one_chat'] = 50655
         test_cases['group_chat'] = 50656
+        test_cases['onboarding'] = 50659
+        test_cases['recovery'] = 50660
         test_pr = list()
         for key in test_cases:
             if key != 'medium' and key != 'upgrade':

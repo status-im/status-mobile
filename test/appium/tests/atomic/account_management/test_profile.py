@@ -111,60 +111,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5323)
-    @marks.critical
-    def test_share_copy_contact_code_and_wallet_address(self):
-        home = SignInView(self.driver).create_user()
-        profile = home.profile_button.click()
-
-        home.just_fyi("Copying contact code")
-        profile.share_my_profile_button.click()
-        public_key = profile.public_key_text.text
-        profile.public_key_text.long_press_element()
-        profile.copy_text()
-
-        home.just_fyi("Sharing contact code via messenger")
-        profile.share_button.click()
-        profile.share_via_messenger()
-        if not profile.element_by_text_part(public_key).is_element_present():
-            self.errors.append("Can't share public key")
-        profile.click_system_back_button()
-
-        home.just_fyi("Check that can paste contact code in chat message input")
-        home = profile.home_button.click()
-        chat = home.add_contact(transaction_senders['M']['public_key'])
-        chat.chat_message_input.click()
-        chat.paste_text()
-        input_text = chat.chat_message_input.text
-        if input_text not in public_key or len(input_text) < 1:
-            self.errors.append('Public key was not copied')
-        chat.chat_message_input.clear()
-        chat.home_button.click()
-
-        home.just_fyi("Copying wallet address")
-        wallet = profile.wallet_button.click()
-        wallet.accounts_status_account.click()
-        request = wallet.receive_transaction_button.click()
-        address = wallet.address_text.text
-        request.share_button.click()
-        request.element_by_translation_id("sharing-copy-to-clipboard").click()
-
-        home.just_fyi("Sharing wallet address via messenger")
-        request.share_button.click()
-        wallet.share_via_messenger()
-        if not wallet.element_by_text_part(address).is_element_present():
-            self.errors.append("Can't share address")
-        wallet.click_system_back_button()
-
-        home.just_fyi("Check that can paste wallet address in chat message input")
-        wallet.home_button.click()
-        home.get_chat(transaction_senders['M']['username']).click()
-        chat.chat_message_input.click()
-        chat.paste_text()
-        if chat.chat_message_input.text != address:
-            self.errors.append('Wallet address was not copied')
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(5502)
     @marks.critical
     def test_can_add_existing_ens_on_mainnet(self):
@@ -229,30 +175,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(6296)
-    @marks.high
-    def test_recover_account_from_new_user_seedphrase(self):
-        home = SignInView(self.driver).create_user()
-        profile = home.profile_button.click()
-        profile.privacy_and_security_button.click()
-        profile.backup_recovery_phrase_button.click()
-        profile.ok_continue_button.click()
-        recovery_phrase = " ".join(profile.get_recovery_phrase().values())
-        profile.close_button.click()
-        profile.back_button.click()
-        public_key = profile.get_public_key_and_username()
-        wallet = profile.wallet_button.click()
-        address = wallet.get_wallet_address()
-        home.profile_button.click()
-        profile.logout()
-        self.driver.reset()
-        SignInView(self.driver).recover_access(recovery_phrase)
-        wallet = home.wallet_button.click()
-        if wallet.get_wallet_address() != address:
-            self.driver.fail("Seed phrase displayed in new accounts for back up does not recover respective address")
-        profile = wallet.profile_button.click()
-        if profile.get_public_key_and_username() != public_key:
-            self.driver.fail("Seed phrase displayed in new accounts for back up does not recover respective public key")
 
     @marks.testrail_id(5433)
     @marks.medium
@@ -359,57 +281,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.network_settings_button.scroll_to_element(10, 'up')
         if not profile.element_by_text_part('custom_ropsten').is_element_displayed():
             self.driver.fail("Network custom_ropsten was not added!")
-
-    @marks.critical
-    @marks.testrail_id(5419)
-    @marks.flaky
-    def test_logcat_backup_recovery_phrase(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-
-        home.just_fyi("Check that badge on profile about back up seed phrase is presented")
-        if home.profile_button.counter.text != '1':
-            self.errors.append('Profile button counter is not shown')
-
-        home.just_fyi("Back up seed phrase and check logcat")
-        profile = home.profile_button.click()
-        profile.privacy_and_security_button.click()
-        profile.backup_recovery_phrase_button.click()
-        profile.ok_continue_button.click()
-        recovery_phrase = profile.get_recovery_phrase()
-        profile.next_button.click()
-        word_number = profile.recovery_phrase_word_number.number
-        profile.recovery_phrase_word_input.set_value(recovery_phrase[word_number])
-        profile.next_button.click()
-        word_number_1 = profile.recovery_phrase_word_number.number
-        profile.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
-        profile.done_button.click()
-        profile.yes_button.click()
-        profile.ok_got_it_button.click()
-        if home.profile_button.counter.is_element_displayed():
-            self.errors.append('Profile button counter is shown after recovery phrase backup')
-        values_in_logcat = profile.find_values_in_logcat(passphrase1=recovery_phrase[word_number],
-                                                         passphrase2=recovery_phrase[word_number_1])
-        if len(values_in_logcat) == 2:
-            self.driver.fail(values_in_logcat)
-        profile.profile_button.double_click()
-
-        home.just_fyi(
-            "Try to restore same account from seed phrase (should be possible only to unlock existing account)")
-        profile.logout()
-        sign_in.back_button.click()
-        sign_in.access_key_button.click()
-        sign_in.enter_seed_phrase_button.click()
-        sign_in.seedphrase_input.click()
-        sign_in.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
-        sign_in.next_button.click()
-        sign_in.element_by_translation_id(translation_id="unlock", uppercase=True).click()
-        sign_in.password_input.set_value(common_password)
-        chat = sign_in.sign_in_button.click()
-        chat.plus_button.click()
-        if not chat.start_new_chat_button.is_element_displayed():
-            self.errors.append("Can't proceed using account after it's re-recover twice.")
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(5453)
     @marks.medium
