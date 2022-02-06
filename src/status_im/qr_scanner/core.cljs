@@ -55,16 +55,16 @@
   (group-chats/create-from-link cofx params))
 
 (fx/defn handle-view-profile
-  [{:keys [db] :as cofx} {:keys [public-key]}]
+  [{:keys [db] :as cofx} {:keys [public-key ens-name]}]
   (let [own (new-chat.db/own-public-key? db public-key)]
     (cond
       (and public-key own)
-      {:navigate-change-tab-fx :profile
+      {:change-tab-fx :profile
        :pop-to-root-tab-fx :profile-stack}
 
       (and public-key (not own))
       (fx/merge cofx
-                {:dispatch [:chat.ui/show-profile public-key]}
+                {:dispatch [:chat.ui/show-profile public-key ens-name]}
                 (navigation/navigate-back))
 
       :else

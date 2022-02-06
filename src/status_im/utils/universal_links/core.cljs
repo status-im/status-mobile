@@ -80,15 +80,17 @@
     (chat/start-public-chat cofx topic {})))
 
 (fx/defn handle-view-profile
-  [{:keys [db] :as cofx} {:keys [public-key]}]
+  [{:keys [db] :as cofx} {:keys [public-key ens-name]}]
   (log/info "universal-links: handling view profile" public-key)
   (cond
     (and public-key (new-chat.db/own-public-key? db public-key))
-    {:navigate-change-tab-fx :profile
+    {:change-tab-fx :profile
      :pop-to-root-tab-fx :profile-stack}
 
     public-key
-    (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key)
+    (navigation/navigate-to-cofx (-> cofx
+                                     (assoc-in [:db :contacts/identity] public-key)
+                                     (assoc-in [:db :contacts/ens-name] ens-name))
                                  :profile
                                  {})))
 

@@ -62,19 +62,20 @@
   (assoc (bidi/match-route routes uri) :uri uri :query-params (parse-query-params uri)))
 
 (defn match-contact-async
-  [chain {:keys [user-id]} callback]
+  [chain {:keys [user-id ens-name]} callback]
   (let [valid-key (and (spec/valid? :global/public-key user-id)
                        (not= user-id ens/default-key))]
     (cond
-      (and valid-key)
+      valid-key
       (callback {:type       :contact
-                 :public-key user-id})
+                 :public-key user-id
+                 :ens-name   ens-name})
 
       (and (not valid-key) (string? user-id) (not (string/blank? user-id))
            (not= user-id "0x"))
       (let [chain-id   (ethereum/chain-keyword->chain-id chain)
             ens-name   (stateofus/ens-name-parse user-id)
-            on-success #(match-contact-async chain {:user-id %} callback)]
+            on-success #(match-contact-async chain {:user-id % :ens-name ens-name} callback)]
         (ens/pubkey chain-id ens-name on-success))
 
       :else

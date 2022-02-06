@@ -14,6 +14,14 @@
      :identicon   (identicon/identicon public-key)
      :public-key  public-key}))
 
+(defn public-key-and-ens-name->new-contact [public-key ens-name]
+  (let [contact (public-key->new-contact public-key)]
+    (if ens-name (-> contact
+                     (assoc :ens-name ens-name)
+                     (assoc :ens-verified true)
+                     (assoc :name ens-name))
+        contact)))
+
 (defn public-key->contact
   [contacts public-key]
   (when public-key
