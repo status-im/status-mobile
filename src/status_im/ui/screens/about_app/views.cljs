@@ -12,6 +12,7 @@
 
 (views/defview about-app []
   (views/letsubs [app-version  [:get-app-short-version]
+                  commit-hash  [:get-commit-hash]
                   node-version [:get-app-node-version]]
     [react/scroll-view
      [quo/list-item
@@ -35,6 +36,14 @@
         :title               (i18n/label :t/version)
         :accessory           :text
         :accessory-text      app-version}]]
+     [copyable-text/copyable-text-view
+      {:copied-text commit-hash}
+      [quo/list-item
+       {:size                :small
+        :accessibility-label :commit-hash
+        :title               (i18n/label :t/app-commit)
+        :accessory           :text
+        :accessory-text      commit-hash}]]
      [copyable-text/copyable-text-view
       {:copied-text node-version}
       [quo/list-item

@@ -1304,6 +1304,7 @@
     "validation-amount-invalid-number": "Amount is not a valid number",
     "validation-amount-is-too-precise": "Amount is too precise. Max number of decimals is {{decimals}}.",
     "version": "App version",
+    "app-commit": "App commit",
     "view": "View",
     "view-cryptokitties": "View in CryptoKitties",
     "view-cryptostrikers": "View in CryptoStrikers",

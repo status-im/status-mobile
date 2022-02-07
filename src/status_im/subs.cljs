@@ -610,19 +610,19 @@
 (defn- node-version [web3-node-version]
   (or web3-node-version "N/A"))
 
-(def app-short-version
-  (let [version build/build-no]
-    (str build/version " (" version ")")))
-
 (re-frame/reg-sub
  :get-app-version
  :<- [:web3-node-version]
  (fn [web3-node-version]
-   (str app-short-version "; " (node-version web3-node-version))))
+   (str build/app-short-version "; " (node-version web3-node-version))))
 
 (re-frame/reg-sub
  :get-app-short-version
- (fn [_] app-short-version))
+ (fn [_] build/app-short-version))
+
+(re-frame/reg-sub
+ :get-commit-hash
+ (fn [_] build/commit-hash))
 
 (re-frame/reg-sub
  :get-app-node-version

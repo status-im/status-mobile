@@ -29,7 +29,7 @@
 (defmacro get-current-sha
   "fetches the latest commit sha from the current branch"
   []
-  (-> (shell/sh "git" "rev-parse" "--short" "HEAD")
+  (-> (shell/sh "git" "rev-parse" "HEAD")
       :out
       (string/replace "\n" "")))
 
