@@ -9,9 +9,9 @@
 (fx/defn send-message-pressed
   {:events       [:contact.ui/send-message-pressed]
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
-  [cofx {:keys [public-key]}]
+  [cofx {:keys [public-key ens-name]}]
   (fx/merge cofx
-            {:dispatch-later [{:ms 1000 :dispatch [:chat.ui/start-chat public-key]}]}
+            {:dispatch-later [{:ms 1000 :dispatch [:chat.ui/start-chat public-key ens-name]}]}
             (notification-center/accept-all-activity-center-notifications-from-chat public-key)
             (navigation/pop-to-root-tab :chat-stack)))
 

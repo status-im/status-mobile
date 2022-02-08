@@ -27,7 +27,8 @@
   [{:keys [public-key added? blocked? ens-name] :as contact} muted?]
   (concat [{:label               (i18n/label :t/chat)
             :icon                :main-icons/message
-            :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:public-key public-key}])
+            :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:public-key public-key
+                                                                                        :ens-name   ens-name}])
             :accessibility-label :start-conversation-button}]
           (if added?
             [{:label               (i18n/label :t/remove-from-contacts)
