@@ -178,7 +178,7 @@
     "blockquote"
     (conj acc [react/view (style/blockquote-style (and outgoing (not pinned)))
                [react/text-class (style/blockquote-text-style (and outgoing (not pinned)))
-                (.substring literal 0 (dec (.-length literal)))]])
+                (.substring literal 0 (.-length literal))]])
 
     "codeblock"
     (conj acc [react/view {:style style/codeblock-style}
