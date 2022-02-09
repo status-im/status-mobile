@@ -23,7 +23,7 @@
             [status-im.ui.screens.bug-report :as bug-report]
             [status-im.ui.screens.chat.pinned-messages :as pin-messages]
             [status-im.ui.screens.chat.views :as chat]
-            [status-im.ui.screens.chat.invite :as chat.invite]
+            [status-im.ui.screens.chat.share :as chat.share]
             [status-im.ui.screens.communities.channel-details :as communities.channel-details]
             [status-im.ui.screens.communities.community :as community]
             [status-im.ui.screens.communities.community-emoji-thumbnail-picker :as community-emoji-thumbnail-picker]
@@ -616,7 +616,7 @@
            {:name      :share-to-contacts
             :options   {:topBar {:visible false}
                         :cofx :cofx}
-            :component chat.invite/invite
+            :component chat.share/share
             :insets    {:bottom true}}
 
 

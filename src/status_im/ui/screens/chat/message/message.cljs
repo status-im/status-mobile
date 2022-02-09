@@ -571,9 +571,10 @@
                          :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
      reaction-picker]))
 
-(defmethod ->message constants/content-type-image [{:keys [content in-popover?] :as message} {:keys [on-long-press modal]
-                                                                                              :as   reaction-picker}]
-  [message-content-wrapper message
+(defmethod ->message constants/content-type-image 
+[{:keys [content in-popover?] :as message}
+ {:keys [on-long-press modal] :as   reaction-picker}]
+   [message-content-wrapper message
    [message-content-image message {:modal         modal
                                    :disabled      in-popover?
                                    :delay-long-press 100

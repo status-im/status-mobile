@@ -1,11 +1,11 @@
-(ns status-im.ui.screens.chat.invite
+(ns status-im.ui.screens.chat.share
   (:require [reagent.core :as reagent]
             [quo.react-native :as rn]
             [quo.core :as quo]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.utils.handlers :refer [<sub >evt-once]]
-            [status-im.chat.models.message :as chat-model]
+            [ status-im.transport.message.protocol :as protocol]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.multiaccounts.core :as multiaccounts]
@@ -38,10 +38,11 @@
                      (swap! selected disj public-key)
                      (swap! selected conj public-key)))}]))
 
-(defn invite []
+(defn share []
   (let [user-pk           (reagent/atom "")
         contacts-selected (reagent/atom #{})
-        {:keys [message-id]} (<sub [:get-screen-params])]
+        {:keys [message-id]} (<sub [:get-screen-params])      
+        {:keys [content-type]} (<sub [:get-screen-params])]
     (fn []
       (let [contacts-data               (<sub [:contacts/active])
             selected                    @contacts-selected
@@ -65,6 +66,6 @@
            [quo/button {:disabled (and (str/blank? @user-pk)
                                        (zero? (count selected)))
                         :type     :secondary
-                        :on-press #(>evt-once [::chat-model/share-image-to-contacts-pressed
-                                               @user-pk selected message-id])}
+                        :on-press #(>evt-once [::protocol/share-image-to-contacts-pressed
+                                               @user-pk selected message-id content-type])}
             (i18n/label :t/share)]}]]))))
