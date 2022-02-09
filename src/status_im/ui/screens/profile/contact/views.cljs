@@ -24,10 +24,11 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (defn actions
-  [{:keys [public-key added? blocked?] :as contact} muted?]
+  [{:keys [public-key added? blocked? ens-name] :as contact} muted?]
   (concat [{:label               (i18n/label :t/chat)
             :icon                :main-icons/message
-            :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:public-key public-key}])
+            :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:public-key public-key
+                                                                                        :ens-name   ens-name}])
             :accessibility-label :start-conversation-button}]
           (if added?
             [{:label               (i18n/label :t/remove-from-contacts)
@@ -38,7 +39,7 @@
             [{:label               (i18n/label :t/add-to-contacts)
               :icon                :main-icons/add-contact
               :accessibility-label :add-to-contacts-button
-              :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}])
+              :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key nil ens-name])}])
           (when platform/ios?
             [{:label               (i18n/label (if (or muted? blocked?) :t/unmute :t/mute))
               :icon                :main-icons/notification

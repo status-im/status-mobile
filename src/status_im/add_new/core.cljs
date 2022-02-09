@@ -68,7 +68,7 @@
 
 (fx/defn qr-code-handled
   {:events [::qr-code-handled]}
-  [{:keys [db] :as cofx} {:keys [type public-key chat-id data]} {:keys [new-contact?] :as opts}]
+  [{:keys [db] :as cofx} {:keys [type public-key chat-id data ens-name]} {:keys [new-contact?] :as opts}]
   (let [public-key? (and (string? data)
                          (string/starts-with? data "0x"))
         chat-key (cond
@@ -80,9 +80,9 @@
     (if-not validation-result
       (if new-contact?
         (fx/merge cofx
-                  (contact/add-contact chat-key nil nil)
+                  (contact/add-contact chat-key nil ens-name)
                   (navigation/navigate-to-cofx :contacts-list {}))
-        (chat/start-chat cofx chat-key nil))
+        (chat/start-chat cofx chat-key ens-name))
       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                           :content    (case validation-result
                                         :invalid

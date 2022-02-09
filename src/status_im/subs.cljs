@@ -152,6 +152,7 @@
 ;;contacts
 (reg-root-key-sub ::contacts :contacts/contacts)
 (reg-root-key-sub :contacts/current-contact-identity :contacts/identity)
+(reg-root-key-sub :contacts/current-contact-ens-name :contacts/ens-name)
 (reg-root-key-sub :contacts/new-identity :contacts/new-identity)
 (reg-root-key-sub :group/selected-contacts :group/selected-contacts)
 (reg-root-key-sub :contacts/blocked-set :contacts/blocked)
@@ -2309,11 +2310,11 @@
  :contacts/current-contact
  :<- [:contacts/contacts]
  :<- [:contacts/current-contact-identity]
- (fn [[contacts identity]]
+ :<- [:contacts/current-contact-ens-name]
+ (fn [[contacts identity ens-name]]
    (or (get contacts identity)
-       (-> identity
-           contact.db/public-key->new-contact
-           contact.db/enrich-contact))))
+       (contact.db/enrich-contact
+        (contact.db/public-key-and-ens-name->new-contact identity ens-name)))))
 
 (re-frame/reg-sub
  :contacts/contact-by-identity

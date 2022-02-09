@@ -387,12 +387,14 @@
 
 (fx/defn show-profile
   {:events [:chat.ui/show-profile]}
-  [{:keys [db] :as cofx} identity]
+  [{:keys [db] :as cofx} identity ens-name]
   (let [my-public-key (get-in db [:multiaccount :public-key])]
     (when (not= my-public-key identity)
       (fx/merge
        cofx
-       {:db (assoc db :contacts/identity identity)}
+       {:db (-> db
+                (assoc :contacts/identity identity)
+                (assoc :contacts/ens-name ens-name))}
        (start-profile-chat identity true)))))
 
 (fx/defn clear-history-pressed
