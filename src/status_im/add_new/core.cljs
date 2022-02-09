@@ -82,7 +82,7 @@
         (fx/merge cofx
                   (contact/add-contact chat-key nil ens-name)
                   (navigation/navigate-to-cofx :contacts-list {}))
-        (chat/start-chat cofx chat-key nil))
+        (chat/start-chat cofx chat-key ens-name))
       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                           :content    (case validation-result
                                         :invalid
