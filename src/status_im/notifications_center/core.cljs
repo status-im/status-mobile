@@ -56,13 +56,14 @@
 (fx/defn accept-activity-center-notifications
   {:events [:accept-activity-center-notifications]}
   [{:keys [db]} ids]
-  {:db (update-in db [:activity.center/notifications :notifications]
-                  (fn [items] (remove #(get ids (:id %)) items)))
-   ::json-rpc/call [{:method     (json-rpc/call-ext-method "acceptActivityCenterNotifications")
-                     :params     [ids]
-                     :js-response true
-                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
-                     :on-error   #()}]})
+  (when (seq ids)
+    {:db (update-in db [:activity.center/notifications :notifications]
+                    (fn [items] (remove #(get ids (:id %)) items)))
+     ::json-rpc/call [{:method     (json-rpc/call-ext-method "acceptActivityCenterNotifications")
+                       :params     [ids]
+                       :js-response true
+                       :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                       :on-error   #(log/info "unable to accept activity center notifications" %)}]}))
 
 (fx/defn accept-all-activity-center-notifications-from-chat
   {:events [:accept-all-activity-center-notifications-from-chat]}
@@ -72,15 +73,16 @@
         notifications-from-chat-not-read (filter #(and (= chat-id (:chat-id %))
                                                        (not (:read %))) notifications)
         ids (map :id notifications-from-chat)]
-    {:db (-> db
-             (update-in [:activity.center/notifications :notifications]
-                        (fn [items] (filter #(not (= chat-id (:chat-id %))) items)))
-             (update :activity.center/notifications-count - (min (db :activity.center/notifications-count) (count notifications-from-chat-not-read))))
-     ::json-rpc/call [{:method     (json-rpc/call-ext-method "acceptActivityCenterNotifications")
-                       :params     [ids]
-                       :js-response true
-                       :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
-                       :on-error   #()}]}))
+    (when (seq ids)
+      {:db (-> db
+               (update-in [:activity.center/notifications :notifications]
+                          (fn [items] (filter #(not (= chat-id (:chat-id %))) items)))
+               (update :activity.center/notifications-count - (min (db :activity.center/notifications-count) (count notifications-from-chat-not-read))))
+       ::json-rpc/call [{:method     (json-rpc/call-ext-method "acceptActivityCenterNotifications")
+                         :params     [ids]
+                         :js-response true
+                         :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
+                         :on-error   #(log/info "unable to accept activity center notifications" %)}]})))
 
 (fx/defn accept-activity-center-notification-and-open-chat
   {:events [:accept-activity-center-notification-and-open-chat]}
