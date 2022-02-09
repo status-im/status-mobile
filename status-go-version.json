@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.93.3",
-    "commit-sha1": "c0c90947abf88202465eb66979584cc5e7905b7d",
-    "src-sha256": "160wk6d8xg1fhg4s5s6hf0grxv3z911xy2vwvx1nbvp6y9p60lzm"
+    "version": "v0.93.4",
+    "commit-sha1": "fb1f95a38f6b2a8a51da3f0c4b2bbacade084e70",
+    "src-sha256": "0dsc1x6kbxaiknb4706j0bzsca2kjwn1pnd32irxz1f41yqqsqgh"
 }
