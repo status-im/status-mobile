@@ -35,6 +35,8 @@
    "ens_ownerOf" {}
    "ens_contentHash" {}
    "ens_resourceURL" {}
+   "ens_registerPrepareTx" {}
+   "ens_setPubKeyPrepareTx" {}
    "net_version" {}
    "web3_clientVersion" {}
    "shh_generateSymKeyFromPassword" {}

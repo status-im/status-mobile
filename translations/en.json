@@ -530,6 +530,8 @@
     "ens-username-owned-continue": "Continuing will connect this username with your chat key.",
     "ens-username-taken": "Username already taken :(",
     "ens-name-not-found": "Cannot resolve ENS name",
+    "ens-username-registration-invalid": "Warning! Registration process has finished in invalid state. DO NOT USE the name for wallet transactions and reach out to our support at support@status.im",
+    "ens-username-invalid-name-warning": "Registration process of one of your ens names has finished in invalid state. DO NOT USE the name for wallet transactions and reach out to our support at support@status.im",
     "enter-12-words": "Enter the 12 words of your seed phrase, separated by single spaces",
     "enter-a-private-key": "Enter a private key",
     "enter-a-seed-phrase": "Enter a seed phrase",

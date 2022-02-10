@@ -41,7 +41,8 @@
             [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
-            [status-im.ethereum.tokens :as tokens]))
+            [status-im.ethereum.tokens :as tokens]
+            [clojure.string :as string]))
 
 (re-frame/reg-fx
  ::initialize-communities-enabled
@@ -97,10 +98,37 @@
           []
           accounts))
 
+;;TODO remove this code after all invalid names will be fixed (ask chu or flexsurfer)
+(def invalid-addrr
+  #{"0x9575cf381f71368a54e09b8138ebe046a1ef31ce93e6c37661513b21faaf741e"
+    "0x56fa5de8cd4f2a3cbc122e7c51ac8690c6fc739b7c3724add97d0c55cc783d45"
+    "0xf0e49d178fa34ac3ade4625e144f51e5f982434f0912bcbe23b6467343f48305"
+    "0x60d1bf67e9d0d34368a6422c55f034230cc0997b186dd921fd18e89b7f0df5f2"
+    "0x5fe69d562990616a02f4a5f934aa973b27bf02c4fc774f9ad82f105379f16789"
+    "0xf1cabf2d74576ef76dfcb1182fd59a734a26c95ea6e68fc8f91ca4bfa1ea0594"
+    "0x21d8ce6c0e32481506f98218920bee88f03d9c1b45dab3546948ccc34b1aadea"
+    "0xbf7a74b39090fb5b1366f61fb4ac3ecc4b7f99f0fd3cb326dc5c18c58d58d7b6"
+    "0xeeb570494d442795235589284100812e4176e9c29d151a81df43b6286ef66c49"
+    "0x86a12d91c813f69a53349ff640e32af97d5f5c1f8d42d54cf4c8aa8dea231955"
+    "0x0011a30f5b2023bc228f6dd5608b3e7149646fa83f33350926ceb1925af78f08"})
+
+(fx/defn check-invalid-ens [{:keys [db]}]
+  (async-storage/get-item
+   :invalid-ens-name-seen
+   (fn [already-seen]
+     (when (and (not already-seen)
+                (boolean (get invalid-addrr (ethereum/sha3 (string/lower-case (ethereum/default-address db))))))
+       (utils/show-popup
+        (i18n/label :t/warning)
+        (i18n/label :t/ens-username-invalid-name-warning)
+        #(async-storage/set-item! :invalid-ens-name-seen true)))))
+  nil)
+
 (fx/defn initialize-wallet
   {:events [::initialize-wallet]}
   [{:keys [db] :as cofx} accounts tokens custom-tokens
    favourites scan-all-tokens? new-account?]
+  (check-invalid-ens cofx)
   (fx/merge
    cofx
    {:db                          (assoc db :multiaccount/accounts

@@ -2,18 +2,14 @@
   (:refer-clojure :exclude [name])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.signing.core :as signing]
             [status-im.navigation :as navigation]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
-            [status-im.utils.money :as money]
             [status-im.utils.random :as random]
             [status-im.bottom-sheet.core :as bottom-sheet]))
 
@@ -80,23 +76,6 @@
              (assoc-in [:ens/registration :state] state)
              (assoc-in [:ens/registration :address] address))}))
 
-(fx/defn on-resolver-found
-  {:events [::resolver-found]}
-  [{:keys [db] :as cofx} resolver-contract address]
-  (let [{:keys [username custom-domain?]} (:ens/registration db)
-        {:keys [public-key]} (:multiaccount db)
-        {:keys [x y]} (ethereum/coordinates public-key)
-        namehash (ens/namehash (str username (when-not custom-domain?
-                                               ".stateofus.eth")))]
-    (signing/eth-transaction-call
-     cofx
-     {:contract   resolver-contract
-      :from       address
-      :method     "setPubkey(bytes32,bytes32,bytes32)"
-      :params     [namehash x y]
-      :on-result  [::save-username custom-domain? username true]
-      :on-error   [::on-registration-failure]})))
-
 (fx/defn save-username
   {:events [::save-username]}
   [{:keys [db] :as cofx} custom-domain? username redirectToSummary]
@@ -112,19 +91,30 @@
                 (multiaccounts.update/multiaccount-update
                  :preferred-name name {})))))
 
+(fx/defn set-pub-key
+  {:events [::set-pub-key]}
+  [{:keys [db]}]
+  (let [{:keys [username address custom-domain?]} (:ens/registration db)
+        address (or address (ethereum/default-address db))
+        {:keys [public-key]} (:multiaccount db)
+        chain-id (ethereum/chain-id db)
+        username (fullname custom-domain? username)]
+    (ens/set-pub-key-prepare-tx
+     chain-id address username public-key
+     #(re-frame/dispatch [:signing.ui/sign
+                          {:tx-obj    %
+                           :on-result [::save-username custom-domain? username true]
+                           :on-error  [::on-registration-failure]}]))))
+
 (fx/defn on-input-submitted
-  {:events [::input-submitted ::input-icon-pressed]}
+  {:events [::input-submitted]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [state username custom-domain? address]} (:ens/registration db)
-        registry-contract (get ens/ens-registries (ethereum/chain-keyword db))
-        ens-name (str username (when-not custom-domain?
-                                 ".stateofus.eth"))]
+  (let [{:keys [state username custom-domain?]} (:ens/registration db)]
     (case state
       (:available :owned)
       (navigation/navigate-to-cofx cofx :ens-checkout {})
       :connected-with-different-key
-      (ens/resolver registry-contract ens-name
-                    #(re-frame/dispatch [::resolver-found % address]))
+      (re-frame/dispatch [::set-pub-key])
       :connected
       (save-username cofx custom-domain? username true)
       ;; for other states, we do nothing
@@ -148,6 +138,8 @@
        #(re-frame/dispatch [::name-resolved username
                             (cond
                               (not public-key) :owned
+                              (string/ends-with? % "0000000000000000000000000000000000000000000000000000000000000000")
+                              :invalid
                               (= % public-key) :connected
                               :else :connected-with-different-key)
                             (eip55/address->checksum response)]))
@@ -160,33 +152,19 @@
     3 50
     1 10))
 
-;; (andrey) there is the method "register" in status-go, but im not sure how we could use it
-;; because we still need to prepare tx and show it to user, and then have a condition to do not sign tx but
-;; call register method instead, doesn't look like a good solution
 (fx/defn register-name
   {:events [::register-name-pressed]}
-  [{:keys [db] :as cofx}]
-  (let [{:keys [custom-domain? username address]}
+  [{:keys [db]} address]
+  (let [{:keys [username]}
         (:ens/registration db)
         {:keys [public-key]} (:multiaccount db)
-        chain (ethereum/chain-keyword db)
-        chain-id (ethereum/chain-id db)
-        amount (registration-cost chain-id)
-        {:keys [x y]} (ethereum/coordinates public-key)]
-    (stateofus/get-registrar
-     chain
-     (fn [contract]
-       (signing/eth-transaction-call
-        cofx
-        {:contract   (contracts/get-address db :status/snt)
-         :method     "approveAndCall(address,uint256,bytes)"
-         :from       address
-         :params     [contract
-                      (money/unit->token amount 18)
-                      (abi-spec/encode "register(bytes32,address,bytes32,bytes32)"
-                                       [(ethereum/sha3 username) address x y])]
-         :on-result  [:update-ens-tx-state-and-redirect :submitted username custom-domain?]
-         :on-error   [::on-registration-failure]})))))
+        chain-id (ethereum/chain-id db)]
+    (ens/register-prepare-tx
+     chain-id address username public-key
+     #(re-frame/dispatch [:signing.ui/sign
+                          {:tx-obj    %
+                           :on-result [:update-ens-tx-state-and-redirect :submitted username false]
+                           :on-error  [::on-registration-failure]}]))))
 
 (defn- valid-custom-domain? [username]
   (and (ens/is-valid-eth-name? username)

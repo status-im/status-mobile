@@ -439,6 +439,7 @@
     :message {:address  :data  :typed? } - message data to sign
     :on-result - re-frame event vector
     :on-error - re-frame event vector}"
+  {:events [:signing.ui/sign]}
   [{:keys [db] :as cofx} tx]
   (fx/merge cofx
             {:db (update db :signing/queue conj (normalize-tx-obj db tx))}

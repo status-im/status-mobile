@@ -106,7 +106,7 @@
 
     (:available :connected :connected-with-different-key :owned)
     [react/touchable-highlight
-     {:on-press #(debounce/dispatch-and-chill [::ens/input-icon-pressed] 3000)}
+     {:on-press #(debounce/dispatch-and-chill [::ens/input-submitted] 3000)}
      [icon-wrapper colors/blue
       [icons/icon :main-icons/arrow-right {:color colors/white-persist}]]]
 
@@ -150,6 +150,10 @@
     [help-message-text-element
      :t/ens-username-owned
      :t/ens-username-connected-with-different-key]
+    :invalid
+    [help-message-text-element
+     :t/ens-username-owned
+     :t/ens-username-registration-invalid]
     (if custom-domain?
       (case state
         :too-short
@@ -330,7 +334,7 @@
            :right        [react/view {:padding-horizontal 8}
                           [quo/button
                            {:disabled (or (not @checked?) (not sufficient-funds?))
-                            :on-press #(debounce/dispatch-and-chill [::ens/register-name-pressed] 2000)}
+                            :on-press #(debounce/dispatch-and-chill [::ens/register-name-pressed address] 2000)}
                            (if sufficient-funds?
                              (i18n/label :t/ens-register)
                              (i18n/label :t/not-enough-snt))]]}]]))))
