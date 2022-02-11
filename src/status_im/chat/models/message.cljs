@@ -222,3 +222,16 @@
                     :c2 {:m3 {:chat-id :c2 :message-id :m3}
                          :m4 {:chat-id :c2 :message-id :m4}}}}}
    [:m1 :m3]))
+
+(defn remove-cleared-message [messages cleared-at]
+  (into {} (remove #(let [message-clock (:clock-value (second %))]
+                      (<= message-clock cleared-at))
+                   messages)))
+
+(fx/defn handle-cleared-histories-messages
+  {:events [::handle-cleared-hisotories-messages]}
+  [{:keys [db]} cleared-histories]
+  {:db (reduce (fn [acc current]
+                 (update-in acc [:messages (:chatId current)] remove-cleared-message (:clearedAt current)))
+               db
+               cleared-histories)})

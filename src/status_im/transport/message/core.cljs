@@ -45,6 +45,7 @@
         ^js removed-messages           (.-removedMessages response-js)
         ^js visibility-status-updates  (.-statusUpdates response-js)
         ^js current-visibility-status  (.-currentStatus response-js)
+        ^js cleared-histories          (.-clearedHistories response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
 
@@ -130,6 +131,13 @@
         (fx/merge cofx
                   (process-next response-js sync-handler)
                   (models.message/handle-removed-messages removed-messages-clj)))
+
+      (seq cleared-histories)
+      (let [cleared-histories-clj (types/js->clj cleared-histories)]
+        (js-delete response-js "clearedHistories")
+        (fx/merge cofx
+                  (process-next response-js sync-handler)
+                  (models.message/handle-cleared-histories-messages cleared-histories-clj)))
 
       (seq visibility-status-updates)
       (let [visibility-status-updates-clj (types/js->clj visibility-status-updates)]
