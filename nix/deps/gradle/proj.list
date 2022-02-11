@@ -25,6 +25,7 @@ react-native-linear-gradient
 react-native-mail
 react-native-navigation
 react-native-nfc-manager
+react-native-notifications
 react-native-permissions
 react-native-reanimated
 react-native-safe-area-context
