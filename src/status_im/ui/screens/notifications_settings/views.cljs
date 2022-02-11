@@ -5,6 +5,7 @@
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [quo.platform :as platform]
+            [status-im.utils.config :as config]
             [quo.design-system.colors :as quo-colors]
             [status-im.notifications.core :as notifications]
             [status-im.ui.components.react :as react]))
@@ -37,7 +38,7 @@
        :title               (i18n/label :t/show-notifications)
        :accessibility-label :notifications-button
        :active              remote-push-notifications-enabled?
-       :on-press            #(re-frame/dispatch [::notifications/switch (not remote-push-notifications-enabled?)])
+       :on-press            #(re-frame/dispatch [::notifications/switch (not remote-push-notifications-enabled?) true])
        :accessory           :switch}]
      [quo/separator {:color (:ui-02 @quo-colors/theme)
                      :style {:margin-vertical 8}}]
@@ -63,17 +64,27 @@
      [local-notifications]]))
 
 (defn notifications-settings-android []
-  (let [{:keys [notifications-enabled?]}
+  (let [{:keys [notifications-enabled? remote-push-notifications-enabled?]}
         @(re-frame/subscribe [:multiaccount])]
     [:<>
      [quo/list-item
-      {:icon                :main-icons/notification
-       :title               (i18n/label :t/notifications)
-       :accessibility-label :notifications-settings-button
+      {:title               (i18n/label :t/local-notifications)
+       :accessibility-label :local-notifications-settings-button
+       :subtitle            (i18n/label :t/local-notifications-subtitle)
        :active              notifications-enabled?
        :on-press            #(re-frame/dispatch
-                              [::notifications/switch (not notifications-enabled?)])
+                              [::notifications/switch (not notifications-enabled?) false])
        :accessory           :switch}]
+     (when (and platform/android? (not config/google-free))
+       [quo/list-item
+        {:title               (i18n/label :t/remote-notifications)
+         :accessibility-label :remote-notifications-settings-button
+         :subtitle            (i18n/label :t/remote-notifications-subtitle)
+         :active              remote-push-notifications-enabled?
+         :on-press            #(re-frame/dispatch
+                                [::notifications/switch
+                                 (not remote-push-notifications-enabled?) true])
+         :accessory           :switch}])
      [local-notifications]]))
 
 (defn notifications-settings []

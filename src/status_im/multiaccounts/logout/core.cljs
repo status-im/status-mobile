@@ -12,6 +12,7 @@
             [status-im.wallet.core :as wallet]))
 
 (fx/defn logout-method
+  {:events [::logout-method]}
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
   (let [key-uid              (get-in db [:multiaccount :key-uid])
         should-send-metrics? (get-in db [:multiaccount :anon-metrics/should-send?])]
@@ -20,10 +21,8 @@
                :hide-popover                         nil
                ::logout                              nil
                ::multiaccounts/webview-debug-changed false
-               ::disable-local-notifications         nil
                :keychain/clear-user-password         key-uid
                ::init/open-multiaccounts             #(re-frame/dispatch [::init/initialize-multiaccounts % {:logout? logout?}])}
-              (notifications/logout-disable)
               (when should-send-metrics?
                 (anon-metrics/stop-transferring))
               (keychain/save-auth-method key-uid auth-method)
@@ -31,16 +30,13 @@
               (wallet/clear-timeouts)
               (init/initialize-app-db))))
 
-(re-frame/reg-fx
- ::disable-local-notifications
- (fn []
-   (status/stop-local-notifications)))
-
 (fx/defn logout
   {:events [:logout :multiaccounts.logout.ui/logout-confirmed :multiaccounts.update.callback/save-settings-success]}
   [cofx]
-  (logout-method cofx {:auth-method keychain/auth-method-none
-                       :logout?     true}))
+  ;; we need to disable notifications before starting the logout process
+  (notifications/logout-disable
+   cofx #(re-frame/dispatch [::logout-method {:auth-method keychain/auth-method-none
+                                              :logout?     true}])))
 
 (fx/defn show-logout-confirmation
   {:events [:multiaccounts.logout.ui/logout-pressed]}

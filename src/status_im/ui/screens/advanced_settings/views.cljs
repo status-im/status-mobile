@@ -3,7 +3,6 @@
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [status-im.utils.config :as config]
-            [status-im.utils.platform :as platform]
             [status-im.ui.components.list.views :as list])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -69,14 +68,14 @@
      :on-press
      #(re-frame/dispatch [:navigate-to :rpc-usage-info])
      :chevron              true}
-    (when platform/ios?
+    (when-not config/google-free
       {:size                :small
        :title               (i18n/label :t/notification-settings)
        :accessibility-label :advanced-notification-settings
        :on-press
        #(re-frame/dispatch [:navigate-to :notifications-advanced-settings])
        :chevron             true})
-     ;; If it's enabled in the config, we don't show the option
+    ;; If it's enabled in the config, we don't show the option
     (when (not config/communities-enabled?)
       {:size                   :small
        :title                   (i18n/label :t/communities-enabled)

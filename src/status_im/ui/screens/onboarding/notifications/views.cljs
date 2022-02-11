@@ -19,7 +19,7 @@
     [react/image {:source (resources/get-image :notifications)
                   :style  {:width  118
                            :height 118}}]]
-   [quo/button {:on-press            #(do (re-frame/dispatch [::notifications/switch true])
+   [quo/button {:on-press            #(do (re-frame/dispatch [::notifications/switch true false])
                                           (re-frame/dispatch [:init-root :welcome]))
                 :accessibility-label :enable-notifications}
     (i18n/label :t/intro-wizard-title6)]

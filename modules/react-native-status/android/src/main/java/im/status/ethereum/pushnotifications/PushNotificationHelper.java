@@ -199,6 +199,10 @@ public class PushNotificationHelper {
         cleanGroup(conversationId);
     }
 
+    public void clearAllMessageNotifications() {
+	notificationManager.cancelAll();
+    }
+
     public void sendToNotificationCentreWithPicture(final Bundle bundle, Bitmap largeIconBitmap, Bitmap bigPictureBitmap) {
 
         try {

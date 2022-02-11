@@ -8,7 +8,8 @@
             [status-im.notifications.local :as local]
             [quo.platform :as platform]
             [status-im.utils.config :as config]
-            [status-im.ethereum.json-rpc :as json-rpc]))
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.notifications.android-remote :as pn-android-remote]))
 
 (def server-type-default 1)
 (def server-type-custom 2)
@@ -28,12 +29,12 @@
      ^js pn-ios
      "register"
      (fn [token]
-       (re-frame/dispatch [::registered-for-push-notifications token])))
+       (re-frame/dispatch [:notifications/registered-for-push-notifications token])))
     (.addEventListener
      ^js pn-ios
      "registrationError"
      (fn [error]
-       (re-frame/dispatch [::switch-error true error])))))
+       (re-frame/dispatch [:notifications/switch-error true error])))))
 
 (defn enable-ios-notifications []
   (add-event-listeners)
@@ -43,7 +44,24 @@
 
 (defn disable-ios-notifications []
   (.abandonPermissions ^js pn-ios)
-  (re-frame/dispatch [::unregistered-from-push-notifications]))
+  (re-frame/dispatch [:notifications/unregistered-from-push-notifications]))
+
+(defn enable-android-notifications [remote-push-notifications-enabled?]
+  (if (and remote-push-notifications-enabled? (not config/google-free))
+    (do
+      (pn-android/disable-notifications)
+      (pn-android/clear-all-message-notifications)
+      (pn-android-remote/register-remote-notifications))
+    (do
+      (pn-android-remote/unregister-remote-notifications)
+      (pn-android/create-channel
+       {:channel-id   "status-im-notifications"
+        :channel-name "Status push notifications"})
+      (pn-android/enable-notifications))))
+
+(defn disable-android-notifications []
+  (pn-android/disable-notifications)
+  (pn-android-remote/unregister-remote-notifications))
 
 ;; FIXME: Repalce with request permission from audio messages PR lib
 (re-frame/reg-fx
@@ -64,19 +82,17 @@
 
 (re-frame/reg-fx
  ::enable
- (fn [_]
+ (fn [remote-push-notifications-enabled?]
    (if platform/android?
-     (do
-       (pn-android/create-channel {:channel-id   "status-im-notifications"
-                                   :channel-name "Status push notifications"})
-       (pn-android/enable-notifications))
+     (enable-android-notifications
+      remote-push-notifications-enabled?)
      (enable-ios-notifications))))
 
 (re-frame/reg-fx
  ::disable
  (fn [_]
    (if platform/android?
-     (pn-android/disable-notifications)
+     (disable-android-notifications)
      (disable-ios-notifications))))
 
 (re-frame/reg-fx
@@ -100,51 +116,47 @@
        (pn-android/clear-message-notifications chat-id)))))
 
 (fx/defn handle-enable-notifications-event
-  {:events [::registered-for-push-notifications]}
+  {:events [:notifications/registered-for-push-notifications]}
   [cofx token]
   {::json-rpc/call [{:method     (json-rpc/call-ext-method "registerForPushNotifications")
                      :params     [token (if platform/ios? config/apn-topic) (if platform/ios? apn-token-type firebase-token-type)]
                      :on-success #(log/info "[push-notifications] register-success" %)
-                     :on-error   #(re-frame/dispatch [::switch-error true %])}]})
+                     :on-error   #(re-frame/dispatch [:notifications/switch-error true %])}]})
 
 (fx/defn handle-disable-notifications-event
-  {:events [::unregistered-from-push-notifications]}
+  {:events [:notifications/unregistered-from-push-notifications]}
   [cofx]
   {::json-rpc/call [{:method     (json-rpc/call-ext-method "unregisterFromPushNotifications")
                      :params     []
                      :on-success #(log/info "[push-notifications] unregister-success" %)
-                     :on-error   #(re-frame/dispatch [::switch-error false %])}]})
+                     :on-error   #(re-frame/dispatch [:notifications/switch-error false %])}]})
 
 (fx/defn logout-disable
-  [cofx]
+  [cofx on-success]
   (merge {::logout-disable nil}
-         (when platform/ios?
-           {::json-rpc/call [{:method     (json-rpc/call-ext-method "unregisterFromPushNotifications")
-                              :params     []
-                              :on-success #(log/info "[push-notifications] unregister-success" %)
-                              :on-error   #(log/info "[push-notifications] unregister-error" %)}]})))
+         {::json-rpc/call [{:method     (json-rpc/call-ext-method "unregisterFromPushNotifications")
+                            :params     []
+                            :on-success on-success
+                            :on-error   #(log/info "[push-notifications] unregister-error" %)}]}))
 
 (fx/defn notification-switch-error
-  {:events [::switch-error]}
+  {:events [:notifications/switch-error]}
   [cofx enabled?]
-  (if platform/android?
-    (multiaccounts.update/multiaccount-update
-     :notifications-enabled? (not enabled?)
-     {})
-    (multiaccounts.update/optimistic cofx :remote-push-notifications-enabled? (not (boolean enabled?)))))
+  (multiaccounts.update/multiaccount-update
+   :remote-push-notifications-enabled? (not enabled?)
+   {}))
 
 (fx/defn notification-switch
   {:events [::switch]}
-  [{:keys [db] :as cofx} enabled?]
+  [{:keys [db] :as cofx} enabled? remote-push-notifications?]
   (fx/merge cofx
             (if enabled?
-              {::enable nil}
+              {::enable  remote-push-notifications?}
               {::disable nil})
-            (if platform/android?
-              (multiaccounts.update/multiaccount-update
-               :notifications-enabled? enabled?
-               {})
-              (multiaccounts.update/optimistic :remote-push-notifications-enabled? (boolean enabled?)))))
+            (multiaccounts.update/multiaccount-update
+             :remote-push-notifications-enabled? (and remote-push-notifications? enabled?) {})
+            (multiaccounts.update/multiaccount-update
+             :notifications-enabled? (and (not remote-push-notifications?) enabled?) {})))
 
 (fx/defn notification-non-contacts-error
   {:events [::non-contacts-update-error]}
