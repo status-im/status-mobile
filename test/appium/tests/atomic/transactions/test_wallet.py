@@ -705,26 +705,31 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in.wallet_button.click()
         wallet.accounts_status_account.click()
 
-        send_transaction = wallet.send_transaction_button.click()
+        send_transaction = wallet.send_transaction_button.click_until_presence_of_element(send_transaction.amount_edit_box)
         send_transaction.amount_edit_box.set_value(0)
         send_transaction.set_recipient_address(ens_user_ropsten['ens'])
         send_transaction.next_button.click()
-        send_transaction.network_fee_button.click()
-        send_transaction = wallet.get_send_transaction_view()
+        wallet.element_by_translation_id("network-fee").click()
+        if not wallet.element_by_translation_id("tx-fail-description2").is_element_displayed():
+            self.errors.append("Tx is likely to fail is not shown!")
+        if send_transaction.network_fee_button.is_element_displayed():
+            self.errors.append("Still can set tx fee when balance is not enough")
 
-        send_transaction.gas_limit_input.clear()
-        send_transaction.gas_limit_input.set_value(default_limit)
-        send_transaction.per_gas_price_limit_input.clear()
-        send_transaction.per_gas_price_limit_input.click()
-        send_transaction.per_gas_price_limit_input.send_keys('1')
-        if not wallet.element_by_translation_id("below-base-fee").is_element_displayed(10):
-            self.errors.append("Fee is below error is not shown")
-        send_transaction.save_fee_button.scroll_and_click()
-        if not wallet.element_by_translation_id("change-tip").is_element_displayed():
-            self.errors.append("Popup about changing fee error is not shown")
-        wallet.element_by_translation_id("continue-anyway").click()
-        if not send_transaction.element_by_text_part('0.000021 ETH').is_element_displayed():
-            self.driver.fail("Custom fee is not applied!")
+        ##  TODO: should be moved to another test after 8f52b9b63ccd9a52b7fe37ab4f89a2e7b6721fcd
+        # send_transaction = wallet.get_send_transaction_view()
+        # send_transaction.gas_limit_input.clear()
+        # send_transaction.gas_limit_input.set_value(default_limit)
+        # send_transaction.per_gas_price_limit_input.clear()
+        # send_transaction.per_gas_price_limit_input.click()
+        # send_transaction.per_gas_price_limit_input.send_keys('1')
+        # if not wallet.element_by_translation_id("below-base-fee").is_element_displayed(10):
+        #     self.errors.append("Fee is below error is not shown")
+        # send_transaction.save_fee_button.scroll_and_click()
+        # if not wallet.element_by_translation_id("change-tip").is_element_displayed():
+        #     self.errors.append("Popup about changing fee error is not shown")
+        # wallet.element_by_translation_id("continue-anyway").click()
+        # if not send_transaction.element_by_text_part('0.000021 ETH').is_element_displayed():
+        #     self.driver.fail("Custom fee is not applied!")
         self.errors.verify_no_errors()
 
 

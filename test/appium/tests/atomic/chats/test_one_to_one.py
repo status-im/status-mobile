@@ -936,23 +936,23 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         url_data = {
             'ens_with_stateofus_domain_deep_link': {
                 'url': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_ropsten['ens'],
-                'username': ens_user_ropsten['username']
+                'username': '@%s' % ens_user_ropsten['ens']
             },
             'ens_without_stateofus_domain_deep_link': {
-                'url': 'https://join.status.im/u/%s' % ens_user['ens'],
-                'username': ens_user['username']
+                'url': 'https://join.status.im/u/%s' % ens_user_ropsten['ens'],
+                'username': '@%s' % ens_user_ropsten['ens']
             },
             'ens_another_domain_deep_link': {
                 'url': 'status-im://u/%s' % ens_user['ens_another'],
-                'username': ens_user['username']
+                'username': '@%s' % ens_user['ens_another']
             },
             'own_profile_key_deep_link': {
                 'url': 'https://join.status.im/u/%s' % basic_user['public_key'],
                 'error': "That's you"
             },
             'other_user_profile_key_deep_link': {
-                'url': 'https://join.status.im/u/%s' % ens_user['public_key'],
-                'username': ens_user['username']
+                'url': 'https://join.status.im/u/%s' % transaction_senders['A']['public_key'],
+                'username': transaction_senders['A']['username']
             },
             'other_user_profile_key_deep_link_invalid': {
                 'url': 'https://join.status.im/u/%sinvalid' % ens_user['public_key'],
@@ -967,8 +967,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             #     'username': ens_user['username']
             # },
             'other_user_profile_key': {
-                'url': ens_user['public_key'],
-                'username': ens_user['username']
+                'url': transaction_senders['A']['public_key'],
+                'username': transaction_senders['A']['username']
             },
             'other_user_profile_key_invalid': {
                 'url': '%s123' % ens_user['public_key'],
@@ -1011,7 +1011,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         url_data = {
             'ens_without_stateofus_domain_deep_link': {
                 'url': 'https://join.status.im/u/%s' % ens_user_ropsten['ens'],
-                'username': ens_user_ropsten['username']
+                'username': '@%s' % ens_user_ropsten['ens']
             },
 
             'other_user_profile_key_deep_link': {
@@ -1026,8 +1026,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 'url': user['public_key'],
             },
             'other_user_profile_key': {
-                'url': ens_user['public_key'],
-                'username': ens_user['username']
+                'url': transaction_senders['A']['public_key'],
+                'username': transaction_senders['A']['username']
             },
             'wallet_validation_wrong_address_transaction': {
                 'url': 'ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e@3/transfer?address=blablabla&uint256=1e10',
@@ -1071,17 +1071,17 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             home.enter_qr_edit_box.scan_qr(url_data[key]['url'])
             from views.chat_view import ChatView
             chat = ChatView(self.driver)
+            if key == 'own_profile_key':
+                from views.profile_view import ProfileView
+                profile = ProfileView(self.driver)
+                if not profile.default_username_text.is_element_displayed():
+                    self.errors.append('In %s case was not redirected to own profile' % key)
+                home.home_button.double_click()
             if url_data[key].get('error'):
                 if not chat.element_by_text_part(url_data[key]['error']).is_element_displayed():
                     self.errors.append('Expected error %s is not shown' % url_data[key]['error'])
                 chat.ok_button.click()
             if url_data[key].get('username'):
-                if key == 'own_profile_key':
-                    if chat.profile_nickname.is_element_displayed():
-                        self.errors.append('In %s case was not redirected to own profile' % key)
-                else:
-                    if not chat.profile_nickname.is_element_displayed():
-                        self.errors.append('In %s case block user button is not shown' % key)
                 if not chat.element_by_text(url_data[key]['username']).is_element_displayed():
                     self.errors.append('In %s case username not shown' % key)
             if 'wallet' in key:

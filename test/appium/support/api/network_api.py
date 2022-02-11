@@ -29,27 +29,31 @@ class NetworkApi(object):
 
     def get_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
-        try:
-            transactions_response = requests.request('GET', url=method, headers=self.headers).json()
-            if transactions_response:
-                return transactions_response['result']
-        except TypeError as e:
-            self.log("Check response from etherscan API. Returned values do not match expected. %s" % e)
-        except JSONDecodeError as e:
-            self.log("No valid JSON response from Etherscan: %s " % str(e))
-            pass
+        for attempt in range(3):
+            try:
+                transactions_response = requests.request('GET', url=method, headers=self.headers).json()
+                if transactions_response:
+                    return transactions_response['result']
+            except TypeError as e:
+                self.log("Check response from etherscan API. Returned values do not match expected. %s" % e)
+            except JSONDecodeError as e:
+                self.log("No valid JSON response from Etherscan: %s " % str(e))
+                pass
+            time.sleep(30)
 
     def get_token_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
-        try:
-            transactions_response = requests.request('GET', url=method, headers=self.headers).json()
-            if transactions_response:
-                return transactions_response['result']
-        except TypeError as e:
-            self.log("Check response from etherscan API. Returned values do not match expected. %s" % str(e))
-        except JSONDecodeError as e:
-            self.log("No valid JSON response from Etherscan: %s " % str(e))
-            pass
+        for attempt in range(3):
+            try:
+                transactions_response = requests.request('GET', url=method, headers=self.headers).json()
+                if transactions_response:
+                    return transactions_response['result']
+            except TypeError as e:
+                self.log("Check response from etherscan API. Returned values do not match expected. %s" % str(e))
+            except JSONDecodeError as e:
+                self.log("No valid JSON response from Etherscan: %s " % str(e))
+                pass
+            time.sleep(30)
 
     def is_transaction_successful(self, transaction_hash: str) -> int:
         method = self.network_url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash
@@ -98,8 +102,8 @@ class NetworkApi(object):
                         if float(int(transaction['value']) / 10 ** decimals) == float(amount):
                             return transaction
                 except TypeError as e:
-                    self.log("Failed iterate transactions: " + str(e))
-                    pytest.fail("No valid JSON response from Etherscan: %s " % str(e))
+                    self.log("Failed iterate transactions(Etherscan unexpected error): " + str(e))
+                    continue
 
     def wait_for_confirmation_of_transaction(self, address, amount, confirmations=6, token=False):
         start_time = time.time()

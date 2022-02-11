@@ -203,7 +203,7 @@ class ProfileView(BaseView):
 
         # ENS
         self.username_in_ens_chat_settings_text = EditBox(self.driver,
-                                                          xpath="//*[@content-desc='chat-icon']/../android.widget.TextView[2]")
+                                                          xpath="//*[@content-desc='chat-icon']/../../android.widget.TextView[2]")
         self.ens_usernames_button = ENSusernames(self.driver)
         self.ens_name_in_share_chat_key_text = Text(self.driver, accessibility_id="ens-username")
 

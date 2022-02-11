@@ -82,7 +82,7 @@ class SendTransactionView(BaseView):
         self.amount_edit_box = AmountEditBox(self.driver)
         self.set_max_button = Button(self.driver, translation_id="set-max")
         self.validation_error_element = Text(self.driver,
-                                             xpath="//*[@content-desc='custom-gas-fee']/../android.view.ViewGroup//*[@content-desc='icon']")
+                                             xpath="//*[@text='Network fee']/following-sibling::*[@content-desc='icon']")
 
         # Network fee elements
         self.network_fee_button = Button(self.driver, accessibility_id="custom-gas-fee")

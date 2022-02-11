@@ -42,24 +42,25 @@ class TestDeepLinks(SingleDeviceTestCase):
     @marks.testrail_id(5781)
     @marks.medium
     def test_deep_link_with_invalid_user_public_key_own_profile_key(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(passphrase=basic_user['passphrase'])
+        sign_in = SignInView(self.driver)
+        sign_in.recover_access(passphrase=basic_user['passphrase'])
         self.driver.close_app()
 
-        sign_in_view.just_fyi('Check that no error when opening invalid deep link')
+        sign_in.just_fyi('Check that no error when opening invalid deep link')
         deep_link = 'status-im://u/%s' % basic_user['public_key'][:-10]
-        sign_in_view.open_weblink_and_login(deep_link)
-        home_view = sign_in_view.get_home_view()
-        home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
-        if not home_view.start_new_chat_button.is_element_present():
+        sign_in.open_weblink_and_login(deep_link)
+        home = sign_in.get_home_view()
+        home.plus_button.click_until_presence_of_element(home.start_new_chat_button)
+        if not home.start_new_chat_button.is_element_present():
             self.errors.append(
                 "Can't navigate to start new chat after app opened from deep link with invalid public key")
         self.driver.close_app()
 
-        sign_in_view.just_fyi('Check that no error when opening invalid deep link')
+        sign_in.just_fyi('Check that no error when opening invalid deep link')
         deep_link = 'status-im://u/%s' % basic_user['public_key']
-        sign_in_view.open_weblink_and_login(deep_link)
-        home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
-        if not home_view.start_new_chat_button.is_element_present():
-            self.errors.append("Can't navigate to start new chat after app opened from deep link with own public key")
+        sign_in.open_weblink_and_login(deep_link)
+        from views.profile_view import ProfileView
+        profile = ProfileView(self.driver)
+        if not profile.default_username_text != basic_user['username']:
+            self.errors.append("Can't navigate to profile from deep link with own public key")
         self.errors.verify_no_errors()

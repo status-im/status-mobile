@@ -4,7 +4,6 @@ import base64
 import random
 import re
 import string
-import zbarlight
 from PIL import Image
 from appium.webdriver.common.touch_action import TouchAction
 from datetime import datetime
@@ -518,13 +517,6 @@ class BaseView(object):
         message = 'test message:'
         return message + ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
 
-    def get_text_from_qr(self):
-        image = Image.open(BytesIO(base64.b64decode(self.driver.get_screenshot_as_base64())))
-        image.load()
-        try:
-            return str(zbarlight.scan_codes('qrcode', image)[0])[2:][:132]
-        except IndexError:
-            raise BaseException('No data in QR code')
 
     def get_back_to_home_view(self, times_to_click_on_back_btn=3):
         counter = 0

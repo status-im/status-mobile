@@ -500,6 +500,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         public_key_3, username_3 = home_3.get_public_key_and_username(return_username=True)
         device_3.home_button.click()
         device_1_name, device_2_name, group_chat_name = 'creator', 'paired', 'some group chat'
+        home_2 = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
+
         device_1.just_fyi('Add contact, start group chat')
         nickname = 'my_tester'
         home_1.add_contact(public_key_3, nickname=nickname)
@@ -509,7 +511,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         chat_3.join_chat_button.click()
 
         device_2.just_fyi('Go to profile > Devices, set device name, discover device 2 to device 1')
-        home_2 = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
         profile_2 = home_2.profile_button.click()
         profile_2.discover_and_advertise_device(device_2_name)
         device_1.profile_button.click()
