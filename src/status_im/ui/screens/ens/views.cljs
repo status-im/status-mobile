@@ -171,7 +171,7 @@
 (defn- username-input
   [_ _ _]
   (let [input-ref (atom nil)]
-    (fn [_ state placeholder]
+    (fn [username state placeholder]
       [react/view {:flex-direction :row :justify-content :center}
        ;;NOTE required so that the keyboards shows up when navigating
        ;;back from checkout screen
@@ -194,7 +194,7 @@
          :auto-complete-type     "off"
          :auto-focus             true
          :auto-correct           false
-         :default-value          ""
+         :default-value          username
          :text-align             :center
          :placeholder            placeholder
          :placeholder-text-color colors/text-gray
