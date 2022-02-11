@@ -132,11 +132,11 @@
                      :on-error   #(re-frame/dispatch [:notifications/switch-error false %])}]})
 
 (fx/defn logout-disable
-  [cofx on-success]
+  [cofx]
   (merge {::logout-disable nil}
          {::json-rpc/call [{:method     (json-rpc/call-ext-method "unregisterFromPushNotifications")
                             :params     []
-                            :on-success on-success
+                            :on-success #(log/info "[push-notifications] unregister-success" %)
                             :on-error   #(log/info "[push-notifications] unregister-error" %)}]}))
 
 (fx/defn notification-switch-error

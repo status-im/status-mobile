@@ -386,7 +386,7 @@
                           (re-frame/dispatch [::initialize-wallet
                                               accounts tokens custom-tokens favourites]))]
                        ::open-last-chat (get-in db [:multiaccount :key-uid])}
-                notifications-enabled?
+                (or notifications-enabled? remote-push-notifications-enabled?)
                 (assoc ::notifications/enable remote-push-notifications-enabled?))
               (transport/start-messenger)
               (initialize-transactions-management-enabled)

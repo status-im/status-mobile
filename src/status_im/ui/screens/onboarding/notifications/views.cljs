@@ -5,6 +5,7 @@
             [status-im.react-native.resources :as resources]
             [re-frame.core :as re-frame]
             [quo.core :as quo]
+            [quo.platform :as platform]
             [status-im.notifications.core :as notifications]))
 
 (defn notifications-onboarding []
@@ -19,7 +20,7 @@
     [react/image {:source (resources/get-image :notifications)
                   :style  {:width  118
                            :height 118}}]]
-   [quo/button {:on-press            #(do (re-frame/dispatch [::notifications/switch true false])
+   [quo/button {:on-press            #(do (re-frame/dispatch [::notifications/switch true platform/ios?])
                                           (re-frame/dispatch [:init-root :welcome]))
                 :accessibility-label :enable-notifications}
     (i18n/label :t/intro-wizard-title6)]
