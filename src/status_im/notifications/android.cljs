@@ -13,6 +13,9 @@
 (defn clear-message-notifications [chat-id]
   (.clearMessageNotifications ^js (pn-android) chat-id))
 
+(defn clear-all-message-notifications []
+  (.clearAllMessageNotifications ^js (pn-android)))
+
 (defn create-channel [{:keys [channel-id channel-name]}]
   (.createChannel ^js (pn-android)
                   #js {:channelId   channel-id

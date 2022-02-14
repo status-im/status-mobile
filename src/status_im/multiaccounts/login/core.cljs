@@ -372,7 +372,9 @@
   [{:keys [db] :as cofx}]
   (let [{:networks/keys [current-network networks]} db
         notifications-enabled? (get-in db [:multiaccount :notifications-enabled?])
-        network-id   (str (get-in networks [current-network :config :NetworkId]))]
+        network-id   (str (get-in networks [current-network :config :NetworkId]))
+        remote-push-notifications-enabled?
+        (get-in db [:multiaccount :remote-push-notifications-enabled?])]
     (fx/merge cofx
               (cond-> {::eip1559/check-eip1559-activation
                        {:network-id  network-id
@@ -384,8 +386,8 @@
                           (re-frame/dispatch [::initialize-wallet
                                               accounts tokens custom-tokens favourites]))]
                        ::open-last-chat (get-in db [:multiaccount :key-uid])}
-                notifications-enabled?
-                (assoc ::notifications/enable nil))
+                (or notifications-enabled? remote-push-notifications-enabled?)
+                (assoc ::notifications/enable remote-push-notifications-enabled?))
               (transport/start-messenger)
               (initialize-transactions-management-enabled)
               (check-network-version network-id)

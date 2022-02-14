@@ -209,6 +209,9 @@
 (def react-native-draggable-flatlist
   #js {:default #js {}})
 
+(def react-native-notifications
+  #js {:Notifications #js {}})
+
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -242,6 +245,7 @@
     "@react-native-community/push-notification-ios" push-notification-ios
     "react-native-camera-kit" react-native-camera-kit
     "rn-emoji-keyboard" rn-emoji-keyboard
+    "react-native-notifications" react-native-notifications
     "react-native-draggable-flatlist" react-native-draggable-flatlist
     "./fleets.js" default-fleets
     "./chats.js" default-chats
