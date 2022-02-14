@@ -38,7 +38,7 @@
                                        :id message-id
                                        :contentType content-type}]
                          :js-response true
-                         :on-success #(re-frame/dispatch [:transport/message-sent %])
+                         :on-success #(re-frame/dispatch [:navigate-back])
                          :on-error   #(do
                                         (log/error "failed to share image message" %)
                                         (re-frame/dispatch [::failed-to-share-image %]))}]})))   
