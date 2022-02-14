@@ -169,6 +169,7 @@
   (let [{:keys [custom-domain? username address]}
         (:ens/registration db)
         {:keys [public-key]} (:multiaccount db)
+        address (or address (ethereum/default-address db))
         chain (ethereum/chain-keyword db)
         chain-id (ethereum/chain-id db)
         amount (registration-cost chain-id)
