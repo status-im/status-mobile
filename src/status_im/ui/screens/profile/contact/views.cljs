@@ -15,7 +15,6 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.utils.platform :as platform]
             [reagent.core :as reagent]
             [clojure.string :as string]
             [quo.components.list.item :as list-item]
