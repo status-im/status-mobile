@@ -185,11 +185,11 @@
 (fx/defn share-to-contacts-pressed
   {:events [::share-to-contacts-pressed]}
   [{:keys [db] :as cofx}
-  {:keys [message-id content-type] :as message}]
+   {:keys [message-id content-type] :as message}]
   (fx/merge cofx
-            (navigation/open-modal 
-              :share-to-contacts {:message-id message-id
-                                  :content-type content-type})))
+            (navigation/open-modal
+             :share-to-contacts {:message-id message-id
+                                 :content-type content-type})))
 
 
 (fx/defn delete-message

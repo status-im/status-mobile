@@ -41,7 +41,7 @@
 (defn share []
   (let [user-pk           (reagent/atom "")
         contacts-selected (reagent/atom #{})
-        {:keys [message-id]} (<sub [:get-screen-params])      
+        {:keys [message-id]} (<sub [:get-screen-params])
         {:keys [content-type]} (<sub [:get-screen-params])]
     (fn []
       (let [contacts-data               (<sub [:contacts/active])
