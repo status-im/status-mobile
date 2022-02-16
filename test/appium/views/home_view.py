@@ -291,7 +291,7 @@ class HomeView(BaseView):
         self.driver.info("## Group chat %s is created successfully!" % group_chat_name, device=False)
         return chat_view
 
-    def create_community(self, name: str, description="some_description", set_image=False, file_name='sauce_logo.png'):
+    def create_community(self, name: str, description="some_description", set_image=False, file_name='sauce_logo.png', require_approval=True):
         self.driver.info("## Creating community '%s', set image is set to '%s'" % (name, str(set_image)), device=False)
         self.plus_button.click()
         chat_view = self.communities_button.click()
@@ -305,8 +305,12 @@ class HomeView(BaseView):
             set_picture_view.element_by_translation_id("community-image-pick").scroll_and_click()
             set_picture_view.select_photo_from_gallery(file_name)
             set_picture_view.crop_photo_button.click()
+        if require_approval:
+            self.element_by_translation_id("membership-title").scroll_and_click()
+            self.element_by_translation_id("membership-approval").click()
+            self.done_button.click()
 
-        chat_view.confirm_create_in_community_button.click()
+        chat_view.confirm_create_in_community_button.wait_and_click()
         self.driver.info("## Community is created successfully!", device=False)
         return chat_view.get_community_by_name(name)
 
