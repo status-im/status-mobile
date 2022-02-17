@@ -435,10 +435,25 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-
-
-
-
-
-
-
+    @marks.testrail_id(700727)
+    @marks.medium
+    def test_gap_in_public_chat(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        message = "testing gap"
+        chat_name = home_1.get_random_chat_name()
+        profile_1 = home_1.profile_button.click()
+        profile_1.sync_settings_button.click()
+        profile_1.sync_history_for_button.click()
+        profile_1.element_by_translation_id("two-minutes").click()
+        home_1.home_button.click()
+        chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
+        chat_1.send_message("HI")
+        device_1.toggle_airplane_mode()
+        chat_2.send_message(message)
+        sleep(180)
+        device_1.toggle_airplane_mode()
+        chat_1.element_by_translation_id("fetch-messages").wait_and_click(60)
+        if not chat_1.chat_element_by_text(message).is_element_displayed():
+            device_1.driver.fail("Test message has not been fetched")
