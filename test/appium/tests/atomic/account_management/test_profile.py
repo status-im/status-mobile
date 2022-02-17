@@ -268,6 +268,39 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(700702)
+    @marks.medium
+    def test_backup_of_contacts(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+
+        home.just_fyi('Add user to contacts')
+        home.add_contact(basic_user['public_key'])
+
+        home.just_fyi('Back up contacts')
+        profile = home.profile_button.click()
+        profile.sync_settings_button.click()
+        profile.backup_settings_button.click()
+        profile.perform_backup_button.click()
+
+        profile.just_fyi('Back up seed phrase')
+        profile.back_button.click(2)
+        profile.privacy_and_security_button.click()
+        profile.backup_recovery_phrase_button.click()
+        profile.ok_continue_button.click()
+        recovery_phrase = profile.get_recovery_phrase()
+        self.driver.reset()
+
+        profile.just_fyi('Recover account from seed phrase')
+        sign_in.recover_access(' '.join(recovery_phrase.values()))
+
+        sign_in.just_fyi('Check backed up contact')
+        profile.profile_button.click()
+        profile.contacts_button.click()
+        profile.element_by_text(basic_user["username"])
+        if not profile.element_by_text(basic_user['username']).is_element_displayed():
+            self.driver.fail("Contact was not backed up!")
+
     @marks.testrail_id(5431)
     @marks.medium
     def test_add_custom_network(self):

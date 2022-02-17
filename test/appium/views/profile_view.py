@@ -253,6 +253,11 @@ class ProfileView(BaseView):
                                       suffix="/following-sibling::android.widget.Switch[1]")
         self.ask_me_when_on_mobile_network = Button(self.driver, translation_id="mobile-network-ask-me",
                                                     suffix="/following-sibling::android.widget.Switch[1]")
+        ## Backup settings
+        self.backup_settings_button = Button(self.driver, accessibility_id="backup-settings-button")
+        ## Perform backup
+        self.perform_backup_button = Button(self.driver, translation_id="perform-backup")
+
         ## Sync history data
         self.sync_history_for_button = Button(self.driver, accessibility_id="default-sync-period-button")
         ## History nodes
