@@ -96,7 +96,7 @@ wallet_users['E']['public_key'] = "0x044cf0620ec3ea0aba9fb0e19cb42a6fbd6b4e74f23
                                   "fa1649927ba48adfa7c95991fd51940bc00a71e80b095db5b107f1b"
 wallet_users['E']['collectibles'] = {
     'Coins & Steel Exclusive Item Skin V2': '1',
-    'Coins & Steel Founder Aura': '2',
+    'Coins & Steel Founder Aura': '1',
     'CryptoKittiesRinkeby': '2',
     'KudosToken V7': '1',
 }

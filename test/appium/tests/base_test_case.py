@@ -87,7 +87,7 @@ def get_capabilities_sauce_lab():
     desired_caps['setWebContentDebuggingEnabled'] = True
     desired_caps['ignoreUnimportantViews'] = False
     desired_caps['enableNotificationListener'] = True
-    desired_caps['maxDuration'] = 1800
+    desired_caps['maxDuration'] = 3600
     return desired_caps
 
 

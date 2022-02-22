@@ -6,6 +6,20 @@ from views.sign_in_view import SignInView
 
 
 class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
+    @marks.testrail_id(6237)
+    @marks.high
+    def test_keycard_fetching_balance_after_offline(self):
+        sender = wallet_users['E']
+        sign_in = SignInView(self.driver)
+
+        sign_in.just_fyi('Keycard: checking if balance will be restored after going back online')
+        self.driver.close_app()
+        sign_in.toggle_airplane_mode()
+        self.driver.launch_app()
+        home = sign_in.recover_access(sender['passphrase'], keycard=True)
+        sign_in.toggle_airplane_mode()
+        wallet = home.wallet_button.click()
+        [wallet.wait_balance_is_changed(asset) for asset in ("ETH", "STT")]
 
     @marks.testrail_id(6289)
     @marks.critical

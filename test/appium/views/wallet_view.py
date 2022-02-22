@@ -170,6 +170,8 @@ class WalletView(BaseView):
                     counter, asset, expected_balance))
             else:
                 self.driver.info('Balance for %s is equal to %s' % (asset, expected_balance))
+                if not self.accounts_status_account.is_element_displayed():
+                    self.accounts_status_account.scroll_to_element(direction='up')
                 return
 
     def wait_balance_is_changed(self, asset='ETH', initial_balance=0, wait_time=400, scan_tokens=False):
@@ -268,7 +270,7 @@ class WalletView(BaseView):
         self.multiaccount_more_options.click()
         self.manage_assets_button.click()
         for asset in args:
-            self.asset_checkbox_by_name(asset).enable()
+            self.element_by_text(asset).click()
         self.cross_icon.click()
 
     def scan_tokens(self, *args):

@@ -1,188 +1,212 @@
 import random
 import string
+import pytest
 
-from support.utilities import get_merged_txs_list
-from tests import marks, unique_password
-from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten, transaction_recipients, \
-    ens_user
+from tests import marks, common_password
+from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase, MultipleSharedDeviceTestCase, create_shared_drivers
+from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten, ens_user, transaction_recipients
 from views.send_transaction_view import SendTransactionView
 from views.sign_in_view import SignInView
 
 
-class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
+@pytest.mark.xdist_group(name="send_tx_1")
+class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
+    @classmethod
+    def setup_class(cls):
+        cls.user = transaction_senders['S']
+        cls.recipient_address = '0x%s' % basic_user['address']
+        cls.drivers, cls.loop = create_shared_drivers(1)
+        [cls.amount_adi, cls.amount_eth, cls.amount_stt] = ['0.000%s' % str(random.randint(100, 999)) + '1' for _ in range(3)]
+        cls.sign_in = SignInView(cls.drivers[0])
+        cls.home = cls.sign_in.recover_access(cls.user['passphrase'])
+        cls.wallet = cls.home.wallet_button.click()
+        cls.assets = ('ETH', 'ADI', 'STT')
+        [cls.wallet.wait_balance_is_changed(asset) for asset in cls.assets]
+        cls.initial_balances = dict()
+        for asset in cls.assets:
+            cls.initial_balances[asset] = cls.wallet.get_asset_amount_by_name(asset)
+        cls.wallet.send_transaction(amount=cls.amount_eth, recipient=cls.recipient_address)
+        cls.wallet.send_transaction(amount=cls.amount_adi, recipient=cls.recipient_address, asset_name='ADI')
 
-    @marks.testrail_id(5308)
+    @marks.testrail_id(700763)
     @marks.critical
     @marks.transaction
-    def test_send_eth_from_wallet_to_address_incorrect_password(self):
-        recipient = basic_user
-        sender = transaction_senders['P']
-        sign_in = SignInView(self.driver)
-        home = sign_in.recover_access(sender['passphrase'], password=unique_password)
-        wallet = home.wallet_button.click()
-        wallet.accounts_status_account.click()
-        transaction_amount = wallet.get_unique_amount()
+    def test_send_tx_eth_check_logcat(self):
+        self.wallet.just_fyi('Check that transaction is appeared in tx history')
+        self.wallet.find_transaction_in_history(amount=self.amount_eth)
+        self.wallet.wallet_button.double_click()
+        self.network_api.wait_for_confirmation_of_transaction(self.user['address'], self.amount_eth)
+        self.wallet.wait_balance_is_changed('ETH', initial_balance=self.initial_balances['ETH'])
 
-        wallet.just_fyi("Checking that can't send transaction with wrong password")
-        send_transaction = wallet.send_transaction_button.click()
-        send_transaction.amount_edit_box.click()
-        send_transaction.amount_edit_box.set_value(transaction_amount)
-        send_transaction.set_recipient_address('0x%s' % recipient['address'])
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_with_password.click_until_presence_of_element(send_transaction.enter_password_input)
-        send_transaction.enter_password_input.click()
-        send_transaction.enter_password_input.send_keys('wrong_password')
-        send_transaction.sign_button.click()
-        if send_transaction.element_by_text_part('Transaction sent').is_element_displayed():
-            self.driver.fail('Transaction was sent with a wrong password')
-
-        wallet.just_fyi("Fix password and sign transaction")
-        send_transaction.enter_password_input.clear()
-        send_transaction.enter_password_input.send_keys(unique_password)
-        send_transaction.sign_button.click()
-        wallet.ok_button.wait_and_click()
-
-        wallet.just_fyi('Check that transaction is appeared in transaction history')
-        wallet.find_transaction_in_history(amount=transaction_amount)
-
-        wallet.just_fyi('Check logcat for sensitive data')
-        values_in_logcat = wallet.find_values_in_logcat(password=unique_password)
+        self.wallet.just_fyi('Check logcat for sensitive data')
+        values_in_logcat = self.wallet.find_values_in_logcat(password=common_password)
         if values_in_logcat:
-            self.driver.fail(values_in_logcat)
+            self.wallet.driver.fail(values_in_logcat)
 
-    @marks.testrail_id(6237)
-    @marks.high
-    @marks.transaction
-    def test_fetching_balance_after_offline(self):
-        sender = wallet_users['E']
-        sign_in = SignInView(self.driver)
-
-        sign_in.just_fyi('Checking if balance will be restored after going back online')
-        sign_in.toggle_airplane_mode()
-        home = sign_in.recover_access(sender['passphrase'])
-        sign_in.toggle_airplane_mode()
-        wallet = home.wallet_button.click()
-        [wallet.wait_balance_is_changed(asset) for asset in ("ETH", "STT")]
-        self.driver.reset()
-
-        sign_in.just_fyi('Keycard: checking if balance will be restored after going back online')
-        self.driver.close_app()
-        sign_in.toggle_airplane_mode()
-        self.driver.launch_app()
-        sign_in.recover_access(sender['passphrase'], keycard=True)
-        sign_in.toggle_airplane_mode()
-        wallet = home.wallet_button.click()
-        [wallet.wait_balance_is_changed(asset) for asset in ("ETH", "STT")]
-
-    @marks.testrail_id(5461)
-    @marks.medium
-    @marks.transaction
-    def test_send_eth_from_wallet_incorrect_address(self):
-        recipient = basic_user
-        sender = wallet_users['B']
-        home = SignInView(self.driver).recover_access(sender['passphrase'])
-        wallet = home.wallet_button.click()
-        wallet.accounts_status_account.click()
-        send_transaction = wallet.send_transaction_button.click()
-        send_transaction.amount_edit_box.click()
-        transaction_amount = send_transaction.get_unique_amount()
-        send_transaction.amount_edit_box.set_value(transaction_amount)
-        send_transaction.chose_recipient_button.click()
-        for address in (recipient['public_key'], '0xDE709F2102306220921060314715629080E2fB77'):
-            send_transaction.enter_recipient_address_input.set_value(address)
-            send_transaction.enter_recipient_address_input.click()
-            send_transaction.done_button.click()
-            if send_transaction.set_max_button.is_element_displayed():
-                self.driver.fail('Can proceed with wrong address %s in recipient' % address)
-
-    @marks.testrail_id(5350)
+    @marks.testrail_id(700764)
     @marks.critical
     @marks.transaction
-    def test_send_token_with_7_decimals(self):
-        sender, recipient = transaction_senders['S'], basic_user
-        home = SignInView(self.driver).recover_access(sender['passphrase'])
-        wallet = home.wallet_button.click()
-        wallet.wait_balance_is_changed(asset='ADI', scan_tokens=True)
-        amount = '0.000%s' % str(random.randint(100, 999)) + '1'
-        wallet.send_transaction(amount=amount, recipient='0x%s' % recipient['address'], asset_name='ADI')
-        transaction = wallet.find_transaction_in_history(amount=amount, asset='ADI', return_hash=True)
-        self.network_api.find_transaction_by_hash(transaction)
+    def test_send_tx_token_7_decimals(self):
+        asset = 'ADI'
+        self.wallet.just_fyi("Checking tx with 7 decimals")
+        transaction_adi = self.wallet.find_transaction_in_history(amount=self.amount_adi, asset=asset, return_hash=True)
+        self.wallet.wallet_button.double_click()
+        self.network_api.find_transaction_by_hash(transaction_adi)
+        self.wallet.wait_balance_is_changed(asset, initial_balance=self.initial_balances[asset])
 
-    @marks.testrail_id(5412)
-    @marks.high
-    @marks.transaction
-    def test_insufficient_funds_wallet_positive_balance(self):
-        sender = wallet_users['E']
-        home = SignInView(self.driver).recover_access(sender['passphrase'])
-        wallet = home.wallet_button.click()
-        [wallet.wait_balance_is_changed(asset) for asset in ['ETH', 'STT']]
-        eth_value, stt_value = wallet.get_asset_amount_by_name('ETH'), wallet.get_asset_amount_by_name('STT')
-        if eth_value == 0 or stt_value == 0:
-            self.driver.fail('No funds!')
-        wallet.accounts_status_account.click()
-        send_transaction = wallet.send_transaction_button.click()
-        send_transaction.amount_edit_box.set_value(round(eth_value + 1))
-        error_text = send_transaction.element_by_text('Insufficient funds')
-        if not error_text.is_element_displayed():
-            self.errors.append(
-                "'Insufficient funds' error is not shown when sending %s ETH from wallet with balance %s" % (
-                    round(eth_value + 1), eth_value))
-        send_transaction.select_asset_button.click()
-        send_transaction.asset_by_name('STT').scroll_to_element()
-        send_transaction.asset_by_name('STT').click()
-        send_transaction.amount_edit_box.set_value(round(stt_value + 1))
-        if not error_text.is_element_displayed():
-            self.errors.append(
-                "'Insufficient funds' error is not shown when sending %s STT from wallet with balance %s" % (
-                    round(stt_value + 1), stt_value))
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5314)
+    @marks.testrail_id(700765)
     @marks.critical
     @marks.transaction
-    def test_can_see_balance_and_all_transactions_history_on_cellular(self):
-        address = wallet_users['D']['address']
-        passphrase = wallet_users['D']['passphrase']
+    def test_send_tx_custom_token_18_decimals(self):
+        contract_address, name, symbol, decimals = '0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA', 'Weenus 💪', 'WEENUS', '18'
+        self.home.wallet_button.double_click()
 
-        ropsten_txs = self.network_api.get_transactions(address)
-        ropsten_tokens = self.network_api.get_token_transactions(address)
-        expected_txs_list = get_merged_txs_list(ropsten_txs, ropsten_tokens)
-        sign_in = SignInView(self.driver)
-        sign_in.switch_to_mobile(before_login=True)
-        home = sign_in.recover_access(passphrase=passphrase)
+        self.wallet.just_fyi("Check that can add custom token")
+        self.wallet.multiaccount_more_options.click()
+        self.wallet.manage_assets_button.click()
+        token_view = self.wallet.add_custom_token_button.click()
+        token_view.contract_address_input.send_keys(contract_address)
+        if token_view.name_input.text != name:
+            self.errors.append('Name for custom token was not set')
+        if token_view.symbol_input.text != symbol:
+            self.errors.append('Symbol for custom token was not set')
+        if token_view.decimals_input.text != decimals:
+            self.errors.append('Decimals for custom token was not set')
+        token_view.add_button.click()
+        token_view.close_button.click()
+        self.wallet.asset_by_name(symbol).scroll_to_element()
+        if not self.wallet.asset_by_name(symbol).is_element_displayed():
+            self.errors.append('Custom token is not shown on Wallet view')
 
-        wallet = home.wallet_button.click()
-        for asset in ('ETH', 'MDS', 'STT'):
-            wallet.wait_balance_is_changed(asset)
-        wallet.swipe_up()
+        self.wallet.just_fyi("Check that can send tx with custom token")
+        self.wallet.send_transaction(asset_name=symbol, amount=self.amount_eth, recipient=self.recipient_address)
+        # TODO: disabled due to 10838 (rechecked 23.11.21, valid)
+        # transactions_view = wallet.transaction_history_button.click()
+        # transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(700757)
+    @marks.critical
+    def test_send_tx_set_recipient_options_invalid_password(self):
+        nickname = 'my_some_nickname'
+        account_name = 'my_acc_name'
+        account_address = '0x8c2E3Cd844848E79cFd4671cE45C12F210b630d7'
+        recent_add_to_fav_name = 'my_Recent_STT'
+        recent_add_to_fav_address = '0x58d8c3d70ce4fa4b9fb10a665c8712238746f2ff'
+        ens_status, ens_other = ens_user_ropsten, ens_user
+
+        basic_add_to_fav_name = 'my_basic_address'
+        self.drivers[0].reset()
+        self.home = self.sign_in.recover_access(wallet_users['D']['passphrase'])
+
+        self.home.just_fyi('Add new account and new ENS contact for recipient')
+        chat = self.home.add_contact(ens_status['ens'])
+        chat.chat_options.click()
+        chat.view_profile_button.click_until_presence_of_element(chat.remove_from_contacts)
+        chat.set_nickname(nickname)
+        wallet = self.home.wallet_button.click()
+        wallet.add_account(account_name=account_name)
         wallet.accounts_status_account.click()
-        transaction = wallet.transaction_history_button.click()
-        if not wallet.element_by_translation_id("transactions-history-empty").is_element_displayed():
-            self.errors.append("Transaction history was loaded automatically on mobila data!")
-        wallet.pull_to_refresh()
-        if wallet.element_by_translation_id("transactions-history-empty").is_element_displayed():
-            wallet.pull_to_refresh()
-        status_tx_number = transaction.transactions_table.get_transactions_number()
-        if status_tx_number < 1:
-            self.driver.fail('No transactions found')
+        send_tr = wallet.send_transaction_button.click()
 
-        for n in range(status_tx_number):
-            transactions_details = transaction.transactions_table.transaction_by_index(n).click()
-            tx_hash = transactions_details.get_transaction_hash()
-            tx_from = transactions_details.get_sender_address()
-            tx_to = transactions_details.get_recipient_address()
-            if tx_from != expected_txs_list[tx_hash]['from']:
-                self.errors.append('Transactions senders do not match!')
-            if tx_to != expected_txs_list[tx_hash]['to']:
-                self.errors.append('Transactions recipients do not match!')
-            transactions_details.close_button.click()
+        wallet.just_fyi("Check that can't send to invalid address")
+        send_tr.amount_edit_box.click()
+        send_tr.amount_edit_box.set_value(send_tr.get_unique_amount())
+        send_tr.chose_recipient_button.click()
+        for address in (basic_user['public_key'], '0xDE709F2102306220921060314715629080E2fB77'):
+            send_tr.enter_recipient_address_input.set_value(address)
+            send_tr.enter_recipient_address_input.click()
+            send_tr.done_button.click()
+            if send_tr.set_max_button.is_element_displayed():
+                self.errors.append('Can proceed with wrong address %s in recipient' % address)
+
+        send_tr.just_fyi('Set one of my accounts')
+        send_tr.chose_recipient_button.click_if_shown()
+        send_tr.element_by_translation_id("my-accounts").click()
+        send_tr.element_by_text(account_name).click()
+        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(account_address):
+            self.errors.append('Added account is not resolved as recipient')
+
+        send_tr.just_fyi('Set contract address from recent and check smart contract error')
+        send_tr.chose_recipient_button.click()
+        send_tr.element_by_translation_id("recent").click()
+        send_tr.element_by_text('↓ 1000 MDS').click()
+        if not send_tr.element_by_translation_id("warning-sending-to-contract-descr").is_element_displayed():
+            self.driver.fail('No warning is shown at attempt to set as recipient smart contract')
+        send_tr.ok_button.click()
+        send_tr.element_by_text('↑ 0.001 ETHro').scroll_and_click()
+        send_tr.add_to_favorites(recent_add_to_fav_name)
+        wallet.element_by_translation_id("recent").click()
+
+        send_tr.just_fyi('Scan invalid QR')
+        send_tr.scan_qr_code_button.click()
+        send_tr.allow_button.click(1)
+        wallet.enter_qr_edit_box.scan_qr('something%s' % basic_user['address'])
+        if not send_tr.element_by_text_part('Invalid address').is_element_displayed(10):
+            self.driver.fail('No error is shown at attempt to scan invalid address')
+        wallet.ok_button.click()
+
+        send_tr.just_fyi('Scan code, add it to favorites and recheck that it is preserved')
+        send_tr.scan_qr_code_button.click()
+        wallet.enter_qr_edit_box.scan_qr(basic_user['address'])
+        send_tr.add_to_favorites(basic_add_to_fav_name)
+        send_tr.element_by_translation_id("favourites").scroll_and_click()
+        for name in (recent_add_to_fav_name, basic_add_to_fav_name):
+            wallet.element_by_text(name).scroll_to_element()
+
+        send_tr.element_by_text(recent_add_to_fav_name).scroll_and_click()
+        if str(send_tr.enter_recipient_address_text.text).lower() != send_tr.get_formatted_recipient_address(
+                recent_add_to_fav_address):
+            self.errors.append('Recent address that was added to favourites was not resolved correctly')
+
+        send_tr.just_fyi('Set contact')
+        send_tr.chose_recipient_button.click()
+        send_tr.element_by_translation_id("contacts").scroll_and_click()
+        send_tr.element_by_text(nickname).scroll_and_click()
+        send_tr.recipient_done.click()
+        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(ens_status['address']):
+            self.errors.append('ENS from contact is not resolved as recipient')
+
+        send_tr.just_fyi('Set different ENS options')
+        send_tr.set_recipient_address(ens_other['ens_another'])
+        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(ens_other['address']):
+            self.errors.append('ENS address on another domain is not resolved as recipient')
+        send_tr.set_recipient_address('%s.stateofus.eth' % ens_status['ens'])
+        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(ens_status['address']):
+            self.errors.append('ENS address on stateofus.eth is not resolved as recipient')
+
+        send_tr.just_fyi('Check search and set address from search')
+        send_tr.chose_recipient_button.click()
+        send_tr.search_by_keyword(ens_status['ens'][:2])
+        if not send_tr.element_by_text('@' + ens_status['ens']).is_element_displayed():
+            self.errors.append('ENS address from contacts is not shown in search')
+        send_tr.cancel_button.click()
+        send_tr.search_by_keyword('my')
+        for name in (nickname, account_name, recent_add_to_fav_name, basic_add_to_fav_name):
+            if not send_tr.element_by_text(name).is_element_displayed():
+                self.errors.append('%s is not shown in search when searching by namepart' % name)
+        send_tr.element_by_text(basic_add_to_fav_name).click()
+        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(
+                '0x' + basic_user['address']):
+            self.errors.append('QR scanned address that was added to favourites was not resolved correctly')
+
+        send_tr.just_fyi('Check that can not sign tx with invalid password')
+        self.wallet.next_button.click_if_shown()
+        self.wallet.ok_got_it_button.click_if_shown()
+        send_tr.sign_with_password.click_until_presence_of_element(send_tr.enter_password_input)
+        send_tr.enter_password_input.click()
+        send_tr.enter_password_input.send_keys('wrong_password')
+        send_tr.sign_button.click()
+        if send_tr.element_by_text_part('Transaction sent').is_element_displayed():
+            wallet.driver.fail('Transaction was sent with a wrong password')
 
         self.errors.verify_no_errors()
+
+
+class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5429)
     @marks.medium
-    @marks.transaction
     def test_set_currency(self):
         home = SignInView(self.driver).create_user()
         user_currency = 'Euro (EUR)'
@@ -190,6 +214,24 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet.set_currency(user_currency)
         if not wallet.element_by_text_part('EUR').is_element_displayed(20):
             self.driver.fail('EUR currency is not displayed')
+
+    @marks.testrail_id(5358)
+    @marks.medium
+    def test_backup_recovery_phrase_warning_from_wallet(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        wallet = sign_in.wallet_button.click()
+        if wallet.backup_recovery_phrase_warning_text.is_element_present():
+            self.driver.fail("'Back up your seed phrase' warning is shown on Wallet while no funds are present")
+        address = wallet.get_wallet_address()
+        self.network_api.get_donate(address[2:], external_faucet=True, wait_time=200)
+        wallet.close_button.click()
+        wallet.wait_balance_is_changed(scan_tokens=True)
+        if not wallet.backup_recovery_phrase_warning_text.is_element_present(30):
+            self.driver.fail("'Back up your seed phrase' warning is not shown on Wallet with funds")
+        profile = wallet.get_profile_view()
+        wallet.backup_recovery_phrase_warning_text.click()
+        profile.backup_recovery_phrase()
 
     @marks.testrail_id(5407)
     @marks.medium
@@ -276,7 +318,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6235)
     @marks.medium
-    @marks.transaction
     def test_can_change_account_settings(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -309,7 +350,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6282)
     @marks.medium
-    @marks.transaction
     def test_can_scan_eip_681_links(self):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(transaction_senders['C']['passphrase'])
@@ -415,132 +455,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                     wallet.close_send_transaction_view_button.wait_and_click()
                 else:
                     wallet.cancel_button.wait_and_click()
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6208)
-    @marks.high
-    @marks.transaction
-    def test_send_transaction_with_custom_token(self):
-        contract_address, name, symbol, decimals = '0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA', 'Weenus 💪', 'WEENUS', '18'
-        home = SignInView(self.driver).recover_access(wallet_users['B']['passphrase'])
-        wallet = home.wallet_button.click()
-        wallet.multiaccount_more_options.click()
-        wallet.manage_assets_button.click()
-        token_view = wallet.add_custom_token_button.click()
-        token_view.contract_address_input.send_keys(contract_address)
-        if token_view.name_input.text != name:
-            self.errors.append('Name for custom token was not set')
-        if token_view.symbol_input.text != symbol:
-            self.errors.append('Symbol for custom token was not set')
-        if token_view.decimals_input.text != decimals:
-            self.errors.append('Decimals for custom token was not set')
-        token_view.add_button.click()
-        token_view.close_button.click()
-        wallet.asset_by_name(symbol).scroll_to_element()
-        if not wallet.asset_by_name(symbol).is_element_displayed():
-            self.errors.append('Custom token is not shown on Wallet view')
-        recipient = "0x" + basic_user['address']
-        amount = '0.000%s' % str(random.randint(10000, 99999)) + '1'
-        wallet.send_transaction(asset_name=symbol, amount=amount, recipient=recipient)
-        # TODO: disabled due to 10838 (rechecked 23.11.21, valid)
-        # transactions_view = wallet.transaction_history_button.click()
-        # transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6328)
-    @marks.critical
-    def test_send_transaction_set_recipient_options(self):
-        home = SignInView(self.driver).recover_access(wallet_users['D']['passphrase'])
-        nickname = 'my_some_nickname'
-        account_name = 'my_acc_name'
-        account_address = '0x8c2E3Cd844848E79cFd4671cE45C12F210b630d7'
-        recent_add_to_fav_name = 'my_Recent_STT'
-        recent_add_to_fav_address = '0x58d8c3d70ce4fa4b9fb10a665c8712238746f2ff'
-        ens_status = ens_user_ropsten
-        ens_other = ens_user
-        basic_add_to_fav_name = 'my_basic_address'
-
-        home.just_fyi('Add new account and new ENS contact for recipient')
-        chat = home.add_contact(ens_status['ens'])
-        chat.chat_options.click()
-        chat.view_profile_button.click_until_presence_of_element(chat.remove_from_contacts)
-        chat.set_nickname(nickname)
-        wallet = home.wallet_button.click()
-        wallet.add_account(account_name=account_name)
-        wallet.accounts_status_account.click()
-        send_tr = wallet.send_transaction_button.click()
-
-        send_tr.just_fyi('Set one of my accounts')
-        send_tr.chose_recipient_button.click()
-        send_tr.element_by_translation_id("my-accounts").click()
-        send_tr.element_by_text(account_name).click()
-        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(account_address):
-            self.errors.append('Added account is not resolved as recipient')
-
-        send_tr.just_fyi('Set contract address from recent and check smart contract error')
-        send_tr.chose_recipient_button.click()
-        send_tr.element_by_translation_id("recent").click()
-        send_tr.element_by_text('↓ 1000 MDS').click()
-        if not send_tr.element_by_translation_id("warning-sending-to-contract-descr").is_element_displayed():
-            self.driver.fail('No warning is shown at attempt to set as recipient smart contract')
-        send_tr.ok_button.click()
-        send_tr.element_by_text('↑ 0.001 ETHro').scroll_and_click()
-        send_tr.add_to_favorites(recent_add_to_fav_name)
-        wallet.element_by_translation_id("recent").click()
-
-        send_tr.just_fyi('Scan invalid QR')
-        send_tr.scan_qr_code_button.click()
-        send_tr.allow_button.click(1)
-        wallet.enter_qr_edit_box.scan_qr('something%s' % basic_user['address'])
-        if not send_tr.element_by_text_part('Invalid address').is_element_displayed(10):
-            self.driver.fail('No error is shown at attempt to scan invalid address')
-        wallet.ok_button.click()
-
-        send_tr.just_fyi('Scan code, add it to favorites and recheck that it is preserved')
-        send_tr.scan_qr_code_button.click()
-        wallet.enter_qr_edit_box.scan_qr(basic_user['address'])
-        send_tr.add_to_favorites(basic_add_to_fav_name)
-        send_tr.element_by_translation_id("favourites").scroll_and_click()
-        for name in (recent_add_to_fav_name, basic_add_to_fav_name):
-            wallet.element_by_text(name).scroll_to_element()
-
-        send_tr.element_by_text(recent_add_to_fav_name).scroll_and_click()
-        if str(send_tr.enter_recipient_address_text.text).lower() != send_tr.get_formatted_recipient_address(
-                recent_add_to_fav_address):
-            self.errors.append('Recent address that was added to favourites was not resolved correctly')
-
-        send_tr.just_fyi('Set contact')
-        send_tr.chose_recipient_button.click()
-        send_tr.element_by_translation_id("contacts").scroll_and_click()
-        send_tr.element_by_text(nickname).scroll_and_click()
-        send_tr.recipient_done.click()
-        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(ens_status['address']):
-            self.errors.append('ENS from contact is not resolved as recipient')
-
-        send_tr.just_fyi('Set different ENS options')
-        send_tr.set_recipient_address(ens_other['ens_another'])
-        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(ens_other['address']):
-            self.errors.append('ENS address on another domain is not resolved as recipient')
-        send_tr.set_recipient_address('%s.stateofus.eth' % ens_status['ens'])
-        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(ens_status['address']):
-            self.errors.append('ENS address on stateofus.eth is not resolved as recipient')
-
-        send_tr.just_fyi('Check search and set address from search')
-        send_tr.chose_recipient_button.click()
-        send_tr.search_by_keyword(ens_status['ens'][:2])
-        if not send_tr.element_by_text('@' + ens_status['ens']).is_element_displayed():
-            self.errors.append('ENS address from contacts is not shown in search')
-        send_tr.cancel_button.click()
-        send_tr.search_by_keyword('my')
-        for name in (nickname, account_name, recent_add_to_fav_name, basic_add_to_fav_name):
-            if not send_tr.element_by_text(name).is_element_displayed():
-                self.errors.append('%s is not shown in search when searching by namepart' % name)
-        send_tr.element_by_text(basic_add_to_fav_name).click()
-        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(
-                '0x' + basic_user['address']):
-            self.errors.append('QR scanned address that was added to favourites was not resolved correctly')
 
         self.errors.verify_no_errors()
 

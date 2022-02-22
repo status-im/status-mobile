@@ -243,6 +243,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         recovery_phrase = profile_1.get_recovery_phrase()
         profile_1.close_button.click()
         profile_1.home_button.click()
+        profile_1.get_recovery_phrase()
 
         device_1.just_fyi('Add contact, 1-1 chat (main device): 3-random, contact with ENS, start 1-1')
         chat_1 = home_1.add_contact(basic_user['public_key'])

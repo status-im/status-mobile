@@ -190,6 +190,10 @@ class BaseElement(object):
         except TimeoutException:
             return False
 
+    def click_if_shown(self, sec=5):
+        if self.is_element_displayed(sec=sec):
+            self.click()
+
     def is_element_disappeared(self, sec=20):
         try:
             return self.wait_for_invisibility_of_element(sec)
