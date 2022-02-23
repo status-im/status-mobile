@@ -7324,16 +7324,16 @@
   },
 
   {
-    "path": "com/squareup/okhttp3/okhttp/5.0.0-alpha.4/okhttp-5.0.0-alpha.4",
+    "path": "com/squareup/okhttp3/okhttp/5.0.0-alpha.5/okhttp-5.0.0-alpha.5",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "928427ff8d8c2326263733462bc5f8ea1021b5cb",
-      "sha256": "11iwhxf9ndkd6qmnb3iim97hm9h20v3fkvr8hnav5ypy44mgxilk"
+      "sha1": "71c72a769bb69cdac5c01b1baf3d3cea94633c8e",
+      "sha256": "1als0653nwccdzcmxikdmlqx2i3072p6bqv65w67nj695n5r0bjj"
     },
     "jar": {
-      "sha1": "bca0daab030b78fbc74e97e45dd01c6826cf4959",
-      "sha256": "0s305pbn9rc8y37grz2gmzgmzpi4zdhg9r0sm4fknnimyzdk6j5x"
+      "sha1": "bb262550c729996d20d3df9f66affc383901a123",
+      "sha256": "1qpyvqmwrz6zh4q492wflqsr12g1jivikl6qf8paw0zcc3d392xb"
     }
   },
 
@@ -7710,34 +7710,6 @@
   },
 
   {
-    "path": "com/willowtreeapps/assertk/assertk/0.25/assertk-0.25",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "jar",
-    "pom": {
-      "sha1": "557170cd696a66845f2f97c36b20b372739dff34",
-      "sha256": "0d6lqsv2j6z9bjzag72bffyswnbbgrz1qcaydm7i2kc34wxz5hjs"
-    },
-    "jar": {
-      "sha1": "c20894404c38109ed837f6f6d254987777a06b0c",
-      "sha256": "0341gbcpz37abbk61xyfxmj5gjxggpvwpq5s16zrjkkrgx7v1sfi"
-    }
-  },
-
-  {
-    "path": "com/willowtreeapps/opentest4k/opentest4k/1.2.2/opentest4k-1.2.2",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "jar",
-    "pom": {
-      "sha1": "e5c64dc093a91d1e2f591d0742798bb8f325b0ea",
-      "sha256": "1wn81995g9qdnxfgbscrm4a07m565dmk7mnycrw575w6vjjl0sca"
-    },
-    "jar": {
-      "sha1": "cc1388f1517c5fb7b83009abbc2f0eb2883739ef",
-      "sha256": "0g31fw5nvd09nc3pkgzpiwmbvizbxw2wv0vz76m2xbpy8wh8n9jg"
-    }
-  },
-
-  {
     "path": "de/undercouch/gradle-download-task/3.4.3/gradle-download-task-3.4.3",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
@@ -7794,26 +7766,26 @@
   },
 
   {
-    "path": "jakarta/xml/bind/jakarta.xml.bind-api-parent/4.0.0-RC2/jakarta.xml.bind-api-parent-4.0.0-RC2",
+    "path": "jakarta/xml/bind/jakarta.xml.bind-api-parent/4.0.0-RC3/jakarta.xml.bind-api-parent-4.0.0-RC3",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "89412e0394f9e398e13416fde8da8b3a80fa0fec",
-      "sha256": "0bpclrb04qff6adkn37rk4zp5y8ky0vjnp5cxyzv8zc8182fhmr1"
+      "sha1": "a19c03e97865c73e090c628f140bf989c39ca58c",
+      "sha256": "1h2kffzcpsivg9ash0qn22gfyrv9dzhzymafsnl3rv70rmx571cx"
     }
   },
 
   {
-    "path": "jakarta/xml/bind/jakarta.xml.bind-api/4.0.0-RC2/jakarta.xml.bind-api-4.0.0-RC2",
+    "path": "jakarta/xml/bind/jakarta.xml.bind-api/4.0.0-RC3/jakarta.xml.bind-api-4.0.0-RC3",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "894741e8eca308287531b49bd3045e247cd43515",
-      "sha256": "15qcygb76b7khpgsq94azpfqkfxp50fn0yypmdy3p3rm8bnpbypc"
+      "sha1": "92e21745056f04ee7fcba97d4560e7844b6ef588",
+      "sha256": "0cbhwfj5v7hfyx1vpl0hq40100k7yl98i6lnlalh718wmw9rq5fz"
     },
     "jar": {
-      "sha1": "79f7ab7d98c0b95bef12d0b33b9b34af415ce222",
-      "sha256": "18dwxaillwc1bssp0wypjhgg9vygk0p5wcr9j6dh63xk0zd6pkqd"
+      "sha1": "ecec3b5ac3aaef841a10d83b5546c285d9914028",
+      "sha256": "0mcij5xnqkq8swvc6fdijjjxbrvp74z23f5jpf9nbqgxbvskjchm"
     }
   },
 
@@ -12042,20 +12014,6 @@
     "jar": {
       "sha1": "6dd50665802f54ba9bc3f70ecb20227d1bc81323",
       "sha256": "02270i5smqqmwbnnk6ny0r92bihjhwm8180qh9knnx0s6x22z5jp"
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlin/kotlin-stdlib-common/1.5.30/kotlin-stdlib-common-1.5.30",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "jar",
-    "pom": {
-      "sha1": "850c3ca345e0afacbfaf203f5259e3e1be59df9e",
-      "sha256": "1g74j6k1lbnljsy2dif47mmc3hrwqch6j6zi1mdp4mh11r812w6d"
-    },
-    "jar": {
-      "sha1": "649ffab7767038323fec0cc41e2d7b0a8f65a378",
-      "sha256": "1f346x78anwcxyj1lbywjz4vwa66la5sgfyhz3h2514p199srcwf"
     }
   },
 
