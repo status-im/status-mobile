@@ -191,6 +191,7 @@ class ProfileView(BaseView):
         self.default_username_text = Text(self.driver, accessibility_id="default-username")
         self.share_my_profile_button = Button(self.driver, accessibility_id="share-header-button")
         self.profile_picture = ProfilePictureElement(self.driver)
+        self.online_indicator = Button(self.driver, accessibility_id="online-profile-photo-dot")
         self.edit_picture_button = Button(self.driver, accessibility_id="edit-profile-photo-button")
         self.confirm_edit_button = Button(self.driver, accessibility_id="done-button")
         self.select_from_gallery_button = Button(self.driver, translation_id="profile-pic-pick")

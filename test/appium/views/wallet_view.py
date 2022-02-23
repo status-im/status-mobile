@@ -157,7 +157,7 @@ class WalletView(BaseView):
                                                      xpath='//*[@text="Password"]/following-sibling::*/android.widget.EditText')
         self.delete_account_confirm_button = Button(self.driver, accessibility_id="delete-account-confirm")
 
-    def wait_balance_is_equal_expected_amount(self, asset='ETH', expected_balance=0.1, wait_time=300):
+    def wait_balance_is_equal_expected_amount(self, asset='ETH', expected_balance=0.1, wait_time=300, main_screen=True):
         counter = 0
         while True:
             if counter >= wait_time:
@@ -170,8 +170,9 @@ class WalletView(BaseView):
                     counter, asset, expected_balance))
             else:
                 self.driver.info('Balance for %s is equal to %s' % (asset, expected_balance))
-                if not self.accounts_status_account.is_element_displayed():
-                    self.accounts_status_account.scroll_to_element(direction='up')
+                if main_screen:
+                    if not self.accounts_status_account.is_element_displayed():
+                        self.accounts_status_account.scroll_to_element(direction='up')
                 return
 
     def wait_balance_is_changed(self, asset='ETH', initial_balance=0, wait_time=400, scan_tokens=False):
@@ -270,6 +271,7 @@ class WalletView(BaseView):
         self.multiaccount_more_options.click()
         self.manage_assets_button.click()
         for asset in args:
+            self.element_by_text(asset).scroll_to_element()
             self.element_by_text(asset).click()
         self.cross_icon.click()
 

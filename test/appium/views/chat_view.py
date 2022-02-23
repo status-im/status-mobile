@@ -804,9 +804,9 @@ class ChatView(BaseView):
         if message_location < today_location + today_height:
             errors.append("Message '%s' is not under 'Today' text" % text)
 
-    def send_message(self, message: str = 'test message'):
+    def send_message(self, message: str = 'test message', wait_chat_input_sec=5):
         self.driver.info("Sending message '%s'" % BaseElement(self.driver).exclude_emoji(message))
-        self.chat_message_input.wait_for_element(5)
+        self.chat_message_input.wait_for_element(wait_chat_input_sec)
         self.chat_message_input.send_keys(message)
         self.send_message_button.click()
 
@@ -856,7 +856,7 @@ class ChatView(BaseView):
 
     def view_profile_long_press(self, message=str):
         self.chat_element_by_text(message).long_press_element()
-        self.view_profile_by_avatar_button.click()
+        self.view_profile_by_avatar_button.wait_and_click()
         self.profile_block_contact.wait_for_visibility_of_element(5)
 
     def wait_ens_name_resolved_in_chat(self, message=str, username_value=str):

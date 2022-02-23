@@ -71,7 +71,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.advanced_button.click()
         profile.transaction_management_enabled_toggle.click()
         profile.webview_debug_toggle.click()
-        profile.waku_bloom_toggle.click()
+        profile.waku_bloom_toggle.scroll_and_click()
         sign_in.sign_in()
 
         home.just_fyi("Check tx management")
@@ -174,7 +174,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("Could not sign in with new password after reset")
 
         self.errors.verify_no_errors()
-
 
     @marks.testrail_id(5433)
     @marks.medium
@@ -587,7 +586,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
     @marks.testrail_id(6636)
     @marks.medium
     @marks.flaky
-    def test_show_profile_picture_of_setting(self):
+    def test_show_profile_picture_of_setting_online_indicator(self):
         self.create_drivers(2)
         home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user(
             enable_notifications=True)
@@ -633,7 +632,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_2 = one_to_one_chat_2.profile_button.click()
         profile_2.contacts_button.click()
         profile_2.element_by_text(default_username_1).click()
-
+        profile_2.online_indicator.wait_for_visibility_of_element(180)
         if not profile_2.profile_picture.is_element_image_similar_to_template(logo_online):
             self.errors.append('Profile picture was not updated on user Profile view')
         profile_2.close_button.click()
@@ -644,7 +643,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.just_fyi('Check profile image updated in user profile view in Group chat views')
         group_chat_name, group_chat_message = 'new_group_chat', 'Trololo'
         group_chat_2 = home_2.create_group_chat(user_names_to_add=[default_username_1])
-        group_chat_2.send_message('Message')
+
+        group_chat_2.send_message('Message', wait_chat_input_sec=10)
         group_chat_1 = home_1.get_chat(group_chat_name).click()
         group_chat_1.join_chat_button.click()
         group_chat_1.send_message(group_chat_message)

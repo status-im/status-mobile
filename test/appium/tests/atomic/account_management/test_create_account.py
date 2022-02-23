@@ -267,7 +267,7 @@ class TestRecoverOneDeviceMerged(MultipleSharedDeviceTestCase):
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.amount_edit_box.click()
         send_transaction.amount_edit_box.set_value("0")
-        send_transaction.set_recipient_address("0x" + transaction_senders['A']['address'])
+        send_transaction.set_recipient_address("0x" + basic_user['address'])
         send_transaction.sign_transaction_button.click()
 
         texts = list(map(self.sign_in.get_translation_by_key,

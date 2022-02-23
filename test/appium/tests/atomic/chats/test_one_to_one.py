@@ -951,8 +951,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 'error': "That's you"
             },
             'other_user_profile_key_deep_link': {
-                'url': 'https://join.status.im/u/%s' % transaction_senders['A']['public_key'],
-                'username': transaction_senders['A']['username']
+                'url': 'https://join.status.im/u/%s' % transaction_senders['M']['public_key'],
+                'username': transaction_senders['M']['username']
             },
             'other_user_profile_key_deep_link_invalid': {
                 'url': 'https://join.status.im/u/%sinvalid' % ens_user['public_key'],
@@ -967,8 +967,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             #     'username': ens_user['username']
             # },
             'other_user_profile_key': {
-                'url': transaction_senders['A']['public_key'],
-                'username': transaction_senders['A']['username']
+                'url': transaction_senders['M']['public_key'],
+                'username': transaction_senders['M']['username']
             },
             'other_user_profile_key_invalid': {
                 'url': '%s123' % ens_user['public_key'],

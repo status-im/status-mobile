@@ -215,7 +215,6 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
         self.home_2.get_chat('#' + self.public_chat_name).click()
         self.chat_2.send_message(self.text_message)
-
         if not self.home_1.home_button.public_unread_messages.is_element_displayed():
             self.errors.append('New messages public chat badge is not shown on Home button')
         chat_element = self.home_1.get_chat('#' + self.public_chat_name)
