@@ -958,7 +958,6 @@
     "notifications-switch": "Show notifications",
     "notifications-non-contacts": "Notifications from non-contacts",
     "notifications-transactions": "Wallet transactions",
-    "local-notifications": "Local notifications",
     "send-push-notifications": "Send Push Notifications",
     "send-push-notifications-description": "When disabled, the person receiving your messages won't be notified of their arrival",
     "push-notifications-server-enabled": "Server enabled",
