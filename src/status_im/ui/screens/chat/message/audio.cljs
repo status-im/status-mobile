@@ -10,7 +10,10 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.slider :as slider]))
+            [status-im.ui.components.slider :as slider]
+            ["react-native-blob-util" :default ReactNativeBlobUtil]
+            [status-im.utils.platform :as platform]
+            [taoensso.timbre :as log]))
 
 (defonce player-ref (atom nil))
 (defonce current-player-message-id (atom nil))
@@ -110,25 +113,34 @@
          #(update-state (merge params {:error (:message %)}))))))
   (update-state (merge params {:seek-to-ms value})))
 
-(defn reload-player [{:keys [message-id state-ref] :as params} base64-data on-success]
+(defn download-audio-http [base64-uri on-success]
+  (-> (.config ReactNativeBlobUtil (clj->js {:trusty platform/ios?}))
+      (.fetch "GET" (str base64-uri))
+      (.then #(on-success (.base64 ^js %)))
+      (.catch #(log/error "could not fetch audio"))))
+
+(defn reload-player [{:keys [message-id state-ref] :as params} audio-url on-success]
   ;; to avoid reloading player while is initializing,
   ;; we go ahead only if there is no player or
   ;; if it is already prepared
   (when (or (nil? @player-ref) (audio/can-play? @player-ref))
     (when @player-ref
       (destroy-player (merge params {:reloading? true})))
-    (reset! player-ref (audio/new-player
-                        base64-data
-                        {:autoDestroy false
-                         :continuesToPlayInBackground false}
-                        #(seek params 0 true nil)))
-    (audio/prepare-player
-     @player-ref
-     #(when on-success (on-success))
-     #(update-state (merge params {:error (:message %)})))
-    (reset! current-player-message-id message-id)
-    (reset! current-active-state-ref-ref state-ref)
-    (update-state params)))
+    (download-audio-http
+     audio-url
+     (fn [base64-data]
+       (reset! player-ref (audio/new-player
+                           (str "data:audio/acc;base64," base64-data)
+                           {:autoDestroy false
+                            :continuesToPlayInBackground false}
+                           #(seek params 0 true nil)))
+       (audio/prepare-player
+        @player-ref
+        #(when on-success (on-success))
+        #(update-state (merge params {:error (:message %)})))
+       (reset! current-player-message-id message-id)
+       (reset! current-active-state-ref-ref state-ref)
+       (update-state params)))))
 
 (defn play-pause [{:keys [message-id state-ref] :as params} audio]
   (if (not= message-id @current-player-message-id)
