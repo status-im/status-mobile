@@ -206,7 +206,9 @@
                                       message-id (:messageId removed-message)]
                                   (data-store.messages/mark-messages-seen chat-id
                                                                           [message-id]
-                                                                          #(re-frame/dispatch [:chat/decrease-unviewed-count chat-id %3])))) removed-messages)
+                                                                          #(re-frame/dispatch [:chat/decrease-unviewed-count chat-id %3]))
+                                  (data-store.messages/send-chat-message-seen chat-id
+                                                                              [message-id]))) removed-messages)
         remove-messages-fx (fn [{:keys [db]}]
                              {:db (reduce (fn [acc current]
                                             (update-in acc [:messages (:chatId current)] dissoc (:messageId current)))

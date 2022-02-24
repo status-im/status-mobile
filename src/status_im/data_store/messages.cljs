@@ -70,8 +70,14 @@
   {::json-rpc/call [{:method (json-rpc/call-ext-method "markMessagesSeen")
                      :params [chat-id ids]
                      :on-success #(do
-                                    (log/debug "successfully marked as seen" %)
+                                    (log/error "successfully marked as seen" %)
                                     (when on-success (on-success chat-id ids %)))
+                     :on-failure #(log/error "failed to get messages" %)}]})
+
+(defn send-chat-message-seen-rpc [chat-id ids]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "sendChatMessageSeen")
+                     :params [chat-id ids]
+                     :on-success #(log/error "successfully seen chat message is seen" %)
                      :on-failure #(log/error "failed to get messages" %)}]})
 
 (defn delete-message-rpc [id]
@@ -100,6 +106,9 @@
 
 (fx/defn mark-messages-seen [cofx chat-id ids on-success]
   (mark-seen-rpc chat-id ids on-success))
+
+(fx/defn send-chat-message-seen [cofx chat-id ids]
+  (send-chat-message-seen-rpc chat-id ids))
 
 (fx/defn update-outgoing-status [cofx message-id status]
   (update-outgoing-status-rpc message-id status))
