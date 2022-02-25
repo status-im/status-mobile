@@ -21,6 +21,7 @@
       :title               (i18n/label :t/notifications-transactions)
       :accessibility-label :notifications-button
       :active              enabled
+      :disabled            (not (or platform/ios? notifications-enabled?))
       :on-press            #(re-frame/dispatch
                              [::notifications/switch-transaction-notifications enabled])
       :accessory           :switch}]))
@@ -37,6 +38,7 @@
        :accessibility-label :notifications-button
        :active              (and remote-push-notifications-enabled?
                                  (not push-notifications-from-contacts-only?))
+       :disabled            (not remote-push-notifications-enabled?)
        :on-press            #(re-frame/dispatch
                               [::notifications/switch-non-contacts (not push-notifications-from-contacts-only?)])
        :accessory           :switch}]
@@ -46,6 +48,7 @@
        :accessibility-label :notifications-button
        :active              (and remote-push-notifications-enabled?
                                  (not push-notifications-block-mentions?))
+       :disabled            (not remote-push-notifications-enabled?)
        :on-press            #(re-frame/dispatch
                               [::notifications/switch-block-mentions (not push-notifications-block-mentions?)])
        :accessory           :switch}]]))
@@ -63,8 +66,8 @@
      [quo/separator {:color (:ui-02 @quo-colors/theme)
                      :style {:margin-vertical 8}}]
      [quo/list-header (i18n/label :t/notifications-preferences)]
-     [remote-notifications]
-     [local-notifications]]))
+     [local-notifications]
+     [remote-notifications]]))
 
 (defn notifications-settings-android []
   (let [{:keys [notifications-enabled? remote-push-notifications-enabled?]}
@@ -91,9 +94,9 @@
      [quo/separator {:color (:ui-02 @quo-colors/theme)
                      :style {:margin-vertical 8}}]
      [quo/list-header (i18n/label :t/notifications-preferences)]
+     [local-notifications]
      (when (and platform/android? (not config/google-free))
-       [remote-notifications])
-     [local-notifications]]))
+       [remote-notifications])]))
 
 (defn notifications-settings []
   [react/scroll-view {:style                   {:flex 1}
