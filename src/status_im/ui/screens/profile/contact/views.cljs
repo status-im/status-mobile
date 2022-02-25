@@ -15,7 +15,6 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.utils.platform :as platform]
             [reagent.core :as reagent]
             [clojure.string :as string]
             [quo.components.list.item :as list-item]
@@ -40,14 +39,13 @@
               :icon                :main-icons/add-contact
               :accessibility-label :add-to-contacts-button
               :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key nil ens-name])}])
-          (when platform/ios?
-            [{:label               (i18n/label (if (or muted? blocked?) :t/unmute :t/mute))
-              :icon                :main-icons/notification
-              :accessibility-label :mute-chat
-              :selected            muted?
-              :disabled            blocked?
-              :action              (when-not blocked?
-                                     #(re-frame/dispatch [::chat.models/mute-chat-toggled public-key (not muted?)]))}])
+          [{:label               (i18n/label (if (or muted? blocked?) :t/unmute :t/mute))
+            :icon                :main-icons/notification
+            :accessibility-label :mute-chat
+            :selected            muted?
+            :disabled            blocked?
+            :action              (when-not blocked?
+                                   #(re-frame/dispatch [::chat.models/mute-chat-toggled public-key (not muted?)]))}]
           [{:label               (i18n/label (if blocked? :t/unblock :t/block))
             :negative            true
             :selected            blocked?
