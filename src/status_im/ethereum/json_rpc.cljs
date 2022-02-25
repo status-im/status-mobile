@@ -75,6 +75,7 @@
    "wakuext_createGroupChatWithMembers" {}
    "wakuext_createGroupChatFromInvitation" {}
    "wakuext_reSendChatMessage" {}
+   "wakuext_shareImageMessage" {}
    "wakuext_getOurInstallations" {}
    "wakuext_setInstallationMetadata" {}
    "wakuext_loadFilters" {}

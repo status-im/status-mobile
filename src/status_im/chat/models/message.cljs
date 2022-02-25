@@ -6,6 +6,7 @@
             [status-im.data-store.messages :as data-store.messages]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.transport.message.protocol :as protocol]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.chat.models.mentions :as mentions]
@@ -180,6 +181,14 @@
                                :on-success #(log/debug "re-sent message successfully")
                                :on-error #(log/error "failed to re-send message" %)}]}
             (update-message-status chat-id message-id :sending)))
+
+(fx/defn share-to-contacts-pressed
+  {:events [::share-to-contacts-pressed]}
+  [{:keys [db] :as cofx}
+   {:keys [message-id] :as message}]
+  (fx/merge cofx
+            (navigation/open-modal
+             :share-to-contacts {:message-id message-id})))
 
 (fx/defn delete-message
   "Deletes chat message, rebuild message-list"

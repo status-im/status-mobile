@@ -26,6 +26,22 @@
    :sticker         sticker
    :contentType     content-type})
 
+(fx/defn share-image-to-contacts-pressed
+  {:events [::share-image-to-contacts-pressed]}
+  [cofx user-pk contacts message-id]
+  (let [pks (if (seq user-pk)
+              (conj contacts user-pk)
+              contacts)]
+    (when (seq pks)
+      {::json-rpc/call [{:method     "wakuext_shareImageMessage"
+                         :params     [{:users pks
+                                       :id message-id}]
+                         :js-response true
+                         :on-success #(re-frame/dispatch [:navigate-back])
+                         :on-error   #(do
+                                        (log/error "failed to share image message" %)
+                                        (re-frame/dispatch [::failed-to-share-image %]))}]})))
+
 (fx/defn send-chat-messages [_ messages]
   {::json-rpc/call [{:method     (json-rpc/call-ext-method "sendChatMessages")
                      :params     [(mapv build-message messages)]
