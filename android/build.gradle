@@ -11,13 +11,14 @@ ext {
     targetSdkVersion    = Integer.valueOf(project.targetSdkVersion)
     supportLibVersion   = project.supportLibVersion
     gradlePluginVersion = project.gradlePluginVersion
+    ndkVersion          = project.ndkVersion
 }
 
 buildscript {
     repositories {
         flatDir { dirs "libs", "${rootDir}/app/libs" }
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31"
@@ -51,7 +52,6 @@ allprojects {
     }
 
     repositories {
-        mavenLocal()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url("$rootDir/../node_modules/react-native/android")
@@ -61,8 +61,14 @@ allprojects {
             url("$rootDir/../node_modules/jsc-android/dist")
         }
 
+        mavenCentral {
+            // We don't want to fetch react-native from Maven Central as there are
+            // older versions over there.
+            content {
+                excludeGroup "com.facebook.react"
+            }
+        }
         google()
-        jcenter()
 
         // for geth, function, and status-go
         flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }

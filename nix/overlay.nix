@@ -34,7 +34,7 @@ in {
 
   # Package version adjustments
   go = super.pkgs.go_1_16;
-  gradle = super.pkgs.gradle_5;
+  gradle = super.pkgs.gradle_7;
   nodejs = super.pkgs.nodejs-12_x;
   openjdk = super.pkgs.openjdk8_headless;
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {

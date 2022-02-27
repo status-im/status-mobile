@@ -31,6 +31,7 @@ project.xcworkspace
 .idea
 .gradle
 *.iml
+*.hprof
 **/android/.project
 **/android/.settings/org.eclipse.buildship.core.prefs
 local.properties

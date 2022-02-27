@@ -11,7 +11,7 @@ let
 
   pname = "aapt2";
   # Warning: This must be the same as gradlePluginVersion android/gradle.properties
-  version = "3.5.4-6197926";
+  version = "4.2.2-7147631";
 
   pkgPath = "com/android/tools/build/aapt2";
   repoUrl = "https://dl.google.com/dl/android/maven2";
@@ -30,20 +30,20 @@ let
     jar = fetchurl {
       url = "${repoUrl}/${pkgPath}/${version}/${filenames.jar}";
       sha256 = getAttr platform {
-        linux = "0hrlbxdn6bkl6qr9y599mjs0dy72q0352j30vpkza4lbq5b7rj9v";
+        linux = "0sh2rrahlfrqsmhgppvrb0s8wb76nab4cldsb0lsbw4q819x8ddq";
         osx = "0hhvxyr0jxci01qqkcrn80h4qs3b43lqxpbss0xvrkd1nwdilmnb";
       };
     };
     sha = fetchurl {
       url = "${repoUrl}/${pkgPath}/${version}/${filenames.jar}.sha1";
       sha256 = getAttr platform {
-        linux = "0ipmkl911hf17g2pb39jjkwrbb07p0cd1qd10p2fl8d1icxf63sz";
+        linux = "02w5pn0c551c1rng5ak4jx339b8631n0q26biyygq1f53hnvv110";
         osx = "156jbw4xm43902c0cqrag9l1s3fg6i1irsdz8m8659i9530ywwpx";
       };
     };
     pom = fetchurl {
       url = "${repoUrl}/${pkgPath}/${version}/${filenames.pom}";
-      sha256 = "00ra1xz4x1sfcf0z6x9in3b1flpyvxjbhpvhacc32r8b58nfvqzp";
+      sha256 = "1clls4l2agfiff7pbrjqm8ajgdbwgi5jynimpj2avyxyxy6ci0sx";
     };
   };
 
