@@ -67,7 +67,9 @@
                                        :Properties    #{}
                                        :create        (fn [])
                                        :configureNext (fn [])}
-            :requireNativeComponent   (fn [] {:propTypes ""})}))
+            :requireNativeComponent   (fn [] {:propTypes ""})
+            :Appearance               {:getColorScheme    (fn [])
+                                       :addChangeListener (fn [])}}))
 
 (set! js/ReactNative react-native)
 
@@ -100,7 +102,6 @@
 (def safe-area-context (clj->js {:SafeAreaProvider {:_reactNativeIphoneXHelper {:getStatusBarHeight (fn [])}}
                                  :SafeAreaInsetsContext {:Consumer (fn [])}
                                  :SafeAreaView {}}))
-(def react-native-dark-mode #js {"eventEmitter" {} "initialMode" {}})
 
 (def back-handler #js {:addEventListener identity
                        :removeEventListener identity})
@@ -221,7 +222,6 @@
     "react-native-gesture-handler" react-native-gesture-handler
     "react-native-safe-area-context" safe-area-context
     "react-native-config" config
-    "react-native-dark-mode" react-native-dark-mode
     "react-native-iphone-x-helper" (clj->js {:getStatusBarHeight (fn [])
                                              :getBottomSpace (fn [])})
     "react-native-screens" (clj->js {})
