@@ -6,8 +6,9 @@
 
 (defn add-mode-change-listener [callback]
   (ocall Appearance "addChangeListener" #(let [mode (oget % "colorScheme")]
-                                           (reset! initial-mode mode)
-                                           (callback (keyword mode)))))
+                                           (when-not (= mode @initial-mode)
+                                             (reset! initial-mode mode)
+                                             (callback (keyword mode))))))
 
 (defn is-dark-mode []
   (= @initial-mode "dark"))
