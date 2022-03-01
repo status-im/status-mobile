@@ -56,7 +56,7 @@ pipeline {
                 --rerun_count=2 \
                 --testrail_report=True \
                 -m testrail_id \
-                -m \"not upgrade\" \
+                -m \"not upgrade and not transaction\" \
                 -k \"${params.KEYWORD_EXPRESSION}\" \
                 --apk=${params.APK_NAME}
             """
