@@ -1,4 +1,4 @@
-.PHONY: nix-add-gcroots clean nix-clean run-metro test release _list _fix-node-perms _tmpdir-mk _tmpdir-rm
+.PHONY: nix-add-gcroots clean nix-clean run-metro test release _list _fix-node-perms _tmpdir-mk _tmpdir-rm _install-hooks
 
 help: SHELL := /bin/sh
 help: ##@other Show this help
@@ -123,6 +123,11 @@ _tmpdir-mk: ##@prepare Create a TMPDIR for temporary files
 _tmpdir-rm: SHELL := /bin/sh
 _tmpdir-rm: ##@prepare Remove TMPDIR
 	rm -fr "$(TMPDIR)"
+
+_install-hooks: SHELL := /bin/sh
+_install-hooks: ##@prepare Create prepare-commit-msg git hook symlink
+	@ln -s ../../scripts/hooks/prepare-commit-msg .git/hooks
+-include _install-hooks
 
 # Remove directories and ignored files
 clean: SHELL := /bin/sh
