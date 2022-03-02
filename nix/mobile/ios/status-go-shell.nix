@@ -7,7 +7,7 @@
 
 mkShell {
   shellHook = ''
-    export STATUS_GO_IOS_LIBDIR=${status-go}/Statusgo.framework
+    export STATUS_GO_IOS_LIBDIR=${status-go {}}/Statusgo.framework
 
     RCTSTATUS_DIR="$STATUS_REACT_HOME/modules/react-native-status/ios/RCTStatus"
     targetBasename='Statusgo.framework'

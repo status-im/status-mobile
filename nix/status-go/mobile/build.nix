@@ -8,6 +8,9 @@
 , goBuildLdFlags ? [ ]
 , outputFileName ? "status-go-${source.shortRev}-${platform}.aar" }:
 
+# Path to the file containing secret environment variables
+{ secretsFile ? "" }:
+
 let
   inherit (stdenv) isDarwin;
   inherit (lib)
@@ -34,6 +37,18 @@ in buildGo116Package {
   # Fixes Cgo related build failures (see https://github.com/NixOS/nixpkgs/issues/25959 )
   hardeningDisable = [ "fortify" ];
 
+  phases = [
+    "unpackPhase" "secretsPhase" "configurePhase"
+    "buildPhase" "installPhase"  "fixupPhase"
+  ];
+
+  # if secretsFile is not set we use generate keystore
+  secretsPhase = if (secretsFile != "") then ''
+    source "${secretsFile}"
+  '' else ''
+    echo "No secrets provided!"
+  '';
+
   # Ensure XCode is present for iOS build, instead of failing at the end of the build
   preConfigure = optionalString (isDarwin && platform == "ios") utils.enforceXCodeAvailable;
 
@@ -54,7 +69,9 @@ in buildGo116Package {
 
   # Build the Go library using gomobile for each of the configured platforms
   buildPhase = let
-    ldFlags = [ "-extldflags=-Wl,--allow-multiple-definition" ] ++ goBuildLdFlags;
+    ldFlags = [ "-extldflags=-Wl,--allow-multiple-definition" ]
+      ++ lib.optionals (secretsFile != "") ["-X node.OpenseaKeyFromEnv=$OPENSEA_API_KEY"]
+      ++ goBuildLdFlags;
     CGO_LDFLAGS = concatStringsSep " " ldFlags;
   in ''
     runHook preBuild

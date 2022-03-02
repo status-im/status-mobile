@@ -52,6 +52,9 @@ fi
 if [[ -n "${INFURA_TOKEN}" ]]; then
   append_env_export 'INFURA_TOKEN'
 fi
+if [[ -n "${OPENSEA_API_KEY}" ]]; then
+  append_env_export 'OPENSEA_API_KEY'
+fi
 
 # Used by Clojure at compile time for remove import of react-native-notifications for fdroid release
 if [[ -n "${READER_FEATURES}" ]]; then
