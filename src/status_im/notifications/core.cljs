@@ -143,8 +143,7 @@
   {:events [:notifications/switch-error]}
   [cofx enabled?]
   (multiaccounts.update/multiaccount-update
-   :remote-push-notifications-enabled? (not enabled?)
-   {}))
+   cofx :remote-push-notifications-enabled? (not enabled?) {}))
 
 (fx/defn notification-switch
   {:events [::switch]}
