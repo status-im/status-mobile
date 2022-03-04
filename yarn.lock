@@ -1447,11 +1447,6 @@
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
 
-"@types/events@*":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
-  integrity sha512-EaObqwIvayI5a8dCzhFrjKzVwKLxjoG9T6Ppd5CEo07LRKfQ8Yokw54r5+Wq7FaBQ+yXRvQAYPrHwya1/UFt9g==
-
 "@types/hammerjs@^2.0.36":
   version "2.0.36"
   resolved "https://registry.yarnpkg.com/@types/hammerjs/-/hammerjs-2.0.36.tgz#17ce0a235e9ffbcdcdf5095646b374c2bf615a4c"
@@ -1486,26 +1481,6 @@
   version "1.19.1"
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-1.19.1.tgz#33509849f8e679e4add158959fdb086440e9553f"
   integrity sha512-5qOlnZscTn4xxM5MeGXAMOsIOIKIbh9e85zJWfBRVPlRMEVawzoPhINYbRGkBZCI8LxvBe7tJCdWiarA99OZfQ==
-
-"@types/prop-types@*":
-  version "15.7.3"
-  resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.3.tgz#2ab0d5da2e5815f94b0b9d4b95d1e5f243ab2ca7"
-  integrity sha512-KfRL3PuHmqQLOG+2tGpRO26Ctg+Cq1E01D2DMriKEATHgWLfeNDmq9e29Q9WIky0dQ3NPkd1mzYH8Lm936Z9qw==
-
-"@types/react-native@*":
-  version "0.62.2"
-  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.62.2.tgz#f3e150f308c27089cefbcbfa3eb6cc14db279b2f"
-  integrity sha512-oIUIbqZNN9vRnGKWHYbTVp/GyTqdaM5mfy1s4zsi6BYvHAaFOPZ32IrhIHno/A5XOv4wuGfE7g5fliDk/H0+/Q==
-  dependencies:
-    "@types/react" "*"
-
-"@types/react@*":
-  version "16.9.34"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.34.tgz#f7d5e331c468f53affed17a8a4d488cd44ea9349"
-  integrity sha512-8AJlYMOfPe1KGLKyHpflCg5z46n0b5DbRfqDksxBLBTUpB75ypDBAO9eCUcjNwE6LCUslwTz00yyG/X9gaVtow==
-  dependencies:
-    "@types/prop-types" "*"
-    csstype "^2.2.0"
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
@@ -2821,11 +2796,6 @@ cssstyle@^2.0.0:
   integrity sha512-sEb3XFPx3jNnCAMtqrXPDeSgQr+jojtCeNf8cvMNMh1cG970+lljssvQDzPq6lmmJu2Vhqood/gtEomBiHOGnA==
   dependencies:
     cssom "~0.3.6"
-
-csstype@^2.2.0:
-  version "2.6.10"
-  resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.6.10.tgz#e63af50e66d7c266edb6b32909cfd0aabe03928b"
-  integrity sha512-D34BqZU4cIlMCY93rZHbrq9pjTAQJ3U8S8rfBqjwHxkGPThWFjzZDQpgMJY0QViLxth6ZKYiwFBo14RdN44U/w==
 
 damerau-levenshtein@^1.0.0:
   version "1.0.6"
@@ -6622,17 +6592,6 @@ react-native-camera-kit@^8.0.4:
   version "1.4.2"
   resolved "git+https://github.com/status-im/react-native-config.git#c3e58d76fed923aaf88eadc5073099fab5ecb346"
 
-react-native-dark-mode@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/react-native-dark-mode/-/react-native-dark-mode-0.2.2.tgz#4faa335e36330bfca832ba8b3d2bd84c7b880381"
-  integrity sha512-2vhWOOimU7DRKYjCU/pdv0+JpnGKURq5+c7bre093Jtzk57HtlJfd+ViibbC9Y8zh0viIOyKtfL5mYhVhZ6Crw==
-  dependencies:
-    "@types/events" "*"
-    "@types/react" "*"
-    "@types/react-native" "*"
-    events "^3.0.0"
-    toolkit.ts "^0.0.2"
-
 react-native-device-info@^7.4.0:
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-7.4.0.tgz#694deddfc6de0ff7268ff463d84693ee980c683c"
@@ -7978,11 +7937,6 @@ toidentifier@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.0.tgz#7e1be3470f1e77948bc43d94a3c8f4d7752ba553"
   integrity sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw==
-
-toolkit.ts@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/toolkit.ts/-/toolkit.ts-0.0.2.tgz#91bde730e5e6ad1a22146cdaf83f4a52721cf3b2"
-  integrity sha512-yJJTVbCwiD6AfFgReewJCGJuODmyZUeL1sDjnxp33t0UBxnezgQrLbz/F9++RC28CTlk5u5pVji4TbeondYEkw==
 
 tough-cookie@^2.3.3, tough-cookie@~2.5.0:
   version "2.5.0"
