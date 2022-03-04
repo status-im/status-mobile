@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ -z $(git diff --cached --name-only -r | grep status-go-version.json) ]]; then
+  exit 0 # No status-go-version.json changes found.
+fi
+
+MERGE_BASE=$(git merge-base -a develop "$(git rev-parse --abbrev-ref HEAD)" develop)
+GO_COMMIT_MERGE_BASE=$(git show "${MERGE_BASE}":status-go-version.json | jq -r '."commit-sha1"')
+GO_COMMIT_CURRENT=$(jq -r '."commit-sha1"' status-go-version.json)
+
+GITHUB_LINK="https://github.com/status-im/status-go/compare/${GO_COMMIT_MERGE_BASE}...${GO_COMMIT_CURRENT}"
+
+COMMIT_MSG_FILE=$1
+#todo for now instead of sed I use this just to have it all working. Later will implement sed solution
+if [[ -f "${COMMIT_MSG_FILE}" ]]; then
+  if [ -f temp_file ] ; then
+          rm temp_file
+  fi
+  while IFS= read -r line; do
+    if [[ "$line" == *"https://github.com/status-im/status-go/compare"* ]]; then
+      echo "${GITHUB_LINK}" >>temp_file
+    else
+      echo "${line}" >>temp_file
+    fi
+  done <"${COMMIT_MSG_FILE}"
+
+  if ! grep -q "https://github.com/status-im/status-go/compare" temp_file; then
+    echo "${GITHUB_LINK}" >>temp_file
+  fi
+
+  cat temp_file >"${COMMIT_MSG_FILE}"
+fi
