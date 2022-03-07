@@ -62,8 +62,14 @@ pipeline {
             credentialsId: 'infura-e2e-token',
             variable: 'WEB3_INFURA_PROJECT_ID'
           ),
+          file(
+            credentialsId: "mobile-tests-eth-accounts",
+            variable: 'TEST_ETH_ACCOUNTS_FILE'
+          ),
         ]) {
           dir('test/appium/tests') {
+            /* Provide Eth test accounts secrets. */
+            sh 'cp -f $TEST_ETH_ACCOUNTS_FILE users.py'
             sh """
               python3 -m pytest \
                 -m "upgrade" \

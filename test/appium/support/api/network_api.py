@@ -10,8 +10,8 @@ from os import environ
 import tests
 import support.api.web3_api as w3
 
-class NetworkApi(object):
 
+class NetworkApi(object):
 
     def __init__(self):
         self.network_url = 'http://api-ropsten.etherscan.io/api?'
@@ -148,9 +148,9 @@ class NetworkApi(object):
             pass
 
     def faucet_backup(self, address):
-            self.log("Trying to get funds from %s" % self.faucet_backup_address)
-            address = "0x" + address
-            w3.donate_testnet_eth(address=address, amount=0.005, inscrease_default_gas_price=10)
+        self.log("Trying to get funds from %s" % self.faucet_backup_address)
+        address = "0x" + address
+        w3.donate_testnet_eth(address=address, amount=0.005, inscrease_default_gas_price=10)
 
     def get_donate(self, address, external_faucet=False, wait_time=300):
         initial_balance = self.get_balance(address)

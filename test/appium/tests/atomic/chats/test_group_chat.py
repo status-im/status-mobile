@@ -253,10 +253,10 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
     def test_cant_add_more_twenty_participants_to_group_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
-        users = [transaction_senders['A'], transaction_senders['B'], transaction_senders['C'], transaction_senders['D'],
-                 transaction_senders['E'], transaction_senders['F'], transaction_senders['G'], transaction_senders['H'],
-                 transaction_senders['I'], transaction_senders['K'], transaction_senders['L'], transaction_senders['M'],
-                 transaction_senders['N'], transaction_senders['O'], transaction_senders['P'], transaction_senders['Q'],
+        users = [transaction_senders['A'], transaction_senders['ETH_8'], transaction_senders['C'], transaction_senders['ETH_1'],
+                 transaction_senders['ETH_2'], transaction_senders['F'], transaction_senders['G'], transaction_senders['H'],
+                 transaction_senders['I'], transaction_senders['ETH_STT_4'], transaction_senders['ETH_STT_3'], transaction_senders['M'],
+                 transaction_senders['N'], transaction_senders['ETH_2'], transaction_senders['ETH_STT_ADI_1'], transaction_senders['Q'],
                  transaction_senders['R'], transaction_senders['S'], transaction_senders['T'], transaction_senders['U'],
                  ]
         usernames = []

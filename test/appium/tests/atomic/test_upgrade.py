@@ -1,7 +1,7 @@
 from tests import marks, pytest_config_global, test_dapp_name, staging_fleet, mailserver_hk, mailserver_ams, \
     mailserver_gc
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from tests.users import upgrade_users, transaction_recipients, basic_user, ens_user
+from tests.users import upgrade_users, transaction_recipients, basic_user, ens_user, transaction_senders
 from views.sign_in_view import SignInView
 import views.upgrade_dbs.chats.data as chat_data
 import views.upgrade_dbs.dapps.data as dapp_data
@@ -209,7 +209,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
 
     @marks.testrail_id(695810)
     def test_keycard_upgrade(self):
-        user = basic_user
+        user = transaction_senders['ETH_STT_ADI_1']
         sign_in = SignInView(self.driver)
         home = sign_in.recover_access(passphrase=user['passphrase'], keycard=True)
         wallet = home.wallet_button.click()
@@ -226,7 +226,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         home.just_fyi('Check that can sign transaction in STT from wallet')
         transaction_amount = wallet.get_unique_amount()
         wallet.send_transaction(amount=transaction_amount, asset_name='STT', sign_transaction=True, keycard=True,
-                                recipient=transaction_recipients['I']['address'])
+                                recipient=transaction_senders['ETH_STT_1']['address'])
         self.network_api.find_transaction_by_unique_amount(user['address'], transaction_amount, token=True)
 
         wallet.just_fyi('Check that transaction is appeared in transaction history')

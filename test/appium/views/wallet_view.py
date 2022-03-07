@@ -235,8 +235,11 @@ class WalletView(BaseView):
             if not asset_value.is_element_displayed():
                 self.element = asset_value.scroll_to_element()
         try:
-            return float(asset_value.text.split()[0])
+            value = float(asset_value.text.split()[0])
+            self.driver.info("%s value is %s" % (asset, value))
+            return value
         except ValueError:
+            self.driver.info("No value for %s" % asset)
             return 0.0
 
     def asset_by_name(self, asset_name):

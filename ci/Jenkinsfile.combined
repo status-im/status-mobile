@@ -101,7 +101,7 @@ pipeline {
       steps { script {
         e2eApk = utils.getEnv(apke2e, 'SAUCE_URL')
         build(
-          job: 'end-to-end-tests/status-app-nightly',
+          job: 'status-react/e2e/status-app-nightly',
           parameters: [string(name: 'APK_NAME', value: e2eApk)],
           wait: false
         )

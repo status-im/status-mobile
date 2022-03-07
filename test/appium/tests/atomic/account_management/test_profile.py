@@ -80,7 +80,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         from views.send_transaction_view import SendTransactionView
         send_tx = SendTransactionView(self.driver)
         send_tx.amount_edit_box.set_value('0')
-        send_tx.set_recipient_address(ens_user['address'])
+        send_tx.set_recipient_address(transaction_senders['ETH_7']['address'])
         send_tx.next_button.click()
         send_tx.set_up_wallet_when_sending_tx()
         send_tx.advanced_button.click()

@@ -12,7 +12,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.critical
     @marks.transaction
     def test_keycard_send_eth_in_1_1_chat(self):
-        sender = transaction_senders['E']
+        sender = transaction_senders['ETH_2']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1 = device_1.recover_access(passphrase=sender['passphrase'], keycard=True)
@@ -82,7 +82,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.medium
     @marks.transaction
     def test_keycard_request_and_receive_stt_in_1_1_chat_offline_opened_from_push(self):
-        sender = transaction_senders['D']
+        sender = transaction_senders['ETH_STT_1']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
@@ -166,7 +166,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
     @marks.transaction
     def test_keycard_send_eth_to_ens(self):
         sign_in = SignInView(self.driver)
-        sender = transaction_senders['E']
+        sender = transaction_senders['ETH_4']
         home = sign_in.recover_access(sender['passphrase'], keycard=True)
         wallet = home.wallet_button.click()
         wallet.home_button.click()

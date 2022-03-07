@@ -1002,7 +1002,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
     @marks.testrail_id(6322)
     @marks.medium
     def test_can_scan_different_links_with_universal_qr_scanner(self):
-        user = transaction_senders['L']
+        user = transaction_senders['ETH_STT_3']
         home = SignInView(self.driver).recover_access(user['passphrase'])
         wallet = home.wallet_button.click()
         wallet.home_button.click()

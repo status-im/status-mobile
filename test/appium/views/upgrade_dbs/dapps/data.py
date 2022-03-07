@@ -25,11 +25,11 @@ dapps = {
     }
 }
 wallets = {
-    'default' : {
+    'default': {
         'name': 'Ethereum account1',
         'address': '0x%s' % transaction_recipients['K']['address']
         },
-    'generated' : {
+    'generated': {
         'name': 'dapp',
         'address': '0x6a0e09b209eEa2a448B2361dD27c06Fc1f316e6c'
         },

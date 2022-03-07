@@ -10,7 +10,8 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.critical
     def test_restore_account_migrate_multiaccount_to_keycard(self):
         sign_in = SignInView(self.driver)
-        seed = basic_user['passphrase']
+        user = transaction_senders['ETH_ADI_STT_2']
+        seed = user['passphrase']
         home = sign_in.recover_access(passphrase=seed)
         profile = home.profile_button.click()
         profile.privacy_and_security_button.click()
@@ -29,7 +30,7 @@ class TestCreateAccount(SingleDeviceTestCase):
             self.errors.append("Get a keycard banner is not shown on login screen for ordinary multiaccount")
         sign_in.options_button.click()
         sign_in.manage_keys_and_storage_button.click()
-        if not sign_in.element_by_text(basic_user['username']).is_element_displayed():
+        if not sign_in.element_by_text(user['username']).is_element_displayed():
             self.driver.fail("Default username is not shown when migrating multiaccount to keycard!")
 
         home.just_fyi("Checking validation of seed phrase during migration")
@@ -78,15 +79,15 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         sign_in.just_fyi('Check that after migration wallet address matches expected')
         address = wallet.get_wallet_address()
-        if address != '0x%s' % basic_user['address']:
+        if address != '0x%s' % user['address']:
             self.errors.append('Restored address %s does not match expected' % address)
 
         sign_in.just_fyi('Check that after migration username and public key match expected')
         public_key, default_username = sign_in.get_public_key_and_username(return_username=True)
         profile = sign_in.get_profile_view()
-        if public_key != basic_user['public_key']:
+        if public_key != user['public_key']:
             self.errors.append('Public key %s does not match expected' % public_key)
-        if default_username != basic_user['username']:
+        if default_username != user['username']:
             self.errors.append('Default username %s does not match expected' % default_username)
         profile.logout()
 
@@ -97,14 +98,14 @@ class TestCreateAccount(SingleDeviceTestCase):
             self.errors.append("Get a keycard banner is shown on migrated keycard multiaccount")
         keycard.one_button.wait_for_visibility_of_element(10)
         keycard.enter_default_pin()
-        if not sign_in.home_button.is_element_displayed(10):
+        if not sign_in.home_button.is_element_displayed(30):
             self.driver.fail('Keycard user is not logged in')
 
         sign_in.just_fyi('Check that can add another wallet account and send transaction')
         home.wallet_button.click()
         wallet.add_account(account_name="another_keycard_account", keycard=True)
         transaction_amount_added = wallet.get_unique_amount()
-        wallet.send_transaction(amount=transaction_amount_added, recipient=transaction_senders['B']['address'],
+        wallet.send_transaction(amount=transaction_amount_added, recipient=transaction_senders['ETH_8']['address'],
                                 keycard=True, sign_transaction=True)
         self.driver.reset()
         home = sign_in.recover_access(passphrase=seed)
@@ -303,12 +304,14 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(6311)
     @marks.medium
+    @marks.transaction
     def test_same_seed_added_inside_multiaccount_and_keycard(self):
         sign_in = SignInView(self.driver)
-        recipient = "0x" + transaction_senders['G']['address']
+        recipient = "0x" + transaction_senders['ETH_7']['address']
+        user = transaction_senders['ETH_ADI_STT_3']
 
         sign_in.just_fyi('Restore keycard multiaccount and logout')
-        sign_in.recover_access(passphrase=basic_user['passphrase'], keycard=True)
+        sign_in.recover_access(passphrase=user['passphrase'], keycard=True)
         profile_view = sign_in.profile_button.click()
         profile_view.logout()
 
@@ -332,7 +335,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         wallet.enter_your_password_input.send_keys(common_password)
         account_name = 'subacc'
         wallet.account_name_input.send_keys(account_name)
-        wallet.enter_seed_phrase_input.set_value(basic_user['passphrase'])
+        wallet.enter_seed_phrase_input.set_value(user['passphrase'])
         wallet.add_account_generate_account_button.click()
         wallet.get_account_by_name(account_name).click()
 
@@ -352,9 +355,9 @@ class TestCreateAccount(SingleDeviceTestCase):
         wallet.send_transaction(amount=transaction_amount_keycard, recipient=recipient, keycard=True,
                                 sign_transaction=True)
 
-        sign_in.just_fyi('Check both transactions from keycard multiaccount and from added account in network')
         for amount in [transaction_amount_keycard, transaction_amount_added]:
-            self.network_api.find_transaction_by_unique_amount(basic_user['address'], amount)
+            sign_in.just_fyi("Checking '%s' tx" % amount)
+            self.network_api.find_transaction_by_unique_amount(user['address'], amount)
 
         self.errors.verify_no_errors()
 
