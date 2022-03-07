@@ -11,7 +11,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.critical
     @marks.transaction
     def test_send_eth_in_1_1_chat_transaction_push(self):
-        sender = transaction_senders['B']
+        sender = transaction_senders['ETH_7']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1 = device_1.recover_access(passphrase=sender['passphrase'], enable_notifications=True)
@@ -99,7 +99,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.critical
     @marks.transaction
     def test_request_and_receive_stt_in_1_1_chat_offline(self):
-        sender = transaction_senders['L']
+        sender = transaction_senders['ETH_STT_3']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         asset_name = 'STT'
@@ -171,7 +171,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.critical
     @marks.transaction
     def test_decline_transactions_in_1_1_chat_push_notification_changing_state(self):
-        sender = transaction_senders['B']
+        sender = transaction_senders['ETH_8']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1 = device_1.recover_access(passphrase=sender['passphrase'], enable_notifications=True)
@@ -222,7 +222,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.medium
     @marks.transaction
     def test_network_mismatch_for_send_request_in_1_1_chat(self):
-        sender = transaction_senders['D']
+        sender = transaction_senders['ETH_1']
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         sign_in_1.recover_access(passphrase=sender['passphrase'])
@@ -273,7 +273,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     def test_send_eth_to_ens_in_chat(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        sender, reciever = transaction_senders['E'], ens_user
+        sender, reciever = transaction_senders['ETH_3'], ens_user
         home_1, home_2 = sign_in_1.recover_access(sender['passphrase']), sign_in_2.recover_access(
             reciever['passphrase'])
 

@@ -10,7 +10,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
     @marks.critical
     @marks.transaction
     def test_request_stt_from_dapp(self):
-        sender = transaction_senders['K']
+        sender = transaction_senders['ETH_STT_4']
         home = SignInView(self.driver).recover_access(sender['passphrase'], unique_password)
         wallet = home.wallet_button.click()
         wallet.scan_tokens()
@@ -41,7 +41,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
     @marks.transaction
     def test_sign_message_and_2tx_in_batch_and_transactions_filters_from_daap(self):
         password = 'password_for_daap'
-        home = SignInView(self.driver).recover_access(passphrase=transaction_senders['W']['passphrase'],
+        home = SignInView(self.driver).recover_access(passphrase=transaction_senders['ETH_9']['passphrase'],
                                                       password=password)
         wallet = home.wallet_button.click()
 
@@ -90,7 +90,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
     @marks.medium
     @marks.transaction
     def test_sign_typed_message_deploy_simple_contract_request_pub_key_from_dapp(self):
-        user = transaction_senders['W']
+        user = transaction_senders['ETH_5']
         home = SignInView(self.driver).recover_access(passphrase=user['passphrase'])
 
         home.just_fyi("Checking requesting public key from dapp")
@@ -113,13 +113,13 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction = status_test_dapp.sign_typed_message_button.click()
         send_transaction.enter_password_input.send_keys(common_password)
         send_transaction.sign_button.click_until_absense_of_element(send_transaction.sign_button)
-        if not status_test_dapp.element_by_text_part('0xde3048417e5881acc9ca8466ab0b3e2f9f96').is_element_displayed(30):
+        if not status_test_dapp.element_by_text_part('0x1673d96e836').is_element_displayed(30):
             self.errors.append("Hash of signed typed message is not shown!")
 
         home.just_fyi("Checking deploy simple contract")
         send_transaction = status_test_dapp.deploy_contract_button.click()
         send_transaction.sign_transaction()
-        if not status_test_dapp.element_by_text('Contract deployed at: ').is_element_displayed(180):
+        if not status_test_dapp.element_by_text('Contract deployed at: ').is_element_displayed(240):
             self.errors.append('Contract was not created')
         for text in ['Call contract get function',
                      'Call contract set function', 'Call function 2 times in a row']:

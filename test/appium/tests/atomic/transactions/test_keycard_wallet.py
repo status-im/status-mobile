@@ -10,8 +10,8 @@ from views.sign_in_view import SignInView
 class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
     def setup_class(cls):
-        cls.user = transaction_senders['P']
-        cls.address = '0x%s' % basic_user['address']
+        cls.user = transaction_senders['ETH_STT_ADI_1']
+        cls.address = '0x%s' % transaction_senders['ETH_7']['address']
         cls.drivers, cls.loop = create_shared_drivers(1)
         cls.sign_in = SignInView(cls.drivers[0])
 
@@ -251,7 +251,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.medium
     @marks.transaction
     def test_keycard_sign_typed_message_deploy_simple_contract(self):
-        sender = transaction_senders['W']
+        sender = transaction_senders['ETH_6']
         home = SignInView(self.driver).recover_access(sender['passphrase'], keycard=True)
         wallet = home.wallet_button.click()
         status_test_dapp = home.open_status_test_dapp()
@@ -263,7 +263,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_with_keycard_button.click()
         keycard_view = send_transaction.sign_with_keycard_button.click()
         keycard_view.enter_default_pin()
-        if not keycard_view.element_by_text_part('0xde3048417').is_element_displayed():
+        if not keycard_view.element_by_text_part('0x6df0ce').is_element_displayed():
             self.errors.append('Typed message was not signed')
 
         wallet.just_fyi("Checking deploy simple contract")

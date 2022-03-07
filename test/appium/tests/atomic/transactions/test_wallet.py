@@ -14,7 +14,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
     def setup_class(cls):
         cls.user = transaction_senders['S']
-        cls.recipient_address = '0x%s' % basic_user['address']
+        cls.recipient_address = '0x%s' % transaction_senders['ETH_7']['address']
         cls.drivers, cls.loop = create_shared_drivers(1)
         [cls.amount_adi, cls.amount_eth, cls.amount_stt] = ['0.000%s' % str(random.randint(100, 999)) + '1' for _ in range(3)]
         cls.sign_in = SignInView(cls.drivers[0])
@@ -540,7 +540,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.transaction
     @marks.medium
     def test_custom_gas_settings(self):
-        sender = wallet_users['B']
+        sender = transaction_senders['ETH_7']
         sign_in = SignInView(self.driver)
         sign_in.recover_access(sender['passphrase'])
         wallet = sign_in.wallet_button.click()
@@ -653,8 +653,8 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
     @marks.medium
     @marks.transaction
     def test_can_send_all_tokens_via_max_option(self):
-        sender = transaction_senders['V']
-        receiver = transaction_recipients['K']
+        sender = transaction_senders['ETH_STT_2']
+        receiver = transaction_senders['ETH_1']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.recover_access(sender['passphrase']), device_2.recover_access(receiver['passphrase'])
