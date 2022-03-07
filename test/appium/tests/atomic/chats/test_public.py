@@ -436,23 +436,76 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(700727)
     @marks.medium
-    def test_gap_in_public_chat(self):
+    def test_gap_in_public_chat_and_no_gap_in_1_1_and_group_chats(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
-        message = "testing gap"
-        chat_name = home_1.get_random_chat_name()
+        message_1 = "testing gap"
+        message_2 = "testing no gap"
+        pub_chat_name = home_1.get_random_chat_name()
+        group_chat_name = home_1.get_random_chat_name()
+        public_key_1, username_1 = home_1.get_public_key_and_username(True)
+        public_key_2, username_2 = home_2.get_public_key_and_username(True)
         profile_1 = home_1.profile_button.click()
         profile_1.sync_settings_button.click()
         profile_1.sync_history_for_button.click()
         profile_1.element_by_translation_id("two-minutes").click()
-        home_1.home_button.click()
-        chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
-        chat_1.send_message("HI")
+        [home.home_button.click() for home in (home_1, home_2)]
+
+        home_1.just_fyi("Creating 1-1 chat and sending message from device 1")
+        one_to_one_chat_1 = home_1.add_contact(public_key_2)
+        one_to_one_chat_1.send_message("HI")
+        home_1.get_back_to_home_view()
+
+        home_1.just_fyi("Creating group chat and sending message from device 1")
+        group_chat_1 = home_1.create_group_chat([username_2], group_chat_name)
+        group_chat_1.send_message("HI")
+        home_1.get_back_to_home_view()
+
+        home_1.just_fyi("Creating public chat and sending message from device 1")
+        pub_chat_1, pub_chat_2 = home_1.join_public_chat(pub_chat_name), home_2.join_public_chat(pub_chat_name)
+        pub_chat_1.send_message("HI")
         device_1.toggle_airplane_mode()
-        chat_2.send_message(message)
+
+        home_2.just_fyi("Joining public chat by device 2 and sending message")
+        pub_chat_2.send_message(message_1)
+        home_2.get_back_to_home_view()
+
+        home_2.just_fyi("Joining 1-1 chat by device 2 and sending message")
+        # one_to_one_chat_element = home_2.get_chat(username_1, wait_time=10)
+        # one_to_one_chat_2 = one_to_one_chat_element.click()
+        one_to_one_chat_2 = home_2.add_contact(public_key_1)
+        one_to_one_chat_2.send_message(message_2)
+        home_2.get_back_to_home_view()
+
+        home_2.just_fyi("Joining Group chat by device 2 and sending message")
+        # home_2.notifications_button.click()
+        # group_chat_2 = home_2.get_chat_from_activity_center_view(group_chat_name).click()
+        group_chat_2 = home_2.get_chat(group_chat_name).click()
+        group_chat_2.join_chat_button.click()
+        group_chat_2.send_message(message_2)
+
+        # Waiting for 3 minutes and then going back online
         sleep(180)
         device_1.toggle_airplane_mode()
-        chat_1.element_by_translation_id("fetch-messages").wait_and_click(60)
-        if not chat_1.chat_element_by_text(message).is_element_displayed():
-            device_1.driver.fail("Test message has not been fetched")
+
+        home_1.just_fyi("Checking gap in public chat and fetching messages")
+        if pub_chat_1.chat_element_by_text(message_1).is_element_displayed(10):
+            self.errors.append("Test message has been fetched automatically")
+        pub_chat_1.element_by_translation_id("fetch-messages").wait_and_click(60)
+        if not pub_chat_1.chat_element_by_text(message_1).is_element_displayed(10):
+            self.errors.append("Test message has not been fetched")
+        home_1.get_back_to_home_view()
+
+        home_1.just_fyi("Checking that there is no gap in 1-1/group chat and messages fetched automatically")
+        for chat in [home_1.get_chat(username_2), home_1.get_chat(group_chat_name)]:
+            chat_view = chat.click()
+            if chat_view.element_by_translation_id("fetch-messages").is_element_displayed(10):
+                self.errors.append("Fetch messages button is displayed in {}} chat".format(chat.user_name_text.text))
+            if not chat_view.chat_element_by_text(message_2).is_element_displayed(10):
+                self.errors.append("Message in {} chat has not been fetched automatically".format(chat.user_name_text.text))
+            chat_view.back_button.click()
+        self.errors.verify_no_errors()
+
+
+
