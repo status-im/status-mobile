@@ -38,7 +38,7 @@
             [status-im.navigation :as navigation]
             status-im.notifications-center.core
             status-im.pairing.core
-            status-im.popover.core
+            [status-im.popover.core :as popover]
             status-im.profile.core
             status-im.search.core
             status-im.signals.core
@@ -52,7 +52,7 @@
             status-im.utils.logging.core
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.utils :as utils]
-            status-im.visibility-status-popover.core
+            [status-im.visibility-status-popover.core :as visibility-status-popover]
             status-im.visibility-status-updates.core
             status-im.waku.core
             status-im.wallet.accounts.core
@@ -60,7 +60,8 @@
             [status-im.wallet.core :as wallet]
             status-im.wallet.custom-tokens.core
             [status-im.navigation.core :as navigation.core]
-            [status-im.multiaccounts.login.core :as login.core]))
+            [status-im.multiaccounts.login.core :as login.core]
+            [status-im.signing.core :as signing]))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -148,7 +149,14 @@
                  {::multiaccounts/switch-theme (if (= :dark theme) 2 1)}
                  (when (seq dispatch-later)
                    {:utils/dispatch-later dispatch-later}))
-                (bottom-sheet/hide-bottom-sheet)
+                (when (get-in db [:bottom-sheet/show?])
+                  (bottom-sheet/hide-bottom-sheet))
+                (when (get-in db [:popover/popover])
+                  (popover/hide-popover))
+                (when (get-in db [:visibility-status-popover/popover])
+                  (visibility-status-popover/hide-visibility-status-popover))
+                (when (get-in db [:signing/tx])
+                  (signing/discard))
                 (navigation/init-root root-id)
                 (when (= root-id :chat-stack)
                   (navigation/change-tab current-tab))))))
