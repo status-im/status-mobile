@@ -5,12 +5,12 @@ from time import sleep
 import emoji
 import pytest
 from dateutil import parser
+from selenium.common.exceptions import NoSuchElementException
 
 from tests import marks
-from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase, create_shared_drivers, \
+from tests.base_test_case import MultipleDeviceTestCase, create_shared_drivers, \
     MultipleSharedDeviceTestCase
 from views.sign_in_view import SignInView
-from selenium.common.exceptions import NoSuchElementException
 
 
 @pytest.mark.xdist_group(name="public_chat_2")
@@ -29,7 +29,8 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         cls.home_1.join_public_chat(cls.pub_chat_delete_long_press)
         [home.home_button.click() for home in (cls.home_1, cls.home_2)]
         cls.public_chat_name = cls.home_1.get_random_chat_name()
-        cls.chat_1, cls.chat_2 = cls.home_1.join_public_chat(cls.public_chat_name), cls.home_2.join_public_chat(cls.public_chat_name)
+        cls.chat_1, cls.chat_2 = cls.home_1.join_public_chat(cls.public_chat_name), cls.home_2.join_public_chat(
+            cls.public_chat_name)
         cls.chat_1.send_message(cls.text_message)
 
     @marks.testrail_id(5313)
@@ -40,7 +41,8 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         sent_time_variants = self.chat_1.convert_device_time_to_chat_timestamp()
         timestamp = self.chat_1.chat_element_by_text(message).timestamp_on_tap
         if timestamp not in sent_time_variants:
-            self.errors.append("Timestamp is not shown, expected: '%s', in fact: '%s'" % (sent_time_variants.join(','), timestamp))
+            self.errors.append(
+                "Timestamp is not shown, expected: '%s', in fact: '%s'" % (sent_time_variants.join(','), timestamp))
         self.chat_2.home_button.click(desired_view='chat')
         for chat in self.chat_1, self.chat_2:
             chat.verify_message_is_under_today_text(message, self.errors)
@@ -296,6 +298,42 @@ class TestPublicChatOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.chat.reopen_app()
         if not self.chat.chat_element_by_text(text_message).is_element_displayed(30):
             self.drivers[0].fail("Not navigated to chat view after reopening app")
+
+    @marks.testrail_id(5317)
+    @marks.critical
+    def test_public_copy_and_paste_messages(self):
+        message_text = {'text_message': 'mmmeowesage_text'}
+        formatted_message = {'message_with_link': 'https://status.im',
+                             # TODO: blocked with 11161 (rechecked 23.11.21, valid)
+                             # 'message_with_tag': '#successishere'
+                             }
+        message_input = self.chat.chat_message_input
+        if not message_input.is_element_displayed():
+            self.home.get_chat('#%s' % self.public_chat_name).click()
+        message_input.send_keys(message_text['text_message'])
+        self.chat.send_message_button.click()
+
+        self.chat.copy_message_text(message_text['text_message'])
+
+        message_input.paste_text_from_clipboard()
+        if message_input.text != message_text['text_message']:
+            self.errors.append('Message %s text was not copied in a public chat' % message_text['text_message'])
+        message_input.clear()
+
+        for message in formatted_message:
+            message_input.send_keys(formatted_message[message])
+            self.chat.send_message_button.click()
+
+            message_bubble = self.chat.chat_element_by_text(formatted_message[message])
+            message_bubble.sent_status_checkmark.long_press_element()
+            self.chat.element_by_text('Copy').click()
+
+            message_input.paste_text_from_clipboard()
+            if message_input.text != formatted_message[message]:
+                self.errors.append('Message %s text was not copied in a public chat' % formatted_message[message])
+            message_input.clear()
+
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(700738)
     @marks.critical

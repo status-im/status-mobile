@@ -275,7 +275,7 @@ class WalletView(BaseView):
         self.manage_assets_button.click()
         for asset in args:
             self.element_by_text(asset).scroll_to_element()
-            self.element_by_text(asset).click()
+            self.element_by_text(asset).scroll_and_click()
         self.cross_icon.click()
 
     def scan_tokens(self, *args):
