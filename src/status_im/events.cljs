@@ -115,30 +115,39 @@
 (fx/defn system-theme-mode-changed
   {:events [:system-theme-mode-changed]}
   [{:keys [db] :as cofx} theme]
-  (let [cur-theme     (get-in db [:multiaccount :appearance])
-        current-tab   (get db :current-tab :chat)
-        view-id       (:view-id db)
-        screen-params (get-in db [:navigation/screen-params view-id])
-        root-id       @navigation.core/root-id]
+  (let [cur-theme      (get-in db [:multiaccount :appearance])
+        current-tab    (get db :current-tab :chat)
+        view-id        (:view-id db)
+        screen-params  (get-in db [:navigation/screen-params view-id])
+        root-id        @navigation.core/root-id
+        dispatch-later (cond-> []
+                         (= view-id :chat)
+                         (conj {:ms       1000
+                                :dispatch [:chat.ui/navigate-to-chat (:current-chat-id db)]})
+
+                         (and
+                          (= root-id :chat-stack)
+                          (not-any? #(= view-id %) '(:home :empty-tab :wallet :status :my-profile :chat)))
+                         (conj {:ms       1000
+                                :dispatch [:navigate-to view-id screen-params]})
+
+                         (some #(= view-id %) navigation.core/community-screens)
+                         (conj {:ms 800 :dispatch
+                                [:navigate-to :community
+                                 (get-in db [:navigation/screen-params :community])]})
+
+                         (= view-id :community-emoji-thumbnail-picker)
+                         (conj {:ms 900 :dispatch
+                                [:navigate-to :create-community-channel
+                                 (get-in db [:navigation/screen-params :create-community-channel])]}))]
+
     (navigation.core/dismiss-all-modals)
     (when (or (nil? cur-theme) (zero? cur-theme))
       (fx/merge cofx
-                {::multiaccounts/switch-theme (if (= :dark theme) 2 1)
-                 :utils/dispatch-later
-                 (cond-> [{:ms 2000 :dispatch
-                           (if (= view-id :chat)
-                             [:chat.ui/navigate-to-chat (:current-chat-id db)]
-                             [:navigate-to view-id screen-params])}]
-
-                   (some #(= view-id %) navigation.core/community-screens)
-                   (conj {:ms 1000 :dispatch
-                          [:navigate-to :community
-                           (get-in db [:navigation/screen-params :community])]})
-
-                   (= view-id :community-emoji-thumbnail-picker)
-                   (conj {:ms 1500 :dispatch
-                          [:navigate-to :create-community-channel
-                           (get-in db [:navigation/screen-params :create-community-channel])]}))}
+                (merge
+                 {::multiaccounts/switch-theme (if (= :dark theme) 2 1)}
+                 (when (seq dispatch-later)
+                   {:utils/dispatch-later dispatch-later}))
                 (bottom-sheet/hide-bottom-sheet)
                 (navigation/init-root root-id)
                 (when (= root-id :chat-stack)
