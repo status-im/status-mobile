@@ -39,7 +39,7 @@ class TestBrowsing(SingleDeviceTestCase):
         element_on_start_page = dapp.element_by_text('Select a token')
         web_page = dapp.open_url(url)
         dapp.allow_button.click()
-        element_on_start_page.click()
+        element_on_start_page.scroll_and_click()
 
         # when bottom sheet is opened, elements by text couldn't be found
         element_on_start_page.wait_for_invisibility_of_element(20)

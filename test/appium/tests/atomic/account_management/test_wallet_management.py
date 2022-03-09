@@ -303,6 +303,7 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
             self.wallet.accounts_status_account.swipe_left_on_element()
         account_button.click()
         self.wallet.collectibles_button.click()
+        self.wallet.element_by_translation_id("display-collectibles").scroll_and_click()
         collectible_amount = self.wallet.get_collectibles_amount()
         collectible_amount.wait_for_visibility_of_element(30)
         if collectible_amount.text != '1':

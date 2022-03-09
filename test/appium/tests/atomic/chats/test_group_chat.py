@@ -1,11 +1,9 @@
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase, MultipleSharedDeviceTestCase, create_shared_drivers
-from tests.users import transaction_senders, ens_user
+from tests.users import transaction_senders, ens_user, chat_users
 from views.sign_in_view import SignInView
-from views.chat_view import ChatView
 import random
 import emoji
-import pytest
 
 
 class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
@@ -253,21 +251,41 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
     def test_cant_add_more_twenty_participants_to_group_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
-        users = [transaction_senders['A'], transaction_senders['ETH_8'], transaction_senders['C'], transaction_senders['ETH_1'],
-                 transaction_senders['ETH_2'], transaction_senders['F'], transaction_senders['G'], transaction_senders['H'],
-                 transaction_senders['I'], transaction_senders['ETH_STT_4'], transaction_senders['ETH_STT_3'], transaction_senders['M'],
-                 transaction_senders['N'], transaction_senders['ETH_2'], transaction_senders['ETH_STT_ADI_1'], transaction_senders['Q'],
-                 transaction_senders['R'], transaction_senders['S'], transaction_senders['T'], transaction_senders['U'],
-                 ]
+        users = [chat_users['A'],
+                 chat_users['B'],
+                 transaction_senders['ETH_8'],
+                 transaction_senders['ETH_1'],
+                 transaction_senders['ETH_2'],
+                 transaction_senders['ETH_7'],
+                 transaction_senders['ETH_STT_3'],
+                 transaction_senders['ETH_STT_ADI_1'],
+                 transaction_senders['C'],
+                 transaction_senders['F'],
+                 transaction_senders['G'],
+                 transaction_senders['H'],
+                 transaction_senders['I'],
+                 transaction_senders['M'],
+                 transaction_senders['N'],
+                 transaction_senders['Q'],
+                 transaction_senders['R'],
+                 transaction_senders['S'],
+                 transaction_senders['T'],
+                 transaction_senders['U']]
         usernames = []
 
         home.just_fyi('Add 20 users to contacts')
+        profile = home.profile_button.click()
+        profile.contacts_button.click()
+        chat = home.get_chat_view()
         for user in users:
-            home.add_contact(user['public_key'])
+            profile.add_new_contact_button.click()
+            chat.public_key_edit_box.click()
+            chat.public_key_edit_box.set_value(user['public_key'])
+            chat.confirm_until_presence_of_element(profile.add_new_contact_button)
             usernames.append(user['username'])
-            home.get_back_to_home_view()
 
         home.just_fyi('Create group chat with max amount of users')
+        profile.home_button.click()
         chat = home.create_group_chat(usernames, 'some_group_chat')
 
         home.just_fyi('Verify that can not add more users via group info')

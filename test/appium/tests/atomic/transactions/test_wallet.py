@@ -13,7 +13,7 @@ from views.sign_in_view import SignInView
 class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
     def setup_class(cls):
-        cls.user = transaction_senders['S']
+        cls.user = transaction_senders['ETH_ADI_STT_3']
         cls.recipient_address = '0x%s' % transaction_senders['ETH_7']['address']
         cls.drivers, cls.loop = create_shared_drivers(1)
         [cls.amount_adi, cls.amount_eth, cls.amount_stt] = ['0.000%s' % str(random.randint(100, 999)) + '1' for _ in range(3)]
@@ -57,7 +57,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(700765)
     @marks.critical
     @marks.transaction
-    def test_send_tx_custom_token_18_decimals(self):
+    def test_send_tx_custom_token_18_decimals_invalid_password(self):
         contract_address, name, symbol, decimals = '0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA', 'Weenus 💪', 'WEENUS', '18'
         self.home.wallet_button.double_click()
 
@@ -77,9 +77,39 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
         self.wallet.asset_by_name(symbol).scroll_to_element()
         if not self.wallet.asset_by_name(symbol).is_element_displayed():
             self.errors.append('Custom token is not shown on Wallet view')
+        send_tx = self.wallet.send_transaction_from_main_screen.click()
+        send_tx.select_asset_button.click()
+        asset_button = send_tx.asset_by_name(symbol)
+        send_tx.select_asset_button.click_until_presence_of_element(
+            send_tx.eth_asset_in_select_asset_bottom_sheet_button)
+        asset_button.click()
+        send_tx.amount_edit_box.click()
+        send_tx.amount_edit_box.set_value(self.amount_eth)
+        send_tx.set_recipient_address(self.recipient_address)
+        send_tx.sign_transaction_button.click()
+        if self.wallet.sign_in_phrase.is_element_displayed():
+            self.wallet.set_up_wallet_when_sending_tx()
+
+        send_tx.just_fyi('Check that can not sign tx with invalid password')
+        self.wallet.next_button.click_if_shown()
+        self.wallet.ok_got_it_button.click_if_shown()
+        send_tx.sign_with_password.click_until_presence_of_element(send_tx.enter_password_input)
+        send_tx.enter_password_input.click()
+        send_tx.enter_password_input.send_keys('wrong_password')
+        send_tx.sign_button.click()
+        if send_tx.element_by_text_part('Transaction sent').is_element_displayed():
+            self.errors.append('Transaction was sent with a wrong password')
 
         self.wallet.just_fyi("Check that can send tx with custom token")
-        self.wallet.send_transaction(asset_name=symbol, amount=self.amount_eth, recipient=self.recipient_address)
+        send_tx.enter_password_input.click()
+        send_tx.enter_password_input.clear()
+        send_tx.enter_password_input.send_keys(common_password)
+        send_tx.sign_button.click_until_absense_of_element(send_tx.sign_button)
+        send_tx.ok_button.wait_for_element(120)
+        if not self.wallet.element_by_translation_id("transaction-sent").is_element_displayed():
+            self.errors.append("Tx is not sent!")
+        send_tx.ok_button.click()
+
         # TODO: disabled due to 10838 (rechecked 23.11.21, valid)
         # transactions_view = wallet.transaction_history_button.click()
         # transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
@@ -87,7 +117,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(700757)
     @marks.critical
-    def test_send_tx_set_recipient_options_invalid_password(self):
+    def test_send_tx_set_recipient_options(self):
         nickname = 'my_some_nickname'
         account_name = 'my_acc_name'
         account_address = '0x8c2E3Cd844848E79cFd4671cE45C12F210b630d7'
@@ -189,17 +219,6 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
         if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(
                 '0x' + basic_user['address']):
             self.errors.append('QR scanned address that was added to favourites was not resolved correctly')
-
-        send_tr.just_fyi('Check that can not sign tx with invalid password')
-        self.wallet.next_button.click_if_shown()
-        self.wallet.ok_got_it_button.click_if_shown()
-        send_tr.sign_with_password.click_until_presence_of_element(send_tr.enter_password_input)
-        send_tr.enter_password_input.click()
-        send_tr.enter_password_input.send_keys('wrong_password')
-        send_tr.sign_button.click()
-        if send_tr.element_by_text_part('Transaction sent').is_element_displayed():
-            wallet.driver.fail('Transaction was sent with a wrong password')
-
         self.errors.verify_no_errors()
 
 

@@ -280,7 +280,7 @@ class HomeView(BaseView):
         if user_names_to_add:
             for user_name in user_names_to_add:
                 if len(user_names_to_add) > 5:
-                    chat_view.search_by_keyword(user_name[:4])
+                    chat_view.search_by_keyword(user_name[:5])
                     chat_view.get_username_checkbox(user_name).click()
                     chat_view.search_input.clear()
                 else:

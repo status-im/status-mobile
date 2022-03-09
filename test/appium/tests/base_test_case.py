@@ -81,7 +81,7 @@ def get_capabilities_sauce_lab():
     desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
     desired_caps['deviceOrientation'] = "portrait"
     desired_caps['commandTimeout'] = 600
-    desired_caps['idleTimeout'] = 600
+    desired_caps['idleTimeout'] = 800
     desired_caps['unicodeKeyboard'] = True
     desired_caps['automationName'] = 'UiAutomator2'
     desired_caps['setWebContentDebuggingEnabled'] = True

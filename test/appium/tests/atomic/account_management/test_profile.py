@@ -585,11 +585,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6636)
     @marks.medium
-    @marks.flaky
     def test_show_profile_picture_of_setting_online_indicator(self):
         self.create_drivers(2)
-        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user(
-            enable_notifications=True)
+        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user(enable_notifications=True)
         profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
         public_key_1, default_username_1 = profile_1.get_public_key_and_username(return_username=True)
         public_key_2, default_username_2 = profile_2.get_public_key_and_username(return_username=True)
@@ -621,6 +619,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         profile_1.just_fyi('Check profile image is in mentions because now user was added in contacts')
         one_to_one_chat_2.add_to_contacts.click()
+        one_to_one_chat_2.send_message("hey")
         one_to_one_chat_2.chat_message_input.set_value('@' + default_username_1)
         one_to_one_chat_2.chat_message_input.click()
         if not one_to_one_chat_2.user_profile_image_in_mentions_list(
@@ -628,12 +627,17 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('Profile picture was not updated in 1-1 chat mentions list')
         one_to_one_chat_2.get_back_to_home_view()
 
+        profile_1.just_fyi('Send message to user to move it to online state')
+        profile_1.home_button.double_click()
+        one_to_one_chat_1 = home_1.get_chat(default_username_2).click()
+        one_to_one_chat_1.send_message('hey')
+
         profile_1.just_fyi('Check profile image is updated in Group chat view')
         profile_2 = one_to_one_chat_2.profile_button.click()
         profile_2.contacts_button.click()
         profile_2.element_by_text(default_username_1).click()
         profile_2.online_indicator.wait_for_visibility_of_element(180)
-        if not profile_2.profile_picture.is_element_image_similar_to_template(logo_online):
+        if not profile_2.profile_picture.is_element_image_similar_to_template('new_profile_online.png'):
             self.errors.append('Profile picture was not updated on user Profile view')
         profile_2.close_button.click()
         [home.home_button.click() for home in (profile_2, home_1)]
@@ -648,8 +652,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         group_chat_1 = home_1.get_chat(group_chat_name).click()
         group_chat_1.join_chat_button.click()
         group_chat_1.send_message(group_chat_message)
-        if not group_chat_2.chat_element_by_text(group_chat_message).member_photo.is_element_image_similar_to_template(
-                logo_default):
+        if not group_chat_2.chat_element_by_text(group_chat_message).member_photo.is_element_image_similar_to_template(logo_default):
             self.errors.append('User profile picture was not updated in message Group chat view')
         home_2.put_app_to_background()
 
