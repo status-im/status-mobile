@@ -23,7 +23,9 @@
                  {:label   "Size:"
                   :key     :size
                   :type    :select
-                  :options [{:key   40
+                  :options [{:key   56
+                             :value "56"}
+                            {:key   40
                              :value "40"}
                             {:key   32
                              :value "32"}
@@ -31,6 +33,9 @@
                              :value "24"}]}
                  {:label "Icon:"
                   :key   :icon
+                  :type  :boolean}
+                 {:label "Above icon:"
+                  :key   :above
                   :type  :boolean}
                  {:label "After icon:"
                   :key   :after
@@ -51,6 +56,7 @@
         label  (reagent/cursor state [:label])
         before (reagent/cursor state [:before])
         after  (reagent/cursor state [:after])
+        above  (reagent/cursor state [:above])
         icon  (reagent/cursor state [:icon])]
     (fn []
       [rn/view {:margin-bottom 50
@@ -63,6 +69,8 @@
         [quo2/button (merge (dissoc @state
                                     :theme :before :after)
                             {:on-press #(println "Hello world!")}
+                            (when @above
+                              {:above :main-icons/close-circle})
                             (when @before
                               {:before :main-icons/back})
                             (when @after
