@@ -1033,9 +1033,8 @@
  :<- [:chats/current-raw-chat]
  :<- [:multiaccount/public-key]
  :<- [:communities/current-community]
- (fn [[{:keys [group-chat] :as current-chat}
-       my-public-key
-       community]]
+ :<- [:contacts/blocked-set]
+ (fn [[{:keys [group-chat chat-id] :as current-chat} my-public-key community blocked-users-set]]
    (when current-chat
      (cond-> current-chat
        (chat.models/public-chat? current-chat)
@@ -1051,7 +1050,7 @@
        (assoc :show-input? true)
 
        (not group-chat)
-       (assoc :show-input? true)))))
+       (assoc :show-input? (not (contains? blocked-users-set chat-id)))))))
 
 (re-frame/reg-sub
  :chats/current-chat-chat-view
