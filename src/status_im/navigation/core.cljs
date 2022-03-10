@@ -390,7 +390,9 @@
                          :create-community-channel
                          :community-emoji-thumbnail-picker
                          :create-community-category
-                         :community-edit-chats))
+                         :community-edit-chats
+                         :community-edit
+                         :community-reorder-categories))
 
 ;; change view-id if it is still same after component is disappeared
 ;; https://github.com/wix/react-native-navigation/issues/5744#issuecomment-563226820
