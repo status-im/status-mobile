@@ -120,7 +120,9 @@
             [status-im.ui.screens.wallet.accounts-manage.views :as accounts-manage]
             [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
             [status-im.ui.screens.wallet.recipient.views :as recipient]
-            [status-im.ui.screens.wallet.send.views :as wallet.send]))
+            [status-im.ui.screens.wallet.send.views :as wallet.send]
+            [quo2.screens.main :as quo2.preview]
+            [status-im.utils.config :as config]))
 
 (def components
   [{:name      :chat-toolbar
@@ -911,7 +913,11 @@
             :options   {:topBar {:visible false}}
             :component bug-report/bug-report}]
 
-          (when js/goog.DEBUG
+          (when config/quo-preview-enabled?
             quo.preview/screens)
-          (when js/goog.DEBUG
-            quo.preview/main-screens)))
+          (when config/quo-preview-enabled?
+            quo.preview/main-screens)
+          (when config/quo-preview-enabled?
+            quo2.preview/screens)
+          (when config/quo-preview-enabled?
+            quo2.preview/main-screens)))
