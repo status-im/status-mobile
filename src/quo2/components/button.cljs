@@ -61,20 +61,21 @@
                                                     :pressed  colors/danger-40
                                                     :disabled colors/danger-50}}}})
 
-(defn style-container [type size disabled background-color border-color icon]
+(defn style-container [type size disabled background-color border-color icon above]
   (println size disabled background-color)
   (merge {:height             size
           :align-items        :center
           :justify-content    :center
-          :flex-direction     :row
+          :flex-direction     (if above :column :row)
           :border-radius      (if (and icon (#{:primary :secondary :danger} type))
                                 24
                                 (case size
+                                  56 12
                                   40 12
                                   32 10
                                   24 8))
           :background-color   background-color
-          :padding-horizontal (if icon 0 (case size 40 16 32 12 24 8))}
+          :padding-horizontal (if icon 0 (case size 56 16 40 16 32 12 24 8))}
          (when icon
            {:width size})
          (when border-color
@@ -97,7 +98,7 @@
    [button {:icon true} :main-icons/close-circle]"
   [_ _]
   (let [pressed (reagent/atom false)]
-    (fn [{:keys [on-press disabled type size before after
+    (fn [{:keys [on-press disabled type size before after above
                  on-long-press accessibility-label icon]
           :or   {type :primary
                  size 40}}
@@ -118,7 +119,10 @@
                                               {:on-press-out (fn []
                                                                (reset! pressed nil))})
 
-         [rn/view {:style (style-container type size disabled (get background-color state) (get border-color state) icon)}
+         [rn/view {:style (style-container type size disabled (get background-color state) (get border-color state) icon above)}
+          (when above
+            [rn/view
+             [icons/icon above {:color icon-color}]])
           (when before
             [rn/view
              [icons/icon before {:color icon-color}]])
@@ -128,7 +132,7 @@
              [icons/icon children {:color icon-color}]
 
              (string? children)
-             [text/text (merge {:size            (when (= size 24) :paragraph-2)
+             [text/text (merge {:size            (when (#{56 24} size) :paragraph-2)
                                 :weight          :medium
                                 :number-of-lines 1}
                                label)
