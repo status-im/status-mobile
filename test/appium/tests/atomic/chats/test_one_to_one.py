@@ -297,9 +297,6 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         for message in self.chat_1.image_message_in_chat, self.chat_1.chat_element_by_text(image_description):
             if not message.is_element_displayed():
                 self.errors.append('Image or description is not shown in chat after sending for sender')
-        self.chat_1.show_images_button.click()
-        self.chat_1.image_from_gallery_button.click()
-        self.chat_1.click_system_back_button()
         self.chat_1.image_message_in_chat.long_press_element()
         for element in self.chat_1.reply_message_button, self.chat_1.save_image_button:
             if not element.is_element_displayed():
