@@ -89,6 +89,7 @@
    :webview-allow-permission-requests? false
    :anon-metrics/should-send?          false
    :opensea-enabled?                   false
+   :read-receipts-enabled?             false
    :link-previews-enabled-sites        #{}
    :link-preview-request-enabled       true})
 

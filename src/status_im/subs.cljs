@@ -2171,6 +2171,12 @@
    (reduce-kv #(conj %1 %3) [] settings)))
 
 (re-frame/reg-sub
+ :read-receipts-enabled?
+ :<- [:multiaccount]
+ (fn [{:keys [read-receipts-enabled?]}]
+   (boolean read-receipts-enabled?)))
+
+(re-frame/reg-sub
  :wallet.request/transaction
  :<- [:wallet]
  :request-transaction)
