@@ -10,16 +10,18 @@
             [status-im.constants :as constants]
             [quo.design-system.colors :as colors]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.communities.core :as communities]
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.communities.styles :as styles]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.tabs :as tabs]
             [status-im.ui.screens.communities.community :as community]
             [status-im.ui.screens.home.views.inner-item :as inner-item]))
 
-(def collapse-chats? (reagent/atom false))
 (def data (reagent/atom []))
+(def state (reagent/atom {:tab :chats}))
 
 (defn show-delete-chat-confirmation [community-id chat-id]
   (utils/show-confirmation
@@ -28,12 +30,16 @@
     :confirm-button-text (i18n/label :t/delete)
     :on-accept           #(>evt [:delete-community-chat community-id chat-id])}))
 
-(defn show-delete-catgory-confirmation [community-id category-id]
+(defn show-delete-category-confirmation [community-id category-id]
   (utils/show-confirmation
    {:title               (i18n/label :t/delete-confirmation)
     :content             (i18n/label :t/delete-category-confirmation)
     :confirm-button-text (i18n/label :t/delete)
     :on-accept           #(>evt [:delete-community-category community-id category-id])}))
+
+(defn categories-tab? []
+  (let [{:keys [tab]} @state]
+    (= tab :categories)))
 
 (defn chat-item
   [{:keys [id community-id] :as home-item} is-active? drag]
@@ -64,15 +70,15 @@
      [rn/view {:accessibility-label :category-item
                :style               (merge styles/category-item
                                            {:background-color background-color})}
-      (if category-none?
+      (if-not (categories-tab?)
         [icons/icon :main-icons/channel-category {:color colors/gray}]
         [rn/touchable-opacity
          {:accessibility-label :delete-category-button
-          :on-press            #(show-delete-catgory-confirmation community-id id)}
+          :on-press            #(show-delete-category-confirmation community-id id)}
          [icons/icon :main-icons/delete-circle {:no-color true}]])
       [rn/view {:flex 1}
        [rn/text {:style {:font-size 17 :margin-left 10 :color colors/black}} name]]
-      (when (and (not category-none?) @collapse-chats?)
+      (when (and (not category-none?) (categories-tab?))
         [rn/touchable-opacity {:accessibility-label :category-drag-handle
                                :on-long-press       drag
                                :delay-long-press    100
@@ -121,18 +127,19 @@
       (>evt [::communities/reorder-community-category community-id id to]))))
 
 (defn on-drag-end-fn [from to data-js]
-  (if @collapse-chats?
+  (if (categories-tab?)
     (on-drag-end-category from to data-js)
     (when-not (= to 0) (on-drag-end-chat from to data-js))))
 
 (defn reset-data [categories chats]
-  (reset! data (if @collapse-chats? categories ;; If chats are collapsed then only show categories
-                   (walk/postwalk-replace      ;; else, categories and chats
-                    {:chat-id :id}
-                    (reduce (fn [acc category]
-                              (-> acc
-                                  (conj category)
-                                  (into (get chats (:id category))))) [] categories)))))
+  (reset! data (if (categories-tab?)
+                 categories
+                 (walk/postwalk-replace
+                  {:chat-id :id}
+                  (reduce (fn [acc category]
+                            (-> acc
+                                (conj category)
+                                (into (get chats (:id category))))) [] categories)))))
 
 (defn draggable-list []
   [rn/draggable-flat-list
@@ -144,33 +151,35 @@
     :container-style      {:margin-bottom 108}          ;;        after bumping react native version to > 0.64 
     :on-drag-end-fn       on-drag-end-fn}])
 
+(defn chats_and_categories []
+  (let [{:keys [tab]} @state]
+    [:<>
+     [react/view {:flex-direction :row :margin-horizontal 16 :margin-vertical 8
+                  :border-radius 8 :background-color colors/blue-light}
+      [tabs/tab-button state :chats (i18n/label :t/edit-chats) (= tab :chats)]
+      [tabs/tab-button state :categories (i18n/label :t/edit-categories) (= tab :categories)]]]))
+
 (defn view []
   (let [{:keys [community-id]} (<sub [:get-screen-params])
         {:keys [id name images members permissions color]}
         (<sub [:communities/community community-id])
         sorted-categories (<sub [:communities/sorted-categories community-id])
-        categories        (if @collapse-chats? sorted-categories
-                              (conj sorted-categories
-                                    {:id           ""
-                                     :position     (count sorted-categories)
-                                     :name         (i18n/label :t/none)
-                                     :community-id community-id}))
+        categories        (if (categories-tab?)
+                            sorted-categories
+                            (conj sorted-categories
+                                  {:id           ""
+                                   :position     (count sorted-categories)
+                                   :name         (i18n/label :t/none)
+                                   :community-id community-id}))
         chats             (<sub [:chats/sorted-categories-by-community-id community-id])]
     (reset-data categories chats)
     [:<>
      [topbar/topbar
-      {:modal?  true
-       :content [community/toolbar-content id name color images
+      {:content [community/toolbar-content id name color images
                  (not= (:access permissions) constants/community-no-membership-access)
                  (count members)]}]
      (if (and (empty? sorted-categories) (empty? chats))
        [community/blank-page (i18n/label :t/welcome-community-blank-message-edit-chats)]
        [:<>
-        [quo/list-item {:size            :small
-                        :title           (i18n/label :t/rearrange-categories)
-                        :active          @collapse-chats?
-                        :accessory       :switch
-                        :container-style {:padding-left 10}
-                        :on-press        #(reset! collapse-chats? (not @collapse-chats?))}]
-        [quo/separator]
+        [chats_and_categories]
         [draggable-list]])]))

@@ -1691,6 +1691,7 @@
     "include": "Include",
     "category": "Category",
     "edit-chats": "Edit chats",
+    "edit-categories": "Edit Categories",
     "hide": "Hide",
     "account-is-used": "The account is being used with Dapps in the browser.",
     "normal": "Normal",
