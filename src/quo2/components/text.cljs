@@ -29,6 +29,5 @@
   (let [this (reagent/current-component)
         props (reagent/props this)
         style (text-style props)]
-    (println "style " style)
     (into [rn/text {:style style}]
           (reagent/children this))))

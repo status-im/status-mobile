@@ -62,7 +62,6 @@
                                                     :disabled colors/danger-50}}}})
 
 (defn style-container [type size disabled background-color border-color icon above]
-  (println size disabled background-color)
   (merge {:height             size
           :align-items        :center
           :justify-content    :center

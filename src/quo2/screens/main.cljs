@@ -5,6 +5,8 @@
             [re-frame.core :as re-frame]
             [quo2.screens.button :as button]
             [quo2.screens.text :as text]
+            [quo2.screens.tabs :as tabs]
+            [quo2.screens.segmented :as segmented]
             [quo.core :as quo]))
 
 (def screens [{:name      :quo2-texts
@@ -12,7 +14,13 @@
                :component text/preview-text}
               {:name      :quo2-button
                :insets    {:top false}
-               :component button/preview-button}])
+               :component button/preview-button}
+              {:name      :quo2-tabs
+               :insets    {:top false}
+               :component tabs/preview-tabs}
+              {:name      :quo2-segmented
+               :insets    {:top false}
+               :component segmented/preview-segmented}])
 
 (defn theme-switcher []
   [rn/view {:style {:flex-direction   :row
