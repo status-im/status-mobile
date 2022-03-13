@@ -273,15 +273,6 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.home_1.get_app_from_background()
         self.home_2.get_app_from_background()
 
-        self.home_1.just_fyi('set status in profile')
-        self.home_1.profile_button.click()
-        status_1 = 'Hey hey hey'
-        timeline = self.home_1.status_button.click()
-        timeline.set_new_status(status_1, image=True)
-        for element in timeline.element_by_text(status_1), timeline.image_message_in_chat:
-            if not element.is_element_displayed():
-                self.drivers[0].fail('Status is not set')
-
         self.home_1.home_button.click()
         self.home_1.get_chat(username=self.default_username_2).click()
 
@@ -309,14 +300,6 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         for message in self.chat_2.image_message_in_chat, self.chat_2.chat_element_by_text(image_description):
             if not message.is_element_displayed():
                 self.errors.append('Image or description is not shown in chat after sending for receiver')
-
-        self.home_2.just_fyi('View user profile and check status')
-        self.chat_2.chat_options.click()
-        timeline_device_1 = self.chat_2.view_profile_button.click()
-        for element in timeline_device_1.element_by_text(status_1), timeline_device_1.image_message_in_chat:
-            if not element.is_element_displayed(40):
-                self.errors.append('Status of another user not shown when open another user profile')
-        self.chat_2.close_button.click()
 
         self.home_2.just_fyi('check options on long-press image for receiver')
         self.chat_2.image_message_in_chat.long_press_element()
@@ -912,9 +895,7 @@ class TestOneToOneChatSingleSharedDevice(MultipleSharedDeviceTestCase):
 
         if self.home.get_chat_from_home_view(self.chat_name).is_element_displayed():
             self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % self.chat_name)
-        self.driver.close_app()
-        self.driver.launch_app()
-        self.sign_in.sign_in()
+        self.home.reopen_app()
         if self.home.get_chat_from_home_view(self.chat_name).is_element_displayed():
             self.errors.append(
                 'Deleted chat %s is shown after re-login, but the chat has been deleted' % self.chat_name)
