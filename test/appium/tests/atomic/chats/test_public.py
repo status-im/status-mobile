@@ -299,8 +299,38 @@ class TestPublicChatOneDeviceMerged(MultipleSharedDeviceTestCase):
         if not self.chat.chat_element_by_text(text_message).is_element_displayed(30):
             self.drivers[0].fail("Not navigated to chat view after reopening app")
 
-    @marks.testrail_id(5317)
+    @marks.testrail_id(700738)
     @marks.critical
+    def test_public_tag_message(self):
+        tag_message = '#wuuut'
+        self.home.home_button.double_click()
+        self.home.get_chat('#%s' % self.public_chat_name).click()
+        self.home.just_fyi("Check that will be redirected to chat view on tap on tag message")
+        self.chat.send_message(tag_message)
+        self.chat.element_starts_with_text(tag_message).click()
+        self.chat.element_by_text_part(self.public_chat_name).wait_for_invisibility_of_element()
+        if not self.chat.user_name_text.text == tag_message:
+            self.errors.append('Could not redirect a user to a public chat tapping the tag message.')
+        self.home.just_fyi("Check that chat is added to home view")
+        self.chat.home_button.double_click()
+        if not self.home.element_by_text(tag_message).is_element_displayed():
+            self.errors.append('Could not find the public chat in user chat list.')
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(700739)
+    @marks.critical
+    def test_public_chat_open_using_deep_link(self):
+        self.drivers[0].close_app()
+        chat_name = self.home.get_random_chat_name()
+        deep_link = 'status-im://%s' % chat_name
+        self.sign_in.open_weblink_and_login(deep_link)
+        try:
+            assert self.chat.user_name_text.text == '#' + chat_name
+        except (AssertionError, NoSuchElementException):
+            self.drivers[0].fail("Public chat '%s' is not opened" % chat_name)
+
+    @marks.testrail_id(5317)
+    @marks.medium
     def test_public_copy_and_paste_messages(self):
         message_text = {'text_message': 'mmmeowesage_text'}
         formatted_message = {'message_with_link': 'https://status.im',
@@ -335,58 +365,39 @@ class TestPublicChatOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(700738)
-    @marks.critical
-    def test_public_tag_message(self):
-        tag_message = '#wuuut'
-        self.home.home_button.double_click()
-        self.home.get_chat('#%s' % self.public_chat_name).click()
-        self.home.just_fyi("Check that will be redirected to chat view on tap on tag message")
-        self.chat.send_message(tag_message)
-        self.chat.element_starts_with_text(tag_message).click()
-        self.chat.element_by_text_part(self.public_chat_name).wait_for_invisibility_of_element()
-        if not self.chat.user_name_text.text == tag_message:
-            self.errors.append('Could not redirect a user to a public chat tapping the tag message.')
-        self.home.just_fyi("Check that chat is added to home view")
-        self.chat.home_button.double_click()
-        if not self.home.element_by_text(tag_message).is_element_displayed():
-            self.errors.append('Could not find the public chat in user chat list.')
-        self.errors.verify_no_errors()
 
-    @marks.testrail_id(700739)
-    @marks.critical
-    def test_public_chat_open_using_deep_link(self):
-        self.drivers[0].close_app()
-        chat_name = self.home.get_random_chat_name()
-        deep_link = 'status-im://%s' % chat_name
-        self.sign_in.open_weblink_and_login(deep_link)
-        try:
-            assert self.chat.user_name_text.text == '#' + chat_name
-        except (AssertionError, NoSuchElementException):
-            self.driver.fail("Public chat '%s' is not opened" % chat_name)
+@pytest.mark.xdist_group(name="public_chat_medium")
+class TestPublicChatMultipleDeviceMergedMedium(MultipleSharedDeviceTestCase):
 
-
-class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
+    @classmethod
+    def setup_class(cls):
+        cls.drivers, cls.loop = create_shared_drivers(2)
+        device_1, device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
+        cls.home_1, cls.home_2 = device_1.create_user(), device_2.create_user()
+        profile_1 = cls.home_1.profile_button.click()
+        cls.public_key_1, cls.username_1 = profile_1.get_public_key_and_username(return_username=True)
+        profile_1.home_button.click()
+        cls.text_message = 'hello'
+        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
+        cls.public_chat_name = cls.home_1.get_random_chat_name()
+        cls.chat_1, cls.chat_2 = cls.home_1.join_public_chat(cls.public_chat_name), cls.home_2.join_public_chat(
+            cls.public_chat_name)
+        cls.chat_1.send_message(cls.text_message)
 
     @marks.testrail_id(6342)
     @marks.medium
     def test_different_status_in_timeline(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-        profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
-        public_key_1, username_1 = profile_1.get_public_key_and_username(return_username=True)
         emoji_message = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_message]
 
-        home_1.just_fyi('Set status in profile')
+        self.home_1.just_fyi('Set status in profile')
         statuses = {
             '*formatted text*': 'formatted text',
             'https://www.youtube.com/watch?v=JjPWmEh2KhA': 'Status Town Hall',
             emoji.emojize(emoji_message): emoji_unicode,
 
         }
-        timeline_1 = device_1.status_button.click()
+        timeline_1 = self.home_1.status_button.click()
         for status in statuses.keys():
             timeline_1.set_new_status(status)
             sleep(60)
@@ -399,16 +410,21 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             if not timeline_1.element_by_text_part(expected_value).is_element_displayed():
                 self.errors.append("Expected value %s is not shown" % expected_value)
         text_status = 'some text'
-        timeline_1.set_new_status(status=text_status)
+        timeline_1.set_new_status(status=text_status, image=True)
         for timestamp in ('Now', '1M', '2M'):
             if not timeline_1.element_by_text(timestamp).is_element_displayed():
                 self.errors.append("Expected timestamp %s is not shown in timeline_1" % timestamp)
+        if not timeline_1.image_message_in_chat.is_element_displayed():
+            self.errors.append("Timeline image is not shown in timeline_1")
 
-        home_2.just_fyi('Check that can see user status without adding him as contact')
-        profile_2.home_button.click()
-        chat_2 = home_2.add_contact(public_key_1, add_in_contacts=False)
+        self.home_2.just_fyi('Check that can see user status without adding him as contact')
+        self.home_2.home_button.click()
+        chat_2 = self.home_2.add_contact(self.public_key_1, add_in_contacts=False)
         chat_2.chat_options.click()
-        chat_2.view_profile_button.click()
+        timeline_2 = chat_2.view_profile_button.click()
+        if not timeline_2.image_message_in_chat.is_element_displayed(40):
+            self.errors.append(
+                'Timeline image of another user is not shown when open another user profile before adding to contacts')
         chat_2.chat_element_by_text(text_status).wait_for_element(30)
         chat_2.element_by_translation_id("enable").scroll_and_click()
         chat_2.element_by_translation_id("enable-all").wait_and_click()
@@ -420,7 +436,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
                 self.errors.append(
                     "Expected value %s is not shown in other user profile without adding to contacts" % expected_value)
 
-        home_2.just_fyi('Add device1 to contacts and check that status will be shown in timeline_1')
+        self.home_2.just_fyi('Add device1 to contacts and check that status will be shown in timeline_1')
         chat_2.close_button.scroll_and_click(direction='up')
         chat_2.add_to_contacts.click()
         timeline_2 = chat_2.status_button.click()
@@ -429,11 +445,14 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             if not timeline_2.element_by_text_part(expected_value).is_element_displayed():
                 self.errors.append(
                     "Expected value %s is not shown in timeline_1 after adding user to contacts" % expected_value)
+        if not timeline_2.image_message_in_chat.is_element_displayed(40):
+            self.errors.append(
+                'Timeline image of another user is not shown when open another user profile after adding to contacts')
 
-        profile_1.just_fyi('Checking message tag and reactions on statuses')
+        self.home_2.just_fyi('Checking message tag and reactions on statuses')
         tag_status = '#public-chat-to-redirect-long-name'
         timeline_1.set_new_status(tag_status)
-        public_chat_2 = home_2.get_chat_view()
+        public_chat_2 = self.home_2.get_chat_view()
 
         public_chat_2.element_by_text(tag_status).wait_and_click()
         public_chat_2.user_name_text.wait_for_element(30)
@@ -445,14 +464,14 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         status_with_reaction_1 = timeline_1.chat_element_by_text(text_status)
         if status_with_reaction_1.emojis_below_message() != 1:
             self.errors.append("Counter of reaction is not updated on your own status in timeline_1!")
-        device_2.home_button.double_click()
-        home_2.get_chat(username_1).click()
+        self.home_2.home_button.double_click()
+        self.home_2.get_chat(self.username_1).click()
         chat_2.chat_options.click()
         chat_2.view_profile_button.click()
         status_with_reaction_2 = chat_2.chat_element_by_text(text_status)
         if status_with_reaction_2.emojis_below_message(own=False) != 1:
             self.errors.append("Counter of reaction is not updated on status of another user in profile!")
-        profile_1.just_fyi("Remove reaction and check it is updated for both users")
+        self.home_1.just_fyi("Remove reaction and check it is updated for both users")
         timeline_1.set_reaction(text_status)
         status_with_reaction_1 = timeline_1.chat_element_by_text(text_status)
         if status_with_reaction_1.emojis_below_message() != 0:
@@ -463,7 +482,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             self.errors.append(
                 "Counter of reaction is not updated after removing on status of another user in profile!")
 
-        profile_1.just_fyi("Remove user from contacts and check there is no his status in timeline_1 anymore")
+        self.home_1.just_fyi("Remove user from contacts and check there is no his status in timeline_1 anymore")
         chat_2.remove_from_contacts.click()
         chat_2.close_button.click()
         chat_2.status_button.click()
@@ -471,6 +490,9 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             self.errors.append("Statuses of removed user are still shown in profile")
 
         self.errors.verify_no_errors()
+
+
+class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(700727)
     @marks.medium
@@ -541,9 +563,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             if chat_view.element_by_translation_id("fetch-messages").is_element_displayed(10):
                 self.errors.append("Fetch messages button is displayed in {}} chat".format(chat.user_name_text.text))
             if not chat_view.chat_element_by_text(message_2).is_element_displayed(10):
-                self.errors.append("Message in {} chat has not been fetched automatically".format(chat.user_name_text.text))
+                self.errors.append(
+                    "Message in {} chat has not been fetched automatically".format(chat.user_name_text.text))
             chat_view.back_button.click()
         self.errors.verify_no_errors()
-
-
-
