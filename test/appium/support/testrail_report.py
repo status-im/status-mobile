@@ -100,6 +100,7 @@ class TestrailReport(BaseTestReport):
         test_cases['critical'] = 730
         test_cases['medium'] = 736
         test_cases['upgrade'] = 881
+        ## tests pr
         test_cases['public_chat'] = 50654
         test_cases['one_to_one_chat'] = 50655
         test_cases['group_chat'] = 50656
@@ -108,6 +109,7 @@ class TestrailReport(BaseTestReport):
         test_cases['wallet'] = 50661
         test_cases['send_tx'] = 50662
         test_cases['keycard_tx'] = 50663
+        test_cases['browser'] = 50812
         test_pr = list()
         for key in test_cases:
             if key != 'medium' and key != 'upgrade':

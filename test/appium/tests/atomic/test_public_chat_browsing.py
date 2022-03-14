@@ -6,14 +6,15 @@ import emoji
 import pytest
 from dateutil import parser
 
-from tests import marks
-from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase, create_shared_drivers, \
+from tests import marks, test_dapp_name, test_dapp_url
+from tests.base_test_case import MultipleDeviceTestCase, create_shared_drivers, \
     MultipleSharedDeviceTestCase
 from views.sign_in_view import SignInView
 from selenium.common.exceptions import NoSuchElementException
 
 
 @pytest.mark.xdist_group(name="public_chat_2")
+@marks.critical
 class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod
@@ -33,8 +34,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         cls.chat_1.send_message(cls.text_message)
 
     @marks.testrail_id(5313)
-    @marks.critical
-    def test_public_message_send_check_timestamps_while_on_different_tab(self):
+    def test_public_chat_message_send_check_timestamps_while_on_different_tab(self):
         message = self.text_message
         self.chat_2.dapp_tab_button.click()
         sent_time_variants = self.chat_1.convert_device_time_to_chat_timestamp()
@@ -49,8 +49,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700734)
-    @marks.critical
-    def test_public_message_edit(self):
+    def test_public_chat_message_edit(self):
         message_before_edit, message_after_edit = self.text_message, "Message AFTER edit 2"
         self.chat_1.edit_message_in_chat(message_before_edit, message_after_edit)
         for chat in (self.chat_1, self.chat_2):
@@ -61,8 +60,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700735)
-    @marks.critical
-    def test_public_message_delete(self):
+    def test_public_chat_message_delete(self):
         message_to_delete = 'delete me, please'
         self.chat_1.send_message(message_to_delete)
         self.chat_1.delete_message_in_chat(message_to_delete)
@@ -72,8 +70,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700719)
-    @marks.critical
-    def test_public_emoji_send_copy_paste_reply(self):
+    def test_public_chat_emoji_send_copy_paste_reply(self):
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
         emoji_message = emoji.emojize(emoji_name)
@@ -100,8 +97,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5360)
-    @marks.critical
-    def test_public_unread_messages_counter(self):
+    def test_public_chat_unread_messages_counter(self):
         self.chat_1.send_message('пиу')
         home_1 = self.chat_1.home_button.click()
         message = 'test message'
@@ -114,8 +110,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700718)
-    @marks.critical
-    def test_public_unread_messages_counter_for_mentions_relogin(self):
+    def test_public_chat_unread_messages_counter_for_mention_relogin(self):
         message = 'test message2'
         [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
         chat_element = self.home_1.get_chat('#' + self.public_chat_name)
@@ -140,8 +135,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5319)
-    @marks.critical
-    def test_public_delete_chat_long_press(self):
+    def test_public_chat_delete_chat_long_press(self):
         [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
         self.home_1.delete_chat_long_press('#%s' % self.pub_chat_delete_long_press)
         self.home_2.just_fyi("Send message to deleted chat")
@@ -154,8 +148,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.drivers[0].fail('Deleted public chat reappears after relogin')
 
     @marks.testrail_id(700736)
-    @marks.critical
-    def test_public_link_send_open(self):
+    def test_public_chat_link_send_open(self):
         [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
         [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
         url_message = 'http://status.im'
@@ -166,8 +159,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.drivers[0].fail('URL was not opened from public chat')
 
     @marks.testrail_id(700737)
-    @marks.critical
-    def test_public_links_with_previews_github_youtube_twitter_gif_send_enable(self):
+    def test_public_chat_links_with_previews_github_youtube_twitter_gif_send_enable(self):
         [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
         [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
         giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
@@ -210,8 +202,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6270)
-    @marks.critical
-    def test_public_mark_all_messages_as_read(self):
+    def test_public_chat_mark_all_messages_as_read(self):
         [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
         self.home_2.get_chat('#' + self.public_chat_name).click()
         self.chat_2.send_message(self.text_message)
@@ -231,8 +222,9 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="public_chat_1")
-class TestPublicChatOneDeviceMerged(MultipleSharedDeviceTestCase):
+@pytest.mark.xdist_group(name="public_chat_browser_1")
+@marks.critical
+class TestPublicChatBrowserOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod
     def setup_class(cls):
@@ -244,8 +236,7 @@ class TestPublicChatOneDeviceMerged(MultipleSharedDeviceTestCase):
         cls.chat = cls.home.join_public_chat(cls.public_chat_name)
 
     @marks.testrail_id(5675)
-    @marks.critical
-    def test_public_fetch_more_history(self):
+    def test_public_chat_fetch_more_history(self):
         self.home.just_fyi("Check that can fetch previous history for several days")
         device_time = parser.parse(self.drivers[0].device_time)
         yesterday = (device_time - timedelta(days=1)).strftime("%b %-d, %Y")
@@ -287,8 +278,7 @@ class TestPublicChatOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.verify_no_errors()
 
     @marks.testrail_id(5396)
-    @marks.critical
-    def test_public_navigate_to_chat_when_relaunch(self):
+    def test_public_chat_navigate_to_chat_when_relaunch(self):
         text_message = 'some_text'
         self.home.home_button.double_click()
         self.home.get_chat('#%s' % self.public_chat_name).click()
@@ -298,8 +288,7 @@ class TestPublicChatOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.drivers[0].fail("Not navigated to chat view after reopening app")
 
     @marks.testrail_id(700738)
-    @marks.critical
-    def test_public_tag_message(self):
+    def test_public_chat_tag_message(self):
         tag_message = '#wuuut'
         self.home.home_button.double_click()
         self.home.get_chat('#%s' % self.public_chat_name).click()
@@ -316,7 +305,6 @@ class TestPublicChatOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700739)
-    @marks.critical
     def test_public_chat_open_using_deep_link(self):
         self.drivers[0].close_app()
         chat_name = self.home.get_random_chat_name()
@@ -326,6 +314,164 @@ class TestPublicChatOneDeviceMerged(MultipleSharedDeviceTestCase):
             assert self.chat.user_name_text.text == '#' + chat_name
         except (AssertionError, NoSuchElementException):
             self.driver.fail("Public chat '%s' is not opened" % chat_name)
+
+    @marks.testrail_id(702072)
+    def test_browser_blocked_url(self):
+        dapp = self.home.dapp_tab_button.click()
+        for url in ('metamask.site', 'cryptokitties.domainname'):
+            dapp.just_fyi('Checking blocked website %s' % url)
+            dapp_detail = dapp.open_url(url)
+            dapp_detail.element_by_translation_id('browsing-site-blocked-title')
+            if dapp_detail.browser_refresh_page_button.is_element_displayed():
+                self.errors.append("Refresh button is present in blocked site")
+            dapp_detail.go_back_button.click()
+            dapp_detail.open_tabs_button.click()
+            dapp.element_by_text_part(url[:8]).click()
+            dapp_detail.continue_anyway_button.click()
+            if dapp_detail.element_by_text('This site is blocked').is_element_displayed():
+                self.errors.append("Failed to open Dapp after 'Continue anyway' tapped for %s" % url)
+            dapp_detail.open_tabs_button.click()
+            dapp_detail.empty_tab_button.click()
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702073)
+    def test_browser_connection_is_secure_not_secure_warning(self):
+        dapp = self.home.dapp_tab_button.click()
+        web_page = dapp.open_url('http://www.dvwa.co.uk')
+        web_page.url_edit_box_lock_icon.click_until_presence_of_element(
+            web_page.element_by_translation_id("browser-not-secure"))
+        web_page.open_tabs_button.click()
+        web_page.empty_tab_button.click()
+        dapp.just_fyi('Checking connection is secure for Airswap')
+        web_page = dapp.open_url('https://instant.airswap.io')
+        web_page.wait_for_d_aap_to_load()
+        web_page.url_edit_box_lock_icon.click_until_presence_of_element(
+            web_page.element_by_translation_id("browser-secure"))
+        web_page.open_tabs_button.click()
+        web_page.empty_tab_button.click()
+
+    @marks.testrail_id(702074)
+    def test_browser_invalid_url(self):
+        dapp = self.home.dapp_tab_button.click()
+        browsing_view = dapp.open_url('invalid.takoe')
+        browsing_view.element_by_translation_id("web-view-error").wait_for_element(20)
+
+    @marks.testrail_id(702075)
+    def test_browser_offline(self):
+        dapp = self.home.dapp_tab_button.click()
+        self.home.toggle_airplane_mode()
+        browsing_view = dapp.open_url('status.im')
+        offline_texts = ['Unable to load page', 'ERR_INTERNET_DISCONNECTED']
+        for text in offline_texts:
+            browsing_view.element_by_text_part(text).wait_for_element(15)
+        self.home.toggle_airplane_mode()
+        browsing_view.browser_refresh_page_button.click_until_presence_of_element(
+            browsing_view.element_by_text_part('An Open Source Community'))
+
+    @marks.testrail_id(702076)
+    def test_browser_delete_close_tabs(self):
+        dapp = self.home.dapp_tab_button.click()
+        urls = {
+            'google.com': 'Google',
+            'status.im': 'Status - Private',
+            'bbc.com': 'bbc.com'
+        }
+        for url in urls:
+            web_page = dapp.open_url(url)
+            web_page.open_tabs_button.click()
+            web_page.empty_tab_button.click()
+
+        self.home.just_fyi('Delete one tab')
+        web_page.remove_tab(name=urls['bbc.com'])
+        if web_page.element_by_text_part(urls['bbc.com']).is_element_displayed():
+            self.errors.append('Closed tab is present after deletion')
+
+        self.home.just_fyi('Close all tabs via "Close all", relogin and check that it is not reappearing')
+        web_page.close_all_button.click()
+        self.home.reopen_app()
+        web_page.dapp_tab_button.click()
+        web_page.open_tabs_button.click()
+        if web_page.element_by_text_part(urls['status.im']).is_element_displayed():
+            self.errors.append('Tabs are not closed or reappeared after re-login!')
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702077)
+    def test_browser_bookmarks_create_edit_remove(self):
+        dapp = self.home.dapp_tab_button.click()
+
+        self.home.just_fyi('Add some url to bookmarks with default name')
+        web_page = dapp.open_url('status.im')
+        default_bookmark_name = web_page.add_to_bookmarks()
+        web_page.browser_previous_page_button.click()
+        if not web_page.element_by_text(default_bookmark_name).is_element_displayed():
+            self.errors.append("Bookmark with default name is not added!")
+
+        self.home.just_fyi('Add some url to bookmarks with custom name')
+        custom_name = 'Custom BBC'
+        dapp.open_url('bbc.com')
+        web_page.add_to_bookmarks(custom_name)
+        web_page.open_tabs_button.click()
+        web_page.empty_tab_button.click()
+        if not web_page.element_by_text(custom_name).is_element_displayed():
+            self.driver.fail("Bookmark with custom name is not added!")
+
+        self.home.just_fyi('Checking "Open in new tab"')
+        dapp.browser_entry_long_press(custom_name)
+        dapp.open_in_new_tab_button.click()
+        web_page.options_button.click()
+        if not web_page.element_by_translation_id('remove-favourite').is_element_displayed():
+            self.errors.append("Remove favourite is not shown on added bookmark!")
+        dapp.click_system_back_button()
+
+        self.home.just_fyi('Check deleting bookmark')
+        web_page.open_tabs_button.click()
+        web_page.empty_tab_button.click()
+        dapp.browser_entry_long_press(custom_name)
+        dapp.delete_bookmark_button.click()
+        if web_page.element_by_text(custom_name).is_element_displayed():
+            self.errors.append("Bookmark with custom name is not deleted!")
+
+        self.home.just_fyi('Check "Edit bookmark" and "Open in new tab"')
+        edited_name = 'My Fav Status'
+        dapp.browser_entry_long_press(default_bookmark_name)
+        dapp.edit_bookmark_button.click()
+        web_page.edit_bookmark_name(edited_name)
+        if not web_page.element_by_text(edited_name).is_element_displayed():
+            self.driver.fail("Edited bookmark name is not shown!")
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702078)
+    def test_browser_web3_permissions_testdapp(self):
+        self.home.home_button.double_click()
+
+        self.home.just_fyi('open Status Test Dapp, allow all and check permissions in Profile')
+        web_view = self.home.open_status_test_dapp()
+        dapp = self.home.dapp_tab_button.click()
+        profile = self.home.profile_button.click()
+        profile.privacy_and_security_button.click()
+        profile.dapp_permissions_button.click()
+        profile.element_by_text(test_dapp_name).click()
+        if not profile.element_by_text(self.home.status_account_name).is_element_displayed():
+            self.errors.append('Wallet permission was not granted')
+        if not profile.element_by_translation_id("chat-key").is_element_displayed():
+            self.errors.append('Contact code permission was not granted')
+
+        profile.just_fyi('revoke access and check that they are asked second time')
+        profile.revoke_access_button.click()
+        profile.back_button.click()
+        profile.dapp_tab_button.click()
+        web_view.open_tabs_button.click()
+        web_view.empty_tab_button.click()
+        dapp.open_url(test_dapp_url)
+        if not dapp.element_by_text_part(self.home.status_account_name).is_element_displayed():
+            self.errors.append('Wallet permission is not asked')
+        if dapp.allow_button.is_element_displayed():
+            dapp.allow_button.click(times_to_click=1)
+        if not dapp.element_by_translation_id("your-contact-code").is_element_displayed():
+            self.errors.append('Profile permission is not asked')
+        self.errors.verify_no_errors()
 
 
 class TestPublicChatMultipleDevice(MultipleDeviceTestCase):

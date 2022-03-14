@@ -3,13 +3,15 @@ import string
 import pytest
 
 from tests import marks, common_password
-from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase, MultipleSharedDeviceTestCase, create_shared_drivers
-from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten, ens_user, transaction_recipients
+from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase, MultipleSharedDeviceTestCase,\
+    create_shared_drivers
+from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten, ens_user
 from views.send_transaction_view import SendTransactionView
 from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="send_tx_1")
+@marks.critical
 class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
     def setup_class(cls):
@@ -29,7 +31,6 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
         cls.wallet.send_transaction(amount=cls.amount_adi, recipient=cls.recipient_address, asset_name='ADI')
 
     @marks.testrail_id(700763)
-    @marks.critical
     @marks.transaction
     def test_send_tx_eth_check_logcat(self):
         self.wallet.just_fyi('Check that transaction is appeared in tx history')
@@ -44,7 +45,6 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
             self.wallet.driver.fail(values_in_logcat)
 
     @marks.testrail_id(700764)
-    @marks.critical
     @marks.transaction
     def test_send_tx_token_7_decimals(self):
         asset = 'ADI'
@@ -54,8 +54,56 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
         self.network_api.find_transaction_by_hash(transaction_adi)
         self.wallet.wait_balance_is_changed(asset, initial_balance=self.initial_balances[asset])
 
+    @marks.testrail_id(5342)
+    @marks.transaction
+    def test_send_tx_sign_message_2tx_in_batch_tx_filters_request_stt_testdapp(self):
+        self.wallet.home_button.click()
+        status_test_dapp = self.home.open_status_test_dapp()
+        status_test_dapp.wait_for_d_aap_to_load()
+
+        self.wallet.just_fyi("Checking request STT")
+        status_test_dapp.assets_button.click()
+        status_test_dapp.request_stt_button.wait_for_element(60)
+        send_transaction = status_test_dapp.request_stt_button.click()
+        send_transaction.sign_transaction()
+
+        self.wallet.just_fyi("Checking signing message")
+        status_test_dapp.transactions_button.click()
+        send_transaction = status_test_dapp.sign_message_button.click()
+        send_transaction.enter_password_input.set_value(common_password)
+        send_transaction.sign_button.click()
+        if not status_test_dapp.element_by_text_part('Signed message').is_element_displayed():
+            self.errors.append('Message was not signed')
+
+        send_transaction.just_fyi('Check logcat for sensitive data')
+        values_in_logcat = send_transaction.find_values_in_logcat(password=common_password)
+        if values_in_logcat:
+            self.errors.append("When signing message from dapp: %s" % values_in_logcat)
+
+        self.wallet.just_fyi("Checking send 2 txs in batch")
+        status_test_dapp.send_two_tx_in_batch_button.scroll_to_element()
+        send_transaction = status_test_dapp.send_two_tx_in_batch_button.click()
+        send_transaction.sign_transaction()
+        if not send_transaction.sign_with_password.is_element_displayed(10):
+            self.errors.append('Second send transaction screen did not appear!')
+        send_transaction.sign_transaction()
+
+        self.wallet.just_fyi("Checking send 2 txs one after another")
+        status_test_dapp.send_two_tx_one_by_one_button.scroll_to_element()
+        send_transaction = status_test_dapp.send_two_tx_one_by_one_button.click()
+        send_transaction.sign_transaction()
+        if not send_transaction.sign_with_password.is_element_displayed(20):
+            self.errors.append('Second send transaction screen did not appear!')
+        send_transaction.sign_transaction()
+
+        self.wallet.just_fyi("Checking test filters")
+        status_test_dapp.test_filters_button.scroll_and_click()
+        for element in status_test_dapp.element_by_text('eth_uninstallFilter'), status_test_dapp.ok_button:
+            if element.is_element_displayed(10):
+                self.errors.append("'Test filters' button produced an error")
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(700765)
-    @marks.critical
     @marks.transaction
     def test_send_tx_custom_token_18_decimals_invalid_password(self):
         contract_address, name, symbol, decimals = '0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA', 'Weenus 💪', 'WEENUS', '18'
@@ -116,7 +164,6 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700757)
-    @marks.critical
     def test_send_tx_set_recipient_options(self):
         nickname = 'my_some_nickname'
         account_name = 'my_acc_name'
@@ -223,6 +270,46 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
 
 
 class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
+
+    @marks.testrail_id(5784)
+    @marks.medium
+    @marks.transaction
+    def test_sign_typed_message_deploy_simple_contract_request_pub_key_from_dapp(self):
+        user = transaction_senders['ETH_5']
+        home = SignInView(self.driver).recover_access(passphrase=user['passphrase'])
+
+        home.just_fyi("Checking requesting public key from dapp")
+        status_test_dapp = home.open_status_test_dapp(allow_all=False)
+        status_test_dapp.status_api_button.click_until_presence_of_element(status_test_dapp.request_contact_code_button)
+        status_test_dapp.request_contact_code_button.click_until_presence_of_element(status_test_dapp.deny_button)
+        status_test_dapp.deny_button.click()
+        if status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
+            self.errors.append('Public key is returned but access was not allowed')
+        status_test_dapp.request_contact_code_button.click_until_presence_of_element(status_test_dapp.deny_button)
+        status_test_dapp.allow_button.click()
+        if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
+            self.errors.append('Public key is not returned')
+        status_test_dapp.get_empty_dapp_tab()
+        home.wallet_button.click()
+
+        home.just_fyi("Checking sign typed message")
+        home.open_status_test_dapp(allow_all=True)
+        status_test_dapp.transactions_button.click_until_presence_of_element(status_test_dapp.sign_typed_message_button)
+        send_transaction = status_test_dapp.sign_typed_message_button.click()
+        send_transaction.enter_password_input.send_keys(common_password)
+        send_transaction.sign_button.click_until_absense_of_element(send_transaction.sign_button)
+        if not status_test_dapp.element_by_text_part('0x1673d96e836').is_element_displayed(30):
+            self.errors.append("Hash of signed typed message is not shown!")
+
+        home.just_fyi("Checking deploy simple contract")
+        send_transaction = status_test_dapp.deploy_contract_button.click()
+        send_transaction.sign_transaction()
+        if not status_test_dapp.element_by_text('Contract deployed at: ').is_element_displayed(240):
+            self.errors.append('Contract was not created')
+        for text in ['Call contract get function',
+                     'Call contract set function', 'Call function 2 times in a row']:
+            status_test_dapp.element_by_text(text).scroll_to_element()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5429)
     @marks.medium

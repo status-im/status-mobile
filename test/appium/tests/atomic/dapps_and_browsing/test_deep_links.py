@@ -8,7 +8,6 @@ from views.sign_in_view import SignInView
 
 class TestDeepLinks(SingleDeviceTestCase):
 
-
     @marks.testrail_id(5441)
     @marks.medium
     def test_open_user_profile_using_deep_link(self):

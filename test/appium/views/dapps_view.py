@@ -58,8 +58,8 @@ class DappsView(BaseView):
         from views.web_views.base_web_view import BaseWebView
         web_view = BaseWebView(self.driver)
         if not self.enter_url_editbox.is_element_displayed():
-            web_view.open_tabs_button.wait_and_click()
-            web_view.open_new_tab_plus_button.click()
+            web_view.open_tabs_button.click_if_shown()
+            web_view.open_new_tab_plus_button.click_if_shown()
             self.enter_url_editbox.wait_for_visibility_of_element(20)
         self.enter_url_editbox.click()
         self.enter_url_editbox.send_keys(url)

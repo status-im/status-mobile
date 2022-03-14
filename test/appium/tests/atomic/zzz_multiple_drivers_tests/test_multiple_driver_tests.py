@@ -8,6 +8,7 @@ from views.chat_view import ChatView
 
 # TODO: moved here until resolve of 13048
 @pytest.mark.xdist_group(name="group_chat_3")
+@marks.critical
 class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod
@@ -41,8 +42,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         cls.chats[0].send_message(cls.message_before_adding)
 
     @marks.testrail_id(3994)
-    @marks.critical
-    def test_group_pn_system_messages_when_invited(self):
+    def test_group_chat_push_system_messages_when_invited(self):
         self.homes[1].just_fyi("Check system messages in PNs")
         self.homes[1].put_app_to_background()
         self.homes[1].open_notification_bar()
@@ -73,8 +73,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700731)
-    @marks.critical
-    def test_group_join_send_text_messages_pn(self):
+    def test_group_chat_join_send_text_messages_push(self):
         message_to_admin = self.message_to_admin
         [self.homes[i].home_button.double_click() for i in range(3)]
         self.homes[1].get_chat(self.chat_name).click()
@@ -105,8 +104,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700732)
-    @marks.critical
-    def test_group_add_new_member_activity_centre(self):
+    def test_group_chat_add_new_member_activity_centre(self):
         [self.homes[i].home_button.double_click() for i in range(3)]
         self.homes[0].get_chat(self.chat_name).click()
         self.chats[0].add_members_to_group_chat([self.usernames[2]])
@@ -126,8 +124,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(3998)
-    @marks.critical
-    def test_group_offline_pn(self):
+    def test_group_chat_offline_pn(self):
         [self.homes[i].home_button.double_click() for i in range(3)]
         chat_name = 'for_offline_pn'
         self.homes[0].create_group_chat([self.usernames[1], self.usernames[2]], chat_name)
@@ -163,8 +160,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5756)
-    @marks.critical
-    def test_group_decline_invite_chat_highligted(self):
+    def test_group_chat_decline_invite_chat_highligted(self):
         chat_name = 'for_invited'
         left_system_message = self.chats[0].leave_system_message(self.usernames[1])
         [self.homes[i].home_button.double_click() for i in range(3)]
@@ -193,8 +189,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(3997)
-    @marks.critical
-    def test_group_leave_relogin(self):
+    def test_group_chat_leave_relogin(self):
         self.drivers[2].quit()
         [self.homes[i].home_button.double_click() for i in range(2)]
         self.homes[0].home_button.double_click()
