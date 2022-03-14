@@ -126,7 +126,7 @@ _tmpdir-rm: ##@prepare Remove TMPDIR
 
 _install-hooks: SHELL := /bin/sh
 _install-hooks: ##@prepare Create prepare-commit-msg git hook symlink
-	@ln -s ../../scripts/hooks/prepare-commit-msg .git/hooks
+	@ln -s -f ../../scripts/hooks/prepare-commit-msg .git/hooks
 -include _install-hooks
 
 # Remove directories and ignored files
