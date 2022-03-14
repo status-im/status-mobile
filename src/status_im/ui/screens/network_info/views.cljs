@@ -8,7 +8,8 @@
             [status-im.utils.datetime :as time]
             [quo.react-native :as rn]
             [quo.core :as quo]
-            [quo.design-system.colors :as colors]))
+            [quo.design-system.colors :as colors]
+            [status-im.i18n.i18n :as i18n]))
 
 (defn get-block [block callback]
   (json-rpc/call
@@ -63,7 +64,7 @@
                                           :value last-loaded-block-number
                                           :ts    (to-date last-loaded-block-ts)
                                           :label "Last Loaded Block"}]
-               footer-text              (str "There is a lag of " blocks-diff " blocks with a time difference of " seconds-diff " seconds.")]
+               footer-text              (i18n/label :t/network-info-footer {:blocks-diff blocks-diff :seconds-diff seconds-diff})]
            (rn/flat-list {:data       data
                           :onRefresh  refresh
                           :refreshing @refreshing?
