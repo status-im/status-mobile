@@ -5,7 +5,10 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.utils.datetime :as time]))
+            [status-im.utils.datetime :as time]
+            [quo.react-native :as rn]
+            [quo.core :as quo]
+            [quo.design-system.colors :as colors]))
 
 (defn get-block [block callback]
   (json-rpc/call
@@ -22,59 +25,55 @@
    (* 1000 timestamp)))
 
 (defn check-lag []
-  (let [latest-block (reagent/atom nil)
+  (let [latest-block      (reagent/atom nil)
         last-loaded-block (reagent/atom nil)
-        on-press
-        (fn []
-          (get-block
-           "latest"
-           (fn [res]
-             (reset! latest-block res)
-             (get-block
-              (str "0x" (abi-spec/number-to-hex
-                         (last-loaded-block-number)))
-              (fn [res]
-                (reset! last-loaded-block res))))))]
-    (fn []
-      [react/view
-       {:style {:flex              1
-                :margin-horizontal 16}}
-       (if-not @latest-block
-         [react/text
-          {:on-press on-press}
-          "PRESS TO REFRESH"]
-         [react/text
-          {:on-press on-press}
-          (let [latest-block-number
-                (decode/uint (:number @latest-block))
-
-                latest-block-timestamp
-                (decode/uint (:timestamp @latest-block))
-
-                last-loaded-block-number
-                (decode/uint (:number @last-loaded-block))
-
-                last-loaded-block-timestamp
-                (decode/uint (:timestamp @last-loaded-block))]
-            (str "Latest block number: "
-                 latest-block-number
-                 "\n"
-                 "Latest block time: "
-                 (to-date latest-block-timestamp)
-                 "\n"
-                 "Last loaded block: "
-                 last-loaded-block-number
-                 "\n"
-                 "Last loaded block time: "
-                 (to-date last-loaded-block-timestamp)
-                 "\n"
-                 "Seconds diff: " (- latest-block-timestamp
-                                     last-loaded-block-timestamp)
-                 "\n"
-                 "Blocks diff: " (- latest-block-number
-                                    last-loaded-block-number)
-                 "\n"
-                 "PRESS TO REFRESH"))])])))
+        refreshing?       (reagent/atom false)
+        refresh           (fn []
+                            (reset! refreshing? true)
+                            (get-block
+                             "latest"
+                             (fn [res]
+                               (reset! latest-block res)
+                               (get-block
+                                (str "0x" (abi-spec/number-to-hex
+                                           (last-loaded-block-number)))
+                                (fn [res]
+                                  (reset! last-loaded-block res)
+                                  (reset! refreshing? false))))))]
+    (reagent/create-class
+     {:display-name ::check-lag
+      :component-did-mount
+      refresh
+      :reagent-render
+      (fn []
+        [react/view
+         {:style {:flex              1
+                  :margin-horizontal 16}}
+         (let [latest-block-number      (-> @latest-block :number decode/uint)
+               last-loaded-block-number (-> @last-loaded-block :number decode/uint)
+               latest-block-ts          (-> @latest-block :timestamp decode/uint)
+               last-loaded-block-ts     (-> @last-loaded-block :timestamp decode/uint)
+               seconds-diff             (- latest-block-ts last-loaded-block-ts)
+               blocks-diff              (- latest-block-number last-loaded-block-number)
+               data                     [{:id    :latest-block
+                                          :value latest-block-number
+                                          :ts    (to-date latest-block-ts)
+                                          :label "Latest Block"}
+                                         {:id    :last-loaded-block
+                                          :value last-loaded-block-number
+                                          :ts    (to-date last-loaded-block-ts)
+                                          :label "Last Loaded Block"}]
+               footer-text              (str "There is a lag of " blocks-diff " blocks with a time difference of " seconds-diff " seconds.")]
+           (rn/flat-list {:data       data
+                          :onRefresh  refresh
+                          :refreshing @refreshing?
+                          :footer     [react/text {:style {:margin-top 5 :color colors/gray}} footer-text]
+                          :render-fn  (fn [{:keys [value label ts]}]
+                                        [quo/list-item
+                                         {:title          label
+                                          :accessory      :text
+                                          :accessory-text value
+                                          :subtitle       ts}])}))])})))
 
 (defn network-info []
   [check-lag])
