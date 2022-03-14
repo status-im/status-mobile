@@ -308,7 +308,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
                 self.errors.append('Save and reply are not available on long-press on received image messages')
 
         self.home_1.just_fyi('save image')
-        self.chat_1.save_image_button.click()
+        self.chat_1.save_image_button.click_until_presence_of_element(self.chat_1.show_images_button)
         self.chat_1.show_images_button.click_until_presence_of_element(self.chat_1.image_from_gallery_button)
         self.chat_1.image_from_gallery_button.click()
         self.chat_1.wait_for_element_starts_with_text('Recent')
