@@ -70,12 +70,12 @@
                                     :theme :before :after)
                             {:on-press #(println "Hello world!")}
                             (when @above
-                              {:above :main-icons/close-circle})
+                              {:above :main-icons2/placeholder})
                             (when @before
-                              {:before :main-icons/back})
+                              {:before :main-icons2/placeholder})
                             (when @after
-                              {:after :main-icons/next}))
-         (if @icon :main-icons/close-circle @label)]]])))
+                              {:after :main-icons2/placeholder}))
+         (if @icon :main-icons2/placeholder @label)]]])))
 
 (defn preview-button []
   [rn/view {:background-color (:ui-background @colors/theme)

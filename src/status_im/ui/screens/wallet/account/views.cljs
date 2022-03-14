@@ -13,14 +13,20 @@
             [status-im.utils.config :as config]
             [status-im.ui.screens.wallet.account.styles :as styles]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
-            [status-im.ui.screens.wallet.accounts.views :as accounts]
+            [status-im.ui.screens.wallet.accounts.common :as common]
             [status-im.ui.screens.wallet.transactions.views :as history]
             [status-im.ui.components.tabs :as tabs]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles.views]
-            [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto])
+            [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
+            [quo2.foundations.colors :as quo2.colors]
+            [status-im.utils.handlers :refer [<sub]]
+            [quo2.components.text :as quo2.text]
+            [quo2.components.button :as quo2.button]
+            [quo2.components.tabs :as quo2.tabs])
   (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
+(def selected-tab (reagent/atom :tokens))
 
 (defn button [label icon color handler]
   [react/touchable-highlight {:on-press handler :style {:flex 1}}
@@ -98,26 +104,27 @@
      {:style {:color colors/blue}}
      (i18n/label :t/check-on-opensea)]]])
 
-(views/defview assets-and-collections [address]
+(views/defview assets-and-collections-new [address]
   (views/letsubs [{:keys [tokens]} [:wallet/visible-assets-with-values address]
                   currency [:wallet/currency]
                   opensea-enabled? [:opensea-enabled?]
-                  collectible-collection [:wallet/collectible-collection address]
-                  ethereum-network? [:ethereum-network?]]
-    (let [{:keys [tab]} @state]
+                  collectible-collection [:wallet/collectible-collection address]]
+                  ;ethereum-network? [:ethereum-network?]]
+    (let [tab @selected-tab]
       [react/view {:flex 1}
-       [react/view {:flex-direction :row :margin-bottom 8 :padding-horizontal 4}
-        [tabs/tab-title state :assets (i18n/label :t/wallet-assets) (= tab :assets)]
-        (when ethereum-network?
-          [tabs/tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)])
-        [tabs/tab-title state :history (i18n/label :t/history) (= tab :history)]]
-       [quo/separator {:style {:margin-top -8}}]
+       [react/view {:padding-horizontal 20 :padding-bottom 20}
+        [quo2.tabs/tabs {:size 24
+                         :on-change #(reset! selected-tab %)
+                         :default-active :tokens
+                         :data [{:id :tokens :label "Tokens"}
+                                {:id :nft :label "NFTs"}
+                                {:id :activity :label "Activity"}]}]]
        (cond
-         (= tab :assets)
-         [:<>
+         (= tab :tokens)
+         [react/scroll-view
           (for [item tokens]
             ^{:key (:name item)}
-            [accounts/render-asset item nil nil (:code currency)])]
+            [common/render-asset-new item nil nil (:code currency)])]
          (= tab :nft)
          [:<>
           [opensea-link address]
@@ -134,7 +141,7 @@
               [react/view {:align-items :center :margin-top 32}
                [react/text {:style {:color colors/gray}}
                 (i18n/label :t/no-collectibles)]]))]
-         (= tab :history)
+         (= tab :activity)
          [transactions address])])))
 
 (views/defview bottom-send-recv-buttons [{:keys [address type] :as account} anim-y]
@@ -201,6 +208,76 @@
                          :title (i18n/label :t/swap)
                          :on-press #(re-frame/dispatch [:open-modal :token-swap])}]])
 
+(views/defview assets-and-collections [address]
+  (views/letsubs [{:keys [tokens]} [:wallet/visible-assets-with-values address]
+                  currency [:wallet/currency]
+                  opensea-enabled? [:opensea-enabled?]
+                  collectible-collection [:wallet/collectible-collection address]
+                  ethereum-network? [:ethereum-network?]]
+    (let [{:keys [tab]} @state]
+      [react/view {:flex 1}
+       [react/view {:flex-direction :row :margin-bottom 8 :padding-horizontal 4}
+        [tabs/tab-title state :assets (i18n/label :t/wallet-assets) (= tab :assets)]
+        (when ethereum-network?
+          [tabs/tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)])
+        [tabs/tab-title state :history (i18n/label :t/history) (= tab :history)]]
+       [quo/separator {:style {:margin-top -8}}]
+       (cond
+         (= tab :assets)
+         [:<>
+          (for [item tokens]
+            ^{:key (:name item)}
+            [common/render-asset item nil nil (:code currency)])]
+         (= tab :nft)
+         [:<>
+          [opensea-link address]
+          ;; Hide collectibles behind a feature flag
+          (when config/collectibles-enabled?
+            (cond
+              (not opensea-enabled?)
+              [collectibles.views/enable-opensea-view]
+
+              (and opensea-enabled? (seq collectible-collection))
+              [collectibles.views/nft-collections address]
+
+              :else
+              [react/view {:align-items :center :margin-top 32}
+               [react/text {:style {:color colors/gray}}
+                (i18n/label :t/no-collectibles)]]))]
+         (= tab :history)
+         [transactions address])])))
+
+(defn account-new [selected-account]
+  (let [;{:keys [name address] :as account} (<sub [:account-by-address selected-account])
+        currency        (<sub [:wallet/currency])
+        portfolio-value (<sub [:account-portfolio-value selected-account])
+        width (<sub [:dimensions/window-width])
+        button-width (/ (- width 40 (* 2 12)) 3)]
+    ;fetching-error (<sub [:wallet/fetching-error])]
+    [react/view {:flex                   1
+                 :background-color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
+                 :border-top-left-radius 20
+                 :border-top-right-radius 20
+                 :elevation              4
+                 :shadow-opacity         1
+                 :shadow-radius          20
+                 :shadow-color           (:shadow-01 @colors/theme)
+                 :shadow-offset          {:width 0 :height 4}}
+     [react/view {:padding 20}
+      [quo2.text/text {:size :heading-2 :weight :semi-bold} (str portfolio-value " " (:code currency))]]
+     [react/view
+      [react/scroll-view {:horizontal true :margin-bottom 32 :showsHorizontalScrollIndicator false}
+       [react/view {:width 20}]
+       [quo2.button/button {:size 56 :width button-width :above :main-icons2/placeholder} "Buy"]
+       [react/view {:width 12}]
+       [quo2.button/button {:size 56 :width button-width :type :secondary :above :main-icons2/placeholder} "Send"]
+       [react/view {:width 12}]
+       [quo2.button/button {:size 56 :width button-width :type :secondary :above :main-icons2/placeholder} "Receive"]
+       [react/view {:width 12}]
+       [quo2.button/button {:size 56 :width button-width :type :secondary :above :main-icons2/placeholder} "Swap"]
+       [react/view {:width 20}]]]
+     [assets-and-collections-new selected-account]]))
+
 (views/defview account []
   (views/letsubs [{:keys [name address] :as account} [:multiaccount/current-account]
                   fetching-error [:wallet/fetching-error]]
@@ -221,9 +298,9 @@
                                  [{:nativeEvent {:contentOffset {:y scroll-y}}}]
                                  {:useNativeDriver true})
          :scrollEventThrottle   1
-         :refreshControl        (accounts/refresh-control
+         :refreshControl        (common/refresh-control
                                  (and
-                                  @accounts/updates-counter
+                                  @common/updates-counter
                                   @(re-frame/subscribe [:wallet/refreshing-history?])))}
         (when fetching-error
           [react/view {:style {:flex        1

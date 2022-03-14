@@ -121,7 +121,8 @@
             [status-im.ui.screens.wallet.recipient.views :as recipient]
             [status-im.ui.screens.wallet.send.views :as wallet.send]
             [quo2.screens.main :as quo2.preview]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [quo2.foundations.colors :as quo2.colors]))
 
 (def components
   [{:name      :chat-toolbar
@@ -357,6 +358,7 @@
            {:name      :wallet
             :insets    {:top false}
             :on-focus  [:wallet/tab-opened]
+            :options   {:statusBar {:backgroundColor quo2.colors/neutral-5}}
             :component wallet.accounts/accounts-overview}
            {:name      :wallet-account
             ;;TODO dynamic title

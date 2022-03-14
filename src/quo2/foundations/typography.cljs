@@ -2,23 +2,24 @@
 
 (def heading-1 {:font-size   27
                 :line-height 32.4
-                :letter-spacing -2.1})
+                :letter-spacing -0.5})
 
 (def heading-2 {:font-size   19
                 :line-height 25.65
-                :letter-spacing -1.6})
+                :letter-spacing -0.4})
 
 (def paragraph-1 {:font-size   15
                   :line-height 21.75
-                  :letter-spacing -0.9})
+                  :letter-spacing -0.1})
 
 (def paragraph-2 {:font-size   13
                   :line-height 18.2
-                  :letter-spacing -0.3})
+                  :letter-spacing 0})
 
 (def label {:font-size   11
             :line-height 15.62
-            :letter-spacing -0.055})
+            :letter-spacing -0.055
+            :text-transform :uppercase})
 
 (def font-regular {:font-family "Inter-Regular"}) ; 400
 

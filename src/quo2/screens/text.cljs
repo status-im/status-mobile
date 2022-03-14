@@ -27,8 +27,6 @@
                              :value "Medium"}
                             {:key   :semi-bold
                              :value "Semi-bold"}
-                            {:key   :bold
-                             :value "Bold"}
                             {:key   :monospace
                              :value "Monospace"}]}])
 

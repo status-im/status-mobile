@@ -5,22 +5,24 @@
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ui.screens.wallet.accounts.styles :as styles]
             [status-im.qr-scanner.core :as qr-scanner]
-            [status-im.wallet.utils :as wallet.utils]
             [status-im.keycard.login :as keycard.login]
-            [quo.react-native :as rn]
-            [status-im.utils.utils :as utils.utils]
-            [status-im.ui.screens.wallet.components.views :as wallet.components])
+            [quo2.foundations.colors :as quo2.colors]
+            [quo2.components.button :as quo2.button]
+            [quo2.components.text :as quo2.text]
+            [quo2.components.tabs :as quo2.tabs]
+            [status-im.ui.screens.wallet.accounts.common :as common]
+            [status-im.ui.screens.wallet.account.views :as account.views]
+            [quo.components.safe-area :as safe-area])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview account-card [{:keys [name color address type wallet] :as account} keycard? card-width]
-  (views/letsubs [currency        [:wallet/currency]
+  (views/letsubs [currency [:wallet/currency]
                   portfolio-value [:account-portfolio-value address]
                   prices-loading? [:prices-loading?]]
     [react/touchable-highlight
@@ -35,7 +37,7 @@
        [react/view {:style {:flex-direction :row}}
         (if prices-loading?
           [react/small-loading-indicator :colors/white-persist]
-          [react/text {:style styles/card-value
+          [react/text {:style               styles/card-value
                        :accessibility-label "account-total-value"} portfolio-value])
         [react/text {:style styles/card-value-currency} (str " " (:code currency))]]
        (let [icon (cond
@@ -46,9 +48,9 @@
                     :main-icons/keycard-account)]
          (when icon
            [icons/icon icon {:container-style styles/card-icon-type
-                             :color color}]))
+                             :color           color}]))
        [react/touchable-highlight
-        {:style styles/card-icon-more
+        {:style    styles/card-icon-more
          :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                         {:content        (fn [] [sheets/account-card-actions account type wallet])
                                          :content-height 130}])}
@@ -63,30 +65,13 @@
     [icons/icon :main-icons/add-circle {:color colors/blue}]
     [react/text {:style styles/add-text} (i18n/label :t/add-account)]]])
 
-(defn render-asset [{:keys [icon decimals amount color value] :as token} _ _ currency]
-  [quo/list-item
-   {:title               [quo/text {:weight :medium}
-                          [quo/text {:weight :inherit}
-                           (str (if amount
-                                  (wallet.utils/format-amount amount decimals)
-                                  "...")
-                                " ")]
-                          [quo/text {:color  :secondary
-                                     :weight :inherit}
-                           (wallet.utils/display-symbol token)]]
-    :subtitle            (str (if value value "...") " " currency)
-    :accessibility-label (str (:symbol token) "-asset-value")
-    :icon                (if icon
-                           [wallet.components/token-icon icon]
-                           [chat-icon/custom-icon-view-list (:name token) color])}])
-
 (views/defview assets []
   (views/letsubs [{:keys [tokens]} [:wallet/all-visible-assets-with-values]
                   currency [:wallet/currency]]
     [:<>
      (for [item tokens]
        ^{:key (:name item)}
-       [render-asset item nil nil (:code currency)])]))
+       [common/render-asset item nil nil (:code currency)])]))
 
 (views/defview send-button []
   (views/letsubs [account [:multiaccount/default-account]]
@@ -108,7 +93,8 @@
      ^{:key i}
      [dot {:selected (= selected i)}])])
 
-(views/defview accounts []
+;;ACCOUNTS OLD
+(views/defview accounts-old []
   (views/letsubs [accounts [:multiaccount/visible-accounts]
                   keycard? [:keycard-multiaccount?]
                   window-width [:dimensions/window-width]
@@ -133,17 +119,18 @@
             [account-card account keycard? card-width]))
          [add-card card-width]]]
        (let [columns (Math/ceil (/ (inc (count accounts)) 2))
-             totalwidth  (* (styles/page-width card-width) columns)
+             totalwidth (* (styles/page-width card-width) columns)
              n (Math/ceil (/ totalwidth window-width))]
          (when (> n 1)
            [dots-selector {:selected @index
                            :n        n}]))])))
 
-(views/defview total-value [{:keys [animation minimized]}]
-  (views/letsubs [currency           [:wallet/currency]
-                  portfolio-value    [:portfolio-value]
-                  empty-balances?    [:empty-balances?]
-                  frozen-card?       [:keycard/frozen-card?]
+;;TOTAL VALUE OLD
+(views/defview total-value-old [{:keys [animation minimized]}]
+  (views/letsubs [currency [:wallet/currency]
+                  portfolio-value [:portfolio-value]
+                  empty-balances? [:empty-balances?]
+                  frozen-card? [:keycard/frozen-card?]
                   {:keys [mnemonic]} [:multiaccount]]
     [reanimated/view {:style (styles/container {:minimized minimized})}
      (when (or
@@ -174,8 +161,8 @@
              (i18n/label :t/your-card-is-frozen)
              (i18n/label :t/back-up-your-seed-phrase))]]]])
 
-     [reanimated/view {:style (styles/value-container {:minimized minimized
-                                                       :animation animation})
+     [reanimated/view {:style          (styles/value-container {:minimized minimized
+                                                                :animation animation})
                        :pointer-events :none}
       [reanimated/view {:style {:justify-content :center}}
        [quo/text {:animated? true
@@ -192,39 +179,130 @@
         [quo/text {:color :secondary}
          (i18n/label :t/wallet-total-value)]])]))
 
-;; Note(rasom): sometimes `refreshing` might get stuck on iOS if action happened
-;; too fast. By updating this atom in 1s we ensure that `refreshing?` property
-;; is updated properly in this case.
-(def updates-counter (reagent/atom 0))
+(views/defview total-value []
+  (views/letsubs [currency [:wallet/currency]
+                  portfolio-value [:portfolio-value]]
+                  ;empty-balances? [:empty-balances?]
+                  ;frozen-card? [:keycard/frozen-card?]
+                  ;{:keys [mnemonic]} [:multiaccount]]
+    [react/view {:padding-vertical 12}
+     [quo2.text/text (i18n/label :t/wallet-total-value)]
+     [quo2.text/text {:size :heading-1 :weight :semi-bold}
+      (str portfolio-value " " (:code currency))]
+     [react/scroll-view {:horizontal true}]]
+    #_[reanimated/view {:style (styles/container {:minimized minimized})}
+       (when (or
+              (and frozen-card? minimized)
+              (and mnemonic minimized (not empty-balances?)))
+         [reanimated/view {:style (styles/accounts-mnemonic {:animation animation})}
+          [react/touchable-highlight
+           {:on-press #(re-frame/dispatch
+                        (if frozen-card?
+                          [::keycard.login/reset-pin]
+                          [:navigate-to :backup-seed]))}
+           [react/view {:flex-direction :row
+                        :align-items    :center}
+            [react/view {:width            14
+                         :height           14
+                         :background-color colors/gray
+                         :border-radius    7
+                         :align-items      :center
+                         :justify-content  :center
+                         :margin-right     9}
+             [react/text {:style {:color       colors/white
+                                  :font-size   13
+                                  :font-weight "700"}}
+              "!"]]
+            [react/text {:style               {:color colors/gray}
+                         :accessibility-label :back-up-your-seed-phrase-warning}
+             (if frozen-card?
+               (i18n/label :t/your-card-is-frozen)
+               (i18n/label :t/back-up-your-seed-phrase))]]]])
 
-(defn schedule-counter-reset []
-  (utils.utils/set-timeout
-   (fn []
-     (swap! updates-counter inc)
-     (when @(re-frame/subscribe [:wallet/refreshing-history?])
-       (schedule-counter-reset)))
-   1000))
+       [reanimated/view {:style          (styles/value-container {:minimized minimized
+                                                                  :animation animation})
+                         :pointer-events :none}
+        [reanimated/view {:style {:justify-content :center}}
+         [quo/text {:animated? true
+                    :weight    :semi-bold
+                    :style     (styles/value-text {:minimized minimized})}
+          portfolio-value
+          [quo/text {:animated? true
+                     :size      :inherit
+                     :weight    :inherit
+                     :color     :secondary}
+           (str " " (:code currency))]]]]
+       (when-not minimized
+         [reanimated/view
+          [quo/text {:color :secondary}
+           (i18n/label :t/wallet-total-value)]])]))
 
-(defn refresh-action []
-  (schedule-counter-reset)
-  (re-frame/dispatch [:wallet.ui/pull-to-refresh-history]))
-
-(defn refresh-control [refreshing?]
-  (reagent/as-element
-   [rn/refresh-control
-    {:refreshing (boolean refreshing?)
-     :onRefresh  refresh-action}]))
+(views/defview accounts [selected-account-atom]
+  (views/letsubs [accounts [:multiaccount/visible-accounts]]
+                  ;keycard? [:keycard-multiaccount?]]
+    (do
+      (reset! selected-account-atom (:address (first accounts)))
+      (let [accounts-data (for [account accounts]
+                            {:label (:name account)
+                             :id    (:address account)})]
+        [react/scroll-view {:horizontal                        true
+                            :shows-horizontal-scroll-indicator false
+                            :scroll-event-throttle             64
+                            :margin-top                        12
+                            :margin-bottom                     20}
+         [react/view {:flex-direction :row}
+          [quo2.tabs/tabs {:default-active (:address (first accounts))
+                           :on-change      #(reset! selected-account-atom %)
+                           :data           accounts-data}]
+          [quo2.button/button {:type     :grey
+                               :size     32
+                               :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                              {:content        sheets/add-account
+                                                               :content-height 260}])}
+           "Add account"]]]))))
 
 (defn accounts-overview []
+  (let [mnemonic @(re-frame/subscribe [:mnemonic])
+        ;mainnet? @(re-frame/subscribe [:mainnet?])
+        selected-account-atom (reagent/atom nil)]
+    (fn []
+      [safe-area/consumer
+       (fn [insets]
+         [react/view {:style {:flex             1
+                              :padding-top      (:top insets)
+                              :background-color (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}}
+          [react/view {:padding-horizontal 20}
+           [react/view {:flex-direction :row :height 56 :align-items :center :justify-content :flex-end}
+            [quo2.button/button {:icon                true
+                                 :size 32
+                                 :type                :grey
+                                 :accessibility-label :accounts-qr-code
+                                 :on-press            #(re-frame/dispatch
+                                                        [::qr-scanner/scan-code
+                                                         {:handler :wallet.send/qr-scanner-result}])}
+             :main-icons2/placeholder]
+            [react/view {:width 12}]
+            [quo2.button/button {:icon                true
+                                 :size  32
+                                 :type                :grey
+                                 :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                           {:content (sheets/accounts-options mnemonic)}])
+                                 :accessibility-label :accounts-more-options}
+             :main-icons2/placeholder]]
+           [total-value]
+           [accounts selected-account-atom]]
+          [account.views/account-new @selected-account-atom]])])))
+
+(defn accounts-overview-old []
   (let [mnemonic @(re-frame/subscribe [:mnemonic])
         mainnet? @(re-frame/subscribe [:mainnet?])]
     [react/view
      {:style {:flex 1}}
      [quo/animated-header
-      {:extended-header    total-value
-       :refresh-control    refresh-control
+      {:extended-header    total-value-old
+       :refresh-control    common/refresh-control
        :refreshing-sub     (re-frame/subscribe [:wallet/refreshing-history?])
-       :refreshing-counter updates-counter
+       :refreshing-counter common/updates-counter
        :use-insets         true
        :right-accessories  [{:on-press            #(re-frame/dispatch
                                                     [::qr-scanner/scan-code
@@ -235,7 +313,7 @@
                                                                        {:content (sheets/accounts-options mnemonic)}])
                              :icon                :main-icons/more
                              :accessibility-label :accounts-more-options}]}
-      [accounts]
+      [accounts-old]
       (when mainnet?
         [buy-crypto/banner])
       [assets]

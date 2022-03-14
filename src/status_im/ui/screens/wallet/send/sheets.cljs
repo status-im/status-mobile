@@ -6,7 +6,7 @@
             [quo.core :as quo]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]))
+            [status-im.ui.screens.wallet.accounts.common :as common]))
 
 (views/defview assets [address]
   (views/letsubs [{:keys [tokens]} [:wallet/visible-assets-with-values address]
@@ -15,7 +15,7 @@
      (for [token tokens]
        ^{:key (str (:symbol token))}
        [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet.send/set-symbol (:symbol token)])}
-        [wallet.accounts/render-asset token nil nil (:code currency)]])]))
+        [common/render-asset token nil nil (:code currency)]])]))
 
 (defn render-account [account _ _ {:keys [field event]}]
   [quo/list-item

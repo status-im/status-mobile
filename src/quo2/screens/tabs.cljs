@@ -10,12 +10,8 @@
                   :type    :select
                   :options [{:key   32
                              :value "32"}
-                            {:key   28
-                             :value "28"}
                             {:key   24
-                             :value "24"}
-                            {:key   20
-                             :value "20"}]}])
+                             :value "24"}]}])
 
 (defn cool-preview []
   (let [state  (reagent/atom {:size  32})]

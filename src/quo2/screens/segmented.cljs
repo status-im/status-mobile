@@ -8,12 +8,8 @@
 (def descriptor [{:label   "Size:"
                   :key     :size
                   :type    :select
-                  :options [{:key   32
-                             :value "32"}
-                            {:key   28
+                  :options [{:key   28
                              :value "28"}
-                            {:key   24
-                             :value "24"}
                             {:key   20
                              :value "20"}]}])
 

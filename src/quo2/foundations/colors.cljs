@@ -1,5 +1,6 @@
 (ns quo2.foundations.colors
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [quo.theme :as theme]))
 
 (defn alpha [value opacity]
   (if (string/starts-with? value "#")
@@ -174,3 +175,6 @@
 (def info-50-opa-20 (alpha info-50 0.2))
 (def info-50-opa-30 (alpha info-50 0.3))
 (def info-50-opa-40 (alpha info-50 0.4))
+
+(defn theme-colors [light dark]
+  (if (theme/dark?) dark light))

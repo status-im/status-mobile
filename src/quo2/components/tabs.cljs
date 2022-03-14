@@ -5,7 +5,7 @@
 
 (defn tabs [{:keys [default-active on-change]}]
   (let [active-tab-id (reagent/atom default-active)]
-    (fn [{:keys [data size]}]
+    (fn [{:keys [data size] :or {size 32}}]
       (let [active-id @active-tab-id]
         [rn/view {:flex-direction :row}
          (for [{:keys [label id]} data]

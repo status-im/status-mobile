@@ -1,10 +1,10 @@
 (ns quo2.components.button
   (:require [quo.react-native :as rn]
-            [status-im.ui.components.icons.icons :as icons]
             [quo2.foundations.colors :as colors]
             [quo2.components.text :as text]
             [quo.theme :as theme]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [quo2.components.icon :as quo2.icons]))
 
 (def themes {:light {:primary   {:icon-color       colors/white
                                  :label            {:style {:color colors/white}}
@@ -16,9 +16,9 @@
                                  :background-color {:default  colors/primary-50-opa-20
                                                     :pressed  colors/primary-50-opa-40
                                                     :disabled colors/primary-50-opa-20}}
-                     :grey      {:icon-color       colors/neutral-50
+                     :grey      {:icon-color       colors/black
                                  :label            {:style {:color colors/black}}
-                                 :background-color {:default  colors/neutral-40
+                                 :background-color {:default  colors/neutral-20
                                                     :pressed  colors/neutral-30
                                                     :disabled colors/neutral-20}}
                      :outline   {:icon-color   colors/neutral-50
@@ -61,7 +61,7 @@
                                                     :pressed  colors/danger-40
                                                     :disabled colors/danger-50}}}})
 
-(defn style-container [type size disabled background-color border-color icon above]
+(defn style-container [type size disabled background-color border-color icon above width before after]
   (merge {:height             size
           :align-items        :center
           :justify-content    :center
@@ -74,7 +74,14 @@
                                   32 10
                                   24 8))
           :background-color   background-color
-          :padding-horizontal (if icon 0 (case size 56 16 40 16 32 12 24 8))}
+          :padding-horizontal (when-not (or icon before after)
+                                (case size 56 16 40 16 32 12 24 8))
+          :padding-left       (when-not (or icon before)
+                                (case size 56 16 40 16 32 12 24 8))
+          :padding-right      (when-not (or icon after)
+                                (case size 56 16 40 16 32 12 24 8))}
+         (when width
+           {:width width})
          (when icon
            {:width size})
          (when border-color
@@ -97,14 +104,15 @@
    [button {:icon true} :main-icons/close-circle]"
   [_ _]
   (let [pressed (reagent/atom false)]
-    (fn [{:keys [on-press disabled type size before after above
+    (fn [{:keys [on-press disabled type size before after above width
                  on-long-press accessibility-label icon]
           :or   {type :primary
                  size 40}}
          children]
       (let [{:keys [icon-color background-color label border-color]}
             (get-in themes [(theme/get-theme) type])
-            state (cond disabled :disabled @pressed :pressed :else :default)]
+            state (cond disabled :disabled @pressed :pressed :else :default)
+            icon-size (when (= 24 size) 12)]
         [rn/touchable-without-feedback (merge {:disabled            disabled
                                                :accessibility-label accessibility-label}
                                               (when on-press
@@ -118,17 +126,33 @@
                                               {:on-press-out (fn []
                                                                (reset! pressed nil))})
 
-         [rn/view {:style (style-container type size disabled (get background-color state) (get border-color state) icon above)}
+         [rn/view {:style (style-container
+                           type
+                           size
+                           disabled
+                           (get background-color state)
+                           (get border-color state)
+                           icon
+                           above
+                           width
+                           before
+                           after)}
           (when above
             [rn/view
-             [icons/icon above {:color icon-color}]])
+             [quo2.icons/icon above {:container-style {:margin-bottom 2}
+                                     :color           icon-color
+                                     :size            icon-size}]])
           (when before
             [rn/view
-             [icons/icon before {:color icon-color}]])
+             [quo2.icons/icon before {:container-style {:margin-left  (if (= size 40) 12 8)
+                                                        :margin-right 4}
+                                      :color           icon-color
+                                      :size            icon-size}]])
           [rn/view
            (cond
              icon
-             [icons/icon children {:color icon-color}]
+             [quo2.icons/icon children {:color icon-color
+                                        :size  icon-size}]
 
              (string? children)
              [text/text (merge {:size            (when (#{56 24} size) :paragraph-2)
@@ -141,4 +165,7 @@
              children)]
           (when after
             [rn/view
-             [icons/icon after {:color icon-color}]])]]))))
+             [quo2.icons/icon after {:container-style {:margin-left  4
+                                                       :margin-right (if (= size 40) 12 8)}
+                                     :color           icon-color
+                                     :size            icon-size}]])]]))))
