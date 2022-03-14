@@ -91,6 +91,7 @@
 (defn message-item [account profile]
   (fn [{:keys [content-type content from timestamp outgoing] :as message}
        {:keys [modal on-long-press close-modal]}]
+
     [react/view (merge {:padding-vertical   8
                         :flex-direction     :row
                         :background-color   (when modal colors/white)
@@ -107,15 +108,18 @@
          [photos/member-photo from])]]
      [react/view {:flex 1}
       [react/view {:flex-direction  :row
-                   :justify-content :space-between}
+                   :justify-content :space-between
+                   :width           :98%
+                   :word-break      :break-all}
        [react/touchable-highlight
         {:on-press #(do (when modal (close-modal))
                         (when profile (re-frame/dispatch [:navigate-back]))
                         (re-frame/dispatch [:chat.ui/show-profile from]))}
-        (if outgoing
-          [message/message-my-name {:profile? true :you? false}]
-          [message/message-author-name from {:profile? true}])]
-       [react/text {:style {:font-size 10 :color colors/gray}}
+        (let [message-author-width (* @(re-frame/subscribe [:dimensions/window-width]) 0.75)]
+          (if outgoing
+            [react/view {:style {:width message-author-width}} [message/message-my-name {:profile? true :you? false}]]
+            [react/view {:style {:width message-author-width}} [message/message-author-name from {:profile? true}]]))]
+       [react/text {:style {:font-size 10 :color colors/gray :margin-left :auto}}
         (datetime/time-ago (datetime/to-date timestamp))]]
       [react/view
        (if (= content-type constants/content-type-image)
