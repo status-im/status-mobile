@@ -139,7 +139,7 @@
                             (cond
                               (not public-key) :owned
                               (string/ends-with? % "0000000000000000000000000000000000000000000000000000000000000000")
-                              :invalid
+                              :invalid-ens
                               (= % public-key) :connected
                               :else :connected-with-different-key)
                             (eip55/address->checksum response)]))
