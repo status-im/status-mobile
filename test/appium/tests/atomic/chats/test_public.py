@@ -365,6 +365,23 @@ class TestPublicChatOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(700738)
+    @marks.critical
+    def test_public_tag_message(self):
+        tag_message = '#wuuut'
+        self.home.home_button.double_click()
+        self.home.get_chat('#%s' % self.public_chat_name).click()
+        self.home.just_fyi("Check that will be redirected to chat view on tap on tag message")
+        self.chat.send_message(tag_message)
+        self.chat.element_starts_with_text(tag_message).click()
+        self.chat.element_by_text_part(self.public_chat_name).wait_for_invisibility_of_element()
+        if not self.chat.user_name_text.text == tag_message:
+            self.errors.append('Could not redirect a user to a public chat tapping the tag message.')
+        self.home.just_fyi("Check that chat is added to home view")
+        self.chat.home_button.double_click()
+        if not self.home.element_by_text(tag_message).is_element_displayed():
+            self.errors.append('Could not find the public chat in user chat list.')
+        self.errors.verify_no_errors()
 
 @pytest.mark.xdist_group(name="public_chat_medium")
 class TestPublicChatMultipleDeviceMergedMedium(MultipleSharedDeviceTestCase):
