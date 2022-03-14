@@ -9,6 +9,7 @@ from tests.users import basic_user, transaction_senders, recovery_users
 
 
 @pytest.mark.xdist_group(name="onboarding_1")
+@marks.critical
 class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod
@@ -24,7 +25,6 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         cls.username = cls.profile.default_username_text.text
 
     @marks.testrail_id(700742)
-    @marks.critical
     def test_onboarding_home_initial_popup(self):
         self.home.home_button.double_click()
         texts = ["chat-and-transact", "invite-friends"]
@@ -39,7 +39,6 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700743)
-    @marks.critical
     def test_onboarding_share_contact_address(self):
         self.profile = self.home.profile_button.click()
 
@@ -68,7 +67,6 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700744)
-    @marks.critical
     def test_onboarding_share_wallet_address(self):
         self.home.just_fyi("Copying wallet address")
         wallet = self.home.wallet_button.click()
@@ -96,7 +94,6 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700745)
-    @marks.critical
     def test_onboarding_backup_seed_phrase_restore_same_login_logcat(self):
         self.home.just_fyi("Check that badge on profile about back up seed phrase is presented")
         if self.home.profile_button.counter.text != '1':
@@ -144,7 +141,6 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700746)
-    @marks.critical
     def test_onboarding_cant_sign_in_with_invalid_password_logcat(self):
         self.home.profile_button.click()
         self.profile.logout()
@@ -168,7 +164,6 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700747)
-    @marks.critical
     def test_onboarding_add_new_multiaccount_username_by_position_pass_validation(self):
         self.home.profile_button.click()
         self.profile.logout()
@@ -227,8 +222,9 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="recover_1")
-class TestRecoverOneDeviceMerged(MultipleSharedDeviceTestCase):
+@pytest.mark.xdist_group(name="restore_1")
+@marks.critical
+class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
     def setup_class(cls):
         cls.user = transaction_senders['A']
@@ -240,8 +236,7 @@ class TestRecoverOneDeviceMerged(MultipleSharedDeviceTestCase):
         cls.home = cls.sign_in.recover_access(passphrase=cls.passphrase, password=cls.password)
 
     @marks.testrail_id(700748)
-    @marks.critical
-    def test_recover_uppercase_whitespaces_seed_phrase_special_char_passw_logcat(self):
+    def test_restore_uppercase_whitespaces_seed_phrase_special_char_passw_logcat(self):
         profile = self.home.profile_button.click()
         public_key, username = self.sign_in.get_public_key_and_username(return_username=True)
 
@@ -258,8 +253,7 @@ class TestRecoverOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700749)
-    @marks.critical
-    def test_recover_set_up_wallet_sign_phrase(self):
+    def test_restore_set_up_wallet_sign_phrase(self):
         wallet = self.sign_in.wallet_button.click()
 
         wallet.just_fyi("Initiating some transaction so the wallet signing phrase pop-up appears")
@@ -308,8 +302,7 @@ class TestRecoverOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700750)
-    @marks.critical
-    def test_recover_validation_seed_phrase_field(self):
+    def test_restore_validation_seed_phrase_field(self):
         validations = [
             {
                 'case': 'empty value',

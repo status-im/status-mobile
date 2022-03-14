@@ -63,7 +63,7 @@ class BaseWebView(BaseView):
             self.driver.info("Closing all tabs")
             self.close_all_button.click()
         else:
-            self.driver.info("Removing '%s' from recent websites")
+            self.driver.info("Removing '%s' from recent websites" % name)
             close_button = Button(self.driver,
                                   xpath="//*[contains(@text, '%s')]/../../../../*[@content-desc='empty-tab']" % name)
             close_button.scroll_to_element()

@@ -10,6 +10,7 @@ from support.utilities import get_merged_txs_list
 
 
 @pytest.mark.xdist_group(name="wallet_management_1")
+@marks.critical
 class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod
@@ -27,7 +28,6 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
                                 'STT': cls.wallet.get_asset_amount_by_name('STT')}
 
     @marks.testrail_id(700756)
-    @marks.critical
     def test_wallet_tx_history_copy_tx_hash_on_lte(self):
         self.wallet.accounts_status_account.click()
         address = wallet_users['D']['address']
@@ -79,7 +79,6 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700759)
-    @marks.critical
     def test_wallet_add_account_generate_new(self):
         self.wallet.just_fyi("Switching off LTE mode and navigating to home view")
         self.wallet.driver.set_network_connection(6)
@@ -117,7 +116,6 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
             self.drivers[0].fail('Delete account option is shown on added account "On Status Tree"!')
 
     @marks.testrail_id(700758)
-    @marks.critical
     def test_wallet_manage_assets(self):
         asset = "HND"
         self.sign_in.just_fyi("Getting back to main wallet view")
@@ -146,7 +144,6 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700760)
-    @marks.critical
     def test_wallet_add_delete_watch_only_account(self):
         self.wallet.get_back_to_home_view()
         self.wallet.accounts_status_account.swipe_left_on_element()
@@ -195,7 +192,6 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700761)
-    @marks.critical
     def test_wallet_add_hide_unhide_account_private_key(self):
         self.wallet.get_back_to_home_view()
         if not self.wallet.add_account_button.is_element_displayed(3):
@@ -256,7 +252,6 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700762)
-    @marks.critical
     @marks.skip
     # TODO: skipped due to #13016
     def test_wallet_add_account_seed_phrase_collectibles_mainnet_rinkeby(self):
@@ -365,7 +360,6 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700766)
-    @marks.high
     def test_wallet_fetching_balance_after_offline_insufficient_funds_errors(self):
         self.sign_in.driver.reset()
         sender = wallet_users['E']

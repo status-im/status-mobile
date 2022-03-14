@@ -391,40 +391,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("Support channel is not suggested for requesting a feature")
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5738)
-    @marks.high
-    def test_dapps_permissions(self):
-        home = SignInView(self.driver).create_user()
-        account_name = home.status_account_name
-
-        home.just_fyi('open Status Test Dapp, allow all and check permissions in Profile')
-        web_view = home.open_status_test_dapp()
-        dapp = home.dapp_tab_button.click()
-        profile = home.profile_button.click()
-        profile.privacy_and_security_button.click()
-        profile.dapp_permissions_button.click()
-        profile.element_by_text(test_dapp_name).click()
-        if not profile.element_by_text(account_name).is_element_displayed():
-            self.errors.append('Wallet permission was not granted')
-        if not profile.element_by_translation_id("chat-key").is_element_displayed():
-            self.errors.append('Contact code permission was not granted')
-
-        profile.just_fyi('revoke access and check that they are asked second time')
-        profile.revoke_access_button.click()
-        profile.back_button.click()
-        profile.dapp_tab_button.click()
-
-        web_view.open_tabs_button.click()
-        web_view.empty_tab_button.click()
-
-        dapp.open_url(test_dapp_url)
-        if not dapp.element_by_text_part(account_name).is_element_displayed():
-            self.errors.append('Wallet permission is not asked')
-        if dapp.allow_button.is_element_displayed():
-            dapp.allow_button.click(times_to_click=1)
-        if not dapp.element_by_translation_id("your-contact-code").is_element_displayed():
-            self.errors.append('Profile permission is not asked')
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(5368)
     @marks.medium
