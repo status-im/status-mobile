@@ -9,7 +9,8 @@
             [quo.react-native :as rn]
             [quo.core :as quo]
             [quo.design-system.colors :as colors]
-            [status-im.i18n.i18n :as i18n]))
+            [status-im.i18n.i18n :as i18n]
+            [status-im.wallet.core :as wallet]))
 
 (defn get-block [block callback]
   (json-rpc/call
@@ -35,9 +36,10 @@
                              "latest"
                              (fn [res]
                                (reset! latest-block res)
+                               (when-not (last-loaded-block-number)
+                                 (re-frame/dispatch-sync [::wallet/request-current-block-update]))
                                (get-block
-                                (str "0x" (abi-spec/number-to-hex
-                                           (last-loaded-block-number)))
+                                (str "0x" (abi-spec/number-to-hex (last-loaded-block-number)))
                                 (fn [res]
                                   (reset! last-loaded-block res)
                                   (reset! refreshing? false))))))]
