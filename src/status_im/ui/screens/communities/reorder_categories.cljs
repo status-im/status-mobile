@@ -70,7 +70,7 @@
      [rn/view {:accessibility-label :category-item
                :style               (merge styles/category-item
                                            {:background-color background-color})}
-      (if-not (categories-tab?)
+      (if (not (categories-tab?))
         [icons/icon :main-icons/channel-category {:color colors/gray}]
         [rn/touchable-opacity
          {:accessibility-label :delete-category-button
