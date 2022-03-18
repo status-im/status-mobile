@@ -3,7 +3,8 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.utils.contenthash :as contenthash]))
+            [status-im.utils.contenthash :as contenthash]
+            [taoensso.timbre :as log]))
 
 (defn- placeholder [props child]
   (let [{:keys [accessibility-label style]} props]
@@ -32,6 +33,8 @@
                        :style style}
           [react/activity-indicator {:animating true}]])
        (when (not @error?)
+         (log/info "loaded" @loaded?)
+         (log/info "style" style)
          [react/fast-image {:accessibility-label (:success accessibility-labels)
                             :onError #(if (empty? (rest @current-source))
                                         (reset! error? true)
@@ -39,7 +42,8 @@
                                                 (rest @current-source)))
                             :onLoad #(reset! loaded? true)
                             :style (if @loaded? style {})
-                            :source (first @current-source)}])])))
+                            :source (first @current-source)
+                            :resize-mode :contain}])])))
 
 (defn ipfs [props]
   (let [{:keys [hash]} props]
