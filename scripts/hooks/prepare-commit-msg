@@ -14,9 +14,8 @@ GITHUB_LINK="${GITHUB_LINK_PREFIX}${GO_COMMIT_MERGE_BASE}...${GO_COMMIT_CURRENT}
 
 COMMIT_MSG_FILE=$1
 # Check if the commit message already contains the link (rebase) and update otherwise insert into line2
-# temporary comment out because of the error on macos
-#if ! grep -qF "${GITHUB_LINK_PREFIX}" "${COMMIT_MSG_FILE}" >/dev/null; then
-#  sed -in "2i${GITHUB_LINK}\n" "${COMMIT_MSG_FILE}"
-#else
-#  sed -in "s;^${GITHUB_LINK_PREFIX}.*$;${GITHUB_LINK};" "${COMMIT_MSG_FILE}"
-#fi
+if ! grep -qF "${GITHUB_LINK_PREFIX}" "${COMMIT_MSG_FILE}" >/dev/null; then
+  sed -in'' -e "2i${GITHUB_LINK}\n" "${COMMIT_MSG_FILE}"
+else
+  sed -in'' -e "s;^${GITHUB_LINK_PREFIX}.*$;${GITHUB_LINK};" "${COMMIT_MSG_FILE}"
+fi
