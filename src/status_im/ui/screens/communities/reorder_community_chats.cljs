@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.communities.reorder-categories
+(ns status-im.ui.screens.communities.reorder-community-chats
   (:require [quo.core :as quo]
             [clojure.walk :as walk]
             [quo.react-native :as rn]
