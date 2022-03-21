@@ -67,10 +67,11 @@
    :top      12
    :left     16})
 
-(def title-text
+(defn title-text [title-text-width]
   {:margin-left  72
    :margin-top   12
-   :margin-right 50})
+   :margin-right 50
+   :width title-text-width})
 
 (def notification-message-container
   {:margin-left  72
