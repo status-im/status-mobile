@@ -31,7 +31,7 @@
      [react/view {:flex 1}
       [react/view {:padding-horizontal 16
                    :padding-vertical   10}
-       [search-input/search-input
+       [search-input/search-input-old
         {:search-active? search-active?
          :search-filter  search-filter
          :on-cancel      #(re-frame/dispatch [:search/currency-filter-changed nil])

@@ -5,7 +5,8 @@
 (defn default-style []
   {:color       colors/black
    :font-weight "400"
-   :font-size   15})
+   :font-size   15
+   :line-height 20})
 
 (def typography-styles
   {:header        {:font-weight "700"

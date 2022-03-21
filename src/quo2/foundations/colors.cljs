@@ -193,5 +193,19 @@
 (def switcher-background-opa-90 (alpha switcher-background 0.9))
 (def switcher-background-opa-95 (alpha switcher-background 0.95))
 
+;;General
+
+;; background
+
+(def ui-background-02-light "#F5F9FA")
+
+;; divider
+(def divider-light "#EDF2f4")
+(def divider-dark "#0E1620")
+
+;; Visibility status
+
+(def color-online "#26A69A")
+
 (defn theme-colors [light dark]
   (if (theme/dark?) dark light))

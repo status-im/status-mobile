@@ -148,7 +148,7 @@
     text]])
 
 (defn community-chat-item [{:keys [chat-id] :as home-item} _ _ _]
-  [inner-item/home-list-item
+  [inner-item/home-list-item-old
    ;; We want communities to behave as public chats when it comes to
    ;; unread indicator
    (assoc home-item :public? true)

@@ -2,7 +2,7 @@ PODS:
   - boost-for-react-native (1.63.0)
   - BVLinearGradient (2.5.6):
     - React
-  - CryptoSwift (1.4.3)
+  - CryptoSwift (1.5.1)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.4)
   - FBReactNativeSpec (0.63.4):
@@ -631,12 +631,12 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
-  CryptoSwift: a0799ee936271bd2253a006f1e4523df21845000
+  CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 2d7c14bbcd0c3139c6258f813895cb61d7860fcc
+  glog: 502275bc0747df92346edbab1f40dacde2ec86d4
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: 07f1b4d4fadcf1218084cb3e1bb3a8bac3870c5a
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
@@ -707,4 +707,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 1a5b8878f89edd08eb4d37898a3a8721a7bb3388
 
-COCOAPODS: 1.11.0
+COCOAPODS: 1.11.3

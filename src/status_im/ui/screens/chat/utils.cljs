@@ -14,21 +14,23 @@
          [first-name second-name] (multiaccounts/contact-two-names contact false)]
      (if (or nickname ens-name)
        [react/nested-text {:number-of-lines 2
-                           :style           {:color       (if modal colors/white-persist colors/blue)
+                           :style           {:color       (if modal colors/white-persist colors/black)
                                              :font-size   (if profile? 15 13)
                                              :line-height (if profile? 22 18)
-                                             :font-weight "500"}}
+                                             :letter-spacing -0.2
+                                             :font-weight "600"}}
         (subs first-name 0 81)
         (when you?
-          [{:style {:color colors/gray :font-weight "400" :font-size 13}}
+          [{:style {:color colors/black-light :font-weight "500" :font-size 13}}
            (str " " (i18n/label :t/You))])
         (when nickname
-          [{:style {:color colors/gray :font-weight "400"}}
+          [{:style {:color colors/black-light :font-weight "500"}}
            (str " " (subs second-name 0 81))])]
-       [react/text {:style {:color       (if modal colors/white-persist colors/gray)
-                            :font-size   (if profile? 15 12)
+       [react/text {:style {:color       (if modal colors/white-persist colors/black)
+                            :font-size   (if profile? 15 13)
                             :line-height (if profile? 22 18)
-                            :font-weight "400"}}
+                            :font-weight "600"
+                            :letter-spacing -0.2}}
         first-name]))))
 
 (defn format-reply-author [from username current-public-key style outgoing]

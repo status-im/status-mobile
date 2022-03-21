@@ -1,6 +1,7 @@
 (ns status-im.ui.components.topbar
   (:require [re-frame.core :as re-frame]
-            [quo.core :as quo]))
+            [quo.core :as quo]
+            [quo2.foundations.colors :as quo2.colors]))
 
 (def default-button-width 48)
 
@@ -20,7 +21,9 @@
     label
     (assoc :label label)))
 
-(defn topbar [{:keys [navigation use-insets right-accessories modal? content]
+(defn topbar [{:keys [navigation use-insets right-accessories modal? content border-bottom? new-ui?] ;; remove new-ui? key, temp fix
+               :or   {border-bottom? true
+                      new-ui?        false}
                :as   props}]
   (let [navigation (if (= navigation :none)
                      nil
@@ -31,7 +34,10 @@
                            :title-component  content
                            :insets           (when use-insets insets)
                            :left-width       (when navigation
-                                               default-button-width)}
+                                               default-button-width)
+                           :border-bottom    border-bottom?}
                           props
                           (when (seq right-accessories)
-                            {:right-accessories right-accessories}))])]))
+                            {:right-accessories right-accessories})
+                          (when new-ui?
+                            {:background (quo2.colors/theme-colors quo2.colors/white quo2.colors/divider-dark)}))])]))

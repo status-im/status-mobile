@@ -1,11 +1,11 @@
-(ns status-im.ui.screens.chat.message.audio
+(ns status-im.ui.screens.chat.message.audio-old
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.utils.utils :as utils]
             [reagent.core :as reagent]
             [goog.string :as gstring]
             [status-im.audio.core :as audio]
             [status-im.utils.fx :as fx]
-            [status-im.ui.screens.chat.styles.message.audio :as style]
+            [status-im.ui.screens.chat.styles.message.audio-old :as style]
             [status-im.ui.components.animation :as anim]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
@@ -171,16 +171,16 @@
           (update-state params))
        #(update-state (merge params {:error (:message %)}))))))
 
-(defn- play-pause-button [state-ref on-press]
-  (let [color colors/blue]
+(defn- play-pause-button [state-ref outgoing on-press]
+  (let [color (if outgoing colors/blue colors/white-persist)]
     (if  (= (:general @state-ref) :preparing)
-      [react/view {:style  (style/play-pause-container true)}
+      [react/view {:style  (style/play-pause-container outgoing true)}
        [react/small-loading-indicator color]]
       [react/touchable-highlight {:on-press on-press}
        [icons/icon (case (:general @state-ref)
                      :playing :main-icons/pause
                      :main-icons/play)
-        {:container-style     (style/play-pause-container false)
+        {:container-style     (style/play-pause-container outgoing false)
          :accessibility-label :play-pause-audio-message-button
          :color               color}]])))
 
@@ -193,7 +193,7 @@
                    :message-id @current-player-message-id}))
   nil)
 
-(defview message-content [{:keys [audio audio-duration-ms message-id]}]
+(defview message-content [{:keys [audio audio-duration-ms message-id outgoing]}]
   (letsubs [state        (reagent/atom nil)
             progress     (reagent/atom 0)
             progress-anim (anim/create-value 0)
@@ -218,9 +218,9 @@
                              :margin-bottom 16}} (:error-msg @state)]
         [react/view (style/container width)
          [react/view style/play-pause-slider-container
-          [play-pause-button state #(play-pause base-params audio)]
+          [play-pause-button state outgoing #(play-pause base-params audio)]
           [react/view style/slider-container
-           [slider/animated-slider (merge (style/slider)
+           [slider/animated-slider (merge (style/slider outgoing)
                                           {:minimum-value 0
                                            :maximum-value  (:duration @state)
                                            :value progress-anim
@@ -229,7 +229,7 @@
                                            :on-sliding-complete #(seek (merge base-params {:slider-new-state-seeking? false}) % true nil)})]]]
 
          [react/view style/times-container
-          [react/text {:style  (style/timestamp)}
+          [react/text {:style  (style/timestamp outgoing)}
            (let [time (cond
                         (or (:slider-seeking @state) (> (:seek-to-ms @state) 0)) (:seek-to-ms @state)
                         (#{:playing :paused :seeking}  (:general @state)) @progress

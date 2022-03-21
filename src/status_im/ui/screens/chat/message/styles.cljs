@@ -81,8 +81,8 @@
            {:justify-content :flex-end}
            {:justify-content :flex-start})
          (if (or display-photo? timeline)
-           {:padding-left (+ 16 photos/default-size (when timeline 8))}
-           {:padding-left 8})))
+           {:padding-left (+ 30 photos/default-size (when timeline 8))}
+           {:padding-left 30})))
 
 (defn reaction-button [active]
   (merge {:width             40

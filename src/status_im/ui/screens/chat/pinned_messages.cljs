@@ -12,7 +12,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.views :as chat]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.screens.chat.message.message :as message]
+            [status-im.ui.screens.chat.message.message-old :as message]
             [status-im.utils.datetime :as time]))
 
 (defn pins-topbar [chat]

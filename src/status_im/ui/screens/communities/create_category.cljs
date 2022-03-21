@@ -27,7 +27,7 @@
       [quo/checkbox {:value     selected
                      :on-change on-change}]]
      [react/view {:flex 1}
-      [inner-item/home-list-item
+      [inner-item/home-list-item-old
        (assoc home-item :public? true)
        {:on-press on-change}]]]))
 

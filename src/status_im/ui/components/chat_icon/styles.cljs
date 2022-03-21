@@ -4,7 +4,7 @@
 
 (defn default-chat-icon [color]
   {:margin           0
-   :width            40
+   :width            2
    :height           40
    :align-items      :center
    :justify-content  :center

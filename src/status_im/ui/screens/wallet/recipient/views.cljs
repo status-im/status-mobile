@@ -43,7 +43,7 @@
   (let [search-filter @(re-frame/subscribe [:search/recipient-filter])]
     [react/view {:padding-horizontal 16
                  :padding-vertical   10}
-     [search-input/search-input
+     [search-input/search-input-old
       {:search-active? search-active?
        :search-filter  search-filter
        :on-cancel      #(re-frame/dispatch [:search/recipient-filter-changed nil])
