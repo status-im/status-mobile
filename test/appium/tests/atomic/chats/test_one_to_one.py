@@ -109,11 +109,11 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         home_1.just_fyi('go back online and check that 1-1 chat will be fetched')
         home_1.toggle_airplane_mode()
-        chat_element = home_1.get_chat(username_2, wait_time=60)
+        chat_element = home_1.get_chat(username_2, wait_time=120)
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element(2)
 
-        home_1.just_fyi('checking offline fetching for another message, check delivered stutus for first message')
+        home_1.just_fyi('checking offline fetching for another message, check delivered status for first message')
         chat_2.toggle_airplane_mode()
         if chat_2.chat_element_by_text(message_1).status != 'delivered':
             self.errors.append(
@@ -212,10 +212,10 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_1_one_to_one_chat_element = home_1.get_chat(username_2)
         chat_private_2.edit_message_in_chat(message_before_edit_1_1, message_after_edit_1_1)
-        if not home_1.element_by_text_part(message_after_edit_1_1).is_element_present():
+        if not home_1.element_by_text_part(message_after_edit_1_1).is_element_displayed(30):
             self.errors.append('UNedited message version displayed on preview')
         chat_private_1 = device_1_one_to_one_chat_element.click()
-        if not home_1.element_by_text_part(message_after_edit_1_1).is_element_present(30):
+        if not home_1.element_by_text_part(message_after_edit_1_1).is_element_present():
             self.errors.append('No edited message in 1-1 chat displayed')
         if not home_1.element_by_text_part("⌫ Edited").is_element_present(30):
             self.errors.append('No mark in message bubble about this message was edited on receiver side')

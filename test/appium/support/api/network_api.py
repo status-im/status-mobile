@@ -150,7 +150,7 @@ class NetworkApi(object):
     def faucet_backup(self, address):
         self.log("Trying to get funds from %s" % self.faucet_backup_address)
         address = "0x" + address
-        w3.donate_testnet_eth(address=address, amount=0.005, inscrease_default_gas_price=10)
+        w3.donate_testnet_eth(address=address, amount=0.01, inscrease_default_gas_price=10)
 
     def get_donate(self, address, external_faucet=False, wait_time=300):
         initial_balance = self.get_balance(address)

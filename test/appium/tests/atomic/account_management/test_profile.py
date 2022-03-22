@@ -812,7 +812,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5767)
     @marks.medium
-    @marks.flaky
     def test_can_not_connect_to_mailserver(self):
         self.create_drivers(2)
         home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
@@ -828,13 +827,16 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.mail_server_address_input.set_value(mailserver_address.replace('4', '5'))
         profile_1.save_button.click()
         profile_1.mail_server_by_name(server_name).click()
-        profile_1.mail_server_connect_button.click()
-        profile_1.confirm_button.click()
+        profile_1.mail_server_connect_button.wait_and_click()
+        profile_1.confirm_button.wait_and_click()
+        if profile_1.save_button.is_element_displayed():
+            profile_1.save_button.click()
+            sign_in_1 = home_1.get_sign_in_view()
+            sign_in_1.sign_in()
 
         profile_1.just_fyi('check that popup "Error connecting" will not reappear if tap on "Cancel"')
         profile_1.element_by_translation_id('mailserver-error-title').wait_for_element(120)
         profile_1.cancel_button.click()
-        profile_1.home_button.click()
 
         home_2.just_fyi('send several messages to public channel')
         public_chat_name = home_2.get_random_chat_name()
@@ -849,27 +851,27 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         public_chat_1 = home_1.join_public_chat(public_chat_name)
         public_chat_1.relogin()
 
+        profile_1.just_fyi('check that still connected to custom mailserver after relogin')
+        home_1.profile_button.click()
+        profile_1.sync_settings_button.click()
+        if not profile_1.element_by_text(server_name).is_element_displayed():
+            self.drivers[0].fail("Not connected to custom mailserver after re-login")
+
+        profile_1.just_fyi('check that can RETRY to connect')
         # TODO: blocked due to 11786 (rechecked 23.11.21, valid)
-        # profile_1.just_fyi('check that still connected to custom mailserver after relogin')
-        # home_1.profile_button.click()
-        # profile_1.sync_settings_button.click()
-        # if not profile_1.element_by_text(server_name).is_element_displayed():
-        #     self.drivers[0].fail("Not connected to custom mailserver after re-login")
-        #
-        # profile_1.just_fyi('check that can RETRY to connect')
-        # profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(60)
-        # public_chat_1.element_by_translation_id(id='mailserver-retry', uppercase=True).wait_and_click(60)
+        # profile_1.element_by_translation_id('mailserver-error-title').wait_for_element(120)
+        # public_chat_1.element_by_translation_id('mailserver-retry', uppercase=True).wait_and_click(60)
         #
         # profile_1.just_fyi('check that can pick another mailserver and receive messages')
-        # profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(60)
-        # profile_1.element_by_translation_id(id='mailserver-pick-another', uppercase=True).wait_and_click(120)
+        # profile_1.element_by_translation_id('mailserver-error-title').wait_for_element(120)
+        # profile_1.element_by_translation_id('mailserver-pick-another', uppercase=True).wait_and_click(120)
         # mailserver = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
         # profile_1.element_by_text(mailserver).click()
         # profile_1.confirm_button.click()
         # profile_1.home_button.click()
         # home_1.get_chat('#%s' % public_chat_name).click()
         # if not public_chat_1.chat_element_by_text(message).is_element_displayed(60):
-        #    self.errors.append("Chat history wasn't fetched")
+        #     self.errors.append("Chat history wasn't fetched")
 
         self.errors.verify_no_errors()
 

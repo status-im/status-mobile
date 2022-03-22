@@ -302,7 +302,7 @@ def create_shared_drivers(quantity):
     else:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        capabilities = {'maxDuration': 1800}
+        capabilities = {'maxDuration': 2700}
         drivers = loop.run_until_complete(start_threads(quantity,
                                                         Driver,
                                                         drivers,
