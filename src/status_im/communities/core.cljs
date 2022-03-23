@@ -84,7 +84,7 @@
 
 (fx/defn handle-community
   [{:keys [db]} {:keys [id] :as community}]
-  (when-not (nil? id)
+  (when id
     {:db (assoc-in db [:communities id] (<-rpc community))}))
 
 (fx/defn handle-communities
