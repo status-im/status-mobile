@@ -591,12 +591,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not one_to_one_chat_2.user_profile_image_in_mentions_list(
                 default_username_1).is_element_image_similar_to_template(logo_default):
             self.errors.append('Profile picture was not updated in 1-1 chat mentions list')
+        home_1.reopen_app()
         one_to_one_chat_2.get_back_to_home_view()
-
-        profile_1.just_fyi('Send message to user to move it to online state')
-        profile_1.home_button.double_click()
-        one_to_one_chat_1 = home_1.get_chat(default_username_2).click()
-        one_to_one_chat_1.send_message('hey')
 
         profile_1.just_fyi('Check profile image is updated in Group chat view')
         profile_2 = one_to_one_chat_2.profile_button.click()
@@ -606,7 +602,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not profile_2.profile_picture.is_element_image_similar_to_template('new_profile_online.png'):
             self.errors.append('Profile picture was not updated on user Profile view')
         profile_2.close_button.click()
-        [home.home_button.click() for home in (profile_2, home_1)]
+        home_2.home_button.double_click()
         if not home_2.get_chat(default_username_1).chat_image.is_element_image_similar_to_template(logo_chats):
             self.errors.append('User profile picture was not updated on Chats view')
 
@@ -824,15 +820,11 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.plus_button.click()
         server_name = 'test'
         profile_1.specify_name_input.set_value(server_name)
-        profile_1.mail_server_address_input.set_value(mailserver_address.replace('4', '5'))
+        profile_1.mail_server_address_input.set_value('%s%s' % (mailserver_address[:-3], '553'))
         profile_1.save_button.click()
         profile_1.mail_server_by_name(server_name).click()
         profile_1.mail_server_connect_button.wait_and_click()
         profile_1.confirm_button.wait_and_click()
-        if profile_1.save_button.is_element_displayed():
-            profile_1.save_button.click()
-            sign_in_1 = home_1.get_sign_in_view()
-            sign_in_1.sign_in()
 
         profile_1.just_fyi('check that popup "Error connecting" will not reappear if tap on "Cancel"')
         profile_1.element_by_translation_id('mailserver-error-title').wait_for_element(120)
@@ -849,7 +841,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.just_fyi('join same public chat and try to reconnect via "Tap to reconnect" and check "Connecting"')
         profile_1.home_button.click()
         public_chat_1 = home_1.join_public_chat(public_chat_name)
-        public_chat_1.relogin()
+        public_chat_1.reopen_app()
 
         profile_1.just_fyi('check that still connected to custom mailserver after relogin')
         home_1.profile_button.click()
@@ -858,20 +850,19 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.drivers[0].fail("Not connected to custom mailserver after re-login")
 
         profile_1.just_fyi('check that can RETRY to connect')
-        # TODO: blocked due to 11786 (rechecked 23.11.21, valid)
-        # profile_1.element_by_translation_id('mailserver-error-title').wait_for_element(120)
-        # public_chat_1.element_by_translation_id('mailserver-retry', uppercase=True).wait_and_click(60)
-        #
-        # profile_1.just_fyi('check that can pick another mailserver and receive messages')
-        # profile_1.element_by_translation_id('mailserver-error-title').wait_for_element(120)
-        # profile_1.element_by_translation_id('mailserver-pick-another', uppercase=True).wait_and_click(120)
-        # mailserver = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
-        # profile_1.element_by_text(mailserver).click()
-        # profile_1.confirm_button.click()
-        # profile_1.home_button.click()
-        # home_1.get_chat('#%s' % public_chat_name).click()
-        # if not public_chat_1.chat_element_by_text(message).is_element_displayed(60):
-        #     self.errors.append("Chat history wasn't fetched")
+        profile_1.element_by_translation_id('mailserver-error-title').wait_for_element(120)
+        public_chat_1.element_by_translation_id('mailserver-retry', uppercase=True).wait_and_click(60)
+
+        profile_1.just_fyi('check that can pick another mailserver and receive messages')
+        profile_1.element_by_translation_id('mailserver-error-title').wait_for_element(120)
+        profile_1.element_by_translation_id('mailserver-pick-another', uppercase=True).wait_and_click(120)
+        mailserver = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
+        profile_1.element_by_text(mailserver).click()
+        profile_1.confirm_button.click()
+        profile_1.home_button.click()
+        home_1.get_chat('#%s' % public_chat_name).click()
+        if not public_chat_1.chat_element_by_text(message).is_element_displayed(60):
+            self.errors.append("Chat history wasn't fetched")
 
         self.errors.verify_no_errors()
 

@@ -112,7 +112,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(700718)
     def test_public_chat_unread_messages_counter_for_mention_relogin(self):
         message = 'test message2'
-        [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
+        [chat.get_back_to_home_view() for chat in (self.chat_1, self.chat_2)]
         chat_element = self.home_1.get_chat('#' + self.public_chat_name)
         self.home_2.get_chat('#' + self.public_chat_name).click()
         self.chat_2.select_mention_from_suggestion_list(self.username_1, self.username_1[:2])
@@ -136,7 +136,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(5319)
     def test_public_chat_delete_chat_long_press(self):
-        [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
+        [chat.get_back_to_home_view() for chat in (self.chat_1, self.chat_2)]
         self.home_1.delete_chat_long_press('#%s' % self.pub_chat_delete_long_press)
         self.home_2.just_fyi("Send message to deleted chat")
         self.deleted_chat_2 = self.home_2.join_public_chat(self.pub_chat_delete_long_press)
@@ -149,7 +149,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(700736)
     def test_public_chat_link_send_open(self):
-        [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
+        [chat.get_back_to_home_view() for chat in (self.chat_1, self.chat_2)]
         [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
         url_message = 'http://status.im'
         self.chat_2.send_message(url_message)
@@ -160,7 +160,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(700737)
     def test_public_chat_links_with_previews_github_youtube_twitter_gif_send_enable(self):
-        [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
+        [chat.get_back_to_home_view() for chat in (self.chat_1, self.chat_2)]
         [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
         giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
         preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-react/pull/11707',
@@ -203,7 +203,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(6270)
     def test_public_chat_mark_all_messages_as_read(self):
-        [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
+        [chat.get_back_to_home_view() for chat in (self.chat_1, self.chat_2)]
         self.home_2.get_chat('#' + self.public_chat_name).click()
         self.chat_2.send_message(self.text_message)
         if not self.home_1.home_button.public_unread_messages.is_element_displayed():

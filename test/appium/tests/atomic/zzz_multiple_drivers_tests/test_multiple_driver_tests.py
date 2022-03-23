@@ -268,7 +268,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         profile_1.discover_and_advertise_device(name_1)
         profile_1.get_toggle_device_by_name(name_2).wait_and_click()
         profile_1.sync_all_button.click()
-        profile_1.sync_all_button.wait_for_visibility_of_element(15)
+        profile_1.sync_all_button.wait_for_visibility_of_element(20)
         [device.profile_button.click() for device in (profile_1, profile_2)]
 
         device_2.just_fyi('Contacts (secondary device): check contacts + blocked users after initial sync')

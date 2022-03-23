@@ -38,8 +38,8 @@ background_service_message = 'Background service for notifications'
 bootnode_address = "enode://a8a97f126f5e3a340cb4db28a1187c325290ec08b2c9a6b1f19845ac86c46f9fac2ba13328822590" \
                    "fd3de3acb09cc38b5a05272e583a2365ad1fa67f66c55b34@167.99.210.203:30404"
 # referred to https://github.com/status-im/status-react/blob/develop/resources/config/fleets.json
-mailserver_address = "enode://69f72baa7f1722d111a8c9c68c39a31430e9d567695f6108f31ccb6cd8f0adff4991e7fdca8fa770e75bc8a511" \
-                     "a87d24690cbc80e008175f40c157d6f6788d48:status-offline-inbox@206.189.240.16:443"
+mailserver_address = 'enode://b74859176c9751d314aeeffc26ec9f866a412752e7ddec91b19018a18e7cca8d637cfe2cedcb972f8eb64d81' \
+                     '6fbd5b4e89c7e8c7fd7df8a1329fa43db80b0bfe:pass@47.52.90.156:443'
 staging_fleet = 'eth.staging'
 prod_fleet = 'eth.prod'
 # This fleet is used in the tests

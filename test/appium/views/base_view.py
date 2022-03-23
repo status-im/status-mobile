@@ -4,10 +4,8 @@ import base64
 import random
 import re
 import string
-from PIL import Image
 from appium.webdriver.common.touch_action import TouchAction
 from datetime import datetime
-from io import BytesIO
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from support.device_apps import start_web_browser

@@ -340,7 +340,7 @@ class EditBox(BaseElement):
         action.press(x=x + 25, y=y - 50).release().perform()
 
     def cut_text(self):
-        self.driver.info("Cut text in '%s'" % self.name)
+        self.driver.info("Cut text in `%s`" % self.name)
         location = self.find_element().location
         x, y = location['x'], location['y']
         action = TouchAction(self.driver)
@@ -356,7 +356,7 @@ class Text(BaseElement):
     @property
     def text(self):
         text = self.find_element().text
-        self.driver.info("'%s' is '%s'" % (self.name, text))
+        self.driver.info("`%s` is `%s`" % (self.name, text))
         return text
 
 
