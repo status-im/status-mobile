@@ -49,8 +49,10 @@
   {:events [::community-resolved]}
   [{:keys [db] :as cofx} community-id community]
   (fx/merge cofx
-            {:db       (community-resolved db community-id)
-             :dispatch [::cache-link-preview-data (community-link community-id) community]}
+            (merge
+             {:db (community-resolved db community-id)}
+             (when-not (nil? community)
+               {:dispatch [::cache-link-preview-data (community-link community-id) community]}))
             (models.communities/handle-community community)))
 
 (fx/defn resolve-community-info
