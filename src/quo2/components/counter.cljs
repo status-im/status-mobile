@@ -37,17 +37,21 @@
         width      (case (count label)
                      1     16
                      2     20
-                     30)]
-    [rn/view {:style (merge
-                      (if outline
-                        {:border-width 1
-                         :border-color (get-color (or type :default))}
-                        {:background-color (get-color (or type :default))})
-                      {:align-items     :center
-                       :justify-content :center
-                       :border-radius   6
-                       :width           width
-                       :height          16})}
+                     28)]
+    [rn/view {:style (cond-> {:align-items     :center
+                              :justify-content :center
+                              :border-radius   6
+                              :width           width
+                              :height          16}
+                       outline
+                       (merge {:border-width 1
+                               :border-color (get-color (or type :default))})
+
+                       (not outline)
+                       (assoc :background-color (get-color (or type :default)))
+
+                       (> value 99)
+                       (assoc :padding-left 0.5))}
      [text/text {:weight :medium
                  :size   :label
                  :style  {:color text-color}} label]]))
