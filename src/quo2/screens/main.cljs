@@ -6,6 +6,7 @@
             [quo2.screens.button :as button]
             [quo2.screens.text :as text]
             [quo2.screens.tabs :as tabs]
+            [quo2.screens.counter :as counter]
             [quo2.screens.segmented :as segmented]
             [quo.core :as quo]))
 
@@ -20,7 +21,10 @@
                :component tabs/preview-tabs}
               {:name      :quo2-segmented
                :insets    {:top false}
-               :component segmented/preview-segmented}])
+               :component segmented/preview-segmented}
+              {:name      :quo2-counter
+               :insets    {:top false}
+               :component counter/preview-counter}])
 
 (defn theme-switcher []
   [rn/view {:style {:flex-direction   :row

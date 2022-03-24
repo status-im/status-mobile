@@ -18,7 +18,7 @@
 
 (def label {:font-size   11
             :line-height 15.62
-            :letter-spacing 0.5})
+            :letter-spacing -0.055})
 
 (def font-regular {:font-family "Inter-Regular"}) ; 400
 
