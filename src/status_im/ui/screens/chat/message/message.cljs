@@ -572,31 +572,45 @@
                          :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
      reaction-picker]))
 
-(defmethod ->message constants/content-type-image [{:keys [content in-popover?] :as message} {:keys [on-long-press modal]
-                                                                                              :as   reaction-picker}]
+(defmethod ->message constants/content-type-image
+  [{:keys [content in-popover? outgoing] :as message}
+   {:keys [on-long-press modal]
+    :as   reaction-picker}]
   [message-content-wrapper message
-   [message-content-image message {:modal         modal
-                                   :disabled      in-popover?
-                                   :delay-long-press 100
-                                   :on-long-press (fn []
-                                                    (on-long-press
-                                                     [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-                                                       :id       :reply
-                                                       :label    (i18n/label :t/message-reply)}
-                                                      {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
-                                                       :id       :save
-                                                       :label    (i18n/label :t/save)}]))}]
+   [message-content-image message
+    {:modal         modal
+     :disabled      in-popover?
+     :delay-long-press 100
+     :on-long-press (fn []
+                      (on-long-press
+                       (concat [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                 :id       :reply
+                                 :label    (i18n/label :t/message-reply)}
+                                {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
+                                 :id       :save
+                                 :label    (i18n/label :t/save)}]
+                               (when (and outgoing config/delete-message-enabled?)
+                                 [{:on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
+                                   :label    (i18n/label :t/delete)
+                                   :id       :delete}]))))}]
    reaction-picker])
 
-(defmethod ->message constants/content-type-audio [message {:keys [on-long-press modal]
-                                                            :as   reaction-picker}]
+(defmethod ->message constants/content-type-audio
+  [{:keys [outgoing] :as message}
+   {:keys [on-long-press modal]
+    :as   reaction-picker}]
   (let [show-timestamp? (reagent/atom false)]
     (fn [] [message-content-wrapper message
-            [react/touchable-highlight (when-not modal
-                                         {:on-long-press
-                                          (fn [] (on-long-press []))
-                                          :on-press (fn []
-                                                      (reset! show-timestamp? true))})
+            [react/touchable-highlight
+             (when-not modal
+               {:on-long-press
+                (fn [] (on-long-press (if (and outgoing config/delete-message-enabled?)
+                                        [{:on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
+                                          :label    (i18n/label :t/delete)
+                                          :id       :delete}]
+                                        [])))
+                :on-press (fn []
+                            (reset! show-timestamp? true))})
              [react/view (style/message-view-wrapper (:outgoing message))
               [message-timestamp message show-timestamp?]
               [react/view {:style (style/message-view message) :accessibility-label :audio-message}
