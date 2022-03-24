@@ -209,6 +209,7 @@
    "wallet_loadTransferByHash" {}
    "wallet_getTokens" {};, %* [chainId]}
    "wallet_getTokensBalancesForChainIDs" {};, %* [@[chainId], accounts, tokens]
+   "wallet_fetchPrices" {}
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}
