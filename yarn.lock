@@ -1421,6 +1421,11 @@
   dependencies:
     type-detect "4.0.8"
 
+"@snyk/protect@^1.883.0":
+  version "1.883.0"
+  resolved "https://registry.yarnpkg.com/@snyk/protect/-/protect-1.883.0.tgz#048015d4e0f1c18b6abc7e2773b6374b620bd399"
+  integrity sha512-N/EqG6P/qNYWOfuZAfGS1d7yGwGY4zV7AvKtgTzdhazDt7G/mRLG6czLSWNWGEFYBiMsYRVPHdc5It3bjhmIGw==
+
 "@stablelib/binary@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@stablelib/binary/-/binary-1.0.1.tgz#c5900b94368baf00f811da5bdb1610963dfddf7f"
