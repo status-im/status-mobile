@@ -136,9 +136,7 @@
 ;;stickers
 (reg-root-key-sub :stickers/selected-pack :stickers/selected-pack)
 (reg-root-key-sub :stickers/packs :stickers/packs)
-(reg-root-key-sub :stickers/installed-packs :stickers/packs-installed)
-(reg-root-key-sub :stickers/packs-owned :stickers/packs-owned)
-(reg-root-key-sub :stickers/packs-pending :stickers/packs-pending)
+(reg-root-key-sub :stickers/recent-stickers :stickers/recent-stickers)
 
 ;;mailserver
 (reg-root-key-sub :mailserver/current-id :mailserver/current-id)
@@ -1336,7 +1334,7 @@
  (fn [[{:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply edit]]
    (let [sending-image (seq sending-image)]
      {:send          (not processing)
-      :stickers      (and mainnet?
+      :stickers      (and (or config/stickers-test-enabled? mainnet?)
                           (not sending-image)
                           (not reply))
       :image         (and (not reply)
@@ -1515,23 +1513,20 @@
 ;;STICKERS =============================================================================================================
 
 (re-frame/reg-sub
- :stickers/installed-packs-vals
- :<- [:stickers/installed-packs]
+ :stickers/installed-packs
+ :<- [:stickers/packs]
  (fn [packs]
-   (vals packs)))
+   (filter #(= (:status %) constants/sticker-pack-status-installed) (vals packs))))
 
 (re-frame/reg-sub
  :stickers/all-packs
  :<- [:stickers/packs]
- :<- [:stickers/installed-packs]
- :<- [:stickers/packs-owned]
- :<- [:stickers/packs-pending]
- (fn [[packs installed owned pending]]
-   (map (fn [{:keys [id] :as pack}]
-          (cond-> pack
-            (get installed id) (assoc :installed true)
-            (get owned id) (assoc :owned true)
-            (get pending id) (assoc :pending true)))
+ (fn [packs]
+   (map (fn [{:keys [status] :as pack}]
+          (-> pack
+              (assoc :installed (= status constants/sticker-pack-status-installed))
+              (assoc :pending (= status constants/sticker-pack-status-pending))
+              (assoc :owned (= status constants/sticker-pack-status-owned))))
         (vals packs))))
 
 (re-frame/reg-sub
@@ -1540,19 +1535,6 @@
  :<- [:stickers/all-packs]
  (fn [[{:keys [id]} packs]]
    (first (filter #(= (:id %) id) packs))))
-
-(defn find-pack-id-for-hash [sticker-uri packs]
-  (some (fn [{:keys [stickers id]}]
-          (when (some #(= sticker-uri (:hash %)) stickers)
-            id))
-        packs))
-
-(re-frame/reg-sub
- :stickers/recent
- :<- [:multiaccount]
- :<- [:stickers/installed-packs-vals]
- (fn [[{:keys [:stickers/recent-stickers]} packs]]
-   (map (fn [hash] {:hash hash :pack (find-pack-id-for-hash hash packs)}) recent-stickers)))
 
 ;;HOME ==============================================================================================================
 

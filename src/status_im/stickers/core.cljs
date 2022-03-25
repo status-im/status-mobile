@@ -1,24 +1,13 @@
 (ns status-im.stickers.core
-  (:require [cljs.reader :as edn]
-            [clojure.set :as clojure.set]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.navigation :as navigation]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.signing.core :as signing]
-            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.fx :as fx]
-            [status-im.utils.utils :as utils]))
-
-(defn pack-data-callback
-  [id]
-  (fn [[_ _ _ _ price contenthash]]
-    (when-let [url (contenthash/url contenthash)]
-      (re-frame/dispatch [:stickers/load-pack url id price]))))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.config :as config]
+            [status-im.constants :as constants]))
 
 (re-frame/reg-fx
  :stickers/set-pending-timeout-fx
@@ -26,193 +15,109 @@
    (utils/set-timeout #(re-frame/dispatch [:stickers/pending-timeout])
                       10000)))
 
-(defn eth-call-pack-data
-  [contract id]
-  (json-rpc/eth-call
-   {:contract contract
-    ;; Returns vector of pack data parameters by pack id:
-    ;; [category owner mintable timestamp price contenthash]
-    :method "getPackData(uint256)"
-    :params [id]
-    :outputs ["bytes4[]" "address" "bool" "uint256" "uint256" "bytes"]
-    :on-success (pack-data-callback id)}))
-
-(re-frame/reg-fx
- :stickers/pack-data-fx
- (fn [[contract id]]
-   (eth-call-pack-data contract id)))
-
-(re-frame/reg-fx
- :stickers/load-packs-fx
- (fn [[contract]]
-   (json-rpc/eth-call
-    {:contract contract
-     ;; Returns number of packs registered in the contract
-     :method "packCount()"
-     :outputs ["uint256"]
-     :on-success
-     (fn [[count]]
-       (dotimes [id count]
-         (eth-call-pack-data contract id)))})))
-
-(re-frame/reg-fx
- :stickers/owned-packs-fx
- (fn [[contract address]]
-   (json-rpc/eth-call
-    {:contract contract
-     ;; Returns vector of owned tokens ids in the contract by address
-     :method "balanceOf(address)"
-     :params [address]
-     :outputs ["uint256"]
-     :number-of-retries 3
-     :on-success
-     (fn [[count]]
-       (dotimes [id count]
-         (json-rpc/eth-call
-          {:contract contract
-           ;; Returns pack id in the contract by token id
-           :method "tokenOfOwnerByIndex(address,uint256)"
-           :params [address id]
-           :outputs ["uint256"]
-           :number-of-retries 3
-           :on-success
-           (fn [[token-id]]
-             (json-rpc/eth-call
-              {:contract contract
-               ;; Returns pack id in the contract by token id
-               :method "tokenPackId(uint256)"
-               :params [token-id]
-               :outputs ["uint256"]
-               :number-of-retries 3
-               :on-success
-               (fn [[pack-id]]
-                 (re-frame/dispatch [:stickers/pack-owned pack-id]))}))})))})))
-
-(fx/defn init-stickers-packs
-  [{:keys [db] :as cofx}]
-  (let [sticker-packs (get-in db [:multiaccount :stickers/packs-installed])
-        pending-packs (get-in db [:multiaccount :stickers/packs-pending] #{})]
-    (cond-> {:db (assoc db
-                        :stickers/packs-installed sticker-packs
-                        :stickers/packs sticker-packs
-                        :stickers/packs-pending pending-packs)}
-      (not-empty pending-packs)
-      (assoc :stickers/set-pending-timeout-fx nil))))
-
 (fx/defn install-stickers-pack
   {:events [:stickers/install-pack]}
-  [{{:keys [multiaccount] :as db} :db :as cofx} id]
-  (let [pack (get-in db [:stickers/packs id])]
-    (fx/merge
-     cofx
-     {:db (-> db
-              (assoc-in [:stickers/packs-installed id] pack))}
-     ;;(assoc :stickers/selected-pack id))} TODO it doesn't scroll to selected pack on Android
-     (multiaccounts.update/multiaccount-update
-      :stickers/packs-installed
-      (assoc (:stickers/packs-installed multiaccount) id pack)
-      {}))))
-
-(defn valid-sticker? [sticker]
-  (contains? sticker :hash))
-
-(fx/defn load-sticker-pack-success
-  {:events [:stickers/load-sticker-pack-success]}
-  [{:keys [db] :as cofx} edn-string id price]
-  (let [{:keys [stickers] :as pack} (assoc (get (edn/read-string edn-string) 'meta)
-                                           :id id :price price)]
-    (fx/merge cofx
-              {:db (cond-> db
-                     (and (seq stickers)
-                          (every? valid-sticker? stickers))
-                     (assoc-in [:stickers/packs id] pack))})))
-
-(fx/defn open-sticker-pack
-  {:events [:stickers/open-sticker-pack]}
-  [{{:stickers/keys [packs packs-installed] :networks/keys [current-network] :as db} :db :as cofx} id]
-  (when (and id (string/starts-with? current-network "mainnet"))
-    (let [pack    (or (get packs-installed id)
-                      (get packs id))
-          contract-address (contracts/get-address db :status/stickers)
-          pack-contract (contracts/get-address db :status/sticker-pack)
-          address  (ethereum/default-address db)]
-      (fx/merge cofx
-                (navigation/open-modal :stickers-pack {:id id})
-                #(when (and contract-address (not pack))
-                   {:stickers/pack-data-fx [contract-address id]
-                    :stickers/owned-packs-fx [pack-contract address]})))))
-
-(fx/defn load-pack
-  {:events [:stickers/load-pack]}
-  [_ url id price]
-  {:http-get {:url url
-              :on-success
-              (fn [o]
-                (re-frame/dispatch [:stickers/load-sticker-pack-success o id price]))}})
+  [{db :db :as cofx} id]
+  (fx/merge
+   cofx
+   {:db             (assoc-in db [:stickers/packs id :status] constants/sticker-pack-status-installed)
+    ::json-rpc/call [{:method     "stickers_install"
+                      :params     [(ethereum/chain-id db) id]
+                      :on-success #()}]}))
 
 (fx/defn load-packs
   {:events [:stickers/load-packs]}
   [{:keys [db]}]
-  (let [contract      (contracts/get-address db :status/stickers)
-        pack-contract (contracts/get-address db :status/sticker-pack)
-        address       (ethereum/default-address db)]
-    (when contract
-      {:stickers/owned-packs-fx [pack-contract address]
-       :stickers/load-packs-fx [contract]})))
+  {::json-rpc/call [{:method     "stickers_market"
+                     :params     [(ethereum/chain-id db)]
+                     :on-success #(re-frame/dispatch [:stickers/stickers-market-success %])}
+                    {:method     "stickers_installed"
+                     :params     []
+                     :on-success #(re-frame/dispatch [:stickers/stickers-installed-success %])}
+                    {:method     "stickers_pending"
+                     :params     []
+                     :on-success #(re-frame/dispatch [:stickers/stickers-pending-success %])}
+                    {:method     "stickers_recent"
+                     :params     []
+                     :on-success #(re-frame/dispatch [:stickers/stickers-recent-success %])}]})
 
-(fx/defn approve-pack
+(fx/defn buy-pack
   {:events [:stickers/buy-pack]}
-  [{db :db :as cofx} pack-id price]
-  (let [address                 (ethereum/default-address db)
-        sticker-market-contract (contracts/get-address db :status/sticker-market)
-        snt-contract            (contracts/get-address db :status/snt)]
-    (signing/eth-transaction-call
-     cofx
-     {:contract snt-contract
-      :method "approveAndCall(address,uint256,bytes)"
-      :params [sticker-market-contract
-               price
-               (abi-spec/encode "buyToken(uint256,address,uint256)" [pack-id address price])]
-      :on-result [:stickers/pending-pack pack-id]})))
+  [{db :db} pack-id]
+  {::json-rpc/call [{:method     "stickers_buyPrepareTx"
+                     :params     [(ethereum/chain-id db) (ethereum/default-address db) (int pack-id)]
+                     :on-success #(re-frame/dispatch [:signing.ui/sign
+                                                      {:tx-obj    %
+                                                       :on-result [:stickers/pending-pack pack-id]}])}]})
 
 (fx/defn pending-pack
   {:events [:stickers/pending-pack]}
-  [{{:keys [multiaccount] :as db} :db :as cofx} id]
-  (let [contract (contracts/get-address db :status/sticker-pack)
-        address  (ethereum/default-address db)
-        pending (get multiaccount :stickers/packs-pending #{})]
-    (when contract
-      (fx/merge cofx
-                {:db (update db :stickers/packs-pending conj id)
-                 :stickers/owned-packs-fx [contract address]}
-                (multiaccounts.update/multiaccount-update
-                 :stickers/packs-pending
-                 (conj pending id)
-                 {})
-                #(when (zero? (count (:stickers/packs-pending db)))
-                   {:stickers/set-pending-timeout-fx nil})))))
+  [{db :db} id]
+  {:db                              (-> db
+                                        (assoc-in [:stickers/packs id :status] constants/sticker-pack-status-pending)
+                                        (update :stickers/packs-pending conj id))
+   :stickers/set-pending-timeout-fx nil
+   ::json-rpc/call                  [{:method     "stickers_addPending"
+                                      :params     [(ethereum/chain-id db) (int id)]
+                                      :on-success #()}]})
 
 (fx/defn pending-timeout
   {:events [:stickers/pending-timeout]}
-  [{{:stickers/keys [packs-pending packs-owned] :as db} :db :as cofx}]
-  (let [packs-diff (clojure.set/difference packs-pending packs-owned)
-        contract   (contracts/get-address db :status/sticker-pack)
-        address    (ethereum/default-address db)]
-    (when contract
-      (fx/merge cofx
-                (merge {:db (assoc db :stickers/packs-pending packs-diff)}
-                       (when-not (zero? (count packs-diff))
-                         {:stickers/owned-packs-fx [contract address]
-                          :stickers/set-pending-timeout-fx nil}))
-                (multiaccounts.update/multiaccount-update
-                 :stickers/packs-pending
-                 packs-diff
-                 {})))))
+  [{{:stickers/keys [packs-pending] :as db} :db}]
+  (when (seq packs-pending)
+    {::json-rpc/call [{:method     "stickers_processPending"
+                       :params     [(ethereum/chain-id db)]
+                       :on-success #(re-frame/dispatch [:stickers/stickers-process-pending-success %])}]}))
 
-(fx/defn pack-owned
-  {:events [:stickers/pack-owned]}
-  [{db :db} id]
-  {:db (update db :stickers/packs-owned conj id)})
+(fx/defn stickers-process-pending-success
+  {:events [:stickers/stickers-process-pending-success]}
+  [{{:stickers/keys [packs-pending packs] :as db} :db} purchased]
+  (let [purchased-ids (map :id (vals purchased))
+        packs-pending (apply disj packs-pending purchased-ids)
+        packs (reduce (fn [packs id]
+                        (assoc-in packs [id :status] constants/sticker-pack-status-owned))
+                      packs
+                      purchased-ids)]
+    (merge
+     {:db (-> db
+              (assoc :stickers/packs packs)
+              (assoc :stickers/packs-pending packs-pending))}
+     (when (seq packs-pending)
+       {:stickers/set-pending-timeout-fx nil}))))
+
+(fx/defn stickers-market-success
+  {:events [:stickers/stickers-market-success]}
+  [{:keys [db]} packs]
+  (let [packs (reduce (fn [acc pack] (assoc acc (:id pack) pack)) {} packs)]
+    {:db (update db :stickers/packs merge packs)}))
+
+(fx/defn stickers-installed-success
+  {:events [:stickers/stickers-installed-success]}
+  [{:keys [db]} packs]
+  (let [packs (reduce (fn [acc [_ pack]] (assoc acc (:id pack) pack)) {} packs)]
+    {:db (update db :stickers/packs merge packs)}))
+
+(fx/defn stickers-pending-success
+  {:events [:stickers/stickers-pending-success]}
+  [{:keys [db]} packs]
+  (let [packs (reduce (fn [acc [_ pack]] (assoc acc (:id pack) pack)) {} packs)]
+    (merge
+     {:db (-> db
+              (assoc :stickers/packs-pending (into #{} (keys packs)))
+              (update :stickers/packs merge packs))}
+     (when (seq packs)
+       {:stickers/set-pending-timeout-fx nil}))))
+
+(fx/defn stickers-recent-success
+  {:events [:stickers/stickers-recent-success]}
+  [{:keys [db]} packs]
+  {:db (assoc db :stickers/recent-stickers packs)})
+
+(fx/defn open-sticker-pack
+  {:events [:stickers/open-sticker-pack]}
+  [{{:networks/keys [current-network]} :db :as cofx} id]
+  (when (and id (or config/stickers-test-enabled? (string/starts-with? current-network "mainnet")))
+    (navigation/open-modal cofx :stickers-pack {:id id})))
 
 (fx/defn select-pack
   {:events [:stickers/select-pack]}

@@ -8,7 +8,8 @@
             [status-im.utils.handlers :as handlers]
             status-im.transport.shh
             [taoensso.timbre :as log]
-            [status-im.utils.universal-links.core :as universal-links]))
+            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.stickers.core :as stickers]))
 
 (fx/defn set-node-info
   {:events [:transport.callback/node-info-fetched]}
@@ -65,4 +66,5 @@
                      (add-mailservers mailservers))}
             (fetch-node-info-fx)
             (pairing/init)
+            (stickers/load-packs)
             (universal-links/process-stored-event)))

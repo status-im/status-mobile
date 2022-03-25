@@ -10,7 +10,6 @@
             [status-im.native-module.core :as status]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.navigation :as navigation]
-            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
             [status-im.utils.platform :as platform]
@@ -181,20 +180,6 @@
                         (assoc browser
                                :history new-history
                                :history-index new-index))))))
-
-(defmulti storage-gateway :namespace)
-
-(defmethod storage-gateway :ipns
-  [{:keys [hash]}]
-  (str "https://" hash))
-
-(defmethod storage-gateway :ipfs
-  [{:keys [hash]}]
-  (contenthash/ipfs-url hash))
-
-(defmethod storage-gateway :swarm
-  [{:keys [hash]}]
-  (str "https://gateway.ethswarm.org/bzz/" hash))
 
 (fx/defn resolve-ens-multihash-success
   {:events [:browser.callback/resolve-ens-multihash-success]}

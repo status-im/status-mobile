@@ -14,7 +14,6 @@
             [status-im.ui.screens.chat.message.gap :as message.gap]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
-            [status-im.utils.contenthash :as contenthash]
             [status-im.utils.security :as security]
             [status-im.ui.screens.chat.message.reactions :as reactions]
             [status-im.ui.screens.chat.image.preview.views :as preview]
@@ -558,7 +557,7 @@
                                    :accessibility-label :sticker-message
                                    :on-press            (fn [_]
                                                           (when pack
-                                                            (re-frame/dispatch [:stickers/open-sticker-pack pack]))
+                                                            (re-frame/dispatch [:stickers/open-sticker-pack (str pack)]))
                                                           (react/dismiss-keyboard!))
                                    :delay-long-press 100
                                    :on-long-press       (fn []
@@ -568,8 +567,7 @@
                                                                             (re-frame/dispatch [:chat.ui/show-profile from]))
                                                                :label    (i18n/label :t/view-details)}])))})
       [react/fast-image {:style  {:margin 10 :width 140 :height 140}
-                         ;;TODO (perf) move to event
-                         :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
+                         :source {:uri (str (-> content :sticker :url) "&download=true")}}]]
      reaction-picker]))
 
 (defmethod ->message constants/content-type-image

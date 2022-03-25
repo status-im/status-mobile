@@ -15,7 +15,6 @@
             [status-im.ui.screens.chat.image.preview.views :as preview]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.components.tabs :as tabs]
-            [status-im.utils.contenthash :as contenthash]
             [status-im.ui.screens.chat.message.reactions :as reactions]
             [status-im.chat.models.reactions :as models.reactions]
             [status-im.ui.screens.chat.components.reply :as components.reply]
@@ -175,8 +174,6 @@
      [tabs/tab-title state :timeline (i18n/label :t/timeline) (= tab :timeline)]
      [tabs/tab-title state :status (i18n/label :t/my-status) (= tab :status)]]))
 
-(def image-hash "e3010170122080c27fe972a95dbb4b0ead029d2c73d18610e849fac197e91068a918755e21b2")
-
 (defn timeline []
   (let [messages @(re-frame/subscribe [:chats/timeline-messages-stream])
         loading-messages? @(re-frame/subscribe [:chats/loading-messages? constants/timeline-chat-id])
@@ -191,10 +188,10 @@
        (if no-messages?
          [react/view {:padding-horizontal 32
                       :margin-top         64}
-          [react/image {:style  {:width      140
-                                 :height     140
-                                 :align-self :center}
-                        :source {:uri (contenthash/url image-hash)}}]
+          [react/fast-image {:style  {:width      140
+                                      :height     140
+                                      :align-self :center}
+                             :source {:uri "https://bafybeieayj76s4vjlw5uwdvnakosy46rqyioqsp2ygl6sedivemhkxrbwi.ipfs.cf-ipfs.com"}}]
           [react/view (styles/descr-container)
            [react/text {:style {:color       colors/gray
                                 :line-height 22}}

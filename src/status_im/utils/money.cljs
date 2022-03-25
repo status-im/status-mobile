@@ -41,6 +41,10 @@
   [bn1 bn2]
   (.greaterThan ^js bn1 bn2))
 
+(defn equal-to
+  [bn1 bn2]
+  (.eq ^js bn1 bn2))
+
 (defn sub [bn1 bn2]
   (.sub ^js bn1 bn2))
 

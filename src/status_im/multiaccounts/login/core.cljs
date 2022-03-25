@@ -18,7 +18,6 @@
             [status-im.popover.core :as popover]
             [status-im.communities.core :as communities]
             [status-im.transport.core :as transport]
-            [status-im.stickers.core :as stickers]
             [status-im.mobile-sync-settings.core :as mobile-network]
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
@@ -445,7 +444,6 @@
               (initialize-transactions-management-enabled)
               (check-network-version network-id)
               (contact/initialize-contacts)
-              (stickers/init-stickers-packs)
               (initialize-browser)
               (mobile-network/on-network-status-change)
               (get-group-chat-invitations)

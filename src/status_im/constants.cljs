@@ -172,3 +172,7 @@
 
 (def ^:const wallet-connect-version-1 1)
 (def ^:const wallet-connect-version-2 2)
+
+(def ^:const sticker-pack-status-installed 1)
+(def ^:const sticker-pack-status-pending 2)
+(def ^:const sticker-pack-status-owned 3)

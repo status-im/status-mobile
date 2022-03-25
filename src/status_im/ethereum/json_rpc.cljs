@@ -242,7 +242,16 @@
    "mailservers_getChatRequestRanges" {}
    "mailservers_deleteChatRequestRange" {}
    "appmetrics_saveAppMetrics" {}
-   "appmetrics_getAppMetrics" {}})
+   "appmetrics_getAppMetrics" {}
+   "stickers_market" {}
+   "stickers_installed" {}
+   "stickers_install" {}
+   "stickers_addRecent" {}
+   "stickers_recent" {}
+   "stickers_buyPrepareTx" {}
+   "stickers_processPending" {}
+   "stickers_addPending" {}
+   "stickers_pending" {}})
 
 (defn on-error-retry
   [call-method {:keys [method number-of-retries delay on-error] :as arg}]

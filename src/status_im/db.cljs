@@ -33,7 +33,6 @@
              :dimensions/window                  (dimensions/window)
              :registry                           {}
              :visibility-status-updates          {}
-             :stickers/packs-owned               #{}
              :stickers/packs-pending             #{}
              :keycard                            {:nfc-enabled?   false
                                                   :pin            {:original     []

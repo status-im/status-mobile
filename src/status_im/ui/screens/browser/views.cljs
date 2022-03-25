@@ -18,7 +18,6 @@
             [status-im.utils.debounce :as debounce]
             [status-im.utils.http :as http]
             [status-im.utils.js-resources :as js-res]
-            [status-im.utils.contenthash :as contenthash]
             [status-im.ui.components.permissions :as components.permissions]
             [quo.core :as quo]
             [status-im.ui.screens.wallet.components.views :as components]
@@ -58,8 +57,7 @@
   (reagent/as-element
    [react/view styles/web-view-error
     [react/image {:style  {:width 140 :height 140 :margin-bottom 16}
-                  :source {:uri (contenthash/url
-                                 "e3010170122001bbe2f5bfba0305a3bdc2047fddc47ee595a591bdee61de6040ffc2456624e1")}}]
+                  :source {:uri "https://bafybeiabxprplp52amc2hpocar753rd64wk2len55zq54yca77bekzre4e.ipfs.cf-ipfs.com"}}]
     [react/i18n-text {:style styles/web-view-error-text :key :web-view-error}]
     [react/text {:style styles/web-view-error-text}
      (str desc)]]))
