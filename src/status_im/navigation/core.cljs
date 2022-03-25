@@ -26,6 +26,9 @@
 (defonce modals (atom []))
 (defonce dissmissing (atom false))
 
+(defonce set-navigation-default-options
+  (.setDefaultOptions Navigation (clj->js (roots/default-root))))
+
 ;; REGISTER COMPONENT (LAZY)
 (defn reg-comp [key]
   (log/debug "reg-comp" key)
