@@ -47,6 +47,6 @@
 
 (defn ipfs [props]
   (let [{:keys [hash]} props]
-    (source (merge (dissoc props :hash)
+    [source (merge (dissoc props :hash)
                    {:source (map (fn [u] {:uri u})
-                                 (contenthash/alternatives hash))}))))
+                                 (contenthash/alternatives hash))})]))
