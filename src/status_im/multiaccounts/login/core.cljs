@@ -143,13 +143,13 @@
   {:events [::initialize-wallet]}
   [{:keys [db] :as cofx} accounts tokens custom-tokens
    favourites scan-all-tokens? new-account?]
-  (check-invalid-ens cofx)
   (fx/merge
    cofx
    {:db                          (assoc db :multiaccount/accounts
                                         (rpc->accounts accounts))
     ;; NOTE: Local notifications should be enabled only after wallet was started
     ::enable-local-notifications nil}
+   (check-invalid-ens)
    (wallet/initialize-tokens tokens custom-tokens)
    (wallet/initialize-favourites favourites)
    (wallet/get-pending-transactions)
