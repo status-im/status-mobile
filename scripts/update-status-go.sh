@@ -50,6 +50,9 @@ Examples:
     # Using tag name
     ${SCRIPT_FILE} v2.1.1
 
+    # Using commit SHA1
+    ${SCRIPT_FILE} 1a2b3c4d
+
     # Using PR number
     ${SCRIPT_FILE} PR-2134
 END
@@ -82,13 +85,12 @@ STATUS_GO_BRANCH_SHA1=$(echo "${STATUS_GO_MATCHING_REFS}" | grep 'refs/heads' | 
 # Prefer tag over branch if both are found
 if [[ -n "${STATUS_GO_TAG_SHA1}" ]]; then
     STATUS_GO_COMMIT_SHA1="${STATUS_GO_TAG_SHA1}"
-else
+elif [[ -n "${STATUS_GO_BRANCH_SHA1}" ]]; then
     STATUS_GO_COMMIT_SHA1="${STATUS_GO_BRANCH_SHA1}"
-fi
-
-if [[ -z "${STATUS_GO_COMMIT_SHA1}" ]]; then
-    echo "ERROR: Failed to find a SHA1 for rev '${STATUS_GO_VERSION}'."
-    echo "NOTE: To set SHA1 you can just edit ${VERSION_FILE} by hand."
+elif [[ "${#STATUS_GO_VERSION}" -gt 4 ]]; then
+    STATUS_GO_COMMIT_SHA1="${STATUS_GO_VERSION}"
+else
+    echo "ERROR: Input not a tag or branch, but too short to be a SHA1!" >&2
     exit 1
 fi
 
