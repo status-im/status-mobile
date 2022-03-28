@@ -18,7 +18,7 @@ async def start_threads(quantity: int, func: type, returns: dict, *args):
 def get_current_time():
     return datetime.now().strftime('%-m%-d%-H%-M%-S')
 
-git
+
 def debug(text: str):
     logging.debug(text)
 
