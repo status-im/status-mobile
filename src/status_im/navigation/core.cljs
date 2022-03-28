@@ -27,7 +27,7 @@
 (defonce dissmissing (atom false))
 
 (defonce set-navigation-default-options
-  (.setDefaultOptions Navigation (clj->js (roots/default-root))))
+  (.setDefaultOptions Navigation (clj->js {:layout {:orientation "portrait"}})))
 
 ;; REGISTER COMPONENT (LAZY)
 (defn reg-comp [key]
