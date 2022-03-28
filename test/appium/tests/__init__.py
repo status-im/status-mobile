@@ -18,7 +18,7 @@ async def start_threads(quantity: int, func: type, returns: dict, *args):
 def get_current_time():
     return datetime.now().strftime('%-m%-d%-H%-M%-S')
 
-
+git
 def debug(text: str):
     logging.debug(text)
 
@@ -28,7 +28,7 @@ pytest_config_global = dict()
 test_suite_data = TestSuiteData()
 appium_container = AppiumContainer()
 
-common_password = 'qwerty'
+common_password = 'qwerty1234'
 unique_password = 'unique' + get_current_time()
 pin = '121212'
 puk = '000000000000'
