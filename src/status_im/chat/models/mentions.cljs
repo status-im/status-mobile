@@ -247,7 +247,7 @@
       (merge mentionable-users
              (mentionable-contacts-from-identites all-contacts public-key (keys community-members)))
 
-      :else (merge mentionable-users mentionable-contacts))))
+      :else mentionable-users)))
 
 (def ending-chars "[\\s\\.,;:]")
 (def ending-chars-regex (re-pattern ending-chars))
