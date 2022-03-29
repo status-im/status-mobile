@@ -247,6 +247,9 @@
       (merge mentionable-users
              (mentionable-contacts-from-identites all-contacts public-key (keys community-members)))
 
+      (= chat-type constants/public-chat-type)
+      (merge mentionable-users (select-keys mentionable-contacts (keys mentionable-users)))
+
       :else mentionable-users)))
 
 (def ending-chars "[\\s\\.,;:]")
