@@ -187,7 +187,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         error = "Can create multiaccount when"
 
         self.sign_in.just_fyi('Checking case when %s' % cases[0])
-        self.sign_in.create_password_input.send_keys('123456')
+        self.sign_in.create_password_input.send_keys('12345678')
         self.sign_in.next_button.click()
         if self.sign_in.maybe_later_button.is_element_displayed(10):
             self.driver.fail('%s  %s' % (error, cases[0]))

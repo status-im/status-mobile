@@ -94,7 +94,7 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.wallet.just_fyi("Checking basic validation when adding multiaccount")
         if self.wallet.get_account_by_name(account_name).is_element_displayed():
             self.drivers[0].fail('Account is added without password')
-        self.wallet.enter_your_password_input.send_keys('000000')
+        self.wallet.enter_your_password_input.send_keys('00000000')
         self.wallet.add_account_generate_account_button.click()
         if not self.wallet.element_by_text_part('Password seems to be incorrect').is_element_displayed():
             self.drivers[0].fail("Incorrect password validation is not performed")
