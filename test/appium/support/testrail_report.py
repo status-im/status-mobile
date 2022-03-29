@@ -97,23 +97,24 @@ class TestrailReport(BaseTestReport):
 
     def get_regression_cases(self):
         test_cases = dict()
-        test_cases['critical'] = 730
-        test_cases['medium'] = 736
-        test_cases['upgrade'] = 881
-        ## tests pr
-        test_cases['public_chat'] = 50654
-        test_cases['one_to_one_chat'] = 50655
-        test_cases['group_chat'] = 50656
-        test_cases['onboarding'] = 50659
-        test_cases['recovery'] = 50660
-        test_cases['wallet'] = 50661
-        test_cases['send_tx'] = 50662
-        test_cases['keycard_tx'] = 50663
-        test_cases['browser'] = 50812
-        test_pr = list()
-        for key in test_cases:
-            if key != 'medium' and key != 'upgrade':
-                test_pr.append(test_cases[key])
+        test_cases['pr'] = dict()
+        test_cases['nightly'] = dict()
+        test_cases['upgrade'] = dict()
+        ## PR e2e
+        test_cases['pr']['critical'] = 730
+        test_cases['pr']['public_chat'] = 50654
+        test_cases['pr']['one_to_one_chat'] = 50655
+        test_cases['pr']['group_chat'] = 50656
+        test_cases['pr']['onboarding'] = 50659
+        test_cases['pr']['recovery'] = 50660
+        test_cases['pr']['wallet'] = 50661
+        test_cases['pr']['send_tx'] = 50662
+        test_cases['pr']['keycard_tx'] = 50663
+        ## Nightly e2e
+        test_cases['nightly']['medium'] = 736
+        test_cases['nightly']['chat'] = 50811
+        ## Upgrade e2e
+        test_cases['upgrade']['general'] = 881
 
         case_ids = list()
         for arg in argv:
@@ -122,16 +123,20 @@ class TestrailReport(BaseTestReport):
                 case_ids = value.split(',')
         if len(case_ids) == 0:
             if 'critical or high' in argv:
-                for case in self.get_cases(test_pr):
-                    case_ids.append(case['id'])
+                for category in test_cases['pr']:
+                    for case in self.get_cases([test_cases['pr'][category]]):
+                        case_ids.append(case['id'])
             elif 'upgrade' in argv and 'not upgrade' not in argv:
-                for case in self.get_cases([test_cases['upgrade']]):
+                for case in self.get_cases([test_cases['upgrade']['general']]):
                     case_ids.append(case['id'])
             else:
                 for phase in test_cases:
                     if phase != 'upgrade':
-                        for case in self.get_cases([test_cases[phase]]):
-                            case_ids.append(case['id'])
+                        print("For %s phase" % phase)
+                        for category in test_cases[phase]:
+                            print("For %s category" % category)
+                            for case in self.get_cases([test_cases[phase][category]]):
+                                case_ids.append(case['id'])
         return case_ids
 
     def add_results(self):

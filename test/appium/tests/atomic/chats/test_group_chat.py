@@ -59,42 +59,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(6280)
-    @marks.medium
-    def test_rename_group_chat(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-        device_1_key, device_1_username = device_1.get_public_key_and_username(True)
-        device_1.home_button.click()
-        initial_chat_name = home_1.get_random_chat_name()
-
-        device_2.just_fyi('Create and join group chat')
-        public_key_2, username_2 = device_2.get_public_key_and_username(True)
-        device_2.home_button.click()
-        home_1.add_contact(public_key_2)
-        home_1.get_back_to_home_view()
-        device_1_chat = home_1.create_group_chat([username_2], initial_chat_name)
-        device_2_chat = home_2.get_chat(initial_chat_name).click()
-        device_2_chat.join_chat_button.click()
-
-        device_2.just_fyi('Rename chat and check system messages')
-        new_chat_name = device_1_chat.get_random_chat_name()
-        device_1_chat.rename_chat_via_group_info(new_chat_name)
-        for chat in (device_1_chat, device_2_chat):
-            if not chat.element_by_text(
-                    chat.create_system_message(device_1_username, initial_chat_name)).is_element_displayed():
-                self.errors.append('Initial system message about creating chta was changed!')
-            if not chat.element_by_text(
-                    chat.changed_group_name_system_message(device_1_username, new_chat_name)).is_element_displayed():
-                self.errors.append('Message about changing chat name is not shown')
-
-        device_2.just_fyi('Check that you can see renamed chat')
-        device_2_chat.back_button.click()
-        home_2.get_chat(new_chat_name).wait_for_visibility_of_element(60)
-
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(6327)
     @marks.medium
     def test_nicknames_ens_group_chats(self):
@@ -197,49 +161,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys('@')
         if chat_1.element_by_text_part(nickname).is_element_displayed():
             self.errors.append("Nickname is shown in group chat after removing!")
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5752)
-    @marks.medium
-    def test_block_and_unblock_user_from_group_chat_via_group_info(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-        initial_chat_name = home_1.get_random_chat_name()
-
-        device_2.just_fyi('Create and join group chat')
-        public_key_2, username_2 = device_2.get_public_key_and_username(True)
-        device_2.home_button.click()
-        home_1.add_contact(public_key_2)
-        home_1.get_back_to_home_view()
-        chat_1 = home_1.create_group_chat([username_2], initial_chat_name)
-        chat_2 = home_2.get_chat(initial_chat_name).click()
-        chat_2.join_chat_button.click()
-
-        device_2.just_fyi('Send message and block user via Group Info')
-        message_before_block = 'message from device2'
-        chat_2.send_message(message_before_block)
-        options_2 = chat_1.get_user_options(username_2)
-        options_2.view_profile_button.click()
-        options_2.block_contact()
-        home_1.close_button.click()
-        if chat_1.chat_element_by_text(message_before_block).is_element_displayed(10):
-            self.errors.append('User was blocked, but past message are shown')
-        message_after_block = 'message from device2 after block'
-        chat_2.send_message(message_after_block)
-        if chat_1.chat_element_by_text(message_after_block).is_element_displayed(10):
-            self.errors.append('User was blocked, but new messages still received')
-
-        device_1.just_fyi('Unblock user via group info and check that new messages will arrive')
-        options_2 = chat_1.get_user_options(username_2)
-        options_2.view_profile_button.click()
-        options_2.unblock_contact_button.click()
-        [options_2.close_button.click() for _ in range(2)]
-        message_after_unblock = 'message from device2 after unblock'
-        chat_2.send_message(message_after_unblock)
-        if not chat_1.chat_element_by_text(message_after_unblock).is_element_displayed(20):
-            self.errors.append('User was unblocked, but new messages are not received')
 
         self.errors.verify_no_errors()
 

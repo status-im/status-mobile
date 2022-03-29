@@ -869,55 +869,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(6267)
-    @marks.medium
-    def test_open_user_profile_long_press_on_message(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        message_from_sender = "Message sender"
-        message_from_receiver = "Message receiver"
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-
-        device_1.just_fyi('Both devices join to 1-1 chat')
-        device_2_public_key = home_2.get_public_key_and_username()
-        device_1_profile = home_1.profile_button.click()
-        device_1_username = device_1_profile.default_username_text.text
-        home_1.home_button.click()
-
-        device_1.just_fyi("1-1 chat: sender adds receiver and send a message")
-        device_1_chat = home_1.add_contact(device_2_public_key)
-        device_1_chat.send_message(message_from_sender)
-        device_1_chat.chat_element_by_text(message_from_sender).long_press_element()
-        if device_1_chat.view_profile_by_avatar_button.is_element_displayed():
-            self.errors.append('Member photo is shown on long tap on sent message from 1-1 chat')
-        device_1_chat.click_system_back_button(2)
-
-        device_2.just_fyi("1-1 chat: receiver verifies that can open sender profile on long tap on message")
-        home_2.home_button.click()
-        device_2_chat_item = home_2.get_chat(device_1_username)
-        device_2_chat_item.wait_for_visibility_of_element(20)
-        device_2_chat = device_2_chat_item.click()
-        device_2_chat.chat_element_by_text(message_from_sender).long_press_element()
-        if device_2_chat.view_profile_by_avatar_button.is_element_displayed():
-            self.errors.append('1-1 chat: another user profile is opened on long tap on received message')
-        device_2_chat.click_system_back_button(2)
-
-        device_1.just_fyi(
-            'Public chat: send message and verify that user profile can be opened on long press on message')
-        chat_name = device_1.get_random_chat_name()
-        for home in home_1, home_2:
-            home.join_public_chat(chat_name)
-        chat_public_1, chat_public_2 = home_1.get_chat_view(), home_2.get_chat_view()
-        chat_public_2.send_message(message_from_receiver)
-        chat_public_2.chat_element_by_text(message_from_receiver).long_press_element()
-        if chat_public_2.view_profile_by_avatar_button.is_element_displayed():
-            self.errors.append('Public chat: "view profile" is shown on long tap on sent message')
-        chat_public_1.view_profile_long_press(message_from_receiver)
-        if not chat_public_1.remove_from_contacts.is_element_displayed():
-            self.errors.append('Public chat: another user profile is not opened on long tap on received message')
-
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(6326)
     @marks.medium
     def test_mention_users_not_in_chats_if_not_in_contacts(self):
