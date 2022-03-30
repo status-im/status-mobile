@@ -187,14 +187,14 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         error = "Can create multiaccount when"
 
         self.sign_in.just_fyi('Checking case when %s' % cases[0])
-        self.sign_in.create_password_input.send_keys('12345678')
+        self.sign_in.create_password_input.send_keys('12345677')
         self.sign_in.next_button.click()
         if self.sign_in.maybe_later_button.is_element_displayed(10):
             self.driver.fail('%s  %s' % (error, cases[0]))
 
         self.sign_in.just_fyi('Checking case when %s' % cases[1])
-        self.sign_in.create_password_input.send_keys('12345677')
-        [field.send_keys('12345677') for field in (self.sign_in.create_password_input, self.sign_in.confirm_your_password_input)]
+        self.sign_in.create_password_input.send_keys('1234566')
+        [field.send_keys('1234566') for field in (self.sign_in.create_password_input, self.sign_in.confirm_your_password_input)]
         self.sign_in.confirm_your_password_input.delete_last_symbols(1)
         self.sign_in.create_password_input.delete_last_symbols(1)
         self.sign_in.next_button.click()
@@ -203,7 +203,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.sign_in.just_fyi("Checking case %s" % cases[2])
         self.sign_in.create_password_input.send_keys('12345654')
-        self.sign_in.confirm_your_password_input.send_keys('12345678')
+        self.sign_in.confirm_your_password_input.send_keys('12345677')
         if not self.sign_in.element_by_translation_id("password_error1").is_element_displayed():
             self.errors.append("'%s' is not shown" % self.sign_in.get_translation_by_key("password_error1"))
         self.sign_in.create_password_input.set_value(common_password)
