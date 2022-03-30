@@ -23,10 +23,10 @@
   [{:keys [db]} ^js new-chats-js]
   (let [{:keys [all-chats chats-home-list]}
         (reduce (fn [acc ^js chat-js]
-                  (let [{:keys [chat-id profile-public-key timeline? community-id] :as chat}
+                  (let [{:keys [chat-id profile-public-key timeline? community-id active] :as chat}
                         (data-store.chats/<-rpc-js chat-js)]
                     (cond-> acc
-                      (and (not profile-public-key) (not timeline?) (not community-id))
+                      (and (not profile-public-key) (not timeline?) (not community-id) active)
                       (update :chats-home-list conj chat-id)
                       :always
                       (assoc-in [:all-chats chat-id] chat))))

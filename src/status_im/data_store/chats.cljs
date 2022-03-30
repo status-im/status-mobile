@@ -97,7 +97,8 @@
                                  :community-id (.-contentCommunityId chat)}
        :last-clock-value        (.-lastClockValue chat)
        :profile-public-key      (.-profile chat)
-       :highlight               (.-highlight chat)}
+       :highlight               (.-highlight chat)
+       :active                  (.-active chat)}
       rpc->type
       unmarshal-members))
 
