@@ -37,7 +37,7 @@
     "qrcode": "^1.4.1",
     "react": "16.13.1",
     "react-dom": "^16.4.2",
-    "react-native": "0.63.4",
+    "react-native": "0.68.0",
     "react-native-background-timer": "^2.1.1",
     "react-native-blob-util": "^0.13.18",
     "react-native-camera-kit": "^8.0.4",
