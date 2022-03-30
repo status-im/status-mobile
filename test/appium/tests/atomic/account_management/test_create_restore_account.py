@@ -193,8 +193,8 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.driver.fail('%s  %s' % (error, cases[0]))
 
         self.sign_in.just_fyi('Checking case when %s' % cases[1])
-        self.sign_in.create_password_input.send_keys('12345678')
-        [field.send_keys('12345678') for field in (self.sign_in.create_password_input, self.sign_in.confirm_your_password_input)]
+        self.sign_in.create_password_input.send_keys('12345677')
+        [field.send_keys('12345677') for field in (self.sign_in.create_password_input, self.sign_in.confirm_your_password_input)]
         self.sign_in.confirm_your_password_input.delete_last_symbols(1)
         self.sign_in.create_password_input.delete_last_symbols(1)
         self.sign_in.next_button.click()
