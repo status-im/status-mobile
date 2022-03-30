@@ -21,7 +21,9 @@
     :on-press  #(re-frame/dispatch [:multiaccounts.ui/default-sync-period-switched id])}])
 
 (views/defview default-sync-period-settings []
-  (views/letsubs [{:keys [default-sync-period]} [:multiaccount]]
+  (views/letsubs [{:keys [default-sync-period]
+                   :or   {default-sync-period constants/one-day}}
+                  [:multiaccount]]
     [react/view {:margin-top 8}
      (when config/two-minutes-syncing?
        [radio-item constants/two-mins default-sync-period])
