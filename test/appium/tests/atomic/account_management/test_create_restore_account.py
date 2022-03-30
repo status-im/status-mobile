@@ -193,8 +193,8 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.driver.fail('%s  %s' % (error, cases[0]))
 
         self.sign_in.just_fyi('Checking case when %s' % cases[1])
-        self.sign_in.create_password_input.send_keys('123456')
-        [field.send_keys('123456') for field in (self.sign_in.create_password_input, self.sign_in.confirm_your_password_input)]
+        self.sign_in.create_password_input.send_keys('12345678')
+        [field.send_keys('12345678') for field in (self.sign_in.create_password_input, self.sign_in.confirm_your_password_input)]
         self.sign_in.confirm_your_password_input.delete_last_symbols(1)
         self.sign_in.create_password_input.delete_last_symbols(1)
         self.sign_in.next_button.click()
@@ -202,8 +202,8 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.driver.fail('%s  %s' % (error, cases[1]))
 
         self.sign_in.just_fyi("Checking case %s" % cases[2])
-        self.sign_in.create_password_input.send_keys('1234565')
-        self.sign_in.confirm_your_password_input.send_keys('1234567')
+        self.sign_in.create_password_input.send_keys('12345654')
+        self.sign_in.confirm_your_password_input.send_keys('12345678')
         if not self.sign_in.element_by_translation_id("password_error1").is_element_displayed():
             self.errors.append("'%s' is not shown" % self.sign_in.get_translation_by_key("password_error1"))
         self.sign_in.create_password_input.set_value(common_password)
