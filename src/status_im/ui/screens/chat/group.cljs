@@ -92,13 +92,14 @@
 
 (defn calculate-quiet-time [synced-to
                             synced-from]
-  (let [quiet-hours (quot (- synced-to synced-from)
-                          (* 60 60))]
-    (if (<= quiet-hours 24)
-      (i18n/label :t/quiet-hours
-                  {:quiet-hours quiet-hours})
-      (i18n/label :t/quiet-days
-                  {:quiet-days (quot quiet-hours 24)}))))
+  (when synced-from
+    (let [quiet-hours (quot (- synced-to synced-from)
+                            (* 60 60))]
+      (if (<= quiet-hours 24)
+        (i18n/label :t/quiet-hours
+                    {:quiet-hours quiet-hours})
+        (i18n/label :t/quiet-days
+                    {:quiet-days (quot quiet-hours 24)})))))
 
 (defview no-messages-community-chat-description-container [chat-id]
   (letsubs [{:keys [synced-to synced-from]}
@@ -113,18 +114,20 @@
 (defview no-messages-private-group-chat-description-container [chat-id]
   (letsubs [{:keys [synced-to synced-from]}
             [:chats/synced-to-and-from chat-id]]
-    [react/nested-text {:style (merge style/intro-header-description
-                                      {:margin-bottom 36})}
-     (let [quiet-time (calculate-quiet-time synced-to
-                                            synced-from)]
-       (i18n/label :t/empty-chat-description-public
-                   {:quiet-hours quiet-time}))
-     [{:style    {:color colors/blue}
-       :on-press #(list-selection/open-share
-                   {:message
-                    (i18n/label
-                     :t/share-public-chat-text {:link (links/generate-link :public-chat :external chat-id)})})}
-      (i18n/label :t/empty-chat-description-public-share-this)]]))
+    (let [quiet-time (calculate-quiet-time synced-to
+                                           synced-from)]
+      [react/nested-text {:style (merge style/intro-header-description
+                                        {:margin-bottom 36})}
+       (if quiet-time
+         (i18n/label :t/empty-chat-description-public
+                     {:quiet-hours quiet-time})
+         (i18n/label :t/cleared-chat-description-public))
+       [{:style    {:color colors/blue}
+         :on-press #(list-selection/open-share
+                     {:message
+                      (i18n/label
+                       :t/share-public-chat-text {:link (links/generate-link :public-chat :external chat-id)})})}
+        (i18n/label :t/empty-chat-description-public-share-this)]])))
 
 (defview pending-invitation-description
   [inviter-pk chat-name]
