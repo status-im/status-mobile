@@ -7,8 +7,10 @@ import time
 from json import JSONDecodeError
 from decimal import Decimal
 from os import environ
+from web3.exceptions import TransactionNotFound
 import tests
 import support.api.web3_api as w3
+
 
 
 class NetworkApi(object):
@@ -79,7 +81,7 @@ class NetworkApi(object):
         counter = 0
         while True:
             if counter >= wait_time:
-                for entry in range(0,5):
+                for entry in range(0, 5):
                     self.log('Transaction #%s, amount is %s' %(entry+1, float(int(transactions[entry]['value']) / 10 ** decimals)))
                     self.log(str(transactions[entry]))
                 pytest.fail(
@@ -100,6 +102,13 @@ class NetworkApi(object):
                 try:
                     for transaction in transactions:
                         if float(int(transaction['value']) / 10 ** decimals) == float(amount):
+                            self.log("Tx is found: %s (etherscan API)" % transaction['hash'])
+                            try:
+                                w3.transaction_status(transaction['hash'])
+                                self.log("Tx is found (web3 API)")
+                            except TransactionNotFound:
+                                self.log("Tx is not found (web3 API)")
+                                continue
                             return transaction
                 except TypeError as e:
                     self.log("Failed iterate transactions(Etherscan unexpected error): " + str(e))

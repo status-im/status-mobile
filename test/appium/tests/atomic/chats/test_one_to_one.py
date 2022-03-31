@@ -1,165 +1,183 @@
 import emoji
 import random
-import string
+import pytest
 
 from tests import marks
-from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
+from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase, MultipleSharedDeviceTestCase, create_shared_drivers
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
 from views.sign_in_view import SignInView
 from views.send_transaction_view import SendTransactionView
 
 
-class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
+@pytest.mark.xdist_group(name="1_1_chat_2")
+@marks.critical
+class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
-    @marks.testrail_id(6283)
-    @marks.high
-    def test_push_notification_1_1_chat_no_pn_activity_center(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user(enable_notifications=True)
-        device_2.just_fyi("Device_1 = Enables Notifications from Profile; Device_2 - from onboarding")
+    @classmethod
+    def setup_class(cls):
+        cls.drivers, cls.loop = create_shared_drivers(2)
+        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
+        cls.home_1 = cls.device_1.create_user(enable_notifications=True)
+        cls.home_2 = cls.device_2.create_user(enable_notifications=True)
+        cls.profile_1 = cls.home_1.profile_button.click()
+        cls.default_username_1 = cls.profile_1.default_username_text.text
+        cls.profile_1.home_button.click()
+        cls.public_key_2, cls.default_username_2 = cls.home_2.get_public_key_and_username(return_username=True)
+        cls.chat_1 = cls.home_1.add_contact(cls.public_key_2)
+        cls.chat_1.send_message('hey')
+        cls.home_2.home_button.double_click()
+        cls.chat_2 = cls.home_2.get_chat(cls.default_username_1).click()
 
-        profile_1 = home_1.profile_button.click()
-        default_username_1 = profile_1.default_username_text.text
-        profile_1.profile_notifications_button.scroll_and_click()
-        profile_1.profile_notifications_toggle_button.click()
-        home_1 = profile_1.home_button.click()
-        public_key_2 = home_2.get_public_key_and_username()
-        message_no_pn, message = 'No PN', 'Text push notification'
+    @marks.testrail_id(6315)
+    def test_1_1_chat_message_reaction(self):
+        message_from_sender = "Message sender"
+        self.device_1.just_fyi("Sender start 1-1 chat, set emoji and check counter")
+        self.chat_1.send_message(message_from_sender)
+        self.chat_1.set_reaction(message_from_sender)
+        message_sender = self.chat_1.chat_element_by_text(message_from_sender)
+        if message_sender.emojis_below_message() != 1:
+            self.errors.append("Counter of reaction is not updated on your own message!")
 
-        device_2.just_fyi("Device 2 check there is no PN when receiving new message to activity centre")
-        device_2.put_app_to_background()
-        chat_1 = home_1.add_contact(public_key_2)
-        chat_1.send_message(message_no_pn)
-        device_2.open_notification_bar()
-        if home_2.element_by_text(message_no_pn).is_element_displayed():
-            self.errors.append("Push notification with text was received for new message in activity centre")
-        device_2.get_app_from_background()
-        device_2.home_button.click()
-        home_2.get_chat(default_username_1).click()
-        home_2.profile_button.click()
+        self.device_2.just_fyi("Receiver  set own emoji and verifies counter on received message in 1-1 chat")
+        message_receiver = self.chat_2.chat_element_by_text(message_from_sender)
+        if message_receiver.emojis_below_message(own=False) != 1:
+            self.errors.append("Counter of reaction is not updated on received message!")
+        self.chat_2.set_reaction(message_from_sender)
+        for counter in message_sender.emojis_below_message(), message_receiver.emojis_below_message():
+            if counter != 2:
+                self.errors.append('Counter is not updated after setting emoji from receiver!')
 
-        device_2.just_fyi("Device 2 puts app on background being on Profile view to receive PN with text")
-        device_2.click_system_home_button()
-        chat_1.send_message(message)
-
-        device_1.just_fyi("Device 1 puts app on background to receive emoji push notification")
-        device_1.profile_button.click()
-        device_1.click_system_home_button()
-
-        device_2.just_fyi("Check text push notification and tap it")
-        device_2.open_notification_bar()
-        pn = home_2.get_pn(message)
-        if not pn.icon.is_element_displayed():
-            device_2.driver.fail("Push notification with text was not received")
-        chat_2 = device_2.click_upon_push_notification_by_text(message)
-
-        device_2.just_fyi("Send emoji message to Device 1 while it's on backround")
-        emoji_message = random.choice(list(emoji.EMOJI_UNICODE))
-        emoji_unicode = emoji.EMOJI_UNICODE[emoji_message]
-        chat_2.send_message(emoji.emojize(emoji_message))
-
-        device_1.just_fyi("Device 1 checks PN with emoji")
-        device_1.open_notification_bar()
-        if not device_1.element_by_text_part(emoji_unicode).is_element_displayed(10):
-            device_1.driver.fail("Push notification with emoji was not received")
-        chat_1 = device_1.click_upon_push_notification_by_text(emoji_unicode)
-
-        device_1.just_fyi("Check Device 1 is actually on chat")
-        if not (chat_1.element_by_text_part(message).is_element_displayed()
-                and chat_1.element_by_text_part(emoji_unicode).is_element_displayed()):
-            device_1.driver.fail("Failed to open chat view after tap on PN")
-
-        device_1.just_fyi("Checks there are no PN after message was seen")
-        [device.click_system_home_button() for device in (device_1, device_2)]
-        [device.open_notification_bar() for device in (device_1, device_2)]
-        if (device_2.element_by_text_part(message).is_element_displayed()
-                or device_1.element_by_text_part(emoji_unicode).is_element_displayed()):
-            self.errors.append("PN are keep staying after message was seen by user")
+        self.device_2.just_fyi("Receiver pick the same emoji and verify that counter will decrease for both users")
+        self.chat_2.set_reaction(message_from_sender)
+        for counter in message_sender.emojis_below_message(), message_receiver.emojis_below_message(own=False):
+            if counter != 1:
+                self.errors.append('Counter is not decreased after re-tapping  emoji from receiver!')
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5310)
-    @marks.critical
-    def test_offline_is_shown_messaging_1_1_chat_sent_delivered(self):
-        self.create_drivers(2)
-        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
-        public_key_1 = home_1.get_public_key_and_username()
-        home_1.home_button.click()
+    @marks.testrail_id(6316)
+    def test_1_1_chat_text_message_with_push(self):
+        self.home_2.just_fyi("Put app on background (to check Push notification received for audio message)")
+        self.home_2.click_system_home_button()
 
-        home_1.just_fyi('turn on airplane mode and check that offline status is shown on home view')
-        home_1.toggle_airplane_mode()
-        home_1.connection_offline_icon.wait_and_click(20)
-        for element in home_1.not_connected_to_node_text, home_1.not_connected_to_peers_text:
-            if not element.is_element_displayed():
-                self.errors.append(
-                    'Element "%s" is not shown in Connection status screen if device is offline' % element.locator)
-        home_1.click_system_back_button()
+        self.home_2.just_fyi("Sending audio message to device who is on background")
+        self.chat_1.record_audio_message(message_length_in_seconds=125)
+        if not self.chat_1.element_by_text("Maximum recording time reached").is_element_displayed():
+            self.drivers[0].fail("Exceeded 2 mins limit of recording time.")
 
-        profile_2 = home_2.profile_button.click()
-        username_2 = profile_2.default_username_text.text
-        profile_2.home_button.click()
-        chat_2 = home_2.add_contact(public_key_1)
-        message_1 = 'test message'
+        self.chat_1.ok_button.click()
+        if self.chat_1.audio_message_recorded_time.text != "1:59":
+            self.errors.append("Timer exceed 2 minutes")
+        self.chat_1.send_message_button.click()
 
-        home_2.just_fyi("check sent status")
-        chat_2.send_message(message_1)
-        if chat_2.chat_element_by_text(message_1).status != 'sent':
-            self.errors.append('Message status is not sent, it is %s!' % chat_2.chat_element_by_text(message_1).status)
-        chat_2.toggle_airplane_mode()
+        self.device_2.open_notification_bar()
+        chat_2 = self.home_2.click_upon_push_notification_by_text("Audio")
 
-        home_1.just_fyi('go back online and check that 1-1 chat will be fetched')
-        home_1.toggle_airplane_mode()
-        chat_element = home_1.get_chat(username_2, wait_time=120)
-        chat_1 = chat_element.click()
-        chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element(2)
+        listen_time = 5
 
-        home_1.just_fyi('checking offline fetching for another message, check delivered status for first message')
-        chat_2.toggle_airplane_mode()
-        if chat_2.chat_element_by_text(message_1).status != 'delivered':
-            self.errors.append(
-                'Message status is not delivered, it is %s!' % chat_2.chat_element_by_text(message_1).status)
-        home_1.toggle_airplane_mode()
-        message_2 = 'one more message'
-        chat_2.send_message(message_2)
-        home_1.toggle_airplane_mode()
-        chat_1 = chat_element.click()
-        chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
+        self.device_2.home_button.click()
+        self.home_2.get_chat(self.default_username_1).click()
+        chat_2.play_audio_message(listen_time)
+        if chat_2.audio_message_in_chat_timer.text not in ("00:05", "00:06", "00:07", "00:08"):
+            self.errors.append("Listened 5 seconds but timer shows different listened time in audio message")
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(5373)
+    def test_1_1_chat_emoji_and_link_send_and_open(self):
+        self.home_1.just_fyi("Check that can send emoji in 1-1 chat")
+        emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
+        self.chat_1.send_message(emoji.emojize(emoji_name))
+        for chat in self.chat_1, self.chat_2:
+            if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
+                self.errors.append('Message with emoji was not sent or received in 1-1 chat')
+
+        self.home_1.just_fyi("Check that link can be opened from 1-1 chat")
+        url_message = 'http://status.im'
+        self.chat_1.send_message(url_message)
+        self.chat_2.element_starts_with_text(url_message, 'button').click()
+        web_view = self.chat_2.open_in_status_button.click()
+        if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
+            self.errors.append('URL was not opened from 1-1 chat')
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(695843)
+    def test_1_1_chat_text_message_edit_delete_push_disappear(self):
+        self.device_2.just_fyi(
+            "Device 1 sends text message and edits it in 1-1 chat. Device2 checks edited message is shown")
+        message_before_edit_1_1, message_after_edit_1_1 = "Message before edit 1-1", "AFTER"
+        self.chat_1.home_button.click()
+        self.chat_2.home_button.click()
+        self.home_2.get_chat(self.default_username_1).click()
+        self.chat_2.send_message(message_before_edit_1_1)
+
+        self.chat_2.edit_message_in_chat(message_before_edit_1_1, message_after_edit_1_1)
+        if not self.home_1.element_by_text_part(message_after_edit_1_1).is_element_present():
+            self.errors.append('UNedited message version displayed on preview')
+        self.home_1.get_chat(self.default_username_2).click()
+        chat_element = self.chat_1.chat_element_by_text(message_after_edit_1_1)
+        if not chat_element.is_element_present(30):
+            self.errors.append('No edited message in 1-1 chat displayed')
+        if not self.chat_1.element_by_text_part("⌫ Edited").is_element_present(30):
+            self.errors.append('No mark in message bubble about this message was edited on receiver side')
+
+        self.device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
+        chat_element.long_press_element()
+        for action in ("edit", "delete"):
+            if self.chat_1.element_by_translation_id(action).is_element_present():
+                self.errors.append('Option to %s someone else message available!' % action)
+        self.home_1.click_system_back_button()
+
+        self.device_2.just_fyi("Delete message and check it is not shown in chat preview on home")
+        self.chat_2.delete_message_in_chat(message_after_edit_1_1)
+        for chat in (self.chat_2, self.chat_1):
+            if chat.chat_element_by_text(message_after_edit_1_1).is_element_displayed(30):
+                self.errors.append("Deleted message is shown in chat view for 1-1 chat")
+        self.chat_1.home_button.double_click()
+        if self.home_1.element_by_text(message_after_edit_1_1).is_element_displayed(30):
+            self.errors.append("Deleted message is shown on chat element on home screen")
+
+        self.device_2.just_fyi("Send one more message and check that PN will be deleted with message deletion")
+        message_to_delete = 'DELETE ME'
+        self.home_1.put_app_to_background()
+        self.chat_2.send_message(message_to_delete)
+        self.home_1.open_notification_bar()
+        if not self.home_1.get_pn(message_to_delete):
+            self.errors.append("Push notification doesn't appear")
+        self.chat_2.delete_message_in_chat(message_to_delete)
+        pn_to_disappear = self.home_1.get_pn(message_to_delete)
+        if pn_to_disappear:
+            if not pn_to_disappear.is_element_disappeared(30):
+                self.errors.append("Push notification was not removed after initial message deletion")
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5315)
-    @marks.high
-    def test_send_non_english_message_to_newly_added_contact_on_different_networks(self):
-        self.create_drivers(2)
-        device_1_home, device_2_home = SignInView(self.drivers[0]).create_user(), SignInView(
-            self.drivers[1]).create_user()
-        profile_1 = device_1_home.profile_button.click()
-        profile_1.switch_network()
+    def test_1_1_chat_non_latin_message_to_newly_added_contact_with_profile_picture_on_different_networks(self):
+        self.home_1.get_app_from_background()
+        self.home_2.get_app_from_background()
+        self.home_1.profile_button.click()
+        self.profile_1.edit_profile_picture('sauce_logo.png')
+        self.profile_1.switch_network()
+        self.profile_1.home_button.click()
+        self.home_1.get_chat(self.default_username_2).click()
 
-        profile_1.just_fyi("Getting public keys and usernames for both users")
-        device_1_home.profile_button.click()
-        default_username_1 = profile_1.default_username_text.text
-        profile_1.home_button.double_click()
-        profile_1 = device_1_home.profile_button.click()
-        profile_1.edit_profile_picture('sauce_logo.png')
-        profile_1.home_button.click()
-        device_2_public_key, default_username_2 = device_2_home.get_public_key_and_username(return_username=True)
-        device_2_home.home_button.click()
-
-        profile_1.just_fyi("Add user to contacts and send messages on different language")
-        device_1_chat = device_1_home.add_contact(device_2_public_key + ' ')
+        self.profile_1.just_fyi("Send messages on different languages")
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
         timestamp_message = messages[3]
         for message in messages:
-            device_1_chat.send_message(message)
-        device_2_chat = device_2_home.get_chat(default_username_1).click()
-        sent_time_variants = device_1_chat.convert_device_time_to_chat_timestamp()
+            self.chat_1.send_message(message)
+        if not self.chat_2.chat_message_input.is_element_displayed():
+            self.chat_2.home_button.click()
+            self.home_2.get_chat(self.default_username_1).click()
+        sent_time_variants = self.chat_1.convert_device_time_to_chat_timestamp()
         for message in messages:
-            if not device_2_chat.chat_element_by_text(message).is_element_displayed():
+            if not self.chat_2.chat_element_by_text(message).is_element_displayed():
                 self.errors.append("Message with test '%s' was not received" % message)
-        if not device_2_chat.add_to_contacts.is_element_displayed():
+        if not self.chat_2.add_to_contacts.is_element_displayed():
             self.errors.append('Add to contacts button is not shown')
-        if device_2_chat.user_name_text.text != default_username_1:
-            self.errors.append("Default username '%s' is not shown in one-to-one chat" % default_username_1)
+        if self.chat_2.user_name_text.text != self.default_username_1:
+            self.errors.append("Default username '%s' is not shown in one-to-one chat" % self.default_username_1)
 
         # TODO: disabled until https://github.com/status-im/status-react/issues/12936 fix
         # profile_1.just_fyi("Check timestamps for sender and receiver")
@@ -170,84 +188,219 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         #         self.errors.append(
         #             "Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time_variants.join(","), timestamp))
 
-        device_2_home.just_fyi("Add user to contact and verify his default username")
-        device_2_chat.add_to_contacts.click()
-        device_2_chat.chat_options.click()
-        device_2_chat.view_profile_button.click()
-        if not device_2_chat.remove_from_contacts.is_element_displayed():
+        self.chat_2.just_fyi("Add user to contact and verify his default username")
+        self.chat_2.add_to_contacts.click()
+        self.chat_2.chat_options.click()
+        self.chat_2.view_profile_button.click()
+        if not self.chat_2.remove_from_contacts.is_element_displayed():
             self.errors.append("Remove from contacts in not shown after adding contact from 1-1 chat bar")
-        device_2_chat.close_button.click()
-        device_2_chat.home_button.double_click()
-        device_2_home.plus_button.click()
-        device_2_contacts = device_2_home.start_new_chat_button.click()
-        if not device_2_contacts.element_by_text(default_username_1).is_element_displayed():
-            self.errors.append('%s is not added to contacts' % default_username_1)
-        if device_1_chat.user_name_text.text != default_username_2:
-            self.errors.append("Default username '%s' is not shown in one-to-one chat" % default_username_2)
-        device_1_chat.chat_options.click()
-        device_1_chat.view_profile_button.click()
+        self.chat_2.close_button.click()
+        self.chat_2.home_button.double_click()
+        self.home_2.plus_button.click()
+        device_2_contacts = self.home_2.start_new_chat_button.click()
+        if not device_2_contacts.element_by_text(self.default_username_1).is_element_displayed():
+            self.errors.append('%s is not added to contacts' % self.default_username_1)
+        if self.chat_1.user_name_text.text != self.default_username_2:
+            self.errors.append("Default username '%s' is not shown in one-to-one chat" % self.default_username_2)
 
-        if not device_2_chat.contact_profile_picture.is_element_image_equals_template('sauce_logo_profile_2.png'):
+        if not self.chat_2.contact_profile_picture.is_element_image_equals_template('sauce_logo_profile_2.png'):
             self.errors.append("Updated profile picture is not shown in one-to-one chat")
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(695843)
-    @marks.high
-    def test_edit_delete_message_in_one_to_one_(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(enable_notifications=True), device_2.create_user()
+    @marks.testrail_id(6283)
+    def test_1_1_chat_push_emoji(self):
+        message_no_pn, message = 'No PN', 'Text push notification'
 
-        device_2.just_fyi("Create public chat on Device1, send message and edit it then")
-        public_key_1, username_1 = home_1.get_public_key_and_username(return_username=True)
-        public_key_2, username_2 = home_2.get_public_key_and_username(return_username=True)
-        [home.home_button.click() for home in (home_1, home_2)]
+        # TODO: Should be moved to group or test where no contact is added in prerequisites
+        # self.device_2.just_fyi("Device 2: check there is no PN when receiving new message to activity centre")
+        # self.device_2.put_app_to_background()
+        # if not self.chat_1.chat_message_input.is_element_displayed():
+        #     self.home_1.get_chat(username=self.default_username_2).click()
+        # self.chat_1.send_message(message_no_pn)
+        # self.device_2.open_notification_bar()
+        # if self.home_2.element_by_text(message_no_pn).is_element_displayed():
+        #     self.errors.append("Push notification with text was received for new message in activity centre")
+        # self.device_2.get_app_from_background()
+        self.device_2.home_button.click()
+        self.home_2.get_chat(self.default_username_1).click()
+        self.home_2.profile_button.click()
 
-        device_2.just_fyi(
-            "Device 1 sends text message and edits it in 1-1 chat. Device2 checks edited message is shown")
-        chat_private_2 = home_2.add_contact(public_key_1)
-        message_before_edit_1_1, message_after_edit_1_1 = "Message before edit 1-1", "AFTER"
-        chat_private_2.send_message(message_before_edit_1_1)
-        home_1.home_button.click()
+        self.device_2.just_fyi("Device 2 puts app on background being on Profile view to receive PN with text")
+        self.device_2.click_system_home_button()
+        self.chat_1.send_message(message)
 
-        device_1_one_to_one_chat_element = home_1.get_chat(username_2)
-        chat_private_2.edit_message_in_chat(message_before_edit_1_1, message_after_edit_1_1)
-        if not home_1.element_by_text_part(message_after_edit_1_1).is_element_displayed(30):
-            self.errors.append('UNedited message version displayed on preview')
-        chat_private_1 = device_1_one_to_one_chat_element.click()
-        if not home_1.element_by_text_part(message_after_edit_1_1).is_element_present():
-            self.errors.append('No edited message in 1-1 chat displayed')
-        if not home_1.element_by_text_part("⌫ Edited").is_element_present(30):
-            self.errors.append('No mark in message bubble about this message was edited on receiver side')
+        self.device_1.just_fyi("Device 1 puts app on background to receive emoji push notification")
+        self.device_1.profile_button.click()
+        self.device_1.click_system_home_button()
 
-        device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
-        home_1.element_by_text_part(message_after_edit_1_1).long_press_element()
-        for action in ("edit", "delete"):
-            if home_1.element_by_translation_id(action).is_element_present():
-                self.errors.append('Option to %s someone else message available!' % action)
-        home_1.click_system_back_button()
+        self.device_2.just_fyi("Check text push notification and tap it")
+        self.device_2.open_notification_bar()
+        if not self.home_2.get_pn(message):
+            self.device_2.driver.fail("Push notification with text was not received")
+        chat_2 = self.device_2.click_upon_push_notification_by_text(message)
 
-        device_2.just_fyi("Delete message and check it is not shown in chat preview on home")
-        chat_private_2.delete_message_in_chat(message_after_edit_1_1)
-        for chat in (chat_private_2, chat_private_1):
-            if chat.chat_element_by_text(message_after_edit_1_1).is_element_displayed(30):
-                self.errors.append("Deleted message is shown in chat view for 1-1 chat")
-        chat_private_1.home_button.double_click()
-        if home_1.element_by_text(message_after_edit_1_1).is_element_displayed(30):
-            self.errors.append("Deleted message is shown on chat element on home screen")
+        self.device_2.just_fyi("Send emoji message to Device 1 while it's on background")
+        emoji_message = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_message]
+        chat_2.send_message(emoji.emojize(emoji_message))
 
-        device_2.just_fyi("Send one more message and check that PN will be deleted with message deletion")
-        message_to_delete = 'DELETE ME'
-        home_1.put_app_to_background()
-        chat_private_2.send_message(message_to_delete)
-        home_1.open_notification_bar()
-        home_1.get_pn(message_to_delete).wait_for_element(30)
-        chat_private_2.delete_message_in_chat(message_to_delete)
-        if not home_1.get_pn(message_to_delete).is_element_disappeared(30):
-            self.errors.append("Push notification was not removed after initial message deletion")
-        home_1.click_system_back_button(2)
+        self.device_1.just_fyi("Device 1 checks PN with emoji")
+        self.device_1.open_notification_bar()
+        if not self.device_1.element_by_text_part(emoji_unicode).is_element_displayed(10):
+            self.device_1.driver.fail("Push notification with emoji was not received")
+        chat_1 = self.device_1.click_upon_push_notification_by_text(emoji_unicode)
+
+        self.device_1.just_fyi("Check Device 1 is actually on chat")
+        if not (chat_1.element_by_text_part(message).is_element_displayed()
+                and chat_1.element_by_text_part(emoji_unicode).is_element_displayed()):
+            self.device_1.driver.fail("Failed to open chat view after tap on PN")
+
+        self.device_1.just_fyi("Checks there are no PN after message was seen")
+        [device.click_system_home_button() for device in (self.device_1, self.device_2)]
+        [device.open_notification_bar() for device in (self.device_1, self.device_2)]
+        if (self.device_2.element_by_text_part(message).is_element_displayed()
+                or self.device_1.element_by_text_part(emoji_unicode).is_element_displayed()):
+            self.errors.append("PN are keep staying after message was seen by user")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6305)
+    def test_1_1_chat_image_send_save_reply(self):
+        self.home_1.get_app_from_background()
+        self.home_2.get_app_from_background()
+
+        self.home_1.home_button.click()
+        self.home_1.get_chat(username=self.default_username_2).click()
+
+        self.home_1.just_fyi('send image in 1-1 chat from Gallery, check options for sender')
+        image_description = 'description'
+        self.chat_1.show_images_button.click()
+        self.chat_1.allow_button.click_if_shown()
+        self.chat_1.first_image_from_gallery.click()
+        if not self.chat_1.cancel_send_image_button.is_element_displayed():
+            self.errors.append("Can't cancel sending images, expected image preview is not shown!")
+        self.chat_1.chat_message_input.set_value(image_description)
+        self.chat_1.send_message_button.click()
+        self.chat_1.chat_message_input.click()
+        for message in self.chat_1.image_message_in_chat, self.chat_1.chat_element_by_text(image_description):
+            if not message.is_element_displayed():
+                self.errors.append('Image or description is not shown in chat after sending for sender')
+        self.chat_1.image_message_in_chat.long_press_element()
+        for element in self.chat_1.reply_message_button, self.chat_1.save_image_button:
+            if not element.is_element_displayed():
+                self.errors.append('Save and reply are not available on long-press on own image messages')
+        if self.chat_1.view_profile_button.is_element_displayed():
+            self.errors.append('"View profile" is shown on long-press on own message')
+
+        self.home_2.just_fyi('check image, description and options for receiver')
+        self.home_2.get_chat(self.default_username_1).click()
+        for message in self.chat_2.image_message_in_chat, self.chat_2.chat_element_by_text(image_description):
+            if not message.is_element_displayed():
+                self.errors.append('Image or description is not shown in chat after sending for receiver')
+
+        self.home_2.just_fyi('check options on long-press image for receiver')
+        self.chat_2.image_message_in_chat.long_press_element()
+        for element in (self.chat_2.reply_message_button, self.chat_2.save_image_button):
+            if not element.is_element_displayed():
+                self.errors.append('Save and reply are not available on long-press on received image messages')
+
+        self.home_1.just_fyi('save image')
+        self.chat_1.save_image_button.click_until_presence_of_element(self.chat_1.show_images_button)
+        self.chat_1.show_images_button.click_until_presence_of_element(self.chat_1.image_from_gallery_button)
+        self.chat_1.image_from_gallery_button.click_until_presence_of_element(self.chat_1.recent_image_in_gallery)
+        if not self.chat_1.recent_image_in_gallery.is_element_displayed():
+            self.errors.append('Saved image is not shown in Recent')
+        self.home_1.click_system_back_button(2)
+
+        self.home_2.just_fyi('reply to image message')
+        self.chat_2.reply_message_button.click()
+        if self.chat_2.quote_username_in_message_input.text != "↪ Replying to %s" % self.default_username_1:
+            self.errors.append("Username is not displayed in reply quote snippet replying to image message")
+        reply_to_message_from_receiver = "image reply"
+        self.chat_2.send_message(reply_to_message_from_receiver)
+        reply_message = self.chat_2.chat_element_by_text(reply_to_message_from_receiver)
+        if not reply_message.image_in_reply.is_element_displayed():
+            self.errors.append("Image is not displayed in reply")
+
+        self.home_2.just_fyi('check share and save options on opened image')
+        self.chat_2.image_message_in_chat.scroll_to_element(direction='up')
+        self.chat_2.image_message_in_chat.click()
+        self.chat_2.share_image_icon_button.click()
+        self.chat_2.share_via_messenger()
+        if not self.chat_2.image_in_android_messenger.is_element_present():
+            self.errors.append("Can't share image")
+        self.chat_2.click_system_back_button()
+        self.chat_2.save_image_icon_button.click()
+        self.chat_2.show_images_button.click()
+        self.chat_2.allow_button.wait_and_click()
+
+        if not self.chat_2.first_image_from_gallery.is_element_image_similar_to_template('saved.png'):
+            self.errors.append("New picture was not saved!")
 
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(5310)
+    def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
+        self.home_1.home_button.click()
+        self.home_2.home_button.click()
+
+        self.home_1.just_fyi('turn on airplane mode and check that offline status is shown on home view')
+        self.home_1.toggle_airplane_mode()
+        self.home_1.connection_offline_icon.wait_and_click(20)
+        for element in self.home_1.not_connected_to_node_text, self.home_1.not_connected_to_peers_text:
+            if not element.is_element_displayed():
+                self.errors.append(
+                    'Element "%s" is not shown in Connection status screen if device is offline' % element.locator)
+        self.home_1.click_system_back_button()
+
+        message_1 = 'test message'
+
+        self.home_2.just_fyi("check sent status")
+        self.home_2.get_chat(username=self.default_username_1).click()
+        self.chat_2.send_message(message_1)
+        chat_element = self.chat_2.chat_element_by_text(message_1)
+        if chat_element.status != 'sent':
+            self.errors.append('Message status is not sent, it is %s!' % chat_element.status)
+        self.chat_2.toggle_airplane_mode()
+
+        self.home_1.just_fyi('go back online and check that 1-1 chat will be fetched')
+        self.home_1.toggle_airplane_mode()
+        chat_element = self.home_1.get_chat(self.default_username_2, wait_time=60)
+        chat_element.click()
+        self.chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element(20)
+
+        self.home_1.just_fyi('checking offline fetching for another message, check delivered status for first message')
+        self.chat_2.toggle_airplane_mode()
+        if self.chat_2.chat_element_by_text(message_1).status != 'delivered':
+            self.errors.append(
+                'Message status is not delivered, it is %s!' % self.chat_2.chat_element_by_text(message_1).status)
+        self.home_1.toggle_airplane_mode()
+        message_2 = 'one more message'
+        self.chat_2.send_message(message_2)
+        self.home_1.toggle_airplane_mode()
+        chat_1 = chat_element.click()
+        chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(5387)
+    def test_1_1_chat_delete_via_delete_button_relogin(self):
+        self.home_1.driver.quit()
+        self.home_2.home_button.click()
+        self.home_2.get_chat(username=self.default_username_1).click()
+
+        self.home_2.just_fyi("Deleting chat via delete button and check it will not reappear after relaunching app")
+        self.chat_2.delete_chat()
+        self.chat_2.get_back_to_home_view()
+
+        if self.home_2.get_chat_from_home_view(self.default_username_1).is_element_displayed():
+            self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % self.default_username_1)
+        self.home_2.reopen_app()
+        if self.home_2.get_chat_from_home_view(self.default_username_1).is_element_displayed():
+            self.errors.append(
+                'Deleted chat %s is shown after re-login, but the chat has been deleted' % self.default_username_1)
+        self.errors.verify_no_errors()
+
+
+class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5782)
     @marks.critical
@@ -306,180 +459,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(6305)
-    @marks.critical
-    def test_image_in_one_to_one_send_save_reply_timeline(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-        profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
-        device_2_public_key = profile_2.get_public_key_and_username()
-
-        home_1.just_fyi('set status in profile')
-        status_1 = 'Hey hey hey'
-        timeline = device_1.status_button.click()
-        timeline.set_new_status(status_1, image=True)
-        for element in timeline.element_by_text(status_1), timeline.image_message_in_chat:
-            if not element.is_element_displayed():
-                self.drivers[0].fail('Status is not set')
-
-        public_key_1, username_1 = profile_1.get_public_key_and_username(return_username=True)
-        [home.click() for home in [profile_1.home_button, profile_2.home_button]]
-
-        home_1.just_fyi('start 1-1 chat')
-        private_chat_1 = home_1.add_contact(device_2_public_key)
-
-        home_1.just_fyi('send image in 1-1 chat from Gallery, check options for sender')
-        image_description = 'description'
-        private_chat_1.show_images_button.click()
-        private_chat_1.first_image_from_gallery.click()
-        if not private_chat_1.cancel_send_image_button.is_element_displayed():
-            self.errors.append("Can't cancel sending images, expected image preview is not shown!")
-        private_chat_1.chat_message_input.set_value(image_description)
-        private_chat_1.send_message_button.click()
-        private_chat_1.chat_message_input.click()
-        for message in private_chat_1.image_message_in_chat, private_chat_1.chat_element_by_text(image_description):
-            if not message.is_element_displayed():
-                self.errors.append('Image or description is not shown in chat after sending for sender')
-        private_chat_1.show_images_button.click()
-        private_chat_1.image_from_gallery_button.click()
-        private_chat_1.click_system_back_button()
-        private_chat_1.image_message_in_chat.long_press_element()
-        for element in private_chat_1.reply_message_button, private_chat_1.save_image_button:
-            if not element.is_element_displayed():
-                self.errors.append('Save and reply are not available on long-press on own image messages')
-        if private_chat_1.view_profile_button.is_element_displayed():
-            self.errors.append('"View profile" is shown on long-press on own message')
-
-        home_2.just_fyi('check image, description and options for receiver')
-        private_chat_2 = home_2.get_chat(username_1).click()
-        for message in private_chat_2.image_message_in_chat, private_chat_2.chat_element_by_text(image_description):
-            if not message.is_element_displayed():
-                self.errors.append('Image or description is not shown in chat after sending for receiver')
-
-        home_2.just_fyi('View user profile and check status')
-        private_chat_2.chat_options.click()
-        timeline_device_1 = private_chat_2.view_profile_button.click()
-        for element in timeline_device_1.element_by_text(status_1), timeline_device_1.image_message_in_chat:
-            if not element.is_element_displayed(40):
-                self.errors.append('Status of another user not shown when open another user profile')
-        private_chat_2.close_button.click()
-
-        home_2.just_fyi('check options on long-press image for receiver')
-        private_chat_2.image_message_in_chat.long_press_element()
-        for element in (private_chat_2.reply_message_button, private_chat_2.save_image_button):
-            if not element.is_element_displayed():
-                self.errors.append('Save and reply are not available on long-press on received image messages')
-
-        home_1.just_fyi('save image')
-        private_chat_1.save_image_button.click()
-        private_chat_1.show_images_button.click_until_presence_of_element(private_chat_1.image_from_gallery_button)
-        private_chat_1.image_from_gallery_button.click()
-        private_chat_1.wait_for_element_starts_with_text('Recent')
-        if not private_chat_1.recent_image_in_gallery.is_element_displayed():
-            self.errors.append('Saved image is not shown in Recent')
-
-        home_2.just_fyi('reply to image message')
-        private_chat_2.reply_message_button.click()
-        if private_chat_2.quote_username_in_message_input.text != "↪ Replying to %s" % username_1:
-            self.errors.append("Username is not displayed in reply quote snippet replying to image message")
-        reply_to_message_from_receiver = "image reply"
-        private_chat_2.send_message(reply_to_message_from_receiver)
-        reply_message = private_chat_2.chat_element_by_text(reply_to_message_from_receiver)
-        if not reply_message.image_in_reply.is_element_displayed():
-            self.errors.append("Image is not displayed in reply")
-
-        home_2.just_fyi('check share and save options on opened image')
-        private_chat_2.image_message_in_chat.scroll_to_element(direction='up')
-        private_chat_2.image_message_in_chat.click()
-        private_chat_2.share_image_icon_button.click()
-        private_chat_2.share_via_messenger()
-        if not private_chat_2.image_in_android_messenger.is_element_present():
-            self.errors.append("Can't share image")
-        private_chat_2.click_system_back_button()
-        private_chat_2.save_image_icon_button.click()
-        private_chat_2.show_images_button.click()
-        private_chat_2.allow_button.wait_and_click()
-
-        if not private_chat_2.first_image_from_gallery.is_element_image_similar_to_template('saved.png'):
-            self.errors.append("New picture was not saved!")
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6316)
-    @marks.critical
-    def test_send_audio_message_with_push_notification_check(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user(enable_notifications=True)
-        profile_1 = home_1.profile_button.click()
-        default_username_1 = profile_1.default_username_text.text
-        home_1 = profile_1.home_button.click()
-        public_key_2 = home_2.get_public_key_and_username()
-        chat_1 = home_1.add_contact(public_key_2)
-        chat_1.send_message('hey')
-        home_2.home_button.double_click()
-        home_2.get_chat(default_username_1).click()
-
-        home_2.just_fyi("Put app on background (to check Push notification received for audio message)")
-        home_2.click_system_home_button()
-
-        home_2.just_fyi("Sending audio message to device who is on background")
-        chat_1.record_audio_message(message_length_in_seconds=125)
-        if not chat_1.element_by_text("Maximum recording time reached").is_element_displayed():
-            self.drivers[0].fail("Exceeded 2 mins limit of recording time.")
-        else:
-            chat_1.ok_button.click()
-        if chat_1.audio_message_recorded_time.text != "1:59":
-            self.errors.append("Timer exceed 2 minutes")
-        chat_1.send_message_button.click()
-
-        device_2.open_notification_bar()
-        chat_2 = home_2.click_upon_push_notification_by_text("Audio")
-
-        listen_time = 5
-
-        device_2.home_button.click()
-        home_2.get_chat(default_username_1).click()
-        chat_2.play_audio_message(listen_time)
-        if chat_2.audio_message_in_chat_timer.text not in ("00:05", "00:06", "00:07", "00:08"):
-            self.errors.append("Listened 5 seconds but timer shows different listened time in audio message")
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5373)
-    @marks.high
-    def test_send_and_open_emoji_link_in_one_to_one(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-        profile_1 = home_1.profile_button.click()
-        default_username_1 = profile_1.default_username_text.text
-        home_1 = profile_1.home_button.click()
-        public_key_2 = home_2.get_public_key_and_username()
-        home_2.home_button.click()
-        chat_1 = home_1.add_contact(public_key_2)
-
-        home_1.just_fyi("Check that can send emoji in 1-1 chat")
-        emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
-        emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
-        chat_1.send_message(emoji.emojize(emoji_name))
-        chat_2 = home_2.get_chat(default_username_1).click()
-        for chat in chat_1, chat_2:
-            if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
-                self.errors.append('Message with emoji was not sent or received in 1-1 chat')
-
-        home_1.just_fyi("Check that link can be opened from 1-1 chat")
-        url_message = 'http://status.im'
-        chat_1.send_message(url_message)
-        chat_1.home_button.double_click()
-        chat_2.element_starts_with_text(url_message, 'button').click()
-        web_view = chat_2.open_in_status_button.click()
-        if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
-            self.errors.append('URL was not opened from 1-1 chat')
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(5362)
     @marks.medium
     def test_unread_messages_counter_preview_highlited_1_1_chat(self):
@@ -528,45 +507,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
 
 class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
-
-    @marks.testrail_id(5317)
-    @marks.critical
-    def test_copy_and_paste_messages(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-
-        home.join_public_chat(''.join(random.choice(string.ascii_lowercase) for _ in range(7)))
-        chat = sign_in.get_chat_view()
-        message_text = {'text_message': 'mmmeowesage_text'}
-        formatted_message = {'message_with_link': 'https://status.im',
-                             # TODO: blocked with 11161 (rechecked 23.11.21, valid)
-                             # 'message_with_tag': '#successishere'
-                             }
-        message_input = chat.chat_message_input
-        message_input.send_keys(message_text['text_message'])
-        chat.send_message_button.click()
-
-        chat.copy_message_text(message_text['text_message'])
-
-        message_input.paste_text_from_clipboard()
-        if message_input.text != message_text['text_message']:
-            self.errors.append('Message %s text was not copied in a public chat' % message_text['text_message'])
-        message_input.clear()
-
-        for message in formatted_message:
-            message_input.send_keys(formatted_message[message])
-            chat.send_message_button.click()
-
-            message_bubble = chat.chat_element_by_text(formatted_message[message])
-            message_bubble.sent_status_checkmark.long_press_element()
-            chat.element_by_text('Copy').click()
-
-            message_input.paste_text_from_clipboard()
-            if message_input.text != formatted_message[message]:
-                self.errors.append('Message %s text was not copied in a public chat' % formatted_message[message])
-            message_input.clear()
-
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(5322)
     @marks.medium

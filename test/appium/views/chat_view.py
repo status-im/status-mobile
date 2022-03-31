@@ -3,7 +3,7 @@ import dateutil.parser
 import time
 import re
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import emojis
 from time import sleep
@@ -156,11 +156,10 @@ class ChatElementByText(Text):
         timestamp_element = Text(self.driver, xpath="//*[@content-desc='message-timestamp']")
         try:
             self.sent_status_checkmark.wait_for_element(30)
-        except NoSuchElementException:
-            return ''
-        self.sent_status_checkmark.click_until_presence_of_element(timestamp_element)
-        return timestamp_element.text
-
+            self.sent_status_checkmark.click_until_presence_of_element(timestamp_element)
+            return timestamp_element.text
+        except (NoSuchElementException, TimeoutException):
+            return None
 
     @property
     def member_photo(self):

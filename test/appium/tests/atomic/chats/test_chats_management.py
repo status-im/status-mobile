@@ -11,50 +11,6 @@ from views.chat_view import ChatView
 
 class TestChatManagement(SingleDeviceTestCase):
 
-    @marks.testrail_id(5387)
-    @marks.high
-    def test_delete_chats_via_delete_button_rejoin(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        messages = [home.get_random_message() for _ in range(3)]
-
-        home.just_fyi("Creating 3 types of chats")
-        chat = home.add_contact(basic_user['public_key'])
-        one_to_one, public, group = basic_user['username'], '#public-delete-long-press', 'group'
-        chat.get_back_to_home_view()
-        home.create_group_chat([basic_user['username']], group)
-        chat.get_back_to_home_view()
-        home.join_public_chat(public[1:])
-        chat.get_back_to_home_view()
-        home.join_public_chat(public[1:])
-        chat.get_back_to_home_view()
-
-        home.just_fyi("Deleting 3 chats via delete button and check they will not reappear after relaunching app")
-        i = 0
-        for chat_name in one_to_one, public, group:
-            message = messages[i]
-            chat = home.get_chat(chat_name).click()
-            chat.send_message(message)
-            chat.leave_chat() if chat_name == group else chat.delete_chat()
-            i += 1
-            chat.get_back_to_home_view()
-        for chat_name in one_to_one, public, group:
-            if home.get_chat_from_home_view(chat_name).is_element_displayed():
-                self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % chat_name)
-        self.driver.close_app()
-        self.driver.launch_app()
-        sign_in.sign_in()
-        for chat_name in one_to_one, public, group:
-            if home.get_chat_from_home_view(chat_name).is_element_displayed():
-                self.errors.append('Deleted %s is shown after re-login, but the chat has been deleted' % chat_name)
-
-        sign_in.just_fyi('Rejoin public chat and check that messages are fetched again')
-        public_chat = home.join_public_chat(public[1:])
-        if not public_chat.chat_element_by_text(messages[1]).is_element_displayed(20):
-            self.errors.append('Messages are not fetched when rejoining public chat after deleting')
-
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(5304)
     @marks.high
     def test_open_chat_by_pasting_chat_key_check_invalid_chat_key_cases(self):
@@ -792,82 +748,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(6315)
-    @marks.critical
-    def test_reactions_to_message_in_chats(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        message_from_sender = "Message sender"
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-
-        device_1.just_fyi('Both devices join to 1-1 chat')
-        device_2_public_key = home_2.get_public_key_and_username()
-        device_1_profile = home_1.profile_button.click()
-        device_1_username = device_1_profile.default_username_text.text
-        home_1.home_button.click()
-
-        device_1.just_fyi("Sender start 1-1 chat, set emoji and check counter")
-        device_1_chat = home_1.add_contact(device_2_public_key)
-        device_1_chat.send_message(message_from_sender)
-        device_1_chat.set_reaction(message_from_sender)
-        message_sender = device_1_chat.chat_element_by_text(message_from_sender)
-        if message_sender.emojis_below_message() != 1:
-            self.errors.append("Counter of reaction is not updated on your own message!")
-
-        device_2.just_fyi("Receiver  set own emoji and verifies counter on received message in 1-1 chat")
-        home_2.home_button.click()
-        device_2_chat_item = home_2.get_chat(device_1_username)
-        device_2_chat_item.wait_for_visibility_of_element(20)
-        device_2_chat = device_2_chat_item.click()
-        message_receiver = device_2_chat.chat_element_by_text(message_from_sender)
-        if message_receiver.emojis_below_message(own=False) != 1:
-            self.errors.append("Counter of reaction is not updated on received message!")
-        device_2_chat.set_reaction(message_from_sender)
-        for counter in message_sender.emojis_below_message(), message_receiver.emojis_below_message():
-            if counter != 2:
-                self.errors.append('Counter is not updated after setting emoji from receiver!')
-
-        device_2.just_fyi("Receiver pick the same emoji and verify that counter will decrease for both users")
-        device_2_chat.set_reaction(message_from_sender)
-        for counter in message_sender.emojis_below_message(), message_receiver.emojis_below_message(own=False):
-            if counter != 1:
-                self.errors.append('Counter is not decreased after re-tapping  emoji from receiver!')
-        [chat.get_back_to_home_view() for chat in (device_2_chat, device_1_chat)]
-
-        device_1.just_fyi('Both devices joining the same public chat, send messages and check counters')
-        chat_name = device_1.get_random_chat_name()
-        [home.join_public_chat(chat_name) for home in (home_1, home_2)]
-        chat_public_1, chat_public_2 = home_1.get_chat_view(), home_2.get_chat_view()
-        chat_public_1.send_message(message_from_sender)
-
-        device_1_chat.just_fyi('Set several emojis as sender and receiver and check counters in public chat')
-        message_sender = chat_public_1.chat_element_by_text(message_from_sender)
-        emojis_from_sender = ['thumbs-down', 'love', 'laugh']
-        [chat_public_1.set_reaction(message_from_sender, reaction) for reaction in emojis_from_sender]
-        emojis_from_receiver = ['angry', 'sad']
-        [chat_public_2.set_reaction(message_from_sender, reaction) for reaction in emojis_from_receiver]
-        message_receiver = chat_public_2.chat_element_by_text(message_from_sender)
-        for reaction in emojis_from_sender:
-            if message_sender.emojis_below_message(reaction) != 1:
-                self.errors.append(
-                    'Counter is not updated on own message after tapping %s for sender in pub chat' % reaction)
-            if message_receiver.emojis_below_message(reaction, own=False) != 1:
-                self.errors.append(
-                    'Counter is not updated on received message after tapping %s for receiver in pub chat' % reaction)
-        for reaction in emojis_from_receiver:
-            if message_sender.emojis_below_message(reaction, own=False) != 1:
-                self.errors.append(
-                    'Counter is not updated on own message after tapping %s for receiver in pub chat' % emoji)
-            if message_receiver.emojis_below_message(reaction) != 1:
-                self.errors.append(
-                    'Counter is not updated on received message after tapping %s for sender in pub chat' % emoji)
-
-        device_1_chat.just_fyi('Unset emoji and check that it is not shown anymore')
-        chat_public_1.set_reaction(message_from_sender, 'love')
-        if message_sender.emojis_below_message('love') != 0:
-            self.errors.append('Emoji is still shown on message after re-tapping last reaction')
-
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(6326)
     @marks.medium
