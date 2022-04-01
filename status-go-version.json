@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "fix/return-muted-chats",
-    "commit-sha1": "a2c13cffe0305c4b9ff54c079c7a9e061800e843",
-    "src-sha256": "04kbrkp207ls98nrvinpjcgj50bv31vzhvcfxpyaiqz7sa5zspyj"
+    "version": "v0.97.4",
+    "commit-sha1": "724689086cdd3edef71a31c17e8888b1933c9ea5",
+    "src-sha256": "091fc4ql9mp99ljw3l644bvkmwrfj2sq2mdhkwz6bn3z2maxgalk"
 }
