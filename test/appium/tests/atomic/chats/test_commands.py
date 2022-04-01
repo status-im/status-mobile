@@ -25,6 +25,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         cls.wallet_1, cls.wallet_2 = cls.home_1.wallet_button.click(), cls.home_2.wallet_button.click()
         [wallet.home_button.click() for wallet in (cls.wallet_1, cls.wallet_2)]
         cls.chat_1 = cls.home_1.add_contact(cls.recipient_public_key)
+        cls.chat_1.send_message("hello!")
         cls.account_name_1 = cls.wallet_1.status_account_name
 
     @marks.testrail_id(6253)
@@ -77,11 +78,16 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.wallet_1.find_transaction_in_history(amount=amount)
 
         [wallet.put_app_to_background() for wallet in (self.wallet_1, self.wallet_2)]
-        self.network_api.wait_for_confirmation_of_transaction(self.sender['address'], amount)
         self.device_1.open_notification_bar()
-        self.device_1.element_by_text_part('You sent %s ETH' % amount).click()
-        if not self.wallet_1.transaction_history_button.is_element_displayed():
-            self.errors.append('Was not redirected to transaction history after tapping on PN')
+        self.network_api.wait_for_confirmation_of_transaction(self.sender['address'], amount)
+        pn = self.home_1.get_pn('You sent %s ETH' % amount)
+        if pn:
+            pn.click()
+            if not self.wallet_1.transaction_history_button.is_element_displayed():
+                self.errors.append('Was not redirected to transaction history after tapping on PN')
+        else:
+            self.home_1.click_system_back_button()
+            self.home_1.status_in_background_button.click_if_shown()
         self.wallet_1.home_button.click(desired_view="chat")
 
         self.home_1.just_fyi("Check 'Confirmed' state for sender and receiver(use pull-to-refresh to update history)")
@@ -99,7 +105,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(6265)
     def test_1_1_chat_command_decline_eth_push_changing_state(self):
-        [chat.status_in_background_button.click_if_shown() for chat in (self.home_1, self.home_2)]
+        [home.driver.background_app(3) for home in (self.home_1, self.home_2)]
         self.home_1.home_button.double_click()
         self.home_1.get_chat(username=self.recipient_username).click()
 
@@ -141,9 +147,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(6263)
     @marks.transaction
     def test_1_1_chat_command_request_and_receive_stt_in_1_1_chat_offline(self):
-        for home in self.home_1, self.home_2:
-            home.status_in_background_button.click_if_shown()
-
+        [home.driver.background_app(2) for home in (self.home_1, self.home_2)]
         asset_name = 'STT'
         amount = self.device_1.get_unique_amount()
 
@@ -152,11 +156,9 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.home_2.wallet_button.click()
         self.wallet_2.select_asset(asset_name)
         self.wallet_2.home_button.click()
-        self.home_1.wallet_button.click()
+        self.home_1.wallet_button.double_click()
         initial_amount_stt = self.wallet_1.get_asset_amount_by_name('STT')
-        self.wallet_1.home_button.click()
-        profile_1 = self.home_1.profile_button.click()
-        profile_1.logout()
+        self.home_1.driver.close_app()
 
         self.home_2.just_fyi('Request %s STT in 1-1 chat and check it is visible for sender and receiver' % amount)
         chat_2 = self.home_2.get_chat(username=self.sender['username']).click()
@@ -173,6 +175,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             self.drivers[1].fail('No incoming transaction in 1-1 chat is shown for recipient after requesting STT')
 
         self.home_1.just_fyi('Check that transaction message is fetched from offline and sign transaction')
+        self.device_1.driver.launch_app()
         self.device_1.sign_in()
         self.home_1.connection_offline_icon.wait_for_invisibility_of_element(30)
         self.home_1.get_chat(self.recipient_username).click()
@@ -297,3 +300,4 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2.just_fyi("Check that message is fetched for receiver")
         chat_2_reciever_message = chat_2.get_incoming_transaction(transaction_value=amount)
         chat_2_reciever_message.transaction_status.wait_for_element_text(chat_2_reciever_message.confirmed)
+

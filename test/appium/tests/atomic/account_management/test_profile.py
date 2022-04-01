@@ -690,7 +690,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         sign_in_1.sign_in_button.click()
 
         profile_1.just_fyi('Remove user from contact and check there is no profile image displayed')
-        group_chat_2.profile_button.click()
+        group_chat_2.profile_button.double_click()
         profile_2.contacts_button.click()
         profile_2.element_by_text(default_username_1).click()
         one_to_one_chat_2.remove_from_contacts.click()
@@ -698,12 +698,12 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         group_chat_1 = home_1.get_chat('new_group_chat').click()
         group_chat_1.send_message(group_chat_message)
         one_to_one_chat_2.close_button.click()
-        one_to_one_chat_2.home_button.click(desired_view='home')
+        one_to_one_chat_2.home_button.double_click()
         if home_2.get_chat(default_username_1).chat_image.is_element_image_similar_to_template(logo_default):
             self.errors.append('User profile picture is not default to default after user removed from Contacts')
 
         profile_2.just_fyi('Enable to see profile image from "Everyone" setting')
-        home_2.profile_button.click()
+        home_2.profile_button.double_click()
         profile_2.privacy_and_security_button.click()
         profile_2.show_profile_pictures_of.scroll_and_click()
         profile_2.element_by_translation_id("everyone").click()
@@ -1162,7 +1162,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         group_chat_1 = home_1.create_group_chat([basic_user['username']], group_chat_name)
         group_chat_1.home_button.click()
         # Editing profile picture
-        home_1.profile_button.click()
+        home_1.profile_button.double_click()
         profile_1.edit_profile_picture('sauce_logo.png')
 
         device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
@@ -1175,7 +1175,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.get_toggle_device_by_name(name_2).wait_and_click()
         profile_1.sync_all_button.click()
         profile_1.sync_all_button.wait_for_visibility_of_element(15)
-        [device.profile_button.click() for device in (profile_1, profile_2)]
+        [device.profile_button.double_click() for device in (profile_1, profile_2)]
 
         device_2.just_fyi('check that created/joined community and profile details are updated')
         home_2 = profile_2.home_button.click()

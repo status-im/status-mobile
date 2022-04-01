@@ -160,7 +160,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(700737)
     def test_public_chat_links_with_previews_github_youtube_twitter_gif_send_enable(self):
-        [chat.get_back_to_home_view() for chat in (self.chat_1, self.chat_2)]
+        [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
         [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
         giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
         preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-react/pull/11707',

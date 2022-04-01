@@ -313,7 +313,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
                 self.errors.append('"%s" is not found in Contacts after adding when devices are paired' % name)
 
         device_1.just_fyi('Contacts (main device): set nickname, (secondary device): check that synced')
-        home_1.profile_button.click()
+        home_1.profile_button.double_click()
         profile_1.contacts_button.scroll_to_element(9, 'up')
         profile_1.open_contact_from_profile(transaction_senders['A']['username'])
         nickname_after_sync = 'my_transaction sender'
@@ -348,7 +348,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
                 '"%s" public chat is not synced after adding when devices are paired' % public_chat_after_sync)
 
         home_1.just_fyi('Contacts (main device): remove and block contact')
-        home_1.profile_button.click()
+        home_1.profile_button.double_click()
         profile_1.contacts_button.scroll_to_element(9, 'up')
         profile_1.open_contact_from_profile(nickname)
         chat_1.block_contact()
@@ -364,7 +364,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi('Chats (main device):delete added public chat, (secondary device): check that synced')
         for profile in (profile_1, profile_2):
             profile.get_back_to_home_view()
-            profile.home_button.click()
+            profile.home_button.double_click()
         home_1.delete_chat_long_press('#%s' % public_chat_after_sync)
         home_2.element_by_text('#%s' % public_chat_after_sync).wait_for_invisibility_of_element(60)
 

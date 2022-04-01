@@ -485,7 +485,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('"Add to contacts" button is shown in 1-1 after adding user to contacts from profile')
 
         device_1.just_fyi('Remove user from contacts')
-        chat_1.profile_button.click()
+        chat_1.profile_button.double_click()
         userprofile = profile_1.open_contact_from_profile(nickname)
         userprofile.remove_from_contacts.click()
         if userprofile.remove_from_contacts.is_element_displayed():
