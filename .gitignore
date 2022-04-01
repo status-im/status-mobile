@@ -41,6 +41,7 @@ local.properties
 # VS Code
 .vscode/ipch/
 .vscode/settings.json
+workspace.code-workspace
 
 # node.js
 #

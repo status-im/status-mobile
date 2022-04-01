@@ -1,5 +1,6 @@
 (ns status-im.multiaccounts.update.core
-  (:require [status-im.ethereum.json-rpc :as json-rpc]
+  (:require [status-im.constants :as constants]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
@@ -42,7 +43,15 @@
 
 (fx/defn optimistic
   [{:keys [db] :as cofx} setting setting-value]
-  (let [current-multiaccount (:multiaccount db)]
+  (let [current-multiaccount (:multiaccount db)
+        setting-value (if (= :currency setting)
+                        (keyword setting-value)
+                        setting-value)
+        db (if (= :stickers/packs-installed setting)
+             ;;updating :stickers/packs for installed stickers
+             (let [packs-installed-keys (keys (js->clj setting-value))]
+               (reduce #(assoc-in %1 [:stickers/packs %2 :status] constants/sticker-pack-status-installed) db packs-installed-keys))
+             db)]
     {:db (if setting-value
            (assoc-in db [:multiaccount setting] setting-value)
            (update db :multiaccount dissoc setting))}))
