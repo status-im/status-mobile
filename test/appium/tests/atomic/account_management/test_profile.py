@@ -6,6 +6,7 @@ from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten, user_mainnet
 from views.sign_in_view import SignInView
 from time import time
+from tests.users import chat_users
 
 
 class TestProfileSingleDevice(SingleDeviceTestCase):
@@ -269,20 +270,45 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(700702)
     @marks.medium
+    # TODO: Can be failed due to mailserver issue
     def test_backup_of_contacts(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
 
         home.just_fyi('Add user to contacts')
-        home.add_contact(basic_user['public_key'])
+        chat = home.add_contact(basic_user['public_key'])
 
-        home.just_fyi('Back up contacts')
+        home.just_fyi('Add nickname to contact')
+        nickname = 'test user'
+        chat.chat_options.click()
+        chat.view_profile_button.click()
+        chat.set_nickname(nickname)
+        home.back_button.click()
+
+        home.just_fyi('Add ENS-user to contacts')
+        home.add_contact(ens_user['ens'])
+        home.back_button.click()
+
+        home.just_fyi('Block user')
+        home.add_contact(chat_users['A']['public_key'], add_in_contacts=False)
+        chat.chat_options.click()
+        chat.view_profile_button.click()
+        chat.block_contact()
+
+        home.just_fyi('Add nickname to non-contact user')
+        nickname1 = 'non-contact user'
+        home.add_contact(chat_users['B']['public_key'], add_in_contacts=False)
+        chat.chat_options.click()
+        chat.view_profile_button.click()
+        chat.set_nickname(nickname1)
+
+        home.just_fyi('Perform backup')
         profile = home.profile_button.click()
         profile.sync_settings_button.click()
         profile.backup_settings_button.click()
         profile.perform_backup_button.click()
 
-        profile.just_fyi('Back up seed phrase')
+        profile.just_fyi('Backup seed phrase')
         profile.back_button.click(2)
         profile.privacy_and_security_button.click()
         profile.backup_recovery_phrase_button.click()
@@ -293,12 +319,27 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.just_fyi('Recover account from seed phrase')
         sign_in.recover_access(' '.join(recovery_phrase.values()))
 
-        sign_in.just_fyi('Check backed up contact')
+        sign_in.just_fyi('Check backup of contact with nickname')
         profile.profile_button.click()
         profile.contacts_button.click()
-        profile.element_by_text(basic_user["username"])
-        if not profile.element_by_text(basic_user['username']).is_element_displayed():
-            self.driver.fail("Contact was not backed up!")
+        if not profile.element_by_text(nickname).is_element_displayed():
+            self.errors.append('Nickname of contact was not backed up')
+
+        sign_in.just_fyi('Check backup of ENS contact')
+        if not profile.element_by_text('@%s' % ens_user['ens']).is_element_displayed():
+            self.errors.append('ENS contact was not backed up')
+
+        sign_in.just_fyi('Check backup of blocked user')
+        profile.blocked_users_button.click()
+        if not profile.element_by_text(chat_users['A']['username']).is_element_displayed():
+            self.errors.append('Blocked user was not backed up')
+
+        sign_in.just_fyi('Check backup of nickname for non-contact user')
+        home.home_button.double_click()
+        home.add_contact(chat_users['B']['public_key'], add_in_contacts=False)
+        if not chat.element_by_text(nickname1).is_element_displayed():
+            self.errors.append("Nickname of non-contact user was not backed up")
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5431)
     @marks.medium
