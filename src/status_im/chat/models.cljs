@@ -48,7 +48,7 @@
 
 (defn active-chat? [cofx chat-id]
   (let [chat (get-chat cofx chat-id)]
-    (not (nil? chat))))
+    (:active chat)))
 
 (defn foreground-chat?
   [{{:keys [current-chat-id view-id]} :db} chat-id]
@@ -115,11 +115,11 @@
   "Add chats to db and update"
   [{:keys [db] :as cofx} chats]
   (let [{:keys [all-chats chats-home-list removed-chats]}
-        (reduce (fn [acc {:keys [chat-id profile-public-key timeline? community-id active] :as chat}]
-                  (if (not active)
+        (reduce (fn [acc {:keys [chat-id profile-public-key timeline? community-id active muted] :as chat}]
+                  (if (not (or active muted))
                     (update acc :removed-chats conj chat-id)
                     (cond-> acc
-                      (and (not profile-public-key) (not timeline?) (not community-id))
+                      (and (not profile-public-key) (not timeline?) (not community-id) active)
                       (update :chats-home-list conj chat-id)
                       :always
                       (assoc-in [:all-chats chat-id] chat))))
@@ -177,8 +177,9 @@
   [{:keys [db now] :as cofx} chat-id]
   (fx/merge
    cofx
-   {:db (-> db
-            (update :chats dissoc chat-id)
+   {:db (-> (if (get-in db [:chats chat-id :muted])
+              (assoc-in db [:chats chat-id :active] false)
+              (update db :chats dissoc chat-id))
             (update :chats-home-list disj chat-id)
             (assoc-in [:current-chat-id] nil))
     ::json-rpc/call [{:method "wakuext_deactivateChat"
