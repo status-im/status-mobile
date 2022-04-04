@@ -225,6 +225,8 @@
   {:events [:chat.ui/remove-chat]}
   [{:keys [db now] :as cofx} chat-id]
   (fx/merge cofx
+            {:clear-message-notifications
+             [[chat-id] (get-in db [:multiaccount :remote-push-notifications-enabled?])]}
             (deactivate-chat chat-id)
             (offload-messages chat-id)
             (when (not (= (:view-id db) :home))

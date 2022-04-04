@@ -67,8 +67,10 @@
 
 (fx/defn handle-mark-all-read-successful
   {:events [::mark-all-read-successful]}
-  [{:keys [db]} chat-id]
-  {:db (mark-chat-all-read db chat-id)})
+  [{:keys [db] :as cofx} chat-id]
+  (fx/merge cofx
+            {:db (mark-chat-all-read db chat-id)}
+            (notification-center/get-activity-center-notifications-count)))
 
 (fx/defn handle-mark-all-read-in-community-successful
   {:events [::mark-all-read-in-community-successful]}
