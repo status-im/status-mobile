@@ -7,7 +7,8 @@
             [status-im.chat.models.message-list :as message-list]
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.chat.models.pin-message :as models.pin-message]))
+            [status-im.chat.models.pin-message :as models.pin-message]
+            [status-im.notifications-center.core :as notification-center]))
 
 (defn cursor->clock-value
   [^js cursor]
@@ -71,24 +72,30 @@
 
 (fx/defn handle-mark-all-read-in-community-successful
   {:events [::mark-all-read-in-community-successful]}
-  [{:keys [db]} chat-ids]
-  {:db (reduce mark-chat-all-read db chat-ids)})
+  [{:keys [db] :as cofx} chat-ids]
+  (fx/merge cofx
+            {:db (reduce mark-chat-all-read db chat-ids)}
+            (notification-center/get-activity-center-notifications-count)))
 
 (fx/defn handle-mark-all-read
   {:events [:chat.ui/mark-all-read-pressed :chat/mark-all-as-read]}
-  [_ chat-id]
-  {:clear-message-notifications chat-id
+  [{db :db} chat-id]
+  {:clear-message-notifications  [[chat-id]
+                                  (get-in db [:multiaccount :remote-push-notifications-enabled?])]
    ::json-rpc/call [{:method     (json-rpc/call-ext-method "markAllRead")
                      :params     [chat-id]
                      :on-success #(re-frame/dispatch [::mark-all-read-successful chat-id])}]})
 
 (fx/defn handle-mark-mark-all-read-in-community
   {:events [:chat.ui/mark-all-read-in-community-pressed]}
-  [_ community-id]
-  {:clear-message-notifications community-id
-   ::json-rpc/call [{:method     (json-rpc/call-ext-method "markAllReadInCommunity")
-                     :params     [community-id]
-                     :on-success #(re-frame/dispatch [::mark-all-read-in-community-successful %])}]})
+  [{db :db} community-id]
+  (let [community-chat-ids (map #(str community-id %)
+                                (keys (get-in db [:communities community-id :chats])))]
+    {:clear-message-notifications  [community-chat-ids
+                                    (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+     ::json-rpc/call [{:method     (json-rpc/call-ext-method "markAllReadInCommunity")
+                       :params     [community-id]
+                       :on-success #(re-frame/dispatch [::mark-all-read-in-community-successful %])}]}))
 
 (fx/defn messages-loaded
   "Loads more messages for current chat"

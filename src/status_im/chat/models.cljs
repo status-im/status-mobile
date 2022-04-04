@@ -135,7 +135,9 @@
                      (update :chats #(apply dissoc % removed-chats))
                      (update :chats-home-list set/difference removed-chats))}
             (when (not-empty removed-chats)
-              {:clear-multiple-message-notifications removed-chats}))
+              {:clear-message-notifications
+               [removed-chats
+                (get-in db [:multiaccount :remote-push-notifications-enabled?])]}))
      leave-removed-chat)))
 
 (fx/defn clear-history

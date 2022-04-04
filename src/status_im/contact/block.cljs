@@ -44,7 +44,9 @@
            {:db (-> db
                     (update :chats dissoc public-key)
                     (update :chats-home-list disj public-key)
-                    (assoc-in [:contacts/contacts public-key :added] false))}
+                    (assoc-in [:contacts/contacts public-key :added] false))
+            :clear-message-notifications
+            [[public-key] (get-in db [:multiaccount :remote-push-notifications-enabled?])]}
            (notification-center/get-activity-center-notifications-count)
            fxs)))
 
