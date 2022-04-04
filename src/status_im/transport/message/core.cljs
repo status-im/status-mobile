@@ -50,6 +50,7 @@
         ^js bookmarks                  (.-bookmarks response-js)
         ^js settings                   (.-settings response-js)
         ^js cleared-histories          (.-clearedHistories response-js)
+        ^js identity-images            (.-identityImages response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
 
@@ -159,7 +160,18 @@
                    visibility-status-updates-clj)))
 
       (seq settings)
-      (update.core/set-many-js cofx settings)
+      (do
+        (js-delete response-js "settings")
+        (fx/merge cofx
+                  (process-next response-js sync-handler)
+                  (update.core/set-many-js settings)))
+
+      (seq identity-images)
+      (let [images-clj (map types/js->clj identity-images)]
+        (js-delete response-js "identityImages")
+        (fx/merge cofx
+                  (process-next response-js sync-handler)
+                  (update.core/optimistic :images images-clj)))
 
       (some? current-visibility-status)
       (let [current-visibility-status-clj (types/js->clj current-visibility-status)]
