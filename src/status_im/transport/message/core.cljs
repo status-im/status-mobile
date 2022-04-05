@@ -100,7 +100,7 @@
         (js-delete response-js "bookmarks")
         (fx/merge cofx
                   (process-next response-js sync-handler)
-                  (browser/handle-bookmarks cofx bookmarks-clj)))
+                  (browser/handle-bookmarks bookmarks-clj)))
 
       (seq pin-messages)
       (let [pin-messages (types/js->clj pin-messages)]
