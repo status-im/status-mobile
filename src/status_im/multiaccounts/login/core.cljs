@@ -415,6 +415,11 @@
            (when (= stored-key-uid key-uid)
              (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])))))))))
 
+(fx/defn check-last-chat
+  {:events [::check-last-chat]}
+  [{:keys [db]}]
+  {::open-last-chat (get-in db [:multiaccount :key-uid])})
+
 (fx/defn get-chats-callback
   {:events [::get-chats-callback]}
   [{:keys [db] :as cofx}]

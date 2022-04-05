@@ -13,7 +13,8 @@
    [status-im.ui.screens.views :as views]
    [status-im.utils.fx :as fx]
    [status-im.utils.platform :as platform]
-   [taoensso.timbre :as log]))
+   [taoensso.timbre :as log]
+   [status-im.multiaccounts.login.core :as login-core]))
 
 (def debug? ^boolean js/goog.DEBUG)
 
@@ -206,7 +207,8 @@
                                     (re-frame/dispatch-sync [::set-multiaccount-root])
                                     (when @root-id
                                       (reset! root-comp-id @root-id)
-                                      (.setRoot Navigation (clj->js (get (roots/roots) @root-id)))))
+                                      (.setRoot Navigation (clj->js (get (roots/roots) @root-id)))
+                                      (re-frame/dispatch [::login-core/check-last-chat])))
                                   (.hide ^js splash-screen))))
 
 (defn get-screen-component [comp]
