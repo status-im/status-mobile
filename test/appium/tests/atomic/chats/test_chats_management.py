@@ -11,50 +11,6 @@ from views.chat_view import ChatView
 
 class TestChatManagement(SingleDeviceTestCase):
 
-    @marks.testrail_id(5304)
-    @marks.high
-    def test_open_chat_by_pasting_chat_key_check_invalid_chat_key_cases(self):
-        home = SignInView(self.driver).create_user()
-        public_key = basic_user['public_key']
-        home.plus_button.click()
-        chat = home.start_new_chat_button.click()
-
-        home.just_fyi("Check that invalid public key and ENS can not be resolved")
-        for invalid_chat_key in (basic_user['public_key'][:-1], ens_user_ropsten['ens'][:-2]):
-            chat.public_key_edit_box.clear()
-            chat.public_key_edit_box.set_value(invalid_chat_key)
-            chat.confirm()
-            if not home.element_by_translation_id("profile-not-found").is_element_displayed():
-                self.errors.append('Error is not shown for invalid public key')
-
-        home.just_fyi("Check that valid ENS is resolved")
-        chat.public_key_edit_box.clear()
-        chat.public_key_edit_box.set_value(ens_user_ropsten['ens'])
-        resolved_ens = '%s.stateofus.eth' % ens_user_ropsten['ens']
-        if not chat.element_by_text(resolved_ens).is_element_displayed(10):
-            self.errors.append('ENS name is not resolved after pasting chat key')
-        home.close_button.click()
-
-        home.just_fyi("Check that can paste public key from keyboard and start chat")
-        home.join_public_chat(home.get_random_chat_name())
-        chat.send_message(public_key)
-        chat.copy_message_text(public_key)
-        chat.back_button.click()
-        home.plus_button.click()
-        home.start_new_chat_button.click()
-        chat.public_key_edit_box.paste_text_from_clipboard()
-        if chat.public_key_edit_box.text != public_key:
-            self.errors.append('Public key is not pasted from clipboard')
-        if not chat.element_by_text(basic_user['username']).is_element_displayed():
-            self.errors.append('3 random-name is not resolved after pasting chat key')
-        chat.public_key_edit_box.click()
-        chat.confirm_until_presence_of_element(chat.chat_message_input)
-        chat.get_back_to_home_view()
-        if not home.get_chat(basic_user['username']).is_element_present():
-            self.errors.append("No chat open in home view")
-
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(5426)
     @marks.medium
     def test_public_clear_history_via_options_and_long_press(self):

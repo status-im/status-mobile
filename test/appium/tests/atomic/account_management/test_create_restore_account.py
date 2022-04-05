@@ -84,7 +84,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         wallet.click_system_back_button()
 
         self.home.just_fyi("Check that can paste wallet address in chat message input")
-        wallet.home_button.click()
+        wallet.home_button.double_click()
         self.home.get_chat('#%s' % self.public_chat_name).click()
         self.chat.chat_message_input.click()
         self.chat.paste_text()
@@ -326,8 +326,8 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
                 'popup': True
             },
         ]
-        profile = self.home.profile_button.click()
-        profile.logout()
+        self.home.driver.close_app()
+        self.home.driver.launch_app()
         if self.sign_in.ok_button.is_element_displayed():
             self.sign_in.ok_button.click()
         self.sign_in.back_button.click()

@@ -9,7 +9,7 @@ from views.chat_view import ChatView
 # TODO: moved here until resolve of 13048
 @pytest.mark.xdist_group(name="group_chat_3")
 @marks.critical
-class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
+class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod
     def setup_class(cls):

@@ -2,11 +2,257 @@ import re
 
 from tests import marks, bootnode_address, mailserver_address, test_dapp_url, test_dapp_name, mailserver_ams, \
     mailserver_gc, mailserver_hk, used_fleet, common_password
-from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
+from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase, MultipleSharedDeviceTestCase, create_shared_drivers
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten, user_mainnet
 from views.sign_in_view import SignInView
-from time import time
 from tests.users import chat_users
+import pytest
+
+
+@pytest.mark.xdist_group(name="ens_stickers_mention_2")
+@marks.critical
+class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
+
+    @classmethod
+    def setup_class(cls):
+        cls.drivers, cls.loop = create_shared_drivers(2)
+        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
+        cls.sender, cls.reciever = transaction_senders['ETH_3'], ens_user
+        cls.home_1 = cls.device_1.recover_access(passphrase=cls.sender['passphrase'])
+        cls.home_2 = cls.device_2.recover_access(ens_user['passphrase'], enable_notifications=True)
+        cls.ens = '@%s' % cls.reciever['ens']
+        cls.pub_chat_name = cls.home_1.get_random_chat_name()
+        cls.chat_1, cls.chat_2 = cls.home_1.join_public_chat(cls.pub_chat_name), cls.home_2.join_public_chat(cls.pub_chat_name)
+        [home.home_button.double_click() for home in (cls.home_1, cls.home_2)]
+        cls.profile_2 = cls.home_2.profile_button.click()
+        cls.profile_2.connect_existing_ens(cls.reciever['ens'])
+        cls.home_1.add_contact(cls.reciever['ens'])
+        cls.home_2.home_button.click()
+        cls.home_2.add_contact(cls.sender['public_key'])
+        # To avoid activity centre for restored users
+        [chat.send_message("hey!") for chat in (cls.chat_1, cls.chat_2)]
+        [home.home_button.double_click() for home in (cls.home_1, cls.home_2)]
+
+    @marks.testrail_id(702152)
+    def test_ens_purchased_in_profile(self):
+        self.home_2.profile_button.double_click()
+        ens_name_after_adding = self.profile_2.default_username_text.text
+        if ens_name_after_adding != '@%s' % ens_user['ens']:
+            self.errors.append('ENS name is not shown as default in user profile after adding, "%s" instead' % ens_name_after_adding)
+
+        self.home_2.just_fyi('check ENS name wallet address and public key')
+        self.home_2.element_by_text(self.reciever['ens']).click()
+        self.home_2.element_by_text(self.reciever['ens']).click()
+        for text in (self.reciever['address'].lower(), self.reciever['public_key']):
+            if not self.home_2.element_by_text_part(text).is_element_displayed(40):
+                self.errors.append('%s text is not shown' % text)
+        self.home_2.profile_button.double_click()
+
+        self.home_2.just_fyi('check ENS name is shown on share my profile window')
+        self.profile_2.share_my_profile_button.click()
+        if self.profile_2.ens_name_in_share_chat_key_text.text != '%s' % ens_user['ens']:
+            self.errors.append('No ENS name is shown on tapping on share icon in Profile')
+        self.profile_2.close_share_popup()
+        self.errors.verify_no_errors()
+
+    @marks.transaction
+    @marks.testrail_id(702153)
+    def test_ens_command_send_eth_1_1_chat(self):
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        wallet_1 = self.home_1.wallet_button.click()
+        wallet_1.wait_balance_is_changed()
+        wallet_1.home_button.click()
+        self.home_1.get_chat(self.ens).click()
+        self.chat_1.commands_button.click()
+        amount = self.chat_1.get_unique_amount()
+
+        self.chat_1.just_fyi("Check sending assets to ENS name from sender side")
+        send_message = self.chat_1.send_command.click()
+        send_message.amount_edit_box.set_value(amount)
+        send_message.confirm()
+        send_message.next_button.click()
+        from views.send_transaction_view import SendTransactionView
+        send_transaction = SendTransactionView(self.drivers[0])
+        send_transaction.ok_got_it_button.click()
+        send_transaction.sign_transaction()
+        chat_1_sender_message = self.chat_1.get_outgoing_transaction(transaction_value=amount)
+        self.network_api.wait_for_confirmation_of_transaction(self.sender['address'], amount, confirmations=3)
+        chat_1_sender_message.transaction_status.wait_for_element_text(chat_1_sender_message.confirmed)
+
+        self.chat_2.just_fyi("Check that message is fetched for receiver")
+        self.home_2.get_chat(self.sender['username']).click()
+        chat_2_reciever_message = self.chat_2.get_incoming_transaction(transaction_value=amount)
+        chat_2_reciever_message.transaction_status.wait_for_element_text(chat_2_reciever_message.confirmed)
+
+    @marks.testrail_id(702155)
+    def test_ens_mention_nickname_1_1_chat(self):
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+
+        self.home_1.just_fyi('Mention user by ENS in 1-1 chat')
+        message, message_ens_owner = '%s hey!' % self.ens, '%s hey!' % self.reciever['ens']
+        self.home_1.get_chat(self.ens).click()
+        self.chat_1.send_message(message)
+
+        self.home_1.just_fyi('Set nickname and mention user by nickname in 1-1 chat')
+        russian_nickname = 'МОЙ дорогой ДРУх'
+        self.chat_1.chat_options.click()
+        self.chat_1.view_profile_button.click()
+        self.chat_1.set_nickname(russian_nickname)
+        self.chat_1.select_mention_from_suggestion_list(russian_nickname + ' ' + self.ens)
+
+        self.chat_1.just_fyi('Check that nickname is shown in preview for 1-1 chat')
+        updated_message = '%s hey!' % russian_nickname
+        self.chat_1.home_button.double_click()
+        if not self.chat_1.element_by_text(updated_message).is_element_displayed():
+            self.errors.append('"%s" is not show in chat preview on home screen!' % message)
+        self.home_1.get_chat(russian_nickname).click()
+
+        self.chat_1.just_fyi('Check redirect to user profile on mention by nickname tap')
+        self.chat_1.chat_element_by_text(updated_message).click()
+        if not self.chat_1.profile_block_contact.is_element_displayed():
+            self.errors.append(
+                'No redirect to user profile after tapping on message with mention (nickname) in 1-1 chat')
+        else:
+            self.chat_1.profile_send_message.click()
+
+        self.chat_2.just_fyi("Check message with mention for ENS owner")
+        self.home_2.get_chat(self.sender['username']).click()
+        if not self.chat_2.chat_element_by_text(message_ens_owner).is_element_displayed():
+            self.errors.append('Expected %s message is not shown for ENS owner' % message_ens_owner)
+
+        self.chat_1.just_fyi('Check if after deleting nickname ENS is shown again')
+        self.chat_1.chat_options.click()
+        self.chat_1.view_profile_button.click()
+        self.chat_1.profile_nickname_button.click()
+        self.chat_1.nickname_input_field.clear()
+        self.chat_1.element_by_text('Done').click()
+        self.chat_1.close_button.click()
+        if self.chat_1.user_name_text.text != self.ens:
+            self.errors.append("Username '%s' is not updated to ENS '%s' after deleting nickname" %
+                               (self.chat_1.user_name_text.text, self.ens))
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702156)
+    def test_ens_mention_push_highlighted_public_chat(self):
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        ####
+        self.home_2.put_app_to_background()
+        self.home_2.open_notification_bar()
+
+        self.home_1.just_fyi('check that can mention user with ENS name')
+        self.home_1.get_chat(self.ens).click()
+        self.chat_1.select_mention_from_suggestion_list(self.reciever['ens'])
+        if self.chat_1.chat_message_input.text != self.ens + ' ':
+            self.errors.append(
+                'ENS username is not resolved in chat input after selecting it in mention suggestions list!')
+        self.chat_1.send_message_button.click()
+
+        self.home_2.just_fyi('check that PN is received and after tap you are redirected to public chat, mention is highligted')
+        # TODO: issue #11003
+        pn = self.home_2.get_pn(self.reciever['username'])
+        if pn:
+            pn.click()
+        else:
+            self.home_2.click_system_back_button(2)
+        if self.home_2.element_starts_with_text(self.reciever['ens']).is_element_differs_from_template('mentioned.png', 2):
+            self.errors.append('Mention is not highlighted!')
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702157)
+    def test_sticker_1_1_public_chat(self):
+        self.home_2.status_in_background_button.click_if_shown()
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        (profile_1, profile_2) = (home.profile_button.click() for home in (self.home_1, self.home_2))
+        [profile.switch_network() for profile in (profile_1, profile_2)]
+        # TODO: no check there is no stickers on ropsten due to transfer stickers to status-go
+
+        self.home_2.just_fyi('Check that can use purchased stickerpack')
+        self.home_2.get_chat('#%s' % self.pub_chat_name).click()
+        self.chat_2.install_sticker_pack_by_name('Tozemoon')
+        self.chat_2.sticker_icon.click()
+        if not self.chat_2.chat_item.is_element_displayed():
+            self.errors.append('Cannot use purchased stickers')
+
+        self.home_1.just_fyi('Install free sticker pack and use it in 1-1 chat')
+        self.home_1.get_chat(self.ens).click()
+        self.chat_1.install_sticker_pack_by_name('Status Cat')
+        self.chat_1.sticker_icon.click()
+        if not self.chat_1.sticker_message.is_element_displayed():
+            self.errors.append('Sticker was not sent')
+        self.chat_1.swipe_right()
+        if not self.chat_1.sticker_icon.is_element_displayed():
+            self.errors.append('Sticker is not shown in recently used list')
+        self.chat_1.get_back_to_home_view()
+
+        self.home_1.just_fyi('Send stickers in public chat from Recent')
+        self.home_1.join_public_chat(self.home_1.get_random_chat_name())
+        self.chat_1.show_stickers_button.click()
+        self.chat_1.sticker_icon.click()
+        if not self.chat_1.chat_item.is_element_displayed():
+            self.errors.append('Sticker was not sent from Recent')
+
+        self.home_2.just_fyi('Check that can install stickers by tapping on sticker message')
+        self.home_2.home_button.double_click()
+        self.home_2.get_chat(self.sender['username']).click()
+        self.chat_2.chat_item.click()
+        if not self.chat_2.element_by_text_part('Status Cat').is_element_displayed():
+            self.errors.append('Stickerpack is not available for installation after tapping on sticker message')
+        self.chat_2.element_by_text_part('Free').click()
+        if self.chat_2.element_by_text_part('Free').is_element_displayed():
+            self.errors.append('Stickerpack was not installed')
+
+        self.chat_2.just_fyi('Check that can navigate to another user profile via long tap on sticker message')
+        self.chat_2.close_sticker_view_icon.click()
+        self.chat_2.chat_item.long_press_element()
+        self.chat_2.element_by_text('View Details').click()
+        self.chat_2.profile_send_message.wait_and_click()
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702158)
+    def test_start_new_chat_screen_validation(self):
+        [home.get_back_to_home_view() for home in (self.home_1, self.home_2)]
+        self.home_2.driver.quit()
+        public_key = basic_user['public_key']
+        self.home_1.plus_button.click()
+        chat = self.home_1.start_new_chat_button.click()
+
+        self.home_1.just_fyi("Validation: invalid public key and invalid ENS")
+        for invalid_chat_key in (basic_user['public_key'][:-1], ens_user_ropsten['ens'][:-2]):
+            chat.public_key_edit_box.clear()
+            chat.public_key_edit_box.set_value(invalid_chat_key)
+            chat.confirm()
+            if not self.home_1.element_by_translation_id("profile-not-found").is_element_displayed():
+                self.errors.append('Error is not shown for invalid public key')
+
+        self.home_1.just_fyi("Check that valid ENS is resolved")
+        chat.public_key_edit_box.clear()
+        chat.public_key_edit_box.set_value(ens_user_ropsten['ens'])
+        resolved_ens = '%s.stateofus.eth' % ens_user_ropsten['ens']
+        if not chat.element_by_text(resolved_ens).is_element_displayed(10):
+            self.errors.append('ENS name is not resolved after pasting chat key')
+        self.home_1.close_button.click()
+
+        self.home_1.just_fyi("Check that can paste public key from keyboard and start chat")
+        self.home_1.get_chat('#%s' % self.pub_chat_name).click()
+        chat.send_message(public_key)
+        chat.copy_message_text(public_key)
+        chat.back_button.click()
+        self.home_1.plus_button.click()
+        self.home_1.start_new_chat_button.click()
+        chat.public_key_edit_box.paste_text_from_clipboard()
+        if chat.public_key_edit_box.text != public_key:
+            self.errors.append('Public key is not pasted from clipboard')
+        if not chat.element_by_text(basic_user['username']).is_element_displayed():
+            self.errors.append('3 random-name is not resolved after pasting chat key')
+
+        self.home_1.just_fyi('My_profile button at Start new chat view opens own QR code with public key pop-up')
+        self.home_1.my_profile_on_start_new_chat_button.click()
+        account = self.home_1.get_profile_view()
+        if not (account.public_key_text.is_element_displayed() and account.share_button.is_element_displayed()
+                and account.qr_code_image.is_element_displayed()):
+            self.errors.append('No self profile pop-up data displayed after My_profile button tap')
+        self.errors.verify_no_errors()
 
 
 class TestProfileSingleDevice(SingleDeviceTestCase):
@@ -109,32 +355,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.switch_network('BSC Network')
         home.wallet_button.click()
         wallet.element_by_text(user['bsc']).wait_for_element(30)
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5502)
-    @marks.critical
-    def test_can_add_existing_ens_on_mainnet(self):
-        home = SignInView(self.driver).recover_access(ens_user['passphrase'])
-        profile = home.profile_button.click()
-
-        profile.just_fyi('check if your name can be added via "ENS usernames" in Profile')
-        profile.switch_network()
-        home.profile_button.click()
-        profile.connect_existing_ens(ens_user['ens'])
-
-        profile.just_fyi('check that after adding username is shown in "ENS usernames" and profile')
-        if not profile.element_by_text(ens_user['ens']).is_element_displayed():
-            self.errors.append('No ENS name is shown in own "ENS usernames" after adding')
-        profile.back_button.click()
-        if not profile.element_by_text('@%s' % ens_user['ens']).is_element_displayed():
-            self.errors.append('No ENS name is shown in own profile after adding')
-        if not profile.element_by_text('%s' % ens_user['ens']).is_element_displayed():
-            self.errors.append('No ENS name is shown in own profile after adding')
-        profile.share_my_profile_button.click()
-        if profile.ens_name_in_share_chat_key_text.text != '%s' % ens_user['ens']:
-            self.errors.append('No ENS name is shown on tapping on share icon in Profile')
-        profile.close_share_popup()
 
         self.errors.verify_no_errors()
 
@@ -946,107 +1166,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.home_button.click(desired_view='chat')
         if not public_chat_1.chat_element_by_text(message).is_element_displayed(60):
             self.errors.append('History was not fetched after enabling use_history_node')
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6226)
-    @marks.critical
-    def test_ens_mentions_pn_and_nickname_in_public_and_1_1_chats(self):
-        self.create_drivers(2)
-        device_1, device_2 = self.drivers[0], self.drivers[1]
-        sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
-        user_1 = ens_user
-        home_1 = sign_in_1.recover_access(user_1['passphrase'], enable_notifications=True)
-        home_2 = sign_in_2.create_user()
-        public_key_2, username_2 = home_2.get_public_key_and_username(return_username=True)
-        home_2.home_button.double_click()
-        profile_1 = sign_in_1.profile_button.click()
-        profile_1.connect_existing_ens(user_1['ens'])
-
-        home_1.just_fyi('check ENS name wallet address and public key')
-        profile_1.element_by_text(user_1['ens']).click()
-        for text in (user_1['address'].lower(), user_1['public_key']):
-            if not profile_1.element_by_text_part(text).is_element_displayed(40):
-                self.errors.append('%s text is not shown' % text)
-        profile_1.home_button.click()
-
-        home_2.just_fyi('joining same public chat, set ENS name and check it in chat from device2')
-        chat_name = home_1.get_random_chat_name()
-        [public_1, public_2] = [home.join_public_chat(chat_name) for home in (home_1, home_2)]
-        public_1.home_button.double_click()
-        home_1.profile_button.double_click()
-        ens_name = '@' + user_1['ens']
-        profile_1.element_by_translation_id("ens-your-your-name").click()
-        if profile_1.username_in_ens_chat_settings_text.text != ens_name:
-            self.errors.append('ENS username is not shown in ENS usernames Chat Settings after enabling')
-        profile_1.back_button.click()
-        profile_1.home_button.click()
-        home_1.get_chat('#' + chat_name).click()
-        message_text_2 = 'message test text 1'
-        public_1.send_message(message_text_2)
-        if not public_2.wait_for_element_starts_with_text(ens_name):
-            self.errors.append('ENS username is not shown in public chat')
-        home_1.put_app_to_background()
-
-        home_2.just_fyi('check that can mention user with ENS name')
-        public_2.select_mention_from_suggestion_list(user_1['ens'])
-        if public_2.chat_message_input.text != ens_name + ' ':
-            self.errors.append(
-                'ENS username is not resolved in chat input after selecting it in mention suggestions list!')
-        public_2.send_message_button.click()
-        public_2.element_starts_with_text(ens_name, 'button').click()
-        for element in (public_2.element_by_text(user_1['username']), public_2.profile_add_to_contacts):
-            if not element.is_element_displayed():
-                self.errors.append('Was not redirected to user profile after tapping on mention!')
-
-        home_1.just_fyi(
-            'check that PN is received and after tap you are redirected to public chat, mention is highligted')
-        home_1.open_notification_bar()
-        home_1.element_by_text_part(username_2).click()
-        if home_1.element_starts_with_text(user_1['ens']).is_element_differs_from_template('mentioned.png', 2):
-            self.errors.append('Mention is not highlighted!')
-
-        # Close Device1 driver session since it's not needed anymore
-        self.drivers[0].quit()
-
-        home_2.just_fyi(
-            'check that ENS name is shown in 1-1 chat without adding user as contact in header, profile, options')
-        one_to_one_2 = public_2.profile_send_message.click()
-        if one_to_one_2.user_name_text.text != ens_name:
-            self.errors.append('ENS username is not shown in 1-1 chat header')
-        one_to_one_2.chat_options.click()
-        if not one_to_one_2.element_by_text(ens_name).is_element_displayed():
-            self.errors.append('ENS username is not shown in 1-1 chat options')
-        one_to_one_2.view_profile_button.click()
-        if not one_to_one_2.element_by_text(ens_name).is_element_displayed():
-            self.errors.append('ENS username is not shown in user profile')
-
-        home_2.just_fyi('add user to contacts and check that ENS name is shown in contact')
-        one_to_one_2.profile_add_to_contacts.click()
-        public_2.close_button.click()
-        profile_2 = one_to_one_2.profile_button.click()
-        profile_2.open_contact_from_profile(ens_name)
-
-        home_2.just_fyi('set nickname and recheck username in 1-1 header, profile, options, contacts')
-        nickname = 'test user' + str(round(time()))
-        public_2.set_nickname(nickname)
-        for name in (nickname, ens_name):
-            if not profile_2.element_by_text(name).is_element_displayed():
-                self.errors.append('%s is not shown in contact list' % name)
-        profile_2.home_button.click(desired_view='chat')
-        if one_to_one_2.user_name_text.text != nickname:
-            self.errors.append('Nickname for user with ENS is not shown in 1-1 chat header')
-        one_to_one_2.chat_options.click()
-        if not one_to_one_2.element_by_text(nickname).is_element_displayed():
-            self.errors.append('Nickname for user with ENS is not shown in 1-1 chat options')
-
-        home_2.just_fyi('check nickname in public chat')
-        public_2.get_back_to_home_view()
-        home_2.get_chat('#' + chat_name).click()
-        chat_element = public_2.chat_element_by_text(message_text_2)
-        chat_element.find_element()
-        if chat_element.username.text != '%s %s' % (nickname, ens_name):
-            self.errors.append('Nickname for user with ENS is not shown in public chat')
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6228)

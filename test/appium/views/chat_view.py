@@ -876,6 +876,7 @@ class ChatView(BaseView):
 
     def install_sticker_pack_by_name(self, pack_name='Status Cat'):
         self.driver.info("## Installing '%s' stickerpack" % pack_name, device=False)
+        self.chat_message_input.click()
         self.show_stickers_button.click()
         self.get_stickers.click()
         element = Button(self.driver,
