@@ -21,9 +21,9 @@ lxml==4.6.5
 matplotlib==3.3.3
 multidict==5.0.2
 namedlist==1.8
-numpy==1.19.4
+numpy==1.22.2
 pbkdf2==1.3
-Pillow==8.1.0
+Pillow==9.0.1
 py==1.10.0
 py-ecc==5.1.0
 pycryptodome==3.9.9
