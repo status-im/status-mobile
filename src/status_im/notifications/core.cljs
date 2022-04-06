@@ -102,18 +102,19 @@
      (pn-android/disable-notifications)
      (.abandonPermissions ^js pn-ios))))
 
-(re-frame/reg-fx
- :clear-message-notifications
- (fn [chat-id]
-   (when platform/android?
-     (pn-android/clear-message-notifications chat-id))))
+(defn clear-all-message-notifications []
+  (if platform/android?
+    (pn-android/clear-all-message-notifications)
+    (.removeAllDeliveredNotifications ^js pn-ios)))
 
 (re-frame/reg-fx
- :clear-multiple-message-notifications
- (fn [chat-ids]
-   (when platform/android?
-     (doseq [chat-id chat-ids]
-       (pn-android/clear-message-notifications chat-id)))))
+ :clear-message-notifications
+ (fn [[chat-ids remote-push-notifications-enabled?]]
+   (if remote-push-notifications-enabled?
+     (clear-all-message-notifications)
+     (when platform/android?
+       (doseq [chat-id chat-ids]
+         (pn-android/clear-message-notifications chat-id))))))
 
 (fx/defn handle-enable-notifications-event
   {:events [:notifications/registered-for-push-notifications]}

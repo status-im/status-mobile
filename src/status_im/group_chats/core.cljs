@@ -8,7 +8,8 @@
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]))
+            [status-im.i18n.i18n :as i18n]
+            [status-im.notifications-center.core :as notification-center]))
 
 (fx/defn navigate-chat-updated
   {:events [:navigate-chat-updated]}
@@ -20,9 +21,11 @@
 
 (fx/defn handle-chat-removed
   {:events [:chat-removed]}
-  [_ response]
-  {:dispatch-n [[:sanitize-messages-and-process-response response]
-                [:pop-to-root-tab :chat-stack]]})
+  [cofx response]
+  (fx/merge cofx
+            {:dispatch-n [[:sanitize-messages-and-process-response response]
+                          [:pop-to-root-tab :chat-stack]]}
+            (notification-center/get-activity-center-notifications-count)))
 
 (fx/defn handle-chat-update
   {:events [:chat-updated]}

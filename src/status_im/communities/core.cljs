@@ -103,7 +103,8 @@
   [cofx response-js]
   (fx/merge cofx
             (handle-response cofx response-js)
-            (navigation/pop-to-root-tab :chat-stack)))
+            (navigation/pop-to-root-tab :chat-stack)
+            (notification-center/get-activity-center-notifications-count)))
 
 (fx/defn joined
   {:events [::joined ::requested-to-join]}
@@ -156,14 +157,18 @@
 
 (fx/defn leave
   {:events [::leave]}
-  [cofx community-id]
-  {::json-rpc/call [{:method     "wakuext_leaveCommunity"
-                     :params     [community-id]
-                     :js-response true
-                     :on-success #(re-frame/dispatch [::left %])
-                     :on-error   #(do
-                                    (log/error "failed to leave community" community-id %)
-                                    (re-frame/dispatch [::failed-to-leave %]))}]})
+  [{:keys [db] :as cofx} community-id]
+  (let [community-chat-ids (map #(str community-id %)
+                                (keys (get-in db [:communities community-id :chats])))]
+    {:clear-message-notifications  [community-chat-ids
+                                    (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+     ::json-rpc/call [{:method     "wakuext_leaveCommunity"
+                       :params     [community-id]
+                       :js-response true
+                       :on-success #(re-frame/dispatch [::left %])
+                       :on-error   #(do
+                                      (log/error "failed to leave community" community-id %)
+                                      (re-frame/dispatch [::failed-to-leave %]))}]}))
 
 (fx/defn fetch [_]
   {::json-rpc/call [{:method "wakuext_communities"
