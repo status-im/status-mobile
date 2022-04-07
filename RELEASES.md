@@ -1,3 +1,49 @@
+## 1.19 Release notes
+
+### Features
+
+* 💬 Re-open app on the last open chat ([details](https://github.com/status-im/status-react/issues/12782))
+* 🪙 Support \$UBI token ([details](https://github.com/status-im/status-react/issues/12975))
+* 🔔 Implementation of remote android notifications ([details](https://github.com/status-im/status-react/issues/12866))
+* 🔁 Sync clear history on paired devices ([details](https://github.com/status-im/status-react/issues/13004))
+* 📑 Synchronize browser bookmarks/favorites across devices ([details](https://github.com/status-im/status-react/issues/12961))
+* 🔕 Add mute option to android ([details](https://github.com/status-im/status-react/issues/12890))
+* 👛 Wallet Connect 2.0 integration ([details](https://github.com/status-im/status-react/issues/12546))
+* 💰 Implement Wallet Connect 1.0 ([details](https://github.com/status-im/status-react/issues/12870))
+* ⚙️ Sync settings ([details](https://github.com/status-im/status-react/pull/13053))
+
+### Improvements
+
+* Improve order of mailserver requests ([details](https://github.com/status-im/status-react/issues/12783))
+* Load images from an https server ([details](https://github.com/status-im/status-react/issues/12855))
+* Load audio messages from https server ([details](https://github.com/status-im/status-react/issues/13116))
+* Show message timestamps on tap, remove from bubbles 🕙 ([details](https://github.com/status-im/status-react/pull/12915))
+* support PUK and seed recovery during onboarding ([details](https://github.com/status-im/status-react/pull/12955))
+* update react-native-webview ([details](https://github.com/status-im/status-react/pull/12987))
+* Add group members to mentionable list ([details](https://github.com/status-im/status-react/pull/12994))
+* always use english for fallback text ([details](https://github.com/status-im/status-react/pull/13019))
+* Disable chat input for chats with a blocked user ([details](https://github.com/status-im/status-react/pull/13162))
+* Handle timeouts on mailserver requests ([details](https://github.com/status-im/status-react/issues/13022))
+* Human Readable data display when signing using eth_signTypedData_v3 ([details](https://github.com/status-im/status-react/issues/12535))
+
+### Bug Fixes
+
+* Bug/fix opensea api ([details](https://github.com/status-im/status-react/pull/13021))
+* Show "Fetch more messages" only in public chats and communities ([details](https://github.com/status-im/status-react/pull/12927))
+* Chats are not synced if delete and re-add them on the first device while the second device is offline ([details](https://github.com/status-im/status-react/issues/12913))
+* fix distortion of app theme due to change in system theme ([details](https://github.com/status-im/status-react/pull/12934))
+* Unable to perform swap on 1inch.exchange if initial swap was cancelled by closing bottom sheet ([details](https://github.com/status-im/status-react/issues/12920))
+* Error when trying to edit 'per-gas price limit' on 1inch.exchange ([details](https://github.com/status-im/status-react/issues/12991))
+* Allow adding emoji in status input even if it exceeds limit ([details](https://github.com/status-im/status-react/pull/12949))
+* Allow adding emoji to group intro message if it exceeds limit ([details](https://github.com/status-im/status-react/pull/13024))
+* Use higher base fee value for default tx fee calculation ([details](https://github.com/status-im/status-react/pull/13020))
+* Profile QR code overlaps share menu during sharing (IOS) ([details](https://github.com/status-im/status-react/pull/13050))
+* No value in 'Gas amount limit' field in NFT dapps ([details](https://github.com/status-im/status-react/pull/13051))
+* Stop showing fetch more button for cleared history ([details](https://github.com/status-im/status-react/pull/13084))
+* fix ens resolve issue while following deep link ([details](https://github.com/status-im/status-react/pull/13080))
+* Fix deadlock on syncing all data ([details](https://github.com/status-im/status-react/pull/13128))
+* Fix broken username and timestamp layout for long usernames ([details](https://github.com/status-im/status-react/pull/13174))
+
 ## 1.18.0 Release notes :package:
 
 ### Features
