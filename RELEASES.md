@@ -16,7 +16,7 @@
 
 * Improve order of mailserver requests ([details](https://github.com/status-im/status-react/issues/12783))
 * Load images from an https server ([details](https://github.com/status-im/status-react/issues/12855))
-* Load audio messages from http server ([details](https://github.com/status-im/status-react/issues/13116))
+* Load audio messages from https server ([details](https://github.com/status-im/status-react/issues/13116))
 * Show message timestamps on tap, remove from bubbles 🕙 ([details](https://github.com/status-im/status-react/pull/12915))
 * support PUK and seed recovery during onboarding ([details](https://github.com/status-im/status-react/pull/12955))
 * update react-native-webview ([details](https://github.com/status-im/status-react/pull/12987))
