@@ -114,7 +114,7 @@ class NetworkApi(object):
                     self.log("Failed iterate transactions(Etherscan unexpected error): " + str(e))
                     continue
 
-    def wait_for_confirmation_of_transaction(self, address, amount, confirmations=6, token=False):
+    def wait_for_confirmation_of_transaction(self, address, amount, confirmations=3, token=False):
         start_time = time.time()
         if token:
             token_info = "token transaction"

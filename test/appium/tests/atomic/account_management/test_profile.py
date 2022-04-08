@@ -254,6 +254,86 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             self.errors.append('No self profile pop-up data displayed after My_profile button tap')
         self.errors.verify_no_errors()
 
+# TODO: suspended according to #13257
+@pytest.mark.xdist_group(name="pairing_2")
+@marks.critical
+@marks.skip
+class TestPairingMultipleDevicesMerged(MultipleSharedDeviceTestCase):
+
+    @classmethod
+    def setup_class(cls):
+        from views.dbs.main_pairing.data import seed_phrase, password
+        cls.drivers, cls.loop = create_shared_drivers(2)
+        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
+        cls.home_1 = cls.device_1.import_db(seed_phrase=seed_phrase, import_db_folder_name='main_pairing', password=password)
+        cls.home_2 = cls.device_2.recover_access(seed_phrase)
+
+        cls.home_1.just_fyi('Pair main and secondary devices')
+        [cls.profile_1, cls.profile_2] = [home.profile_button.click() for home in (cls.home_1, cls.home_2)]
+        name_1, name_2 = 'device_1', 'a_%s_2' % cls.device_2.get_unique_amount()
+        cls.profile_2.discover_and_advertise_device(name_2)
+        cls.profile_1.sync_settings_button.scroll_and_click()
+        cls.profile_1.devices_button.scroll_to_element()
+        cls.profile_1.devices_button.click()
+        cls.home_1.element_by_text_part(name_2).scroll_and_click()
+        cls.profile_1.sync_all_button.click()
+        cls.profile_1.sync_all_button.wait_for_visibility_of_element(20)
+        [profile.get_back_to_home_view() for profile in [cls.profile_1, cls.profile_2]]
+        [home.home_button.click() for home in [cls.home_1, cls.home_2]]
+
+    def test_pairing_initial_sync_chats(self):
+        self.profile_2.just_fyi("Check chats and previews")
+        from views.dbs.main_pairing.data import chats
+        for chat in chats.keys():
+            if chats[chat]['initial_sync']:
+                if 'preview' in chats.keys():
+                    actual_chat_preview = self.home_2.get_chat(chat).chat_preview.text
+                    expected_chat_preview = chats[chat]['preview']
+                    if actual_chat_preview != expected_chat_preview:
+                        self.errors.append('Expected preview for %s is "%s", in fact "%s" after initial sync' % (
+                        chat, expected_chat_preview, actual_chat_preview))
+
+        # TODO: blocked due to 13176
+        # self.profile_2.just_fyi("Check unread indicator")
+        # if self.home_2.home_button.counter.text != '2':
+        #     self.errors.append('New messages counter is not shown on Home button')
+        # for chat in chats.keys():
+        #     if 'unread' in chats.keys():
+        #         if self.home_2.get_chat(chat).new_messages_counter.text != chats[chat]['unread']:
+        #             self.errors.append('No unread for %s after initial sync' % chat)
+        self.errors.verify_no_errors()
+
+    @marks.skip
+    # TODO: blocked due to 13176
+    def test_pairing_initial_sync_activity_centre(self):
+        from views.dbs.main_pairing.data import activity_centre
+        if self.home_2.notifications_unread_badge.is_element_displayed():
+            self.home_2.notifications_unread_badge.click()
+            for chat in activity_centre.keys():
+                from views.home_view import ActivityCenterChatElement
+                chat_in_ac = ActivityCenterChatElement(self.driver, chat_name=chat)
+                if not chat_in_ac.is_element_displayed():
+                    self.errors.append('No chat "%s" in activity centre' % chat)
+                else:
+                    if not chat_in_ac.chat_message_preview != activity_centre[chat]:
+                        self.errors.append('No chat preview  for "%s" in activity centre, "%s" instead' % chat, chat_in_ac.chat_message_preview)
+        else:
+            self.home_2.driver.fail("No unread messages in Activity centre!")
+        self.errors.verify_no_errors()
+
+    def test_pairing_initial_sync_contacts_blocked_nickname(self):
+        from views.dbs.main_pairing.data import contacts, blocked
+        self.profile_2 = self.home_2.profile_button.click()
+        self.profile_2.contacts_button.click()
+        for contact in contacts:
+            if not self.profile_2.element_by_text(contact).is_element_displayed():
+                self.errors.append("%s contact is not synced after initial sync" % contact)
+        self.profile_2.blocked_users_button.click()
+        for blocked_user in blocked.keys():
+            if not self.profile_2.element_by_text(blocked_user).is_element_displayed():
+                self.errors.append("%s blocked user is not synced after initial sync" % blocked_user)
+        self.profile_2.get_back_to_home_view()
+
 
 class TestProfileSingleDevice(SingleDeviceTestCase):
 
@@ -764,55 +844,22 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
 
 class TestProfileMultipleDevice(MultipleDeviceTestCase):
-    @marks.testrail_id(6646)
-    @marks.high
-    def test_set_profile_picture(self):
-        self.create_drivers(2)
-        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
-        profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
-        public_key_1, public_key_2 = profile_1.get_public_key_and_username(), profile_2.get_public_key_and_username()
-        profile_2.home_button.click()
-
-        profile_1.just_fyi("Set user Profile image from Gallery")
-        profile_1.edit_profile_picture(file_name='sauce_logo.png')
-        home_1.profile_button.click()
-        profile_1.swipe_down()
-
-        if not profile_1.profile_picture.is_element_image_similar_to_template('sauce_logo_profile.png'):
-            self.drivers[0].fail('Profile picture was not updated')
-
-        profile_1.just_fyi("Add user2 to contacts")
-        profile_1.home_button.click()
-        home_1.add_contact(public_key_2)
-        home_1.home_button.click()
-
-        profile_1.just_fyi("Check user profile updated in chat")
-        message = "Text message"
-        public_chat_name = home_1.get_random_chat_name()
-        home_2.add_contact(public_key=public_key_1)
-        home_2.home_button.click()
-        public_chat_2 = home_2.join_public_chat(public_chat_name)
-        public_chat_1 = home_1.join_public_chat(public_chat_name)
-        public_chat_1.chat_message_input.send_keys(message)
-        public_chat_1.send_message_button.click()
-        if not public_chat_2.chat_element_by_text(message).member_photo.is_element_image_similar_to_template(
-                'sauce_logo.png'):
-            self.drivers[0].fail('Profile picture was not updated in chat')
-
-        profile_1.just_fyi("Set user Profile image by taking Photo")
-        home_1.profile_button.click()
-        profile_1.edit_profile_picture(file_name='sauce_logo.png', update_by='Make Photo')
-        home_1.home_button.click(desired_view='chat')
-        public_chat_1.chat_message_input.send_keys(message)
-        public_chat_1.send_message_button.click()
-
-        if public_chat_2.chat_element_by_text(message).member_photo.is_element_image_similar_to_template(
-                'sauce_logo.png'):
-            self.drivers[0].fail('Profile picture was not updated in chat after making photo')
 
     @marks.testrail_id(6636)
     @marks.medium
     def test_show_profile_picture_of_setting_online_indicator(self):
+        ####TODO: add check by make photo in this test
+        # profile_1.just_fyi("Set user Profile image by taking Photo")
+        # home_1.profile_button.click()
+        # profile_1.edit_profile_picture(file_name='sauce_logo.png', update_by='Make Photo')
+        # home_1.home_button.click(desired_view='chat')
+        # public_chat_1.chat_message_input.send_keys(message)
+        # public_chat_1.send_message_button.click()
+        #
+        # if public_chat_2.chat_element_by_text(message).member_photo.is_element_image_similar_to_template(
+        #         'sauce_logo.png'):
+        #     self.drivers[0].fail('Profile picture was not updated in chat after making photo')
+        ####
         self.create_drivers(2)
         home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user(enable_notifications=True)
         profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
@@ -1166,82 +1213,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.home_button.click(desired_view='chat')
         if not public_chat_1.chat_element_by_text(message).is_element_displayed(60):
             self.errors.append('History was not fetched after enabling use_history_node')
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6228)
-    @marks.high
-    def test_mobile_data_usage_complex_settings(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1 = device_1.create_user()
-        public_chat_name, public_chat_message = 'e2e-started-before', 'message to pub chat'
-        public_1 = home_1.join_public_chat(public_chat_name)
-        public_1.send_message(public_chat_message)
-
-        home_1.just_fyi('set mobile data to "OFF" and check that peer-to-peer connection is still working')
-        home_2 = device_2.create_user()
-        home_2.toggle_mobile_data()
-        home_2.mobile_connection_off_icon.wait_for_visibility_of_element(20)
-        for element in home_2.continue_syncing_button, home_2.stop_syncing_button, home_2.remember_my_choice_checkbox:
-            if not element.is_element_displayed(10):
-                self.drivers[0].fail('Element %s is not not shown in "Syncing mobile" bottom sheet' % element.locator)
-        home_2.stop_syncing_button.click()
-        if not home_2.mobile_connection_off_icon.is_element_displayed():
-            self.drivers[0].fail('No mobile connection OFF icon is shown')
-        home_2.mobile_connection_off_icon.click()
-        for element in home_2.connected_to_n_peers_text, home_2.waiting_for_wi_fi:
-            if not element.is_element_displayed():
-                self.errors.append("Element '%s' is not shown in Connection status bottom sheet" % element.locator)
-        home_2.click_system_back_button()
-        public_2 = home_2.join_public_chat(public_chat_name)
-        if public_2.chat_element_by_text(public_chat_message).is_element_displayed(30):
-            self.errors.append("Chat history was fetched with mobile data fetching off")
-        public_chat_new_message = 'new message'
-        public_1.send_message(public_chat_new_message)
-        if not public_2.chat_element_by_text(public_chat_new_message).is_element_displayed(30):
-            self.errors.append("Peer-to-peer connection is not working when  mobile data fetching is off")
-
-        home_2.just_fyi('set mobile data to "ON"')
-        home_2.home_button.click()
-        home_2.mobile_connection_off_icon.click()
-        home_2.use_mobile_data_switch.wait_and_click(30)
-        if not home_2.connected_to_node_text.is_element_displayed(10):
-            self.errors.append("Not connected to history node after enabling fetching on mobile data")
-        home_2.click_system_back_button()
-        home_2.mobile_connection_on_icon.wait_for_visibility_of_element(10)
-        home_2.get_chat('#%s' % public_chat_name).click()
-        if not public_2.chat_element_by_text(public_chat_message).is_element_displayed(180):
-            self.errors.append("Chat history was not fetched with mobile data fetching ON")
-
-        home_2.just_fyi('check redirect to sync settings by tapping on "Sync" in connection status bottom sheet')
-        home_2.home_button.click()
-        home_2.mobile_connection_on_icon.click()
-        home_2.connection_settings_button.click()
-        if not home_2.element_by_translation_id("mobile-network-use-mobile").is_element_displayed():
-            self.errors.append("Was not redirected to sync settings after tapping on Settings in connection bottom sheet")
-
-        home_1.just_fyi("Check default preferences in Sync settings")
-        profile_1 = home_1.profile_button.click()
-        profile_1.sync_settings_button.click()
-        if not profile_1.element_by_translation_id("mobile-network-use-wifi").is_element_displayed():
-            self.errors.append("Mobile data is enabled by default")
-        profile_1.element_by_translation_id("mobile-network-use-wifi").click()
-        if profile_1.ask_me_when_on_mobile_network.text != "ON":
-            self.errors.append("'Ask me when on mobile network' is not enabled by default")
-
-        profile_1.just_fyi("Disable 'ask me when on mobile network' and check that it is not shown")
-        profile_1.ask_me_when_on_mobile_network.click()
-        profile_1.toggle_mobile_data()
-        if profile_1.element_by_translation_id("mobile-network-start-syncing").is_element_displayed(20):
-            self.errors.append("Popup is shown, but 'ask me when on mobile network' is disabled")
-
-        profile_1.just_fyi("Check 'Restore default' setting")
-        profile_1.element_by_text('Restore Defaults').click()
-        if profile_1.use_mobile_data.attribute_value("checked"):
-            self.errors.append("Mobile data is enabled by default")
-        if not profile_1.ask_me_when_on_mobile_network.attribute_value("checked"):
-            self.errors.append("'Ask me when on mobile network' is not enabled by default")
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(695856)

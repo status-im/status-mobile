@@ -261,18 +261,18 @@ class SignInView(BaseView):
         self.open_universal_web_link(url_weblink)
         self.sign_in()
 
-    def import_db(self, user, import_db_folder_name):
+    def import_db(self, seed_phrase, import_db_folder_name, password=common_password):
         from tests.base_test_case import AbstractTestCase
         self.driver.info('## Importing database', device=False)
         import_file_name = 'export.db'
-        home = self.recover_access(user['passphrase'])
+        home = self.recover_access(passphrase=seed_phrase, password=password)
         profile = home.profile_button.click()
-        full_path_to_file = os.path.join(appium_root_project_path, 'views/upgrade_dbs/%s/%s' %
+        full_path_to_file = os.path.join(appium_root_project_path, 'views/dbs/%s/%s' %
                                          (import_db_folder_name, import_file_name))
         profile.logout()
         self.multi_account_on_login_button.wait_for_visibility_of_element(30)
         self.get_multiaccount_by_position(1).click()
-        self.password_input.set_value(common_password)
+        self.password_input.set_value(password)
         self.driver.push_file(source_path=full_path_to_file,
                               destination_path='%s%s' % (AbstractTestCase().app_path, import_file_name))
         self.options_button.click()

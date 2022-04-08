@@ -209,7 +209,6 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
 
 class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
-
     @marks.testrail_id(5762)
     @marks.high
     def test_pair_devices_sync_one_to_one_contacts_nicknames_public_chat(self):
@@ -369,6 +368,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         home_2.element_by_text('#%s' % public_chat_after_sync).wait_for_invisibility_of_element(60)
 
         self.errors.verify_no_errors()
+
 
     @marks.testrail_id(6324)
     @marks.medium

@@ -3,10 +3,10 @@ from tests import marks, pytest_config_global, test_dapp_name, staging_fleet, ma
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import upgrade_users, transaction_recipients, basic_user, ens_user, transaction_senders
 from views.sign_in_view import SignInView
-import views.upgrade_dbs.chats.data as chat_data
-import views.upgrade_dbs.dapps.data as dapp_data
-import views.upgrade_dbs.pairing.data as sync_data
-import views.upgrade_dbs.group.data as group
+import views.dbs.chats.data as chat_data
+import views.dbs.dapps.data as dapp_data
+import views.dbs.pairing.data as sync_data
+import views.dbs.group.data as group
 
 
 @marks.upgrade
@@ -18,7 +18,8 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         unread_one_to_one_name, unread_public_name = 'All Whopping Dassierat', '#before-upgrade'
         chats = chat_data.chats
-        home = sign_in.import_db(user=upgrade_users['chats'], import_db_folder_name='chats')
+        seed = upgrade_users['chats']['passphrase']
+        home = sign_in.import_db(seed_phrase=seed, import_db_folder_name='chats')
         home.just_fyi("Grab profile version")
 
         profile = home.profile_button.click()
@@ -141,7 +142,8 @@ class TestUpgradeApplication(SingleDeviceTestCase):
     def test_dapps_browser_several_accounts_upgrade(self):
         sign_in = SignInView(self.driver)
         favourites = dapp_data.dapps['favourites']
-        home = sign_in.import_db(user=transaction_recipients['K'], import_db_folder_name='dapps')
+        seed = transaction_recipients['K']['passphrase']
+        home = sign_in.import_db(seed_phrase=seed, import_db_folder_name='dapps')
         home.upgrade_app()
         sign_in.sign_in()
         dapps = home.dapp_tab_button.click()
@@ -254,9 +256,10 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         device_2_public_key = device_2_home.get_public_key_and_username()
         device_2_home.home_button.click()
         user = upgrade_users['chats']
+        seed = user['passphrase']
 
         device_1.just_fyi("Import db, upgrade")
-        home = device_1.import_db(user=user, import_db_folder_name='chats')
+        home = device_1.import_db(seed_phrase=seed, import_db_folder_name='chats')
         home.upgrade_app()
         home = device_1.sign_in()
 
@@ -310,8 +313,9 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
         device_1.just_fyi("Import db, upgrade")
-        home_1 = device_1.import_db(user=user, import_db_folder_name='pairing/main')
-        home_2 = device_2.import_db(user=user, import_db_folder_name='pairing/secondary')
+        seed = user['passphrase']
+        home_1 = device_1.import_db(seed_phrase=seed, import_db_folder_name='pairing/main')
+        home_2 = device_2.import_db(seed_phrase=seed, import_db_folder_name='pairing/secondary')
         for device in (device_1, device_2):
             device.upgrade_app()
             device.sign_in()
@@ -397,8 +401,8 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
         device_1.just_fyi("Import db, upgrade")
-        home_1 = device_1.import_db(user=admin, import_db_folder_name='group/admin')
-        home_2 = device_2.import_db(user=member, import_db_folder_name='group/member')
+        home_1 = device_1.import_db(seed_phrase=admin['passphrase'], import_db_folder_name='group/admin')
+        home_2 = device_2.import_db(seed_phrase=member['passphrase'], import_db_folder_name='group/member')
         for device in (device_1, device_2):
             device.upgrade_app()
             device.sign_in()
@@ -485,7 +489,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
         device_1.just_fyi("Import db")
-        home_1 = device_1.import_db(user=user, import_db_folder_name='group/admin')
+        home_1 = device_1.import_db(seed_phrase=user['passphrase'], import_db_folder_name='group/admin')
         home_2 = device_2.create_user()
         profile_2 = home_2.profile_button.click()
         public_key_2, username_2 = profile_2.get_public_key_and_username(return_username=True)

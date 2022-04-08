@@ -2,7 +2,8 @@ import emoji
 import random
 import pytest
 
-from tests import marks
+from time import sleep
+from tests import marks, common_password
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase, MultipleSharedDeviceTestCase, create_shared_drivers
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
 from views.sign_in_view import SignInView
@@ -400,8 +401,347 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
+@pytest.mark.xdist_group(name="chats_contacts_keycard_2")
+@marks.critical
+class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
+    @classmethod
+    def setup_class(cls):
+        cls.drivers, cls.loop = create_shared_drivers(2)
+        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
+        cls.sender = transaction_senders['ETH_2']
+        cls.nick = "FFOO_brak!1234"
+        cls.message = cls.device_1.get_random_message()
+        cls.pub_chat_name = cls.device_1.get_random_chat_name()
+        cls.home_1 = cls.device_1.recover_access(cls.sender['passphrase'], keycard=True)
+        cls.home_2 = cls.device_2.create_user()
+        cls.profile_2 = cls.home_2.profile_button.click()
+        cls.profile_2.privacy_and_security_button.click()
+        cls.profile_2.backup_recovery_phrase_button.click()
+        recovery_phrase = cls.profile_2.backup_recovery_phrase()
+        cls.recovery_phrase = ' '.join(recovery_phrase.values())
+        cls.public_key_2, cls.default_username_2 = cls.home_2.get_public_key_and_username(return_username=True)
+        cls.chat_1 = cls.home_1.add_contact(cls.public_key_2, add_in_contacts=False)
+        cls.chat_1.chat_options.click()
+        cls.chat_1.view_profile_button.click()
+        cls.chat_1.set_nickname(cls.nick)
+        [home.home_button.click() for home in [cls.home_1, cls.home_2]]
+        cls.home_2.add_contact(cls.sender['public_key'])
+        cls.home_2.home_button.click()
+        [home.join_public_chat(cls.pub_chat_name) for home in [cls.home_1, cls.home_2]]
+        cls.chat_2 = cls.home_2.get_chat_view()
+        cls.chat_2.send_message(cls.message)
+        [home.home_button.click() for home in [cls.home_1, cls.home_2]]
+
+    @marks.testrail_id(702186)
+    def test_keycard_command_send_eth_1_1_chat(self):
+        self.home_2.get_chat(self.sender['username']).click()
+        self.chat_2.send_message("hey on kk!")
+        self.chat_2.home_button.click()
+
+        amount = self.chat_1.get_unique_amount()
+        account_name = self.chat_1.status_account_name
+
+        self.chat_1.just_fyi('Send %s ETH in 1-1 chat and check it for sender and receiver: Address requested' % amount)
+        self.home_1.get_chat(self.nick).click()
+        self.chat_1.send_message("hello again!")
+        self.chat_1.commands_button.click()
+        send_transaction = self.chat_1.send_command.click()
+        send_transaction.get_username_in_transaction_bottom_sheet_button(self.default_username_2).click()
+        if send_transaction.scan_qr_code_button.is_element_displayed():
+            self.chat_1.driver.fail('Recipient is editable in bottom sheet when send ETH from 1-1 chat')
+        send_transaction.amount_edit_box.set_value(amount)
+        send_transaction.confirm()
+        send_transaction.sign_transaction_button.click()
+        sender_message = self.chat_1.get_outgoing_transaction()
+        if not sender_message.is_element_displayed():
+            self.chat_1.driver.fail('No message is shown after sending ETH in 1-1 chat for sender')
+        sender_message.transaction_status.wait_for_element_text(sender_message.address_requested)
+
+        self.home_2.get_chat(self.sender['username']).click()
+        receiver_message = self.chat_2.get_incoming_transaction()
+        timestamp_sender = sender_message.timestamp_command_message.text
+        if not receiver_message.is_element_displayed(30):
+            self.chat_2.driver.fail('No message about incoming transaction in 1-1 chat is shown for receiver')
+        receiver_message.transaction_status.wait_for_element_text(receiver_message.address_requested)
+
+        self.chat_1.just_fyi('Accept and share address for sender and receiver')
+        for option in (receiver_message.decline_transaction, receiver_message.accept_and_share_address):
+            if not option.is_element_displayed():
+                self.drivers[0].fail("Required options accept or share are not shown")
+
+        select_account_bottom_sheet = receiver_message.accept_and_share_address.click()
+        if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button(
+                account_name).is_element_displayed():
+            self.errors.append('Not expected value in "From" in "Select account": "Status" is expected')
+        select_account_bottom_sheet.select_button.click()
+        receiver_message.transaction_status.wait_for_element_text(receiver_message.shared_account)
+        sender_message.transaction_status.wait_for_element_text(sender_message.address_request_accepted)
+
+        self.chat_1.just_fyi("Sign and send transaction and check that timestamp on message is updated")
+        sleep(20)
+        send_message = sender_message.sign_and_send.click()
+        send_message.next_button.click()
+        send_message.sign_transaction(keycard=True)
+        updated_timestamp_sender = sender_message.timestamp_command_message.text
+        if updated_timestamp_sender == timestamp_sender:
+            self.errors.append("Timestamp of message is not updated after signing transaction")
+
+        wallet_1 = self.chat_1.wallet_button.click()
+        wallet_1.find_transaction_in_history(amount=amount)
+        self.network_api.wait_for_confirmation_of_transaction(self.sender['address'], amount, confirmations=3)
+        wallet_1.home_button.click(desired_view='chat')
+
+        self.home_1.just_fyi("Check 'Confirmed' state for sender and receiver(use pull-to-refresh to update history)")
+        wallet_2 = self.chat_2.wallet_button.click()
+        wallet_2.find_transaction_in_history(amount=amount)
+        sender_message.transaction_status.wait_for_element_text(sender_message.confirmed, 120)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702175)
+    def test_contact_add_remove_mention_default_username_nickname_public_chat(self):
+        [home.home_button.double_click() for home in [self.home_1, self.home_2]]
+        self.chat_1.just_fyi('check that can mention user with 3-random name in public chat')
+        self.home_1.get_chat('#%s' % self.pub_chat_name).click()
+
+        self.chat_1.just_fyi('Set nickname for user without adding him to contacts, check it in public chat')
+        chat_element = self.chat_1.chat_element_by_text(self.message)
+        expected_username = '%s %s' % (self.nick, self.default_username_2)
+        if chat_element.username.text != expected_username:
+            self.errors.append('Username %s in public chat does not match expected %s' % (
+                chat_element.username.text, expected_username))
+
+        self.chat_1.just_fyi('Add user to contacts, mention it by nickname check contact list in Profile')
+        chat_element.member_photo.click()
+        self.chat_1.profile_add_to_contacts.click()
+        if not self.chat_1.remove_from_contacts.is_element_displayed():
+            self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
+        self.chat_1.close_button.click()
+
+        self.chat_1.just_fyi('check that can mention user with nickname or default username in public chat')
+        self.chat_1.select_mention_from_suggestion_list(username_in_list=self.nick + ' ' + self.default_username_2,
+                                                        typed_search_pattern=self.nick[0:2])
+        if self.chat_1.chat_message_input.text != '@' + self.default_username_2 + ' ':
+            self.errors.append('Username is not resolved in chat input after selecting it in mention '
+                               'suggestions list by nickname!')
+        self.chat_1.chat_message_input.clear()
+        for pattern in (self.nick[0:2], self.default_username_2[0:4]):
+            self.chat_1.select_mention_from_suggestion_list(username_in_list=self.nick + ' ' + self.default_username_2,
+                                                            typed_search_pattern=self.default_username_2[0:4])
+            if self.chat_1.chat_message_input.text != '@' + self.default_username_2 + ' ':
+                self.errors.append('Username is not resolved in chat input after selecting it in mention '
+                               'suggestions list by default username!')
+        additional_text = 'and more'
+        self.chat_1.send_as_keyevent(additional_text)
+        self.chat_1.send_message_button.click()
+        if not self.chat_1.chat_element_by_text('%s %s' % (self.nick, additional_text)).is_element_displayed():
+            self.errors.append("Nickname is not resolved on send message")
+        self.chat_1.get_back_to_home_view()
+
+        self.chat_1.just_fyi('check contact list in Profile after setting nickname')
+        profile_1 = self.chat_1.profile_button.click()
+        userprofile = profile_1.open_contact_from_profile(self.nick)
+        if not userprofile.remove_from_contacts.is_element_displayed():
+            self.errors.append("'Add to contacts' is not changed to 'Remove from contacts' in profile contacts")
+        profile_1.close_button.click()
+        profile_1.home_button.double_click()
+
+        self.chat_1.just_fyi(
+            'Check that user is added to contacts below "Start new chat" and you redirected to 1-1 on tap')
+        self.home_1.plus_button.click()
+        self.home_1.start_new_chat_button.click()
+        if not self.home_1.element_by_text(self.nick).is_element_displayed():
+            self.home_1.driver.fail('List of contacts below "Start new chat" does not contain added user')
+        self.home_1.element_by_text(self.nick).click()
+        if not self.chat_1.chat_message_input.is_element_displayed():
+            self.chat_1.driver.fail('No redirect to 1-1 chat if tap on Contact below "Start new chat"')
+        for element in (self.chat_1.chat_message_input, self.chat_1.element_by_text(self.nick)):
+            if not element.is_element_displayed():
+                self.errors.append('Expected element is not found in 1-1 after adding user to contacts from profile')
+        if self.chat_1.add_to_contacts.is_element_displayed():
+            self.errors.append('"Add to contacts" button is shown in 1-1 after adding user to contacts from profile')
+
+        self.chat_1.just_fyi('Remove user from contacts')
+        self.chat_1.chat_options.click()
+        self.chat_1.view_profile_button.click()
+        self.chat_1.remove_from_contacts.click_until_absense_of_element(self.chat_1.remove_from_contacts)
+        if self.chat_1.profile_nickname.text != self.nick:
+            self.errors.append("Nickname is changed after removing user from contacts")
+
+        self.chat_1.just_fyi('Check that user is removed from contact list in profile')
+        self.chat_1.close_button.click()
+        if not self.chat_1.add_to_contacts.is_element_displayed():
+            self.errors.append('"Add to contacts" button is not shown in 1-1 after removing user from contacts')
+        self.chat_1.profile_button.double_click()
+        profile_1.contacts_button.click()
+        if profile_1.element_by_text(self.nick).is_element_displayed():
+            self.errors.append('Contact is shown in Profile after removing user from contacts')
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702176)
+    def test_contact_block_unblock_public_chat_offline(self):
+        [home.home_button.double_click() for home in [self.home_1, self.home_2]]
+
+        self.chat_1.just_fyi('Block user')
+        self.home_1.get_chat("#%s" % self.pub_chat_name).click()
+        chat_element = self.chat_1.chat_element_by_text(self.message)
+        chat_element.find_element()
+        chat_element.member_photo.click()
+        self.chat_1.block_contact()
+
+        self.chat_1.just_fyi('messages from blocked user are hidden in public chat and close app')
+        if self.chat_1.chat_element_by_text(self.message).is_element_displayed():
+            self.errors.append("Messages from blocked user is not cleared in public chat ")
+        self.chat_1.home_button.click()
+        if self.home_1.element_by_text(self.nick).is_element_displayed():
+            self.errors.append("1-1 chat from blocked user is not removed!")
+        self.chat_1.toggle_airplane_mode()
+
+        self.home_2.just_fyi('send message to public chat while device 1 is offline')
+        message_blocked, message_unblocked = "Message from blocked user", "Hurray! unblocked"
+        self.home_2.get_chat("#%s" % self.pub_chat_name).click()
+        self.chat_2.send_message(message_blocked)
+
+        self.chat_1.just_fyi('check that new messages from blocked user are not delivered')
+        self.chat_1.toggle_airplane_mode()
+        self.home_1.get_chat("#%s" % self.pub_chat_name).click()
+        for message in self.message, message_blocked:
+            if self.chat_1.chat_element_by_text(message).is_element_displayed():
+                self.errors.append(
+                    "'%s' from blocked user is fetched from offline in public chat" % (message))
+
+        self.chat_2.just_fyi('Unblock user and check that can see further messages')
+        profile_1 = self.home_1.get_profile_view()
+        self.chat_1.profile_button.double_click()
+        profile_1.contacts_button.wait_and_click()
+        profile_1.blocked_users_button.wait_and_click()
+        profile_1.element_by_text(self.nick).click()
+        self.chat_1.unblock_contact_button.click()
+        self.chat_1.close_button.click()
+        [home.home_button.click(desired_view='chat') for home in [self.home_1, self.home_2]]
+        self.chat_2.send_message(message_unblocked)
+        self.chat_2.home_button.double_click()
+        self.home_2.add_contact(self.sender['public_key'])
+        self.chat_2.send_message(message_unblocked)
+        if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed():
+            self.errors.append("Message was not received in public chat after user unblock!")
+        self.chat_1.home_button.click()
+        self.home_1.get_chat(self.nick, wait_time=30).click()
+        if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed():
+            self.errors.append("Message was not received in 1-1 chat after user unblock!")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702188)
+    def test_cellular_settings_on_off_public_chat_fetching_history(self):
+        [home.home_button.double_click() for home in [self.home_1, self.home_2]]
+        public_chat_name, public_chat_message = 'e2e-started-before', 'message to pub chat'
+        public_1 = self.home_1.join_public_chat(public_chat_name)
+        public_1.send_message(public_chat_message)
+
+        self.home_2.just_fyi('set mobile data to "OFF" and check that peer-to-peer connection is still working')
+        self.home_2.set_network_to_cellular_only()
+        self.home_2.mobile_connection_off_icon.wait_for_visibility_of_element(20)
+        for element in (self.home_2.continue_syncing_button, self.home_2.stop_syncing_button,
+                        self.home_2.remember_my_choice_checkbox):
+            if not element.is_element_displayed(10):
+                self.drivers[0].fail(
+                    'Element %s is not not shown in "Syncing mobile" bottom sheet' % element.locator)
+        self.home_2.stop_syncing_button.click()
+        if not self.home_2.mobile_connection_off_icon.is_element_displayed():
+            self.drivers[0].fail('No mobile connection OFF icon is shown')
+        self.home_2.mobile_connection_off_icon.click()
+        for element in self.home_2.connected_to_n_peers_text, self.home_2.waiting_for_wi_fi:
+            if not element.is_element_displayed():
+                self.errors.append("Element '%s' is not shown in Connection status bottom sheet" % element.locator)
+        self.home_2.click_system_back_button()
+        public_2 = self.home_2.join_public_chat(public_chat_name)
+        if public_2.chat_element_by_text(public_chat_message).is_element_displayed(30):
+            self.errors.append("Chat history was fetched with mobile data fetching off")
+        public_chat_new_message = 'new message'
+        public_1.send_message(public_chat_new_message)
+        if not public_2.chat_element_by_text(public_chat_new_message).is_element_displayed(30):
+            self.errors.append("Peer-to-peer connection is not working when  mobile data fetching is off")
+
+        self.home_2.just_fyi('set mobile data to "ON"')
+        self.home_2.home_button.click()
+        self.home_2.mobile_connection_off_icon.click()
+        self.home_2.use_mobile_data_switch.wait_and_click(30)
+        if not self.home_2.connected_to_node_text.is_element_displayed(10):
+            self.errors.append("Not connected to history node after enabling fetching on mobile data")
+        self.home_2.click_system_back_button()
+        self.home_2.mobile_connection_on_icon.wait_for_visibility_of_element(10)
+        self.home_2.get_chat('#%s' % public_chat_name).click()
+        if not public_2.chat_element_by_text(public_chat_message).is_element_displayed(180):
+            self.errors.append("Chat history was not fetched with mobile data fetching ON")
+
+        self.home_2.just_fyi('check redirect to sync settings by tapping on "Sync" in connection status bottom sheet')
+        self.home_2.home_button.click()
+        self.home_2.mobile_connection_on_icon.click()
+        self.home_2.connection_settings_button.click()
+        if not self.home_2.element_by_translation_id("mobile-network-use-mobile").is_element_displayed():
+            self.errors.append(
+                "Was not redirected to sync settings after tapping on Settings in connection bottom sheet")
+
+        self.home_2.just_fyi("Check default preferences in Sync settings")
+        profile_1 = self.home_1.get_profile_view()
+        self.home_1.profile_button.double_click()
+        profile_1.sync_settings_button.click()
+        if not profile_1.element_by_translation_id("mobile-network-use-wifi").is_element_displayed():
+            self.errors.append("Mobile data is enabled by default")
+        profile_1.element_by_translation_id("mobile-network-use-wifi").click()
+        if profile_1.ask_me_when_on_mobile_network.text != "ON":
+            self.errors.append("'Ask me when on mobile network' is not enabled by default")
+
+        profile_1.just_fyi("Disable 'ask me when on mobile network' and check that it is not shown")
+        profile_1.ask_me_when_on_mobile_network.click()
+        profile_1.set_network_to_cellular_only()
+        if profile_1.element_by_translation_id("mobile-network-start-syncing").is_element_displayed(20):
+            self.errors.append("Popup is shown, but 'ask me when on mobile network' is disabled")
+
+        profile_1.just_fyi("Check 'Restore default' setting")
+        profile_1.element_by_text('Restore Defaults').click()
+        if profile_1.use_mobile_data.attribute_value("checked"):
+            self.errors.append("Mobile data is enabled by default")
+        if not profile_1.ask_me_when_on_mobile_network.attribute_value("checked"):
+            self.errors.append("'Ask me when on mobile network' is not enabled by default")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702177)
+    def test_restore_account_migrate_multiaccount_to_keycard_db_saved(self):
+        self.home_1.driver.quit()
+        self.home_2.profile_button.double_click()
+        self.profile_2.logout()
+
+        self.device_2.just_fyi("Checking migration to keycard: db saved (1-1 chat, nickname, messages)")
+        self.device_2.options_button.click()
+        self.device_2.manage_keys_and_storage_button.click()
+        self.device_2.move_keystore_file_option.click()
+        self.device_2.enter_seed_phrase_next_button.click()
+        self.device_2.seedphrase_input.set_value(self.recovery_phrase)
+        self.device_2.choose_storage_button.click()
+        self.device_2.keycard_required_option.click()
+        self.device_2.confirm_button.click()
+        self.device_2.migration_password_input.set_value(common_password)
+        self.device_2.confirm_button.click()
+        from views.keycard_view import KeycardView
+        keycard = KeycardView(self.device_2.driver)
+        keycard.begin_setup_button.click()
+        keycard.connect_card_button.wait_and_click()
+        keycard.enter_default_pin()
+        keycard.enter_default_pin()
+        if not self.device_2.element_by_translation_id("migration-successful").is_element_displayed(30):
+            self.driver.fail("No popup about successfull migration is shown!")
+        self.device_2.ok_button.click()
+        self.home_2.home_button.wait_for_element(30)
+        if not self.home_2.element_by_text_part(self.pub_chat_name).is_element_displayed():
+            self.errors.append("Public chat was removed from home after migration to kk")
+        self.home_2.get_chat(self.sender['username']).click()
+        if self.chat_2.add_to_contacts.is_element_displayed():
+            self.errors.append("User was removed from contacts after migration to kk")
+        self.errors.verify_no_errors()
+
+
+class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
     @marks.testrail_id(5362)
     @marks.medium
     def test_unread_messages_counter_preview_highlited_1_1_chat(self):
@@ -473,7 +813,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.send_message_button.click()
 
         chat.chat_element_by_text(message_text[:-2]).wait_for_visibility_of_element(2)
-
 
     @marks.testrail_id(6298)
     @marks.medium

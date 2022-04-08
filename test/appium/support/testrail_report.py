@@ -102,6 +102,7 @@ class TestrailReport(BaseTestReport):
         test_cases['upgrade'] = dict()
         ## PR e2e
         test_cases['pr']['critical'] = 730
+        test_cases['pr']['contacts'] = 50831
         test_cases['pr']['public_chat'] = 50654
         test_cases['pr']['one_to_one_chat'] = 50655
         test_cases['pr']['group_chat'] = 50656

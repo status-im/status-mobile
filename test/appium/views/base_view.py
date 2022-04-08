@@ -515,7 +515,6 @@ class BaseView(object):
         message = 'test message:'
         return message + ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
 
-
     def get_back_to_home_view(self, times_to_click_on_back_btn=3):
         counter = 0
         while BackButton(self.driver).is_element_displayed(2) or self.close_button.is_element_displayed(2):
