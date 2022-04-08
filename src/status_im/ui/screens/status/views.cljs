@@ -33,7 +33,9 @@
   (let [width (reagent/atom nil)]
     (fn [uri show-close?]
       [react/view {:style               {:width         @width
+                                         :align-items   :center
                                          :height        image-max-dimension
+                                         :max-width     :100%
                                          :overflow      :hidden
                                          :opacity       (if @width 1 0)
                                          :border-radius 16
