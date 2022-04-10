@@ -32,6 +32,7 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
+            [status-im.utils.password-utils :as pass]
             [status-im.wallet.db :as wallet.db]
             [status-im.wallet.utils :as wallet.utils]
             status-im.ui.screens.keycard.subs
@@ -2948,9 +2949,9 @@
       (and (pos? (count current-password))
            (pos? (count new-password))
            (pos? (count confirm-new-password))
-           (>= (count new-password) 6)
+           (pass/valid-password new-password)
            (>= (count current-password) 6)
-           (= new-password confirm-new-password))})))
+           (pass/confirm-password new-password confirm-new-password))})))
 
 (re-frame/reg-sub
  :bookmarks/active

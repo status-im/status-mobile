@@ -3,6 +3,6 @@
             [status-im.constants :as const]))
 
 (defn valid-length? [password]
-  (>= (count password) const/min-password-length))
+  (>= (count password) const/min-sign-in-password-length))
 
 (spec/def ::password  (spec/and :global/not-empty-string valid-length?))

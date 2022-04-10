@@ -3,16 +3,10 @@
             [reagent.core :as reagent]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.i18n.i18n :as i18n]
-            [status-im.constants :as const]
             [status-im.utils.security :as security]
+            [status-im.utils.password-utils :as pass]
             [quo.react-native :as rn]
             [quo.core :as quo]))
-
-(defn validate-password [password]
-  (>= (count password) const/min-password-length))
-
-(defn confirm-password [password confirm]
-  (= password confirm))
 
 (defn screen []
   (let [password    (reagent/atom nil)
@@ -21,8 +15,8 @@
         show-error  (reagent/atom nil)
         confirm-ref (atom nil)]
     (fn []
-      (let [valid-password (validate-password @password)
-            valid-form     (confirm-password @password @confirm)
+      (let [valid-password (pass/valid-password @password)
+            valid-form     (pass/confirm-password @password @confirm)
             {:keys [recovering?]} @(re-frame/subscribe [:intro-wizard])
             on-submit      (fn []
                              (when (not @processing?)
@@ -52,6 +46,11 @@
                              :placeholder         (i18n/label :t/password-placeholder)
                              :on-change-text      #(reset! password (security/mask-data %))
                              :return-key-type     :next
+                                                  ; When the password is not valid, but it already meets the minimum length
+                                                  ; Then show the error about not allowing weak passwords like aaaa and 12345
+                             :error               (when (and (not valid-password)
+                                                             (pass/meets-minimum-length? @password))
+                                                    (i18n/label :t/password_error2))
                              :on-submit-editing   #(when valid-password
                                                      (some-> ^js @confirm-ref .focus))}]]
            [rn/view {:style {:padding 16
@@ -74,7 +73,7 @@
                                                        (> (count @password) (count @confirm))
                                                        (reset! show-error false)
 
-                                                       (not (confirm-password @password @confirm))
+                                                       (not (pass/confirm-password @password @confirm))
                                                        (reset! show-error true)
 
                                                        :else (reset! show-error false)))}]]]
