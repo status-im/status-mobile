@@ -438,223 +438,31 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(695850)
-    @marks.medium
-    def test_can_reset_password(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        new_password = basic_user['special_chars_password']
+    @marks.testrail_id(5502)
+    @marks.critical
+    def test_can_add_existing_ens_on_mainnet(self):
+        home = SignInView(self.driver).recover_access(ens_user['passphrase'])
         profile = home.profile_button.click()
-        profile.privacy_and_security_button.click()
 
-        profile.just_fyi("Check that can not reset password when entering wrong current password")
-        profile.reset_password_button.click()
-        profile.current_password_edit_box.send_keys(common_password + '1')
-        profile.new_password_edit_box.set_value(new_password)
-        profile.confirm_new_password_edit_box.set_value(new_password)
-        profile.next_button.click()
-        if not profile.current_password_wrong_text.is_element_displayed():
-            self.errors.append("Validation error for wrong current password is not shown")
+        profile.just_fyi('check if your name can be added via "ENS usernames" in Profile')
+        profile.switch_network()
+        home.profile_button.click()
+        profile.connect_existing_ens(ens_user['ens'])
 
-        profile.just_fyi("Check that can not procced if did not confirm new password")
-        profile.current_password_edit_box.clear()
-        profile.current_password_edit_box.set_value(common_password)
-        profile.new_password_edit_box.set_value(new_password)
-        profile.confirm_new_password_edit_box.set_value(new_password + '1')
-        profile.next_button.click()
-
-        profile.just_fyi("Delete last symbol and check that can reset password")
-        profile.confirm_new_password_edit_box.delete_last_symbols(1)
-        profile.next_button.click()
-        profile.element_by_translation_id("password-reset-success").wait_for_element(30)
-        profile.element_by_translation_id("okay").click()
-
-        profile.just_fyi("Login with new password")
-        sign_in.sign_in(password=new_password)
-        if not sign_in.home_button.is_element_displayed():
-            self.errors.append("Could not sign in with new password after reset")
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5433)
-    @marks.medium
-    def test_invite_friends(self):
-        home = SignInView(self.driver).create_user()
-
-        self.driver.info("Check it via 'Invite friends' on home view")
-        home.invite_friends_button.click()
-        home.share_via_messenger()
-        home.element_by_text_part("Hey join me on Status: https://join.status.im/u/0x")
-        home.click_system_back_button()
-
-        self.driver.info("Check it via bottom sheet menu")
-        home.plus_button.click()
-        home.chats_menu_invite_friends_button.click()
-        home.share_via_messenger()
-        home.element_by_text_part("Hey join me on Status: https://join.status.im/u/0x")
-
-    @marks.testrail_id(6312)
-    @marks.medium
-    def test_add_remove_contact_via_contacts_view(self):
-        home = SignInView(self.driver).create_user()
-
-        home.just_fyi('Check empty contacts view')
-        profile = home.profile_button.click()
-        profile.contacts_button.click()
-        if not profile.add_new_contact_button.is_element_displayed():
-            self.driver.fail('No expected element on contacts view')
-
-        users = {
-            'scanning_ens_with_stateofus_domain_deep_link': {
-                'contact_code': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_ropsten['ens'],
-                'username': ens_user_ropsten['username']
-            },
-            'scanning_public_key': {
-                'contact_code': transaction_senders['A']['public_key'],
-                'username': transaction_senders['A']['username'],
-            },
-            'pasting_public_key': {
-                'contact_code': basic_user['public_key'],
-                'username': basic_user['username'],
-            },
-            'pasting_ens_another_domain': {
-                'contact_code': ens_user['ens_another'],
-                'username': '@%s' % ens_user['ens_another'],
-                'nickname': 'my_dear_friend'
-            },
-
-        }
-
-        home.just_fyi('Add contact  and check that they appear in Contacts view')
-        chat = home.get_chat_view()
-        for key in users:
-            profile.add_new_contact_button.click()
-            home.just_fyi('Checking %s case' % key)
-            if 'scanning' in key:
-                chat.scan_contact_code_button.click()
-                if chat.allow_button.is_element_displayed():
-                    chat.allow_button.click()
-                chat.enter_qr_edit_box.scan_qr(users[key]['contact_code'])
-            else:
-                chat.public_key_edit_box.click()
-                chat.public_key_edit_box.send_keys(users[key]['contact_code'])
-                if 'nickname' in users[key]:
-                    chat.nickname_input_field.set_value(users[key]['nickname'])
-                chat.confirm_until_presence_of_element(profile.add_new_contact_button)
-            if not profile.element_by_text(users[key]['username']).is_element_displayed():
-                self.errors.append('In %s case username not found in contact view after scanning' % key)
-            if 'nickname' in users[key]:
-                if not profile.element_by_text(users[key]['nickname']).is_element_displayed():
-                    self.errors.append('In %s case nickname %s not found in contact view after scanning' % (key,
-                                                                                                            users[key]['nickname']))
-
-        home.just_fyi('Remove contact and check that it disappeared')
-        user_to_remove = '@%s' % ens_user['ens_another']
-        profile.element_by_text(user_to_remove).click()
-        chat.remove_from_contacts.click()
-        chat.close_button.click()
-        if profile.element_by_text(user_to_remove).is_element_displayed():
-            self.errors.append('Removed user is still shown in contact view')
-
-        home.just_fyi(
-            'Relogin and open profile view of the contact removed from Contact list to ensure there is no crash')
-        profile.profile_button.click()
-        profile.relogin()
-        one_to_one_chat = home.add_contact(public_key=ens_user['ens_another'], add_in_contacts=False)
-        one_to_one_chat.chat_options.click()
-        profile = one_to_one_chat.view_profile_button.click()
-        if profile.remove_from_contacts.is_element_displayed():
-            self.errors.append('User still added in contact after relogin')
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(700702)
-    @marks.medium
-    # TODO: Can be failed due to mailserver issue
-    def test_backup_of_contacts(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-
-        home.just_fyi('Add user to contacts')
-        chat = home.add_contact(basic_user['public_key'])
-
-        home.just_fyi('Add nickname to contact')
-        nickname = 'test user'
-        chat.chat_options.click()
-        chat.view_profile_button.click()
-        chat.set_nickname(nickname)
-        home.back_button.click()
-
-        home.just_fyi('Add ENS-user to contacts')
-        home.add_contact(ens_user['ens'])
-        home.back_button.click()
-
-        home.just_fyi('Block user')
-        home.add_contact(chat_users['A']['public_key'], add_in_contacts=False)
-        chat.chat_options.click()
-        chat.view_profile_button.click()
-        chat.block_contact()
-
-        home.just_fyi('Add nickname to non-contact user')
-        nickname1 = 'non-contact user'
-        home.add_contact(chat_users['B']['public_key'], add_in_contacts=False)
-        chat.chat_options.click()
-        chat.view_profile_button.click()
-        chat.set_nickname(nickname1)
-
-        home.just_fyi('Perform backup')
-        profile = home.profile_button.click()
-        profile.sync_settings_button.click()
-        profile.backup_settings_button.click()
-        profile.perform_backup_button.click()
-
-        profile.just_fyi('Backup seed phrase')
-        profile.back_button.click(2)
-        profile.privacy_and_security_button.click()
-        profile.backup_recovery_phrase_button.click()
-        profile.ok_continue_button.click()
-        recovery_phrase = profile.get_recovery_phrase()
-        self.driver.reset()
-
-        profile.just_fyi('Recover account from seed phrase')
-        sign_in.recover_access(' '.join(recovery_phrase.values()))
-
-        sign_in.just_fyi('Check backup of contact with nickname')
-        profile.profile_button.click()
-        profile.contacts_button.click()
-        if not profile.element_by_text(nickname).is_element_displayed():
-            self.errors.append('Nickname of contact was not backed up')
-
-        sign_in.just_fyi('Check backup of ENS contact')
+        profile.just_fyi('check that after adding username is shown in "ENS usernames" and profile')
+        if not profile.element_by_text(ens_user['ens']).is_element_displayed():
+            self.errors.append('No ENS name is shown in own "ENS usernames" after adding')
+        profile.back_button.click()
         if not profile.element_by_text('@%s' % ens_user['ens']).is_element_displayed():
-            self.errors.append('ENS contact was not backed up')
+            self.errors.append('No ENS name is shown in own profile after adding')
+        if not profile.element_by_text('%s' % ens_user['ens']).is_element_displayed():
+            self.errors.append('No ENS name is shown in own profile after adding')
+        profile.share_my_profile_button.click()
+        if profile.ens_name_in_share_chat_key_text.text != '%s' % ens_user['ens']:
+            self.errors.append('No ENS name is shown on tapping on share icon in Profile')
+        profile.close_share_popup()
 
-        sign_in.just_fyi('Check backup of blocked user')
-        profile.blocked_users_button.click()
-        if not profile.element_by_text(chat_users['A']['username']).is_element_displayed():
-            self.errors.append('Blocked user was not backed up')
-
-        sign_in.just_fyi('Check backup of nickname for non-contact user')
-        home.home_button.double_click()
-        home.add_contact(chat_users['B']['public_key'], add_in_contacts=False)
-        if not chat.element_by_text(nickname1).is_element_displayed():
-            self.errors.append("Nickname of non-contact user was not backed up")
         self.errors.verify_no_errors()
-
-    @marks.testrail_id(5431)
-    @marks.medium
-    def test_add_custom_network(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        profile = sign_in.profile_button.click()
-        profile.add_custom_network()
-        sign_in.sign_in()
-        sign_in.profile_button.click()
-        profile.advanced_button.click()
-        profile.network_settings_button.scroll_to_element(10, 'up')
-        if not profile.element_by_text_part('custom_ropsten').is_element_displayed():
-            self.driver.fail("Network custom_ropsten was not added!")
-
     @marks.testrail_id(5453)
     @marks.medium
     def test_privacy_policy_terms_of_use_node_version_need_help_in_profile(self):
@@ -730,50 +538,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.request_a_feature_button.click()
         if not profile.element_by_text("#support").is_element_displayed(30):
             self.errors.append("Support channel is not suggested for requesting a feature")
-        self.errors.verify_no_errors()
-
-
-    @marks.testrail_id(5368)
-    @marks.medium
-    def test_change_log_level_and_fleet(self):
-        home = SignInView(self.driver).create_user()
-        profile = home.profile_button.click()
-        profile.advanced_button.click()
-        default_log_level = 'INFO'
-        for text in default_log_level, used_fleet:
-            if not profile.element_by_text(text).is_element_displayed():
-                self.errors.append('%s is not selected by default' % text)
-        if home.find_values_in_geth('lvl=trce', 'lvl=dbug'):
-            self.errors.append('"%s" is set, but found another entries!' % default_log_level)
-        if not home.find_values_in_geth('lvl=info'):
-            self.errors.append('"%s" is set, but no entries are found!' % default_log_level)
-
-        home.just_fyi('Set another loglevel and check that changes are applied')
-        profile.log_level_setting_button.click()
-        changed_log_level = 'TRACE'
-        profile.element_by_text(changed_log_level).click_until_presence_of_element(profile.confirm_button)
-        profile.confirm_button.click()
-        SignInView(self.driver).sign_in()
-        home.profile_button.click()
-        profile.advanced_button.click()
-        if not profile.element_by_text(changed_log_level).is_element_displayed():
-            self.errors.append('"%s" is not selected after change' % changed_log_level)
-        if not home.find_values_in_geth('lvl=trc'):
-            self.errors.append('"%s" is set, but no entries are found!' % changed_log_level)
-
-        home.just_fyi('Set another fleet and check that changes are applied')
-        profile.fleet_setting_button.click()
-        changed_fleet = 'wakuv2.prod'
-        profile.element_by_text(changed_fleet).click_until_presence_of_element(profile.confirm_button)
-        profile.confirm_button.click()
-        SignInView(self.driver).sign_in()
-        home.profile_button.click()
-        profile.advanced_button.click()
-        if not profile.element_by_text(changed_fleet).is_element_displayed():
-            self.errors.append('"%s" fleet is not selected after change' % changed_fleet)
-        if not home.find_values_in_geth(changed_fleet):
-            self.errors.append('"%s" is set, but no entry is found!' % changed_fleet)
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5766)
