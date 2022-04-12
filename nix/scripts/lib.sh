@@ -23,15 +23,28 @@ nix_install_type() {
     NIX_STORE_DIR_GROUP=$(file_group /nix/store)
     if [[ "$(os_name)" =~ NixOS ]]; then
         echo "nixos"
-    elif [[ "${NIX_STORE_DIR_GROUP}" == "nixbld" ]]; then
-        echo "multi"
-    elif [[ "${NIX_STORE_DIR_GROUP}" == "${USER}" ]]; then
-        echo "single"
-    elif [[ "${NIX_STORE_DIR_GROUP}" == "" ]]; then
-        echo "No Nix installtion detected!" >&2
-        echo "none"
     else
-        echo "Unknown Nix installtion type!" >&2
-        exit 1
+        case "${NIX_STORE_DIR_GROUP}" in
+            "nixbld")   echo "multi";;
+            "30000")    echo "multi";;
+            "(30000)")  echo "multi";;
+            "wheel")    echo "single";;
+            "users")    echo "single";;
+            "${USER}")  echo "single";;
+            "${UID}")   echo "single";;
+            "(${UID})") echo "single";;
+            "")         echo "none";
+                        echo "No Nix installtion detected!" >&2;;
+            *)          echo "Unknown Nix installtion type!" >&2; exit 1;;
+        esac
     fi
+}
+
+nix_root() {
+    NIX_ROOT="/nix"
+    if [[ $(uname -s) == "Darwin" ]]; then
+        # Special case due to read-only root on MacOS Catalina
+        NIX_ROOT="/opt/nix"
+    fi
+    echo "${NIX_ROOT}"
 }

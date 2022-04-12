@@ -5,20 +5,58 @@ GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 source "${GIT_ROOT}/nix/scripts/lib.sh"
 source "${GIT_ROOT}/scripts/colors.sh"
 
-nix_purge_multi_user() {
-    sudo systemctl stop nix-daemon.socket
-    sudo systemctl stop nix-daemon.service
-    sudo systemctl disable nix-daemon.socket
-    sudo systemctl disable nix-daemon.service
+nix_purge_linux_multi_user_service() {
+    NIX_SERVICES=(nix-daemon.service nix-daemon.socket)
+    for NIX_SERVICE in "${NIX_SERVICES[@]}"; do
+        sudo systemctl stop "${NIX_SERVICE}"
+        sudo systemctl disable "${NIX_SERVICE}"
+    done
     sudo systemctl daemon-reload
-    sudo rm -fr /etc/nix
-    sudo rm -f /etc/profile.d/nix.sh*
+}
 
-    # Remove nix build users and groups
+nix_purge_linux_multi_user_users() {
     for NIX_USER in $(awk -F: '/nixbld/{print $1}' /etc/passwd); do
         sudo userdel "${NIX_USER}"
     done
     sudo groupdel nixbld
+}
+
+nix_purge_darwin_multi_user_service() {
+    cd /Library/LaunchDaemons
+    NIX_SERVICES=(org.nixos.darwin-store.plist org.nixos.nix-daemon.plist)
+    for NIX_SERVICE in "${NIX_SERVICES[@]}"; do
+        sudo launchctl unload "${NIX_SERVICE}"
+        sudo launchctl remove "${NIX_SERVICE}"
+    done
+}
+
+nix_purge_darwin_multi_user_users() {
+    for NIX_USER in $(dscl . list /Users | grep nixbld); do
+        sudo dscl . -delete "/Users/${NIX_USER}"
+    done
+    sudo dscl . -delete /Groups/nixbld
+}
+
+# This still leaves an empty /nix, which will disappear after reboot.
+nix_purge_darwin_multi_user_volumes() {
+    sudo sed -i.bkp '/nix/d' /etc/synthetic.conf
+    sudo sed -i.bkp '/nix/d' /etc/fstab
+    sudo diskutil apfs deleteVolume /nix
+    echo -e "${YLW}You will need to reboot your system!${RST}" >&2
+}
+
+nix_purge_multi_user() {
+    if [[ $(uname -s) == "Darwin" ]]; then
+        nix_purge_darwin_multi_user_service
+        nix_purge_darwin_multi_user_users
+        nix_purge_darwin_multi_user_volumes
+    else
+        nix_purge_linux_multi_user_service
+        nix_purge_linux_multi_user_users
+    fi
+
+    sudo rm -fr /etc/nix
+    sudo rm -f /etc/profile.d/nix.sh*
 
     # Restore old shell profiles
     NIX_PROFILE_FILES=(
@@ -41,11 +79,7 @@ nix_purge_user_profile() {
 }
 
 nix_purge_root() {
-    NIX_ROOT="/nix"
-    if [[ $(uname -s) == "Darwin" ]]; then
-        # Special case due to read-only root on MacOS Catalina
-        NIX_ROOT="/opt/nix"
-    fi
+    NIX_ROOT=$(nix_root)
     if [[ -z "${NIX_ROOT}" ]]; then
         echo -e "${RED}Unable to identify Nix root!${RST}" >&2
         exit 1
@@ -53,27 +87,35 @@ nix_purge_root() {
     sudo rm -fr "${NIX_ROOT}"
 }
 
-NIX_INSTALL_TYPE=$(nix_install_type)
-
-if [[ "${1}" == "--force" ]] && [[ "${NIX_INSTALL_TYPE}" != "nixos" ]]; then
-    echo -e "${YLW}Purge forced, no checks performed!${RST}" >&2
-    nix_purge_multi_user
-    nix_purge_user_profile
-    nix_purge_root
-    exit
+# Don't run anything if script is just sourced.
+if (return 0 2>/dev/null); then
+    echo -e "${YLW}Script sourced, not running purge.${RST}"
+    return
 fi
 
-# Purging /nix on NixOS would be disasterous
+# Confirm user decission, unless --force is used.
+if [[ "${1}" != "--force" ]]; then
+    echo -e "${YLW}Are you sure you want to purge Nix?${RST}" >&2
+    read -p "[y/n]: " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[^Yy]$ ]]; then
+        echo -e "${GRN}Aborting Nix purge!${RST}" >&2
+        exit 0
+    fi
+fi
+
+NIX_INSTALL_TYPE=$(nix_install_type)
+# Purging /nix on NixOS would be disasterous.
 if [[ "${NIX_INSTALL_TYPE}" == "nixos" ]]; then
     echo -e "${RED}You should not purge Nix files on NixOS!${RST}" >&2
     exit
-elif [[ "${NIX_INSTALL_TYPE}" == "none" ]]; then
+elif [[ "${NIX_INSTALL_TYPE}" == "none" ]] && [[ "${1}" != "--force" ]]; then
     echo -e "${YLW}Nothing to remove, Nix not installed.${RST}" >&2
     exit
-elif [[ "${NIX_INSTALL_TYPE}" == "multi" ]]; then
+elif [[ "${NIX_INSTALL_TYPE}" == "multi" ]] || [[ "${1}" == "--force" ]]; then
     echo -e "${YLW}Detected multi-user Nix installation.${RST}" >&2
     nix_purge_multi_user
-elif [[ "${NIX_INSTALL_TYPE}" == "single" ]]; then
+elif [[ "${NIX_INSTALL_TYPE}" == "single" ]] || [[ "${1}" == "--force" ]]; then
     echo -e "${YLW}Detected single-user Nix installation.${RST}" >&2
     nix_purge_user_profile
 fi
