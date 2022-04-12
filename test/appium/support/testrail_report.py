@@ -113,6 +113,7 @@ class TestrailReport(BaseTestReport):
         test_cases['pr']['keycard_tx'] = 50663
         test_cases['pr']['1_1_chat_commands'] = 50825
         test_cases['pr']['ens'] = 50827
+        test_cases['pr']['sync'] = 50834
         ## Nightly e2e
         test_cases['nightly']['medium'] = 736
         test_cases['nightly']['chat'] = 50811

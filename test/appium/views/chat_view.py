@@ -936,6 +936,10 @@ class ChatView(BaseView):
         chat_element.find_element()
         chat_element.member_photo.click()
 
+    def open_user_profile_from_1_1_chat(self):
+        self.chat_options.click()
+        self.view_profile_button.click()
+
     def set_nickname(self, nickname, close_profile=True):
         self.driver.info("Setting nickname:%s" % nickname)
         self.profile_nickname_button.click()

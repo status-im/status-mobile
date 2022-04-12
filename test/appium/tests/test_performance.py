@@ -19,7 +19,6 @@ class TestPerformance(SingleDeviceTestCase):
         return timestamps_by_event
 
     @marks.testrail_id(6216)
-    @marks.high
     @marks.skip
     def test_time_to_load_sign_in_screen(self):
 
