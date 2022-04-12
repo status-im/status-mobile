@@ -342,7 +342,7 @@ dependencies {
             exclude group: 'com.android.installreferrer'
         }
     } else {
-	implementation 'com.google.firebase:firebase-messaging:23.0.0'
+        implementation 'com.google.firebase:firebase-messaging:23.0.0'
     }
 
     // react-native-screens
@@ -398,5 +398,5 @@ preBuild.dependsOn hemroidBuild
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 
 if (!googleFree) {
-	apply plugin: "com.google.gms.google-services"
+    apply plugin: "com.google.gms.google-services"
 }

@@ -61,6 +61,11 @@ if [[ -n "${READER_FEATURES}" ]]; then
     append_env_export 'READER_FEATURES'
 fi
 
+# Used by android/build.gradle to make dependencies/plugins optional
+if [[ -n "${GOOGLE_FREE}" ]]; then
+    append_env_export 'GOOGLE_FREE'
+fi
+
 # If no secrets were passed there's no need to pass the 'secretsFile'.
 if [[ -s "${SECRETS_FILE_PATH}" ]]; then
   nixOpts+=("--argstr" "secretsFile" "${SECRETS_FILE_PATH}")
