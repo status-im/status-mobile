@@ -55,23 +55,6 @@ class TestDApps(SingleDeviceTestCase):
         if not camera_dapp.allow_button.is_element_displayed():
             self.driver.fail("No request to camera access after relogin")
 
-    @marks.testrail_id(6323)
-    @marks.medium
-    @marks.flaky
-    def test_resolve_ipns_name(self):
-        user = basic_user
-        ipns_url = 'uniswap.eth'
-        home = SignInView(self.driver).recover_access(passphrase=user['passphrase'])
-        profile = home.profile_button.click()
-        profile.switch_network()
-        self.driver.set_clipboard_text(ipns_url)
-        dapp = home.dapp_tab_button.click()
-        dapp.enter_url_editbox.click()
-        dapp.paste_text()
-        dapp.confirm()
-        if not dapp.allow_button.is_element_displayed(30):
-            self.driver.fail('No permission is asked for dapp, so IPNS name is not resolved')
-
     @marks.testrail_id(6232)
     @marks.medium
     @marks.flaky

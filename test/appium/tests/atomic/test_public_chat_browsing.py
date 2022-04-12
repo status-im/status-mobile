@@ -537,6 +537,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
             if dapp.web_page.is_element_differs_from_template(urls[url], 5):
                 self.errors.append('Web page does not match expected template %s' % urls[url])
             base_web.browser_previous_page_button.click_until_presence_of_element(dapp.element_by_text_part('Discover'))
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702150)
@@ -563,7 +564,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         browsing.browser_next_page_button.click()
         browsing.element_by_text_part('написана спільно її читачами').wait_for_element(30)
 
-        self.errors.verify_no_errors
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(702179)
     def test_browser_refresh_page(self):
@@ -587,6 +588,27 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(702201)
+    def test_browser_resolve_ipns_name(self):
+        ipns_url = 'uniswap.eth'
+
+        self.home.just_fyi('Switching to Mainnet')
+        profile = self.home.profile_button.click()
+        profile.switch_network()
+
+        self.home.just_fyi('Opening url containing ipns name')
+        dapp = self.home.dapp_tab_button.click()
+        web_page = dapp.open_url(ipns_url)
+        if not dapp.allow_button.is_element_displayed(30):
+            self.driver.fail('No permission is asked for dapp, so IPNS name is not resolved')
+        dapp.allow_button.click()
+
+        # Switching back to ropsten
+        web_page.profile_button.click()
+        profile.switch_network('Ropsten with upstream RPC')
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702151)
     def test_browser_open_url_with_non_english_text(self):
         dapp = self.home.dapp_tab_button.click()
@@ -597,7 +619,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
             if not browsing.element_by_text_part(wiki_text).is_element_displayed(15):
                 self.errors.append("%s is not shown" % wiki_text)
 
-        self.errors.verify_no_errors
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(702180)
     def test_browser_connect_revoke_wallet(self):
@@ -684,6 +706,8 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.share_via_messenger()
         self.home.element_by_text_part("Hey join me on Status: https://join.status.im/u/0x")
         self.home.click_system_back_button()
+
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(702160)
     def test_profile_add_remove_contact_via_contacts_view(self):
@@ -847,6 +871,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.add_contact(chat_users['B']['public_key'], add_in_contacts=False)
         if not chat.element_by_text(nickname1).is_element_displayed():
             self.errors.append("Nickname of non-contact user was not backed up")
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702165)
@@ -875,7 +900,9 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
             self.errors.append('"%s" is not selected after change' % changed_log_level)
         if not self.home.find_values_in_geth('lvl=trc'):
             self.errors.append('"%s" is set, but no entries are found!' % changed_log_level)
+
         profile.get_back_to_home_view()
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702178)
@@ -899,6 +926,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
             self.errors.append('"%s" fleet is not selected after change' % changed_fleet)
         if not self.home.find_values_in_geth(changed_fleet):
             self.errors.append('"%s" is set, but no entry is found!' % changed_fleet)
+
         profile.get_back_to_home_view()
 
         self.errors.verify_no_errors()
