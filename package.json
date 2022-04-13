@@ -47,6 +47,7 @@
     "react-native-draggable-flatlist": "^3.0.3",
     "react-native-fast-image": "^8.5.11",
     "react-native-fetch-polyfill": "^1.1.2",
+    "react-native-flash-message": "^0.2.1",
     "react-native-fs": "^2.14.1",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-haptic-feedback": "^1.9.0",

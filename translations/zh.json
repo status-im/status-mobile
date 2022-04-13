@@ -1721,5 +1721,6 @@
     "your-recovery-phrase": "您的助记词",
     "your-recovery-phrase-description": "这是您的助记词。您需要用它来证明这个钱包属于您。您只能查看一次！请将其写在纸上并保存在安全的地方。如果丢失或重新安装钱包，您将需要用到这些助记词。",
     "your-tip-limit": "您的手续费上限",
-    "youre-on-mobile-network": "您正在使用移动网络"
+    "youre-on-mobile-network": "您正在使用移动网络",
+    "saved-successfully": "保存成功"
 }

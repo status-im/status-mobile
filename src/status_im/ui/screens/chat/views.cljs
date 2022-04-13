@@ -33,7 +33,8 @@
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
-            [status-im.ui.screens.chat.sheets :as sheets]))
+            [status-im.ui.screens.chat.sheets :as sheets]
+            ["react-native-flash-message" :default FlashMessage]))
 
 (defn invitation-requests [chat-id admins]
   (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])
@@ -399,4 +400,7 @@
                :active-panel     @active-panel
                :set-active-panel set-active-panel
                :text-input-ref   text-input-ref}]]
-            [bottom-sheet @active-panel]])]))))
+            [bottom-sheet @active-panel]])
+         [:> FlashMessage {:position "bottom"
+                           :floating true
+                           :icon "auto"}]]))))

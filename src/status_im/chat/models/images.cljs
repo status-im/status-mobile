@@ -14,7 +14,8 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.platform :as platform]
             [status-im.utils.fs :as fs]
-            [status-im.chat.models :as chat]))
+            [status-im.chat.models :as chat]
+            ["react-native-flash-message" :refer [showMessage]]))
 
 (def maximum-image-size-px 2000)
 
@@ -48,7 +49,11 @@
       (.then #(on-success (.path %)))
       (.catch #(log/error "could not save image"))))
 
-(defn save-to-gallery [path] (.save CameraRoll path))
+(defn save-to-gallery [path]
+  (.save CameraRoll path)
+  (^js showMessage (clj->js {:message (i18n/label :t/saved-successfully)
+                             :description ""
+                             :type "success"})))
 
 (re-frame/reg-fx
  ::save-image-to-gallery
