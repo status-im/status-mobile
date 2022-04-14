@@ -48,7 +48,8 @@ class BaseTestReport:
             'testrail_case_id': test.testrail_case_id,
             'name': test.name,
             'geth_paths': geth_paths,
-            'testruns': list()
+            'testruns': list(),
+            'group_name': test.group_name
         }
         for testrun in test.testruns:
             test_dict['testruns'].append(testrun.__dict__)
@@ -70,7 +71,8 @@ class BaseTestReport:
             tests.append(SingleTestData(name=test_data['name'],
                                         geth_paths=test_data['geth_paths'],
                                         testruns=testruns,
-                                        testrail_case_id=test_data['testrail_case_id']))
+                                        testrail_case_id=test_data['testrail_case_id'],
+                                        grop_name=test_data['group_name']))
         return tests
 
     def get_failed_tests(self):

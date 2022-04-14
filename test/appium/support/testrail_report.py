@@ -159,14 +159,21 @@ class TestrailReport(BaseTestReport):
                         i + 1, self.get_sauce_job_url(job_id=device, first_command=last_testrun.first_commands[device]))
                 else:
                     devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(job_id=device))
+            comment = str()
+            if test.group_name:
+                comment += "# Class: %s \n" % test.group_name
+            if last_testrun.error:
+                comment += '%s' % ('# Error: \n %s \n' % emoji.demojize(last_testrun.error)) + devices + test_steps
+            else:
+                comment += devices + test_steps
             data = {'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
-                    'comment': '%s' % ('# Error: \n %s \n' % emoji.demojize(
-                        last_testrun.error)) + devices + test_steps if last_testrun.error
-                    else devices + test_steps}
+                    'comment': comment}
+            result = self.post(method, data=data)
             try:
-                result_id = self.post(method, data=data)['id']
+                result_id = result['id']
             except KeyError:
                 result_id = ''
+                print("Got TestRail error when adding results for case %s: \n%s" % (test.testrail_case_id, result))
             if last_testrun.error:
                 try:
                     for geth in test.geth_paths.keys():
@@ -198,7 +205,7 @@ class TestrailReport(BaseTestReport):
                     case_title = '\n'
                     case_title += '-------\n'
                     case_title += "## %s) ID %s: [%s](%s) \n" % (
-                    i + 1, test.testrail_case_id, test.name, test_rail_link)
+                        i + 1, test.testrail_case_id, test.name, test_rail_link)
                     error = "```%s```\n" % last_testrun.error[:255]
                     for job_id, f in last_testrun.jobs.items():
                         if last_testrun.first_commands:
@@ -216,8 +223,8 @@ class TestrailReport(BaseTestReport):
         request_body = {'description': final_description}
         return self.post('update_run/%s' % self.run_id, request_body)
 
-    def get_run_results(self):
-        return self.get('get_results_for_run/%s' % self.run_id)['results']
+    def get_run_results(self, test_run_id=None):
+        return self.get('get_results_for_run/%s' % (test_run_id if test_run_id else self.run_id))['results']
 
     def is_run_successful(self):
         for test in self.get_run_results():
@@ -232,3 +239,7 @@ class TestrailReport(BaseTestReport):
             return '%stests/view/%s' % (self.url, test_id)
         except KeyError:
             return None
+
+    def get_not_executed_tests(self, test_run_id):
+        results = self.get("get_tests/%s&status_id=3" % test_run_id)
+        return [result['case_id'] for result in results["tests"]]

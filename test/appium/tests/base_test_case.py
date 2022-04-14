@@ -349,6 +349,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
             for index, driver in self.drivers.items():
                 jobs[driver.session_id] = index + 1
         self.errors = Errors()
+        test_suite_data.current_test.group_name = self.__class__.__name__
 
     def teardown_method(self, method):
         geth_names, geth_contents = [], []

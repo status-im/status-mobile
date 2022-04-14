@@ -20,6 +20,7 @@ class GithubHtmlReport(BaseTestReport):
         tests = self.get_all_tests()
         passed_tests = self.get_passed_tests()
         failed_tests = self.get_failed_tests()
+        not_executed_tests = TestrailReport().get_not_executed_tests(run_id)
 
         if len(tests) > 0:
             title_html = "## %.0f%% of end-end tests have passed\n" % (len(passed_tests) / len(tests) * 100)
@@ -27,9 +28,18 @@ class GithubHtmlReport(BaseTestReport):
             summary_html += "Total executed tests: %d\n" % len(tests)
             summary_html += "Failed tests: %d\n" % len(failed_tests)
             summary_html += "Passed tests: %d\n" % len(passed_tests)
+            if not_executed_tests:
+                summary_html += "Not executed tests: %d\n" % len(not_executed_tests)
             summary_html += "```\n"
+            not_executed_tests_html = str()
             failed_tests_html = str()
             passed_tests_html = str()
+            if not_executed_tests:
+                not_executed_tests_html = self.build_tests_table_html(not_executed_tests, run_id,
+                                                                      not_executed_tests=True)
+                summary_html += "```\n"
+                summary_html += 'IDs of not executed tests: %s \n' % ','.join([str(i) for i in not_executed_tests])
+                summary_html += "```\n"
             if failed_tests:
                 failed_tests_html = self.build_tests_table_html(failed_tests, run_id, failed_tests=True)
                 summary_html += "```\n"
@@ -37,39 +47,53 @@ class GithubHtmlReport(BaseTestReport):
                 summary_html += "```\n"
             if passed_tests:
                 passed_tests_html = self.build_tests_table_html(passed_tests, run_id, failed_tests=False)
-            return title_html + summary_html + failed_tests_html + passed_tests_html
+            return title_html + summary_html + not_executed_tests_html + failed_tests_html + passed_tests_html
         else:
             return None
 
-    def build_tests_table_html(self, tests, run_id, failed_tests=False):
-        tests_type = "Failed tests" if failed_tests else "Passed tests"
+    def build_tests_table_html(self, tests, run_id, failed_tests=False, not_executed_tests=False):
+        if failed_tests:
+            tests_type = "Failed tests"
+        elif not_executed_tests:
+            tests_type = "Not executed tests"
+        else:
+            tests_type = "Passed tests"
         html = "<h3>%s (%d)</h3>" % (tests_type, len(tests))
         html += "<details>"
         html += "<summary>Click to expand</summary>"
         html += "<br/>"
 
-        if failed_tests:
-            from tests import pytest_config_global
-            pr_id = pytest_config_global['pr_number']
-            apk_name = pytest_config_global['apk']
-            tr_case_ids = self.list_of_failed_testrail_ids(self.get_failed_tests())
-            html += "<li><a href=\"%s\">Rerun tests</a></li>" % self.get_jenkins_link_to_rerun_e2e(pr_id=pr_id,
-                                                                                                   apk_name=apk_name,
-                                                                                                   tr_case_ids=tr_case_ids)
+        from tests import pytest_config_global
+        pr_id = pytest_config_global['pr_number']
+        apk_name = pytest_config_global['apk']
 
-        html += "<br/>"
-        html += "<table style=\"width: 100%\">"
-        html += "<colgroup>"
-        html += "<col span=\"1\" style=\"width: 20%;\">"
-        html += "<col span=\"1\" style=\"width: 80%;\">"
-        html += "</colgroup>"
-        html += "<tbody>"
-        html += "<tr>"
-        html += "</tr>"
-        for i, test in enumerate(tests):
-            html += self.build_test_row_html(i, test, run_id)
-        html += "</tbody>"
-        html += "</table>"
+        if not_executed_tests:
+            html += "<li><a href=\"%s\">Rerun not executed tests</a></li>" % self.get_jenkins_link_to_rerun_e2e(
+                pr_id=pr_id,
+                apk_name=apk_name,
+                tr_case_ids=','.join([str(i) for i in tests]))
+
+        if failed_tests:
+            tr_case_ids = self.list_of_failed_testrail_ids(self.get_failed_tests())
+            html += "<li><a href=\"%s\">Rerun failed tests</a></li>" % self.get_jenkins_link_to_rerun_e2e(
+                pr_id=pr_id,
+                apk_name=apk_name,
+                tr_case_ids=tr_case_ids)
+
+        if not not_executed_tests:
+            html += "<br/>"
+            html += "<table style=\"width: 100%\">"
+            html += "<colgroup>"
+            html += "<col span=\"1\" style=\"width: 20%;\">"
+            html += "<col span=\"1\" style=\"width: 80%;\">"
+            html += "</colgroup>"
+            html += "<tbody>"
+            html += "<tr>"
+            html += "</tr>"
+            for i, test in enumerate(tests):
+                html += self.build_test_row_html(i, test, run_id)
+            html += "</tbody>"
+            html += "</table>"
         html += "</details>"
         return html
 
@@ -77,7 +101,7 @@ class GithubHtmlReport(BaseTestReport):
         test_rail_link = TestrailReport().get_test_result_link(run_id, test.testrail_case_id)
         if test_rail_link:
             html = "<tr><td><b>%s. <a href=\"%s\">%s</a>, id: %s </b></td></tr>" % (
-            index + 1, test_rail_link, test.name, test.testrail_case_id)
+                index + 1, test_rail_link, test.name, test.testrail_case_id)
         else:
             html = "<tr><td><b>%d. %s</b> (TestRail link is not found)</td></tr>" % (index + 1, test.name)
         html += "<tr><td>"
@@ -95,6 +119,8 @@ class GithubHtmlReport(BaseTestReport):
                 html += "</p>"
             html += "<code>%s</code>" % last_testrun.error[:255]
             html += "<br/><br/>"
+        if test.group_name:
+            html += "<p><b>Class: %s</b></p>" % test.group_name
         if last_testrun.jobs:
             html += self.build_device_sessions_html(last_testrun)
         html += "</td></tr>"

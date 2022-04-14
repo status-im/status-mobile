@@ -2,11 +2,12 @@ from typing import Dict
 
 
 class SingleTestData(object):
-    def __init__(self, name, testruns, testrail_case_id, geth_paths):
+    def __init__(self, name, testruns, testrail_case_id, geth_paths, grop_name):
         self.testrail_case_id = testrail_case_id
         self.name = name
         self.testruns = testruns
         self.geth_paths = geth_paths
+        self.group_name = grop_name
 
     class TestRunData(object):
         def __init__(self, steps, jobs, error, first_commands: Dict[str, int]):
@@ -30,6 +31,6 @@ class TestSuiteData(object):
         if existing_test:
             self.current_test = existing_test
         else:
-            test = SingleTestData(test_name, list(), testrail_case_id, list())
+            test = SingleTestData(test_name, list(), testrail_case_id, list(), None)
             self.tests.append(test)
             self.current_test = test
