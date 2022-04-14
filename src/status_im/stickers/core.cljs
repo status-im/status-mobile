@@ -108,8 +108,11 @@
      {:db (-> db
               (assoc-in [:stickers/packs-installed id] pack))}
      ;;(assoc :stickers/selected-pack id))} TODO it doesn't scroll to selected pack on Android
+     
      (multiaccounts.update/multiaccount-update
       :stickers/packs-installed
+
+    
       (assoc (:stickers/packs-installed multiaccount) id pack)
       {}))))
 

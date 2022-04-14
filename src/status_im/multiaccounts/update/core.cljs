@@ -42,6 +42,7 @@
 
 (fx/defn optimistic
   [{:keys [db] :as cofx} setting setting-value]
+         (prn "---------- " setting setting-value)
   (let [current-multiaccount (:multiaccount db)]
     {:db (if setting-value
            (assoc-in db [:multiaccount setting] setting-value)
