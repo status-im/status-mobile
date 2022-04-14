@@ -12,7 +12,7 @@ pipeline {
     string(
       name: 'TEST_MARKERS',
       description: 'Marker expression for matching tests to run.',
-      defaultValue: 'critical or high',
+      defaultValue: 'critical',
     ) */
     string(
       name: 'APK_NAME',

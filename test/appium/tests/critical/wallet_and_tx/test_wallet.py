@@ -3,8 +3,8 @@ import string
 import pytest
 
 from tests import marks, common_password
-from tests.base_test_case import SingleDeviceTestCase, MultipleSharedDeviceTestCase, create_shared_drivers
-from tests.users import wallet_users, transaction_senders, basic_user, ens_user, ens_user_ropsten
+from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
+from tests.users import wallet_users, basic_user
 from views.sign_in_view import SignInView
 from support.utilities import get_merged_txs_list
 
@@ -28,7 +28,7 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
                                 'STT': cls.wallet.get_asset_amount_by_name('STT')}
 
     @marks.testrail_id(700756)
-    def test_wallet_tx_history_copy_tx_hash_on_lte(self):
+    def test_wallet_tx_history_copy_tx_hash_on_cellular(self):
         self.wallet.accounts_status_account.click()
         address = wallet_users['D']['address']
         ropsten_txs = self.network_api.get_transactions(address)
@@ -389,58 +389,4 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append(
                 "'Insufficient funds' error is not shown when sending %s STT from wallet with balance %s" % (
                     round(stt_value + 1), stt_value))
-        self.errors.verify_no_errors()
-
-
-class TestWalletManagement(SingleDeviceTestCase):
-
-    @marks.testrail_id(6269)
-    @marks.medium
-    def test_search_asset_and_currency(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        profile = home.profile_button.click()
-        profile.switch_network()
-        search_list_assets = {
-            'ad': ['AdEx', 'Open Trading Network', 'TrueCAD'],
-            'zs': ['ZSC']
-        }
-        wallet = home.wallet_button.click()
-
-        home.just_fyi('Searching for asset by name and symbol')
-        wallet.multiaccount_more_options.click()
-        wallet.manage_assets_button.click()
-        for keyword in search_list_assets:
-            home.search_by_keyword(keyword)
-            if keyword == 'ad':
-                search_elements = wallet.all_assets_full_names.find_elements()
-            else:
-                search_elements = wallet.all_assets_symbols.find_elements()
-            if not search_elements:
-                self.errors.append('No search results after searching by %s keyword' % keyword)
-            search_results = [element.text for element in search_elements]
-            if search_results != search_list_assets[keyword]:
-                self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
-                                   (', '.join(search_results), keyword))
-            home.cancel_button.click()
-        wallet.close_button.click()
-
-        home.just_fyi('Searching for currency')
-        search_list_currencies = {
-            'aF': ['Afghanistan Afghani (AFN)', 'South Africa Rand (ZAR)'],
-            'bolívi': ['Bolivia Bolíviano (BOB)']
-        }
-        wallet.multiaccount_more_options.click_until_presence_of_element(wallet.set_currency_button)
-        wallet.set_currency_button.click()
-        for keyword in search_list_currencies:
-            home.search_by_keyword(keyword)
-            search_elements = wallet.currency_item_text.find_elements()
-            if not search_elements:
-                self.errors.append('No search results after searching by %s keyword' % keyword)
-            search_results = [element.text for element in search_elements]
-            if search_results != search_list_currencies[keyword]:
-                self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
-                                   (', '.join(search_results), keyword))
-            home.cancel_button.click()
-
         self.errors.verify_no_errors()

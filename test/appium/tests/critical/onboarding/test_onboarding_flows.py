@@ -2,10 +2,10 @@ import random
 import pytest
 
 from support.utilities import fill_string_with_char
-from tests import marks, common_password, unique_password
-from tests.base_test_case import SingleDeviceTestCase, MultipleSharedDeviceTestCase, create_shared_drivers
+from tests import marks, common_password
+from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from views.sign_in_view import SignInView
-from tests.users import basic_user, transaction_senders, recovery_users
+from tests.users import basic_user, transaction_senders
 
 
 @pytest.mark.xdist_group(name="onboarding_1")
@@ -213,8 +213,8 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         [element.wait_and_click(10) for element in (self.sign_in.maybe_later_button, self.sign_in.lets_go_button)]
         self.home.cross_icon_inside_welcome_screen_button.wait_and_click(10)
         if not self.home.element_by_translation_id("welcome-blank-message").is_element_displayed():
-            self.errors.append("'%s' text is not shown after welcome view was closed" % self.home.get_translation_by_key(
-                "welcome-blank-message"))
+            self.errors.append("'%s' text is not shown after welcome view was closed" %
+                               self.home.get_translation_by_key("welcome-blank-message"))
         self.home.profile_button.click()
         shown_username = self.profile.default_username_text.text
         if shown_username != username:
@@ -302,7 +302,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700750)
-    def test_restore_validation_seed_phrase_field(self):
+    def test_restore_seed_phrase_field_validation(self):
         validations = [
             {
                 'case': 'empty value',
@@ -340,8 +340,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Possible to create account with empty seed phrase")
         for validation in validations:
             self.sign_in.just_fyi("Checking %s" % validation.get('case'))
-            phrase, msg, words_count, popup = validation.get('phrase'), \
-                                              validation.get('validation message'), \
+            phrase, msg, words_count, popup = validation.get('phrase'), validation.get('validation message'), \
                                               validation.get('words count'), \
                                               validation.get('popup')
             if self.sign_in.access_key_button.is_element_displayed():
@@ -377,8 +376,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702189)
-    @marks.transaction
-    def test_restore_account_migrate_multiaccount_to_keycard_no_db_saved_add_wallet_sign_tx(self):
+    def test_restore_account_migrate_multiaccount_to_keycard_no_db_saved_add_wallet_send_tx(self):
         self.sign_in.driver.close_app()
         self.sign_in.driver.launch_app()
         self.sign_in.sign_in(password=self.password)
@@ -478,25 +476,4 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
         transaction_amount_added = wallet.get_unique_amount()
         wallet.send_transaction(amount=transaction_amount_added, recipient=transaction_senders['ETH_8']['address'],
                                 keycard=True, sign_transaction=True)
-        self.errors.verify_no_errors()
-
-
-class TestCreateAccount(SingleDeviceTestCase):
-
-    @marks.testrail_id(5455)
-    @marks.medium
-    def test_recover_accounts_with_certain_seedphrase(self):
-        sign_in = SignInView(self.driver)
-        for phrase, account in recovery_users.items():
-            home_view = sign_in.recover_access(passphrase=phrase, password=unique_password)
-            wallet_view = home_view.wallet_button.click()
-            address = wallet_view.get_wallet_address()
-            if address != account:
-                self.errors.append('Restored wallet address "%s" does not match expected "%s"' % (address, account))
-            profile = home_view.profile_button.click()
-            profile.privacy_and_security_button.click()
-            profile.delete_my_profile_button.scroll_and_click()
-            profile.delete_my_profile_password_input.set_value(unique_password)
-            profile.delete_profile_button.click()
-            profile.ok_button.click()
         self.errors.verify_no_errors()

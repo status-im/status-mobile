@@ -128,7 +128,7 @@ class TestrailReport(BaseTestReport):
                 key, value = arg.split('=')
                 case_ids = value.split(',')
         if len(case_ids) == 0:
-            if 'critical or high' in argv:
+            if 'critical' in argv:
                 for category in test_cases['pr']:
                     for case in self.get_cases([test_cases['pr'][category]]):
                         case_ids.append(case['id'])

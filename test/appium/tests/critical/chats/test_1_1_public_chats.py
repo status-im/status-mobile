@@ -1,13 +1,211 @@
 import emoji
 import random
-import pytest
+import time
 
-from time import sleep
 from tests import marks, common_password
-from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase, MultipleSharedDeviceTestCase, create_shared_drivers
+from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
 from views.sign_in_view import SignInView
-from views.send_transaction_view import SendTransactionView
+import pytest
+
+
+@pytest.mark.xdist_group(name="commands_2")
+@marks.critical
+class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
+
+    @classmethod
+    def setup_class(cls):
+        cls.drivers, cls.loop = create_shared_drivers(2)
+        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
+        cls.sender = transaction_senders['ETH_STT_3']
+        cls.home_1 = cls.device_1.recover_access(passphrase=cls.sender['passphrase'], enable_notifications=True)
+        cls.home_2 = cls.device_2.create_user()
+        for home in cls.home_1, cls.home_2:
+            profile = home.profile_button.click()
+            profile.profile_notifications_button.scroll_and_click()
+            profile.wallet_push_notifications.click()
+        cls.recipient_public_key, cls.recipient_username = cls.home_2.get_public_key_and_username(return_username=True)
+        cls.wallet_1, cls.wallet_2 = cls.home_1.wallet_button.click(), cls.home_2.wallet_button.click()
+        [wallet.home_button.click() for wallet in (cls.wallet_1, cls.wallet_2)]
+        cls.chat_1 = cls.home_1.add_contact(cls.recipient_public_key)
+        cls.chat_1.send_message("hello!")
+        cls.account_name_1 = cls.wallet_1.status_account_name
+
+    @marks.testrail_id(6253)
+    def test_1_1_chat_command_send_tx_eth_outgoing_tx_push(self):
+        amount = self.chat_1.get_unique_amount()
+        self.home_1.just_fyi('Send %s ETH in 1-1 chat and check it for sender and receiver: Address requested' % amount)
+        self.chat_1.commands_button.click()
+        send_transaction = self.chat_1.send_command.click()
+        send_transaction.get_username_in_transaction_bottom_sheet_button(self.recipient_username).click()
+        if send_transaction.scan_qr_code_button.is_element_displayed():
+            self.drivers[0].fail('Recipient is editable in bottom sheet when send ETH from 1-1 chat')
+        send_transaction.amount_edit_box.set_value(amount)
+        send_transaction.confirm()
+        send_transaction.sign_transaction_button.click()
+        sender_message = self.chat_1.get_outgoing_transaction(self.account_name_1)
+        if not sender_message.is_element_displayed():
+            self.drivers[0].fail('No message is shown after sending ETH in 1-1 chat for sender')
+        sender_message.transaction_status.wait_for_element_text(sender_message.address_requested)
+
+        chat_2 = self.home_2.get_chat(self.sender['username']).click()
+        receiver_message = chat_2.get_incoming_transaction(self.account_name_1)
+        timestamp_sender = sender_message.timestamp_command_message.text
+        if not receiver_message.is_element_displayed():
+            self.drivers[0].fail('No message about incoming transaction in 1-1 chat is shown for receiver')
+        receiver_message.transaction_status.wait_for_element_text(receiver_message.address_requested)
+
+        self.home_2.just_fyi('Accept and share address for sender and receiver')
+        for option in (receiver_message.decline_transaction, receiver_message.accept_and_share_address):
+            if not option.is_element_displayed():
+                self.drivers[0].fail("Required options accept or share are not shown")
+
+        select_account_bottom_sheet = receiver_message.accept_and_share_address.click()
+        if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button(
+                self.account_name_1).is_element_displayed():
+            self.errors.append('Not expected value in "From" in "Select account": "Status" is expected')
+        select_account_bottom_sheet.select_button.click()
+        receiver_message.transaction_status.wait_for_element_text(receiver_message.shared_account)
+        sender_message.transaction_status.wait_for_element_text(sender_message.address_request_accepted)
+
+        self.home_1.just_fyi("Sign and send transaction and check that timestamp on message is updated")
+        time.sleep(20)
+        send_bottom_sheet = sender_message.sign_and_send.click()
+        send_bottom_sheet.next_button.click()
+        send_bottom_sheet.sign_transaction()
+        updated_timestamp_sender = sender_message.timestamp_command_message.text
+        if updated_timestamp_sender == timestamp_sender:
+            self.errors.append("Timestamp of message is not updated after signing transaction")
+        self.chat_1.wallet_button.click()
+        self.wallet_1.find_transaction_in_history(amount=amount)
+
+        [wallet.put_app_to_background() for wallet in (self.wallet_1, self.wallet_2)]
+        self.device_1.open_notification_bar()
+        self.network_api.wait_for_confirmation_of_transaction(self.sender['address'], amount)
+        pn = self.home_1.get_pn('You sent %s ETH' % amount)
+        if pn:
+            pn.click()
+            if not self.wallet_1.transaction_history_button.is_element_displayed():
+                self.errors.append('Was not redirected to transaction history after tapping on PN')
+        else:
+            self.home_1.click_system_back_button()
+            self.home_1.status_in_background_button.click_if_shown()
+        self.wallet_1.home_button.click(desired_view="chat")
+
+        self.home_1.just_fyi("Check 'Confirmed' state for sender and receiver(use pull-to-refresh to update history)")
+        chat_2.status_in_background_button.click()
+        chat_2.wallet_button.click()
+        self.wallet_2.wait_balance_is_changed()
+        self.wallet_2.find_transaction_in_history(amount=amount)
+        self.wallet_2.home_button.click()
+        self.home_2.get_chat(self.sender['username']).click()
+        [message.transaction_status.wait_for_element_text(message.confirmed, 60) for message in
+         (sender_message, receiver_message)]
+
+        # TODO: should be added PNs for receiver after getting more stable feature (rechecked 23.11.21, valid)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6265)
+    def test_1_1_chat_command_decline_eth_push_changing_state(self):
+        [home.driver.background_app(3) for home in (self.home_1, self.home_2)]
+        self.home_1.home_button.double_click()
+        self.home_1.get_chat(username=self.recipient_username).click()
+
+        self.home_1.just_fyi('Decline transaction before sharing address and check that state is changed')
+        self.chat_1.commands_button.click()
+        send_transaction = self.chat_1.send_command.click()
+        amount = self.chat_1.get_unique_amount()
+        send_transaction.amount_edit_box.set_value(amount)
+        send_transaction.confirm()
+        send_transaction.sign_transaction_button.click()
+        chat_1_sender_message = self.chat_1.get_outgoing_transaction()
+        self.home_1.click_system_home_button()
+
+        self.home_2.home_button.double_click()
+        chat_2 = self.home_2.get_chat(self.sender['username']).click()
+        chat_2_receiver_message = chat_2.get_incoming_transaction()
+        chat_2_receiver_message.decline_transaction.click()
+        self.home_1.open_notification_bar()
+        self.home_1.element_by_text_part('Request address for transaction declined').wait_and_click()
+
+        [message.transaction_status.wait_for_element_text(message.declined) for message in
+         (chat_1_sender_message, chat_2_receiver_message)]
+
+        self.home_1.just_fyi('Decline transaction request and check that state is changed')
+        request_amount = self.chat_1.get_unique_amount()
+        self.chat_1.commands_button.click()
+        request_transaction = self.chat_1.request_command.click()
+        request_transaction.amount_edit_box.set_value(request_amount)
+        request_transaction.confirm()
+        request_transaction.request_transaction_button.click()
+        chat_1_request_message = self.chat_1.get_incoming_transaction()
+        chat_2_sender_message = chat_2.get_outgoing_transaction()
+        chat_2_sender_message.decline_transaction.click()
+        [message.transaction_status.wait_for_element_text(message.declined) for message in
+         (chat_2_sender_message, chat_1_request_message)]
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6263)
+    def test_1_1_chat_command_request_and_send_tx_stt_in_1_1_chat_offline(self):
+        [home.driver.background_app(2) for home in (self.home_1, self.home_2)]
+        asset_name = 'STT'
+        amount = self.device_1.get_unique_amount()
+
+        self.device_1.just_fyi('Grab user data for transactions and public chat, set up wallets')
+        self.home_2.get_back_to_home_view()
+        self.home_2.wallet_button.click()
+        self.wallet_2.select_asset(asset_name)
+        self.wallet_2.home_button.click()
+        self.home_1.wallet_button.double_click()
+        initial_amount_stt = self.wallet_1.get_asset_amount_by_name('STT')
+        self.home_1.driver.close_app()
+
+        self.home_2.just_fyi('Request %s STT in 1-1 chat and check it is visible for sender and receiver' % amount)
+        chat_2 = self.home_2.get_chat(username=self.sender['username']).click()
+        chat_2.commands_button.click()
+        request_transaction = chat_2.request_command.click()
+        request_transaction.amount_edit_box.set_value(amount)
+        request_transaction.confirm()
+        asset_button = request_transaction.asset_by_name(asset_name)
+        request_transaction.select_asset_button.click_until_presence_of_element(asset_button)
+        asset_button.click()
+        request_transaction.request_transaction_button.click()
+        chat_2_request_message = chat_2.get_incoming_transaction()
+        if not chat_2_request_message.is_element_displayed():
+            self.drivers[1].fail('No incoming transaction in 1-1 chat is shown for recipient after requesting STT')
+
+        self.home_1.just_fyi('Check that transaction message is fetched from offline and sign transaction')
+        self.device_1.driver.launch_app()
+        self.device_1.sign_in()
+        self.home_1.connection_offline_icon.wait_for_invisibility_of_element(30)
+        self.home_1.get_chat(self.recipient_username).click()
+        chat_1_sender_message = self.chat_1.get_outgoing_transaction()
+        if not chat_1_sender_message.is_element_displayed():
+            self.drivers[0].fail('No outgoing transaction in 1-1 chat is shown for sender after requesting STT')
+        chat_1_sender_message.transaction_status.wait_for_element_text(chat_1_sender_message.address_received)
+        send_message = chat_1_sender_message.sign_and_send.click()
+        send_message.next_button.click()
+        send_message.sign_transaction()
+
+        self.home_2.just_fyi('Check that transaction message is updated with new status after offline')
+        [chat.toggle_airplane_mode() for chat in (self.chat_1, chat_2)]
+        self.network_api.wait_for_confirmation_of_transaction(self.sender['address'], amount, token=True)
+        for home in (self.home_1, self.home_2):
+            home.toggle_airplane_mode()
+            home.home_button.double_click()
+            home.connection_offline_icon.wait_for_invisibility_of_element(100)
+        self.home_2.get_chat(self.sender['username']).click()
+        self.home_1.get_chat(self.recipient_username).click()
+        [message.transaction_status.wait_for_element_text(message.confirmed, wait_time=120) for message in
+         (chat_1_sender_message, chat_2_request_message)]
+
+        self.home_1.just_fyi('Check that can find tx in history and balance is updated after offline')
+        self.home_1.wallet_button.click()
+        self.wallet_1.wait_balance_is_changed('STT', initial_amount_stt)
+        self.wallet_1.find_transaction_in_history(amount=amount, asset=asset_name)
+
+        self.errors.verify_no_errors()
 
 
 @pytest.mark.xdist_group(name="1_1_chat_2")
@@ -434,7 +632,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         [home.home_button.click() for home in [cls.home_1, cls.home_2]]
 
     @marks.testrail_id(702186)
-    def test_keycard_command_send_eth_1_1_chat(self):
+    def test_keycard_command_send_tx_eth_1_1_chat(self):
         self.home_2.get_chat(self.sender['username']).click()
         self.chat_2.send_message("hey on kk!")
         self.chat_2.home_button.click()
@@ -479,7 +677,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         sender_message.transaction_status.wait_for_element_text(sender_message.address_request_accepted)
 
         self.chat_1.just_fyi("Sign and send transaction and check that timestamp on message is updated")
-        sleep(20)
+        time.sleep(20)
         send_message = sender_message.sign_and_send.click()
         send_message.next_button.click()
         send_message.sign_transaction(keycard=True)
@@ -527,10 +725,10 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         self.chat_1.chat_message_input.clear()
         for pattern in (self.nick[0:2], self.default_username_2[0:4]):
             self.chat_1.select_mention_from_suggestion_list(username_in_list=self.nick + ' ' + self.default_username_2,
-                                                            typed_search_pattern=self.default_username_2[0:4])
+                                                            typed_search_pattern=pattern)
             if self.chat_1.chat_message_input.text != '@' + self.default_username_2 + ' ':
-                self.errors.append('Username is not resolved in chat input after selecting it in mention '
-                               'suggestions list by default username!')
+                self.errors.append('Username is not resolved in chat input after selecting it in mention suggestions '
+                                   'list by default username!')
         additional_text = 'and more'
         self.chat_1.send_as_keyevent(additional_text)
         self.chat_1.send_message_button.click()
@@ -608,7 +806,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         for message in self.message, message_blocked:
             if self.chat_1.chat_element_by_text(message).is_element_displayed():
                 self.errors.append(
-                    "'%s' from blocked user is fetched from offline in public chat" % (message))
+                    "'%s' from blocked user is fetched from offline in public chat" % message)
 
         self.chat_2.just_fyi('Unblock user and check that can see further messages')
         profile_1 = self.home_1.get_profile_view()
@@ -741,257 +939,247 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         self.errors.verify_no_errors()
 
 
-class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
-    @marks.testrail_id(5362)
-    @marks.medium
-    def test_unread_messages_counter_preview_highlited_1_1_chat(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-        profile_2 = home_2.profile_button.click()
-        default_username_2 = profile_2.default_username_text.text
-        home_2 = profile_2.home_button.click()
-        public_key_1 = home_1.get_public_key_and_username()
-        home_1.home_button.click()
-        chat_2 = home_2.add_contact(public_key_1)
+@pytest.mark.xdist_group(name="ens_stickers_mention_2")
+@marks.critical
+class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
-        message, message_2, message_3 = 'test message', 'test message2', 'test'
-        chat_2.send_message(message)
-        chat_element = home_1.get_chat(default_username_2)
-        home_1.dapp_tab_button.click()
-        chat_2.send_message(message_2)
+    @classmethod
+    def setup_class(cls):
+        cls.drivers, cls.loop = create_shared_drivers(2)
+        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
+        cls.sender, cls.reciever = transaction_senders['ETH_3'], ens_user
+        cls.home_1 = cls.device_1.recover_access(passphrase=cls.sender['passphrase'])
+        cls.home_2 = cls.device_2.recover_access(ens_user['passphrase'], enable_notifications=True)
+        cls.ens = '@%s' % cls.reciever['ens']
+        cls.pub_chat_name = cls.home_1.get_random_chat_name()
+        cls.chat_1 = cls.home_1.join_public_chat(cls.pub_chat_name)
+        cls.chat_2 = cls.home_2.join_public_chat(cls.pub_chat_name)
+        [home.home_button.double_click() for home in (cls.home_1, cls.home_2)]
+        cls.profile_2 = cls.home_2.profile_button.click()
+        cls.profile_2.connect_existing_ens(cls.reciever['ens'])
+        cls.home_1.add_contact(cls.reciever['ens'])
+        cls.home_2.home_button.click()
+        cls.home_2.add_contact(cls.sender['public_key'])
+        # To avoid activity centre for restored users
+        [chat.send_message("hey!") for chat in (cls.chat_1, cls.chat_2)]
+        [home.home_button.double_click() for home in (cls.home_1, cls.home_2)]
 
-        if home_1.home_button.counter.text != '1':
-            self.errors.append('New messages counter is not shown on Home button')
-        device_1.home_button.click()
-        if chat_element.new_messages_counter.text != '1':
-            self.errors.append('New messages counter is not shown on chat element')
-        chat_1 = chat_element.click()
-        chat_1.add_to_contacts.click()
+    @marks.testrail_id(702152)
+    def test_ens_purchased_in_profile(self):
+        self.home_2.profile_button.double_click()
+        ens_name_after_adding = self.profile_2.default_username_text.text
+        if ens_name_after_adding != '@%s' % ens_user['ens']:
+            self.errors.append('ENS name is not shown as default in user profile after adding, "%s" instead' %
+                               ens_name_after_adding)
 
-        home_1.home_button.double_click()
+        self.home_2.just_fyi('check ENS name wallet address and public key')
+        self.home_2.element_by_text(self.reciever['ens']).click()
+        self.home_2.element_by_text(self.reciever['ens']).click()
+        for text in (self.reciever['address'].lower(), self.reciever['public_key']):
+            if not self.home_2.element_by_text_part(text).is_element_displayed(40):
+                self.errors.append('%s text is not shown' % text)
+        self.home_2.profile_button.double_click()
 
-        if home_1.home_button.counter.is_element_displayed():
-            self.errors.append('New messages counter is shown on Home button for already seen message')
-        if chat_element.new_messages_counter.text == '1':
-            self.errors.append('New messages counter is shown on chat element for already seen message')
-        home_1.delete_chat_long_press(default_username_2)
-
-        home_1.just_fyi("Checking preview of message and chat highlighting")
-        chat_2.send_message(message_3)
-        chat_1_element = home_1.get_chat(default_username_2)
-        if chat_1_element.chat_preview.is_element_differs_from_template('highligted_preview.png', 0):
-            self.errors.append("Preview message is not hightligted or text is not shown! ")
-        home_1.get_chat(default_username_2).click()
-        home_1.home_button.double_click()
-        if not home_1.get_chat(default_username_2).chat_preview.is_element_differs_from_template('highligted_preview.png', 0):
-            self.errors.append("Preview message is still highlighted after opening ")
+        self.home_2.just_fyi('check ENS name is shown on share my profile window')
+        self.profile_2.share_my_profile_button.click()
+        if self.profile_2.ens_name_in_share_chat_key_text.text != '%s' % ens_user['ens']:
+            self.errors.append('No ENS name is shown on tapping on share icon in Profile')
+        self.profile_2.close_share_popup()
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(702153)
+    def test_ens_command_send_tx_eth_1_1_chat(self):
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        wallet_1 = self.home_1.wallet_button.click()
+        wallet_1.wait_balance_is_changed()
+        wallet_1.home_button.click()
+        self.home_1.get_chat(self.ens).click()
+        self.chat_1.commands_button.click()
+        amount = self.chat_1.get_unique_amount()
 
-class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
+        self.chat_1.just_fyi("Check sending assets to ENS name from sender side")
+        send_message = self.chat_1.send_command.click()
+        send_message.amount_edit_box.set_value(amount)
+        send_message.confirm()
+        send_message.next_button.click()
+        from views.send_transaction_view import SendTransactionView
+        send_transaction = SendTransactionView(self.drivers[0])
+        send_transaction.ok_got_it_button.click()
+        send_transaction.sign_transaction()
+        chat_1_sender_message = self.chat_1.get_outgoing_transaction(transaction_value=amount)
+        self.network_api.wait_for_confirmation_of_transaction(self.sender['address'], amount, confirmations=3)
+        chat_1_sender_message.transaction_status.wait_for_element_text(chat_1_sender_message.confirmed)
 
-    @marks.testrail_id(5322)
-    @marks.medium
-    def test_delete_cut_and_paste_messages(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        chat = home.add_contact(transaction_senders['N']['public_key'])
+        self.chat_2.just_fyi("Check that message is fetched for receiver")
+        self.home_2.get_chat(self.sender['username']).click()
+        chat_2_reciever_message = self.chat_2.get_incoming_transaction(transaction_value=amount)
+        chat_2_reciever_message.transaction_status.wait_for_element_text(chat_2_reciever_message.confirmed)
 
-        message_text = 'test'
-        message_input = chat.chat_message_input
-        message_input.send_keys(message_text)
+    @marks.testrail_id(702155)
+    def test_ens_mention_nickname_1_1_chat(self):
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
 
-        message_input.delete_last_symbols(2)
-        current_text = message_input.text
-        if current_text != message_text[:-2]:
-            self.driver.fail("Message input text '%s' doesn't match expected '%s'" % (current_text, message_text[:-2]))
+        self.home_1.just_fyi('Mention user by ENS in 1-1 chat')
+        message, message_ens_owner = '%s hey!' % self.ens, '%s hey!' % self.reciever['ens']
+        self.home_1.get_chat(self.ens).click()
+        self.chat_1.send_message(message)
 
-        message_input.cut_text()
+        self.home_1.just_fyi('Set nickname and mention user by nickname in 1-1 chat')
+        russian_nickname = 'МОЙ дорогой ДРУх'
+        self.chat_1.chat_options.click()
+        self.chat_1.view_profile_button.click()
+        self.chat_1.set_nickname(russian_nickname)
+        self.chat_1.select_mention_from_suggestion_list(russian_nickname + ' ' + self.ens)
 
-        message_input.paste_text_from_clipboard()
-        chat.send_message_button.click()
+        self.chat_1.just_fyi('Check that nickname is shown in preview for 1-1 chat')
+        updated_message = '%s hey!' % russian_nickname
+        self.chat_1.home_button.double_click()
+        if not self.chat_1.element_by_text(updated_message).is_element_displayed():
+            self.errors.append('"%s" is not show in chat preview on home screen!' % message)
+        self.home_1.get_chat(russian_nickname).click()
 
-        chat.chat_element_by_text(message_text[:-2]).wait_for_visibility_of_element(2)
+        self.chat_1.just_fyi('Check redirect to user profile on mention by nickname tap')
+        self.chat_1.chat_element_by_text(updated_message).click()
+        if not self.chat_1.profile_block_contact.is_element_displayed():
+            self.errors.append(
+                'No redirect to user profile after tapping on message with mention (nickname) in 1-1 chat')
+        else:
+            self.chat_1.profile_send_message.click()
 
-    @marks.testrail_id(6298)
-    @marks.medium
-    def test_can_scan_qr_with_chat_key_from_home_start_chat(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.recover_access(basic_user['passphrase'])
+        self.chat_2.just_fyi("Check message with mention for ENS owner")
+        self.home_2.get_chat(self.sender['username']).click()
+        if not self.chat_2.chat_element_by_text(message_ens_owner).is_element_displayed():
+            self.errors.append('Expected %s message is not shown for ENS owner' % message_ens_owner)
 
-        url_data = {
-            'ens_with_stateofus_domain_deep_link': {
-                'url': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_ropsten['ens'],
-                'username': '@%s' % ens_user_ropsten['ens']
-            },
-            'ens_without_stateofus_domain_deep_link': {
-                'url': 'https://join.status.im/u/%s' % ens_user_ropsten['ens'],
-                'username': '@%s' % ens_user_ropsten['ens']
-            },
-            'ens_another_domain_deep_link': {
-                'url': 'status-im://u/%s' % ens_user['ens_another'],
-                'username': '@%s' % ens_user['ens_another']
-            },
-            'own_profile_key_deep_link': {
-                'url': 'https://join.status.im/u/%s' % basic_user['public_key'],
-                'error': "That's you"
-            },
-            'other_user_profile_key_deep_link': {
-                'url': 'https://join.status.im/u/%s' % transaction_senders['M']['public_key'],
-                'username': transaction_senders['M']['username']
-            },
-            'other_user_profile_key_deep_link_invalid': {
-                'url': 'https://join.status.im/u/%sinvalid' % ens_user['public_key'],
-                'error': 'Please enter or scan a valid chat key'
-            },
-            'own_profile_key': {
-                'url': basic_user['public_key'],
-                'error': "That's you"
-            },
-            # 'ens_without_stateofus_domain': {
-            #     'url': ens_user['ens'],
-            #     'username': ens_user['username']
-            # },
-            'other_user_profile_key': {
-                'url': transaction_senders['M']['public_key'],
-                'username': transaction_senders['M']['username']
-            },
-            'other_user_profile_key_invalid': {
-                'url': '%s123' % ens_user['public_key'],
-                'error': 'Please enter or scan a valid chat key'
-            },
-        }
+        self.chat_1.just_fyi('Check if after deleting nickname ENS is shown again')
+        self.chat_1.chat_options.click()
+        self.chat_1.view_profile_button.click()
+        self.chat_1.profile_nickname_button.click()
+        self.chat_1.nickname_input_field.clear()
+        self.chat_1.element_by_text('Done').click()
+        self.chat_1.close_button.click()
+        if self.chat_1.user_name_text.text != self.ens:
+            self.errors.append("Username '%s' is not updated to ENS '%s' after deleting nickname" %
+                               (self.chat_1.user_name_text.text, self.ens))
 
-        for key in url_data:
-            home.plus_button.click_until_presence_of_element(home.start_new_chat_button)
-            contacts = home.start_new_chat_button.click()
-            sign_in.just_fyi('Checking scanning qr for "%s" case' % key)
-            contacts.scan_contact_code_button.click()
-            if contacts.allow_button.is_element_displayed():
-                contacts.allow_button.click()
-            contacts.enter_qr_edit_box.scan_qr(url_data[key]['url'])
-            from views.chat_view import ChatView
-            chat = ChatView(self.driver)
-            if url_data[key].get('error'):
-                if not chat.element_by_text_part(url_data[key]['error']).is_element_displayed():
-                    self.errors.append('Expected error %s is not shown' % url_data[key]['error'])
-                chat.ok_button.click()
-            if url_data[key].get('username'):
-                if not chat.chat_message_input.is_element_displayed():
-                    self.errors.append(
-                        'In "%s" case chat input is not found after scanning, so no redirect to 1-1' % key)
-                if not chat.element_by_text(url_data[key]['username']).is_element_displayed():
-                    self.errors.append('In "%s" case "%s" not found after scanning' % (key, url_data[key]['username']))
-                chat.get_back_to_home_view()
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(6322)
-    @marks.medium
-    def test_can_scan_different_links_with_universal_qr_scanner(self):
-        user = transaction_senders['ETH_STT_3']
-        home = SignInView(self.driver).recover_access(user['passphrase'])
-        wallet = home.wallet_button.click()
-        wallet.home_button.click()
-        send_transaction = SendTransactionView(self.driver)
+    @marks.testrail_id(702156)
+    def test_ens_mention_push_highlighted_public_chat(self):
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        self.home_2.put_app_to_background()
+        self.home_2.open_notification_bar()
 
-        url_data = {
-            'ens_without_stateofus_domain_deep_link': {
-                'url': 'https://join.status.im/u/%s' % ens_user_ropsten['ens'],
-                'username': '@%s' % ens_user_ropsten['ens']
-            },
+        self.home_1.just_fyi('check that can mention user with ENS name')
+        self.home_1.get_chat(self.ens).click()
+        self.chat_1.select_mention_from_suggestion_list(self.reciever['ens'])
+        if self.chat_1.chat_message_input.text != self.ens + ' ':
+            self.errors.append(
+                'ENS username is not resolved in chat input after selecting it in mention suggestions list!')
+        self.chat_1.send_message_button.click()
 
-            'other_user_profile_key_deep_link': {
-                'url': 'status-im://u/%s' % basic_user['public_key'],
-                'username': basic_user['username']
-            },
-            'other_user_profile_key_deep_link_invalid': {
-                'url': 'https://join.status.im/u/%sinvalid' % ens_user['public_key'],
-                'error': 'Unable to read this code'
-            },
-            'own_profile_key': {
-                'url': user['public_key'],
-            },
-            'other_user_profile_key': {
-                'url': transaction_senders['A']['public_key'],
-                'username': transaction_senders['A']['username']
-            },
-            'wallet_validation_wrong_address_transaction': {
-                'url': 'ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e@3/transfer?address=blablabla&uint256=1e10',
-                'error': 'Invalid address',
-            },
-            'wallet_eip_ens_for_receiver': {
-                'url': 'ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=nastya.stateofus.eth&uint256=1e-1',
-                'data': {
-                    'asset': 'STT',
-                    'amount': '0.1',
-                    'address': '0x58d8…F2ff',
-                },
-            },
-            'wallet_eip_payment_link': {
-                'url': 'ethereum:pay-0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=0x3d597789ea16054a084ac84ce87f50df9198f415&uint256=1e1',
-                'data': {
-                    'amount': '10',
-                    'asset': 'STT',
-                    'address': '0x3D59…F415',
-                },
-            },
-            'dapp_deep_link': {
-                'url': 'https://join.status.im/b/simpledapp.eth',
-            },
-            'dapp_deep_link_https': {
-                'url': 'https://join.status.im/b/https://simpledapp.eth',
-            },
-            'public_chat_deep_link': {
-                'url': 'https://join.status.im/baga-ma-2020',
-                'chat_name': 'baga-ma-2020'
-            },
-        }
+        self.home_2.just_fyi('check that PN is received and after tap you are redirected to chat, mention is highligted')
+        # TODO: issue #11003
+        pn = self.home_2.get_pn(self.reciever['username'])
+        if pn:
+            pn.click()
+        else:
+            self.home_2.click_system_back_button(2)
+        if self.home_2.element_starts_with_text(self.reciever['ens']).is_element_differs_from_template('mentioned.png', 2):
+            self.errors.append('Mention is not highlighted!')
+        self.errors.verify_no_errors()
 
-        for key in url_data:
-            home.plus_button.click_until_presence_of_element(home.start_new_chat_button)
-            home.just_fyi('Checking %s case' % key)
-            if home.universal_qr_scanner_button.is_element_displayed():
-                home.universal_qr_scanner_button.click()
-            if home.allow_button.is_element_displayed():
-                home.allow_button.click()
-            home.enter_qr_edit_box.scan_qr(url_data[key]['url'])
-            from views.chat_view import ChatView
-            chat = ChatView(self.driver)
-            if key == 'own_profile_key':
-                from views.profile_view import ProfileView
-                profile = ProfileView(self.driver)
-                if not profile.default_username_text.is_element_displayed():
-                    self.errors.append('In %s case was not redirected to own profile' % key)
-                home.home_button.double_click()
-            if url_data[key].get('error'):
-                if not chat.element_by_text_part(url_data[key]['error']).is_element_displayed():
-                    self.errors.append('Expected error %s is not shown' % url_data[key]['error'])
-                chat.ok_button.click()
-            if url_data[key].get('username'):
-                if not chat.element_by_text(url_data[key]['username']).is_element_displayed():
-                    self.errors.append('In %s case username not shown' % key)
-            if 'wallet' in key:
-                if url_data[key].get('data'):
-                    actual_data = send_transaction.get_values_from_send_transaction_bottom_sheet()
-                    difference_in_data = url_data[key]['data'].items() - actual_data.items()
-                    if difference_in_data:
-                        self.errors.append(
-                            'In %s case returned value does not match expected in %s' % (key, repr(difference_in_data)))
-                    wallet.close_send_transaction_view_button.click()
-                wallet.home_button.click()
-            if 'dapp' in key:
-                home.open_in_status_button.click()
-                if not (chat.allow_button.is_element_displayed() or chat.element_by_text(
-                        "Can't find web3 library").is_element_displayed()):
-                    self.errors.append('No allow button is shown in case of navigating to Status dapp!')
-                chat.dapp_tab_button.click()
-                chat.home_button.click()
-            if 'public' in key:
-                if not chat.chat_message_input.is_element_displayed():
-                    self.errors.append('No message input is shown in case of navigating to public chat via deep link!')
-                if not chat.element_by_text_part(url_data[key]['chat_name']).is_element_displayed():
-                    self.errors.append('Chat name is not shown in case of navigating to public chat via deep link!')
-            chat.get_back_to_home_view()
+    @marks.testrail_id(702157)
+    def test_sticker_1_1_public_chat(self):
+        self.home_2.status_in_background_button.click_if_shown()
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        (profile_1, profile_2) = (home.profile_button.click() for home in (self.home_1, self.home_2))
+        [profile.switch_network() for profile in (profile_1, profile_2)]
+        # TODO: no check there is no stickers on ropsten due to transfer stickers to status-go
 
+        self.home_2.just_fyi('Check that can use purchased stickerpack')
+        self.home_2.get_chat('#%s' % self.pub_chat_name).click()
+        self.chat_2.install_sticker_pack_by_name('Tozemoon')
+        self.chat_2.sticker_icon.click()
+        if not self.chat_2.chat_item.is_element_displayed():
+            self.errors.append('Cannot use purchased stickers')
+
+        self.home_1.just_fyi('Install free sticker pack and use it in 1-1 chat')
+        self.home_1.get_chat(self.ens).click()
+        self.chat_1.install_sticker_pack_by_name('Status Cat')
+        self.chat_1.sticker_icon.click()
+        if not self.chat_1.sticker_message.is_element_displayed():
+            self.errors.append('Sticker was not sent')
+        self.chat_1.swipe_right()
+        if not self.chat_1.sticker_icon.is_element_displayed():
+            self.errors.append('Sticker is not shown in recently used list')
+        self.chat_1.get_back_to_home_view()
+
+        self.home_1.just_fyi('Send stickers in public chat from Recent')
+        self.home_1.join_public_chat(self.home_1.get_random_chat_name())
+        self.chat_1.show_stickers_button.click()
+        self.chat_1.sticker_icon.click()
+        if not self.chat_1.chat_item.is_element_displayed():
+            self.errors.append('Sticker was not sent from Recent')
+
+        self.home_2.just_fyi('Check that can install stickers by tapping on sticker message')
+        self.home_2.home_button.double_click()
+        self.home_2.get_chat(self.sender['username']).click()
+        self.chat_2.chat_item.click()
+        if not self.chat_2.element_by_text_part('Status Cat').is_element_displayed():
+            self.errors.append('Stickerpack is not available for installation after tapping on sticker message')
+        self.chat_2.element_by_text_part('Free').click()
+        if self.chat_2.element_by_text_part('Free').is_element_displayed():
+            self.errors.append('Stickerpack was not installed')
+
+        self.chat_2.just_fyi('Check that can navigate to another user profile via long tap on sticker message')
+        self.chat_2.close_sticker_view_icon.click()
+        self.chat_2.chat_item.long_press_element()
+        self.chat_2.element_by_text('View Details').click()
+        self.chat_2.profile_send_message.wait_and_click()
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702158)
+    def test_start_new_chat_public_key_validation(self):
+        [home.get_back_to_home_view() for home in (self.home_1, self.home_2)]
+        self.home_2.driver.quit()
+        public_key = basic_user['public_key']
+        self.home_1.plus_button.click()
+        chat = self.home_1.start_new_chat_button.click()
+
+        self.home_1.just_fyi("Validation: invalid public key and invalid ENS")
+        for invalid_chat_key in (basic_user['public_key'][:-1], ens_user_ropsten['ens'][:-2]):
+            chat.public_key_edit_box.clear()
+            chat.public_key_edit_box.set_value(invalid_chat_key)
+            chat.confirm()
+            if not self.home_1.element_by_translation_id("profile-not-found").is_element_displayed():
+                self.errors.append('Error is not shown for invalid public key')
+
+        self.home_1.just_fyi("Check that valid ENS is resolved")
+        chat.public_key_edit_box.clear()
+        chat.public_key_edit_box.set_value(ens_user_ropsten['ens'])
+        resolved_ens = '%s.stateofus.eth' % ens_user_ropsten['ens']
+        if not chat.element_by_text(resolved_ens).is_element_displayed(10):
+            self.errors.append('ENS name is not resolved after pasting chat key')
+        self.home_1.close_button.click()
+
+        self.home_1.just_fyi("Check that can paste public key from keyboard and start chat")
+        self.home_1.get_chat('#%s' % self.pub_chat_name).click()
+        chat.send_message(public_key)
+        chat.copy_message_text(public_key)
+        chat.back_button.click()
+        self.home_1.plus_button.click()
+        self.home_1.start_new_chat_button.click()
+        chat.public_key_edit_box.paste_text_from_clipboard()
+        if chat.public_key_edit_box.text != public_key:
+            self.errors.append('Public key is not pasted from clipboard')
+        if not chat.element_by_text(basic_user['username']).is_element_displayed():
+            self.errors.append('3 random-name is not resolved after pasting chat key')
+
+        self.home_1.just_fyi('My_profile button at Start new chat view opens own QR code with public key pop-up')
+        self.home_1.my_profile_on_start_new_chat_button.click()
+        account = self.home_1.get_profile_view()
+        if not (account.public_key_text.is_element_displayed() and account.share_button.is_element_displayed()
+                and account.qr_code_image.is_element_displayed()):
+            self.errors.append('No self profile pop-up data displayed after My_profile button tap')
         self.errors.verify_no_errors()
