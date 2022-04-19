@@ -43,12 +43,10 @@
     (= our-installation-id (:installation-id b))
     1
     :else
-    (let [enabled-compare (compare (:enabled? b)
-                                   (:enabled? a))]
+    (let [enabled-compare (compare (:enabled? b) (:enabled? a))]
       (if (not= 0 enabled-compare)
         enabled-compare
-        (compare (:timestamp b)
-                 (:timestamp a))))))
+        (compare (:timestamp a) (:timestamp b))))))
 
 (defn sort-installations
   [our-installation-id installations]
@@ -189,10 +187,10 @@
                        :params     [(or preferred-name name) identicon]
                        :on-success #(log/debug "successfully synced devices")}]}))
 
-(defn installation<-rpc [{:keys [metadata id enabled]}]
+(defn installation<-rpc [{:keys [metadata id enabled timestamp]}]
   {:installation-id id
    :name (:name metadata)
-   :timestamp (:timestamp metadata)
+   :timestamp timestamp
    :device-type (:deviceType metadata)
    :enabled? enabled})
 
