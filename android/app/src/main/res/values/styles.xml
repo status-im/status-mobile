@@ -12,14 +12,14 @@
     </style>
 
     <style name="LightTheme" parent="AppTheme">
-        <item name="textColor">#000000</item>
-        <item name="backgroundColor">#ffffff</item>
+        <item name="textColor">#ff0000</item>
+        <item name="backgroundColor">#00ff00</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="DarkTheme" parent="AppTheme">
-        <item name="textColor">#ffffff</item>
-        <item name="backgroundColor">#000000</item>
+        <item name="textColor">#00ff00</item>
+        <item name="backgroundColor">#0000ff</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
