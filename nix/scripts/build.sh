@@ -58,7 +58,7 @@ nixOpts=(
 ${GIT_ROOT}/nix/scripts/gcroots.sh "${TARGET}" "${@}"
 
 # Run the actual build
-echo "Running: nix-build "${nixOpts[@]}" "${@}" default.nix"
+echo "${GRN}Running:${RST} nix-build "${nixOpts[@]}" "${@}" default.nix"
 nixResultPath=$(nix-build "${nixOpts[@]}" "${@}" default.nix)
 
 echo -e "\n${YLW}Extracting result${RST}: ${BLD}${nixResultPath}${RST}"

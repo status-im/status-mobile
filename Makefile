@@ -32,10 +32,12 @@ ifndef BUILD_TAG
 export BUILD_TAG := $(shell git rev-parse --short HEAD)
 endif
 
-# We don't want to use /run/user/$UID because it runs out of space too easilly
+# We don't want to use /run/user/$UID because it runs out of space too easilly.
 export TMPDIR = /tmp/tmp-status-react-$(BUILD_TAG)
-# this has to be specified for both the Node.JS server process and the Qt process
+# This has to be specified for both the Node.JS server process and the Qt process.
 export REACT_SERVER_PORT ?= 5001
+# The path can be anything, but home is usually safest.
+export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 
 # Our custom config is located in nix/nix.conf
 export NIX_CONF_DIR = $(PWD)/nix
@@ -153,10 +155,11 @@ update-fleets: ##@prepare Download up-to-date JSON file with current fleets stat
 		| jq --indent 4 --sort-keys . \
 		> resources/config/fleets.json
 
-keystore: export TARGET := keytool
-keystore: export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
-keystore: ##@prepare Generate a Keystore for signing Android APKs
+$(KEYSTORE_PATH): export TARGET := keytool
+$(KEYSTORE_PATH):
 	@./scripts/generate-keystore.sh
+
+keystore: $(KEYSTORE_PATH) ##@prepare Generate a Keystore for signing Android APKs
 
 fdroid-max-watches: SHELL := /bin/sh
 fdroid-max-watches: ##@prepare Bump max_user_watches to avoid ENOSPC errors
@@ -190,23 +193,26 @@ xcode-clean: ##@prepare Clean XCode derived data and archives
 #----------------
 release: release-android release-ios ##@build Build release for Android and iOS
 
-release-android: export BUILD_ENV ?= prod
-release-android: export BUILD_TYPE ?= nightly
-release-android: export BUILD_NUMBER ?= $(TMP_BUILD_NUMBER)
-release-android: export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
-release-android: export ANDROID_APK_SIGNED ?= true
-release-android: export ANDROID_ABI_SPLIT ?= false
-release-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
-release-android: keystore ##@build Build release for Android
-	scripts/release-android.sh
+build-fdroid: export BUILD_ENV = prod
+build-fdroid: export BUILD_TYPE = release
+build-fdroid: export ANDROID_ABI_SPLIT = false
+build-fdroid: export ANDROID_ABI_INCLUDE = armeabi-v7a;arm64-v8a;x86;x86_64
+build-fdroid: ##@build Build release for F-Droid
+	@scripts/build-android.sh
 
-release-fdroid: export BUILD_ENV = prod
-release-fdroid: export BUILD_TYPE = release
-release-fdroid: export ANDROID_APK_SIGNED = false
-release-fdroid: export ANDROID_ABI_SPLIT = false
-release-fdroid: export ANDROID_ABI_INCLUDE = armeabi-v7a;arm64-v8a;x86;x86_64
-release-fdroid: ##@build Build release for F-Droid
-	scripts/release-android.sh
+build-android: SHELL := /bin/sh
+build-android: export BUILD_ENV ?= prod
+build-android: export BUILD_TYPE ?= nightly
+build-android: export BUILD_NUMBER ?= $(TMP_BUILD_NUMBER)
+build-android: export ANDROID_ABI_SPLIT ?= false
+build-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
+build-android: ##@build Build unsigned Android APK
+	@scripts/build-android.sh
+
+release-android: export TARGET := keytool
+release-android: export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
+release-android: keystore build-android ##@build Build signed Android APK
+	@scripts/sign-android.sh result/app-release-unsigned.apk
 
 release-ios: export TARGET := ios
 release-ios: export BUILD_ENV ?= prod
@@ -221,7 +227,7 @@ jsbundle-android: export BUILD_ENV ?= prod
 jsbundle-android: ##@jsbundle Compile JavaScript and Clojurescript into app directory
 	# Call nix-build to build the 'targets.mobile.android.jsbundle' attribute and copy the.js files to the project root
 	nix/scripts/build.sh targets.mobile.android.jsbundle && \
-	mv result/* ./
+	mv result/*.js ./
 
 jsbundle-ios: export TARGET := ios
 jsbundle-ios: export BUILD_ENV ?= prod

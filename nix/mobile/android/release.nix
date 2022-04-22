@@ -1,6 +1,6 @@
 { stdenv, pkgs, deps, lib, config, callPackage,
   watchmanFactory, androidPkgs, patchMavenSources,
-  keystore, jsbundle, status-go }:
+  jsbundle, status-go }:
 
 {
   # Value for BUILD_ENV checked by Clojure code at compile time
@@ -28,9 +28,6 @@ let
   gradleOpts = getConfig "android.gradle-opts" null;
   # Used to detect end-to-end builds
   androidAbiInclude = getConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
-  # Keystore can be provided via config and extra-sandbox-paths.
-  # If it is not we use an ad-hoc one generated with default password.
-  keystorePath = getConfig "android.keystore-path" keystore;
 
   baseName = "${buildType}-android";
   name = "status-react-build-${baseName}";
@@ -76,7 +73,6 @@ in stdenv.mkDerivation rec {
 
   # custom env variables derived from config
   STATUS_GO_SRC_OVERRIDE = getConfig "status-go.src-override" null;
-  ANDROID_APK_SIGNED = getConfig "android.apk-signed" "true";
   ANDROID_ABI_SPLIT = getConfig "android.abi-split" "false";
   ANDROID_ABI_INCLUDE = androidAbiInclude;
 
@@ -88,8 +84,7 @@ in stdenv.mkDerivation rec {
   STATUS_GO_ANDROID_LIBDIR = status-go { inherit secretsFile; };
 
   phases = [
-    "unpackPhase" "secretsPhase" "keystorePhase"
-    "buildPhase" "checkPhase" "installPhase"
+    "unpackPhase" "secretsPhase" "buildPhase" "checkPhase" "installPhase"
   ];
 
   unpackPhase = ''
@@ -120,21 +115,13 @@ in stdenv.mkDerivation rec {
     ${patchMavenSources} ./android/build.gradle
   '';
 
-  # if secretsFile is not set we use generate keystore
+  # Secrets file is passed to sandbox using extra-sandbox-paths.
   secretsPhase = if (secretsFile != "") then ''
     source "${secretsFile}"
-    ${checkEnvVarSet "KEYSTORE_ALIAS"}
-    ${checkEnvVarSet "KEYSTORE_PASSWORD"}
-    ${checkEnvVarSet "KEYSTORE_KEY_PASSWORD"}
-  '' else keystore.shellHook;
-
-  # if keystorePath is set copy it into build directory
-  keystorePhase =
-    assert assertMsg (keystorePath != null) "keystorePath has to be set!";
-  ''
-    export KEYSTORE_PATH="$PWD/status-im.keystore"
-    cp -a --no-preserve=ownership "${keystorePath}" "$KEYSTORE_PATH"
+  '' else ''
+    echo 'WARNING: No secrets provided!' >&2
   '';
+
   buildPhase = let
     adhocEnvVars = optionalString stdenv.isLinux
       "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${makeLibraryPath [ pkgs.zlib ]}";
