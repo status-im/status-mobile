@@ -229,23 +229,6 @@ android {
         jumboMode true
         javaMaxHeapSize "8g"
     }
-    signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-        }
-        /* Caution! In production, you need to generate your own keystore file.
-         * See: https://facebook.github.io/react-native/docs/signed-apk-android */
-        release {
-            /* environment variables take precedence over gradle.properties file */
-            storeFile     file(getEnvOrConfig('KEYSTORE_PATH').replaceAll("~", System.properties['user.home']))
-            storePassword getEnvOrConfig('KEYSTORE_PASSWORD')
-            keyAlias      getEnvOrConfig('KEYSTORE_ALIAS')
-            keyPassword   getEnvOrConfig('KEYSTORE_KEY_PASSWORD')
-        }
-    }
     splits {
         abi {
             reset()
@@ -254,20 +237,26 @@ android {
             universalApk true
         }
     }
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
             debuggable          true
             versionNameSuffix   "-SNAPSHOT"
-            signingConfig signingConfigs.debug
             resValue "string", "build_config_package", "im.status.ethereum"
+            signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            if (getEnvOrConfig('ANDROID_APK_SIGNED').toBoolean()) {
-                signingConfig signingConfigs.release
-            }
+            signingConfig null
         }
         pr {
             initWith release

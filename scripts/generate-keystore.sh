@@ -32,7 +32,6 @@ KEYSTORE_PATH=${KEYSTORE_PATH/#\~/$HOME}
 
 if [[ -e "${KEYSTORE_PATH}" ]]; then
     echo -e "${YLW}Keystore file already exists:${RST} ${KEYSTORE_PATH}" >&2
-    echo "${KEYSTORE_PATH}"
     exit 0
 fi
 
@@ -41,7 +40,7 @@ KEYSTORE_DIR=$(dirname "${KEYSTORE_PATH}")
 
 echo -e "${GRN}Generating keystore...${RST}" >&2
 
-keytool -genkey -v \
+exec keytool -genkey -v \
     -keyalg RSA \
     -keysize 2048 \
     -validity 10000 \
@@ -52,5 +51,3 @@ keytool -genkey -v \
     -storepass "${KEYSTORE_PASSWORD}" \
     -keypass "${KEYSTORE_KEY_PASSWORD}" \
     > /dev/stderr
-
-echo "${KEYSTORE_PATH}"

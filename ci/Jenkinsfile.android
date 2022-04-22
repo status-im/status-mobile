@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.4.2'
+library 'status-jenkins-lib@v1.4.3'
 
 pipeline {
   agent { label 'linux && x86_64 && nix-2.8' }
@@ -79,6 +79,11 @@ pipeline {
           stage('Bundle') {
             steps {
               script { apks = android.bundle() }
+            }
+          }
+          stage('Sign') {
+            steps {
+              script { apks = android.sign(apks) }
             }
           }
         } }

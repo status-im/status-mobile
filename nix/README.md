@@ -19,7 +19,6 @@ Here is a sample structure of the `config` attribute set:
     build-number = 9999;   # Used for versionCode and CFBundleVersion in Android and iOS respectively
     android = {
       gradle-opts = "";    # Gradle options passed for Android builds
-      keystore-path = "";  # Path to keystore for signing the APK
       abi-split = false;   # If APKs should be split based on architectures
       abi-include = "x86"; # Android architectures to build for
     };

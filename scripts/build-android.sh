@@ -26,13 +26,9 @@ config=''
 if [[ -n "${STATUS_GO_SRC_OVERRIDE}" ]]; then
   config+="status-im.status-go.src-override=\"${STATUS_GO_SRC_OVERRIDE}\";"
 fi
-if [[ "${ANDROID_APK_SIGNED}" == "true" ]]; then
-  config+="status-im.android.keystore-path=\"$(must_get_env KEYSTORE_PATH)\";"
-fi
 config+="status-im.commit-hash=\"$(git rev-parse --verify HEAD)\";"
 config+="status-im.build-type=\"$(must_get_env BUILD_TYPE)\";"
 config+="status-im.build-number=\"$(must_get_env BUILD_NUMBER)\";"
-config+="status-im.android.apk-signed=\"$(must_get_env ANDROID_APK_SIGNED)\";"
 config+="status-im.android.abi-split=\"$(must_get_env ANDROID_ABI_SPLIT)\";"
 config+="status-im.android.abi-include=\"$(must_get_env ANDROID_ABI_INCLUDE)\";"
 nixOpts=()
@@ -42,19 +38,10 @@ export SECRETS_FILE_PATH=$(mktemp)
 chmod 644 ${SECRETS_FILE_PATH}
 # If secrets file was created we want to remove it.
 trap "rm -vf ${SECRETS_FILE_PATH}" EXIT ERR INT QUIT
+
 # Secrets like this can't be passed via args or they end up in derivation.
-if [[ -n "${KEYSTORE_ALIAS}${KEYSTORE_ALIAS}${KEYSTORE_ALIAS}" ]]; then
-  # WARNING: All three have to be set!
-  append_env_export 'KEYSTORE_PASSWORD'
-  append_env_export 'KEYSTORE_ALIAS'
-  append_env_export 'KEYSTORE_KEY_PASSWORD'
-fi
-if [[ -n "${INFURA_TOKEN}" ]]; then
-  append_env_export 'INFURA_TOKEN'
-fi
-if [[ -n "${OPENSEA_API_KEY}" ]]; then
-  append_env_export 'OPENSEA_API_KEY'
-fi
+if [[ -n "${INFURA_TOKEN}" ]];    then append_env_export 'INFURA_TOKEN';    fi
+if [[ -n "${OPENSEA_API_KEY}" ]]; then append_env_export 'OPENSEA_API_KEY'; fi
 
 # If no secrets were passed there's no need to pass the 'secretsFile'.
 if [[ -s "${SECRETS_FILE_PATH}" ]]; then
