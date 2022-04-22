@@ -97,7 +97,7 @@ pipeline {
             sh 'cp -f $TEST_ETH_ACCOUNTS_FILE users.py'
             sh """
               python3 -m pytest \
-                --numprocesses 15 \
+                --numprocesses 9 \
                 --rerun_count=2 \
                 --testrail_report=True \
                 --dist loadgroup \

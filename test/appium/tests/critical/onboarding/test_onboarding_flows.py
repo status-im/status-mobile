@@ -8,7 +8,7 @@ from views.sign_in_view import SignInView
 from tests.users import basic_user, transaction_senders
 
 
-@pytest.mark.xdist_group(name="onboarding_1")
+@pytest.mark.xdist_group(name="one_1")
 @marks.critical
 class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
 
@@ -222,7 +222,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="restore_1")
+@pytest.mark.xdist_group(name="two_1")
 @marks.critical
 class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod

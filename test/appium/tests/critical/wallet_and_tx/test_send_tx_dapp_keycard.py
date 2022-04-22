@@ -9,7 +9,7 @@ from tests.users import transaction_senders, basic_user, wallet_users, ens_user_
 from views.sign_in_view import SignInView
 
 
-@pytest.mark.xdist_group(name="send_tx_1")
+@pytest.mark.xdist_group(name="three_1")
 @marks.critical
 class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
@@ -264,7 +264,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="keycard_tx_1")
+@pytest.mark.xdist_group(name="one_1")
 @marks.critical
 class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
