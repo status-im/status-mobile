@@ -5,7 +5,7 @@ from views.sign_in_view import SignInView
 from views.chat_view import ChatView
 
 
-@pytest.mark.xdist_group(name="group_chat_3")
+@pytest.mark.xdist_group(name="one_3")
 @marks.critical
 class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 

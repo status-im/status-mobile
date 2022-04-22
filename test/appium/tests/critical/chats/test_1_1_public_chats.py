@@ -9,7 +9,7 @@ from views.sign_in_view import SignInView
 import pytest
 
 
-@pytest.mark.xdist_group(name="commands_2")
+@pytest.mark.xdist_group(name="one_2")
 @marks.critical
 class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
@@ -208,7 +208,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="1_1_chat_2")
+@pytest.mark.xdist_group(name="two_2")
 @marks.critical
 class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
@@ -599,7 +599,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="chats_contacts_keycard_2")
+@pytest.mark.xdist_group(name="three_2")
 @marks.critical
 class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
@@ -939,7 +939,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="ens_stickers_mention_2")
+@pytest.mark.xdist_group(name="four_2")
 @marks.critical
 class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
