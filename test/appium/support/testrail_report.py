@@ -187,6 +187,7 @@ class TestrailReport(BaseTestReport):
         tests = self.get_all_tests()
         passed_tests = self.get_passed_tests()
         failed_tests = self.get_failed_tests()
+        not_executed_tests = self.get_not_executed_tests(self.run_id)
         final_description = "Nothing to report this time..."
         if len(tests) > 0:
             description_title = "# %.0f%% of end-end tests have passed\n" % (len(passed_tests) / len(tests) * 100)
@@ -194,6 +195,8 @@ class TestrailReport(BaseTestReport):
             description_title += "Total executed tests: %d\n" % len(tests)
             description_title += "Failed tests: %d\n" % len(failed_tests)
             description_title += "Passed tests: %d\n" % len(passed_tests)
+            if not_executed_tests:
+                description_title += "Not executed tests: %d\n" % len(not_executed_tests)
             description_title += "\n"
             ids_failed_test = []
             description, case_info = '', ''
@@ -216,8 +219,14 @@ class TestrailReport(BaseTestReport):
                         case_info = "Logs for device %d: [steps](%s), [failure screenshot](%s)" \
                                     % (f, job_url, self.get_sauce_final_screenshot_url(job_id))
 
-                    description += case_title + error + case_info
+                    if test.group_name:
+                        class_name = "Class: %s\n" % test.group_name
+                        description += case_title + class_name + error + case_info
+                    else:
+                        description += case_title + error + case_info
             description_title += '## Failed tests: %s \n' % ','.join(map(str, ids_failed_test))
+            if not_executed_tests:
+                description_title += "## Not executed tests: %s\n" % ','.join([str(i) for i in not_executed_tests])
             final_description = description_title + description
 
         request_body = {'description': final_description}
