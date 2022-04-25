@@ -49,7 +49,8 @@
              (i18n/label :t/group-membership-request)]]])))))
 
 (defn add-contact-bar [public-key]
-  (when-not @(re-frame/subscribe [:contacts/contact-added? public-key])
+  (when-not (or @(re-frame/subscribe [:contacts/contact-added? public-key])
+                @(re-frame/subscribe [:contacts/contact-blocked? public-key]))
     [react/touchable-highlight
      {:on-press
       #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])

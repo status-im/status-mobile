@@ -37,8 +37,10 @@
               :action              #(re-frame/dispatch [:contact.ui/remove-contact-pressed contact])}]
             [{:label               (i18n/label :t/add-to-contacts)
               :icon                :main-icons/add-contact
+              :disabled            blocked?
               :accessibility-label :add-to-contacts-button
-              :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key nil ens-name])}])
+              :action              (when-not blocked?
+                                     #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key nil ens-name]))}])
           [{:label               (i18n/label (if (or muted? blocked?) :t/unmute :t/mute))
             :icon                :main-icons/notification
             :accessibility-label :mute-chat

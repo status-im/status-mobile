@@ -2340,6 +2340,13 @@
    (:added contact)))
 
 (re-frame/reg-sub
+ :contacts/contact-blocked?
+ (fn [[_ identity] _]
+   [(re-frame/subscribe [:contacts/contact-by-identity identity])])
+ (fn [[contact] _]
+   (:blocked contact)))
+
+(re-frame/reg-sub
  :contacts/contact-two-names-by-identity
  (fn [[_ identity] _]
    [(re-frame/subscribe [:contacts/contact-by-identity identity])

@@ -22,7 +22,8 @@
             [status-im.utils.identicon :as identicon]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
             [status-im.ui.components.animation :as animation]
-            [status-im.ui.screens.chat.photos :as photos])
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.utils.db :as utils.db])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-row [row]
@@ -45,19 +46,20 @@
    icon])
 
 (defn- input-icon
-  [state new-contact? entered-nickname]
+  [state new-contact? entered-nickname blocked?]
   (let [icon (if new-contact? :main-icons/add :main-icons/arrow-right)]
-    (case state
-      :searching
+    (cond
+      (= state :searching)
       [icon-wrapper colors/gray
        [react/activity-indicator {:color colors/white-persist}]]
 
-      :valid
+      (and (= state :valid) (not blocked?))
       [react/touchable-highlight
        {:on-press #(debounce/dispatch-and-chill [:contact.ui/contact-code-submitted new-contact? entered-nickname] 3000)}
        [icon-wrapper colors/blue
         [icons/icon icon {:color colors/white-persist}]]]
 
+      :else
       [icon-wrapper colors/gray
        [icons/icon icon {:color colors/white-persist}]])))
 
@@ -251,9 +253,12 @@
     :return-key-type     :done
     :auto-correct        false}])
 
-(views/defview new-contact []
-  (views/letsubs [{:keys [state ens-name public-key error]} [:contacts/new-identity]
-                  entered-nickname (reagent/atom "")]
+(defn new-contact []
+  (let [{:keys [state ens-name public-key error]} @(re-frame/subscribe [:contacts/new-identity])
+        entered-nickname (reagent/atom "")
+        blocked? (and
+                  (utils.db/valid-public-key? (or public-key ""))
+                  @(re-frame/subscribe [:contacts/contact-blocked? public-key]))]
     [react/view {:style {:flex 1}}
      [topbar/topbar
       {:title  (i18n/label :t/new-contact)
@@ -284,7 +289,7 @@
          :return-key-type     :go}]]
       [react/view {:justify-content :center
                    :align-items     :center}
-       [input-icon state true @entered-nickname]]]
+       [input-icon state true @entered-nickname blocked?]]]
      [react/view {:min-height 30 :justify-content :flex-end :margin-bottom 16}
       [quo/text {:style {:margin-horizontal 16}
                  :size  :small
