@@ -127,6 +127,8 @@ class TestrailReport(BaseTestReport):
             if "run_testrail_ids" in arg:
                 key, value = arg.split('=')
                 case_ids = value.split(',')
+                case_ids = {x: y.replace(' ', '')
+                for x, y in case_ids.items()}
         if len(case_ids) == 0:
             if 'critical' in argv:
                 for category in test_cases['pr']:
