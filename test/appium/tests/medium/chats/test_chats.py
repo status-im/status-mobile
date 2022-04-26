@@ -8,7 +8,7 @@ from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTest
 from views.sign_in_view import SignInView
 
 
-@pytest.mark.xdist_group(name="public_chat_medium_2")
+@pytest.mark.xdist_group(name="one_2")
 @marks.medium
 class TestPublicChatMultipleDeviceMergedMedium(MultipleSharedDeviceTestCase):
     @classmethod
@@ -133,7 +133,7 @@ class TestPublicChatMultipleDeviceMergedMedium(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="chat_medium_2")
+@pytest.mark.xdist_group(name="two_2")
 @marks.medium
 class TestChatMultipleDevice(MultipleSharedDeviceTestCase):
 

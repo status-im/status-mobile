@@ -252,7 +252,6 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700762)
-    @marks.skip
     # TODO: skipped due to #13016
     def test_wallet_add_account_seed_phrase_collectibles_mainnet_rinkeby(self):
         user = wallet_users['E']
@@ -283,12 +282,12 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         if not account_button.is_element_displayed():
             self.wallet.accounts_status_account.swipe_left_on_element()
 
-        self.home.just_fyi('Check that collectibles are not shown on Ropsten')
-        account_button.click()
-        self.wallet.collectibles_button.click()
-        self.wallet.element_by_translation_id("display-collectibles").scroll_and_click()
-        if not self.wallet.element_by_translation_id("no-collectibles").is_element_displayed():
-            self.errors.append("Collectibles are shown on Ropsten network!")
+        # self.home.just_fyi('Check that collectibles are not shown on Ropsten')
+        # account_button.click()
+        # self.wallet.collectibles_button.click()
+        # self.wallet.element_by_translation_id("display-collectibles").scroll_and_click()
+        # if not self.wallet.element_by_translation_id("no-collectibles").is_element_displayed():
+        #     self.errors.append("Collectibles are shown on Ropsten network!")
 
         self.wallet.just_fyi('Check collectibles amount in wallet')
         profile = self.home.profile_button.click()

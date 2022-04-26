@@ -222,7 +222,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="two_1")
+@pytest.mark.xdist_group(name="three_1")
 @marks.critical
 class TestPublicChatBrowserOneDeviceMerged(MultipleSharedDeviceTestCase):
 

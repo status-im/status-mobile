@@ -1231,7 +1231,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5432)
-    @marks.medium
     # TODO: can be united with other 2-driver profile e2e
     def test_profile_custom_bootnodes(self):
         self.create_drivers(2)

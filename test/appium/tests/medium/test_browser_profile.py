@@ -6,7 +6,7 @@ from views.sign_in_view import SignInView
 from tests.users import basic_user, ens_user, ens_user_ropsten, transaction_senders, chat_users
 
 
-@pytest.mark.xdist_group(name="browser_profile_medium_1")
+@pytest.mark.xdist_group(name="two_1")
 @marks.medium
 class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
