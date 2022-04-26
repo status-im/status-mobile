@@ -2,7 +2,7 @@ PODS:
   - boost-for-react-native (1.63.0)
   - BVLinearGradient (2.5.6):
     - React
-  - CryptoSwift (1.4.3)
+  - CryptoSwift (1.5.1)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.4)
   - FBReactNativeSpec (0.63.4):
@@ -22,9 +22,10 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - Keycard (3.0.4):
+  - Keycard (3.0.5):
     - CryptoSwift
     - secp256k1
+    - Zip
   - libwebp (1.2.1):
     - libwebp/demux (= 1.2.1)
     - libwebp/mux (= 1.2.1)
@@ -305,8 +306,6 @@ PODS:
     - React-jsi (= 0.63.4)
   - ReactNativeAudioToolkit (2.0.3):
     - React
-  - ReactNativeDarkMode (0.2.2):
-    - React
   - ReactNativeNavigation (7.13.0):
     - React-Core
     - React-RCTImage
@@ -401,6 +400,7 @@ PODS:
   - TouchID (4.4.1):
     - React
   - Yoga (1.14.0)
+  - Zip (2.1.2)
 
 DEPENDENCIES:
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
@@ -453,7 +453,6 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "ReactNativeAudioToolkit (from `../node_modules/@react-native-community/audio-toolkit`)"
-  - ReactNativeDarkMode (from `../node_modules/react-native-dark-mode`)
   - ReactNativeNavigation (from `../node_modules/react-native-navigation`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
@@ -487,6 +486,7 @@ SPEC REPOS:
     - SQLCipher
     - SSZipArchive
     - TOCropViewController
+    - Zip
 
 EXTERNAL SOURCES:
   BVLinearGradient:
@@ -585,8 +585,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeAudioToolkit:
     :path: "../node_modules/@react-native-community/audio-toolkit"
-  ReactNativeDarkMode:
-    :path: "../node_modules/react-native-dark-mode"
   ReactNativeNavigation:
     :path: "../node_modules/react-native-navigation"
   RNCAsyncStorage:
@@ -631,7 +629,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Keycard:
-    :commit: d5bb5d68dbac19a34945918b51873fbba2c18310
+    :commit: 29c26b51ef76304e9551657c605fb55b2540a077
     :git: https://github.com/status-im/Keycard.swift.git
   secp256k1:
     :commit: 46a1fa30d9b8babeae85ff519050f42394ab5fcc
@@ -641,13 +639,13 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
-  CryptoSwift: a0799ee936271bd2253a006f1e4523df21845000
+  CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 61334f8bdb4deea07543d4fbac3fb5948e78a7a5
-  Keycard: dd96182888da0aacf4de821b641103143bbb26cc
+  Keycard: 07f1b4d4fadcf1218084cb3e1bb3a8bac3870c5a
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   Permission-Camera: afad27bf90337684d4a86f3825112d648c8c4d3b
   Permission-Microphone: 0ffabc3fe1c75cfb260525ee3f529383c9f4368c
@@ -690,7 +688,6 @@ SPEC CHECKSUMS:
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   ReactNativeAudioToolkit: de9610f323e855ac6574be8c99621f3d57c5df06
-  ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
   ReactNativeNavigation: 4c4ca87edc0da4ee818158a62cb6188088454e5c
   RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
@@ -716,6 +713,7 @@ SPEC CHECKSUMS:
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
+  Zip: b3fef584b147b6e582b2256a9815c897d60ddc67
 
 PODFILE CHECKSUM: 1a5b8878f89edd08eb4d37898a3a8721a7bb3388
 
