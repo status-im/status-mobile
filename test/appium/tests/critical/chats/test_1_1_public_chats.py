@@ -9,7 +9,7 @@ from views.sign_in_view import SignInView
 import pytest
 
 
-@pytest.mark.xdist_group(name="one_2")
+@pytest.mark.xdist_group(name="five_2")
 @marks.critical
 class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
