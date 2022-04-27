@@ -100,7 +100,6 @@ pipeline {
                 --numprocesses 9 \
                 --rerun_count=2 \
                 --testrail_report=True \
-                --dist loadgroup \
                 -m \"${params.TEST_MARKERS}\" \
                 -k \"${params.KEYWORD_EXPRESSION}\" \
                 --apk=${params.APK_NAME} \
