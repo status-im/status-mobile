@@ -419,6 +419,17 @@
   [{:keys [db]}]
   {::open-last-chat (get-in db [:multiaccount :key-uid])})
 
+(fx/defn update-wallet-accounts
+  [{:keys [db]} accounts]
+  (let [existing-accounts (into {} (map #(vector (:address %1) %1) (:multiaccount/accounts db)))
+        reduce-fn (fn [existing-accs new-acc]
+                    (let [address (:address new-acc)]
+                      (if (:removed new-acc)
+                        (dissoc existing-accs address)
+                        (assoc existing-accs address new-acc))))
+        new-accounts (reduce reduce-fn existing-accounts (rpc->accounts accounts))]
+    {:db (assoc db :multiaccount/accounts (vals new-accounts))}))
+
 (fx/defn get-chats-callback
   {:events [::get-chats-callback]}
   [{:keys [db] :as cofx}]
