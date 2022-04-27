@@ -448,10 +448,10 @@ class BaseView(object):
 
     def switch_to_mobile(self, before_login=False, sync=False):
         self.driver.info("Turning on mobile data, syncing is %s" % str(sync))
+        from views.home_view import HomeView
+        home = HomeView(self.driver)
         self.driver.set_network_connection(4)
         if before_login is False:
-            from views.home_view import HomeView
-            home = HomeView(self.driver)
             if sync is True:
                 home.continue_syncing_button.wait_and_click()
             else:
