@@ -292,6 +292,8 @@ def pytest_runtest_protocol(item, nextitem):
     for i in range(rerun_count):
         reports = runtestprotocol(item, nextitem=nextitem)
         for report in reports:
+            # is_in_group = [i for i in item.iter_markers(name='xdist_group')]
+            # if report.failed and should_rerun_test(report.longreprtext) and not is_in_group:
             if report.failed and should_rerun_test(report.longreprtext):
                 break  # rerun
         else:

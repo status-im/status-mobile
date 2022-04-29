@@ -59,6 +59,7 @@ pipeline {
             sh """
               python3 -m pytest \
                 --numprocesses 9 \
+                --dist loadgroup \
                 --rerun_count=2 \
                 --testrail_report=True \
                 -m testrail_id \
