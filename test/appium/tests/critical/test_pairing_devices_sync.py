@@ -88,7 +88,7 @@ class TestPairingMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.profile_2.get_back_to_home_view()
 
 
-@pytest.mark.xdist_group(name="five_2")
+@pytest.mark.xdist_group(name="five_2_1")
 @marks.critical
 class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 

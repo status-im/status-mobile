@@ -222,7 +222,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="two_1")
+@pytest.mark.xdist_group(name="two_1_2")
 @marks.critical
 class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
