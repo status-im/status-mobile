@@ -11,6 +11,7 @@ import pytest
 
 @pytest.mark.xdist_group(name="commands_2")
 @marks.critical
+@pytest.mark.run1
 class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
     @classmethod
@@ -210,6 +211,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="1_1_chat_2")
 @marks.critical
+@pytest.mark.run1
 class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
     @classmethod
@@ -601,6 +603,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="chats_contacts_keycard_2")
 @marks.critical
+@pytest.mark.run1
 class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
     @classmethod
@@ -941,6 +944,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
 
 @pytest.mark.xdist_group(name="ens_stickers_mention_2")
 @marks.critical
+@pytest.mark.run1
 class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
     @classmethod

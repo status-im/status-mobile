@@ -11,6 +11,7 @@ from support.utilities import get_merged_txs_list
 
 @pytest.mark.xdist_group(name="wallet_management_1")
 @marks.critical
+@pytest.mark.run1
 class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod

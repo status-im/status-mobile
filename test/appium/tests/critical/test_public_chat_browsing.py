@@ -13,6 +13,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 @pytest.mark.xdist_group(name="public_chat_2")
 @marks.critical
+@pytest.mark.run2
 class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod
@@ -224,6 +225,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="public_chat_browser_1")
 @marks.critical
+@pytest.mark.run2
 class TestPublicChatBrowserOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod

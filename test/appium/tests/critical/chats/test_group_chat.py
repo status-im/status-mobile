@@ -7,6 +7,7 @@ from views.chat_view import ChatView
 
 @pytest.mark.xdist_group(name="group_chat_3")
 @marks.critical
+@pytest.mark.run1
 class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod

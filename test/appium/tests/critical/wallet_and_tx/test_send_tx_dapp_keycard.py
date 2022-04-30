@@ -11,6 +11,7 @@ from views.sign_in_view import SignInView
 
 @pytest.mark.xdist_group(name="send_tx_1")
 @marks.critical
+@pytest.mark.run1
 class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
     def setup_class(cls):
@@ -266,6 +267,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="keycard_tx_1")
 @marks.critical
+@pytest.mark.run1
 class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
     def setup_class(cls):

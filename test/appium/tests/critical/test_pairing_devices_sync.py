@@ -90,6 +90,7 @@ class TestPairingMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="sync_2")
 @marks.critical
+@pytest.mark.run1
 class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
     @classmethod

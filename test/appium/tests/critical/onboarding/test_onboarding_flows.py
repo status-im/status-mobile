@@ -10,6 +10,7 @@ from tests.users import basic_user, transaction_senders
 
 @pytest.mark.xdist_group(name="onboarding_1")
 @marks.critical
+@pytest.mark.run2
 class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @classmethod
@@ -224,6 +225,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="restore_1")
 @marks.critical
+@pytest.mark.run2
 class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
     def setup_class(cls):
