@@ -8,7 +8,7 @@ Modules provided by `yarn2nix` are normally fine, but we use `react-native-*` pa
 ```js
 repositories {
     google()
-    jcenter()
+    maven { url "https://www.jitpack.io" }
 }
 ```
 And these need to be patched and replaced with `mavenLocal()` to make sure Gradle doesn't try to fetch dependencies from remote repos.

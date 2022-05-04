@@ -17,12 +17,12 @@ buildscript {
     repositories {
         flatDir { dirs "libs", "${rootDir}/app/libs" }
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31"
         classpath "com.android.tools.build:gradle:${project.ext.gradlePluginVersion}"
-	classpath "com.google.gms:google-services:4.3.10"
+        classpath "com.google.gms:google-services:4.3.10"
         // WARNING: Do not place your application dependencies here!
         //          They belong in the individual module build.gradle files.
     }
@@ -45,27 +45,22 @@ subprojects {
 
 allprojects {
     beforeEvaluate {
-      if (System.env.STATUS_GO_ANDROID_LIBDIR == null || System.env.STATUS_GO_ANDROID_LIBDIR == "") {
-        throw new GradleException('STATUS_GO_ANDROID_LIBDIR environment variable is not valid!')
-      }
+        if (System.env.STATUS_GO_ANDROID_LIBDIR == null || System.env.STATUS_GO_ANDROID_LIBDIR == "") {
+            throw new GradleException('STATUS_GO_ANDROID_LIBDIR environment variable is not valid!')
+        }
     }
 
     repositories {
         mavenLocal()
-        maven {
-            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url("$rootDir/../node_modules/react-native/android")
-        }
-        maven {
-            // Android JSC is installed from npm
-            url("$rootDir/../node_modules/jsc-android/dist")
-        }
-
-        google()
-        jcenter()
-
-        // for geth, function, and status-go
+        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+        maven { url("$rootDir/../node_modules/react-native/android") }
+        // Android JSC is installed from npm
+        maven { url("$rootDir/../node_modules/jsc-android/dist") }
+        // For geth, function, and status-go
         flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
+        // Everything Else
+        google()
+        mavenCentral()
         maven { url "https://www.jitpack.io" }
     }
 }
