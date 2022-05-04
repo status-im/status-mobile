@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.98.5",
-    "commit-sha1": "640793fe85d9a9eef9eb3712cda1c5a1ceea401a",
-    "src-sha256": "1k1iw69yw23k29y0b1yvnggjqlmfnwavk4mq1sf2h3wrlb8x47kd"
+    "version": "fix/delete-account-keystore",
+    "commit-sha1": "81bf26d566ac948577546db35742f08d8742f743",
+    "src-sha256": "0xjpli4pr3f366czzl1lk68bi9mz4ji93ynncw1ayiibblbx1v91"
 }
