@@ -33,9 +33,9 @@ in {
   gradlePropParser = callPackage ./tools/gradlePropParser.nix { };
 
   # Package version adjustments
-  go = super.pkgs.go_1_16;
+  go = super.pkgs.go_1_17;
   gradle = super.pkgs.gradle_5;
-  nodejs = super.pkgs.nodejs-12_x;
+  nodejs = super.pkgs.nodejs-16_x;
   openjdk = super.pkgs.openjdk8_headless;
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
     version = "11.5";
