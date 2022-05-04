@@ -113,6 +113,7 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         cls.profile_1.close_button.click()
         cls.profile_1.home_button.click()
         cls.profile_1.get_recovery_phrase()
+        cls.device_2.put_app_to_background_and_back()
 
         cls.home_1.just_fyi('Add contact, 1-1 chat (main device): 3-random, contact with ENS, start 1-1')
         cls.chat_1 = cls.home_1.add_contact(cls.contact_before_sync['public_key'])

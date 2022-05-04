@@ -38,9 +38,10 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.chat_2.dapp_tab_button.click()
         sent_time_variants = self.chat_1.convert_device_time_to_chat_timestamp()
         timestamp = self.chat_1.chat_element_by_text(message).timestamp_on_tap
-        if timestamp not in sent_time_variants:
-            self.errors.append("Timestamp is not shown, expected: '%s', in fact: '%s'" %
-                               (sent_time_variants.join(','), timestamp))
+        if sent_time_variants and timestamp:
+            if timestamp not in sent_time_variants:
+                self.errors.append("Timestamp is not shown, expected: '%s', in fact: '%s'" %
+                                   (sent_time_variants.join(','), timestamp))
         self.chat_2.home_button.click(desired_view='chat')
         for chat in self.chat_1, self.chat_2:
             chat.verify_message_is_under_today_text(message, self.errors)
@@ -50,6 +51,8 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(700734)
     def test_public_chat_message_edit(self):
+        if not self.chat_2.chat_message_input.is_element_displayed():
+            self.chat_2.home_button.click(desired_view='chat')
         message_before_edit, message_after_edit = self.text_message, "Message AFTER edit 2"
         self.chat_1.edit_message_in_chat(message_before_edit, message_after_edit)
         for chat in (self.chat_1, self.chat_2):

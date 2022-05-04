@@ -1007,6 +1007,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         send_transaction.ok_got_it_button.click()
         send_transaction.sign_transaction()
         chat_1_sender_message = self.chat_1.get_outgoing_transaction(transaction_value=amount)
+        self.home_2.put_app_to_background_and_back()
         self.network_api.wait_for_confirmation_of_transaction(self.sender['address'], amount, confirmations=3)
         chat_1_sender_message.transaction_status.wait_for_element_text(chat_1_sender_message.confirmed)
 

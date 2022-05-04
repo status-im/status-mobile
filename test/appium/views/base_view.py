@@ -564,7 +564,8 @@ class BaseView(object):
 
     def share_via_messenger(self):
         self.driver.info("Sharing via messenger", device=False)
-        self.element_by_text('Messages').wait_and_click(40)
+        self.element_by_text('Messages').wait_for_visibility_of_element(40)
+        self.element_by_text('Messages').click_until_presence_of_element(self.element_by_text('New message'))
         self.element_by_text('New message').wait_and_click()
         self.send_as_keyevent('+0100100101')
         self.confirm()

@@ -252,10 +252,9 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700762)
-    @marks.skip
-    # TODO: skipped due to #13016
-    def test_wallet_add_account_seed_phrase_collectibles_mainnet_rinkeby(self):
+    def test_wallet_add_account_seed_phrase_collectibles_rinkeby_set_as_profile_image(self):
         user = wallet_users['E']
+        self.wallet.driver.set_network_connection(6)
         account_seed_collectibles = self.account_seed_collectibles
         self.wallet.get_back_to_home_view()
         if not self.wallet.add_account_button.is_element_displayed(3):
@@ -290,57 +289,11 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         if not self.wallet.element_by_translation_id("no-collectibles").is_element_displayed():
             self.errors.append("Collectibles are shown on Ropsten network!")
 
-        self.wallet.just_fyi('Check collectibles amount in wallet')
-        profile = self.home.profile_button.click()
-        profile.switch_network()
-        profile.wallet_button.click()
-        if not account_button.is_element_displayed():
-            self.wallet.accounts_status_account.swipe_left_on_element()
-        account_button.click()
-        self.wallet.collectibles_button.click()
-        self.wallet.element_by_translation_id("display-collectibles").scroll_and_click()
-        collectible_amount = self.wallet.get_collectibles_amount()
-        collectible_amount.wait_for_visibility_of_element(30)
-        if collectible_amount.text != '1':
-            self.errors.append('Wrong number is shown on CK assets: %s' % collectible_amount.text)
-
-        self.wallet.just_fyi('Check that you can open collectible to view')
-        collectible_amount.click()
-        if not self.wallet.nft_asset_button.is_element_displayed(60):
-            self.driver.fail("Kitty is not shown after opening it from collectibles!")
-        self.wallet.nft_asset_button.click()
-        self.wallet.set_collectible_as_profile_photo_button.scroll_and_click()
-
-        self.wallet.just_fyi('Check that you can set collectible as profile photo')
-        web_view = self.wallet.get_base_web_view()
-        self.wallet.view_collectible_on_opensea_button.click_until_presence_of_element(
-            web_view.browser_previous_page_button)
-        web_view.wait_for_d_aap_to_load()
-        if not web_view.element_by_text('Princess Gunklater').is_element_displayed(30):
-            self.errors.append("Collectible can't be opened when tapping 'View on OpenSea' via NFT page")
-        self.wallet.wallet_button.click()
-
-        self.wallet.just_fyi('Check that collectibles are not shown when sending assets from wallet')
-        send_transaction = self.wallet.send_transaction_button.click()
-        send_transaction.select_asset_button.click()
-        if send_transaction.asset_by_name("CryptoKitties").is_element_displayed():
-            self.errors.append('Collectibles can be sent from wallet')
-        self.wallet.close_send_transaction_view_button.double_click()
-
-        self.wallet.just_fyi('Check "Open in OpenSea" (that user is signed in)')
-        self.wallet.element_by_translation_id("check-on-opensea").click_until_presence_of_element(
-            web_view.browser_previous_page_button)
-        web_view.wait_for_d_aap_to_load(10)
-        self.wallet.element_by_text('e2ecryptokitty').wait_for_element(60)
-
-        self.wallet.just_fyi("Check that custom image from collectible is set as profile photo")
-        self.wallet.profile_button.double_click()
-        if not profile.profile_picture.is_element_image_similar_to_template('collectible_pic.png'):
-            self.errors.append("Collectible image is not set as profile image")
-
         self.home.just_fyi('Check that collectibles amount is shown on Rinkeby')
         profile = self.home.profile_button.click()
         profile.switch_network('Rinkeby with upstream RPC')
+        # Additional login as a workaround for issue when collectibles are not shown on test network
+        self.wallet.reopen_app()
         profile = self.home.profile_button.click()
         profile.wallet_button.click()
         if not account_button.is_element_displayed():
@@ -350,13 +303,40 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.wallet.transaction_history_button.click()
         self.wallet.collectibles_button.click()
         self.wallet.swipe_up()
-        if self.wallet.element_by_translation_id("display-collectibles").is_element_displayed:
-            self.wallet.element_by_translation_id("display-collectibles").click()
         for asset in user['collectibles']:
             self.wallet.get_collectibles_amount(asset).scroll_to_element()
             if self.wallet.get_collectibles_amount(asset).text != user['collectibles'][asset]:
                 self.errors.append(
                     '%s %s is not shown in Collectibles for Rinkeby!' % (user['collectibles'][asset], asset))
+
+        self.wallet.just_fyi('Check that you can open collectible to view')
+        nft, nft_name = 'Coins & Steel Exclusive Item Skin V2', "Warlock's Arm"
+        self.wallet.get_collectibles_amount(nft).click()
+        if not self.wallet.nft_asset_button.is_element_displayed(60):
+            self.driver.fail("No card is not shown for %s after opening it from collectibles!" % nft)
+        self.wallet.nft_asset_button.click()
+        self.wallet.set_collectible_as_profile_photo_button.scroll_and_click()
+
+        self.wallet.just_fyi('Check that you can set collectible as profile photo')
+        web_view = self.wallet.get_base_web_view()
+        self.wallet.view_collectible_on_opensea_button.click_until_presence_of_element(
+            web_view.browser_previous_page_button)
+        web_view.wait_for_d_aap_to_load()
+        if not web_view.element_by_text(nft_name).is_element_displayed(30):
+            self.errors.append("Collectible can't be opened when tapping 'View on OpenSea' via NFT page")
+        self.wallet.wallet_button.click()
+
+        self.wallet.just_fyi('Check that collectibles are not shown when sending assets from wallet')
+        send_transaction = self.wallet.send_transaction_button.click()
+        send_transaction.select_asset_button.click()
+        if send_transaction.asset_by_name(nft).is_element_displayed():
+            self.errors.append('Collectibles can be sent from wallet')
+        self.wallet.close_send_transaction_view_button.double_click()
+
+        self.wallet.just_fyi("Check that custom image from collectible is set as profile photo")
+        self.wallet.profile_button.double_click()
+        if not profile.profile_picture.is_element_image_similar_to_template('collectible_pic.png'):
+            self.errors.append("Collectible image is not set as profile image")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700766)

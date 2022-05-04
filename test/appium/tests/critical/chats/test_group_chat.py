@@ -19,8 +19,10 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         for key in cls.drivers:
             sign_in = SignInView(cls.drivers[key])
             cls.homes[key] = sign_in.create_user(enable_notifications=True)
+            SignInView(cls.drivers[2]).put_app_to_background_and_back()
             cls.public_keys[key], cls.usernames[key] = sign_in.get_public_key_and_username(True)
             sign_in.home_button.click()
+            SignInView(cls.drivers[0]).put_app_to_background_and_back()
         cls.chat_name = cls.homes[0].get_random_chat_name()
 
         cls.homes[0].just_fyi('Admin adds future members to contacts')
@@ -42,6 +44,7 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(3994)
     def test_group_chat_push_system_messages_when_invited(self):
         self.homes[1].just_fyi("Check system messages in PNs")
+        self.homes[2].put_app_to_background_and_back()
         self.homes[1].put_app_to_background()
         self.homes[1].open_notification_bar()
         pns = [self.chats[0].pn_invited_to_group_chat(self.usernames[0], self.chat_name),

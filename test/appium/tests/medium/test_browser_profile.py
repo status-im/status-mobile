@@ -188,7 +188,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702159)
     def test_profile_invite_friends(self):
-        self.home.home_button.click()
+        self.home.home_button.double_click()
 
         self.home.just_fyi("Check it via 'Invite friends' on home view")
         self.home.invite_friends_button.click()

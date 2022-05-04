@@ -84,8 +84,9 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         wallet.click_system_back_button()
 
         self.home.just_fyi("Check that can paste wallet address in chat message input")
-        wallet.home_button.double_click()
-        self.home.get_chat('#%s' % self.public_chat_name).click()
+        wallet.home_button.click()
+        if not self.chat.chat_message_input.is_element_displayed():
+            self.home.get_chat('#%s' % self.public_chat_name).click()
         self.chat.chat_message_input.click()
         self.chat.paste_text()
         if self.chat.chat_message_input.text != address:
