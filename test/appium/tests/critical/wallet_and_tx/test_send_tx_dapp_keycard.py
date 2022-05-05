@@ -425,13 +425,6 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.maybe_later_button.click_until_presence_of_element(self.sign_in.lets_go_button)
         self.sign_in.lets_go_button.click_until_absense_of_element(self.sign_in.lets_go_button)
         self.sign_in.profile_button.wait_for_visibility_of_element(30)
-
-        self.sign_in.just_fyi('Check that after creating keycard account balance is 0, not ...')
-        wallet_1 = self.sign_in.wallet_button.click()
-        wallet_address = wallet_1.get_wallet_address()
-        wallet_1.wallet_button.double_click()
-        if wallet_1.status_account_total_usd_value.text != '0':
-            self.errors.append("Account USD value is not 0, it is %s" % wallet_1.status_account_total_usd_value.text)
         public_key, default_username = self.sign_in.get_public_key_and_username(return_username=True)
         profile_1 = self.sign_in.get_profile_view()
         profile_1.logout()

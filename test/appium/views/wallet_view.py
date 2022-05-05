@@ -38,7 +38,7 @@ class AccountElementButton(SilentButton):
 
     def color_matches(self, expected_color_image_name: str):
         amount_text = Text(self.driver, xpath="%s//*[@content-desc='account-total-value']" % self.locator)
-        amount_text.wait_for_element_text('0', 60)
+        amount_text.wait_for_element_text('...', 60)
         return not amount_text.is_element_differs_from_template(expected_color_image_name)
 
 
