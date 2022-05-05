@@ -869,8 +869,10 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         for key in self.drivers:
             sign_ins[key] = SignInView(self.drivers[key])
             homes[key] = sign_ins[key].create_user()
+            SignInView(self.drivers[2]).put_app_to_background_and_back()
             public_keys[key], usernames[key] = sign_ins[key].get_public_key_and_username(True)
             sign_ins[key].home_button.click()
+            SignInView(self.drivers[0]).put_app_to_background_and_back()
         [driver.close_app() for driver in (self.drivers[1], self.drivers[2])]
         chat_name = homes[0].get_random_chat_name()
 
@@ -935,8 +937,10 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         for key in self.drivers:
             sign_in_view = SignInView(self.drivers[key])
             homes[key] = sign_in_view.create_user()
+            SignInView(self.drivers[2]).put_app_to_background_and_back()
             public_keys[key], usernames[key] = sign_in_view.get_public_key_and_username(True)
             sign_in_view.home_button.click()
+            SignInView(self.drivers[0]).put_app_to_background_and_back()
         chat_name = homes[0].get_random_chat_name()
         for i in range(1, 3):
             homes[0].add_contact(public_keys[i])
@@ -1585,6 +1589,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         recovery_phrase = profile_1.get_recovery_phrase()
         profile_1.close_button.click()
         profile_1.home_button.click()
+        device_2.put_app_to_background_and_back()
         home_3 = device_3.create_user()
         public_key_3, username_3 = home_3.get_public_key_and_username(return_username=True)
         device_3.home_button.click()
