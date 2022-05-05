@@ -7,7 +7,7 @@ from support.api.third_parties_api import get_token_info
 
 
 def get_parameters():
-    directory = os.sep.join(__file__.split(os.sep)[:-4])
+    directory = os.sep.join(__file__.split(os.sep)[:-5])
     file_path = path.join(directory, 'src/status_im/ethereum/tokens.cljs')
     with open(file_path, 'r') as f:
         data = f.read()

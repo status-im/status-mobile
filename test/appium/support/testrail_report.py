@@ -1,13 +1,16 @@
-import json
-import requests
-import logging
-import itertools
-import emoji
 import base64
-from os import environ
-from support.base_test_report import BaseTestReport
-from sys import argv
+import itertools
+import json
+import logging
+import re
 from json import JSONDecodeError
+from os import environ
+from sys import argv
+
+import emoji
+import requests
+
+from support.base_test_report import BaseTestReport
 
 
 class TestrailReport(BaseTestReport):
@@ -150,10 +153,11 @@ class TestrailReport(BaseTestReport):
         return case_ids
 
     def add_results(self):
-        for test in self.get_all_tests():
+        data = list()
+        all_tests = self.get_all_tests()
+        for test in all_tests:
             test_steps = "# Steps: \n"
             devices = str()
-            method = 'add_result_for_case/%s/%s' % (self.run_id, test.testrail_case_id)
             last_testrun = test.testruns[-1]
             for step in last_testrun.steps:
                 test_steps += step + "\n"
@@ -170,21 +174,36 @@ class TestrailReport(BaseTestReport):
                 comment += '%s' % ('# Error: \n %s \n' % emoji.demojize(last_testrun.error)) + devices + test_steps
             else:
                 comment += devices + test_steps
-            data = {'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
-                    'comment': comment}
-            result = self.post(method, data=data)
-            try:
-                result_id = result['id']
-            except KeyError:
-                result_id = ''
-                print("Got TestRail error when adding results for case %s: \n%s" % (test.testrail_case_id, result))
+            data.append(
+                {'case_id': test.testrail_case_id,
+                 'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
+                 'comment': comment})
+
+        results = self.post('add_results_for_cases/%s' % self.run_id, data={"results": data})
+        try:
+            results[0]
+        except IndexError:
+            print("Got TestRail error when adding results: \n%s" % results)
+
+        for test in all_tests:
+            last_testrun = test.testruns[-1]
             if last_testrun.error:
                 try:
-                    for geth in test.geth_paths.keys():
-                        self.add_attachment(method='add_attachment_to_result/%s' % str(result_id),
-                                            path=test.geth_paths[geth])
-                except AttributeError:
-                    pass
+                    device = list(last_testrun.jobs.keys())[0]
+                except IndexError:
+                    continue
+                for res in results:
+                    if re.findall(r"%s\?auth=.*#%s" % (device, str(last_testrun.first_commands[device])),
+                                  res['comment']):
+                        res_id = res['id']
+                        try:
+                            for geth in test.geth_paths.keys():
+                                self.add_attachment(method='add_attachment_to_result/%s' % str(res_id),
+                                                    path=test.geth_paths[geth])
+                        except AttributeError:
+                            pass
+                        break
+
         self.change_test_run_description()
 
     def change_test_run_description(self):
