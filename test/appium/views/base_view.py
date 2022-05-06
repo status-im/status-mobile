@@ -346,6 +346,21 @@ class BaseView(object):
         for _ in range(times):
             self.driver.press_keycode(4)
 
+    def click_system_back_button_until_element_is_shown(self, attempts=3, element='home'):
+        counter = 0
+        if element is 'home':
+            element = self.home_button
+        while not element.is_element_present(1) and counter <= attempts:
+            try:
+                self.driver.press_keycode(4)
+                element.is_element_present(5)
+                return self
+            except (NoSuchElementException, TimeoutException):
+                counter += 1
+        else:
+            self.driver.info("Could not reach %s element by pressing back" % element.name)
+
+
     def get_app_from_background(self):
         self.driver.info('Get Status back from Recent apps')
         self.driver.press_keycode(187)

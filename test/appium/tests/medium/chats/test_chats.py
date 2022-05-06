@@ -82,6 +82,7 @@ class TestPublicChatMultipleDeviceMergedMedium(MultipleSharedDeviceTestCase):
         chat_2.add_to_contacts.click()
         timeline_2 = chat_2.status_button.click()
         for status in statuses:
+            chat_2.element_by_text_part(statuses['*formatted text*']).scroll_to_element()
             expected_value = statuses[status]
             if not timeline_2.element_by_text_part(expected_value).is_element_displayed():
                 self.errors.append(
@@ -94,8 +95,7 @@ class TestPublicChatMultipleDeviceMergedMedium(MultipleSharedDeviceTestCase):
         tag_status = '#public-chat-to-redirect-long-name'
         timeline_1.set_new_status(tag_status)
         public_chat_2 = self.home_2.get_chat_view()
-
-        public_chat_2.element_by_text(tag_status).wait_and_click()
+        public_chat_2.element_by_text(tag_status).scroll_and_click('up')
         public_chat_2.user_name_text.wait_for_element(30)
         if not public_chat_2.user_name_text.text == tag_status:
             self.errors.append('Could not redirect a user to a public chat tapping the tag message from timeline_1')

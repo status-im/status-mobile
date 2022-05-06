@@ -596,7 +596,7 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet.click_system_back_button()
 
         wallet.just_fyi("Send transaction to new account")
-        transaction_amount = '0.004'
+        transaction_amount = '0.006'
         initial_balance = self.network_api.get_balance(status_account_address)
         wallet.send_transaction(account_name=account_name, amount=transaction_amount, keycard=True)
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
@@ -855,6 +855,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home.just_fyi("Checking setting pairing with new PIN")
         profile.change_pairing_code_button.click()
         keycard.enter_another_pin()
+        sign_in.create_password_input.wait_for_element()
         sign_in.create_password_input.set_value(common_password)
         sign_in.confirm_your_password_input.set_value(common_password + "1")
         if not keycard.element_by_translation_id("pairing-code_error1").is_element_displayed():

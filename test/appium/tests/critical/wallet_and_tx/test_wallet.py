@@ -279,30 +279,25 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.wallet.account_name_input.send_keys(account_seed_collectibles)
         self.wallet.add_account_generate_account_button.click()
         account_button = self.wallet.get_account_by_name(account_seed_collectibles)
-        if not account_button.is_element_displayed():
-            self.wallet.accounts_status_account.swipe_left_on_element()
-
-        self.home.just_fyi('Check that collectibles are not shown on Ropsten')
-        account_button.click()
-        self.wallet.collectibles_button.click()
-        self.wallet.element_by_translation_id("display-collectibles").scroll_and_click()
-        if not self.wallet.element_by_translation_id("no-collectibles").is_element_displayed():
-            self.errors.append("Collectibles are shown on Ropsten network!")
 
         self.home.just_fyi('Check that collectibles amount is shown on Rinkeby')
         profile = self.home.profile_button.click()
         profile.switch_network('Rinkeby with upstream RPC')
-        # Additional login as a workaround for issue when collectibles are not shown on test network
-        self.wallet.reopen_app()
-        profile = self.home.profile_button.click()
         profile.wallet_button.click()
         if not account_button.is_element_displayed():
             self.wallet.accounts_status_account.swipe_left_on_element()
-        self.wallet.scan_tokens()
         account_button.click()
-        self.wallet.transaction_history_button.click()
         self.wallet.collectibles_button.click()
-        self.wallet.swipe_up()
+        self.wallet.element_by_translation_id("display-collectibles").scroll_and_click()
+        # Workaround for situation when after switching network from Ropsten collectibles are not shown
+        self.wallet.pull_to_refresh(5)
+        if self.wallet.element_by_translation_id("no-collectibles").is_element_displayed():
+            self.wallet.reopen_app()
+            profile.wallet_button.click()
+            if not account_button.is_element_displayed():
+                self.wallet.accounts_status_account.swipe_left_on_element()
+            account_button.click()
+            self.wallet.collectibles_button.click()
         for asset in user['collectibles']:
             self.wallet.get_collectibles_amount(asset).scroll_to_element()
             if self.wallet.get_collectibles_amount(asset).text != user['collectibles'][asset]:

@@ -421,8 +421,8 @@ class TestPublicChatBrowserOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi('Delete one tab')
         web_page.remove_tab(name=urls['bbc.com'])
-        if web_page.element_by_text_part(urls['bbc.com']).is_element_displayed():
-            self.errors.append('Closed tab is present after deletion')
+        web_page.open_tabs_button.wait_for_invisibility_of_element()
+        web_page.element_by_text_part(urls['bbc.com']).wait_for_invisibility_of_element()
 
         self.home.just_fyi('Close all tabs via "Close all", relogin and check that it is not reappearing')
         web_page.close_all_button.click()

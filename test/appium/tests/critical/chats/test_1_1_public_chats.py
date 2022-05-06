@@ -527,7 +527,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.chat_2.share_via_messenger()
         if not self.chat_2.image_in_android_messenger.is_element_present():
             self.errors.append("Can't share image")
-        self.chat_2.click_system_back_button()
+        self.chat_2.click_system_back_button_until_element_is_shown()
         self.chat_2.save_image_icon_button.click()
         self.chat_2.show_images_button.click()
         self.chat_2.allow_button.wait_and_click()
@@ -539,6 +539,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(5310)
     def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
+
         self.home_1.home_button.click()
         self.home_2.home_button.click()
 
