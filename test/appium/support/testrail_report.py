@@ -193,8 +193,11 @@ class TestrailReport(BaseTestReport):
                 except IndexError:
                     continue
                 for res in results:
-                    if re.findall(r"%s\?auth=.*#%s" % (device, str(last_testrun.first_commands[device])),
-                                  res['comment']):
+                    if last_testrun.first_commands:
+                        pattern = r"%s\?auth=.*#%s" % (device, str(last_testrun.first_commands[device]))
+                    else:
+                        pattern = device
+                    if re.findall(pattern, res['comment']):
                         res_id = res['id']
                         try:
                             for geth in test.geth_paths.keys():
