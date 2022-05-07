@@ -98,8 +98,8 @@ pipeline {
           nix.shell("""
               find /nix/store/ -mindepth 1 -maxdepth 1 -type d \
                 -not -name '*.links' -and -not -name '*-status-react-*' \
-                | xargs nix-copy-closure -v \
-                  --to ${params.NIX_CACHE_USER}@${params.NIX_CACHE_HOST}
+                | xargs nix copy \
+                  --to ssh-ng://${params.NIX_CACHE_USER}@${params.NIX_CACHE_HOST}
             """,
             pure: false
           )
