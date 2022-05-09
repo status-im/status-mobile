@@ -105,7 +105,7 @@
   [_ _]
   (let [pressed (reagent/atom false)]
     (fn [{:keys [on-press disabled type size before after above width
-                 on-long-press accessibility-label icon]
+                 on-long-press accessibility-label icon style]
           :or   {type :primary
                  size 40}}
          children]
@@ -126,17 +126,19 @@
                                               {:on-press-out (fn []
                                                                (reset! pressed nil))})
 
-         [rn/view {:style (style-container
-                           type
-                           size
-                           disabled
-                           (get background-color state)
-                           (get border-color state)
-                           icon
-                           above
-                           width
-                           before
-                           after)}
+         [rn/view {:style (merge
+                           (style-container
+                            type
+                            size
+                            disabled
+                            (get background-color state)
+                            (get border-color state)
+                            icon
+                            above
+                            width
+                            before
+                            after)
+                           style)}
           (when above
             [rn/view
              [quo2.icons/icon above {:container-style {:margin-bottom 2}

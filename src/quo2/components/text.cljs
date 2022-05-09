@@ -29,5 +29,6 @@
   (let [this (reagent/current-component)
         props (reagent/props this)
         style (text-style props)]
-    (into [rn/text {:style style}]
+    (into [rn/text (merge {:style style}
+                          (dissoc props :style :size :align :weight :color))]
           (reagent/children this))))

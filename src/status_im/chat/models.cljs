@@ -10,6 +10,7 @@
             [quo.design-system.colors :as colors]
             [status-im.constants :as constants]
             [status-im.navigation :as navigation]
+            [status-im.navigation2 :as navigation2]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
@@ -262,6 +263,15 @@
               #(when-not home-view?
                  (navigation/pop-to-root-tab % :chat-stack))
               (navigation/navigate-to-cofx :chat nil))))
+
+(fx/defn navigate-to-chat-nav2
+  "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
+  {:events [:chat.ui/navigate-to-chat-nav2]}
+  [{db :db :as cofx} chat-id from-switcher?]
+  (fx/merge cofx
+            {:db (assoc db :current-chat-id chat-id)}
+            (preload-chat-data chat-id)
+            (navigation2/navigate-to-nav2 :chat chat-id nil from-switcher?)))
 
 (fx/defn handle-clear-history-response
   {:events [::history-cleared]}
