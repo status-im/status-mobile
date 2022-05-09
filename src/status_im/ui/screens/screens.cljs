@@ -121,8 +121,9 @@
             [status-im.ui.screens.wallet.recipient.views :as recipient]
             [status-im.ui.screens.wallet.send.views :as wallet.send]
             [quo2.screens.main :as quo2.preview]
-            [status-im.navigation2.screens :as navigation2.screens]
-            [status-im.navigation2.stack-with-switcher :as stack-with-switcher]))
+            [status-im.utils.config :as config]
+            [status-im.navigation2.screens :as navigation2.screens]))
+            ;[status-im.navigation2.stack-with-switcher :as stack-with-switcher]))
             ;[quo2.foundations.colors :as quo2.colors]))
 
 (def components
