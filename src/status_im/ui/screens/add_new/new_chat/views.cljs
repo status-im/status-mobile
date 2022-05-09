@@ -254,58 +254,58 @@
     :auto-correct        false}])
 
 (defn new-contact []
-  (let [{:keys [state ens-name public-key error]} @(re-frame/subscribe [:contacts/new-identity])
-        entered-nickname (reagent/atom "")
-        blocked? (and
-                  (utils.db/valid-public-key? (or public-key ""))
-                  @(re-frame/subscribe [:contacts/contact-blocked? public-key]))]
-    [react/view {:style {:flex 1}}
-     [topbar/topbar
-      {:title  (i18n/label :t/new-contact)
-       :modal? true
-       :right-accessories
-       [{:icon                :qr
-         :accessibility-label :scan-contact-code-button
-         :on-press            #(re-frame/dispatch [::qr-scanner/scan-code
-                                                   {:title        (i18n/label :t/new-contact)
-                                                    :handler      :contact/qr-code-scanned
-                                                    :new-contact? true}])}]}]
-     [react/view {:flex-direction :row
-                  :padding        16}
-      [react/view {:flex          1
-                   :padding-right 16}
-       [quo/text-input
-        {:on-change-text
-         #(do
-            (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
-            (debounce/debounce-and-dispatch [:new-chat/set-new-identity %] 600))
-         :on-submit-editing
-         #(when (= state :valid)
-            (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted true @entered-nickname] 3000))
-         :placeholder         (i18n/label :t/enter-contact-code)
-         :show-cancel         false
-         :accessibility-label :enter-contact-code-input
-         :auto-capitalize     :none
-         :return-key-type     :go}]]
-      [react/view {:justify-content :center
-                   :align-items     :center}
-       [input-icon state true @entered-nickname blocked?]]]
-     [react/view {:min-height 30 :justify-content :flex-end :margin-bottom 16}
-      [quo/text {:style {:margin-horizontal 16}
-                 :size  :small
-                 :align :center
-                 :color :secondary}
-       (cond (= state :error)
-             (get-validation-label error)
-             (= state :valid)
-             (str (when ens-name (str ens-name " • "))
-                  (utils/get-shortened-address public-key))
-             :else "")]]
-     [react/text {:style {:margin-horizontal 16 :color colors/gray}}
-      (i18n/label :t/nickname-description)]
-     [react/view {:padding 16}
-
-      [nickname-input entered-nickname]
-      [react/text {:style {:align-self :flex-end :margin-top 16
-                           :color      colors/gray}}
-       (str (count @entered-nickname) " / 32")]]]))
+  (let [entered-nickname (reagent/atom "")]
+    (fn []
+      (let [{:keys [state ens-name public-key error]} @(re-frame/subscribe [:contacts/new-identity])
+            blocked? (and
+                      (utils.db/valid-public-key? (or public-key ""))
+                      @(re-frame/subscribe [:contacts/contact-blocked? public-key]))]
+        [react/view {:style {:flex 1}}
+         [topbar/topbar
+          {:title  (i18n/label :t/new-contact)
+           :modal? true
+           :right-accessories
+           [{:icon                :qr
+             :accessibility-label :scan-contact-code-button
+             :on-press            #(re-frame/dispatch [::qr-scanner/scan-code
+                                                       {:title        (i18n/label :t/new-contact)
+                                                        :handler      :contact/qr-code-scanned
+                                                        :new-contact? true}])}]}]
+         [react/view {:flex-direction :row
+                      :padding        16}
+          [react/view {:flex          1
+                       :padding-right 16}
+           [quo/text-input
+            {:on-change-text
+             #(do
+                (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
+                (debounce/debounce-and-dispatch [:new-chat/set-new-identity %] 600))
+             :on-submit-editing
+             #(when (= state :valid)
+                (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted true @entered-nickname] 3000))
+             :placeholder         (i18n/label :t/enter-contact-code)
+             :show-cancel         false
+             :accessibility-label :enter-contact-code-input
+             :auto-capitalize     :none
+             :return-key-type     :go}]]
+          [react/view {:justify-content :center
+                       :align-items     :center}
+           [input-icon state true @entered-nickname blocked?]]]
+         [react/view {:min-height 30 :justify-content :flex-end :margin-bottom 16}
+          [quo/text {:style {:margin-horizontal 16}
+                     :size  :small
+                     :align :center
+                     :color :secondary}
+           (cond (= state :error)
+                 (get-validation-label error)
+                 (= state :valid)
+                 (str (when ens-name (str ens-name " • "))
+                      (utils/get-shortened-address public-key))
+                 :else "")]]
+         [react/text {:style {:margin-horizontal 16 :color colors/gray}}
+          (i18n/label :t/nickname-description)]
+         [react/view {:padding 16}
+          [nickname-input entered-nickname]
+          [react/text {:style {:align-self :flex-end :margin-top 16
+                               :color      colors/gray}}
+           (str (count @entered-nickname) " / 32")]]]))))
