@@ -13,6 +13,8 @@
 
 (defn topbar-options []
   {:noBorder   true
+   :scrollEdgeAppearance {:active   false
+                          :noBorder true}
    :elevation  0
    :title {:color colors/black}
    :rightButtonColor colors/black
@@ -114,6 +116,7 @@
                                            :id      :intro
                                            :options (status-bar-options)}}]
                    :options  (merge (default-root)
+                                    (status-bar-options)
                                     {:topBar (assoc (topbar-options) :visible false)})}}}
 
    ;; ONBOARDING
@@ -123,6 +126,7 @@
                                            :id      :get-your-keys
                                            :options (status-bar-options)}}]
                    :options  (merge (default-root)
+                                    (status-bar-options)
                                     {:topBar (assoc (topbar-options) :elevation 0 :noBorder true :animate false)})}}}
 
    ;;PROGRESS
@@ -143,6 +147,7 @@
                                            :id      :login
                                            :options (get-screen-options :login)}}]
                    :options  (merge (default-root)
+                                    (status-bar-options)
                                     {:topBar (topbar-options)})}}}
 
    :multiaccounts-keycard
@@ -154,6 +159,7 @@
                                            :id      :keycard-login-pin
                                            :options (get-screen-options :keycard-login-pin)}}]
                    :options  (merge (default-root)
+                                    (status-bar-options)
                                     {:topBar (topbar-options)})}}}
 
    ;;WELCOME
@@ -162,6 +168,7 @@
                                            :id      :welcome
                                            :options (status-bar-options)}}]
                    :options  (merge (default-root)
+                                    (status-bar-options)
                                     {:topBar (assoc (topbar-options) :visible false)})}}}
 
    ;;NOTIFICATIONS
@@ -170,6 +177,7 @@
                                            :id      :onboarding-notification
                                            :options (status-bar-options)}}]
                    :options  (merge (default-root)
+                                    (status-bar-options)
                                     {:topBar (assoc (topbar-options) :visible false)})}}}
 
    ;; TERMS OF SERVICE
@@ -178,4 +186,5 @@
                                            :id      :force-accept-tos
                                            :options (get-screen-options :force-accept-tos)}}]
                    :options  (merge (default-root)
+                                    (status-bar-options)
                                     {:topBar (assoc (topbar-options) :visible false)})}}}})

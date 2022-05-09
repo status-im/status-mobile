@@ -125,13 +125,15 @@ public class MainActivity extends NavigationActivity
         switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
             case Configuration.UI_MODE_NIGHT_YES:
                 setTheme(R.style.DarkTheme);
-
+                SplashScreen.show(this, R.style.DarkTheme, false);
                 break;
             case Configuration.UI_MODE_NIGHT_NO:
                 setTheme(R.style.LightTheme);
+                SplashScreen.show(this, R.style.LightTheme, false);
                 break;
             default:
                 setTheme(R.style.LightTheme);
+                SplashScreen.show(this, R.style.LightTheme, false);
         }
         // Make sure we get an Alert for every uncaught exceptions
         registerUncaughtExceptionHandler(MainActivity.this);
@@ -141,7 +143,7 @@ public class MainActivity extends NavigationActivity
         Log.v("RNBootstrap", "Available system memory "+getAvailableMemory(activityManager).availMem + ", maximum usable application memory " + activityManager.getLargeMemoryClass()+"M");
 
         setSecureFlag();
-        SplashScreen.show(this, true);
+
         // NOTE: Try to not restore the state https://github.com/software-mansion/react-native-screens/issues/17
         super.onCreate(null);
 

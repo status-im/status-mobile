@@ -7426,10 +7426,10 @@ react-native-mail@^6.1.1:
   resolved "https://registry.yarnpkg.com/react-native-mail/-/react-native-mail-6.1.1.tgz#f1b1f8034c84d2510a93e4a2a795f0db5a13595e"
   integrity sha512-pTs180wwyh7hN/iyTC9SfOX579U4YhDlHOLxi47IGvhPJENqO/QFdBq+wWKxyhNqdQuVSy+LoeIxLreWnIeYmg==
 
-react-native-navigation@^7.13.0:
-  version "7.13.0"
-  resolved "https://registry.yarnpkg.com/react-native-navigation/-/react-native-navigation-7.13.0.tgz#3d3d97be1825034effab2a1deb5402a1fe1ba33e"
-  integrity sha512-/mdNuTlz9YVplJRB7Rv3g5cDgHCtw4RyG6ATdvrIJvMJOCU57ivCHuZkZDI/YQv7Txm48XD/EUkNahFFUATFZg==
+react-native-navigation@^7.27.1:
+  version "7.27.1"
+  resolved "https://registry.yarnpkg.com/react-native-navigation/-/react-native-navigation-7.27.1.tgz#90bfac2a400109cc036394b4ee807a997da6a7b4"
+  integrity sha512-rKgIiekZfAMZTF+OhLINJeB81tpqWH+wJDUbJmcF5A/aZj5cmetglWrDiYnX+2eUHOhGBpYk4elCX4zAC84drg==
   dependencies:
     hoist-non-react-statics "3.x.x"
     lodash "4.17.x"

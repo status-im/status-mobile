@@ -305,7 +305,7 @@
                               :id      comp
                               :options (merge (cond-> (roots/status-bar-options)
                                                 (and platform/android? (not (quo.colors/dark?)))
-                                                (assoc-in [:statusBar :translucent] true))
+                                                (assoc-in [:statusBar :backgroundColor] "#99999A"))
                                               {:layout  {:componentBackgroundColor (if platform/android?
                                                                                      (:backdrop @quo.colors/theme)
                                                                                      "transparent")}
