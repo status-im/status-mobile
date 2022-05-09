@@ -131,3 +131,9 @@
 (defn safe-replace [s m r]
   (when (string? s)
     (string/replace s m r)))
+
+(defn svg? [some-string]
+  (string/ends-with? some-string ".svg"))
+
+(defn exclude-svg-resources [lst]
+  (remove svg? lst))

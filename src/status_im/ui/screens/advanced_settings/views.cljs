@@ -15,8 +15,7 @@
                                           current-fleet
                                           webview-debug
                                           new-ui-enabled?
-                                          mutual-contact-requests-enabled?
-                                          wallet-connect-enabled?]}]
+                                          mutual-contact-requests-enabled?]}]
   (keep
    identity
    [{:size                 :small
@@ -119,15 +118,6 @@
      :accessory               :switch
      :active                  mutual-contact-requests-enabled?}
     {:size                    :small
-     :title                   (i18n/label :t/wallet-connect)
-     :accessibility-label     :wallet-connect-settings-switch
-     :container-margin-bottom 8
-     :on-press
-     #(re-frame/dispatch
-       [:multiaccounts.ui/switch-wallet-connect-enabled (not wallet-connect-enabled?)])
-     :accessory               :switch
-     :active                  wallet-connect-enabled?}
-    {:size                    :small
      :title                   (i18n/label :t/new-ui)
      :accessibility-label     :new-ui-toggle
      :container-margin-bottom 8
@@ -152,8 +142,7 @@
                   transactions-management-enabled? [:wallet/transactions-management-enabled?]
                   current-log-level                [:log-level/current-log-level]
                   current-fleet                    [:fleets/current-fleet]
-                  mutual-contact-requests-enabled? [:mutual-contact-requests/enabled?]
-                  wallet-connect-enabled?          [:wallet-connect/enabled?]]
+                  mutual-contact-requests-enabled? [:mutual-contact-requests/enabled?]]
     [list/flat-list
      {:data      (flat-list-data
                   {:network-name                     network-name
@@ -166,7 +155,6 @@
                    :waku-bloom-filter-mode           waku-bloom-filter-mode
                    :webview-debug                    webview-debug
                    :new-ui-enabled?                  @config/new-ui-enabled?
-                   :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
-                   :wallet-connect-enabled?          wallet-connect-enabled?})
+                   :mutual-contact-requests-enabled? mutual-contact-requests-enabled?})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))
