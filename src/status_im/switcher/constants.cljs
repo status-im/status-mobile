@@ -7,8 +7,6 @@
 (def switcher-button-size
   (* switcher-button-radius 2))
 
-(def platform (if platform/android? :android :ios))
-
 (def switcher-bottom-positions
   {:android
    {:home-stack 17
@@ -20,7 +18,7 @@
 (defn switcher-bottom-position [view-id]
   (get-in
    switcher-bottom-positions
-   [platform view-id]))
+   [(keyword platform/os) view-id]))
 
 (defn switcher-center-position [view-id]
   (+ (switcher-bottom-position view-id) (/ switcher-button-size 2)))

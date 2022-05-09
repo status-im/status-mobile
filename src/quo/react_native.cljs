@@ -106,6 +106,7 @@
                                                               :property (:opacity layout-animation-properties)}
                                                :delete   #js {:type     (:ease-in-ease-out layout-animation-types)
                                                               :property (:opacity layout-animation-properties)}}})
+
 (defonce enable-layout-animations
   (when (and platform/android? config/quo-preview-enabled?)
     (.setLayoutAnimationEnabledExperimental ^js ui-manager true)))

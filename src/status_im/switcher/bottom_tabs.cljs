@@ -23,8 +23,8 @@
 
 (defn bottom-tabs []
   [rn/animated-view {:style (styles/bottom-tabs)}
-   [bottom-tab :main-icons/messages-new :chats-stack]
+   [bottom-tab :main-icons/redesign-messages :chats-stack]
    [bottom-tab :main-icons/communities :communities-stack]
    [rn/view {:width 10}]
-   [bottom-tab :main-icons/wallet-new :wallet-stack]
+   [bottom-tab :main-icons/redesign-wallet :wallet-stack]
    [bottom-tab :main-icons/browser :browser-stack]])
