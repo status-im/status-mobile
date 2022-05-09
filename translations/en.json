@@ -1741,6 +1741,7 @@
     "wallet-manage-app-connections": "Manage app connections",
     "connection-request": "Connection Request",
     "disconnect": "Disconnect",
+    "app-connections": "App connections",
     "new-ui": "New UI",
     "send-contact-request-message": "To start a chat you need to become contacts",
     "contact-request": "Contact request",
@@ -1754,8 +1755,8 @@
     "contact-request-pending": "Pending...",
     "removed-from-contacts": "Removed from contacts",
     "mutual-contact-requests": "Mutual contact requests",
-    "pending": "Pending",
     "negative": "Negative",
     "positive": "Positive",
-    "public": "Public"
+    "public": "Public",
+    "successful-connection": "Successful Connection"
 }

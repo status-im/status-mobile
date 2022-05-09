@@ -137,7 +137,8 @@
      :wc-1-kill-session connector
      :db (-> db
              (assoc :wallet-connect-legacy/sessions (filter #(not= (:connector %) connector) sessions))
-             (dissoc :wallet-connect/session-managed))}))
+             (dissoc :wallet-connect/session-managed)
+             (dissoc :wallet-connect/session-connected))}))
 
 (fx/defn pair-session
   {:events [:wallet-connect-legacy/pair]}

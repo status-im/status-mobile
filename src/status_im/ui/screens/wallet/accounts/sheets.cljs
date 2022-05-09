@@ -10,49 +10,61 @@
 
 (defn accounts-options [mnemonic]
   (fn []
-    [:<>
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/wallet-manage-accounts)
-       :icon                :main-icons/account
-       :accessibility-label :wallet-manage-accounts
-       :on-press            #(hide-sheet-and-dispatch
-                              [:navigate-to :manage-accounts])}]
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/wallet-manage-assets)
-       :icon                :main-icons/token
-       :accessibility-label :wallet-manage-assets
-       :on-press            #(hide-sheet-and-dispatch
-                              [:navigate-to :wallet-settings-assets])}]
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/scan-tokens)
-       :icon                :main-icons/refresh
-       :accessibility-label :wallet-scan-token
-       :on-press            #(hide-sheet-and-dispatch
-                              [:wallet/update-balances nil true])}]
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/set-currency)
-       :icon                :main-icons/language
-       :accessibility-label :wallet-set-currency
-       :on-press            #(hide-sheet-and-dispatch
-                              [:navigate-to :currency-settings])}]
-     [quo/list-item
-      {:theme    :accent
-       :title    (i18n/label :t/view-signing)
-       :icon     :main-icons/info
-       :on-press #(hide-sheet-and-dispatch
-                   [:show-popover {:view :signing-phrase}])}]
-     (when mnemonic
+    (let [session @(re-frame/subscribe [:wallet-connect/session-connected])]
+
+      [:<>
        [quo/list-item
-        {:theme               :negative
-         :title               (i18n/label :t/wallet-backup-recovery-title)
-         :icon                :main-icons/security
-         :accessibility-label :wallet-backup-recovery-title
+        {:theme               :accent
+         :title               (i18n/label :t/wallet-manage-accounts)
+         :icon                :main-icons/account
+         :accessibility-label :wallet-manage-accounts
          :on-press            #(hide-sheet-and-dispatch
-                                [:navigate-to :backup-seed])}])]))
+                                [:navigate-to :manage-accounts])}]
+       [quo/list-item
+        {:theme               :accent
+         :title               (i18n/label :t/wallet-manage-assets)
+         :icon                :main-icons/token
+         :accessibility-label :wallet-manage-assets
+         :on-press            #(hide-sheet-and-dispatch
+                                [:navigate-to :wallet-settings-assets])}]
+
+       (when-not (= session nil)
+         [quo/list-item
+          {:theme               :accent
+           :title               (i18n/label :t/wallet-manage-app-connections)
+           :icon                :main-icons/manage-connections
+           :accessibility-label :wallet-manage-app-connections
+           :on-press            #(hide-sheet-and-dispatch
+                                  [:wallet-connect-legacy/manage-app session])}])
+
+       [quo/list-item
+        {:theme               :accent
+         :title               (i18n/label :t/scan-tokens)
+         :icon                :main-icons/refresh
+         :accessibility-label :wallet-scan-token
+         :on-press            #(hide-sheet-and-dispatch
+                                [:wallet/update-balances nil true])}]
+       [quo/list-item
+        {:theme               :accent
+         :title               (i18n/label :t/set-currency)
+         :icon                :main-icons/language
+         :accessibility-label :wallet-set-currency
+         :on-press            #(hide-sheet-and-dispatch
+                                [:navigate-to :currency-settings])}]
+       [quo/list-item
+        {:theme    :accent
+         :title    (i18n/label :t/view-signing)
+         :icon     :main-icons/info
+         :on-press #(hide-sheet-and-dispatch
+                     [:show-popover {:view :signing-phrase}])}]
+       (when mnemonic
+         [quo/list-item
+          {:theme               :negative
+           :title               (i18n/label :t/wallet-backup-recovery-title)
+           :icon                :main-icons/security
+           :accessibility-label :wallet-backup-recovery-title
+           :on-press            #(hide-sheet-and-dispatch
+                                  [:navigate-to :backup-seed])}])])))
 
 (defn account-card-actions [account type wallet]
   [react/view

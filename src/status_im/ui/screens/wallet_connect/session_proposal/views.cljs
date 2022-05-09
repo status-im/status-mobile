@@ -89,7 +89,7 @@
        [react/view (styles/proposal-sheet-header)
         [quo/text {:weight :bold
                    :size   :large}
-         (i18n/label :t/connection-request)]]
+         (i18n/label :t/successful-connection)]]
        [react/image {:style (styles/dapp-logo)
                      :source {:uri icon-uri}}]
        [react/view styles/sheet-body-container
