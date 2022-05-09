@@ -4,6 +4,7 @@ import emoji
 import pytest
 
 from tests import marks
+from tests.users import ens_user
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -433,4 +434,244 @@ class TestChatMultipleDevice(MultipleSharedDeviceTestCase):
                 self.group_chat_2.chat_element_by_text(self.message_1).pinned_by_label.is_element_present()):
             self.errors.append("Message failed be unpinned by user who granted admin permissions!")
 
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702258)
+    def test_chat_group_chat_set_nickname_and_ens_via_group_info_mention(self):
+        self.drivers[1].reset()
+
+        self.home_2 = SignInView(self.drivers[1]).recover_access(ens_user['passphrase'])
+        self.home_1.home_button.double_click()
+        self.profile_2 = self.home_2.profile_button.click()
+        ens, full_ens, username_2 = ens_user['ens'], '@%s' % ens_user['ens'], ens_user['username']
+        self.profile_2.connect_existing_ens(ens)
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
+
+        self.home_1.just_fyi('Set nickname, using emojis, special chars and cyrrilic chars without adding to contact')
+        emoji_message = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_message]
+        special_char, cyrrilic = '"£¢€¥~`•|√π¶∆×°™®©%$@', 'стат'
+        nickname_to_set = emoji.emojize(emoji_message) + special_char + cyrrilic
+        nickname_expected = emoji_unicode + special_char + cyrrilic
+        chat_1 = self.home_1.add_contact(ens, add_in_contacts=False, nickname=nickname_to_set)
+        if chat_1.user_name_text.text != nickname_expected:
+            self.errors.append('Expected special char nickname %s does not match actual %s' % (nickname_expected, chat_1.user_name_text.text))
+
+        self.home_1.just_fyi('Can remove nickname without adding to contact')
+        chat_1.chat_options.click()
+        chat_1.view_profile_button.click()
+        chat_1.profile_nickname_button.click()
+        chat_1.nickname_input_field.clear()
+        chat_1.element_by_text('Done').click()
+        chat_1.close_button.click()
+        if chat_1.user_name_text.text != full_ens:
+            self.errors.append(
+                'Nickname was not removed! real chat name is %s instead of %s' % (chat_1.user_name_text.text, full_ens))
+
+        self.home_1.just_fyi('Adding ENS user to contacts and start group chat with him')
+        group_name = 'ens_group'
+        chat_1.add_to_contacts.click()
+        chat_2 = self.home_2.add_contact(self.public_key_1)
+        chat_2.send_message("first")
+        chat_2.home_button.click()
+        chat_1.home_button.click()
+        chat_1 = self.home_1.create_group_chat([full_ens], group_name)
+        chat_2 = self.home_2.get_chat(group_name).click()
+        chat_2.join_chat_button.click()
+
+        self.home_1.just_fyi('Check ENS and in group chat and suggestions list')
+        chat_1.element_by_text_part(full_ens).wait_for_visibility_of_element(60)
+        chat_1.select_mention_from_suggestion_list(ens, typed_search_pattern=ens[:2])
+        if chat_1.chat_message_input.text != '@' + ens + ' ':
+            self.errors.append(
+                'ENS username is not resolved in chat input after selecting it in mention suggestions list!')
+        additional_text = 'and more'
+        chat_1.send_as_keyevent(additional_text)
+        chat_1.send_message_button.click()
+        message_text = '%s %s' % (full_ens, additional_text)
+        if not chat_1.chat_element_by_text(message_text).is_element_displayed():
+            self.errors.append("ENS name is not resolved on sent message")
+
+        self.home_1.just_fyi('Set nickname via group info and check that can mention by nickname /username in group chat')
+        nickname = 'funny_bunny'
+        device_2_options = chat_1.get_user_options(full_ens)
+        device_2_options.view_profile_button.click()
+        chat_1.set_nickname(nickname, close_profile=False)
+        if not chat_1.element_by_text(nickname).is_element_displayed():
+            self.errors.append('Nickname is not shown in profile view after setting from group info')
+        chat_1.close_button.click()
+        chat_1.element_by_text(nickname).scroll_to_element()
+        chat_1.close_button.click()
+        message_text = '%s %s' % (nickname, additional_text)
+        if not chat_1.chat_element_by_text(message_text).is_element_displayed():
+            self.errors.append("ENS name was not replaced with nickname on sent message")
+        chat_1.chat_message_input.send_keys('@')
+        if not chat_1.element_by_text('%s %s' % (nickname, full_ens)).is_element_displayed():
+            self.errors.append("ENS name with nickname is not shown in mention input after set")
+        if not chat_1.element_by_text(username_2).is_element_displayed():
+            self.errors.append("3-random name is not shown in mention input after set from group info")
+        chat_1.chat_message_input.clear()
+        chat_1.select_mention_from_suggestion_list('%s %s' % (nickname, full_ens), typed_search_pattern=username_2[:2])
+        if chat_1.chat_message_input.text != '@' + ens + ' ':
+            self.errors.append(
+                'ENS is not resolved in chat input after setting nickname in mention suggestions list (search by 3-random name)!')
+        chat_1.chat_message_input.clear()
+        chat_1.select_mention_from_suggestion_list('%s %s' % (nickname, full_ens), typed_search_pattern=nickname[:2])
+        if chat_1.chat_message_input.text != '@' + ens + ' ':
+            self.errors.append(
+                'ENS is not resolved in chat input after setting nickname in mention suggestions list (search by nickname)!')
+        chat_1.chat_message_input.clear()
+
+        self.home_1.just_fyi('Can delete nickname via group info and recheck received messages')
+        device_2_options = chat_1.get_user_options(full_ens)
+        device_2_options.view_profile_button.click()
+        chat_1.profile_nickname_button.click()
+        chat_1.nickname_input_field.clear()
+        chat_1.element_by_text('Done').click()
+        chat_1.close_button.click()
+        chat_1.close_button.click()
+        message_text = '%s %s' % (full_ens, additional_text)
+        if not chat_1.chat_element_by_text(message_text).is_element_displayed():
+            self.errors.append("ENS name is not resolved on sent message after removing nickname")
+        chat_1.chat_message_input.send_keys('@')
+        if chat_1.element_by_text_part(nickname).is_element_displayed():
+            self.errors.append("Nickname is shown in group chat after removing!")
+
+        self.errors.verify_no_errors()
+
+
+@pytest.mark.xdist_group(name="group_chat_medium_3")
+@marks.medium
+class TestGroupChatMultipleDevice(MultipleSharedDeviceTestCase):
+    @classmethod
+    def setup_class(cls):
+        cls.drivers, cls.loop = create_shared_drivers(3)
+        cls.sign_ins, cls.homes, cls.public_keys, cls.usernames, cls.chats = {}, {}, {}, {}, {}
+        for key in cls.drivers:
+            cls.sign_ins[key] = SignInView(cls.drivers[key])
+            cls.homes[key] = cls.sign_ins[key].create_user()
+            SignInView(cls.drivers[2]).put_app_to_background_and_back()
+            cls.public_keys[key], cls.usernames[key] = cls.sign_ins[key].get_public_key_and_username(True)
+            cls.sign_ins[key].home_button.click()
+            SignInView(cls.drivers[0]).put_app_to_background_and_back()
+
+        for member in (cls.public_keys[1], cls.public_keys[2]):
+            cls.homes[0].add_contact(member)
+            cls.homes[0].home_button.click()
+        cls.chat_name = cls.homes[0].get_random_chat_name()
+        cls.invite_chat_name = '%s_invite' % cls.homes[0].get_random_chat_name()
+        cls.chats[0] = cls.homes[0].create_group_chat([], cls.invite_chat_name)
+        [SignInView(cls.drivers[i]).put_app_to_background_and_back() for i in range(1, 3)]
+        cls.link = cls.chats[0].get_group_invite_via_group_info()
+        cls.chats[0].home_button.double_click()
+
+        cls.chats[0] = cls.homes[0].create_group_chat([cls.usernames[1], cls.usernames[2]], cls.chat_name)
+        for i in range(1, 3):
+            cls.chats[i] = cls.homes[i].get_chat(cls.chat_name).click()
+            cls.chats[i].join_chat_button.click()
+
+    @marks.testrail_id(702259)
+    def test_group_chat_remove_member(self):
+        self.chats[0].just_fyi("Admin: get options for device 2 in group chat and remove him")
+        removed_user = self.usernames[2]
+        options = self.chats[0].get_user_options(removed_user)
+        options.remove_user_button.click()
+        left_message = self.chats[0].leave_system_message(removed_user)
+        for key in self.chats:
+            if not self.chats[key].chat_element_by_text(left_message).is_element_displayed():
+                self.errors.append("Message with text '%s' was not received" % left_message)
+
+        self.chats[0].just_fyi("Check that input field is not available after removing")
+        if self.chats[2].chat_message_input.is_element_displayed():
+            self.errors.append("Message input is still available for removed user")
+        self.chats[0].just_fyi("Send message and check that it is available only for remaining users")
+        message = 'after removing member'
+        self.chats[0].send_message(message)
+        for chat in (self.chats[0], self.chats[1]):
+            if not chat.chat_element_by_text(message).is_element_displayed(30):
+                self.errors.append("Message '%s' was not received after removing member" % message)
+        if self.chats[2].chat_element_by_text(message).is_element_displayed():
+            self.errors.append("Message '%s' was received by removed member" % message)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702260)
+    def test_group_chat_make_admin(self):
+        self.homes[0].just_fyi('Check group info view and options of users')
+        self.chats[0].chat_options.click()
+        group_info_1 = self.chats[0].group_info.click()
+        if not group_info_1.user_admin(self.usernames[0]).is_element_displayed():
+            self.errors.append("Admin user is not marked as admin")
+        group_info_1.get_user_from_group_info(self.usernames[0]).click()
+        if self.chats[0].profile_block_contact.is_element_displayed():
+            self.errors.append("Admin is redirected to own profile on tapping own username from group info")
+
+        self.chats[0].just_fyi('Made admin another user and check system message')
+        options = group_info_1.get_username_options(self.usernames[1]).click()
+        options.make_admin_button.click()
+        admin_system_message = self.chats[0].has_been_made_admin_system_message(self.usernames[0], self.usernames[1])
+        for chat in (self.chats[0], self.chats[1]):
+            if not chat.chat_element_by_text(admin_system_message).is_element_displayed():
+                self.errors.append("Message with test '%s' was not received" % admin_system_message)
+
+        self.chats[1].just_fyi('Check Admin in group info and that "add members" is available')
+        self.chats[1].chat_options.click()
+        group_info_1 = self.chats[1].group_info.click()
+        for username in (self.usernames[0], self.usernames[1]):
+            if not group_info_1.user_admin(username).is_element_displayed():
+                self.errors.append("Admin user is not marked as admin")
+        if not group_info_1.add_members.is_element_displayed():
+            self.errors.append("Add member button is not available for new admin")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702261)
+    def test_group_chat_accept_decline_invite(self):
+        [driver.close_app() for driver in (self.drivers[1], self.drivers[2])]
+        self.homes[0].home_button.double_click()
+        self.chats[0].just_fyi('Member_1, member_2: both users send requests to join group chat')
+        [sign_in.open_weblink_and_login(self.link) for sign_in in (self.sign_ins[1], self.sign_ins[2])]
+        introduction_messages = ['message for retrying']
+        for i in range(1, 3):
+            self.homes[i].element_by_text_part(self.invite_chat_name).click()
+            introduction_messages.append('Please add me, member_%s to your gorgeous group chat' % str(i))
+            self.chats[i].request_membership_for_group_chat(introduction_messages[i])
+
+        self.chats[0].just_fyi('Admin: accept request for Member_1 and decline for Member_2')
+        self.homes[0].get_chat(self.invite_chat_name).click()
+        self.chats[0].group_membership_request_button.wait_and_click()
+        self.chats[0].element_by_text(self.usernames[1]).click()
+        if not self.chats[0].element_by_text_part(introduction_messages[1]).is_element_displayed():
+            self.errors.append('Introduction message is not shown!')
+        self.chats[0].accept_group_invitation_button.wait_and_click()
+        self.chats[0].accept_membership_for_group_chat_via_chat_view(self.usernames[2], accept=False)
+        self.chats[0].click_system_back_button()
+
+        self.chats[2].just_fyi('Member_2: retry request')
+        self.chats[2].retry_group_invite_button.wait_and_click()
+        self.chats[2].request_membership_for_group_chat(introduction_messages[0])
+
+        self.chats[2].just_fyi('Admin: decline request for Member_2')
+        self.chats[0].group_membership_request_button.wait_and_click()
+        self.chats[0].element_by_text(self.usernames[2]).click()
+        if not self.chats[0].element_by_text_part(introduction_messages[0]).is_element_displayed():
+            self.errors.append('Introduction message that was set after retrying attempt is not shown for admin!')
+        self.chats[0].decline_group_invitation_button.wait_and_click()
+        self.chats[0].click_system_back_button()
+
+        self.chats[2].just_fyi('Member_2: remove chat')
+        self.chats[2].remove_group_invite_button.wait_and_click()
+
+        self.chats[2].just_fyi('Double check after relogin')
+        if self.chats[0].group_membership_request_button.is_element_displayed():
+            self.errors.append('Group membership request is still shown when there are no pending requests anymore')
+        [self.homes[i].reopen_app() for i in range(0, 3)]
+        if self.homes[2].element_by_text_part(self.invite_chat_name).is_element_displayed():
+            self.errors.append('Group chat was not removed when removing after declining group invite')
+        [home.get_chat(self.invite_chat_name).click() for home in (self.homes[0], self.homes[1])]
+        if self.chats[0].group_membership_request_button.is_element_displayed():
+            self.errors.append(
+                'Group membership request is shown after relogin when there are no pending requests anymore')
+        join_system_message = self.chats[0].join_system_message(self.usernames[1])
+        for chat in (self.chats[1], self.chats[0]):
+            if not chat.chat_element_by_text(join_system_message).is_element_displayed():
+                self.errors.append('%s is not shown after joining to group chat via invite' % join_system_message)
         self.errors.verify_no_errors()
