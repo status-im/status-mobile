@@ -6,7 +6,8 @@
             ["@react-native-community/hooks" :as hooks]
             ["react-native-navigation" :refer (Navigation)]
             ["rn-emoji-keyboard" :refer (EmojiKeyboard)]
-            ["react-native-draggable-flatlist" :default DraggableFlatList]))
+            ["react-native-draggable-flatlist" :default DraggableFlatList]
+            [status-im.utils.config :as config]))
 
 (def rn-draggable-flatlist (reagent/adapt-react-class DraggableFlatList))
 
@@ -74,6 +75,9 @@
 (def animated-view
   (reagent/adapt-react-class (.-View ^js animated)))
 
+(def animated-image-view
+  (reagent/adapt-react-class (.-Image ^js animated)))
+
 (def ui-manager  (.-UIManager ^js rn))
 
 (def layout-animation (.-LayoutAnimation ^js rn))
@@ -102,6 +106,10 @@
                                                               :property (:opacity layout-animation-properties)}
                                                :delete   #js {:type     (:ease-in-ease-out layout-animation-types)
                                                               :property (:opacity layout-animation-properties)}}})
+
+(defonce enable-layout-animations
+  (when (and platform/android? config/quo-preview-enabled?)
+    (.setLayoutAnimationEnabledExperimental ^js ui-manager true)))
 
 (def activity-indicator (reagent/adapt-react-class (.-ActivityIndicator ^js rn)))
 
