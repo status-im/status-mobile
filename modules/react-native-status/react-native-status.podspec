@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
 
 
   s.dependency "React"
-  s.vendored_frameworks = "Statusgo.framework"
+  s.vendored_frameworks = "Statusgo.xcframework"
 end

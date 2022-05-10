@@ -17,4 +17,5 @@
 
   # Android SDK requires an accepted license
   android_sdk.accept_license = true;
+  allowUnfree = true;
 }
