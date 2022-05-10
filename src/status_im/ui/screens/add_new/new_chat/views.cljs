@@ -270,7 +270,8 @@
              :on-press            #(re-frame/dispatch [::qr-scanner/scan-code
                                                        {:title        (i18n/label :t/new-contact)
                                                         :handler      :contact/qr-code-scanned
-                                                        :new-contact? true}])}]}]
+                                                        :new-contact? true
+                                                        :nickname     @entered-nickname}])}]}]
          [react/view {:flex-direction :row
                       :padding        16}
           [react/view {:flex          1
