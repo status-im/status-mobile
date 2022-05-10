@@ -9,7 +9,7 @@ from views.sign_in_view import SignInView
 from support.utilities import get_merged_txs_list
 
 
-@pytest.mark.xdist_group(name="wallet_management_1")
+@pytest.mark.xdist_group(name="three_1")
 @marks.critical
 class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
 

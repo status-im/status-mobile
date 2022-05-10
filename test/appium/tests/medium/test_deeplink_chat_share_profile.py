@@ -16,7 +16,7 @@ from views.chat_view import ChatView
 from views.sign_in_view import SignInView
 
 
-@pytest.mark.xdist_group(name="deeplink_chat_profile_medium_1")
+@pytest.mark.xdist_group(name="two_1")
 @marks.medium
 class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
 

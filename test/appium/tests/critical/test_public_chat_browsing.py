@@ -11,7 +11,7 @@ from views.sign_in_view import SignInView
 from selenium.common.exceptions import NoSuchElementException
 
 
-@pytest.mark.xdist_group(name="public_chat_2")
+@pytest.mark.xdist_group(name="one_2")
 @marks.critical
 class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
@@ -225,7 +225,7 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="public_chat_browser_1")
+@pytest.mark.xdist_group(name="three_1")
 @marks.critical
 class TestPublicChatBrowserOneDeviceMerged(MultipleSharedDeviceTestCase):
 
