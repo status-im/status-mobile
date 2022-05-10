@@ -881,7 +881,7 @@ class ChatView(BaseView):
         self.get_stickers.click()
         element = Button(self.driver,
                          xpath="//*[@content-desc='sticker-pack-name'][@text='%s']/..//*[@content-desc='sticker-pack-price']" % pack_name)
-        element.scroll_to_element()
+        element.scroll_to_element(depth=21)
         element.click()
         element.wait_for_invisibility_of_element()
         self.back_button.click()
