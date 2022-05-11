@@ -219,13 +219,61 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         cls.home_1 = cls.device_1.create_user(enable_notifications=True)
         cls.home_2 = cls.device_2.create_user(enable_notifications=True)
         cls.profile_1 = cls.home_1.profile_button.click()
-        cls.default_username_1 = cls.profile_1.default_username_text.text
+        cls.public_key_1, cls.default_username_1 = cls.profile_1.get_public_key_and_username(return_username=True)
         cls.profile_1.home_button.click()
+        cls.profile_2 = cls.home_2.profile_button.click()
+        cls.default_username_2 = cls.profile_2.default_username_text.text
+        cls.profile_2.home_button.click()
         cls.public_key_2, cls.default_username_2 = cls.home_2.get_public_key_and_username(return_username=True)
         cls.chat_1 = cls.home_1.add_contact(cls.public_key_2)
         cls.chat_1.send_message('hey')
         cls.home_2.home_button.double_click()
         cls.chat_2 = cls.home_2.get_chat(cls.default_username_1).click()
+
+    @marks.testrail_id(702267)
+    def test_1_1_chat_unread_counter_preview_highlited(self):
+        self.chat_2.get_back_to_home_view()
+
+        message_1, message_2 = 'test message2', 'test'
+        chat_element = self.home_2.get_chat(self.default_username_1)
+        self.home_2.dapp_tab_button.click()
+        self.chat_1.send_message(message_1)
+
+        if self.home_2.home_button.counter.text != '1':
+            self.errors.append('New messages counter is not shown on Home button')
+        self.device_2.home_button.click()
+        if chat_element.new_messages_counter.text != '1':
+            self.errors.append('New messages counter is not shown on chat element')
+        chat_2 = chat_element.click()
+        chat_2.add_to_contacts.click()
+
+        self.home_2.home_button.double_click()
+
+        if self.home_2.home_button.counter.is_element_displayed():
+            self.errors.append('New messages counter is shown on Home button for already seen message')
+        if chat_element.new_messages_counter.text == '1':
+            self.errors.append('New messages counter is shown on chat element for already seen message')
+        self.home_2.delete_chat_long_press(self.default_username_1)
+
+        self.home_2.just_fyi("Checking preview of message and chat highlighting")
+        self.chat_1.send_message(message_2)
+        chat_2_element = self.home_2.get_chat(self.default_username_1)
+        if chat_2_element.chat_preview.is_element_differs_from_template('highligted_preview.png', 0):
+            self.errors.append("Preview message is not hightligted or text is not shown! ")
+        self.home_2.get_chat(self.default_username_1).click()
+        self.home_2.home_button.double_click()
+        if not self.home_2.get_chat(self.default_username_1).chat_preview.is_element_differs_from_template(
+                'highligted_preview.png', 0):
+            self.errors.append("Preview message is still highlighted after opening ")
+
+        self.home_2.just_fyi("Removing user from contacts for the case 5315")
+        chat_element.click()
+        chat_2.chat_options.click()
+        chat_2.view_profile_button.click()
+        chat_2.remove_from_contacts.click()
+        chat_2.get_back_to_home_view()
+
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(6315)
     def test_1_1_chat_message_reaction(self):
@@ -238,6 +286,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
             self.errors.append("Counter of reaction is not updated on your own message!")
 
         self.device_2.just_fyi("Receiver  set own emoji and verifies counter on received message in 1-1 chat")
+        self.home_2.get_chat(self.default_username_1).click()
         message_receiver = self.chat_2.chat_element_by_text(message_from_sender)
         if message_receiver.emojis_below_message(own=False) != 1:
             self.errors.append("Counter of reaction is not updated on received message!")

@@ -292,52 +292,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5362)
-    # TODO: can be moved to TestOneToOneChatMultipleSharedDevices - should be quick e2e
-    def test_1_1_chat_unread_counter_preview_highlited(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
-        profile_2 = home_2.profile_button.click()
-        default_username_2 = profile_2.default_username_text.text
-        home_2 = profile_2.home_button.click()
-        public_key_1 = home_1.get_public_key_and_username()
-        home_1.home_button.click()
-        chat_2 = home_2.add_contact(public_key_1)
-
-        message, message_2, message_3 = 'test message', 'test message2', 'test'
-        chat_2.send_message(message)
-        chat_element = home_1.get_chat(default_username_2)
-        home_1.dapp_tab_button.click()
-        chat_2.send_message(message_2)
-
-        if home_1.home_button.counter.text != '1':
-            self.errors.append('New messages counter is not shown on Home button')
-        device_1.home_button.click()
-        if chat_element.new_messages_counter.text != '1':
-            self.errors.append('New messages counter is not shown on chat element')
-        chat_1 = chat_element.click()
-        chat_1.add_to_contacts.click()
-
-        home_1.home_button.double_click()
-
-        if home_1.home_button.counter.is_element_displayed():
-            self.errors.append('New messages counter is shown on Home button for already seen message')
-        if chat_element.new_messages_counter.text == '1':
-            self.errors.append('New messages counter is shown on chat element for already seen message')
-        home_1.delete_chat_long_press(default_username_2)
-
-        home_1.just_fyi("Checking preview of message and chat highlighting")
-        chat_2.send_message(message_3)
-        chat_1_element = home_1.get_chat(default_username_2)
-        if chat_1_element.chat_preview.is_element_differs_from_template('highligted_preview.png', 0):
-            self.errors.append("Preview message is not hightligted or text is not shown! ")
-        home_1.get_chat(default_username_2).click()
-        home_1.home_button.double_click()
-        if not home_1.get_chat(default_username_2).chat_preview.is_element_differs_from_template('highligted_preview.png', 0):
-            self.errors.append("Preview message is still highlighted after opening ")
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(700727)
     # TODO: merge with any medium group that contains 3 types of chats
     def test_chat_gap_in_public_and_no_gap_in_1_1_and_group(self):
