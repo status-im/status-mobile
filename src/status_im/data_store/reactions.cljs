@@ -24,7 +24,7 @@
                                 limit
                                 on-success
                                 on-failure]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "emojiReactionsByChatID")
+  {::json-rpc/call [{:method     "wakuext_emojiReactionsByChatID"
                      :params     [chat-id cursor limit]
                      :on-success (fn [result]
                                    (on-success (map <-rpc result)))

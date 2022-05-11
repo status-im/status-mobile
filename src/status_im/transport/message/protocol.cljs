@@ -27,23 +27,21 @@
    :contentType     content-type})
 
 (fx/defn send-chat-messages [_ messages]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "sendChatMessages")
+  {::json-rpc/call [{:method     "wakuext_sendChatMessages"
                      :params     [(mapv build-message messages)]
                      :js-response true
                      :on-success #(re-frame/dispatch [:transport/message-sent %])
                      :on-failure #(log/error "failed to send a message" %)}]})
 
 (fx/defn send-reaction [_ {:keys [message-id chat-id emoji-id]}]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method
-                                  "sendEmojiReaction")
+  {::json-rpc/call [{:method     "wakuext_sendEmojiReaction"
                      :params     [chat-id message-id emoji-id]
                      :js-response true
                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
                      :on-failure #(log/error "failed to send a reaction" %)}]})
 
-(fx/defn send-retract-reaction [_ {:keys [emoji-reaction-id] :as reaction}]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method
-                                  "sendEmojiReactionRetraction")
+(fx/defn send-retract-reaction [_ {:keys [emoji-reaction-id]}]
+  {::json-rpc/call [{:method     "wakuext_sendEmojiReactionRetraction"
                      :params     [emoji-reaction-id]
                      :js-response true
                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])

@@ -2,10 +2,8 @@
  status-im.transport.core
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.native-module.core :as status]
             [status-im.pairing.core :as pairing]
             [status-im.utils.fx :as fx]
-            [status-im.utils.handlers :as handlers]
             status-im.transport.shh
             [taoensso.timbre :as log]
             [status-im.utils.universal-links.core :as universal-links]
@@ -16,22 +14,10 @@
   [{:keys [db]} node-info]
   {:db (assoc db :node-info node-info)})
 
-(defn fetch-node-info []
-  (let [args    {:jsonrpc "2.0"
-                 :id      2
-                 :method  "admin_nodeInfo"}
-        payload (.stringify js/JSON (clj->js args))]
-    (status/call-private-rpc payload
-                             (handlers/response-handler #(re-frame/dispatch [:transport.callback/node-info-fetched %])
-                                                        #(log/error "node-info: failed error" %)))))
-
-(re-frame/reg-fx
- ::fetch-node-info
- (fn []
-   (fetch-node-info)))
-
-(fx/defn fetch-node-info-fx [cofx]
-  {::fetch-node-info []})
+(fx/defn fetch-node-info-fx [_]
+  {::json-rpc/call [{:method "admin_nodeInfo"
+                     :on-success #(re-frame/dispatch [:transport.callback/node-info-fetched %])
+                     :on-error #(log/error "node-info: failed error" %)}]})
 
 (defn add-mailservers
   [db mailservers]
@@ -52,7 +38,7 @@
   initializiation is completed, otherwise we might receive messages/topics
   when the state has not been properly initialized."
   [_]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "startMessenger")
+  {::json-rpc/call [{:method "wakuext_startMessenger"
                      :on-success #(re-frame/dispatch [::messenger-started %])
                      :on-failure #(log/error "failed to start messenger")}]})
 

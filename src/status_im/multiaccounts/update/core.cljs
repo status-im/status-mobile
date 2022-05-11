@@ -6,7 +6,7 @@
 (fx/defn send-multiaccount-update [{:keys [db] :as cofx}]
   (let [multiaccount (:multiaccount db)
         {:keys [name preferred-name address]} multiaccount]
-    {::json-rpc/call [{:method (json-rpc/call-ext-method "sendContactUpdates")
+    {::json-rpc/call [{:method "wakuext_sendContactUpdates"
                        :params [(or preferred-name name) ""]
                        :on-success #(log/debug "sent contact update")}]}))
 

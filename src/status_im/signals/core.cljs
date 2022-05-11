@@ -71,8 +71,6 @@
       "mailserver.not.working" (mailserver/handle-mailserver-not-working cofx)
       "discovery.summary"  (summary cofx (js->clj event-js :keywordize-keys true))
       "wakuv2.peerstats"  (wakuv2-peer-stats cofx (js->clj event-js :keywordize-keys true))
-      "subscriptions.data" (ethereum.subscriptions/handle-signal cofx (js->clj event-js :keywordize-keys true))
-      "subscriptions.error" (ethereum.subscriptions/handle-error cofx (js->clj event-js :keywordize-keys true))
       "messages.new" (transport.message/sanitize-messages-and-process-response cofx event-js true)
       "wallet" (ethereum.subscriptions/new-wallet-event cofx (js->clj event-js :keywordize-keys true))
       "local-notifications" (local-notifications/process cofx (js->clj event-js :keywordize-keys true))

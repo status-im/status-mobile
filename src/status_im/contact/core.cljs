@@ -70,7 +70,7 @@
   {:events [::send-contact-request]}
   [{:keys [db] :as cofx} public-key]
   (let [{:keys [name profile-image]} (own-info db)]
-    {::json-rpc/call [{:method (json-rpc/call-ext-method "sendContactUpdate")
+    {::json-rpc/call [{:method "wakuext_sendContactUpdate"
                        :params [public-key name profile-image]
                        :on-success #(log/debug "contact request sent" public-key)}]}))
 

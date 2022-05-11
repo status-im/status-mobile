@@ -10,25 +10,25 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]))
 
 (defn enable-installation-rpc [installation-id on-success on-failure]
-  (json-rpc/call {:method     (json-rpc/call-ext-method "enableInstallation")
+  (json-rpc/call {:method     "wakuext_enableInstallation"
                   :params     [installation-id]
                   :on-success on-success
                   :on-failure on-failure}))
 
 (defn disable-installation-rpc [installation-id on-success on-failure]
-  (json-rpc/call {:method     (json-rpc/call-ext-method "disableInstallation")
+  (json-rpc/call {:method     "wakuext_disableInstallation"
                   :params     [installation-id]
                   :on-success on-success
                   :on-failure on-failure}))
 
 (defn set-installation-metadata-rpc [installation-id metadata on-success on-failure]
-  (json-rpc/call {:method     (json-rpc/call-ext-method "setInstallationMetadata")
+  (json-rpc/call {:method     "wakuext_setInstallationMetadata"
                   :params     [installation-id metadata]
                   :on-success on-success
                   :on-failure on-failure}))
 
 (defn get-our-installations-rpc [on-success on-failure]
-  (json-rpc/call {:method     (json-rpc/call-ext-method "getOurInstallations")
+  (json-rpc/call {:method     "wakuext_getOurInstallations"
                   :params     []
                   :on-success on-success
                   :on-failure on-failure}))
@@ -55,7 +55,7 @@
 (fx/defn send-pair-installation
   {:events [:pairing.ui/pair-devices-pressed]}
   [_]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "sendPairInstallation")
+  {::json-rpc/call [{:method     "wakuext_sendPairInstallation"
                      :params     []
                      :on-success #(log/info "sent pair installation message")}]})
 
@@ -183,7 +183,7 @@
   [{:keys [db]}]
   (let [multiaccount                             (:multiaccount db)
         {:keys [name preferred-name identicon]} multiaccount]
-    {::json-rpc/call [{:method     (json-rpc/call-ext-method "syncDevices")
+    {::json-rpc/call [{:method     "wakuext_syncDevices"
                        :params     [(or preferred-name name) identicon]
                        :on-success #(log/debug "successfully synced devices")}]}))
 

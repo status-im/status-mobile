@@ -17,7 +17,7 @@
                                      limit
                                      on-success
                                      on-failure]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "chatPinnedMessages")
+  {::json-rpc/call [{:method     "wakuext_chatPinnedMessages"
                      :params     [chat-id cursor limit]
                      :on-success (fn [result]
                                    (let [result (clojure.set/rename-keys result {:pinnedMessages :pinned-messages})]
@@ -25,7 +25,7 @@
                      :on-failure on-failure}]})
 
 (fx/defn send-pin-message [cofx pin-message]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "sendPinMessage")
+  {::json-rpc/call [{:method "wakuext_sendPinMessage"
                      :params [(messages/->rpc pin-message)]
                      :on-success #(log/debug "successfully pinned message" pin-message)
                      :on-failure #(log/error "failed to pin message" % pin-message)}]})

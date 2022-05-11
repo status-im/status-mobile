@@ -37,7 +37,7 @@
   "Format group update message and sign membership"
   {:events [:group-chats.ui/remove-member-pressed]}
   [_ chat-id member]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "removeMemberFromGroupChat")
+  {::json-rpc/call [{:method     "wakuext_removeMemberFromGroupChat"
                      :params     [nil chat-id member]
                      :js-response true
                      :on-success #(re-frame/dispatch [:chat-updated %])}]})
@@ -45,7 +45,7 @@
 (fx/defn join-chat
   {:events [:group-chats.ui/join-pressed]}
   [_ chat-id]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "confirmJoiningGroup")
+  {::json-rpc/call [{:method     "wakuext_confirmJoiningGroup"
                      :params     [chat-id]
                      :js-response true
                      :on-success #(re-frame/dispatch [:chat-updated %])}]})
@@ -55,7 +55,7 @@
    :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
   [{:keys [db] :as cofx} group-name]
   (let [selected-contacts (:group/selected-contacts db)]
-    {::json-rpc/call [{:method     (json-rpc/call-ext-method "createGroupChatWithMembers")
+    {::json-rpc/call [{:method     "wakuext_createGroupChatWithMembers"
                        :params     [nil group-name (into [] selected-contacts)]
                        :js-response true
                        :on-success #(re-frame/dispatch [:chat-updated %])}]}))
@@ -65,7 +65,7 @@
   (if (get-in cofx [:db :chats chat-id])
     {:dispatch-n [[:accept-all-activity-center-notifications-from-chat chat-id]
                   [:chat.ui/navigate-to-chat chat-id]]}
-    {::json-rpc/call [{:method     (json-rpc/call-ext-method "createGroupChatFromInvitation")
+    {::json-rpc/call [{:method     "wakuext_createGroupChatFromInvitation"
                        :params     [chat-name chat-id invitation-admin]
                        :js-response true
                        :on-success #(re-frame/dispatch [:chat-updated %])}]}))
@@ -73,7 +73,7 @@
 (fx/defn make-admin
   {:events [:group-chats.ui/make-admin-pressed]}
   [_ chat-id member]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "addAdminsToGroupChat")
+  {::json-rpc/call [{:method     "wakuext_addAdminsToGroupChat"
                      :params     [nil chat-id [member]]
                      :js-response true
                      :on-success #(re-frame/dispatch [:chat-updated %])}]})
@@ -82,7 +82,7 @@
   "Add members to a group chat"
   {:events [:group-chats.ui/add-members-pressed]}
   [{{:keys [current-chat-id selected-participants]} :db :as cofx}]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "addMembersToGroupChat")
+  {::json-rpc/call [{:method     "wakuext_addMembersToGroupChat"
                      :params     [nil current-chat-id selected-participants]
                      :js-response true
                      :on-success #(re-frame/dispatch [:chat-updated %])}]})
@@ -92,7 +92,7 @@
   {:events [:group-chats.ui/add-members-from-invitation]}
   [{{:keys [current-chat-id] :as db} :db :as cofx} id participant]
   {:db             (assoc-in db [:group-chat/invitations id :state] constants/invitation-state-approved)
-   ::json-rpc/call [{:method     (json-rpc/call-ext-method "addMembersToGroupChat")
+   ::json-rpc/call [{:method     "wakuext_addMembersToGroupChat"
                      :params     [nil current-chat-id [participant]]
                      :js-response true
                      :on-success #(re-frame/dispatch [:chat-updated %])}]})
@@ -101,7 +101,7 @@
   "Leave chat"
   {:events [:group-chats.ui/leave-chat-confirmed]}
   [{:keys [db] :as cofx} chat-id]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "leaveGroupChat")
+  {::json-rpc/call [{:method     "wakuext_leaveGroupChat"
                      :params     [nil chat-id true]
                      :js-response true
                      :on-success #(re-frame/dispatch [:chat-removed %])}]})
@@ -126,7 +126,7 @@
   [{:keys [db] :as cofx} chat-id new-name]
   (when (valid-name? new-name)
     {:db             (assoc-in db [:chats chat-id :name] new-name)
-     ::json-rpc/call [{:method     (json-rpc/call-ext-method "changeGroupChatName")
+     ::json-rpc/call [{:method     "wakuext_changeGroupChatName"
                        :params     [nil chat-id new-name]
                        :js-response true
                        :on-success #(re-frame/dispatch [:chat-updated %])}]}))
@@ -148,7 +148,7 @@
   (let [{:keys [invitation-admin]} (get chats current-chat-id)
         message (get-in db [:chat/memberships current-chat-id :message])]
     {:db             (assoc-in db [:chat/memberships current-chat-id] nil)
-     ::json-rpc/call [{:method     (json-rpc/call-ext-method "sendGroupChatInvitationRequest")
+     ::json-rpc/call [{:method     "wakuext_sendGroupChatInvitationRequest"
                        :params     [nil current-chat-id invitation-admin message]
                        :js-response true
                        :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
@@ -157,7 +157,7 @@
   "Send group chat membership rejection"
   {:events [:send-group-chat-membership-rejection]}
   [cofx invitation-id]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method "sendGroupChatInvitationRejection")
+  {::json-rpc/call [{:method     "wakuext_sendGroupChatInvitationRejection"
                      :params     [nil invitation-id]
                      :js-response true
                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})

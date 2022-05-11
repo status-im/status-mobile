@@ -288,7 +288,7 @@
 (fx/defn send-transaction-message
   {:events [:sign/send-transaction-message]}
   [cofx chat-id value contract transaction-hash signature]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "sendTransaction")
+  {::json-rpc/call [{:method "wakuext_sendTransaction"
                      ;; We make sure `value` is serialized as string, and not
                      ;; as an integer or big-int
                      :params [chat-id (str value) contract transaction-hash
@@ -301,7 +301,7 @@
 (fx/defn send-accept-request-transaction-message
   {:events [:sign/send-accept-transaction-message]}
   [cofx message-id transaction-hash signature]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "acceptRequestTransaction")
+  {::json-rpc/call [{:method "wakuext_acceptRequestTransaction"
                      :params [transaction-hash message-id
                               (or (:result (types/json->clj signature))
                                   (ethereum/normalized-hex signature))]
@@ -482,7 +482,7 @@
                                     [to-norm amount-hex])})}))
       {:db db
        ::json-rpc/call
-       [{:method (json-rpc/call-ext-method "requestAddressForTransaction")
+       [{:method "wakuext_requestAddressForTransaction"
          :params [(:current-chat-id db)
                   from-address
                   amount

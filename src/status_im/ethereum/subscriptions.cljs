@@ -6,23 +6,8 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
-(fx/defn handle-signal
-  [cofx {:keys [subscription_id data] :as event}]
-  (if-let [handler (get-in cofx [:db :ethereum/subscriptions subscription_id])]
-    (handler data)
-    (log/warn ::unknown-subscription :event event)))
-
-(fx/defn handle-error
-  [cofx {:keys [subscription_id data] :as event}]
-  (log/error ::error event))
-
-(fx/defn register-subscription
-  {:events [:ethereum.callback/subscription-success]}
-  [{:keys [db]} id handler]
-  {:db (assoc-in db [:ethereum/subscriptions id] handler)})
-
 (fx/defn new-transfers
-  [{:keys [db] :as cofx} block-number accounts]
+  [cofx block-number accounts]
   (log/debug "[wallet-subs] new-transfers"
              "accounts" accounts
              "block" block-number)
@@ -41,7 +26,7 @@
       (assoc :dispatch event))))
 
 (fx/defn recent-history-fetching-ended
-  [{:keys [db] :as cofx} {:keys [accounts blockNumber]}]
+  [{:keys [db]} {:keys [accounts blockNumber]}]
   (log/debug "[wallet-subs] recent-history-fetching-ended"
              "accounts" accounts
              "block" blockNumber)
@@ -76,11 +61,11 @@
    (wallet.core/after-checking-history)))
 
 (fx/defn non-archival-node-detected
-  [{:keys [db] :as cofx} _]
+  [{:keys [db]} _]
   {:db (assoc db :wallet/non-archival-node true)})
 
 (fx/defn new-wallet-event
-  [cofx {:keys [type blockNumber accounts newTransactions] :as event}]
+  [cofx {:keys [type blockNumber accounts] :as event}]
   (log/info "[wallet-subs] new-wallet-event"
             "event-type" type
             "blockNumber" blockNumber

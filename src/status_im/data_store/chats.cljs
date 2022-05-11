@@ -103,7 +103,7 @@
       unmarshal-members))
 
 (fx/defn fetch-chats-rpc [_ {:keys [on-success]}]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "chatsPreview")
+  {::json-rpc/call [{:method "wakuext_chatsPreview"
                      :params []
                      :js-response true
                      :on-success #(on-success ^js %)

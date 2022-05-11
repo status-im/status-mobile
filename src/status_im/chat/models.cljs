@@ -393,9 +393,9 @@
 (fx/defn mute-chat
   {:events [::mute-chat-toggled]}
   [{:keys [db] :as cofx} chat-id muted?]
-  (let [method (if muted? "muteChat" "unmuteChat")]
+  (let [method (if muted? "wakuext_muteChat" "wakuext_unmuteChat")]
     {:db (assoc-in db [:chats chat-id :muted] muted?)
-     ::json-rpc/call [{:method (json-rpc/call-ext-method method)
+     ::json-rpc/call [{:method method
                        :params [chat-id]
                        :on-error #(re-frame/dispatch [::mute-chat-failed chat-id muted? %])
                        :on-success #(log/debug "muted chat successfully")}]}))

@@ -346,7 +346,7 @@
 
 (fx/defn get-group-chat-invitations [_]
   {::json-rpc/call
-   [{:method     (json-rpc/call-ext-method "getGroupChatInvitations")
+   [{:method     "wakuext_getGroupChatInvitations"
      :on-success #(re-frame/dispatch [::initialize-invitations %])}]})
 
 (fx/defn initialize-communities-enabled

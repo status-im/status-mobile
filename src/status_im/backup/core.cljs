@@ -18,7 +18,7 @@
   {:events [:multiaccounts.ui/perform-backup-pressed]}
   [{:keys [db]}]
   {:db (assoc db :backup/performing-backup true)
-   ::json-rpc/call [{:method     (json-rpc/call-ext-method "backupData")
+   ::json-rpc/call [{:method     "wakuext_backupData"
                      :params     []
                      :on-error   #(do
                                     (log/error "failed to perfom backup" %)

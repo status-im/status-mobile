@@ -15,14 +15,14 @@
 
 (fx/defn fetch-contacts-rpc
   [_ on-success]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "contacts")
+  {::json-rpc/call [{:method "wakuext_contacts"
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch contacts" %)}]})
 
 (fx/defn add
   [_ public-key nickname ens-name on-success]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "addContact")
+  {::json-rpc/call [{:method "wakuext_addContact"
                      :params [{:id public-key :nickname nickname :ensName ens-name}]
                      :js-response true
                      :on-success #(do
@@ -33,7 +33,7 @@
 
 (fx/defn set-nickname
   [_ public-key nickname on-success]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "setContactLocalNickname")
+  {::json-rpc/call [{:method "wakuext_setContactLocalNickname"
                      :params [{:id public-key :nickname nickname}]
                      :js-response true
                      :on-success #(do
@@ -43,14 +43,14 @@
                      :on-failure #(log/error "failed to set contact nickname " public-key nickname %)}]})
 
 (fx/defn block [_ contact-id on-success]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "blockContact")
+  {::json-rpc/call [{:method "wakuext_blockContact"
                      :params [contact-id]
                      :js-response true
                      :on-success on-success
                      :on-failure #(log/error "failed to block contact" % contact-id)}]})
 
 (fx/defn unblock [_ contact-id on-success]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "unblockContact")
+  {::json-rpc/call [{:method "wakuext_unblockContact"
                      :params [contact-id]
                      :on-success on-success
                      :js-response true

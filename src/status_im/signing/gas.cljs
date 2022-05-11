@@ -298,7 +298,7 @@
     (fn []
       (json-rpc/call
        {:method     "eth_gasPrice"
-        :on-success success-callback
+        :on-success #(success-callback (money/bignumber %))
         :on-error   (or error-callback #(log/warn "eth_gasPrice error" %))})))))
 
 (def london-block-gas-limit (money/bignumber 30000000))
@@ -378,7 +378,7 @@
                                  :testnet? (ethereum/testnet?
                                             (get-in networks [current-network :config :NetworkId]))))]
                      (merge {:max-priority-fee
-                             (max-priority-fee-hex % current-base-fee)}
+                             (max-priority-fee-hex (money/bignumber %) current-base-fee)}
                             base-fees)))
      :on-error   (if error-callback
                    #(error-callback %)
@@ -387,7 +387,8 @@
 (re-frame/reg-fx
  :signing/update-estimated-gas
  (fn [{:keys [obj success-event error-event]}]
-   (json-rpc/call {:method     "eth_estimateGas"
-                   :params     [obj]
-                   :on-success #(re-frame/dispatch [success-event %])
-                   :on-error   #(re-frame/dispatch [error-event %])})))
+   (json-rpc/call
+    {:method     "eth_estimateGas"
+     :params     [obj]
+     :on-success #(re-frame/dispatch [success-event (money/bignumber (if (= (int %) 21000) % (int (* % 1.2))))])
+     :on-error   #(re-frame/dispatch [error-event %])})))

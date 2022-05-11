@@ -174,7 +174,7 @@
 (fx/defn resend-message
   [{:keys [db] :as cofx} chat-id message-id]
   (fx/merge cofx
-            {::json-rpc/call [{:method (json-rpc/call-ext-method "reSendChatMessage")
+            {::json-rpc/call [{:method "wakuext_reSendChatMessage"
                                :params [message-id]
                                :on-success #(log/debug "re-sent message successfully")
                                :on-error #(log/error "failed to re-send message" %)}]}

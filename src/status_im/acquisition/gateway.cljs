@@ -39,7 +39,7 @@
         network (ethereum/chain-keyword db)]
     {:db             (assoc-in db [:acquisition :network-status]
                                (get network-statuses :initiated))
-     ::json-rpc/call [{:method     (json-rpc/call-ext-method "signMessageWithChatKey")
+     ::json-rpc/call [{:method     "wakuext_signMessageWithChatKey"
                        :params     [msg]
                        :on-error   #(re-frame/dispatch [::on-error (i18n/label :t/sign-request-failed)])
                        :on-success #(re-frame/dispatch [::call-acquisition-gateway

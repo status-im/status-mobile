@@ -36,7 +36,7 @@
   (json-rpc/call
    {:method            "eth_getBalance"
     :params            [address "latest"]
-    :on-success        on-success
+    :on-success        #(on-success (money/bignumber %))
     :number-of-retries 50
     :on-error          on-error}))
 
@@ -489,7 +489,7 @@
         identity (:current-chat-id db)]
     (fx/merge cofx
               {:db (dissoc db :wallet/prepare-transaction)
-               ::json-rpc/call [{:method (json-rpc/call-ext-method "requestTransaction")
+               ::json-rpc/call [{:method "wakuext_requestTransaction"
                                  :params [(:public-key to)
                                           amount
                                           (when-not (= symbol :ETH)
