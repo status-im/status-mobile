@@ -14,8 +14,8 @@ from views.sign_in_view import SignInView
 class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
     @classmethod
     def setup_class(cls):
-        cls.user = transaction_senders['ETH_ADI_STT_3']
-        cls.recipient_address = '0x%s' % transaction_senders['ETH_7']['address']
+        cls.user = transaction_senders['ETH_STT_4']
+        cls.recipient_address = '0x%s' % transaction_senders['ETH_ADI_STT_3']['address']
         cls.drivers, cls.loop = create_shared_drivers(1)
         [cls.amount_adi, cls.amount_eth, cls.amount_stt] = ['0.000%s' % str(random.randint(100, 999)) + '1' for _ in range(3)]
         cls.sign_in = SignInView(cls.drivers[0])

@@ -715,6 +715,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('Grab user data for transactions and public chat, set up wallets')
         home_1 = device_1.create_user(keycard=True)
+        device_2.put_app_to_background_and_back()
         recipient_public_key, recipient_username = home_1.get_public_key_and_username(return_username=True)
         amount = device_1.get_unique_amount()
         asset_name = 'STT'

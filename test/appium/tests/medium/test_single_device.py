@@ -517,8 +517,8 @@ class TestChatManagement(SingleDeviceTestCase):
     # TODO: can be added to any group where kk multiaccount with money is restored as additional check
     def test_keycard_same_seed_added_inside_multiaccount(self):
         sign_in = SignInView(self.driver)
-        recipient = "0x" + transaction_senders['ETH_7']['address']
-        user = transaction_senders['ETH_ADI_STT_3']
+        recipient = "0x" + transaction_senders['ETH_1']['address']
+        user = transaction_senders['ETH_STT_4']
 
         sign_in.just_fyi('Restore keycard multiaccount and logout')
         sign_in.recover_access(passphrase=user['passphrase'], keycard=True)
