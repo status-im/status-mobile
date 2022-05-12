@@ -6,6 +6,7 @@
             [status-im.data-store.messages :as data-store.messages]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.transport.message.protocol :as protocol]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.chat.models.mentions :as mentions]
@@ -171,6 +172,13 @@
   (fx/merge cofx
             (update-db-message-status chat-id message-id status)))
 
+(fx/defn shared-with
+  {:events [::shared-with]}
+  [cofx response-js]
+  (fx/merge cofx
+            {:dispatch [:sanitize-messages-and-process-response response-js]}
+            (navigation/navigate-back)))
+
 (fx/defn resend-message
   [{:keys [db] :as cofx} chat-id message-id]
   (fx/merge cofx
@@ -179,6 +187,26 @@
                                :on-success #(log/debug "re-sent message successfully")
                                :on-error #(log/error "failed to re-send message" %)}]}
             (update-message-status chat-id message-id :sending)))
+
+(fx/defn share-to-contacts-pressed
+  {:events [::share-to-contacts-pressed]}
+  [{:keys [db] :as cofx}
+   {:keys [message-id] :as message}]
+  (navigation/open-modal cofx :share-to-contacts {:message-id message-id}))
+
+(fx/defn share-image-to-contacts-pressed
+  {:events [::share-image-to-contacts-pressed]}
+  [cofx user-pk contacts message-id]
+  (let [pks (if (seq user-pk)
+              (conj contacts user-pk)
+              contacts)]
+    (when (seq pks)
+      {::json-rpc/call [{:method     "wakuext_shareImageMessage"
+                         :params     [{:users pks
+                                       :id message-id}]
+                         :js-response true
+                         :on-success #(re-frame/dispatch [::shared-with %])
+                         :on-error   #(log/error "failed to share image message" %)}]})))
 
 (fx/defn delete-message
   "Deletes chat message, rebuild message-list"
