@@ -17,19 +17,6 @@ from views.sign_in_view import SignInView
 @marks.medium
 class TestChatManagement(SingleDeviceTestCase):
 
-    @marks.testrail_id(6221)
-    # TODO: delete? a lot of tests are already using this
-    def test_app_on_background_by_back_button(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        home.click_system_back_button()
-        home.driver.press_keycode(187)
-        if self.driver.current_activity != '.NexusLauncherActivity':
-            self.driver.fail('App is not in background! Current activity is: %s' % self.driver.current_activity)
-        home.status_in_background_button.click()
-        if not home.plus_button.is_element_displayed():
-            self.driver.fail('Chats view was not opened')
-
     @marks.testrail_id(6213)
     # TODO: check main e2e about block; may be it makes sense to add additional check to it and remove this e2e at all
     def test_contacts_unblock_user_is_not_added_back_to_contacts(self):
