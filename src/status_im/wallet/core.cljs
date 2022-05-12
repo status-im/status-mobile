@@ -87,81 +87,10 @@
   [cofx hash address]
   (navigation/navigate-to-cofx cofx :wallet-transaction-details {:hash hash :address address}))
 
-(defn- validate-token-name!
-  [{:keys [address symbol name]}]
-  (json-rpc/eth-call
-   {:contract address
-    :method "name()"
-    :outputs ["string"]
-    :on-success
-    (fn [[contract-name]]
-      (when (and (seq contract-name)
-                 (not= name contract-name))
-        (let [message (i18n/label :t/token-auto-validate-name-error
-                                  {:symbol   symbol
-                                   :expected name
-                                   :actual   contract-name
-                                   :address  address})]
-          (log/warn message)
-          (utils.utils/show-popup (i18n/label :t/warning) message))))}))
-
-(defn- validate-token-symbol!
-  [{:keys [address symbol]}]
-  (when-not (or (= symbol :DCN) (= symbol :SUPRR)) ;; ignore this symbol because it has weird symbol
-    (json-rpc/eth-call
-     {:contract address
-      :method "symbol()"
-      :outputs ["string"]
-      :on-success
-      (fn [[contract-symbol]]
-        ;;NOTE(goranjovic): skipping check if field not set in contract
-        (when (and (seq contract-symbol)
-                   (not= (clojure.core/name symbol) contract-symbol))
-          (let [message (i18n/label :t/token-auto-validate-symbol-error
-                                    {:symbol   symbol
-                                     :expected (clojure.core/name symbol)
-                                     :actual   contract-symbol
-                                     :address  address})]
-            (log/warn message)
-            (utils.utils/show-popup (i18n/label :t/warning) message))))})))
-
-(defn- validate-token-decimals!
-  [{:keys [address symbol decimals nft?]}]
-  (when-not nft?
-    (json-rpc/eth-call
-     {:contract address
-      :method "decimals()"
-      :outputs ["uint256"]
-      :on-success
-      (fn [[contract-decimals]]
-        (when (and (not (nil? contract-decimals))
-                   (not= decimals contract-decimals))
-          (let [message (i18n/label :t/token-auto-validate-decimals-error
-                                    {:symbol   symbol
-                                     :expected decimals
-                                     :actual   contract-decimals
-                                     :address  address})]
-            (log/warn message)
-            (utils.utils/show-popup (i18n/label :t/warning) message))))})))
-
 (defn dups [seq]
   (for [[id freq] (frequencies seq)
         :when (> freq 1)]
     id))
-
-(re-frame/reg-fx
- :wallet/validate-tokens
- (fn [[tokens all-default-tokens]]
-   (let [symb-dups (dups (map :symbol all-default-tokens))
-         addr-dups (dups (map :address all-default-tokens))]
-     (when (seq symb-dups)
-       (utils.utils/show-popup (i18n/label :t/warning) (str "Duplicated tokens symbols" symb-dups)))
-     (when (seq addr-dups)
-       (utils.utils/show-popup (i18n/label :t/warning) (str "Duplicated tokens addresses" addr-dups)))
-     (doseq [token (vals tokens)]
-       (validate-token-decimals! token)
-       (validate-token-symbol! token)
-       (validate-token-name! token)))))
 
 (defn- clean-up-results
   "remove empty balances
@@ -277,10 +206,7 @@
   (let [default-tokens (utils.core/index-by :address tokens)
         ;;we want to override custom-tokens by default
         all-tokens     (merge (rpc->token custom-tokens) default-tokens)]
-    (merge
-     {:db (assoc db :wallet/all-tokens all-tokens)}
-     (when config/erc20-contract-warnings-enabled?
-       {:wallet/validate-tokens [default-tokens tokens]}))))
+    {:db (assoc db :wallet/all-tokens all-tokens)}))
 
 (fx/defn initialize-favourites
   [{:keys [db]} favourites]

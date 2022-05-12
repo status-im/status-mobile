@@ -94,37 +94,25 @@
                 (common/set-on-card-connected :keycard/sign-typed-data)
                 {:db (assoc-in db [:signing/sign :keycard-step] :signing)}))))
 
-(fx/defn fetch-currency-symbol-on-success
-  {:events [:keycard/fetch-currency-symbol-on-success]}
-  [{:keys [db] :as cofx} currency]
-  {:db (assoc-in db [:signing/sign :formatted-data :message :formatted-currency] currency)})
-
-(fx/defn fetch-currency-decimals-on-success
-  {:events [:keycard/fetch-currency-decimals-on-success]}
-  [{:keys [db] :as cofx} decimals]
-  {:db (update-in db [:signing/sign :formatted-data :message]
-                  #(assoc % :formatted-amount (.dividedBy ^js (money/bignumber (:amount %))
-                                                          (money/bignumber (money/from-decimal decimals)))))})
+(fx/defn fetch-currency-token-on-success
+  {:events [:keycard/fetch-currency-token-on-success]}
+  [{:keys [db]} {:keys [decimals symbol]}]
+  {:db (-> db
+           (assoc-in [:signing/sign :formatted-data :message :formatted-currency] symbol)
+           (update-in [:signing/sign :formatted-data :message]
+                      #(assoc % :formatted-amount (.dividedBy ^js (money/bignumber (:amount %))
+                                                              (money/bignumber (money/from-decimal decimals))))))})
 
 (fx/defn store-hash-and-sign-typed
   {:events [:keycard/store-hash-and-sign-typed]}
   [{:keys [db] :as cofx} result]
-  (let [{:keys [result error]} (types/json->clj result)
+  (let [{:keys [result]} (types/json->clj result)
         message (get-in db [:signing/sign :formatted-data :message])
         currency-contract (:currency message)]
     (when currency-contract
-      (json-rpc/eth-call {:contract currency-contract
-                          :method "decimals()"
-                          :outputs ["uint8"]
-                          :on-success  (fn [[decimals]]
-                                         (re-frame/dispatch [:keycard/fetch-currency-decimals-on-success decimals]))})
-
-      (json-rpc/eth-call {:contract currency-contract
-                          :method "symbol()"
-                          :outputs ["string"]
-                          :on-success (fn [[currency]]
-                                        (re-frame/dispatch [:keycard/fetch-currency-symbol-on-success currency]))}))
-
+      {::json-rpc/call [{:method "wallet_discoverToken"
+                         :params [(ethereum/chain-id db) currency-contract]
+                         :on-success #(re-frame/dispatch [:keycard/fetch-currency-token-on-success %])}]})
     (fx/merge cofx
               {:db (assoc-in db [:keycard :hash] result)}
               sign-typed-data)))

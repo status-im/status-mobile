@@ -30,7 +30,6 @@
 (def cached-webviews-enabled? (enabled? (get-config :CACHED_WEBVIEWS_ENABLED 0)))
 (def snoopy-enabled? (enabled? (get-config :SNOOPY 0)))
 (def dev-build? (enabled? (get-config :DEV_BUILD 0)))
-(def erc20-contract-warnings-enabled? (enabled? (get-config :ERC20_CONTRACT_WARNINGS)))
 (def tr-to-talk-enabled? (enabled? (get-config :TRIBUTE_TO_TALK 0)))
 (def max-message-delivery-attempts (js/parseInt (get-config :MAX_MESSAGE_DELIVERY_ATTEMPTS "6")))
 (def max-images-batch (js/parseInt (get-config :MAX_IMAGES_BATCH "1")))
