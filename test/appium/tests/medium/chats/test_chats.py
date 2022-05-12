@@ -1,4 +1,5 @@
 import random
+import time
 from time import sleep
 import emoji
 import pytest
@@ -174,8 +175,75 @@ class TestChatMultipleDevice(MultipleSharedDeviceTestCase):
 
         cls.message_1, cls.message_2, cls.message_3, cls.message_4 = "Message1", "Message2", "Message3", "Message4"
 
+    @marks.testrail_id(702268)
+    def test_chat_gap_in_public_and_no_gap_in_1_1_and_group(self):
+        self.home_2.get_back_to_home_view()
+        message_1 = "testing gap"
+        message_2 = "testing no gap"
+        profile_1 = self.home_1.profile_button.click()
+        profile_1.sync_settings_button.click()
+        profile_1.sync_history_for_button.click()
+        profile_1.element_by_translation_id("two-minutes").click()
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
+
+        self.home_1.just_fyi("Creating 1-1 chat and sending message from device 1")
+        self.chat_1.send_message("HI")
+        self.home_1.get_back_to_home_view()
+
+        self.home_1.just_fyi("Creating group chat and sending message from device 1")
+        group_chat_1 = self.home_1.get_chat(self.initial_group_chat_name).click()
+        group_chat_1.send_message("HI")
+        self.home_1.get_back_to_home_view()
+
+        self.home_1.just_fyi("Creating public chat and sending message from device 1")
+        pub_chat_1 = self.home_1.get_chat('#' + self.public_chat_name).click()
+        pub_chat_1.send_message("HI")
+        self.device_1.toggle_airplane_mode()
+
+        self.home_2.just_fyi("Joining public chat by device 2 and sending message")
+        pub_chat_2 = self.home_2.get_chat('#' + self.public_chat_name).click()
+        pub_chat_2.send_message(message_1)
+        self.home_2.get_back_to_home_view()
+
+        self.home_2.just_fyi("Joining 1-1 chat by device 2 and sending message")
+        one_to_one_chat_2 = self.home_2.get_chat(self.default_username_1).click()
+        one_to_one_chat_2.send_message(message_2)
+        self.home_2.get_back_to_home_view()
+
+        self.home_2.just_fyi("Joining Group chat by device 2 and sending message")
+        group_chat_2 = self.home_2.get_chat(self.initial_group_chat_name).click()
+        group_chat_2.send_message(message_2)
+        group_chat_2.get_back_to_home_view()
+
+        # Waiting for 3 minutes and then going back online
+        time.sleep(180)
+        self.device_1.toggle_airplane_mode()
+
+        self.home_1.just_fyi("Checking gap in public chat and fetching messages")
+        if pub_chat_1.chat_element_by_text(message_1).is_element_displayed(10):
+            self.errors.append("Test message has been fetched automatically")
+        pub_chat_1.element_by_translation_id("fetch-messages").wait_and_click(60)
+        if not pub_chat_1.chat_element_by_text(message_1).is_element_displayed(10):
+            self.errors.append("Test message has not been fetched")
+        self.home_1.get_back_to_home_view()
+
+        self.home_1.just_fyi("Checking that there is no gap in 1-1/group chat and messages fetched automatically")
+        for chat in [self.home_1.get_chat(self.default_username_2), self.home_1.get_chat(self.initial_group_chat_name)]:
+            chat_view = chat.click()
+            if chat_view.element_by_translation_id("fetch-messages").is_element_displayed(10):
+                self.errors.append("Fetch messages button is displayed in {}} chat".format(chat.user_name_text.text))
+            if not chat_view.chat_element_by_text(message_2).is_element_displayed(10):
+                self.errors.append(
+                    "Message in {} chat has not been fetched automatically".format(chat.user_name_text.text))
+            chat_view.back_button.click()
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702066)
     def test_chat_1_1_push_and_reaction_for_messages_sticker_audio_image(self):
+
+        self.home_1.get_chat(self.default_username_2).click()
+        self.home_2.get_chat(self.default_username_1).click()
+
 
         # methods with steps to use later in loop
         def navigate_to_start_state_of_both_devices():
