@@ -24,6 +24,7 @@
             [status-im.ui.screens.chat.message.link-preview :as link-preview]
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.ui.components.animation :as animation]
+            [status-im.chat.models.images :as images]
             [status-im.chat.models.pin-message :as models.pin-message])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -586,7 +587,11 @@
                                  :label    (i18n/label :t/message-reply)}
                                 {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
                                  :id       :save
-                                 :label    (i18n/label :t/save)}]
+                                 :label    (i18n/label :t/save)}
+                                {:on-press #(images/download-image-http
+                                             (get-in message [:content :image]) preview/share)
+                                 :id       :share
+                                 :label    (i18n/label :t/share)}]
                                (when (and outgoing config/delete-message-enabled?)
                                  [{:on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
                                    :label    (i18n/label :t/delete)

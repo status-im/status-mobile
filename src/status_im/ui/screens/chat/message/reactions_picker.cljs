@@ -25,6 +25,8 @@
    "unpin"  :main-icons/pin
    "copy"   :main-icons/copy
    "reply"  :main-icons/reply
+   "save"  :main-icons/download
+   "share"  :main-icons/share-default
    "delete" :main-icons/delete})
 
 (defn picker [{:keys [outgoing actions own-reactions on-close send-emoji timeline]}]
