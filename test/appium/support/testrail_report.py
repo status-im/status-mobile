@@ -128,6 +128,7 @@ class TestrailReport(BaseTestReport):
         test_cases['nightly']['chat_2'] = 50838
         test_cases['nightly']['group_chat'] = 50839
         test_cases['nightly']['pairing'] = 50840
+        test_cases['nightly']['activity_center'] = 50833
         ## Upgrade e2e
         test_cases['upgrade']['general'] = 881
 
