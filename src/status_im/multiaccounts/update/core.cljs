@@ -2,6 +2,7 @@
   (:require [status-im.constants :as constants]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
+            [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
 (fx/defn send-multiaccount-update [{:keys [db] :as cofx}]
@@ -41,17 +42,35 @@
                        :mnemonic nil
                        {}))
 
+(defn augment-synchronized-recent-stickers
+  "Add 'url' parameter to stickers that are synchronized from other devices.
+   It is not sent from aanother devices but we have it in our db."
+  [synced-stickers stickers-from-db]
+  (mapv #(assoc % :url (->> (get stickers-from-db (:packID %))
+                            (:stickers)
+                            (filter (fn [sticker-db] (= (:hash sticker-db) (:hash %))))
+                            (first)
+                            (:url)))
+        synced-stickers))
+
 (fx/defn optimistic
   [{:keys [db] :as cofx} setting setting-value]
   (let [current-multiaccount (:multiaccount db)
         setting-value (if (= :currency setting)
                         (keyword setting-value)
                         setting-value)
-        db (if (= :stickers/packs-installed setting)
-             ;;updating :stickers/packs for installed stickers
-             (let [packs-installed-keys (keys (js->clj setting-value))]
-               (reduce #(assoc-in %1 [:stickers/packs %2 :status] constants/sticker-pack-status-installed) db packs-installed-keys))
-             db)]
+        db  (case setting
+              :stickers/packs-pending
+              (let [packs-pending (keys (js->clj setting-value))]
+                (update db :stickers/packs-pending conj packs-pending))
+              :stickers/packs-installed
+              (let [packs-installed-keys (keys (js->clj setting-value))]
+                (reduce #(assoc-in %1 [:stickers/packs %2 :status] constants/sticker-pack-status-installed) db packs-installed-keys))
+              :stickers/recent-stickers
+              (let [recent-stickers-from-remote (augment-synchronized-recent-stickers (types/js->clj setting-value) (:stickers/packs db))
+                    merged (into recent-stickers-from-remote (:stickers/recent-stickers db))]
+                (assoc db :stickers/recent-stickers recent-stickers-from-remote))
+              db)]
     {:db (if setting-value
            (assoc-in db [:multiaccount setting] setting-value)
            (update db :multiaccount dissoc setting))}))
