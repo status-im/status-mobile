@@ -13,7 +13,6 @@
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
-            [status-im.acquisition.core :as acquisition]
             [status-im.wallet.choose-recipient.core :as choose-recipient]
             [status-im.group-chats.core :as group-chats]))
 
@@ -99,10 +98,6 @@
             (choose-recipient/parse-eip681-uri-and-resolve-ens data true)
             (navigation/navigate-to-cofx :wallet nil)))
 
-(fx/defn handle-referrer-url [_ {:keys [referrer]}]
-  ;; TODO: Use only for testing
-  {::acquisition/check-referrer referrer})
-
 (defn existing-account? [{:keys [db]} address]
   (when address
     (some #(when (= (string/lower-case (:address %))
@@ -138,7 +133,6 @@
     :contact            (handle-view-profile cofx data)
     :browser            (handle-browse cofx data)
     :eip681             (handle-eip681 cofx data)
-    :referrals          (handle-referrer-url cofx data)
     :wallet-account     (handle-wallet-account cofx data)
     (handle-not-found url)))
 

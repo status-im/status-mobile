@@ -69,13 +69,6 @@
      :on-press
      #(re-frame/dispatch [:navigate-to :rpc-usage-info])
      :chevron              true}
-    (when-not config/google-free
-      {:size                :small
-       :title               (i18n/label :t/notification-settings)
-       :accessibility-label :advanced-notification-settings
-       :on-press
-       #(re-frame/dispatch [:navigate-to :notifications-advanced-settings])
-       :chevron             true})
     ;; If it's enabled in the config, we don't show the option
     (when (not config/communities-enabled?)
       {:size                   :small

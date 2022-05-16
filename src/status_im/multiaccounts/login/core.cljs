@@ -1,6 +1,5 @@
 (ns status-im.multiaccounts.login.core
   (:require [re-frame.core :as re-frame]
-            [status-im.anon-metrics.core :as anon-metrics]
             [status-im.contact.core :as contact]
             [status-im.utils.config :as config]
             [status-im.data-store.settings :as data-store.settings]
@@ -27,7 +26,6 @@
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
             [status-im.wallet.prices :as prices]
-            [status-im.acquisition.core :as acquisition]
             [taoensso.timbre :as log]
             [status-im.data-store.invitations :as data-store.invitations]
             [status-im.chat.models.link-preview :as link-preview]
@@ -392,7 +390,6 @@
                {:on-success
                 #(do (re-frame/dispatch [:chats-list/load-success %])
                      (re-frame/dispatch [::get-chats-callback]))})
-              (acquisition/login)
               (initialize-appearance)
               (initialize-communities-enabled)
               (initialize-wallet-connect)
@@ -474,22 +471,9 @@
 (defn redirect-to-root
   "Decides which root should be initialised depending on user and app state"
   [db]
-  (let [tos-accepted?                    (get db :tos/accepted?)
-        metrics-opt-in-screen-displayed? (get db :anon-metrics/opt-in-screen-displayed?)]
-    ;; There is a race condition to show metrics opt-in and
-    ;; tos opt-in. Tos is more important and is displayed first.
-    ;; Metrics opt-in is diplayed the next time the user logs in
-    (cond
-      (not tos-accepted?)
-      (re-frame/dispatch [:init-root :tos])
-
-      ;; TODO <shivekkhurana>: This needs work post new navigation
-      (and tos-accepted?
-           (not metrics-opt-in-screen-displayed?)
-           config/metrics-enabled?)
-      (navigation/navigate-to :anon-metrics-opt-in {})
-
-      :else  (re-frame/dispatch [:init-root :chat-stack]))))
+  (if (get db :tos/accepted?)
+    (re-frame/dispatch [:init-root :chat-stack])
+    (re-frame/dispatch [:init-root :tos])))
 
 (fx/defn login-only-events
   [{:keys [db] :as cofx} key-uid password save-password?]
@@ -571,8 +555,7 @@
                                       recovered-account?
                                       (keycard-setup? cofx)))
         from-migration?      (get-in db [:keycard :from-key-storage-and-migration?])
-        nodes                nil
-        should-send-metrics? (get-in db [:multiaccount :anon-metrics/should-send?])]
+        nodes                nil]
     (log/debug "[multiaccount] multiaccount-login-success"
                "login-only?" login-only?
                "recovered-account?" recovered-account?)
@@ -581,9 +564,6 @@
                ::json-rpc/call
                [{:method     "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}
-              ;; Start tasks to save usage data locally
-              (when should-send-metrics?
-                (anon-metrics/start-transferring))
               ;;FIXME
               (when nodes
                 (fleet/set-nodes :eth.contract nodes))
@@ -722,14 +702,8 @@
 
 (fx/defn welcome-lets-go
   {:events [:welcome-lets-go]}
-  [cofx]
-  (let [first-account? (get-in cofx [:db :multiaccount :multiaccounts/first-account])]
-    (fx/merge cofx
-              {:init-root-fx :chat-stack}
-              (when first-account?
-                (acquisition/create))
-              (when config/metrics-enabled?
-                {:dispatch [:navigate-to :anon-metrics-opt-in]}))))
+  [_]
+  {:init-root-fx :chat-stack})
 
 (fx/defn multiaccount-selected
   {:events [:multiaccounts.login.ui/multiaccount-selected]}

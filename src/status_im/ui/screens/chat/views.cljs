@@ -23,7 +23,6 @@
             [status-im.ui.screens.chat.extensions.views :as extensions]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as gap]
-            [status-im.ui.components.invite.chat :as invite.chat]
             [status-im.ui.screens.chat.components.accessory :as accessory]
             [status-im.ui.screens.chat.components.input :as components]
             [status-im.ui.screens.chat.message.datemark :as message-datemark]
@@ -226,7 +225,7 @@
     (when panel
       (js/setTimeout #(react/dismiss-keyboard!) 100))))
 
-(defn list-footer [{:keys [chat-id chat-type] :as chat}]
+(defn list-footer [{:keys [chat-id] :as chat}]
   (let [loading-messages? @(re-frame/subscribe [:chats/loading-messages? chat-id])
         no-messages? @(re-frame/subscribe [:chats/chat-no-messages? chat-id])
         all-loaded? @(re-frame/subscribe [:chats/all-loaded? chat-id])]
@@ -234,9 +233,7 @@
      (if (or loading-messages? (not chat-id) (not all-loaded?))
        [react/view {:height 324 :align-items :center :justify-content :center}
         [react/activity-indicator {:animating true}]]
-       [chat-intro-header-container chat no-messages?])
-     (when (= chat-type constants/one-to-one-chat-type)
-       [invite.chat/reward-messages])]))
+       [chat-intro-header-container chat no-messages?])]))
 
 (defn list-header [{:keys [chat-id chat-type invitation-admin]}]
   (when (= chat-type constants/private-group-chat-type)

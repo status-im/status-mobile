@@ -152,8 +152,6 @@
 (def ^:const one-week (* one-day 7))
 (def ^:const one-month (* one-day 31))
 
-(def ^:const metrics-github-link
-  "https://github.com/status-im/status-go/blob/develop/_docs/app-metrics.md")
 (def ^:const privacy-policy-link "https://status.im/privacy-policy/")
 (def ^:const terms-of-service-link "https://status.im/terms-of-use")
 (def ^:const docs-link "https://status.im/docs/")

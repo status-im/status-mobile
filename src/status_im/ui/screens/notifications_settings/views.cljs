@@ -5,7 +5,6 @@
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [quo.platform :as platform]
-            [status-im.utils.config :as config]
             [quo.design-system.colors :as quo-colors]
             [status-im.notifications.core :as notifications]
             [status-im.ui.components.react :as react]))
@@ -13,48 +12,25 @@
 (defonce server (reagent/atom ""))
 
 (defn local-notifications []
-  (let [{:keys [enabled]} @(re-frame/subscribe [:notifications/wallet-transactions])
-        {:keys [notifications-enabled?]} @(re-frame/subscribe [:multiaccount])
-        enabled (and enabled (or platform/ios? notifications-enabled?))]
-    [quo/list-item
-     {:size                :small
-      :title               (i18n/label :t/notifications-transactions)
-      :accessibility-label :notifications-button
-      :active              enabled
-      :disabled            (not (or platform/ios? notifications-enabled?))
-      :on-press            #(re-frame/dispatch
-                             [::notifications/switch-transaction-notifications enabled])
-      :accessory           :switch}]))
+  (let [{:keys [enabled]} @(re-frame/subscribe [:notifications/wallet-transactions])]
+    [:<>
+     [quo/separator {:color (:ui-02 @quo-colors/theme)
+                     :style {:margin-vertical 8}}]
+     [quo/list-header (i18n/label :t/local-notifications)]
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/notifications-transactions)
+       :accessibility-label :notifications-button
+       :active              enabled
+       :on-press            #(re-frame/dispatch
+                              [::notifications/switch-transaction-notifications enabled])
+       :accessory           :switch}]]))
 
-(defn remote-notifications []
+(defn notifications-settings-ios []
   (let [{:keys [remote-push-notifications-enabled?
                 push-notifications-block-mentions?
                 push-notifications-from-contacts-only?]}
         @(re-frame/subscribe [:multiaccount])]
-    [:<>
-     [quo/list-item
-      {:size                :small
-       :title               (i18n/label :t/notifications-non-contacts)
-       :accessibility-label :notifications-button
-       :active              (and remote-push-notifications-enabled?
-                                 (not push-notifications-from-contacts-only?))
-       :disabled            (not remote-push-notifications-enabled?)
-       :on-press            #(re-frame/dispatch
-                              [::notifications/switch-non-contacts (not push-notifications-from-contacts-only?)])
-       :accessory           :switch}]
-     [quo/list-item
-      {:size                :small
-       :title               (i18n/label :t/allow-mention-notifications)
-       :accessibility-label :notifications-button
-       :active              (and remote-push-notifications-enabled?
-                                 (not push-notifications-block-mentions?))
-       :disabled            (not remote-push-notifications-enabled?)
-       :on-press            #(re-frame/dispatch
-                              [::notifications/switch-block-mentions (not push-notifications-block-mentions?)])
-       :accessory           :switch}]]))
-
-(defn notifications-settings-ios []
-  (let [{:keys [remote-push-notifications-enabled?]} @(re-frame/subscribe [:multiaccount])]
     [:<>
      [quo/list-item
       {:size                :small
@@ -66,12 +42,28 @@
      [quo/separator {:color (:ui-02 @quo-colors/theme)
                      :style {:margin-vertical 8}}]
      [quo/list-header (i18n/label :t/notifications-preferences)]
-     [local-notifications]
-     [remote-notifications]]))
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/notifications-non-contacts)
+       :accessibility-label :notifications-button
+       :active              (and remote-push-notifications-enabled?
+                                 (not push-notifications-from-contacts-only?))
+       :on-press            #(re-frame/dispatch
+                              [::notifications/switch-non-contacts (not push-notifications-from-contacts-only?)])
+       :accessory           :switch}]
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/allow-mention-notifications)
+       :accessibility-label :notifications-button
+       :active              (and remote-push-notifications-enabled?
+                                 (not push-notifications-block-mentions?))
+       :on-press            #(re-frame/dispatch
+                              [::notifications/switch-block-mentions (not push-notifications-block-mentions?)])
+       :accessory           :switch}]
+     [local-notifications]]))
 
 (defn notifications-settings-android []
-  (let [{:keys [notifications-enabled? remote-push-notifications-enabled?]}
-        @(re-frame/subscribe [:multiaccount])]
+  (let [{:keys [notifications-enabled?]} @(re-frame/subscribe [:multiaccount])]
     [:<>
      [quo/list-item
       {:title               (i18n/label :t/local-notifications)
@@ -81,22 +73,7 @@
        :on-press            #(re-frame/dispatch
                               [::notifications/switch (not notifications-enabled?) false])
        :accessory           :switch}]
-     (when (and platform/android? (not config/google-free))
-       [quo/list-item
-        {:title               (i18n/label :t/remote-notifications)
-         :accessibility-label :remote-notifications-settings-button
-         :subtitle            (i18n/label :t/remote-notifications-subtitle)
-         :active              remote-push-notifications-enabled?
-         :on-press            #(re-frame/dispatch
-                                [::notifications/switch
-                                 (not remote-push-notifications-enabled?) true])
-         :accessory           :switch}])
-     [quo/separator {:color (:ui-02 @quo-colors/theme)
-                     :style {:margin-vertical 8}}]
-     [quo/list-header (i18n/label :t/notifications-preferences)]
-     [local-notifications]
-     (when (and platform/android? (not config/google-free))
-       [remote-notifications])]))
+     [local-notifications]]))
 
 (defn notifications-settings []
   [react/scroll-view {:style                   {:flex 1}

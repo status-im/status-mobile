@@ -236,8 +236,6 @@
 (reg-root-key-sub :push-notifications/servers :push-notifications/servers)
 (reg-root-key-sub :push-notifications/preferences :push-notifications/preferences)
 
-(reg-root-key-sub :acquisition :acquisition)
-
 (reg-root-key-sub :buy-crypto/on-ramps :buy-crypto/on-ramps)
 
 ;; communities
@@ -252,15 +250,6 @@
 
 (reg-root-key-sub :activity.center/notifications :activity.center/notifications)
 (reg-root-key-sub :activity.center/notifications-count :activity.center/notifications-count)
-
-;; anon. metrics
-(reg-root-key-sub :anon-metrics/opt-in-screen-displayed? :anon-metrics/opt-in-screen-displayed?)
-(reg-root-key-sub :anon-metrics/show-thank-you? :anon-metrics/show-thank-you?)
-(reg-root-key-sub :anon-metrics/events :anon-metrics/events)
-(reg-root-key-sub :anon-metrics/total-count :anon-metrics/total-count)
-(reg-root-key-sub :anon-metrics/fetching? :anon-metrics/fetching?)
-(reg-root-key-sub :anon-metrics/data-visible? :anon-metrics/data-visible?)
-(reg-root-key-sub :anon-metrics/learn-more-visible? :anon-metrics/learn-more-visible?)
 
 (reg-root-key-sub :bug-report/description-error :bug-report/description-error)
 (reg-root-key-sub :bug-report/details :bug-report/details)

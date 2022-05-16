@@ -10,7 +10,6 @@ react-native-community_masked-view
 react-native-community_netinfo
 react-native-community_slider
 react-native-config
-react-native-device-info
 react-native-dialogs
 react-native-fast-image
 react-native-fs
@@ -24,7 +23,6 @@ react-native-linear-gradient
 react-native-mail
 react-native-navigation
 react-native-nfc-manager
-react-native-notifications
 react-native-permissions
 react-native-randombytes
 react-native-reanimated

@@ -16,14 +16,14 @@
             [reagent.core :as reagent]
             [quo.react-native :as rn]
             [clojure.string :as string]
-            [status-im.ui.components.invite.views :as invite]
             [status-im.ethereum.ens :as ens]
             [quo.platform :as platform]
             [status-im.utils.identicon :as identicon]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.utils.db :as utils.db])
+            [status-im.utils.db :as utils.db]
+            [status-im.ui.components.invite.views :as invite])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-row [row]

@@ -10,7 +10,6 @@
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.screens.communities.views :as communities.views]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
-            [status-im.ui.screens.referrals.home-item :as referral-item]
             [quo.design-system.colors :as colors]
             [quo.core :as quo]
             [status-im.add-new.core :as new-chat]
@@ -18,12 +17,12 @@
             [status-im.add-new.db :as db]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
-            [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.components.tabbar.core :as tabbar]
-            ["react-native-navigation" :refer (Navigation)])
+            ["react-native-navigation" :refer (Navigation)]
+            [status-im.ui.components.invite.views :as invite])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn home-tooltip-view []
@@ -135,7 +134,6 @@
         :header                       [:<>
                                        (when (or (seq items) @search-active? (seq search-filter))
                                          [search-input-wrapper search-filter (empty? items)])
-                                       [referral-item/list-item]
                                        (when (and (empty? items)
                                                   (or @search-active? (seq search-filter)))
                                          [start-suggestion search-filter])]

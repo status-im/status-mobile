@@ -211,9 +211,6 @@
 (def react-native-draggable-flatlist
   #js {:default #js {}})
 
-(def react-native-notifications
-  #js {:Notifications #js {}})
-
 (def react-native-blur
   (clj->js {:BlurView {}}))
 
@@ -257,7 +254,6 @@
     "@react-native-community/blur" react-native-blur
     "react-native-camera-kit" react-native-camera-kit
     "rn-emoji-keyboard" rn-emoji-keyboard
-    "react-native-notifications" react-native-notifications
     "react-native-draggable-flatlist" react-native-draggable-flatlist
     "./fleets.js" default-fleets
     "./chats.js" default-chats

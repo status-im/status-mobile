@@ -8,8 +8,7 @@
             [status-im.notifications.local :as local]
             [quo.platform :as platform]
             [status-im.utils.config :as config]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.notifications.android-remote :as pn-android-remote]))
+            [status-im.ethereum.json-rpc :as json-rpc]))
 
 (def server-type-default 1)
 (def server-type-custom 2)
@@ -46,22 +45,14 @@
   (.abandonPermissions ^js pn-ios)
   (re-frame/dispatch [:notifications/unregistered-from-push-notifications]))
 
-(defn enable-android-notifications [remote-push-notifications-enabled?]
-  (if (and remote-push-notifications-enabled? (not config/google-free))
-    (do
-      (pn-android/disable-notifications)
-      (pn-android/clear-all-message-notifications)
-      (pn-android-remote/register-remote-notifications))
-    (do
-      (pn-android-remote/unregister-remote-notifications)
-      (pn-android/create-channel
-       {:channel-id   "status-im-notifications"
-        :channel-name "Status push notifications"})
-      (pn-android/enable-notifications))))
+(defn enable-android-notifications []
+  (pn-android/create-channel
+   {:channel-id   "status-im-notifications"
+    :channel-name "Status push notifications"})
+  (pn-android/enable-notifications))
 
 (defn disable-android-notifications []
-  (pn-android/disable-notifications)
-  (pn-android-remote/unregister-remote-notifications))
+  (pn-android/disable-notifications))
 
 ;; FIXME: Repalce with request permission from audio messages PR lib
 (re-frame/reg-fx
@@ -82,10 +73,9 @@
 
 (re-frame/reg-fx
  ::enable
- (fn [remote-push-notifications-enabled?]
+ (fn []
    (if platform/android?
-     (enable-android-notifications
-      remote-push-notifications-enabled?)
+     (enable-android-notifications)
      (enable-ios-notifications))))
 
 (re-frame/reg-fx
@@ -102,16 +92,13 @@
      (pn-android/disable-notifications)
      (.abandonPermissions ^js pn-ios))))
 
-(defn clear-all-message-notifications []
-  (if platform/android?
-    (pn-android/clear-all-message-notifications)
-    (.removeAllDeliveredNotifications ^js pn-ios)))
-
 (re-frame/reg-fx
  :clear-message-notifications
- (fn [[chat-ids remote-push-notifications-enabled?]]
+ (fn [[chat-ids] remote-push-notifications-enabled?]
    (if remote-push-notifications-enabled?
-     (clear-all-message-notifications)
+     (if platform/android?
+       (pn-android/clear-all-message-notifications)
+       (.removeAllDeliveredNotifications ^js pn-ios))
      (when platform/android?
        (doseq [chat-id chat-ids]
          (pn-android/clear-message-notifications chat-id))))))

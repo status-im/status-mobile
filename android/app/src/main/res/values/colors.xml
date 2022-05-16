@@ -2,5 +2,4 @@
 <resources>
   <color name="alert_background">#ffffff</color>
   <color name="alert_text">#000000</color>
-  <color name="notification_icon_color">#4360DF</color>
 </resources>

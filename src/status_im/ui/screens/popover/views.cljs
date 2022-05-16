@@ -10,9 +10,7 @@
             [status-im.ui.screens.wallet.request.views :as request]
             [status-im.ui.screens.profile.user.views :as profile.user]
             ["react-native" :refer (BackHandler)]
-            [status-im.ui.components.invite.advertiser :as advertiser.invite]
             [status-im.ui.screens.reset-password.views :as reset-password.views]
-            [status-im.ui.components.invite.dapp :as dapp.invite]
             [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
             [status-im.ui.screens.multiaccounts.key-storage.views :as multiaccounts.key-storage]
             [status-im.ui.screens.signing.views :as signing]
@@ -154,14 +152,8 @@
                    (= :blocked-card view)
                    [keycard.views/blocked-card-popover]
 
-                   (= :advertiser-invite view)
-                   [advertiser.invite/accept-popover]
-
                    (= :export-community view)
                    [communities/export-community]
-
-                   (= :dapp-invite view)
-                   [dapp.invite/accept-popover]
 
                    (= :seed-key-uid-mismatch view)
                    [multiaccounts.key-storage/seed-key-uid-mismatch-popover]

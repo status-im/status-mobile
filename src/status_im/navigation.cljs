@@ -1,6 +1,5 @@
 (ns status-im.navigation
-  (:require [status-im.anon-metrics.core :as anon-metrics]
-            [status-im.utils.fx :as fx]))
+  (:require [status-im.utils.fx :as fx]))
 
 (defn- all-screens-params [db view screen-params]
   (cond-> db
@@ -15,9 +14,7 @@
   {:db
    (-> (assoc db :view-id go-to-view-id)
        (all-screens-params go-to-view-id screen-params))
-   :navigate-to-fx              go-to-view-id
-   ;; simulate a navigate-to event so it can be captured be anon-metrics
-   ::anon-metrics/transform-and-log {:coeffects {:event [:navigate-to go-to-view-id screen-params]}}})
+   :navigate-to-fx go-to-view-id})
 
 (fx/defn navigate-to
   {:events [:navigate-to]}
@@ -45,8 +42,7 @@
   {:change-tab-fx tab})
 
 (fx/defn navigate-replace
-  {:events       [:navigate-replace]
-   :interceptors [anon-metrics/interceptor]}
+  {:events       [:navigate-replace]}
   [{:keys [db]} go-to-view-id screen-params]
   (let [db (cond-> (assoc db :view-id go-to-view-id)
              (seq screen-params)

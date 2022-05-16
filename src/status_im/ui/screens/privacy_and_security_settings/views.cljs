@@ -100,12 +100,6 @@
                                                (re-frame/dispatch [::reset-password/clear-form-vals])
                                                (re-frame/dispatch [:navigate-to :reset-password]))
                        :accessibility-label :reset-password}])
-     (when config/metrics-enabled?
-       [quo/list-item {:size                :small
-                       :title               (i18n/label :t/anonymous-usage-data)
-                       :chevron             true
-                       :on-press            #(re-frame/dispatch [:navigate-to :anonymous-metrics-settings])
-                       :accessibility-label :anonymous-usage-data}])
      (when platform/android?
        [quo/list-item {:size               :small
                        :title              (i18n/label :t/webview-camera-permission-requests)

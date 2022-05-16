@@ -52,8 +52,7 @@
                                   "g/"                    group-chat-extractor
                                   ["wallet/" :account]    :wallet-account
                                   ["u/" :user-id]         :user
-                                  ["user/" :user-id]      :user
-                                  ["referral/" :referrer] :referrals}
+                                  ["user/" :user-id]      :user}
                  ethereum-scheme eip-extractor}])
 
 (defn parse-query-params
@@ -175,10 +174,6 @@
 (defn address->eip681 [address]
   (match-eip681 (str ethereum-scheme address)))
 
-(defn match-referral [{:keys [referrer]}]
-  {:type     :referrals
-   :referrer referrer})
-
 (defn match-wallet-account [{:keys [account]}]
   {:type    :wallet-account
    :account (when account (string/lower-case account))})
@@ -216,9 +211,6 @@
 
       (= handler :community-chat)
       (cb {:type handler :chat-id (:chat-id route-params)})
-
-      (= handler :referrals)
-      (cb (match-referral route-params))
 
       (= handler :wallet-account)
       (cb (match-wallet-account route-params))

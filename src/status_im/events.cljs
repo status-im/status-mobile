@@ -2,7 +2,6 @@
   (:require clojure.set
             [re-frame.core :as re-frame]
             status-im.add-new.core
-            [status-im.anon-metrics.core :as anon-metrics]
             [status-im.async-storage.core :as async-storage]
             status-im.backup.core
             status-im.bootnodes.core
@@ -238,8 +237,7 @@
     (chat/preload-chat-data cofx constants/timeline-chat-id)))
 
 (fx/defn on-will-focus
-  {:events [:screens/on-will-focus]
-   :interceptors [anon-metrics/interceptor]}
+  {:events [:screens/on-will-focus]}
   [{:keys [db] :as cofx} view-id]
   (fx/merge cofx
             (cond

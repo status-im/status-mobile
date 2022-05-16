@@ -56,11 +56,6 @@ if [[ -n "${OPENSEA_API_KEY}" ]]; then
   append_env_export 'OPENSEA_API_KEY'
 fi
 
-# Used by Clojure at compile time for remove import of react-native-notifications for fdroid release
-if [[ -n "${READER_FEATURES}" ]]; then
-    append_env_export 'READER_FEATURES'
-fi
-
 # If no secrets were passed there's no need to pass the 'secretsFile'.
 if [[ -s "${SECRETS_FILE_PATH}" ]]; then
   nixOpts+=("--argstr" "secretsFile" "${SECRETS_FILE_PATH}")

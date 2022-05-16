@@ -1,6 +1,5 @@
 (ns status-im.multiaccounts.logout.core
   (:require [re-frame.core :as re-frame]
-            [status-im.anon-metrics.core :as anon-metrics]
             [status-im.i18n.i18n :as i18n]
             [status-im.init.core :as init]
             [status-im.native-module.core :as status]
@@ -13,8 +12,7 @@
 (fx/defn logout-method
   {:events [::logout-method]}
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
-  (let [key-uid              (get-in db [:multiaccount :key-uid])
-        should-send-metrics? (get-in db [:multiaccount :anon-metrics/should-send?])]
+  (let [key-uid              (get-in db [:multiaccount :key-uid])]
     (fx/merge cofx
               {:init-root-fx                         :progress
                :hide-popover                         nil
@@ -22,8 +20,6 @@
                ::multiaccounts/webview-debug-changed false
                :keychain/clear-user-password         key-uid
                ::init/open-multiaccounts             #(re-frame/dispatch [::init/initialize-multiaccounts % {:logout? logout?}])}
-              (when should-send-metrics?
-                (anon-metrics/stop-transferring))
               (keychain/save-auth-method key-uid auth-method)
               (wallet/clear-timeouts)
               (init/initialize-app-db))))

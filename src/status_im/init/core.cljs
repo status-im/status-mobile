@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
-            [status-im.anon-metrics.core :as anon-metrics]
             [status-im.native-module.core :as status]
             [status-im.network.net-info :as network]
             [status-im.db :refer [app-db]]
@@ -58,8 +57,7 @@
                              (assoc :multiaccounts/logout? logout?)
                              (assoc :multiaccounts/loading false))
                :dispatch-n [[::initialize-view]
-                            [:get-opted-in-to-new-terms-of-service]
-                            [::anon-metrics/fetch-opt-in-screen-displayed?]]})))
+                            [:get-opted-in-to-new-terms-of-service]]})))
 
 (fx/defn start-app
   {:events [:init/app-started]}
