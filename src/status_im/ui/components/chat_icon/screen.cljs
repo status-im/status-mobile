@@ -3,6 +3,7 @@
             [re-frame.core :as re-frame.core]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.chat-icon.styles-redesign :as styles-redesign]
             [status-im.ui.components.chat-icon.styles :as styles]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
@@ -92,6 +93,19 @@
     :chat-icon              styles/chat-icon-chat-list
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
     :default-chat-icon-text (styles/default-chat-icon-text 40)}])
+
+(defn chat-icon-view-chat-list-redesign
+  [chat-id group-chat name color size]
+  [chat-icon-view chat-id group-chat name
+   {:container              (if (= size 48)
+                              styles/community-icon-container-chat-list
+                              styles/token-icon-container-chat-list)
+    :size                   size
+    :chat-icon              (if (= size 48)
+                              styles-redesign/community-icon-chat-list
+                              styles-redesign/token-icon-chat-list)
+    :default-chat-icon      (styles-redesign/default-chat-icon-chat-list color size)
+    :default-chat-icon-text (styles-redesign/default-chat-icon-text size)}])
 
 (defn chat-icon-view-chat-sheet
   [chat-id group-chat name color]

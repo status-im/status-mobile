@@ -3,6 +3,7 @@
    [clojure.string :as string]
    ["i18n-js" :as i18n]
    [status-im.i18n.i18n-resources :as i18n-resources]
+   [status-im.utils.money :as money]
    [status-im.goog.i18n :as goog.i18n]))
 
 (set! (.-locale i18n) (name i18n-resources/default-device-language))
@@ -64,3 +65,10 @@
   (.-locale i18n))
 
 (def format-currency goog.i18n/format-currency)
+
+(defn format-members [count]
+  (if (> count 1000000)
+    (str (money/with-precision (/ count 1000000) 1) "M")
+    (if (and (> count 999) (< count 1000000))
+      (str (money/with-precision (/ count 1000) 1) "K")
+      count)))

@@ -87,7 +87,6 @@
 (reg-root-key-sub :home-items-show-number :home-items-show-number)
 (reg-root-key-sub :waku/v2-peer-stats :peer-stats)
 (reg-root-key-sub :visibility-status-updates :visibility-status-updates)
-(reg-root-key-sub :navigation2/navigation2-stacks :navigation2/navigation2-stacks)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -1589,6 +1588,19 @@
        res)
      ;;we want to keep data unchanged so react doesn't change component when we leave screen
      @memo-home-items)))
+
+(def memo-community-items (atom nil))
+
+(re-frame/reg-sub
+ :community-items
+ :<- [:communities/communities]
+ :<- [:view-id]
+ (fn [[communities]]
+   (let [res {:items  communities}]
+     (reset! memo-community-items res)
+     res)
+     ;;we want to keep data unchanged so react doesn't change component when we leave screen
+   @memo-community-items))
 
 (re-frame/reg-sub
  :hide-home-tooltip?
