@@ -185,7 +185,7 @@ class TestrailReport(BaseTestReport):
         results = self.post('add_results_for_cases/%s' % self.run_id, data={"results": data})
         try:
             results[0]
-        except IndexError:
+        except (IndexError, KeyError):
             print("Got TestRail error when adding results: \n%s" % results)
 
         for test in all_tests:

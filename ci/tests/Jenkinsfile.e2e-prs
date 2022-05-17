@@ -61,6 +61,8 @@ pipeline {
         def extraPytestOpts = ''
         if (params.TR_CASE_IDS != '') {
           extraPytestOpts = "--run_testrail_ids='${params.TR_CASE_IDS}'"
+        } else {
+          extraPytestOpts = "-m \"${params.TEST_MARKERS}\""
         }
 
         withCredentials([
@@ -100,7 +102,6 @@ pipeline {
                 --numprocesses 9 \
                 --rerun_count=2 \
                 --testrail_report=True \
-                -m \"${params.TEST_MARKERS}\" \
                 -k \"${params.KEYWORD_EXPRESSION}\" \
                 --apk=${params.APK_NAME} \
                 --build=PR-${params.PR_ID}-${utils.timestamp()} \
