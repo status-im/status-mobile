@@ -1,12 +1,14 @@
 (ns status-im.ui.screens.rpc-usage-info
   (:require [status-im.ui.components.react :as react]
             [status-im.i18n.i18n :as i18n]
+            [reagent.core :as reagent]
             [quo.core :as quo.core]
             [quo.react-native :as quo.react-native]
             [re-frame.core :as re-frame]
             [status-im.utils.fx :as fx]
             [status-im.ethereum.json-rpc :as json-rpc]
             [taoensso.timbre :as log]
+            [status-im.utils.utils :as utils]
             [clojure.string :as clojure.string]))
 
 (re-frame/reg-sub :rpc-usage/raw-data (fn [db] (get db :rpc-usage/data)))
@@ -44,6 +46,12 @@
     {:method "rpcstats_reset"
      :params []
      :on-success #(log/debug "rpcstats_reset success")})))
+
+;; RPC refresh interval ID
+(defonce rpc-refresh-interval (atom nil))
+
+;; RPC usage refresh interval (ms)
+(def rpc-usage-refresh-interval-ms 2000)
 
 (fx/defn handle-stats
   {:events [::handle-stats]}
@@ -106,11 +114,7 @@
      [quo.react-native/view
       {:style {:flex-direction  :row
                :margin-top      8
-               :justify-content :space-between}}
-      [quo.core/button
-       {:on-press            #(re-frame/dispatch [::get-stats])
-        :accessibility-label :rpc-usage-get-stats}
-       (i18n/label :t/rpc-usage-get-stats)]
+               :justify-content :space-around}}
       [quo.core/button
        {:on-press            #(re-frame/dispatch [::reset])
         :accessibility-label :rpc-usage-reset}
@@ -129,4 +133,10 @@
        :auto-focus      false}]
      [stats-table stats]]))
 
-
+(defn usage-info-container []
+  (reagent/create-class {:component-did-mount (fn []
+                                                (reset! rpc-refresh-interval (utils/set-interval #(re-frame/dispatch [::get-stats]) rpc-usage-refresh-interval-ms)))
+                         :component-will-unmount (fn []
+                                                   (utils/clear-interval @rpc-refresh-interval)
+                                                   (reset! rpc-refresh-interval nil))
+                         :reagent-render usage-info}))
