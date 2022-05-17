@@ -10842,16 +10842,16 @@
   },
 
   {
-    "path": "org/codehaus/plexus/plexus-utils/3.0.24/plexus-utils-3.0.24",
+    "path": "org/codehaus/plexus/plexus-utils/3.3.0/plexus-utils-3.3.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "288f4a74efd0cea03e1d59272271f07d598b88d6",
-      "sha256": "1rifia2i52qgzsiqibrxkhlcwhnrvmk7mbwdvjy15vgxfmm7y1hi"
+      "sha1": "de5faec837d872a1712aa89242845216118a9405",
+      "sha256": "0p2742ga3ganms5i4pgqm4j1dl9dijx7c6nnxgdkrvpxfch7kjbr"
     },
     "jar": {
-      "sha1": "b4ac9780b37cb1b736eae9fbcef27609b7c911ef",
-      "sha256": "1d397qlp72rf03nz340rpdgh5s5k688mj2h5sh5gnsnh2a5p9vl3"
+      "sha1": "cf43b5391de623b36fe066a21127baef82c64022",
+      "sha256": "1kmr5c3p1rfk4zsfph0arpi7diykn87x20sdz5d7gqj04mwp9lbn"
     }
   },
 
@@ -10926,16 +10926,6 @@
     "pom": {
       "sha1": "7ba5dd42cae4e80cf4d34ecff014dbf34df26b59",
       "sha256": "1zryv25cg6x4qavsq1ag1kffz5v8l2jz21wmnn5592vxrlx8blrg"
-    }
-  },
-
-  {
-    "path": "org/codehaus/plexus/plexus/4.0/plexus-4.0",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "pom",
-    "pom": {
-      "sha1": "cdbb31ee91973d16e8f8b0bda51ed4211e7a9f57",
-      "sha256": "0skz6bhznd7gc2m79w848njgfj0dcvs50bmfbnjdd46cgwnnj6qa"
     }
   },
 
@@ -11132,42 +11122,22 @@
   },
 
   {
-    "path": "org/eclipse/sisu/org.eclipse.sisu.inject/0.3.5/org.eclipse.sisu.inject-0.3.5",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "eclipse-plugin",
-    "pom": {
-      "sha1": "3722f112fe5752bbb677eeae0ff379848902df2c",
-      "sha256": "0wbdd487hcp5qi738646l87xlmb7ymsq8vbi0j3gsbr4nir6k5y2"
-    }
-  },
-
-  {
-    "path": "org/eclipse/sisu/org.eclipse.sisu.plexus/0.3.5/org.eclipse.sisu.plexus-0.3.5",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "eclipse-plugin",
-    "pom": {
-      "sha1": "e462a9a33f45e2f44460eb67611708791a8e9640",
-      "sha256": "1lw35mnqgdz2v9x5s5ijykysqwi1diks2irll55afn42sz4j6rbq"
-    }
-  },
-
-  {
-    "path": "org/eclipse/sisu/sisu-inject/0.3.5/sisu-inject-0.3.5",
+    "path": "org/eclipse/sisu/sisu-inject/0.9.0.M1/sisu-inject-0.9.0.M1",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "37191778332db19b604649f562b3aa4aaa84063b",
-      "sha256": "1pgmymb4a3f0gkv4w58rh98a48wg1pj57f21kqgzyvcgkjmyqcjz"
+      "sha1": "87aef8c45bcb81d0d5a60878ae5dcc32b59b9be6",
+      "sha256": "003byd2sxpf9ckhif91g5bw29y6jn5hixj8w59i69xwfxxcvdg8m"
     }
   },
 
   {
-    "path": "org/eclipse/sisu/sisu-plexus/0.3.5/sisu-plexus-0.3.5",
+    "path": "org/eclipse/sisu/sisu-plexus/0.9.0.M1/sisu-plexus-0.9.0.M1",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "2bfdf50eb1fcf53bf56114cf988f5ad5ddb34e4d",
-      "sha256": "1pmrj6kp9j65kk9f3q4z2d0ws8riqp5w76niv30ax6fqxw10kfkf"
+      "sha1": "2724f3ab98bc94392b674358b18759f88e5482d6",
+      "sha256": "0gmi7b3wjpcdc5dvj21k7a69hg5x8pbf5j3c8ifh5cmx4jj7n6nj"
     }
   },
 
@@ -12672,12 +12642,12 @@
   },
 
   {
-    "path": "org/junit/junit-bom/5.8.2/junit-bom-5.8.2",
+    "path": "org/junit/junit-bom/5.9.0-M1/junit-bom-5.9.0-M1",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "90eab8a5a400f15b8e1cb6e65af0ceb616f23bba",
-      "sha256": "1ql6yb1zqznlzn26vl9zplvz2qqj57d24qip91pcbqwfkv56jq43"
+      "sha1": "713c5d49ce56b50cb83ad1902b17e98e4b2e68fe",
+      "sha256": "1ybmmhq2hsqbi6j1b45d743vif9kfdc0hyd6slm5jqgws65xi0jq"
     }
   },
 

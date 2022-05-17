@@ -66,16 +66,30 @@ POM_SHA256=$(get_nix_sha "${POM_NIX_FETCH_OUT}")
 POM_SHA1=$(get_sha1 "${POM_PATH}")
 
 # Identify packaging type, JAR, AAR, or just POM.
-OBJ_TYPE=$(grep -oP '<packaging>\K[^<]+' "${POM_PATH}")
+OBJ_TYPE_RAW=$(grep -oP '<packaging>\K[^<]+' "${POM_PATH}")
 # Bundle is a JAR made using maven-bundle-plugin.
-case "${OBJ_TYPE}" in
+case "${OBJ_TYPE_RAW}" in
     ''|'bundle') OBJ_TYPE=jar;;
     'aar.asc')   OBJ_TYPE=aar;;
+    *)           OBJ_TYPE="${OBJ_TYPE_RAW}"
 esac
-# Some dependencies have only a POM file.
+
+# Some deps are Eclipse plugins, and we don't need those.
+if [[ "${OBJ_TYPE}" == "eclipse-plugin" ]]; then
+    exit 0
+fi
+
+# Some deps are just POMs, in which case there is no JAR to fetch.
 if [[ "${OBJ_TYPE}" != "pom" ]]; then
     OBJ_NIX_FETCH_OUT=$(nix_fetch "${OBJ_REL_URL}.${OBJ_TYPE}")
-    if [[ ${?} -eq 0 ]]; then
+    # If type was a JAR or other, not getting one is an error.
+    if [[ ${?} -ne 0 ]]; then
+        # POMs without packaging type defined can still include JARs.
+        if [[ "${OBJ_TYPE_RAW}" != "" ]]; then
+            echo " ! Failed to fetch: ${OBJ_REL_URL}.${OBJ_TYPE}" >&2
+            exit 1
+        fi
+    else
         OBJ_PATH=$(get_nix_path "${OBJ_NIX_FETCH_OUT}")
         OBJ_SHA256=$(get_nix_sha "${OBJ_NIX_FETCH_OUT}")
         OBJ_SHA1=$(get_sha1 "${OBJ_PATH}")
