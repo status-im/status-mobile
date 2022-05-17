@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "a244d776571cc73ea34d7a700cc5db36166ce832",
-    "commit-sha1": "a244d776571cc73ea34d7a700cc5db36166ce832",
-    "src-sha256": "1v057jy565y9178ja8j9j6sg04z83y7a0bnry6ziy9zf2zda7nkg"
+    "version": "feat/AddHasAcitvityToDerivedAddresses",
+    "commit-sha1": "6cb0fa83c0a1fbb058866aaa1732b1c423b11bab",
+    "src-sha256": "0laiy2xrw1z4666hncz1h4fynqzymalr3d0dap097mkygzp1djz7"
 }
