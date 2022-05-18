@@ -52,7 +52,8 @@ function gen_deps_json() {
 
     # Format URLs into a Nix consumable file.
     URLS=$(cat ${DEPS_URLS})
-    parallel --will-cite --keep-order \
+    # Avoid rate limiting by using 4 of the available threads.
+    parallel --will-cite --keep-order --jobs 4 \
         "${CUR_DIR}/url2json.sh" \
         ::: ${URLS} \
         >> ${DEPS_JSON}
