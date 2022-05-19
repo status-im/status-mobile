@@ -282,7 +282,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5373)
-    def test_1_1_chat_emoji_and_link_send_and_open(self):
+    def test_1_1_chat_emoji_send_reply_and_open_link(self):
         self.home_1.just_fyi("Check that can send emoji in 1-1 chat")
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
@@ -290,8 +290,35 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         for chat in self.chat_1, self.chat_2:
             if not chat.chat_element_by_text(emoji_unicode).is_element_displayed():
                 self.errors.append('Message with emoji was not sent or received in 1-1 chat')
+        self.chat_1.quote_message(emoji_unicode)
+        if self.chat_1.quote_username_in_message_input.text != "↪ You":
+            self.errors.append("'You' is not displayed in reply quote snippet replying to own message")
 
-        self.home_1.just_fyi("Check that link can be opened from 1-1 chat")
+        self.chat_1.just_fyi("Clear quote and check there is not snippet anymore")
+        self.chat_1.cancel_reply_button.click()
+        if self.chat_1.cancel_reply_button.is_element_displayed():
+            self.errors.append("Message quote kept in public chat input after it was cancellation")
+
+        self.chat_1.just_fyi("Send reply")
+        self.chat_1.quote_message(emoji_unicode)
+        reply_to_message_from_sender = "hey, reply"
+        self.chat_1.send_message(reply_to_message_from_sender)
+
+        self.chat_1.just_fyi("Receiver verifies received reply...")
+        if self.chat_2.chat_element_by_text(reply_to_message_from_sender).replied_message_text != emoji_unicode:
+            self.errors.append("No reply received in 1-1 chat")
+
+        self.home_1.just_fyi("Check that link can be opened and replied from 1-1 chat")
+        reply = 'reply to link'
+        url_message = 'Test with link: https://status.im/ here should be nothing unusual.'
+        self.chat_1.send_message(url_message)
+        self.chat_2.chat_element_by_text(url_message).wait_for_element(20)
+        self.chat_2.quote_message(url_message)
+        self.chat_2.send_message(reply)
+        replied_message = self.chat_1.chat_element_by_text(reply)
+        if replied_message.replied_message_text != url_message:
+            self.errors.append("Reply for '%s' not present in message received in public chat" % url_message)
+
         url_message = 'http://status.im'
         self.chat_1.send_message(url_message)
         self.chat_2.element_starts_with_text(url_message, 'button').click()
@@ -410,16 +437,6 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
     def test_1_1_chat_push_emoji(self):
         message_no_pn, message = 'No PN', 'Text push notification'
 
-        # TODO: Should be moved to group or test where no contact is added in prerequisites
-        # self.device_2.just_fyi("Device 2: check there is no PN when receiving new message to activity centre")
-        # self.device_2.put_app_to_background()
-        # if not self.chat_1.chat_message_input.is_element_displayed():
-        #     self.home_1.get_chat(username=self.default_username_2).click()
-        # self.chat_1.send_message(message_no_pn)
-        # self.device_2.open_notification_bar()
-        # if self.home_2.element_by_text(message_no_pn).is_element_displayed():
-        #     self.errors.append("Push notification with text was received for new message in activity centre")
-        # self.device_2.get_app_from_background()
         self.device_2.home_button.click()
         self.home_2.get_chat(self.default_username_1).click()
         self.home_2.profile_button.click()
@@ -1086,6 +1103,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         if pn:
             pn.click()
         else:
+            self.errors.append('No PN on mention in public chat! ')
             self.home_2.click_system_back_button(2)
         if self.home_2.element_starts_with_text(self.reciever['ens']).is_element_differs_from_template('mentioned.png', 2):
             self.errors.append('Mention is not highlighted!')
