@@ -565,7 +565,7 @@
             :component network-info/network-info}
            {:name      :rpc-usage-info
             :options   {:topBar {:title {:text (i18n/label :t/rpc-usage-info)}}}
-            :component rpc-usage-info/usage-info-container}
+            :component rpc-usage-info/usage-info}
            {:name      :edit-network
             :options   {:topBar {:title {:text (i18n/label :t/add-network)}}}
             :component edit-network/edit-network}

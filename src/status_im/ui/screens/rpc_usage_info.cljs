@@ -95,9 +95,9 @@
        ^{:key (str k v)}
        [quo.react-native/view
         {:style {:flex-direction :row
-                 :justify-content :space-between}}
-        [quo.core/text k]
-        [quo.core/text v]]))])
+                 :align-items     :center}}
+        [quo.core/text {:style {:flex 1}} k]
+        [quo.core/text  {:style {:margin-left 16}} v]]))])
 
 (defn prepare-stats [{:keys [stats]}]
   (clojure.string/join
@@ -106,7 +106,7 @@
           (str k " " v))
         stats)))
 
-(defn usage-info []
+(defn usage-info-render []
   (let [stats @(re-frame/subscribe [:rpc-usage/data])
         methods-filter @(re-frame/subscribe [:rpc-usage/filter])]
     [react/view {:flex 1
@@ -133,10 +133,10 @@
        :auto-focus      false}]
      [stats-table stats]]))
 
-(defn usage-info-container []
+(defn usage-info []
   (reagent/create-class {:component-did-mount (fn []
                                                 (reset! rpc-refresh-interval (utils/set-interval #(re-frame/dispatch [::get-stats]) rpc-usage-refresh-interval-ms)))
                          :component-will-unmount (fn []
                                                    (utils/clear-interval @rpc-refresh-interval)
                                                    (reset! rpc-refresh-interval nil))
-                         :reagent-render usage-info}))
+                         :reagent-render usage-info-render}))
