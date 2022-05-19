@@ -1,6 +1,7 @@
 {
   "name": "StatusIm-Mobile",
   "version": "0.0.1",
+  "main": "modules/react-native-status/nodejs/bindings.js",
   "private": true,
   "scripts": {
     "start": "react-native start",
@@ -11,6 +12,7 @@
     "app:android": "react-native run-android"
   },
   "dependencies": {
+    "@mapbox/node-pre-gyp": "^1.0.9",
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/audio-toolkit": "git+https://github.com/tbenr/react-native-audio-toolkit.git#refs/tags/v2.0.3-status-v6",
     "@react-native-community/blur": "^3.6.0",
@@ -85,5 +87,11 @@
     "process": "0.11.10",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#refs/tags/v2.0.2-status",
     "shadow-cljs": "^2.10.14"
+  },
+  "binary": {
+    "module_name": "status_nodejs_addon",
+    "module_path": "./lib/binding/",
+    "host": "https://github.com/status-im/status-react/releases/download/",
+    "remote_path": "{version}"
   }
 }

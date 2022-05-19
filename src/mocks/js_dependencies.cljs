@@ -1,6 +1,7 @@
 (ns mocks.js-dependencies
   (:require-macros [status-im.utils.slurp :refer [slurp]])
   (:require [status-im.fleet.default-fleet :refer (default-fleets)])
+  (:require [status-im.utils.test :as utils.test])
   (:require [status-im.chat.default-chats :refer (default-chats)]))
 
 (def action-button          #js {:default #js {:Item #js {}}})
@@ -19,6 +20,7 @@
 (def react-native
   (clj->js {:NativeModules {:RNGestureHandlerModule {:Direction (fn [])}
                             :PushNotifications      {}
+                            :Status                 utils.test/status
                             :ReanimatedModule       {:configureProps (fn [])}}
 
             :View                     {}

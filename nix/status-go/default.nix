@@ -1,9 +1,7 @@
 { lib, callPackage, mkShell, openjdk, androidPkgs }:
 
 let
-  inherit (lib)
-    catAttrs concatStrings concatStringsSep fileContents makeBinPath
-    getConfig optional attrValues mapAttrs attrByPath;
+  inherit (lib) attrValues mapAttrs;
 
   # Metadata common to all builds of status-go
   meta = {
@@ -37,6 +35,11 @@ in rec {
   mobile = callPackage ./mobile {
     inherit meta source goBuildFlags goBuildLdFlags;
   };
+
+  library = callPackage ./library {
+    inherit meta source;
+  };
+
 
   shell = mkShell {
     inputsFrom = [ mobile.android mobile.ios ];

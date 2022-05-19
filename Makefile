@@ -246,6 +246,10 @@ status-go-ios: SHELL := /bin/sh
 status-go-ios: ##@status-go Compile status-go for iOS app
 	nix/scripts/build.sh targets.status-go.mobile.ios
 
+status-go-library: SHELL := /bin/sh
+status-go-library: ##@status-go Compile status-go for node-js
+	nix/scripts/build.sh targets.status-go.library
+
 #--------------
 # Watch, Build & Review changes
 #--------------
@@ -291,7 +295,9 @@ lint-fix: ##@test Run code style checks and fix issues
 	clojure -Scp "$$CLASS_PATH" -m cljfmt.main fix src --indents indentation.edn
 
 test: export TARGET := clojure
-test: ##@test Run tests once in NodeJS
+test: status-go-library ##@test Run tests once in NodeJS
+	# Here we creates the gyp bindings for nodejs
+	yarn install
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js target/test/test.js

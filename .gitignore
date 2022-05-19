@@ -171,3 +171,7 @@ project.clj
 test/appium/report/
 result.xml
 test/appium/tests/users.py
+
+##node bindings
+/bin/
+/lib/
