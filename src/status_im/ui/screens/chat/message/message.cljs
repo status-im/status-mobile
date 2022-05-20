@@ -159,7 +159,7 @@
                         :text-decoration-line :underline}
                 :on-press
                 #(re-frame/dispatch
-                  [:chat.ui/start-public-chat literal {:navigation-reset? true}])}
+                  [:chat.ui/start-public-chat literal])}
                "#"
                literal])
 

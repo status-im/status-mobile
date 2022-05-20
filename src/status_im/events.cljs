@@ -59,7 +59,7 @@
             [status-im.wallet.core :as wallet]
             status-im.wallet.custom-tokens.core
             [status-im.navigation.core :as navigation.core]
-            [status-im.multiaccounts.login.core :as login.core]
+            [status-im.navigation.state :as navigation.state]
             [status-im.signing.core :as signing]
             status-im.wallet-connect.core
             status-im.wallet-connect-legacy.core
@@ -123,7 +123,7 @@
         current-tab    (get db :current-tab :chat)
         view-id        (:view-id db)
         screen-params  (get-in db [:navigation/screen-params view-id])
-        root-id        @navigation.core/root-id
+        root-id        @navigation.state/root-id
         dispatch-later (cond-> []
                          (= view-id :chat)
                          (conj {:ms       1000

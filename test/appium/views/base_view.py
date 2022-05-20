@@ -15,7 +15,7 @@ from views.base_element import Button, BaseElement, EditBox, Text, CheckBox
 
 class BackButton(Button):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="Navigate Up")
+        super().__init__(driver, accessibility_id="back-button")
 
     def click(self, times_to_click: int = 1):
         for _ in range(times_to_click):

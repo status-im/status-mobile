@@ -12,7 +12,7 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- start-chat [topic]
-  (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}])
+  (re-frame/dispatch [:chat.ui/start-public-chat topic])
   (re-frame/dispatch [:set :public-group-topic nil]))
 
 (defn- hash-icon []

@@ -50,7 +50,7 @@
 
 (fx/defn handle-public-chat [cofx {:keys [topic]}]
   (when (seq topic)
-    (chat/start-public-chat cofx topic {})))
+    (chat/start-public-chat cofx topic)))
 
 (fx/defn handle-group-chat [cofx params]
   (group-chats/create-from-link cofx params))
