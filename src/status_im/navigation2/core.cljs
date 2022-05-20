@@ -11,8 +11,8 @@
                   :wallet      2
                   :browser     3})
 
-(defonce set-navigation-default-options
-  (.setDefaultOptions Navigation (clj->js {:options {:topBar {:visible false}}})))
+;; (defonce set-navigation-default-options
+;;   (.setDefaultOptions Navigation (clj->js {:options {:topBar {:visible false}}})))
 
 ;; TODO (parvesh) - improve open-modal and close-modal
 (defn open-modal [comp]
