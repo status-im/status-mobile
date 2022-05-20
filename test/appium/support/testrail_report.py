@@ -118,6 +118,8 @@ class TestrailReport(BaseTestReport):
         test_cases['pr']['ens'] = 50827
         test_cases['pr']['sync'] = 50834
         test_cases['pr']['browser'] = 50812
+        test_cases['pr']['permissions'] = 50843
+        test_cases['pr']['scan qr'] = 50844
         ## Nightly e2e
         test_cases['nightly']['medium'] = 736
         test_cases['nightly']['chat'] = 50811
