@@ -911,6 +911,50 @@ class TestChatManagement(SingleDeviceTestCase):
             self.errors.append('No redirected to carousel view after deleting last multiaccount')
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(6330)
+    def test_wallet_send_tx_token_set_max(self):
+        sender = transaction_senders['ETH_STT_2']
+        receiver = transaction_senders['ETH_1']
+        sign_in = SignInView(self.driver)
+        home_1 = sign_in.recover_access(sender['passphrase'])
+        wallet = home_1.wallet_button.click()
+        wallet.wait_balance_is_changed('STT')
+
+        home_1.just_fyi("Sending token amount to account who will use Set Max option for token")
+        amount = wallet.get_unique_amount()
+        wallet.send_transaction(asset_name='STT', amount=amount, recipient=receiver['address'])
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, token=True)
+        wallet.wallet_button.double_click()
+
+        home_1.just_fyi('Add account restored from seed phrase')
+        account_name = 'subaccount'
+        wallet.add_account_button.click()
+        wallet.enter_a_seed_phrase_button.click()
+        wallet.enter_your_password_input.send_keys(common_password)
+        wallet.enter_seed_phrase_input.set_value(receiver['passphrase'])
+        wallet.account_name_input.send_keys(account_name)
+        wallet.add_account_generate_account_button.click()
+        account_button = wallet.get_account_by_name(account_name)
+        account_button.click()
+        wallet.wait_balance_is_changed('STT', navigate_to_home=False)
+
+        home_1.just_fyi("Send all tokens via Set Max option")
+        send_transaction = wallet.send_transaction_button.click()
+        send_transaction.select_asset_button.click()
+        asset_name = 'STT'
+        asset_button = send_transaction.asset_by_name(asset_name)
+        send_transaction.select_asset_button.click_until_presence_of_element(
+            send_transaction.eth_asset_in_select_asset_bottom_sheet_button)
+        asset_button.click()
+        send_transaction.set_max_button.click()
+        send_transaction.set_recipient_address(sender['address'])
+        send_transaction.sign_transaction_button.click()
+        send_transaction.sign_transaction()
+        wallet.close_button.click()
+        wallet.wallet_button.double_click()
+        wallet.get_account_by_name(account_name).click()
+        wallet.wait_balance_is_equal_expected_amount(asset='STT', expected_balance=0, main_screen=False)
+
     @marks.testrail_id(6225)
     # TODO: can be added as last e2e in wallet group (to group with several accounts as prerequiste)
     def test_wallet_send_tx_between_accounts_in_multiaccount_instance(self):

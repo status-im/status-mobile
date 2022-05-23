@@ -231,7 +231,7 @@ class HomeView(BaseView):
             except TimeoutException:
                 break
 
-    def get_chat(self, username, community=False,wait_time=30):
+    def get_chat(self, username, community=False, wait_time=30):
         self.driver.info("Looking for chat: '%s'" % username)
         chat_element = ChatElement(self.driver, username[:25], community=community)
         if not chat_element.is_element_displayed(10):

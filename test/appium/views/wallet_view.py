@@ -175,7 +175,7 @@ class WalletView(BaseView):
                         self.accounts_status_account.scroll_to_element(direction='up')
                 return
 
-    def wait_balance_is_changed(self, asset='ETH', initial_balance=0, wait_time=400, scan_tokens=False):
+    def wait_balance_is_changed(self, asset='ETH', initial_balance=0, wait_time=400, scan_tokens=False, navigate_to_home=True):
         self.driver.info('Waiting %ss for %s updated balance' % (wait_time, asset))
         counter = 0
         while True:
@@ -200,9 +200,11 @@ class WalletView(BaseView):
                 time.sleep(10)
                 self.driver.info('Waiting %s seconds for %s to display asset' % (counter, asset))
             else:
-                self.driver.info('Balance is updated!')
-                self.wallet_button.double_click()
-                self.element_by_translation_id("wallet-total-value").scroll_to_element(direction='up')
+                self.driver.info('Initial "%s" is not equal expected balance "%s", it is updated!' % (initial_balance,
+                                 self.get_asset_amount_by_name(asset)))
+                if navigate_to_home:
+                    self.wallet_button.double_click()
+                    self.element_by_translation_id("wallet-total-value").scroll_to_element(direction='up')
                 return self
 
     def get_sign_in_phrase(self):

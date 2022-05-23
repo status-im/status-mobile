@@ -1086,11 +1086,17 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702156)
     def test_ens_mention_push_highlighted_public_chat(self):
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        self.home_2.get_chat('#%s' % self.pub_chat_name).click()
+        text = "From ENS name user!"
+        self.chat_2.send_message(text)
+        self.chat_2.home_button.click()
+
         self.home_2.put_app_to_background()
         self.home_2.open_notification_bar()
 
         self.home_1.just_fyi('check that can mention user with ENS name')
-        self.home_1.get_chat(self.ens).click()
+        self.home_1.get_chat('#%s' % self.pub_chat_name).click()
+        self.chat_1.wait_ens_name_resolved_in_chat(message=text, username_value='@%s' % self.reciever['ens'])
         self.chat_1.select_mention_from_suggestion_list(self.reciever['ens'])
         if self.chat_1.chat_message_input.text != self.ens + ' ':
             self.errors.append(
@@ -1098,14 +1104,13 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.chat_1.send_message_button.click()
 
         self.home_2.just_fyi('check that PN is received and after tap you are redirected to chat, mention is highligted')
-        # TODO: issue #11003
         pn = self.home_2.get_pn(self.reciever['username'])
         if pn:
             pn.click()
         else:
             self.errors.append('No PN on mention in public chat! ')
             self.home_2.click_system_back_button(2)
-        if self.home_2.element_starts_with_text(self.reciever['ens']).is_element_differs_from_template('mentioned.png', 2):
+        if self.home_2.element_starts_with_text(self.reciever['ens']).is_element_differs_from_template('ment_new.png'):
             self.errors.append('Mention is not highlighted!')
         self.errors.verify_no_errors()
 

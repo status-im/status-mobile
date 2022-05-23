@@ -2,23 +2,13 @@ import random
 from time import sleep
 import emoji
 import pytest
-
-from tests import marks
-from tests.users import ens_user
-from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase, MultipleDeviceTestCase
-from views.sign_in_view import SignInView
-
-from views.chat_view import CommunityView
-import pytest
-from tests import marks
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
-from views.sign_in_view import SignInView
-import time
-from tests import bootnode_address, mailserver_address, mailserver_ams,  mailserver_hk, used_fleet, common_password
-from tests.users import transaction_senders, basic_user, ens_user
+
+from tests import bootnode_address, mailserver_address, mailserver_ams, used_fleet, background_service_message
+from tests.users import transaction_senders, ens_user
 from tests import marks
-from tests.base_test_case import MultipleDeviceTestCase
 from views.sign_in_view import SignInView
+
 
 @pytest.mark.xdist_group(name="two_2")
 @marks.medium
@@ -291,7 +281,6 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.home_1.profile_button.double_click()
         self.profile_1.sync_settings_button.click()
         self.profile_1.mail_server_button.click()
-        #self.profile_1.mail_server_auto_selection_button.click()
         self.profile_1.element_by_text(server_name).scroll_and_click()
         self.profile_1.mail_server_delete_button.scroll_and_click()
         self.profile_1.mail_server_confirm_delete_button.click()
@@ -303,7 +292,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
 
 @pytest.mark.xdist_group(name="three_2")
 @marks.medium
-class TestChatMultipleDevice(MultipleSharedDeviceTestCase):
+class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
 
     @classmethod
     def setup_class(cls):
@@ -843,3 +832,198 @@ class TestGroupChatMultipleDevice(MultipleSharedDeviceTestCase):
                 self.errors.append('%s is not shown after joining to group chat via invite' % join_system_message)
         self.errors.verify_no_errors()
 
+
+@pytest.mark.xdist_group(name="two_2")
+@marks.medium
+class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
+
+    @classmethod
+    def setup_class(cls):
+        cls.drivers, cls.loop = create_shared_drivers(2)
+        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
+        cls.sender = transaction_senders['ETH_STT_1']
+
+        cls.device_1.just_fyi('Grab user data for transactions and public chat, set up wallets')
+        cls.home_1 = cls.device_1.create_user(keycard=True, enable_notifications=True)
+        cls.device_2.put_app_to_background_and_back()
+        cls.recipient_public_key, cls.recipient_username = cls.home_1.get_public_key_and_username(return_username=True)
+        cls.amount = cls.device_1.get_unique_amount()
+        cls.asset_name = 'STT'
+        cls.wallet_1 = cls.home_1.wallet_button.click()
+        cls.wallet_1.select_asset(cls.asset_name)
+        cls.wallet_1.home_button.click()
+
+        cls.home_2 = cls.device_2.recover_access(passphrase=cls.sender['passphrase'],
+                                                 keycard=True, enable_notifications=True)
+        cls.wallet_2 = cls.home_2.wallet_button.click()
+        cls.initial_amount_stt = cls.wallet_2.get_asset_amount_by_name('STT')
+        cls.wallet_2.home_button.click()
+
+        cls.device_2.just_fyi('Add recipient to contact and send 1 message')
+        cls.chat_2 = cls.home_2.add_contact(cls.recipient_public_key)
+        cls.chat_2.send_message("test message")
+        cls.chat_1 = cls.home_1.get_chat(cls.sender['username']).click()
+
+    @marks.testrail_id(702294)
+    def test_chat_1_1_unread_counter_highligted(self):
+        message_2, message_3 = 'test message2', 'test'
+        self.home_1.home_button.click()
+        self.home_1.dapp_tab_button.click()
+        self.chat_2.send_message(message_2)
+
+        self.home_1.home_button.counter.wait_for_element(30)
+        if self.home_1.home_button.counter.text != '1':
+            self.errors.append('New messages counter is not shown on Home button')
+        self.device_1.home_button.click()
+        if self.home_1.get_chat(self.sender['username']).new_messages_counter.text != '1':
+            self.errors.append('New messages counter is not shown on chat element')
+        self.home_1.get_chat(self.sender['username']).click()
+        self.chat_1.add_to_contacts.click()
+
+        self.home_1.home_button.double_click()
+        if self.home_1.home_button.counter.is_element_displayed():
+            self.errors.append('New messages counter is shown on Home button for already seen message')
+        if self.home_1.get_chat(self.sender['username']).new_messages_counter.text == '1':
+            self.errors.append('New messages counter is shown on chat element for already seen message')
+        self.home_1.delete_chat_long_press(self.sender['username'])
+
+        self.home_1.just_fyi("Checking preview of message and chat highlighting")
+        self.chat_2.send_message(message_3)
+        chat_1_element = self.home_1.get_chat(self.sender['username'])
+        if chat_1_element.chat_preview.is_element_differs_from_template('highligted_preview.png', 0):
+            self.errors.append("Preview message is not hightligted or text is not shown! ")
+        self.home_1.get_chat(self.sender['username']).click()
+        self.home_1.home_button.double_click()
+        if not self.home_1.get_chat(self.sender['username']).chat_preview.is_element_differs_from_template('highligted_preview.png', 0):
+            self.errors.append("Preview message is still highlighted after opening ")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702295)
+    def test_keycard_1_1_chat_command_request_and_send_tx_stt_in_1_1_chat_offline_opened_from_push(self):
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        self.home_1.get_chat(self.sender['username']).click()
+        self.chat_2.toggle_airplane_mode()
+        self.home_1.just_fyi('Request %s STT in 1-1 chat and check it is visible for sender and receiver' % self.amount)
+        self.chat_1.commands_button.click()
+        request_transaction = self.chat_1.request_command.click()
+        request_transaction.amount_edit_box.set_value(self.amount)
+        request_transaction.confirm()
+        asset_button = request_transaction.asset_by_name(self.asset_name)
+        request_transaction.select_asset_button.click_until_presence_of_element(asset_button)
+        asset_button.click()
+        request_transaction.request_transaction_button.click()
+        chat_1_request_message = self.chat_1.get_incoming_transaction()
+        if not chat_1_request_message.is_element_displayed():
+            self.drivers[0].fail('No incoming transaction in 1-1 chat is shown for recipient after requesting STT')
+
+        self.home_2.just_fyi('Check that transaction message is fetched from offline and sign transaction')
+        self.chat_2.toggle_airplane_mode()
+        self.home_2.home_button.click()
+        self.home_2.connection_offline_icon.wait_for_invisibility_of_element(120)
+        transaction_request_pn = 'Request transaction'
+        self.device_2.open_notification_bar()
+        if not self.device_2.element_by_text(transaction_request_pn).is_element_displayed(60):
+            self.errors.append("Push notification is not received after going back from offline")
+            self.home_2.click_system_back_button()
+            self.home_2.get_chat(self.recipient_username).click()
+        else:
+            self.device_2.element_by_text(transaction_request_pn).click()
+        chat_2_sender_message = self.chat_2.get_outgoing_transaction()
+        chat_2_sender_message.wait_for_visibility_of_element(60)
+        chat_2_sender_message.transaction_status.wait_for_element_text(chat_2_sender_message.address_received)
+        send_message = chat_2_sender_message.sign_and_send.click()
+        send_message.next_button.click()
+        send_message.sign_transaction(keycard=True)
+        self.chat_1.toggle_airplane_mode()
+
+        self.home_2.just_fyi('Check that transaction message is updated with new status after offline')
+        [chat.toggle_airplane_mode() for chat in (self.chat_1, self.chat_2)]
+        self.network_api.wait_for_confirmation_of_transaction(self.sender['address'], self.amount, token=True)
+        for home in (self.home_1, self.home_2):
+            home.toggle_airplane_mode()
+            home.home_button.double_click()
+        self.home_1.get_chat(self.sender['username']).click()
+        self.home_2.get_chat(self.recipient_username).click()
+        chat_2_sender_message.transaction_status.wait_for_element_text(chat_2_sender_message.confirmed, wait_time=120)
+
+        self.home_1.just_fyi('Check that can find tx in history and balance is updated after offline')
+        [home.wallet_button.click() for home in (self.home_1, self.home_2)]
+        self.wallet_2.wait_balance_is_changed('STT', self.initial_amount_stt)
+        self.wallet_1.wait_balance_is_changed('STT', scan_tokens=True)
+        [wallet.find_transaction_in_history(amount=self.amount, asset='STT') for wallet in (self.wallet_1, self.wallet_2)]
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702296)
+    def test_block_user_from_1_1_chat_header_check_mentions_and_push_notification_service(self):
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        message_before_block_1 = "Before block from recipient"
+        message_before_block_2 = "Before block from sender"
+        message_after_block_2 = "After block from sender"
+
+        self.device_1.just_fyi('both devices joining 1-1 chat and exchanging several messages')
+        self.home_1.get_chat(self.sender['username']).click()
+        self.home_2.get_chat(self.recipient_username).click()
+        self.chat_1.send_message(message_before_block_1)
+        self.chat_2.send_message(message_before_block_2)
+
+        self.home_1.just_fyi('Check there is no random user in different public chat')
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
+        chat_name = self.home_1.get_random_chat_name()
+        [chat_1, chat_2] = [home.join_public_chat(chat_name) for home in (self.home_1, self.home_2)]
+        chat_1.send_message(message_before_block_1)
+        self.home_2.home_button.click()
+        self.home_2.join_public_chat('r-%s' % chat_name)
+        chat_2.chat_message_input.send_keys('@')
+        if chat_2.search_user_in_mention_suggestion_list(self.recipient_username).is_element_displayed():
+            self.errors.append('Random user from public chat is in mention suggestion list another public chat')
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+
+        self.device_1.just_fyi('block user')
+        self.home_1.get_chat(self.sender['username']).click()
+        self.chat_1.chat_options.click()
+        self.chat_1.view_profile_button.click()
+        self.chat_1.block_contact()
+        self.chat_1.get_back_to_home_view()
+
+        self.home_1.just_fyi('Check there is no blocked user in mentions in public chat ')
+        self.home_1.get_chat('#%s' % chat_name).click()
+        self.chat_1.chat_message_input.send_keys('@')
+        if self.chat_1.search_user_in_mention_suggestion_list(self.recipient_username).is_element_displayed():
+            self.errors.append('Blocked user is available in mention suggestion list')
+        [chat.home_button.click() for chat in (self.chat_1, self.chat_2)]
+
+        self.device_1.just_fyi('no 1-1 message from blocked user')
+        blocked_chat_user = self.home_1.element_by_text_part(self.sender['username'])
+        if blocked_chat_user.is_element_displayed():
+            self.errors.append("Chat with blocked user is not deleted")
+        self.home_2.get_chat(self.recipient_username).click()
+        self.chat_2.send_message(message_after_block_2)
+
+        self.device_1.just_fyi("check that new messages and push notifications don't arrive from blocked user")
+        self.device_1.open_notification_bar()
+        if self.device_1.element_by_text_part(message_after_block_2).is_element_displayed(30):
+            self.errors.append("Push notification is received from blocked user")
+        self.device_1.element_by_text_part(background_service_message).click()
+
+        if blocked_chat_user.is_element_displayed():
+            self.errors.append("Chat with blocked user is reappeared after receiving new messages in home view")
+        self.device_1.open_notification_bar()
+        self.home_1.stop_status_service_button.click()
+
+        self.device_2.just_fyi("send messages when device 1 is offline")
+        self.chat_2.send_message(message_after_block_2)
+
+        self.device_1.just_fyi("reopen app and check that messages from blocked user are not fetched")
+        self.device_1.click_system_home_button()
+        self.device_1.driver.launch_app()
+        self.device_1.sign_in(keycard=True)
+        if blocked_chat_user.is_element_displayed():
+            self.errors.append("Chat with blocked user is reappeared after fetching new messages from offline")
+
+        self.device_1.just_fyi("check that PNs are still enabled in profile after closing 'background notification centre' "
+                          "message and relogin")
+        self.device_1.open_notification_bar()
+        if not self.device_1.element_by_text_part(background_service_message).is_element_displayed():
+            self.errors.append("Background notification service is not started after relogin")
+
+        self.errors.verify_no_errors()
