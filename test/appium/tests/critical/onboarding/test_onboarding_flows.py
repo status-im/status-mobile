@@ -126,7 +126,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.just_fyi(
             "Try to restore same account from seed phrase (should be possible only to unlock existing account)")
         self.profile.logout()
-        self.sign_in.back_button.click()
+        self.sign_in.navigate_up_button.click()
         self.sign_in.access_key_button.click()
         self.sign_in.enter_seed_phrase_button.click()
         self.sign_in.seedphrase_input.click()
@@ -143,7 +143,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(700746)
     def test_onboarding_cant_sign_in_with_invalid_password_logcat(self):
-        self.home.profile_button.click()
+        self.home.profile_button.double_click()
         self.profile.logout()
 
         self.sign_in.just_fyi('Check that cannot login with incorrect password, and can login with valid data')
@@ -166,7 +166,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(700747)
     def test_onboarding_add_new_multiaccount_username_by_position_pass_validation(self):
-        self.home.profile_button.click()
+        self.home.profile_button.double_click()
         self.profile.logout()
 
         self.sign_in.just_fyi('Create another multiaccount')
@@ -331,7 +331,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.driver.launch_app()
         if self.sign_in.ok_button.is_element_displayed():
             self.sign_in.ok_button.click()
-        self.sign_in.back_button.click()
+        self.sign_in.navigate_up_button.click()
         self.sign_in.access_key_button.click()
         self.sign_in.element_by_translation_id("recover-with-seed-phrase").click()
 
@@ -393,7 +393,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi("Checking keycard banner and starting migrate multiaccount to keycard: no db saved")
         self.sign_in.close_button.click()
-        self.sign_in.back_button.click()
+        self.sign_in.navigate_up_button.click()
         self.sign_in.multi_account_on_login_button.wait_for_visibility_of_element(30)
         self.sign_in.get_multiaccount_by_position(1).click()
         if not self.sign_in.get_keycard_banner.is_element_displayed():

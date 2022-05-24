@@ -498,7 +498,7 @@ class TestPublicChatBrowserOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         profile.just_fyi('revoke access and check that they are asked second time')
         profile.revoke_access_button.click()
-        profile.back_button.click()
+        profile.get_back_to_home_view()
         profile.dapp_tab_button.click()
         web_view.open_tabs_button.click()
         web_view.empty_tab_button.click()

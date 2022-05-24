@@ -209,7 +209,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
     def test_profile_add_remove_contact_via_contacts_view(self):
 
         self.home.just_fyi('Check empty contacts view')
-        profile = self.home.profile_button.click()
+        profile = self.home.profile_button.double_click()
         profile.contacts_button.click()
         if not profile.add_new_contact_button.is_element_displayed():
             self.driver.fail('No expected element on contacts view')

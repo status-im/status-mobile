@@ -1120,7 +1120,6 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
         (profile_1, profile_2) = (home.profile_button.click() for home in (self.home_1, self.home_2))
         [profile.switch_network() for profile in (profile_1, profile_2)]
-        # TODO: no check there is no stickers on ropsten due to transfer stickers to status-go
 
         self.home_2.just_fyi('Check that can use purchased stickerpack')
         self.home_2.get_chat('#%s' % self.pub_chat_name).click()

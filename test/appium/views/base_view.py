@@ -15,7 +15,7 @@ from views.base_element import Button, BaseElement, EditBox, Text, CheckBox
 
 class BackButton(Button):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="Navigate Up")
+        super().__init__(driver, accessibility_id="back-button")
 
     def click(self, times_to_click: int = 1):
         for _ in range(times_to_click):
@@ -252,6 +252,7 @@ class BaseView(object):
         self.close_sticker_view_icon = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
         self.native_close_button = Button(self.driver, id="android:id/aerr_close")
         self.close_button = Button(self.driver, accessibility_id="back-button")
+        self.navigate_up_button = Button(self.driver, accessibility_id="Navigate Up")
         self.show_roots_button = Button(self.driver, accessibility_id="Show roots")
         self.get_started_button = Button(self.driver, translation_id="get-started")
         self.ok_got_it_button = Button(self.driver, translation_id="ok-got-it")
@@ -532,18 +533,20 @@ class BaseView(object):
 
     def get_back_to_home_view(self, times_to_click_on_back_btn=3):
         counter = 0
-        while BackButton(self.driver).is_element_displayed(2) or self.close_button.is_element_displayed(2):
+        while BackButton(self.driver).is_element_displayed(2) or self.close_button.is_element_displayed(2) or self.navigate_up_button.is_element_displayed(2):
             try:
                 if counter >= times_to_click_on_back_btn:
                     break
                 if BackButton(self.driver).is_element_displayed(2):
                     self.back_button.click()
-                else:
+                elif self.close_button.is_element_displayed(2):
                     self.close_button.click()
+                else:
+                    self.navigate_up_button.click()
                 counter += 1
             except (NoSuchElementException, TimeoutException):
                 continue
-        return self.get_home_view()
+        return self
 
     def relogin(self, password=common_password):
         try:

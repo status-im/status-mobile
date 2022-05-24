@@ -194,7 +194,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
 
         self.profile_1.just_fyi(
             'disable use_history_node and check that no history is fetched but you can still send messages')
-        self.home_1.profile_button.click()
+        self.home_1.profile_button.double_click()
         self.profile_1.sync_settings_button.click()
         self.profile_1.mail_server_button.click()
         self.profile_1.use_history_node_button.click()
@@ -212,7 +212,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
             self.errors.append('History was fetched after relogin when use_history_node is disabled')
 
         self.home_1.just_fyi('enable use_history_node and check that history is fetched')
-        self.home_1.profile_button.click()
+        self.home_1.profile_button.double_click()
         self.profile_1.sync_settings_button.click()
         self.profile_1.mail_server_button.click()
         self.profile_1.use_history_node_button.click()
@@ -301,8 +301,6 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         cls.home_1, cls.home_2 = cls.device_1.create_user(enable_notifications=True), cls.device_2.create_user()
         cls.public_key_1, cls.default_username_1 = cls.home_1.get_public_key_and_username(return_username=True)
         cls.public_key_2, cls.default_username_2 = cls.home_2.get_public_key_and_username(return_username=True)
-        profile_2 = cls.home_2.profile_button.click()
-        profile_2.switch_network()
         [home.home_button.click() for home in (cls.home_1, cls.home_2)]
 
         cls.home_1.just_fyi("Creating 1-1 chats")
