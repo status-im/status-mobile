@@ -4,6 +4,6 @@
   {:home-stack
    {:root
     {:stack {:id       :home-stack
-             :children [{:component {:name    :home-stack
-                                     :id      :home-stack
+             :children [{:component {:name    :chat-stack
+                                     :id      :chat-stack
                                      :options {:topBar {:visible false}}}}]}}}})

@@ -172,3 +172,5 @@
                                       :icons ["https://statusnetwork.com/img/press-kit-status-logo.svg"]})
 
 (def wallet-connect-project-id "87815d72a81d739d2a7ce15c2cfdefb3")
+
+(def new-ui-enabled? (atom false))

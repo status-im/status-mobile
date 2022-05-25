@@ -16,6 +16,7 @@
             [status-im.utils.universal-links.core :as utils.universal-links]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
+            [status-im.async-storage.core :as async-storage]
             ["react-native" :refer (DevSettings LogBox)]
             ["react-native-languages" :default react-native-languages]
             ["react-native-shake" :as react-native-shake]))
@@ -38,6 +39,9 @@
   (re-frame/dispatch-sync [:init/app-started])
 
   (utils.universal-links/initialize)
+
+  (when config/quo-preview-enabled?
+    (async-storage/get-item :new-ui-enabled? #(reset! config/new-ui-enabled? %)))
 
   ;;DEV
   (snoopy/subscribe!)

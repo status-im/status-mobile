@@ -21,7 +21,7 @@
    (fn [acc screen]
      (assoc acc (:name screen) screen))
    {}
-   screens/screens))
+   (screens/screens)))
 
 ;;we need this for hot reload (for some reason it doesn't reload, so we have to call get-screens if debug true)
 (def screens (get-screens))
@@ -58,7 +58,11 @@
 (defn screen [key]
   (reagent.core/reactify-component
    (fn []
-     (let [{:keys [component insets]} (get (if js/goog.DEBUG (get-screens) screens) (keyword key))]
+     (let [{:keys [component insets]} (get
+                                       (if (or js/goog.DEBUG @config/new-ui-enabled?)
+                                         (get-screens)
+                                         screens)
+                                       (keyword key))]
        ^{:key (str "root" key @reloader/cnt)}
        [react/safe-area-provider
         [react/safe-area-consumer

@@ -1,8 +1,19 @@
 (ns status-im.navigation2
   (:require [status-im.utils.fx :as fx]
-            [status-im.utils.datetime :as datetime]))
+            [status-im.reloader :as reloader]
+            [status-im.utils.config :as config]
+            [status-im.utils.datetime :as datetime]
+            [status-im.async-storage.core :as async-storage]))
 
 (def parent-stack (atom :home-stack))
+
+(fx/defn toggle-new-ui
+  {:events [:toggle-new-ui]}
+  [_]
+  (swap! config/new-ui-enabled? not)
+  (reloader/reload)
+  {:dispatch [:init-root (if @config/new-ui-enabled? :home-stack :chat-stack)]
+   ::async-storage/set! {:new-ui-enabled? @config/new-ui-enabled?}})
 
 (fx/defn init-root-nav2
   {:events [:init-root-nav2]}
@@ -38,7 +49,7 @@
   [{:keys [db] :as cofx} go-to-view-id id screen-params from-switcher?]
   (let [view-id     (:view-id db)
         stacks      (:navigation2/navigation2-stacks db)
-        from-home?  (= view-id :home-stack)]
+        from-home?  (= view-id :chat-stack)]
     (if from-switcher?
       (navigate-from-switcher go-to-view-id id db from-home?)
       (if from-home?

@@ -1538,7 +1538,8 @@
  :<- [:view-id]
  :<- [:home-items-show-number]
  (fn [[search-filter filtered-chats communities view-id home-items-show-number]]
-   (if (= view-id :home)
+   (if (or (= view-id :home)
+           (and config/new-ui-enabled? (= view-id :chat-stack)))
      (let [communities-count (count communities)
            chats-count (count filtered-chats)
            ;; If we have both communities & chats we want to display
