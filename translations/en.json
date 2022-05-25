@@ -1737,5 +1737,6 @@
     "manage-connections": "Manage connections from within Application Connections",
     "wallet-manage-app-connections": "Manage app connections",
     "connection-request": "Connection Request",
-    "disconnect": "Disconnect"
+    "disconnect": "Disconnect",
+    "new-ui": "New UI"
 }

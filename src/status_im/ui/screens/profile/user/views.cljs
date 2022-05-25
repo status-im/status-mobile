@@ -123,7 +123,6 @@
          :accessibility-label :appearance-settings-button
          :chevron             true
          :on-press            #(re-frame/dispatch [:navigate-to :quo2-preview])}])
-         ;; :on-press            #(re-frame/dispatch [:init-root-nav2 :home-stack])}])
      [quo/list-item
       {:icon                :main-icons/appearance
        :title               (i18n/label :t/appearance)

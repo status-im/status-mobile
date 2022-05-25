@@ -31,7 +31,7 @@
    :justify-content  :space-around
    :height           (constants/bottom-tabs-height)
    :position         :absolute
-   :bottom           0
+   :bottom           -1
    :right            0
    :left             0
    :opacity          animation/bottom-tabs-opacity

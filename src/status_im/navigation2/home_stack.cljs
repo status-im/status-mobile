@@ -4,7 +4,8 @@
             [status-im.switcher.switcher :as switcher]
             [status-im.ui.screens.home.views :as home]
             [status-im.switcher.constants :as switcher-constants]
-            [status-im.ui.screens.browser.empty-tab.views :as empty-tab]
+            [status-im.ui.screens.profile.user.views :as profile.user]
+            ;; [status-im.ui.screens.browser.empty-tab.views :as empty-tab]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
             [status-im.switcher.bottom-tabs :as bottom-tabs]))
 
@@ -18,7 +19,8 @@
        :chats-stack       [home/home]
        :communities-stack [quo2.preview/main-screen]
        :wallet-stack      [wallet.accounts/accounts-overview]
-       :browser-stack     [empty-tab/empty-tab])]))
+       ;;:browser-stack     [empty-tab/empty-tab])]))
+       :browser-stack     [profile.user/my-profile])]))
 
 (defn home []
   [:<>

@@ -12,6 +12,7 @@
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [quo.design-system.colors :as colors]
             [quo.core :as quo]
+            [quo.platform :as platform]
             [status-im.add-new.core :as new-chat]
             [status-im.ui.components.search-input.view :as search-input]
             [status-im.add-new.db :as db]
@@ -22,7 +23,8 @@
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.components.tabbar.core :as tabbar]
             ["react-native-navigation" :refer (Navigation)]
-            [status-im.ui.components.invite.views :as invite])
+            [status-im.ui.components.invite.views :as invite]
+            [status-im.utils.config :as config])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn home-tooltip-view []
@@ -102,7 +104,9 @@
      home-item
      {:on-press      (fn []
                        (re-frame/dispatch [:dismiss-keyboard])
-                       (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
+                       (if (and @config/new-ui-enabled? platform/android?)
+                         (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
+                         (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
                        (re-frame/dispatch [:search/home-filter-changed nil])
                        (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
       :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet

@@ -14,7 +14,8 @@
                                           wakuv2-flag
                                           current-fleet
                                           webview-debug
-                                          wallet-connect-enabled?]}]
+                                          wallet-connect-enabled?
+                                          new-ui-enabled?]}]
   (keep
    identity
    [{:size                 :small
@@ -115,7 +116,15 @@
      #(re-frame/dispatch
        [:multiaccounts.ui/switch-wallet-connect-enabled (not wallet-connect-enabled?)])
      :accessory               :switch
-     :active                  wallet-connect-enabled?}]))
+     :active                  wallet-connect-enabled?}
+    (when config/quo-preview-enabled?
+      {:size                    :small
+       :title                   (i18n/label :t/new-ui)
+       :accessibility-label     :new-ui-toggle
+       :container-margin-bottom 8
+       :on-press                #(re-frame/dispatch [:toggle-new-ui])
+       :accessory               :switch
+       :active                  new-ui-enabled?})]))
 
 (defn- flat-list-data [options]
   (normal-mode-settings-data options))
@@ -146,6 +155,7 @@
                    :wakuv2-flag                      wakuv2-flag
                    :waku-bloom-filter-mode           waku-bloom-filter-mode
                    :webview-debug                    webview-debug
-                   :wallet-connect-enabled?          wallet-connect-enabled?})
+                   :wallet-connect-enabled?          wallet-connect-enabled?
+                   :new-ui-enabled?                  @config/new-ui-enabled?})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))

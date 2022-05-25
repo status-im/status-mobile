@@ -472,7 +472,7 @@
   "Decides which root should be initialised depending on user and app state"
   [db]
   (if (get db :tos/accepted?)
-    (re-frame/dispatch [:init-root :chat-stack])
+    (re-frame/dispatch [:init-root (if @config/new-ui-enabled? :home-stack :chat-stack)])
     (re-frame/dispatch [:init-root :tos])))
 
 (fx/defn login-only-events
