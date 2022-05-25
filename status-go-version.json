@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "a244d776571cc73ea34d7a700cc5db36166ce832",
-    "commit-sha1": "a244d776571cc73ea34d7a700cc5db36166ce832",
-    "src-sha256": "1v057jy565y9178ja8j9j6sg04z83y7a0bnry6ziy9zf2zda7nkg"
+    "version": "fix/get-balance-chain",
+    "commit-sha1": "99e56424c0562de2dba4f00a635426bb67d718d2",
+    "src-sha256": "11zkhvs4aryrjfivcy2hlzcqsga82aq1sm43fkc50c1ldgj3b9zp"
 }
