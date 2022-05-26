@@ -1,8 +1,8 @@
-{ lib, buildGo116Module, fetchFromGitHub }:
+{ lib, buildGoModule, fetchFromGitHub }:
 
 let
   inherit (lib) strings;
-in buildGo116Module rec {
+in buildGoModule rec {
   pname = "go-maven-resolver";
   version = "v1.1.2";
 

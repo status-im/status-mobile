@@ -33,7 +33,6 @@ in {
   gradlePropParser = callPackage ./tools/gradlePropParser.nix { };
 
   # Package version adjustments
-  go = super.pkgs.go_1_17;
   gradle = super.pkgs.gradle_5;
   nodejs = super.pkgs.nodejs-16_x;
   openjdk = super.pkgs.openjdk8_headless;
@@ -41,6 +40,9 @@ in {
     version = "13.3";
     allowHigher = true;
   };
+  go = super.pkgs.go_1_17;
+  buildGoPackage = super.pkgs.buildGo117Package;
+  buildGoModule = super.pkgs.buildGo117Module;
   gomobile = super.gomobile.override {
     # FIXME: No Android SDK packages for aarch64-darwin.
     withAndroidPkgs = stdenv.system != "aarch64-darwin";

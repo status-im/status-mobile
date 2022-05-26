@@ -1,4 +1,4 @@
-{ lib, stdenv, utils, buildGo117Package
+{ lib, stdenv, utils, buildGoPackage
 , go, xcodeWrapper
 # object with source attributes
 , meta, source}:
@@ -7,7 +7,7 @@ let
   inherit (stdenv) isDarwin;
   inherit (lib) optional;
 
-in buildGo117Package {
+in buildGoPackage {
   pname = source.repo;
   version = "${source.cleanVersion}-${source.shortRev}";
 
