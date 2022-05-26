@@ -1,13 +1,8 @@
-{ lib, stdenv, utils, buildGoPackage
-, go, xcodeWrapper
+{ buildGoPackage
 # object with source attributes
 , meta, source}:
 
-let
-  inherit (stdenv) isDarwin;
-  inherit (lib) optional;
-
-in buildGoPackage {
+buildGoPackage {
   pname = source.repo;
   version = "${source.cleanVersion}-${source.shortRev}";
 
@@ -25,9 +20,7 @@ in buildGoPackage {
   # Build the Go library
   buildPhase = ''
     runHook preBuild
-
-    go build -buildmode=c-archive -o $out/libstatus.a  $NIX_BUILD_TOP/main.go
-
+    go build -buildmode=c-archive -o $out/libstatus.a $NIX_BUILD_TOP/main.go
     runHook postBuild
   '';
 }

@@ -1,4 +1,4 @@
-{ lib, callPackage, mkShell, openjdk, androidPkgs }:
+{ lib, callPackage, mkShell }:
 
 let
   inherit (lib) attrValues mapAttrs;
@@ -39,7 +39,6 @@ in rec {
   library = callPackage ./library {
     inherit meta source;
   };
-
 
   shell = mkShell {
     inputsFrom = [ mobile.android mobile.ios ];

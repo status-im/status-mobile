@@ -1,4 +1,4 @@
-{ lib, stdenv, utils, callPackage, buildGoPackage
+{ lib, stdenv, utils, buildGoPackage
 , go, androidPkgs, openjdk, gomobile, xcodeWrapper
 # object with source attributes
 , meta, source
@@ -13,9 +13,7 @@
 
 let
   inherit (stdenv) isDarwin;
-  inherit (lib)
-    concatStrings concatStringsSep concatMapStrings optionalString
-    getAttr attrValues makeBinPath optional;
+  inherit (lib) concatStringsSep concatMapStrings optionalString makeBinPath optional;
 
   removeReferences = [ go ];
   removeExpr = refs: ''remove-references-to ${concatMapStrings (ref: " -t ${ref}") refs}'';

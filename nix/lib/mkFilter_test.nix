@@ -51,10 +51,6 @@ let
     { path = "${absPath}/ios/subfile"; type = "file";
       expected = false; }
   ];
-  # make paths absolute
-  testsAbs = builtins.map (
-    t: t // { path = "${absPath}/${t.path}"; }
-  ) tests;
 in builtins.map (
     t: let
       rval = (filter t.path t.type);

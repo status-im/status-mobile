@@ -1,8 +1,6 @@
-{ config, lib, stdenvNoCC, callPackage, mkShell, status-go }:
+{ lib, callPackage, mkShell, status-go }:
 
 let
-  inherit (lib) catAttrs concatStrings optional unique;
-
   fastlane = callPackage ./fastlane { };
 
   android = callPackage ./android {
@@ -24,7 +22,7 @@ let
 
 in {
   shell = mkShell {
-    inputsFrom = (catAttrs "shell" selectedSources);
+    inputsFrom = lib.catAttrs "shell" selectedSources;
   };
 
   # TARGETS

@@ -2,11 +2,10 @@
 # It is used by Gradle to package Android app resources.
 # See: https://developer.android.com/studio/command-line/aapt2
 
-{ lib, stdenv, deps, pkgs, fetchurl }:
+{ lib, stdenv, pkgs, fetchurl }:
 
 let
   inherit (lib) getAttr optionals;
-  inherit (pkgs) zip unzip patchelf;
   inherit (stdenv) isLinux isDarwin;
 
   pname = "aapt2";
@@ -53,7 +52,7 @@ in stdenv.mkDerivation {
   srcs = with urls; [ jar sha pom ];
   phases = [ "unpackPhase" ]
     ++ optionals isLinux [ "patchPhase" ]; # OSX binaries don't need patchelf
-  buildInputs = [ zip unzip patchelf ];
+  buildInputs = with pkgs; [ zip unzip patchelf ];
 
   unpackPhase = ''
     mkdir -p $out
@@ -71,15 +70,15 @@ in stdenv.mkDerivation {
 
     # Patch executables from maven dependency to use Nix's interpreter
     tmpDir=$(mktemp -d)
-    ${unzip}/bin/unzip $out/${filenames.jar} -d $tmpDir
+    unzip $out/${filenames.jar} -d $tmpDir
     for exe in `find $tmpDir/ -type f -executable`; do
-      ${patchelf}/bin/patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $exe
+      patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $exe
     done
 
     # Rebuild the .jar file with patched binaries
     pushd $tmpDir > /dev/null
     chmod u+w $out/${filenames.jar}
-    ${zip}/bin/zip -fr $out/${filenames.jar}
+    zip -fr $out/${filenames.jar}
     chmod $out/${filenames.jar} --reference=$out/${filenames.jar}.sha1
     popd > /dev/null
     rm -rf $tmpDir

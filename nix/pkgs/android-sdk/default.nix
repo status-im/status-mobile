@@ -3,7 +3,7 @@
 # for the Android development environment.
 #
 
-{ callPackage, stdenv, writeScript }:
+{ callPackage }:
 
 let
   compose = callPackage ./compose.nix { };

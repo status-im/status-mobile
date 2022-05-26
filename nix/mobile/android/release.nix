@@ -1,6 +1,5 @@
-{ stdenv, pkgs, deps, lib, config, callPackage,
-  watchmanFactory, androidPkgs, patchMavenSources,
-  jsbundle, status-go }:
+{ stdenv, pkgs, deps, lib, watchmanFactory
+, androidPkgs, patchMavenSources, jsbundle, status-go }:
 
 {
   # Value for BUILD_ENV checked by Clojure code at compile time
@@ -15,9 +14,7 @@
 assert (lib.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 
 let
-  inherit (lib)
-    toLower optionalString stringLength assertMsg
-    getConfig makeLibraryPath checkEnvVarSet elem;
+  inherit (lib) toLower optionalString stringLength getConfig makeLibraryPath elem;
 
   # Pass secretsFile for INFURA_TOKEN to jsbundle build
   builtJsBundle = jsbundle { inherit secretsFile; };
@@ -28,9 +25,6 @@ let
   gradleOpts = getConfig "android.gradle-opts" null;
   # Used to detect end-to-end builds
   androidAbiInclude = getConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
-
-  baseName = "${buildType}-android";
-  name = "status-react-build-${baseName}";
 
   envFileName = 
     if androidAbiInclude == "x86"                  then ".env.e2e" 
@@ -44,8 +38,10 @@ let
   apksPath = "./android/app/build/outputs/apk/${toLower gradleBuildType}";
   patchedWatchman = watchmanFactory watchmanSockPath;
 
+  baseName = "${buildType}-android";
 in stdenv.mkDerivation rec {
-  inherit name;
+  name = "status-react-build-${baseName}";
+
   src = let path = ./../../..;
   # We use builtins.path so that we can name the resulting derivation
   in builtins.path {

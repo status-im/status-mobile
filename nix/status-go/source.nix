@@ -1,7 +1,7 @@
-{ config, utils, lib, callPackage, fetchFromGitHub }:
+{ utils, lib, fetchFromGitHub }:
 
 let
-  inherit (lib) strings traceValFn attrByPath importJSON getConfig;
+  inherit (lib) strings traceValFn importJSON getConfig;
 
   srcOverride = getConfig "status-go.src-override" null;
   # Warning message about using local sources

@@ -11,7 +11,7 @@ let
   lines = splitString "\n" (readFile gradlePropsFile);
 
   isKeyValueLine = line: line != "" && !hasPrefix "#" line;
-  cleanup = lines: filter isKeyValueLine lines;
+  cleanup = filter isKeyValueLine;
   extractKeyValues = line:
     let flag = splitString "=" line;
     in nameValuePair (head flag) (last flag);

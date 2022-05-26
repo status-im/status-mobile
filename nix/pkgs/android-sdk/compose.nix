@@ -3,7 +3,7 @@
 # for the Android development environment.
 #
 
-{ stdenv, config, callPackage, androidenv, openjdk, mkShell }:
+{ androidenv }:
 
 # The "android-sdk-license" license is accepted
 # by setting android_sdk.accept_license = true.

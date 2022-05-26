@@ -1,4 +1,4 @@
-{ lib, pkgs, deps, callPackage, mkShell
+{ pkgs, deps, callPackage, mkShell
 , status-go, androidPkgs, androidShell }:
 
 let

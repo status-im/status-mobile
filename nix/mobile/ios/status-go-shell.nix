@@ -3,7 +3,7 @@
 # It copies the status-go build result to 'modules/react-native-status/ios/RCTStatus'.
 #
 
-{ lib, mkShell, status-go }:
+{ mkShell, status-go }:
 
 mkShell {
   shellHook = ''

@@ -53,9 +53,9 @@ let
   sanitizeVersion = version:
     if (builtins.match versionRegex version) != null
     # Geth forces a 'v' prefix for all versions
-    then lib.removePrefix "v" (dropSlashes version) 
+    then lib.removePrefix "v" (dropSlashes version)
     # reduce metrics cardinality in Prometheus
-    else lib.traceValFn (v: "WARNING: Marking build version as 'develop'!") "develop"; 
+    else lib.traceValFn (_: "WARNING: Marking build version as 'develop'!") "develop";
 
 in {
   inherit sanitizeVersion

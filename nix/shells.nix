@@ -71,7 +71,7 @@ let
   };
 
   # for merging the default shell with others
-  mergeDefaultShell = (key: val: lib.mergeSh default [ val ]);
+  mergeDefaultShell = (_: val: lib.mergeSh default [ val ]);
 
 # values here can be selected using `nix-shell --attr shells.$TARGET default.nix`
 # the nix/scripts/shell.sh wrapper does this for us and expects TARGET to be set
