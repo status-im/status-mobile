@@ -200,7 +200,6 @@ build-fdroid: export ANDROID_ABI_INCLUDE = armeabi-v7a;arm64-v8a;x86;x86_64
 build-fdroid: ##@build Build release for F-Droid
 	@scripts/build-android.sh
 
-build-android: SHELL := /bin/sh
 build-android: export BUILD_ENV ?= prod
 build-android: export BUILD_TYPE ?= nightly
 build-android: export BUILD_NUMBER ?= $(TMP_BUILD_NUMBER)
