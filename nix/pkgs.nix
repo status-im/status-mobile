@@ -11,10 +11,10 @@ let
   # We follow the master branch of official nixpkgs.
   nixpkgsSrc = fetchFromGitHub {
     name = "nixpkgs-source";
-    owner = "status-im";
+    owner = "NixOS";
     repo = "nixpkgs";
-    rev = "4ba5f26780e7a27aa2e97676603cd9ef04f11e74";
-    sha256 = "sha256-ZpHXUuF9bvHooKwGuR1Mr/n2mE/LJ6/MCdCk2AfdD9M=";
+    rev = "8a782b05cb764db86f2826995adb9128e26dffe2";
+    sha256 = "sha256-9+Ys74yxniHBz2/kLVSzboqCNRx1E+Dv/yzSBtw0jDQ=";
     # To get the compressed Nix sha256, use:
     # nix-prefetch-url --unpack https://github.com/${ORG}/nixpkgs/archive/${REV}.tar.gz
   };
