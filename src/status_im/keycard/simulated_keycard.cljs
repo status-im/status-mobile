@@ -432,7 +432,7 @@
    (types/clj->json accounts-data)))
 
 (defn login [{:keys [key-uid multiaccount-data password]}]
-  (status/login key-uid multiaccount-data password))
+  (status/login-with-config key-uid multiaccount-data password nil))
 
 (defn send-transaction-with-signature
   [{:keys [transaction on-completed]}]

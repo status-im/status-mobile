@@ -542,6 +542,19 @@ RCT_EXPORT_METHOD(login:(NSString *)accountData
     NSLog(@"%@", result);
 }
 
+//////////////////////////////////////////////////////////////////// loginWithConfig
+RCT_EXPORT_METHOD(loginWithConfig:(NSString *)accountData
+                  password:(NSString *)password
+                  configJSON:(NSString *)configJSON) {
+#if DEBUG
+    NSLog(@"LoginWithConfig() method called");
+#endif
+    [self getExportDbFilePath];
+    [self migrateKeystore:accountData password:password];
+    NSString *result = StatusgoLoginWithConfig(accountData, password, configJSON);
+    NSLog(@"%@", result);
+}
+
 //////////////////////////////////////////////////////////////////// loginWithKeycard
 RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
                   password:(NSString *)password
