@@ -53,9 +53,10 @@
           address]]]
        [react/view styles/share-link-button
         [quo/button
-         {:on-press            #(do
-                                  (re-frame/dispatch [:hide-popover])
-                                  (list-selection/open-share {:message link}))
+         {:on-press            (fn []
+                                 (re-frame/dispatch [:hide-popover])
+                                 (js/setTimeout
+                                  #(list-selection/open-share {:message link}) 250))
           :accessibility-label :share-my-contact-code-button}
          (i18n/label :t/share-link)]]])))
 
