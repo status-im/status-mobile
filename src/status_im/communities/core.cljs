@@ -189,7 +189,8 @@
                      :js-response true
                      :on-success
                      #(re-frame/dispatch [:transport/message-sent %])
-                     :on-failure #(log/error "failed to send a message" %)}]})
+                     :on-error
+                     #(log/error "failed to send a message" %)}]})
 
 (fx/defn invite-users
   {:events [::invite-people-confirmation-pressed]}

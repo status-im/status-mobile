@@ -9,29 +9,29 @@
             [taoensso.timbre :as log]
             [status-im.multiaccounts.update.core :as multiaccounts.update]))
 
-(defn enable-installation-rpc [installation-id on-success on-failure]
+(defn enable-installation-rpc [installation-id on-success on-error]
   (json-rpc/call {:method     "wakuext_enableInstallation"
                   :params     [installation-id]
                   :on-success on-success
-                  :on-failure on-failure}))
+                  :on-error on-error}))
 
-(defn disable-installation-rpc [installation-id on-success on-failure]
+(defn disable-installation-rpc [installation-id on-success on-error]
   (json-rpc/call {:method     "wakuext_disableInstallation"
                   :params     [installation-id]
                   :on-success on-success
-                  :on-failure on-failure}))
+                  :on-error on-error}))
 
-(defn set-installation-metadata-rpc [installation-id metadata on-success on-failure]
+(defn set-installation-metadata-rpc [installation-id metadata on-success on-error]
   (json-rpc/call {:method     "wakuext_setInstallationMetadata"
                   :params     [installation-id metadata]
                   :on-success on-success
-                  :on-failure on-failure}))
+                  :on-error on-error}))
 
-(defn get-our-installations-rpc [on-success on-failure]
+(defn get-our-installations-rpc [on-success on-error]
   (json-rpc/call {:method     "wakuext_getOurInstallations"
                   :params     []
                   :on-success on-success
-                  :on-failure on-failure}))
+                  :on-error on-error}))
 
 (defn compare-installation
   "Sort installations, first by our installation-id, then on whether is

@@ -49,7 +49,7 @@
   {::json-rpc/call [{:method "wakuext_chat"
                      :params [chat-id]
                      :on-success #(re-frame/dispatch [:chats-list/load-chat-success %])
-                     :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})
+                     :on-error #(log/error "failed to fetch chats" 0 -1 %)}]})
 
 (fx/defn handle-failed-loading-messages
   {:events [::failed-loading-messages]}

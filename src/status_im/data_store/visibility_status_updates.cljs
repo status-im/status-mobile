@@ -20,5 +20,5 @@
                      :on-success #(re-frame/dispatch
                                    [:visibility-status-updates/visibility-status-updates-loaded
                                     (:statusUpdates ^js %)])
-                     :on-failure #(log/error
-                                   "failed to fetch visibility-status-updates" %)}]})
+                     :on-error #(log/error
+                                 "failed to fetch visibility-status-updates" %)}]})

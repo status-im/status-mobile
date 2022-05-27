@@ -159,7 +159,7 @@
                                                 :gasLimit (money/to-fixed (money/bignumber gas)))
                                          clj->js)]
                        :on-success #(log/info "pending transfer is saved")
-                       :on-failure #(log/info "pending transfer was not saved" %)}]}))
+                       :on-error #(log/info "pending transfer was not saved" %)}]}))
 
 (defn get-method-type [data]
   (cond

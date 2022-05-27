@@ -16,16 +16,16 @@
                                      cursor
                                      limit
                                      on-success
-                                     on-failure]
+                                     on-error]
   {::json-rpc/call [{:method     "wakuext_chatPinnedMessages"
                      :params     [chat-id cursor limit]
                      :on-success (fn [result]
                                    (let [result (clojure.set/rename-keys result {:pinnedMessages :pinned-messages})]
                                      (on-success (update result :pinned-messages #(map <-rpc %)))))
-                     :on-failure on-failure}]})
+                     :on-error on-error}]})
 
 (fx/defn send-pin-message [cofx pin-message]
   {::json-rpc/call [{:method "wakuext_sendPinMessage"
                      :params [(messages/->rpc pin-message)]
                      :on-success #(log/debug "successfully pinned message" pin-message)
-                     :on-failure #(log/error "failed to pin message" % pin-message)}]})
+                     :on-error #(log/error "failed to pin message" % pin-message)}]})

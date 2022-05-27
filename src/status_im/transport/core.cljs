@@ -40,7 +40,7 @@
   [_]
   {::json-rpc/call [{:method "wakuext_startMessenger"
                      :on-success #(re-frame/dispatch [::messenger-started %])
-                     :on-failure #(log/error "failed to start messenger")}]})
+                     :on-error #(log/error "failed to start messenger")}]})
 
 (fx/defn messenger-started
   {:events [::messenger-started]}

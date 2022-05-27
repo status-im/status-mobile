@@ -31,18 +31,20 @@
                      :params     [(mapv build-message messages)]
                      :js-response true
                      :on-success #(re-frame/dispatch [:transport/message-sent %])
-                     :on-failure #(log/error "failed to send a message" %)}]})
+                     :on-error #(do
+                                  (log/warn "failed to send a message" %)
+                                  (js/alert (str "failed to send a message: " %)))}]})
 
 (fx/defn send-reaction [_ {:keys [message-id chat-id emoji-id]}]
   {::json-rpc/call [{:method     "wakuext_sendEmojiReaction"
                      :params     [chat-id message-id emoji-id]
                      :js-response true
                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
-                     :on-failure #(log/error "failed to send a reaction" %)}]})
+                     :on-error #(log/error "failed to send a reaction" %)}]})
 
 (fx/defn send-retract-reaction [_ {:keys [emoji-reaction-id]}]
   {::json-rpc/call [{:method     "wakuext_sendEmojiReactionRetraction"
                      :params     [emoji-reaction-id]
                      :js-response true
                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
-                     :on-failure #(log/error "failed to send a reaction retraction" %)}]})
+                     :on-error #(log/error "failed to send a reaction retraction" %)}]})

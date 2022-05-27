@@ -107,4 +107,4 @@
                      :params []
                      :js-response true
                      :on-success #(on-success ^js %)
-                     :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})
+                     :on-error #(log/error "failed to fetch chats" 0 -1 %)}]})
