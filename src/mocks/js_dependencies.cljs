@@ -25,6 +25,7 @@
 
             :View                     {}
             :RefreshControl           {}
+            :AppState                 {}
             :FlatList                 {}
             :SectionList              {}
             :Text                     {}
@@ -58,7 +59,7 @@
                                        :in     (fn [])
                                        :inOut  (fn [])}
             :DeviceEventEmitter       {:addListener (fn [])}
-            :Dimensions               {:get (fn [])}
+            :Dimensions               {:get (fn []) :addEventListener identity}
             :useWindowDimensions      {}
             :Platform                 {:select (fn [])}
             :I18nManager              {:isRTL ""}
@@ -80,13 +81,19 @@
 
 (def icons           #js {:default #js {}})
 (def webview                #js {:WebView #js {}})
-(def status-keycard         #js {:default #js {}})
+(def status-keycard         #js {:default #js {:nfcIsSupported (fn [] #js {:then identity})
+                                               :nfcIsEnabled (fn [] #js {:then identity})}})
 
 (def snoopy                 #js {:default #js {}})
 (def snoopy-filter          #js {:default #js {}})
 (def snoopy-bars            #js {:default #js {}})
 (def snoopy-buffer          #js {:default #js {}})
 (def fetch                  #js {})
+
+(def async-storage-atom (atom {}))
+(def async-storage #js {:default #js {:setItem #(js/Promise.resolve)
+                                      :multiGet #(js/Promise.resolve)
+                                      :getItem #(js/Promise.resolve)}})
 
 (def background-timer (clj->js {:default {:setTimeout js/setTimeout
                                           :setInterval js/setInterval
@@ -100,8 +107,14 @@
 (def react-native-mail #js {:mail #js {}})
 (def react-native-screens  #js {})
 (def react-native-shake  #js {})
+(def react-native-share #js {:default {}})
+(def react-native-svg #js {:SvgUri #js {:render identity}
+                           :SvgXml #js {:render identity}})
+(def react-native-webview #js {:default {}})
+(def react-native-audio-toolkit #js {:MediaStates {}})
 (def net-info  #js {})
 (def touchid  #js {})
+(def react-native-image-viewing #js {:default {}})
 (def safe-area-context (clj->js {:SafeAreaProvider {:_reactNativeIphoneXHelper {:getStatusBarHeight (fn [])}}
                                  :SafeAreaInsetsContext {:Consumer (fn [])}
                                  :SafeAreaView {}}))
@@ -119,7 +132,19 @@
                                   :StackActions        #js {}})
 
 (def react-native-navigation #js {:Navigation #js {:constants (fn [] #js {:then identity})
-                                                   :events identity}})
+                                                   :setDefaultOptions identity
+                                                   :setRoot identity
+                                                   :setLazyComponentRegistrator identity
+                                                   :push identity
+                                                   :registerComponent identity
+                                                   :events
+                                                   (fn []
+                                                     #js {:registerModalDismissedListener identity
+                                                          :registerAppLaunchedListener identity
+                                                          :registerBottomTabSelectedListener identity
+                                                          :registerComponentDidDisappearListener identity
+                                                          :registerComponentDidAppearListener identity
+                                                          :registerNavigationButtonPressedListener identity})}})
 
 (def react-navigation-stack #js {:createStackNavigator identity
                                  :TransitionPresets    #js {:ModalPresentationIOS #js {}}})
@@ -205,6 +230,8 @@
 
 (def react-native-gradien #js {:default #js {}})
 
+(def react-native-permissions #js {:default #js {}})
+
 (def push-notification-ios #js {})
 
 (def rn-emoji-keyboard
@@ -213,8 +240,14 @@
 (def react-native-draggable-flatlist
   #js {:default #js {}})
 
+(def react-native-blob-util
+  #js {:default #js {}})
+
 (def react-native-blur
   (clj->js {:BlurView {}}))
+
+(def react-native-camera-roll
+  (clj->js {:default #js {}}))
 
 (def wallet-connect-client #js {:default       #js {}
                                 :CLIENT_EVENTS #js {:session #js {:request nil
@@ -251,12 +284,21 @@
     "react-native-device-info" react-native-device-info
     "react-native-push-notification" react-native-push-notification
     "react-native-linear-gradient" react-native-gradien
+    "react-native-blob-util" react-native-blob-util
     "react-native-navigation" react-native-navigation
     "@react-native-community/push-notification-ios" push-notification-ios
     "@react-native-community/blur" react-native-blur
+    "@react-native-community/cameraroll" react-native-camera-roll
     "react-native-camera-kit" react-native-camera-kit
+    "react-native-permissions" react-native-permissions
     "rn-emoji-keyboard" rn-emoji-keyboard
     "react-native-draggable-flatlist" react-native-draggable-flatlist
+    "react-native-webview" react-native-webview
+    "@react-native-community/audio-toolkit" react-native-audio-toolkit
+    "react-native-image-viewing" react-native-image-viewing
+    "react-native-share" react-native-share
+    "@react-native-community/async-storage" async-storage
+    "react-native-svg" react-native-svg
     "./fleets.js" default-fleets
     "./chats.js" default-chats
     "@walletconnect/client" wallet-connect-client

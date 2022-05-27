@@ -268,6 +268,10 @@
 
 (reg-root-key-sub :mutual-contact-requests/enabled? :mutual-contact-requests/enabled?)
 
+; Testing
+
+(reg-root-key-sub :messenger/started? :messenger/started?)
+
 (re-frame/reg-sub
  :communities
  :<- [:raw-communities]

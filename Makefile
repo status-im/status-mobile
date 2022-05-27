@@ -293,6 +293,16 @@ lint-fix: export TARGET := clojure
 lint-fix: ##@test Run code style checks and fix issues
 	clojure -Scp "$$CLASS_PATH" -m cljfmt.main fix src --indents indentation.edn
 
+shadow-server: export TARGET := clojure
+shadow-server:##@ Start shadow-cljs in server mode for watching
+	yarn shadow-cljs server
+
+test-watch: export TARGET := clojure
+test-watch: status-go-library
+test-watch: ##@ Watch tests and re-run no changes to cljs files
+	yarn install
+	nodemon --exec 'yarn shadow-cljs compile mocks && yarn shadow-cljs compile test && node --require ./test-resources/override.js target/test/test.js' -e cljs
+
 test: export TARGET := clojure
 test: status-go-library ##@test Run tests once in NodeJS
 	# Here we creates the gyp bindings for nodejs
@@ -300,6 +310,7 @@ test: status-go-library ##@test Run tests once in NodeJS
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js target/test/test.js
+
 
 coverage: ##@test Run tests once in NodeJS generating coverage
 	@scripts/run-coverage.sh

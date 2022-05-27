@@ -2,6 +2,8 @@
 // https://github.com/divan/go2nodebinding
 
 #include <node.h>
+#include <string>
+#include <queue>
 
 #include "../../../result/libstatus.h"
 
@@ -833,39 +835,39 @@ Isolate* runCallbackIsolate;
 
 Persistent<Function> r_call;
 
-void run(char *json) {
-  printf("%s\n", json);
-    if(!r_call.IsEmpty()) {
-        v8::Isolate* isolate = v8::Isolate::GetCurrent();
-        Local<Context> context = isolate->GetCurrentContext();
-        v8::Local<v8::Function> func = v8::Local<v8::Function>::New(isolate, r_call);
+std::queue<std::string> q;
 
-        if (!func.IsEmpty()) {
-            const unsigned argc = 1;
-            v8::Local<v8::Value> argv[argc] =
-                { v8::String::NewFromUtf8Literal(isolate, "hello world") };
-            func->Call(context, v8::Null(isolate), argc, argv);
-        }
-    }
+void run(char *json) {
+  printf("signal received %s\n", json);
+
+  std::string str(json);
+  q.push(str);
 }
 
-
-void _SetSignalEventCallback(const FunctionCallbackInfo<Value>& args) {
+// Poll signals and process queue, one at a time
+void _PollSignal(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
 
 	if (args.Length() != 1) {
 		// Throw an Error that is passed back to JavaScript
 		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for StartCPUProfile")));
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for SetSignalEventCallback")));
 		return;
 	}
 
 
         v8::Local<v8::Function> func = v8::Local<v8::Function>::Cast(args[0]);
-        //v8::Function * ptr = *func;
-        r_call.Reset(isolate, func);
+        if (!q.empty()) {
+          const unsigned argc = 1;
+          v8::Local<v8::Value> argv[argc] =
+          { v8::String::NewFromUtf8(isolate,q.front().c_str()).ToLocalChecked()};
 
+          func->Call(isolate->GetCurrentContext(), v8::Null(isolate), argc, argv);
+          q.pop();
+        }
+}
 
+void _SetSignalEventCallback(const FunctionCallbackInfo<Value>& args) {
         SetSignalEventCallback((void *)&run);
 }
 
@@ -1569,51 +1571,51 @@ void _ConnectionChange(const FunctionCallbackInfo<Value>& args) {
 
 
 void init(Local<Object> exports) {
-	NODE_SET_METHOD(exports, "MultiAccountGenerateAndDeriveAddresses", _MultiAccountGenerateAndDeriveAddresses);
-	NODE_SET_METHOD(exports, "MultiAccountImportPrivateKey", _MultiAccountImportPrivateKey);
-	NODE_SET_METHOD(exports, "MultiAccountLoadAccount", _MultiAccountLoadAccount);
-	NODE_SET_METHOD(exports, "MultiAccountReset", _MultiAccountReset);
-	NODE_SET_METHOD(exports, "MultiAccountDeriveAddresses", _MultiAccountDeriveAddresses);
-	NODE_SET_METHOD(exports, "MultiAccountImportMnemonic", _MultiAccountImportMnemonic);
-	NODE_SET_METHOD(exports, "MultiAccountGenerate", _MultiAccountGenerate);
-	NODE_SET_METHOD(exports, "MultiAccountStoreDerivedAccounts", _MultiAccountStoreDerivedAccounts);
-	NODE_SET_METHOD(exports, "MultiAccountStoreAccount", _MultiAccountStoreAccount);
-	NODE_SET_METHOD(exports, "InitKeystore", _InitKeystore);
-	NODE_SET_METHOD(exports, "StopCPUProfiling", _StopCPUProfiling);
+	NODE_SET_METHOD(exports, "multiAccountGenerateAndDeriveAddresses", _MultiAccountGenerateAndDeriveAddresses);
+	NODE_SET_METHOD(exports, "multiAccountImportPrivateKey", _MultiAccountImportPrivateKey);
+	NODE_SET_METHOD(exports, "multiAccountLoadAccount", _MultiAccountLoadAccount);
+	NODE_SET_METHOD(exports, "multiAccountReset", _MultiAccountReset);
+	NODE_SET_METHOD(exports, "multiAccountDeriveAddresses", _MultiAccountDeriveAddresses);
+	NODE_SET_METHOD(exports, "multiAccountImportMnemonic", _MultiAccountImportMnemonic);
+	NODE_SET_METHOD(exports, "multiAccountGenerate", _MultiAccountGenerate);
+	NODE_SET_METHOD(exports, "multiAccountStoreDerivedAccounts", _MultiAccountStoreDerivedAccounts);
+	NODE_SET_METHOD(exports, "multiAccountStoreAccount", _MultiAccountStoreAccount);
+	NODE_SET_METHOD(exports, "initKeystore", _InitKeystore);
+	NODE_SET_METHOD(exports, "stopCPUProfiling", _StopCPUProfiling);
 	NODE_SET_METHOD(exports, "identicon", _Identicon);
-	NODE_SET_METHOD(exports, "Logout", _Logout);
-	NODE_SET_METHOD(exports, "HashMessage", _HashMessage);
-	NODE_SET_METHOD(exports, "ResetChainData", _ResetChainData);
-	NODE_SET_METHOD(exports, "SaveAccountAndLogin", _SaveAccountAndLogin);
-	NODE_SET_METHOD(exports, "GenerateAlias", _GenerateAlias);
-	NODE_SET_METHOD(exports, "ValidateMnemonic", _ValidateMnemonic);
-	NODE_SET_METHOD(exports, "MultiformatSerializePublicKey", _MultiformatSerializePublicKey);
-	NODE_SET_METHOD(exports, "SaveAccountAndLoginWithKeycard", _SaveAccountAndLoginWithKeycard);
-	NODE_SET_METHOD(exports, "LoginWithKeycard", _LoginWithKeycard);
-	NODE_SET_METHOD(exports, "MultiformatDeserializePublicKey", _MultiformatDeserializePublicKey);
-	NODE_SET_METHOD(exports, "Login", _Login);
-	NODE_SET_METHOD(exports, "StartCPUProfile", _StartCPUProfile);
-	NODE_SET_METHOD(exports, "OpenAccounts", _OpenAccounts);
-	NODE_SET_METHOD(exports, "ExtractGroupMembershipSignatures", _ExtractGroupMembershipSignatures);
-	NODE_SET_METHOD(exports, "CallPrivateRPC", _CallPrivateRPC);
-	NODE_SET_METHOD(exports, "VerifyAccountPassword", _VerifyAccountPassword);
-	NODE_SET_METHOD(exports, "SendTransactionWithSignature", _SendTransactionWithSignature);
-	NODE_SET_METHOD(exports, "WriteHeapProfile", _WriteHeapProfile);
-	NODE_SET_METHOD(exports, "AddPeer", _AddPeer);
-	NODE_SET_METHOD(exports, "SignHash", _SignHash);
-	NODE_SET_METHOD(exports, "SignGroupMembership", _SignGroupMembership);
-	NODE_SET_METHOD(exports, "CallRPC", _CallRPC);
-	NODE_SET_METHOD(exports, "SignMessage", _SignMessage);
-	NODE_SET_METHOD(exports, "SignTypedData", _SignTypedData);
-	NODE_SET_METHOD(exports, "SendTransaction", _SendTransaction);
-	NODE_SET_METHOD(exports, "AppStateChange", _AppStateChange);
-        NODE_SET_METHOD(exports, "SetSignalEventCallback", _SetSignalEventCallback);
-	NODE_SET_METHOD(exports, "ValidateNodeConfig", _ValidateNodeConfig);
-	NODE_SET_METHOD(exports, "HashTypedData", _HashTypedData);
-	NODE_SET_METHOD(exports, "Recover", _Recover);
-	NODE_SET_METHOD(exports, "HashTransaction", _HashTransaction);
-	NODE_SET_METHOD(exports, "ConnectionChange", _ConnectionChange);
-
+	NODE_SET_METHOD(exports, "logout", _Logout);
+	NODE_SET_METHOD(exports, "hashMessage", _HashMessage);
+	NODE_SET_METHOD(exports, "resetChainData", _ResetChainData);
+	NODE_SET_METHOD(exports, "saveAccountAndLogin", _SaveAccountAndLogin);
+	NODE_SET_METHOD(exports, "generateAlias", _GenerateAlias);
+	NODE_SET_METHOD(exports, "validateMnemonic", _ValidateMnemonic);
+	NODE_SET_METHOD(exports, "multiformatSerializePublicKey", _MultiformatSerializePublicKey);
+	NODE_SET_METHOD(exports, "saveAccountAndLoginWithKeycard", _SaveAccountAndLoginWithKeycard);
+	NODE_SET_METHOD(exports, "loginWithKeycard", _LoginWithKeycard);
+	NODE_SET_METHOD(exports, "multiformatDeserializePublicKey", _MultiformatDeserializePublicKey);
+	NODE_SET_METHOD(exports, "login", _Login);
+	NODE_SET_METHOD(exports, "startCPUProfile", _StartCPUProfile);
+	NODE_SET_METHOD(exports, "openAccounts", _OpenAccounts);
+	NODE_SET_METHOD(exports, "extractGroupMembershipSignatures", _ExtractGroupMembershipSignatures);
+	NODE_SET_METHOD(exports, "callPrivateRPC", _CallPrivateRPC);
+	NODE_SET_METHOD(exports, "verifyAccountPassword", _VerifyAccountPassword);
+	NODE_SET_METHOD(exports, "sendTransactionWithSignature", _SendTransactionWithSignature);
+	NODE_SET_METHOD(exports, "writeHeapProfile", _WriteHeapProfile);
+	NODE_SET_METHOD(exports, "addPeer", _AddPeer);
+	NODE_SET_METHOD(exports, "signHash", _SignHash);
+	NODE_SET_METHOD(exports, "signGroupMembership", _SignGroupMembership);
+	NODE_SET_METHOD(exports, "callRPC", _CallRPC);
+	NODE_SET_METHOD(exports, "signMessage", _SignMessage);
+	NODE_SET_METHOD(exports, "signTypedData", _SignTypedData);
+	NODE_SET_METHOD(exports, "sendTransaction", _SendTransaction);
+	NODE_SET_METHOD(exports, "appStateChange", _AppStateChange);
+        NODE_SET_METHOD(exports, "setSignalEventCallback", _SetSignalEventCallback);
+	NODE_SET_METHOD(exports, "validateNodeConfig", _ValidateNodeConfig);
+	NODE_SET_METHOD(exports, "hashTypedData", _HashTypedData);
+	NODE_SET_METHOD(exports, "recover", _Recover);
+	NODE_SET_METHOD(exports, "hashTransaction", _HashTransaction);
+	NODE_SET_METHOD(exports, "connectionChange", _ConnectionChange);
+	NODE_SET_METHOD(exports, "pollSignal", _PollSignal);
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, init)

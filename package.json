@@ -84,6 +84,7 @@
     "clj-kondo": "^2020.1.13",
     "coveralls": "^3.0.4",
     "jest": "^25.1.0",
+    "nodemon": "^2.0.16",
     "nyc": "^14.1.1",
     "process": "0.11.10",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#refs/tags/v2.0.2-status",
