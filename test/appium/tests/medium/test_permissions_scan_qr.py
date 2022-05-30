@@ -151,7 +151,7 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(702291)
+    @marks.testrail_id(702292)
     def test_scan_qr_with_scan_contact_code_via_start_chat(self):
 
         url_data = {
