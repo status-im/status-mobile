@@ -1053,9 +1053,9 @@
        (assoc :show-input? true)
 
        (and (chat.models/group-chat? current-chat)
-            (group-chats.db/joined? my-public-key current-chat))
+            (group-chats.db/member? my-public-key current-chat))
        (assoc :show-input? true
-              :joined? true)
+              :member? true)
 
        (and (chat.models/community-chat? current-chat)
             (communities/can-post? community my-public-key (:chat-id current-chat)))
@@ -1413,7 +1413,7 @@
    [(re-frame/subscribe [:chat-by-id chat-id])
     (re-frame/subscribe [:multiaccount/public-key])])
  (fn [[chat my-public-key]]
-   {:joined? (group-chats.db/joined? my-public-key chat)
+   {:member? (group-chats.db/member? my-public-key chat)
     :inviter-pk (group-chats.db/get-inviter-pk my-public-key chat)}))
 
 (re-frame/reg-sub

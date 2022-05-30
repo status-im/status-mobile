@@ -157,13 +157,13 @@
             (i18n/label :t/empty-pending-invitations-descr)])]]])))
 
 (defview group-chat-profile []
-  (letsubs [{:keys [admins chat-id joined? chat-name color contacts] :as current-chat} [:chats/current-chat]
+  (letsubs [{:keys [admins chat-id member? chat-name color contacts] :as current-chat} [:chats/current-chat]
             members         [:contacts/current-chat-contacts]
             current-pk      [:multiaccount/public-key]
             pinned-messages [:chats/pinned chat-id]]
     (when current-chat
       (let [admin?                (get admins current-pk)
-            allow-adding-members? (and admin? joined?
+            allow-adding-members? (and admin? member?
                                        (< (count members) constants/max-group-chat-participants))]
         [react/view profile.components.styles/profile
          [quo/animated-header
@@ -171,7 +171,7 @@
            :left-accessories  [{:icon                :main-icons/arrow-left
                                 :accessibility-label :back-button
                                 :on-press            #(re-frame/dispatch [:navigate-back])}]
-           :right-accessories (when (and admin? joined?)
+           :right-accessories (when (and admin? member?)
                                 [{:icon                :icons/edit
                                   :accessibility-label :edit-button
                                   :on-press            #(re-frame/dispatch [:open-modal :edit-group-chat-name])}])
@@ -200,7 +200,7 @@
              :accessory-text      (count pinned-messages)
              :chevron             true
              :on-press            #(re-frame/dispatch [:contact.ui/pinned-messages-pressed chat-id])}]
-           (when joined?
+           (when member?
              [quo/list-item
               {:theme               :negative
                :title               (i18n/label :t/leave-chat)

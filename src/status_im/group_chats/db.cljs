@@ -2,9 +2,9 @@
 
 (def members-added-type 3)
 
-(defn joined?
-  [public-key {:keys [members-joined]}]
-  (contains? members-joined public-key))
+(defn member?
+  [public-key {:keys [contacts]}]
+  (contains? contacts public-key))
 
 (defn invited?
   [my-public-key {:keys [contacts]}]

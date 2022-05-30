@@ -99,7 +99,7 @@
 
 (defn group-chat-accents []
   (fn [{:keys [chat-id group-chat chat-name color invitation-admin]}]
-    (let [{:keys [joined?]} @(re-frame/subscribe [:group-chat/inviter-info chat-id])
+    (let [{:keys [member?]} @(re-frame/subscribe [:group-chat/inviter-info chat-id])
           removed? @(re-frame/subscribe [:group-chat/removed-from-current-chat?])]
       (if invitation-admin
         [quo/list-item
@@ -125,7 +125,7 @@
            :accessibility-label :mark-all-read-button
            :icon                :main-icons/check
            :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
-         (when joined?
+         (when member?
            [quo/list-item
             {:theme               :negative
              :title               (i18n/label :t/leave-chat)

@@ -12,13 +12,6 @@
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn join-chat-button [chat-id]
-  [quo/button
-   {:type                :secondary
-    :accessibility-label :join-chat-button
-    :on-press            #(debounce/dispatch-and-chill [:group-chats.ui/join-pressed chat-id] 2000)}
-   (i18n/label :t/join-group-chat)])
-
 (defn decline-chat [chat-id]
   [quo/button
    {:type                :secondary
@@ -69,16 +62,9 @@
 
 (defview group-chat-footer
   [chat-id invitation-admin]
-  (letsubs [{:keys [joined?]} [:group-chat/inviter-info chat-id]
-            removed? [:group-chat/removed-from-current-chat?]
-            invitations [:group-chat/invitations-by-chat-id chat-id]]
-    (if invitation-admin
-      [request-membership (first invitations)]
-      (when (and (not joined?) (not removed?))
-        [react/view {:style style/group-chat-join-footer}
-         [react/view {:style style/group-chat-join-container}
-          [join-chat-button chat-id]
-          [decline-chat chat-id]]]))))
+  (letsubs [invitations [:group-chat/invitations-by-chat-id chat-id]]
+    (when invitation-admin
+      [request-membership (first invitations)])))
 
 (def group-chat-description-loading
   [react/view {:style (merge style/intro-header-description-container
@@ -153,10 +139,10 @@
                {:group-name chat-name})])
 
 (defview group-chat-inviter-description-container [chat-id chat-name]
-  (letsubs [{:keys [joined? inviter-pk]}
+  (letsubs [{:keys [member? inviter-pk]}
             [:group-chat/inviter-info chat-id]]
     (cond
-      (not joined?)
+      (not member?)
       [pending-invitation-description inviter-pk chat-name]
       inviter-pk
       [joined-group-chat-description inviter-pk chat-name]
