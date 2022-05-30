@@ -76,7 +76,7 @@
 (fx/defn handle-public-chat [cofx {:keys [topic]}]
   (log/info "universal-links: handling public chat" topic)
   (when (seq topic)
-    (chat/start-public-chat cofx topic {})))
+    (chat/start-public-chat cofx topic)))
 
 (fx/defn handle-view-profile
   [{:keys [db] :as cofx} {:keys [public-key ens-name]}]

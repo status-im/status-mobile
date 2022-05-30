@@ -31,8 +31,7 @@
     :accessibility-label :request-a-feature-button
     :on-press
     #(re-frame/dispatch [:chat.ui/start-public-chat
-                         "support"
-                         {:navigation-reset? false}])
+                         "support"])
     :chevron             true}])
 
 (defn help-center []

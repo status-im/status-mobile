@@ -123,8 +123,7 @@
             ;[quo2.foundations.colors :as quo2.colors]))
 
 (def components
-  [{:name      :chat-toolbar
-    :component chat/topbar}])
+  [])
 
 (defn right-button-options [id icon]
   {:id   id
@@ -222,10 +221,9 @@
            ;Chat
            {:name          :chat
             :options       {:popGesture false
-                            :topBar     {:title        {:component {:name :chat-toolbar :id :chat-toolbar}
-                                                        :alignment :fill}
-                                         :rightButtons (right-button-options :chat :more)}}
-            :right-handler chat/topbar-button
+                            :hardwareBackButton {:dismissModalOnPress false
+                                                 :popStackOnPress     false}
+                            :topBar             {:visible false}}
             :component     chat/chat}
 
            ;Pinned messages

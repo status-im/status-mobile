@@ -6,7 +6,7 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             ["react" :as reactjs]
-            ["react-native" :as react-native :refer (Keyboard)]
+            ["react-native" :as react-native :refer (Keyboard BackHandler)]
             ["react-native-image-crop-picker" :default image-picker]
             ["react-native-safe-area-context" :as safe-area-context
              :refer (SafeAreaProvider SafeAreaInsetsContext)]
@@ -270,3 +270,9 @@
 
 (def safe-area-provider (reagent/adapt-react-class SafeAreaProvider))
 (def safe-area-consumer (reagent/adapt-react-class (.-Consumer ^js SafeAreaInsetsContext)))
+
+(defn hw-back-add-listener [callback]
+  (.addEventListener BackHandler "hardwareBackPress" callback))
+
+(defn hw-back-remove-listener [callback]
+  (.removeEventListener BackHandler "hardwareBackPress" callback))

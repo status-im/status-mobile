@@ -11,9 +11,8 @@
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [cofx {:keys [public-key ens-name]}]
   (fx/merge cofx
-            {:dispatch-later [{:ms 1000 :dispatch [:chat.ui/start-chat public-key ens-name]}]}
-            (notification-center/accept-all-activity-center-notifications-from-chat public-key)
-            (navigation/pop-to-root-tab :chat-stack)))
+            (chat/start-chat public-key ens-name)
+            (notification-center/accept-all-activity-center-notifications-from-chat public-key)))
 
 (fx/defn contact-code-submitted
   {:events       [:contact.ui/contact-code-submitted]
