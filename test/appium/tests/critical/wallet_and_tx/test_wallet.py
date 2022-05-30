@@ -76,6 +76,7 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         public_chat.chat_message_input.paste_text_from_clipboard()
         if public_chat.chat_message_input.text != transaction_hash:
             self.errors.append('Transaction hash was not copied')
+        public_chat.back_button.click()
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700759)

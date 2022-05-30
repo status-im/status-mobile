@@ -38,7 +38,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
         profile.just_fyi('Navigating to contact list and check that user is not in list')
         profile.close_button.click()
-        profile.back_button.click()
+        profile.navigate_up_button.click()
         if profile.element_by_text(basic_user["username"]).is_element_displayed():
             self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
 
@@ -125,7 +125,7 @@ class TestChatManagement(SingleDeviceTestCase):
         profile_view.logout()
 
         sign_in.just_fyi('Login to keycard account and send another transaction')
-        sign_in.back_button.click()
+        sign_in.navigate_up_button.click()
         sign_in.sign_in(position=2, keycard=True)
         sign_in.wallet_button.click()
         wallet.wait_balance_is_changed('ETH')
@@ -592,7 +592,7 @@ class TestChatManagement(SingleDeviceTestCase):
         keycard.close_button.click()
         if not keycard.element_by_translation_id("keycard-blocked").is_element_displayed():
             self.errors.append("In keycard settings there is no info that card is blocked")
-        keycard.back_button.click()
+        keycard.navigate_up_button.click()
         profile.logout()
 
         home.just_fyi("Check blocked card when user is logged out and use lost or frozen to restore access")
@@ -785,8 +785,7 @@ class TestChatManagement(SingleDeviceTestCase):
         if not re.search(r'StatusIM/v.*/android-\d{3}/go\d[.]\d+', node_version):
             self.errors.append("Node version %s didn't match expected format" % node_version)
         profile.app_version_text.click()
-        profile.back_button.click()
-        profile.home_button.click()
+        profile.home_button.double_click()
         chat = home.join_public_chat(home.get_random_chat_name())
         message_input = chat.chat_message_input
         message_input.paste_text_from_clipboard()
@@ -829,8 +828,9 @@ class TestChatManagement(SingleDeviceTestCase):
     def test_use_pinned_history_node(self):
         home = SignInView(self.driver).create_user()
         profile = home.profile_button.click()
+        home.profile_button.click()
 
-        profile.just_fyi('pin history node')
+        home.just_fyi('pin history node')
         profile.sync_settings_button.click()
         node_gc, node_ams, node_hk = [profile.return_mailserver_name(history_node_name, used_fleet) for
                                       history_node_name in (mailserver_gc, mailserver_ams, mailserver_hk)]
@@ -872,7 +872,7 @@ class TestChatManagement(SingleDeviceTestCase):
         profile.logout()
         if sign_in.ok_button.is_element_displayed():
             sign_in.ok_button.click()
-        sign_in.back_button.click()
+        sign_in.navigate_up_button.click()
         sign_in.your_keys_more_icon.click()
         sign_in.generate_new_key_button.click()
         sign_in.next_button.click()

@@ -88,7 +88,7 @@ class ViewProfileButton(Button):
 
 class ChatOptionsButton(Button):
     def __init__(self, driver):
-        super().__init__(driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
+        super().__init__(driver, accessibility_id="chat-menu-button")
 
     def click(self):
         self.click_until_presence_of_element(HomeView(self.driver).mark_all_messages_as_read_button)
@@ -884,7 +884,7 @@ class ChatView(BaseView):
         element.scroll_to_element(depth=21)
         element.click()
         element.wait_for_invisibility_of_element()
-        self.back_button.click()
+        self.navigate_up_button.click()
         time.sleep(2)
         self.swipe_left()
         self.driver.info("## Stickerpack is installed successfully!", device=False)

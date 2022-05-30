@@ -174,7 +174,6 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Device1 checks unread indicator on Activity center bell")
         if not self.home_1.notifications_unread_badge.is_element_displayed():
             self.errors.append("Unread badge is NOT shown after receiving mentions from Group")
-        self.home_1.notifications_unread_badge.wait_for_element(30)
         self.home_1.notifications_unread_badge.click_until_absense_of_element(self.home_1.plus_button)
 
         self.home_1.just_fyi("Check that notification from group is presented in Activity Center")

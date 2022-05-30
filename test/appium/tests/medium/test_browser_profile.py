@@ -207,9 +207,9 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702160)
     def test_profile_add_remove_contact_via_contacts_view(self):
-
         self.home.just_fyi('Check empty contacts view')
         profile = self.home.profile_button.click()
+        self.home.profile_button.click()
         profile.contacts_button.click()
         if not profile.add_new_contact_button.is_element_displayed():
             self.driver.fail('No expected element on contacts view')
@@ -280,9 +280,8 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702166)
     def test_profile_add_custom_network(self):
-        self.home.get_back_to_home_view()
-
         profile = self.home.profile_button.click()
+        self.home.get_back_to_home_view()
         profile.add_custom_network()
         self.sign_in.sign_in()
         self.home.profile_button.click()
@@ -298,7 +297,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702164)
     def test_profile_backup_of_contacts(self):
-
+        self.home.get_back_to_home_view()
         self.home.just_fyi('Add user to contacts')
         chat = self.home.add_contact(basic_user['public_key'])
 
@@ -334,7 +333,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         profile.perform_backup_button.click()
 
         profile.just_fyi('Backup seed phrase')
-        profile.back_button.click(2)
+        profile.get_back_to_home_view()
         profile.privacy_and_security_button.click()
         profile.backup_recovery_phrase_button.click()
         profile.ok_continue_button.click()

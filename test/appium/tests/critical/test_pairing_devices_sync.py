@@ -135,10 +135,11 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         cls.profile_1, cls.profile_2 = cls.home_1.profile_button.click(), cls.home_2.profile_button.click()
 
         cls.device_2.just_fyi('Nicknames (main device): set nickname for contact')
+        cls.profile_1.profile_button.click()
         cls.profile_1.open_contact_from_profile(cls.contact_before_sync['username'])
         cls.nickname = 'my_basic_user'
         cls.chat_1.set_nickname(cls.nickname)
-        cls.device_1.back_button.click()
+        cls.device_1.get_back_to_home_view()
 
         cls.device_2.just_fyi('Pair main and secondary devices')
         cls.profile_2.discover_and_advertise_device(cls.name_2)

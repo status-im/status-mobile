@@ -145,8 +145,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702248)
     def test_chat_can_start_and_find_from_suggestions_using_search(self):
-
-        self.home.home_button.click()
+        self.home.home_button.double_click()
         self.home.just_fyi('Start 1-1 with username and with ENS')
 
         for public_key in (basic_user['public_key'], dummy_user['public_key']):
@@ -240,6 +239,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702253)
     def test_chat_no_suggestions_invalid_data_search(self):
         self.home.just_fyi('No suggestion at attempt to search for invalid data')
+        self.home.home_button.double_click()
         invalid_data = ['   ', 'ab;', '.6', '@ana']
         for text in invalid_data:
             self.home.search_by_keyword(text)
@@ -251,9 +251,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702249)
     def test_chat_input_delete_cut_and_paste_messages(self):
-
         chat = self.home.add_contact(transaction_senders['N']['public_key'])
-
         message_text = 'test'
         message_input = chat.chat_message_input
         message_input.send_keys(message_text)
@@ -280,13 +278,12 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         chat.send_message_button.click()
 
         chat.chat_element_by_text(message_text[:-2]).wait_for_visibility_of_element(2)
-        chat.get_back_to_home_view()
 
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702250)
     def test_chat_public_clear_history_via_options_and_long_press(self):
-
+        self.home.home_button.double_click()
         public_long_press = '#public-clear-options'
         options_chat_name = '#' + self.public_chat_name
         message = 'test message'
@@ -326,6 +323,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
     # Should be the last in group as it disables network connection
     def test_chat_can_search_while_offline(self):
         self.home.just_fyi('Can search for public chat while offline')
+        self.home.get_back_to_home_view()
         self.home.toggle_airplane_mode()
         self.home.search_input.click()
         self.home.search_input.send_keys(self.public_chat_name)
@@ -338,9 +336,3 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
                                    (element.text, self.public_chat_name))
 
         self.errors.verify_no_errors()
-
-
-
-
-
-
