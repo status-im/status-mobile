@@ -1,146 +1,80 @@
 import re
 import random
-import string
-
-from tests import marks, mailserver_ams, mailserver_gc, mailserver_hk, used_fleet, common_password, test_dapp_name,\
-    test_dapp_url, pair_code, unique_password
-from tests.users import user_mainnet, chat_users, dummy_user, recovery_users, transaction_senders, basic_user,\
+from tests import marks, mailserver_ams, mailserver_gc, mailserver_hk, used_fleet, common_password,\
+    pair_code, unique_password
+from tests.users import user_mainnet, chat_users, recovery_users, transaction_senders, basic_user,\
     wallet_users, ens_user_ropsten, ens_user
-from selenium.common.exceptions import NoSuchElementException
-
-from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from views.send_transaction_view import SendTransactionView
-from views.chat_view import ChatView
+from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
 @marks.medium
 class TestChatManagement(SingleDeviceTestCase):
 
-    @marks.testrail_id(6213)
-    # TODO: check main e2e about block; may be it makes sense to add additional check to it and remove this e2e at all
-    def test_contacts_unblock_user_is_not_added_back_to_contacts(self):
-        home = SignInView(self.driver).create_user()
-        chat = home.add_contact(basic_user["public_key"], add_in_contacts=False)
-
-        chat.just_fyi('Block user not added as contact from chat view')
-        chat.chat_options.click()
-        chat.view_profile_button.click()
-        chat.block_contact()
-        chat.get_back_to_home_view()
-
-        chat.just_fyi('Unblock user not added as contact from chat view')
-        profile = home.profile_button.click()
-        profile.contacts_button.click()
-        profile.blocked_users_button.click()
-        profile.element_by_text(basic_user["username"]).click()
-        chat.unblock_contact_button.click()
-
-        profile.just_fyi('Navigating to contact list and check that user is not in list')
-        profile.close_button.click()
-        profile.navigate_up_button.click()
-        if profile.element_by_text(basic_user["username"]).is_element_displayed():
-            self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
-
-    @marks.testrail_id(6300)
-    @marks.skip
-    # TODO: waiting mode (rechecked 23.11.21, valid)
-    def test_webview_security(self):
-        home_view = SignInView(self.driver).create_user()
-        daap_view = home_view.dapp_tab_button.click()
-
-        browsing_view = daap_view.open_url('https://simpledapp.status.im/webviewtest/url-spoof-ssl.html')
-        browsing_view.url_edit_box_lock_icon.click()
-        if not browsing_view.element_by_translation_id("browser-not-secure").is_element_displayed():
-            self.errors.append("Broken certificate displayed as secure connection \n")
-
-        browsing_view.cross_icon.click()
-        daap_view.open_url('https://simpledapp.status.im/webviewtest/webviewtest.html')
-        browsing_view.element_by_text_part('204').click()
-        if browsing_view.element_by_text_part('google.com').is_element_displayed():
-            self.errors.append("URL changed on attempt to redirect to no-content page \n")
-
-        browsing_view.cross_icon.click()
-        daap_view.open_url('https://simpledapp.status.im/webviewtest/webviewtest.html')
-        browsing_view.element_by_text_part('XSS check').click()
-        browsing_view.open_in_status_button.click()
-        if browsing_view.element_by_text_part('simpledapp.status.im').is_element_displayed():
-            self.errors.append("XSS attemp succedded \n")
-            browsing_view.ok_button.click()
-
-        browsing_view.cross_icon.click()
-        daap_view.open_url('https://simpledapp.status.im/webviewtest/url-blank.html')
-        if daap_view.edit_url_editbox.text == '':
-            self.errors.append("Blank URL value. Must show the actual URL \n")
-
-        browsing_view.cross_icon.click()
-        daap_view.open_url('https://simpledapp.status.im/webviewtest/port-timeout.html')
-        # wait up  ~2.5 mins for port time out
-        if daap_view.element_by_text_part('example.com').is_element_displayed(150):
-            self.errors.append("URL spoof due to port timeout \n")
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6311)
-    # TODO: can be added to any group where kk multiaccount with money is restored as additional check
-    def test_keycard_same_seed_added_inside_multiaccount(self):
+    @marks.testrail_id(6243)
+    def test_keycard_can_recover_keycard_account_offline_and_add_watch_only_acc(self):
         sign_in = SignInView(self.driver)
-        recipient = "0x" + transaction_senders['ETH_1']['address']
-        user = transaction_senders['ETH_STT_4']
+        sign_in.toggle_airplane_mode()
 
-        sign_in.just_fyi('Restore keycard multiaccount and logout')
-        sign_in.recover_access(passphrase=user['passphrase'], keycard=True)
-        profile_view = sign_in.profile_button.click()
-        profile_view.logout()
-
-        sign_in.just_fyi('Create new multiaccount')
-        sign_in.close_button.click()
-        sign_in.your_keys_more_icon.click()
-        sign_in.generate_new_key_button.click()
-        sign_in.next_button.click()
-        sign_in.next_button.click()
-        sign_in.create_password_input.set_value(common_password)
-        sign_in.next_button.click()
-        sign_in.confirm_your_password_input.set_value(common_password)
-        sign_in.next_button.click()
+        sign_in.just_fyi('Recover multiaccount offline')
+        sign_in.accept_tos_checkbox.enable()
+        sign_in.get_started_button.click_until_presence_of_element(sign_in.access_key_button)
+        sign_in.access_key_button.click()
+        sign_in.recover_with_keycard_button.click()
+        keycard_view = sign_in.begin_recovery_button.click()
+        keycard_view.connect_pairing_card_button.click()
+        keycard_view.pair_code_input.set_value(pair_code)
+        keycard_view.confirm()
+        keycard_view.enter_default_pin()
         sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
-        sign_in.lets_go_button.click()
+        sign_in.lets_go_button.click_until_absense_of_element(sign_in.lets_go_button)
+        sign_in.home_button.wait_for_visibility_of_element(30)
+        wallet_view = sign_in.wallet_button.click()
 
-        sign_in.just_fyi('Add to wallet seed phrase for restored multiaccount')
-        wallet = sign_in.wallet_button.click()
-        wallet.add_account_button.click()
-        wallet.enter_a_seed_phrase_button.click()
-        wallet.enter_your_password_input.send_keys(common_password)
-        account_name = 'subacc'
-        wallet.account_name_input.send_keys(account_name)
-        wallet.enter_seed_phrase_input.set_value(user['passphrase'])
-        wallet.add_account_generate_account_button.click()
-        wallet.get_account_by_name(account_name).click()
+        sign_in.just_fyi('Relogin offline')
+        self.driver.close_app()
+        self.driver.launch_app()
+        sign_in.sign_in(keycard=True)
+        if not sign_in.home_button.is_element_displayed(10):
+            self.driver.fail('Keycard user is not logged in')
 
-        sign_in.just_fyi('Send transaction from added account and log out')
-        transaction_amount_added = wallet.get_unique_amount()
-        wallet.send_transaction(from_main_wallet=False, amount=transaction_amount_added, recipient=recipient,
-                                sign_transaction=True)
-        wallet.profile_button.click()
-        profile_view.logout()
-
-        sign_in.just_fyi('Login to keycard account and send another transaction')
-        sign_in.navigate_up_button.click()
-        sign_in.sign_in(position=2, keycard=True)
+        sign_in.just_fyi('Turn off airplane mode and turn on cellular network')
+        sign_in.toggle_airplane_mode()
+        sign_in.toggle_mobile_data()
+        sign_in.element_by_text_part('Stop syncing').wait_and_click(60)
         sign_in.wallet_button.click()
-        wallet.wait_balance_is_changed('ETH')
-        transaction_amount_keycard = wallet.get_unique_amount()
-        wallet.send_transaction(amount=transaction_amount_keycard, recipient=recipient, keycard=True,
-                                sign_transaction=True)
+        if not wallet_view.element_by_text_part('LXS').is_element_displayed():
+            self.errors.append('Token balance is not fetched while on cellular network!')
 
-        for amount in [transaction_amount_keycard, transaction_amount_added]:
-            sign_in.just_fyi("Checking '%s' tx" % amount)
-            self.network_api.find_transaction_by_unique_amount(user['address'], amount)
+        wallet_view.just_fyi('Add watch-only account when on cellular network')
+        wallet_view.add_account_button.click()
+        wallet_view.add_watch_only_address_button.click()
+        wallet_view.enter_address_input.send_keys(basic_user['address'])
+        account_name = 'watch-only'
+        wallet_view.account_name_input.send_keys(account_name)
+        wallet_view.add_account_generate_account_button.click()
+        account_button = wallet_view.get_account_by_name(account_name)
+        if not account_button.is_element_displayed():
+            self.driver.fail('Account was not added')
+
+        wallet_view.just_fyi('Check that balance is changed after go back to WI-FI')
+        sign_in.toggle_mobile_data()
+        for asset in ('ADI', 'STT'):
+            wallet_view.asset_by_name(asset).scroll_to_element()
+            wallet_view.wait_balance_is_changed(asset, wait_time=60)
+
+        wallet_view.just_fyi('Delete watch-only account')
+        wallet_view.get_account_by_name(account_name).click()
+        wallet_view.get_account_options_by_name(account_name).click()
+        wallet_view.account_settings_button.click()
+        wallet_view.delete_account_button.click()
+        wallet_view.yes_button.click()
+        if wallet_view.get_account_by_name(account_name).is_element_displayed(20):
+            self.errors.append('Account was not deleted')
 
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6292)
-    # TODO: better to recover user already eith
     def test_keycard_send_funds_between_accounts_set_max_in_multiaccount_instance(self):
         sign_in_view = SignInView(self.driver).create_user(keycard=True)
         wallet = sign_in_view.wallet_button.click()
@@ -227,7 +161,6 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet.wait_balance_is_equal_expected_amount(asset='ETH', expected_balance=0, main_screen=False)
 
     @marks.testrail_id(5742)
-    # TODO: can be separate group of medium onboarding e2e
     def test_keycard_onboarding_interruption_creating_flow(self):
         sign_in = SignInView(self.driver)
 
@@ -281,7 +214,6 @@ class TestChatManagement(SingleDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6246)
-    # TODO: can be separate group of medium onboarding e2e
     def test_keycard_onboarding_interruption_access_key_flow(self):
         sign_in = SignInView(self.driver)
         sign_in.accept_tos_checkbox.enable()
@@ -322,133 +254,7 @@ class TestChatManagement(SingleDeviceTestCase):
             self.errors.append("Failed to login to Keycard account")
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(6243)
-    # TODO: add to keycard medium group e2e
-    def test_keycard_can_recover_keycard_account_offline_and_add_watch_only_acc(self):
-        sign_in = SignInView(self.driver)
-        sign_in.toggle_airplane_mode()
-
-        sign_in.just_fyi('Recover multiaccount offline')
-        sign_in.accept_tos_checkbox.enable()
-        sign_in.get_started_button.click_until_presence_of_element(sign_in.access_key_button)
-        sign_in.access_key_button.click()
-        sign_in.recover_with_keycard_button.click()
-        keycard_view = sign_in.begin_recovery_button.click()
-        keycard_view.connect_pairing_card_button.click()
-        keycard_view.pair_code_input.set_value(pair_code)
-        keycard_view.confirm()
-        keycard_view.enter_default_pin()
-        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
-        sign_in.lets_go_button.click_until_absense_of_element(sign_in.lets_go_button)
-        sign_in.home_button.wait_for_visibility_of_element(30)
-        wallet_view = sign_in.wallet_button.click()
-
-        sign_in.just_fyi('Relogin offline')
-        self.driver.close_app()
-        self.driver.launch_app()
-        sign_in.sign_in(keycard=True)
-        if not sign_in.home_button.is_element_displayed(10):
-            self.driver.fail('Keycard user is not logged in')
-
-        sign_in.just_fyi('Turn off airplane mode and turn on cellular network')
-        sign_in.toggle_airplane_mode()
-        sign_in.toggle_mobile_data()
-        sign_in.element_by_text_part('Stop syncing').wait_and_click(60)
-        sign_in.wallet_button.click()
-        if not wallet_view.element_by_text_part('LXS').is_element_displayed():
-            self.errors.append('Token balance is not fetched while on cellular network!')
-
-        wallet_view.just_fyi('Add watch-only account when on cellular network')
-        wallet_view.add_account_button.click()
-        wallet_view.add_watch_only_address_button.click()
-        wallet_view.enter_address_input.send_keys(basic_user['address'])
-        account_name = 'watch-only'
-        wallet_view.account_name_input.send_keys(account_name)
-        wallet_view.add_account_generate_account_button.click()
-        account_button = wallet_view.get_account_by_name(account_name)
-        if not account_button.is_element_displayed():
-            self.driver.fail('Account was not added')
-
-        wallet_view.just_fyi('Check that balance is changed after go back to WI-FI')
-        sign_in.toggle_mobile_data()
-        for asset in ('ADI', 'STT'):
-            wallet_view.asset_by_name(asset).scroll_to_element()
-            wallet_view.wait_balance_is_changed(asset, wait_time=60)
-
-        wallet_view.just_fyi('Delete watch-only account')
-        wallet_view.get_account_by_name(account_name).click()
-        wallet_view.get_account_options_by_name(account_name).click()
-        wallet_view.account_settings_button.click()
-        wallet_view.delete_account_button.click()
-        wallet_view.yes_button.click()
-        if wallet_view.get_account_by_name(account_name).is_element_displayed(20):
-            self.errors.append('Account was not deleted')
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(695841)
-    # TODO: add to keycard medium group e2e
-    def test_keycard_settings_pin_puk_pairing(self):
-        sign_in = SignInView(self.driver)
-        seed = basic_user['passphrase']
-        home = sign_in.recover_access(passphrase=seed, keycard=True)
-        profile = home.profile_button.click()
-
-        home.just_fyi("Checking changing PIN")
-        profile.keycard_button.scroll_and_click()
-        keycard = profile.change_pin_button.click()
-        keycard.enter_another_pin()
-        keycard.wait_for_element_starts_with_text('2 attempts left', 30)
-        keycard.enter_default_pin()
-        if not keycard.element_by_translation_id("new-pin-description").is_element_displayed():
-            self.driver.fail("Screen for setting new pin is not shown!")
-        [keycard.enter_another_pin() for _ in range(2)]
-        if not keycard.element_by_translation_id("pin-changed").is_element_displayed(30):
-            self.driver.fail("Popup about successful setting new PIN is not shown!")
-        keycard.ok_button.click()
-
-        home.just_fyi("Checking changing PUK with new PIN")
-        profile.change_puk_button.click()
-        keycard.enter_another_pin()
-        if not keycard.element_by_translation_id("new-puk-description").is_element_displayed():
-            self.driver.fail("Screen for setting new puk is not shown!")
-        [keycard.one_button.click() for _ in range(12)]
-        if not keycard.element_by_translation_id("repeat-puk").is_element_displayed():
-            self.driver.fail("Confirmation screen for setting new puk is not shown!")
-        [keycard.one_button.click() for _ in range(12)]
-        if not keycard.element_by_translation_id("puk-changed").is_element_displayed(30):
-            self.driver.fail("Popup about successful setting new PUK is not shown!")
-        keycard.ok_button.click()
-
-        home.just_fyi("Checking setting pairing with new PIN")
-        profile.change_pairing_code_button.click()
-        keycard.enter_another_pin()
-        sign_in.create_password_input.wait_for_element()
-        sign_in.create_password_input.set_value(common_password)
-        sign_in.confirm_your_password_input.set_value(common_password + "1")
-        if not keycard.element_by_translation_id("pairing-code_error1").is_element_displayed():
-            self.errors.append("No error is shown when pairing codes don't match")
-        sign_in.confirm_your_password_input.delete_last_symbols(1)
-        sign_in.element_by_translation_id("change-pairing").click()
-        if not keycard.element_by_translation_id("pairing-changed").is_element_displayed(30):
-            self.driver.fail("Popup about successful setting new pairing is not shown!")
-        keycard.ok_button.click()
-
-        home.just_fyi("Checking backing up keycard")
-        profile.create_keycard_backup_button.scroll_and_click()
-        sign_in.seedphrase_input.set_value(seed)
-        sign_in.next_button.click()
-        keycard.return_card_to_factory_settings_checkbox.enable()
-        keycard.begin_setup_button.click()
-        keycard.yes_button.wait_and_click()
-        [keycard.enter_another_pin() for _ in range(2)]
-        keycard.element_by_translation_id("keycard-backup-success-title").wait_for_element(30)
-        keycard.ok_button.click()
-
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(695851)
-    # TODO: add to keycard medium group e2e
     def test_keycard_frozen_card_flows(self):
         sign_in = SignInView(self.driver)
         seed = basic_user['passphrase']
@@ -558,7 +364,6 @@ class TestChatManagement(SingleDeviceTestCase):
         home.home_button.wait_for_element(30)
 
     @marks.testrail_id(695852)
-    # TODO: add to keycard medium group e2e
     def test_keycard_blocked_card_lost_or_frozen_flows(self):
         sign_in = SignInView(self.driver)
         seed = basic_user['passphrase']
@@ -614,303 +419,6 @@ class TestChatManagement(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(6310)
-    # TODO: add to keycard medium group e2e
-    def test_keycard_testdapp_sign_typed_message_deploy_simple_contract_send_tx(self):
-        sender = transaction_senders['ETH_6']
-        home = SignInView(self.driver).recover_access(sender['passphrase'], keycard=True)
-        wallet = home.wallet_button.click()
-        status_test_dapp = home.open_status_test_dapp()
-        status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.transactions_button.click_until_presence_of_element(status_test_dapp.sign_typed_message_button)
-
-        wallet.just_fyi("Checking sign typed message")
-        send_transaction = status_test_dapp.sign_typed_message_button.click()
-        send_transaction.sign_with_keycard_button.click()
-        keycard_view = send_transaction.sign_with_keycard_button.click()
-        keycard_view.enter_default_pin()
-        if not keycard_view.element_by_text_part('0x6df0ce').is_element_displayed():
-            self.errors.append('Typed message was not signed')
-
-        wallet.just_fyi("Checking deploy simple contract")
-        send_transaction_view = status_test_dapp.deploy_contract_button.click()
-        send_transaction_view.sign_transaction(keycard=True)
-        if not status_test_dapp.element_by_text('Contract deployed at: ').is_element_displayed(300):
-            self.driver.fail('Contract was not created or tx taking too long')
-        for text in ['Call contract get function',
-                     'Call contract set function', 'Call function 2 times in a row']:
-            status_test_dapp.element_by_text(text).scroll_to_element()
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6295)
-    # TODO: may be merged with 6294 to group and add more tx tests
-    def test_keycard_send_tx_eth_to_ens(self):
-        sign_in = SignInView(self.driver)
-        sender = transaction_senders['ETH_4']
-        home = sign_in.recover_access(sender['passphrase'], keycard=True)
-        wallet = home.wallet_button.click()
-        wallet.home_button.click()
-
-        chat = home.add_contact(ens_user_ropsten['ens'])
-        chat.commands_button.click()
-        amount = chat.get_unique_amount()
-
-        send_message = chat.send_command.click()
-        send_message.amount_edit_box.set_value(amount)
-        send_message.confirm()
-        send_message.next_button.click()
-
-        from views.send_transaction_view import SendTransactionView
-        send_transaction = SendTransactionView(self.driver)
-        send_transaction.sign_transaction(keycard=True)
-        chat_sender_message = chat.get_outgoing_transaction()
-        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
-        chat_sender_message.transaction_status.wait_for_element_text(chat_sender_message.confirmed)
-
-    @marks.testrail_id(695890)
-    # TODO: may be split into several more atomic e2e and added to group of profile e2e
-    def test_profile_use_another_fleets_balance_bsc_xdai_advanced_set_nonce(self):
-        user = user_mainnet
-        sign_in = SignInView(self.driver)
-        home = sign_in.recover_access(user['passphrase'])
-
-        home.just_fyi("Check that can enable all toggles and still login successfully")
-        profile = home.profile_button.click()
-        profile.advanced_button.click()
-        profile.transaction_management_enabled_toggle.click()
-        profile.webview_debug_toggle.click()
-        profile.waku_bloom_toggle.scroll_and_click()
-        sign_in.sign_in()
-
-        home.just_fyi("Check tx management")
-        wallet = home.wallet_button.click()
-        send_tx = wallet.send_transaction_from_main_screen.click()
-        from views.send_transaction_view import SendTransactionView
-        send_tx = SendTransactionView(self.driver)
-        send_tx.amount_edit_box.set_value('0')
-        send_tx.set_recipient_address(transaction_senders['ETH_7']['address'])
-        send_tx.next_button.click()
-        send_tx.set_up_wallet_when_sending_tx()
-        send_tx.advanced_button.click()
-        send_tx.nonce_input.set_value('4')
-        send_tx.nonce_save_button.click()
-        error_text = send_tx.sign_transaction(error=True)
-        if error_text != 'nonce too low':
-            self.errors.append("%s is not expected error when signing tx with custom nonce" % error_text)
-
-        home.just_fyi("Check balance on mainnet")
-        profile = home.profile_button.click()
-        profile.switch_network()
-        wallet = home.wallet_button.click()
-        wallet.scan_tokens()
-        [wallet.wait_balance_is_equal_expected_amount(asset, value) for asset, value in user['mainnet'].items()]
-
-        home.just_fyi("Check balance on xDai and default network fee")
-        profile = home.profile_button.click()
-        profile.switch_network('xDai Chain')
-        home.wallet_button.click()
-        wallet.element_by_text(user['xdai']).wait_for_element(30)
-
-        home.just_fyi("Check balance on BSC and default network fee")
-        profile = home.profile_button.click()
-        profile.switch_network('BSC Network')
-        home.wallet_button.click()
-        wallet.element_by_text(user['bsc']).wait_for_element(30)
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6219)
-    # TODO: can bought ens to user from 695890 and use the same user
-    def test_profile_set_primary_ens_custom_domain(self):
-        home = SignInView(self.driver).recover_access(ens_user['passphrase'])
-        ens_second, ens_main = ens_user['ens_another'], ens_user['ens']
-
-        home.just_fyi('add 2 ENS names in Profile')
-        profile = home.profile_button.click()
-        dapp = profile.connect_existing_ens(ens_main)
-        profile.element_by_translation_id("ens-add-username").wait_and_click()
-        profile.element_by_translation_id("ens-want-custom-domain").wait_and_click()
-        dapp.ens_name_input.set_value(ens_second)
-        dapp.check_ens_name.click_until_presence_of_element(dapp.element_by_translation_id("ens-got-it"))
-        dapp.element_by_translation_id("ens-got-it").wait_and_click()
-
-        home.just_fyi('check that by default %s ENS is set' % ens_main)
-        dapp.element_by_translation_id("ens-primary-username").click()
-        message_to_check = 'Your messages are displayed to others with'
-        if not dapp.element_by_text('%s\n@%s' % (message_to_check, ens_main)).is_element_displayed():
-            self.errors.append('%s ENS username is not set as primary by default' % ens_main)
-
-        home.just_fyi('check view in chat settings ENS from other domain: %s after set new primary ENS' % ens_second)
-        dapp.set_primary_ens_username(ens_second).click()
-        if profile.username_in_ens_chat_settings_text.text != '@' + ens_second:
-            self.errors.append('ENS username %s is not shown in ENS username Chat Settings after enabling' % ens_second)
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5453)
-    # TODO: may be split into several more atomic e2e and added to group of profile e2e
-    def test_profile_privacy_policy_terms_of_use_node_version_need_help(self):
-        signin = SignInView(self.driver)
-        no_link_found_error_msg = 'Could not find privacy policy link at'
-        no_link_open_error_msg = 'Could not open our privacy policy from'
-        no_link_tos_error_msg = 'Could not open Terms of Use from'
-
-        signin.just_fyi("Checking privacy policy and TOS links")
-        if not signin.privacy_policy_link.is_element_present():
-            self.errors.append('%s Sign in view!' % no_link_found_error_msg)
-        if not signin.terms_of_use_link.is_element_displayed():
-            self.driver.fail("No Terms of Use link on Sign in view!")
-
-        home = signin.create_user()
-        profile = home.profile_button.click()
-        profile.about_button.click()
-        profile.privacy_policy_button.click()
-        from views.web_views.base_web_view import BaseWebView
-        web_page = BaseWebView(self.driver)
-        if not web_page.policy_summary.is_element_displayed():
-            self.errors.append('%s Profile about view!' % no_link_open_error_msg)
-        web_page.click_system_back_button()
-
-        profile.terms_of_use_button.click()
-        web_page.wait_for_d_aap_to_load()
-        web_page.swipe_by_custom_coordinates(0.5, 0.8, 0.5, 0.4)
-        if not web_page.terms_of_use_summary.is_element_displayed(30):
-            self.errors.append('%s Profile about view!' % no_link_tos_error_msg)
-        web_page.click_system_back_button()
-
-        signin.just_fyi("Checking that version match expected format and can be copied")
-        app_version = profile.app_version_text.text
-        node_version = profile.node_version_text.text
-        if not re.search(r'\d[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]', app_version):
-            self.errors.append("App version %s didn't match expected format" % app_version)
-        if not re.search(r'StatusIM/v.*/android-\d{3}/go\d[.]\d+', node_version):
-            self.errors.append("Node version %s didn't match expected format" % node_version)
-        profile.app_version_text.click()
-        profile.home_button.double_click()
-        chat = home.join_public_chat(home.get_random_chat_name())
-        message_input = chat.chat_message_input
-        message_input.paste_text_from_clipboard()
-        if message_input.text != app_version:
-            self.errors.append('Version number was not copied to clipboard')
-
-        signin.just_fyi("Checking Need help section")
-        home.profile_button.double_click()
-        profile.help_button.click()
-        web_page = profile.faq_button.click()
-        web_page.open_in_webview()
-        web_page.wait_for_d_aap_to_load()
-        if not profile.element_by_text_part("F.A.Q").is_element_displayed(30):
-            self.errors.append("FAQ is not shown")
-        profile.click_system_back_button()
-        profile.submit_bug_button.click()
-
-        signin.just_fyi("Checking bug submitting form")
-        profile.bug_description_edit_box.set_value('1234')
-        profile.bug_submit_button.click()
-        if not profile.element_by_translation_id("bug-report-too-short-description").is_element_displayed():
-            self.errors.append("Can submit big with too short description!")
-        profile.bug_description_edit_box.clear()
-        [field.set_value("Something wrong happened!!") for field in
-         (profile.bug_description_edit_box, profile.bug_steps_edit_box)]
-        profile.bug_submit_button.click()
-        if not profile.element_by_text_part("Welcome to Gmail").is_element_displayed(30):
-            self.errors.append("Mail client is not opened when submitting bug")
-        profile.click_system_back_button(2)
-
-        signin.just_fyi("Checking request feature")
-        profile.request_a_feature_button.click()
-        if not profile.element_by_text("#support").is_element_displayed(30):
-            self.errors.append("Support channel is not suggested for requesting a feature")
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5766)
-    @marks.flaky
-    # TODO: recheck that it is not part of 5436 (suspect duplicate)
-    def test_use_pinned_history_node(self):
-        home = SignInView(self.driver).create_user()
-        profile = home.profile_button.click()
-        home.profile_button.click()
-
-        home.just_fyi('pin history node')
-        profile.sync_settings_button.click()
-        node_gc, node_ams, node_hk = [profile.return_mailserver_name(history_node_name, used_fleet) for
-                                      history_node_name in (mailserver_gc, mailserver_ams, mailserver_hk)]
-        h_node = node_ams
-        profile.mail_server_button.click()
-        profile.mail_server_auto_selection_button.click()
-        profile.mail_server_by_name(h_node).click()
-        profile.confirm_button.click()
-        if profile.element_by_translation_id("mailserver-error-title").is_element_displayed(10):
-            h_node = node_hk
-            profile.element_by_translation_id("mailserver-pick-another", uppercase=True).click()
-            profile.mail_server_by_name(h_node).click()
-            profile.confirm_button.click()
-            if profile.element_by_translation_id("mailserver-error-title").is_element_displayed(10):
-                self.driver.fail("Couldn't connect to any history node")
-
-        profile.just_fyi('check that history node is pinned')
-        profile.close_button.click()
-        if not profile.element_by_text(h_node).is_element_displayed():
-            self.errors.append('"%s" history node is not pinned' % h_node)
-        profile.home_button.click()
-
-        profile.just_fyi('Relogin and check that settings are preserved')
-        home.relogin()
-        home.profile_button.click()
-        profile.sync_settings_button.click()
-        if not profile.element_by_text(h_node).is_element_displayed():
-            self.errors.append('"%s" history node is not pinned' % h_node)
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6318)
-    # TODO: can be added as last e2e in profile group
-    def test_can_delete_several_multiaccounts(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        delete_alert_warning = sign_in.get_translation_by_key("delete-profile-warning")
-        profile = sign_in.profile_button.click()
-        profile.logout()
-        if sign_in.ok_button.is_element_displayed():
-            sign_in.ok_button.click()
-        sign_in.navigate_up_button.click()
-        sign_in.your_keys_more_icon.click()
-        sign_in.generate_new_key_button.click()
-        sign_in.next_button.click()
-        sign_in.next_button.click()
-        sign_in.create_password_input.set_value(common_password)
-        sign_in.next_button.click()
-        sign_in.confirm_your_password_input.set_value(common_password)
-        sign_in.next_button.click()
-        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
-        sign_in.lets_go_button.click()
-
-        sign_in.just_fyi('Delete 2nd multiaccount')
-        public_key, username = sign_in.get_public_key_and_username(return_username=True)
-        profile.privacy_and_security_button.click()
-        profile.delete_my_profile_button.scroll_and_click()
-        for text in (username, delete_alert_warning):
-            if not profile.element_by_text(text).is_element_displayed():
-                self.errors.append('Required %s is not shown when deleting multiaccount' % text)
-        profile.delete_profile_button.click()
-        if profile.element_by_translation_id("profile-deleted-title").is_element_displayed():
-            self.driver.fail('Profile is deleted without confirmation with password')
-        profile.delete_my_profile_password_input.set_value(common_password)
-        profile.delete_profile_button.click_until_presence_of_element(
-            profile.element_by_translation_id("profile-deleted-title"))
-        profile.ok_button.click()
-
-        sign_in.just_fyi('Delete last multiaccount')
-        sign_in.sign_in()
-        sign_in.profile_button.click()
-        profile.privacy_and_security_button.click()
-        profile.delete_my_profile_button.scroll_and_click()
-        profile.delete_my_profile_password_input.set_value(common_password)
-        profile.delete_profile_button.click()
-        profile.ok_button.click()
-        if not sign_in.get_started_button.is_element_displayed(20):
-            self.errors.append('No redirected to carousel view after deleting last multiaccount')
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(6330)
     def test_wallet_send_tx_token_set_max(self):
         sender = transaction_senders['ETH_STT_2']
@@ -955,209 +463,7 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet.get_account_by_name(account_name).click()
         wallet.wait_balance_is_equal_expected_amount(asset='STT', expected_balance=0, main_screen=False)
 
-    @marks.testrail_id(6225)
-    # TODO: can be added as last e2e in wallet group (to group with several accounts as prerequiste)
-    def test_wallet_send_tx_between_accounts_in_multiaccount_instance(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        wallet = sign_in.wallet_button.click()
-        status_account_address = wallet.get_wallet_address()[2:]
-        self.network_api.get_donate(status_account_address, external_faucet=True)
-        wallet.wait_balance_is_changed()
-
-        account_name = 'subaccount'
-        wallet.add_account(account_name)
-
-        wallet.just_fyi("Send transaction to new account")
-        initial_balance = self.network_api.get_balance(status_account_address)
-
-        transaction_amount = '0.003%s' % str(random.randint(10000, 99999)) + '1'
-        wallet.send_transaction(account_name=account_name, amount=transaction_amount)
-        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
-        self.network_api.verify_balance_is_updated(str(initial_balance), status_account_address)
-
-        wallet.just_fyi("Verifying previously sent transaction in new account")
-        wallet.get_account_by_name(account_name).click()
-        wallet.send_transaction_button.click()
-        wallet.close_send_transaction_view_button.click()
-        balance_after_receiving_tx = float(wallet.get_asset_amount_by_name('ETH'))
-        expected_balance = self.network_api.get_rounded_balance(balance_after_receiving_tx, transaction_amount)
-        if balance_after_receiving_tx != expected_balance:
-            self.driver.fail('New account balance %s does not match expected %s after receiving a transaction' % (
-                balance_after_receiving_tx, transaction_amount))
-
-        wallet.just_fyi("Sending eth from new account to main account")
-        updated_balance = self.network_api.get_balance(status_account_address)
-        transaction_amount_1 = round(float(transaction_amount) * 0.2, 12)
-        wallet.send_transaction(from_main_wallet=False, account_name=wallet.status_account_name,
-                                amount=transaction_amount_1)
-        wallet.close_button.click()
-        sub_account_address = wallet.get_wallet_address(account_name)[2:]
-        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1)
-        self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
-        wallet.find_transaction_in_history(amount=transaction_amount)
-        wallet.find_transaction_in_history(amount=format(float(transaction_amount_1), '.11f').rstrip('0'))
-
-        wallet.just_fyi("Check transactions on subaccount")
-        self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
-
-        wallet.just_fyi("Verify total ETH on main wallet view")
-        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1)
-        self.network_api.verify_balance_is_updated((updated_balance + transaction_amount_1), status_account_address)
-        wallet.close_button.click()
-        balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000
-        balance_of_status_account = float(self.network_api.get_balance(status_account_address)) / 1000000000000000000
-        wallet.scan_tokens()
-        total_eth_from_two_accounts = float(wallet.get_asset_amount_by_name('ETH'))
-        expected_balance = self.network_api.get_rounded_balance(total_eth_from_two_accounts,
-                                                                (balance_of_status_account + balance_of_sub_account))
-
-        if total_eth_from_two_accounts != expected_balance:
-            self.driver.fail('Total wallet balance %s != of Status account (%s) + SubAccount (%s)' % (
-                total_eth_from_two_accounts, balance_of_status_account, balance_of_sub_account))
-
-    @marks.testrail_id(6235)
-    # TODO: can be added as last e2e in wallet group (to group with several accounts as prerequiste)
-    def test_wallet_can_change_account_settings(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        wallet_view = sign_in_view.wallet_button.click()
-        status_account_address = wallet_view.get_wallet_address()
-        wallet_view.get_account_options_by_name().click()
-
-        wallet_view.just_fyi('open Account Settings screen and check that all elements are shown')
-        wallet_view.account_settings_button.click()
-        for text in 'On Status tree', status_account_address, "m/44'/60'/0'/0/0":
-            if not wallet_view.element_by_text(text).is_element_displayed():
-                self.errors.append("'%s' text is not shown on Account Settings screen!" % text)
-
-        wallet_view.just_fyi('change account name/color and verified applied changes')
-        account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-        wallet_view.account_name_input.clear()
-        wallet_view.account_name_input.send_keys(account_name)
-        wallet_view.account_color_button.select_color_by_position(1)
-        wallet_view.apply_settings_button.click()
-        wallet_view.element_by_text('This device').scroll_to_element()
-        wallet_view.close_button.click()
-        wallet_view.close_button.click()
-        account_button = wallet_view.get_account_by_name(account_name)
-        if not account_button.is_element_displayed():
-            self.driver.fail('Account name was not changed')
-        if not account_button.color_matches('multi_account_color.png'):
-            self.driver.fail('Account color does not match expected')
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6232)
-    # TODO: can be added as last e2e in wallet group (to group with several accounts as prerequiste)
-    # TODO: due to 13011
-    def test_testdapp_wallet_permissions_switching_accounts_in_dapp(self):
-        home = SignInView(self.driver).create_user()
-        wallet = home.wallet_button.click()
-
-        wallet.just_fyi('create new account in multiaccount')
-        status_account = home.status_account_name
-        account_name = 'Subaccount'
-        wallet.add_account(account_name)
-        address = wallet.get_wallet_address(account_name)
-
-        home.just_fyi('can see two accounts in DApps')
-        dapp = home.dapp_tab_button.click()
-        dapp.select_account_button.click()
-        for text in 'Select the account', status_account, account_name:
-            if not dapp.element_by_text_part(text).is_element_displayed():
-                self.driver.fail("No expected element %s is shown in menu" % text)
-
-        home.just_fyi('add permission to Status account')
-        dapp.enter_url_editbox.click()
-        status_test_dapp = home.open_status_test_dapp()
-
-        home.just_fyi('check that permissions from previous account was removed once you choose another')
-        dapp.select_account_button.click()
-        dapp.select_account_by_name(account_name).wait_for_element(30)
-        dapp.select_account_by_name(account_name).click()
-        profile = dapp.profile_button.click()
-        profile.privacy_and_security_button.click()
-        profile.dapp_permissions_button.click()
-        if profile.element_by_text(test_dapp_name).is_element_displayed():
-            self.errors.append("Permissions for %s are not removed" % test_dapp_name)
-
-        home.just_fyi('check that can change account')
-        profile.dapp_tab_button.click()
-        if not status_test_dapp.element_by_text_part(account_name).is_element_displayed():
-            self.errors.append("No expected account %s is shown in authorize web3 popup for wallet" % account_name)
-        status_test_dapp.allow_button.click()
-        dapp.profile_button.click(desired_element_text='DApp permissions')
-        profile.element_by_text(test_dapp_name).click()
-        for text in 'Chat key', account_name:
-            if not dapp.element_by_text_part(text).is_element_displayed():
-                self.errors.append("Access is not granted to %s" % text)
-
-        home.just_fyi('check correct account is shown for transaction if sending from DApp')
-        profile.dapp_tab_button.click(desired_element_text='Accounts')
-        status_test_dapp.assets_button.click()
-        send_transaction = status_test_dapp.request_stt_button.click()
-        send_transaction.ok_got_it_button.wait_and_click()
-        address = send_transaction.get_formatted_recipient_address(address)
-        if not send_transaction.element_by_text(address).is_element_displayed():
-            self.errors.append("Wallet address %s in not shown in 'From' on Send Transaction screen" % address)
-
-        home.just_fyi('Relogin and check multiaccount loads fine')
-        send_transaction.cancel_button.click()
-        home.profile_button.click()
-        home.relogin()
-        home.wallet_button.click()
-        if not wallet.element_by_text(account_name).is_element_displayed():
-            self.errors.append("Subaccount is gone after relogin in Wallet!")
-        home.profile_button.click()
-        profile.privacy_and_security_button.click()
-        profile.dapp_permissions_button.click()
-        profile.element_by_text(test_dapp_name).click()
-        if not profile.element_by_text(account_name).is_element_displayed():
-            self.errors.append("Subaccount is not selected after relogin in Dapps!")
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5784)
-    # TODO: can be added as last e2e in wallet group (to group with several accounts as prerequiste)
-    def test_testdapp_sign_typed_message_deploy_simple_contract_request_pub_key(self):
-        user = transaction_senders['ETH_5']
-        home = SignInView(self.driver).recover_access(passphrase=user['passphrase'])
-
-        home.just_fyi("Checking requesting public key from dapp")
-        status_test_dapp = home.open_status_test_dapp(allow_all=False)
-        status_test_dapp.status_api_button.click_until_presence_of_element(status_test_dapp.request_contact_code_button)
-        status_test_dapp.request_contact_code_button.click_until_presence_of_element(status_test_dapp.deny_button)
-        status_test_dapp.deny_button.click()
-        if status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
-            self.errors.append('Public key is returned but access was not allowed')
-        status_test_dapp.request_contact_code_button.click_until_presence_of_element(status_test_dapp.deny_button)
-        status_test_dapp.allow_button.click()
-        if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
-            self.errors.append('Public key is not returned')
-        status_test_dapp.get_empty_dapp_tab()
-        home.wallet_button.click()
-
-        home.just_fyi("Checking sign typed message")
-        home.open_status_test_dapp(allow_all=True)
-        status_test_dapp.transactions_button.click_until_presence_of_element(status_test_dapp.sign_typed_message_button)
-        send_transaction = status_test_dapp.sign_typed_message_button.click()
-        send_transaction.enter_password_input.send_keys(common_password)
-        send_transaction.sign_button.click_until_absense_of_element(send_transaction.sign_button)
-        if not status_test_dapp.element_by_text_part('0x1673d96e836').is_element_displayed(30):
-            self.errors.append("Hash of signed typed message is not shown!")
-
-        home.just_fyi("Checking deploy simple contract")
-        send_transaction = status_test_dapp.deploy_contract_button.click()
-        send_transaction.sign_transaction()
-        if not status_test_dapp.element_by_text('Contract deployed at: ').is_element_displayed(240):
-            self.errors.append('Contract was not created')
-        for text in ['Call contract get function',
-                     'Call contract set function', 'Call function 2 times in a row']:
-            status_test_dapp.element_by_text(text).scroll_to_element()
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(5358)
-    # TODO: can be added to any group where new multiaccount is created
     def test_wallet_backup_recovery_phrase_warning_from_wallet(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -1175,7 +481,6 @@ class TestChatManagement(SingleDeviceTestCase):
         profile.backup_recovery_phrase()
 
     @marks.testrail_id(5437)
-    # TODO: should be in separate group where tx is not sent
     def test_wallet_validation_amount_errors(self):
         sender = wallet_users['C']
         sign_in = SignInView(self.driver)
@@ -1252,91 +557,8 @@ class TestChatManagement(SingleDeviceTestCase):
             self.errors.append(warning % (errors['sending_screen']['Network fee'], screen))
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(6269)
-    # TODO: can be added as last e2e in wallet group (with 5437)
-    def test_wallet_search_asset_and_currency(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        profile = home.profile_button.click()
-        profile.switch_network()
-        search_list_assets = {
-            'ad': ['AdEx', 'Open Trading Network', 'TrueCAD'],
-            'zs': ['ZSC']
-        }
-        wallet = home.wallet_button.click()
-
-        home.just_fyi('Searching for asset by name and symbol')
-        wallet.multiaccount_more_options.click()
-        wallet.manage_assets_button.click()
-        for keyword in search_list_assets:
-            home.search_by_keyword(keyword)
-            if keyword == 'ad':
-                search_elements = wallet.all_assets_full_names.find_elements()
-            else:
-                search_elements = wallet.all_assets_symbols.find_elements()
-            if not search_elements:
-                self.errors.append('No search results after searching by %s keyword' % keyword)
-            search_results = [element.text for element in search_elements]
-            if search_results != search_list_assets[keyword]:
-                self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
-                                   (', '.join(search_results), keyword))
-            home.cancel_button.click()
-        wallet.close_button.click()
-
-        home.just_fyi('Searching for currency')
-        search_list_currencies = {
-            'aF': ['Afghanistan Afghani (AFN)', 'South Africa Rand (ZAR)'],
-            'bolívi': ['Bolivia Bolíviano (BOB)']
-        }
-        wallet.multiaccount_more_options.click_until_presence_of_element(wallet.set_currency_button)
-        wallet.set_currency_button.click()
-        for keyword in search_list_currencies:
-            home.search_by_keyword(keyword)
-            search_elements = wallet.currency_item_text.find_elements()
-            if not search_elements:
-                self.errors.append('No search results after searching by %s keyword' % keyword)
-            search_results = [element.text for element in search_elements]
-            if search_results != search_list_currencies[keyword]:
-                self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
-                                   (', '.join(search_results), keyword))
-            home.cancel_button.click()
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5429)
-    # TODO: can be added as last e2e in wallet group (with 5437)
-    def test_wallet_set_currency(self):
-        home = SignInView(self.driver).create_user()
-        user_currency = 'Euro (EUR)'
-        wallet = home.wallet_button.click()
-        wallet.set_currency(user_currency)
-        if not wallet.element_by_text_part('EUR').is_element_displayed(20):
-            self.driver.fail('EUR currency is not displayed')
-
-    @marks.testrail_id(5407)
-    # TODO: can be added as last e2e in wallet group (with 5437)
-    def test_wallet_offline_can_login_cant_send_transaction(self):
-        home = SignInView(self.driver).create_user()
-        wallet = home.wallet_button.click()
-        wallet.toggle_airplane_mode()
-        wallet.accounts_status_account.click_until_presence_of_element(wallet.send_transaction_button)
-        send_transaction = wallet.send_transaction_button.click()
-        send_transaction.set_recipient_address('0x%s' % basic_user['address'])
-        send_transaction.amount_edit_box.set_value("0")
-        send_transaction.confirm()
-        send_transaction.sign_transaction_button.click()
-        if send_transaction.sign_with_password.is_element_displayed():
-            self.driver.fail("Sign transaction button is active in offline mode")
-        self.driver.close_app()
-        self.driver.launch_app()
-        SignInView(self.driver).sign_in()
-        home.home_button.wait_for_visibility_of_element()
-        home.connection_offline_icon.wait_for_visibility_of_element(20)
-
     @marks.testrail_id(695855)
-    @marks.medium
-    # TODO: can be split and add as separate group
-    def test_custom_gas_settings(self):
+    def test_wallet_custom_gas_settings_send_tx(self):
         sender = transaction_senders['ETH_7']
         sign_in = SignInView(self.driver)
         sign_in.recover_access(sender['passphrase'])
@@ -1443,9 +665,270 @@ class TestChatManagement(SingleDeviceTestCase):
         #     self.driver.fail("Custom fee is not applied!")
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(695890)
+    def test_profile_use_another_fleets_balance_bsc_xdai_advanced_set_nonce(self):
+        user = user_mainnet
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(user['passphrase'])
+
+        home.just_fyi("Check that can enable all toggles and still login successfully")
+        profile = home.profile_button.click()
+        profile.advanced_button.click()
+        profile.transaction_management_enabled_toggle.click()
+        profile.webview_debug_toggle.click()
+        profile.waku_bloom_toggle.scroll_and_click()
+        sign_in.sign_in()
+
+        home.just_fyi("Check tx management")
+        wallet = home.wallet_button.click()
+        send_tx = wallet.send_transaction_from_main_screen.click()
+        from views.send_transaction_view import SendTransactionView
+        send_tx = SendTransactionView(self.driver)
+        send_tx.amount_edit_box.set_value('0')
+        send_tx.set_recipient_address(transaction_senders['ETH_7']['address'])
+        send_tx.next_button.click()
+        send_tx.set_up_wallet_when_sending_tx()
+        send_tx.advanced_button.click()
+        send_tx.nonce_input.set_value('4')
+        send_tx.nonce_save_button.click()
+        error_text = send_tx.sign_transaction(error=True)
+        if error_text != 'nonce too low':
+            self.errors.append("%s is not expected error when signing tx with custom nonce" % error_text)
+
+        home.just_fyi("Check balance on mainnet")
+        profile = home.profile_button.click()
+        profile.switch_network()
+        wallet = home.wallet_button.click()
+        wallet.scan_tokens()
+        [wallet.wait_balance_is_equal_expected_amount(asset, value) for asset, value in user['mainnet'].items()]
+
+        home.just_fyi("Check balance on xDai and default network fee")
+        profile = home.profile_button.click()
+        profile.switch_network('xDai Chain')
+        home.wallet_button.click()
+        wallet.element_by_text(user['xdai']).wait_for_element(30)
+
+        home.just_fyi("Check balance on BSC and default network fee")
+        profile = home.profile_button.click()
+        profile.switch_network('BSC Network')
+        home.wallet_button.click()
+        wallet.element_by_text(user['bsc']).wait_for_element(30)
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6219)
+    def test_profile_set_primary_ens_custom_domain(self):
+        home = SignInView(self.driver).recover_access(ens_user['passphrase'])
+        ens_second, ens_main = ens_user['ens_another'], ens_user['ens']
+
+        home.just_fyi('add 2 ENS names in Profile')
+        profile = home.profile_button.click()
+        dapp = profile.connect_existing_ens(ens_main)
+        profile.element_by_translation_id("ens-add-username").wait_and_click()
+        profile.element_by_translation_id("ens-want-custom-domain").wait_and_click()
+        dapp.ens_name_input.set_value(ens_second)
+        dapp.check_ens_name.click_until_presence_of_element(dapp.element_by_translation_id("ens-got-it"))
+        dapp.element_by_translation_id("ens-got-it").wait_and_click()
+
+        home.just_fyi('check that by default %s ENS is set' % ens_main)
+        dapp.element_by_translation_id("ens-primary-username").click()
+        message_to_check = 'Your messages are displayed to others with'
+        if not dapp.element_by_text('%s\n@%s' % (message_to_check, ens_main)).is_element_displayed():
+            self.errors.append('%s ENS username is not set as primary by default' % ens_main)
+
+        home.just_fyi('check view in chat settings ENS from other domain: %s after set new primary ENS' % ens_second)
+        dapp.set_primary_ens_username(ens_second).click()
+        if profile.username_in_ens_chat_settings_text.text != '@' + ens_second:
+            self.errors.append('ENS username %s is not shown in ENS username Chat Settings after enabling' % ens_second)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(5453)
+    def test_profile_privacy_policy_terms_of_use_node_version_need_help(self):
+        signin = SignInView(self.driver)
+        no_link_found_error_msg = 'Could not find privacy policy link at'
+        no_link_open_error_msg = 'Could not open our privacy policy from'
+        no_link_tos_error_msg = 'Could not open Terms of Use from'
+
+        signin.just_fyi("Checking privacy policy and TOS links")
+        if not signin.privacy_policy_link.is_element_present():
+            self.errors.append('%s Sign in view!' % no_link_found_error_msg)
+        if not signin.terms_of_use_link.is_element_displayed():
+            self.driver.fail("No Terms of Use link on Sign in view!")
+
+        home = signin.create_user()
+        profile = home.profile_button.click()
+        profile.about_button.click()
+        profile.privacy_policy_button.click()
+        from views.web_views.base_web_view import BaseWebView
+        web_page = BaseWebView(self.driver)
+        if not web_page.policy_summary.is_element_displayed():
+            self.errors.append('%s Profile about view!' % no_link_open_error_msg)
+        web_page.click_system_back_button()
+
+        profile.terms_of_use_button.click()
+        web_page.wait_for_d_aap_to_load()
+        web_page.swipe_by_custom_coordinates(0.5, 0.8, 0.5, 0.4)
+        if not web_page.terms_of_use_summary.is_element_displayed(30):
+            self.errors.append('%s Profile about view!' % no_link_tos_error_msg)
+        web_page.click_system_back_button()
+
+        signin.just_fyi("Checking that version match expected format and can be copied")
+        app_version = profile.app_version_text.text
+        node_version = profile.node_version_text.text
+        if not re.search(r'\d[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]', app_version):
+            self.errors.append("App version %s didn't match expected format" % app_version)
+        if not re.search(r'StatusIM/v.*/android-\d{3}/go\d[.]\d+', node_version):
+            self.errors.append("Node version %s didn't match expected format" % node_version)
+        profile.app_version_text.click()
+        profile.home_button.double_click()
+        chat = home.join_public_chat(home.get_random_chat_name())
+        message_input = chat.chat_message_input
+        message_input.paste_text_from_clipboard()
+        if message_input.text != app_version:
+            self.errors.append('Version number was not copied to clipboard')
+
+        signin.just_fyi("Checking Need help section")
+        home.profile_button.double_click()
+        profile.help_button.click()
+        web_page = profile.faq_button.click()
+        web_page.open_in_webview()
+        web_page.wait_for_d_aap_to_load()
+        if not profile.element_by_text_part("F.A.Q").is_element_displayed(30):
+            self.errors.append("FAQ is not shown")
+        profile.click_system_back_button()
+        profile.submit_bug_button.click()
+
+        signin.just_fyi("Checking bug submitting form")
+        profile.bug_description_edit_box.set_value('1234')
+        profile.bug_submit_button.click()
+        if not profile.element_by_translation_id("bug-report-too-short-description").is_element_displayed():
+            self.errors.append("Can submit big with too short description!")
+        profile.bug_description_edit_box.clear()
+        [field.set_value("Something wrong happened!!") for field in
+         (profile.bug_description_edit_box, profile.bug_steps_edit_box)]
+        profile.bug_submit_button.click()
+        if not profile.element_by_text_part("Welcome to Gmail").is_element_displayed(30):
+            self.errors.append("Mail client is not opened when submitting bug")
+        profile.click_system_back_button(2)
+
+        signin.just_fyi("Checking request feature")
+        profile.request_a_feature_button.click()
+        if not profile.element_by_text("#support").is_element_displayed(30):
+            self.errors.append("Support channel is not suggested for requesting a feature")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(5766)
+    def test_profile_use_pinned_history_node_from_list(self):
+        home = SignInView(self.driver).create_user()
+        profile = home.profile_button.click()
+        home.profile_button.click()
+
+        home.just_fyi('pin history node')
+        profile.sync_settings_button.click()
+        node_gc, node_ams, node_hk = [profile.return_mailserver_name(history_node_name, used_fleet) for
+                                      history_node_name in (mailserver_gc, mailserver_ams, mailserver_hk)]
+        h_node = node_ams
+        profile.mail_server_button.click()
+        profile.mail_server_auto_selection_button.click()
+        profile.mail_server_by_name(h_node).click()
+        profile.confirm_button.click()
+        if profile.element_by_translation_id("mailserver-error-title").is_element_displayed(10):
+            h_node = node_hk
+            profile.element_by_translation_id("mailserver-pick-another", uppercase=True).click()
+            profile.mail_server_by_name(h_node).click()
+            profile.confirm_button.click()
+            if profile.element_by_translation_id("mailserver-error-title").is_element_displayed(10):
+                self.driver.fail("Couldn't connect to any history node")
+
+        profile.just_fyi('check that history node is pinned')
+        profile.close_button.click()
+        if not profile.element_by_text(h_node).is_element_displayed():
+            self.errors.append('"%s" history node is not pinned' % h_node)
+        profile.home_button.click()
+
+        profile.just_fyi('Relogin and check that settings are preserved')
+        home.relogin()
+        home.profile_button.click()
+        profile.sync_settings_button.click()
+        if not profile.element_by_text(h_node).is_element_displayed():
+            self.errors.append('"%s" history node is not pinned' % h_node)
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6318)
+    def test_profile_delete_several_multiaccounts(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        delete_alert_warning = sign_in.get_translation_by_key("delete-profile-warning")
+        profile = sign_in.profile_button.click()
+        profile.logout()
+        if sign_in.ok_button.is_element_displayed():
+            sign_in.ok_button.click()
+        sign_in.navigate_up_button.click()
+        sign_in.your_keys_more_icon.click()
+        sign_in.generate_new_key_button.click()
+        sign_in.next_button.click()
+        sign_in.next_button.click()
+        sign_in.create_password_input.set_value(common_password)
+        sign_in.next_button.click()
+        sign_in.confirm_your_password_input.set_value(common_password)
+        sign_in.next_button.click()
+        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
+        sign_in.lets_go_button.click()
+
+        sign_in.just_fyi('Delete 2nd multiaccount')
+        public_key, username = sign_in.get_public_key_and_username(return_username=True)
+        profile.privacy_and_security_button.click()
+        profile.delete_my_profile_button.scroll_and_click()
+        for text in (username, delete_alert_warning):
+            if not profile.element_by_text(text).is_element_displayed():
+                self.errors.append('Required %s is not shown when deleting multiaccount' % text)
+        profile.delete_profile_button.click()
+        if profile.element_by_translation_id("profile-deleted-title").is_element_displayed():
+            self.driver.fail('Profile is deleted without confirmation with password')
+        profile.delete_my_profile_password_input.set_value(common_password)
+        profile.delete_profile_button.click_until_presence_of_element(
+            profile.element_by_translation_id("profile-deleted-title"))
+        profile.ok_button.click()
+
+        sign_in.just_fyi('Delete last multiaccount')
+        sign_in.sign_in()
+        sign_in.profile_button.click()
+        profile.privacy_and_security_button.click()
+        profile.delete_my_profile_button.scroll_and_click()
+        profile.delete_my_profile_password_input.set_value(common_password)
+        profile.delete_profile_button.click()
+        profile.ok_button.click()
+        if not sign_in.get_started_button.is_element_displayed(20):
+            self.errors.append('No redirected to carousel view after deleting last multiaccount')
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6213)
+    def test_contacts_unblock_user_is_not_added_back_to_contacts(self):
+        home = SignInView(self.driver).create_user()
+        chat = home.add_contact(basic_user["public_key"], add_in_contacts=False)
+
+        chat.just_fyi('Block user not added as contact from chat view')
+        chat.chat_options.click()
+        chat.view_profile_button.click()
+        chat.block_contact()
+        chat.get_back_to_home_view()
+
+        chat.just_fyi('Unblock user not added as contact from chat view')
+        profile = home.profile_button.click()
+        profile.contacts_button.click()
+        profile.blocked_users_button.click()
+        profile.element_by_text(basic_user["username"]).click()
+        chat.unblock_contact_button.click()
+
+        profile.just_fyi('Navigating to contact list and check that user is not in list')
+        profile.close_button.click()
+        profile.navigate_up_button.click()
+        if profile.element_by_text(basic_user["username"]).is_element_displayed():
+            self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
+
     @marks.testrail_id(5721)
-    # TODO: can be merged with other group chat e2e
-    def test_cant_add_more_twenty_participants_to_group_chat(self):
+    def test_group_chat_cant_add_more_twenty_participants(self):
         user_20_contacts = dict()
         user_20_contacts[
             'passphrase'] = "length depend bottom mom kitchen solar deposit emerge junior horse midnight grunt"
@@ -1494,7 +977,7 @@ class TestChatManagement(SingleDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5455)
-    def test_recover_accounts_with_certain_seedphrase(self):
+    def test_restore_multiaccounts_with_certain_seed_phrase(self):
         sign_in = SignInView(self.driver)
         for phrase, account in recovery_users.items():
             home_view = sign_in.recover_access(passphrase=phrase, password=unique_password)
@@ -1508,4 +991,43 @@ class TestChatManagement(SingleDeviceTestCase):
             profile.delete_my_profile_password_input.set_value(unique_password)
             profile.delete_profile_button.click()
             profile.ok_button.click()
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6300)
+    @marks.skip
+    # TODO: waiting mode (rechecked 23.11.21, valid)
+    def test_webview_security(self):
+        home_view = SignInView(self.driver).create_user()
+        daap_view = home_view.dapp_tab_button.click()
+
+        browsing_view = daap_view.open_url('https://simpledapp.status.im/webviewtest/url-spoof-ssl.html')
+        browsing_view.url_edit_box_lock_icon.click()
+        if not browsing_view.element_by_translation_id("browser-not-secure").is_element_displayed():
+            self.errors.append("Broken certificate displayed as secure connection \n")
+
+        browsing_view.cross_icon.click()
+        daap_view.open_url('https://simpledapp.status.im/webviewtest/webviewtest.html')
+        browsing_view.element_by_text_part('204').click()
+        if browsing_view.element_by_text_part('google.com').is_element_displayed():
+            self.errors.append("URL changed on attempt to redirect to no-content page \n")
+
+        browsing_view.cross_icon.click()
+        daap_view.open_url('https://simpledapp.status.im/webviewtest/webviewtest.html')
+        browsing_view.element_by_text_part('XSS check').click()
+        browsing_view.open_in_status_button.click()
+        if browsing_view.element_by_text_part('simpledapp.status.im').is_element_displayed():
+            self.errors.append("XSS attemp succedded \n")
+            browsing_view.ok_button.click()
+
+        browsing_view.cross_icon.click()
+        daap_view.open_url('https://simpledapp.status.im/webviewtest/url-blank.html')
+        if daap_view.edit_url_editbox.text == '':
+            self.errors.append("Blank URL value. Must show the actual URL \n")
+
+        browsing_view.cross_icon.click()
+        daap_view.open_url('https://simpledapp.status.im/webviewtest/port-timeout.html')
+        # wait up  ~2.5 mins for port time out
+        if daap_view.element_by_text_part('example.com').is_element_displayed(150):
+            self.errors.append("URL spoof due to port timeout \n")
+
         self.errors.verify_no_errors()
