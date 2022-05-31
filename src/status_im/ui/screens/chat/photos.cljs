@@ -5,16 +5,17 @@
             [status-im.profile.db :as profile.db]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.image :as utils.image]
-            [quo.design-system.colors :as colors]))
+            [quo.design-system.colors :as colors]
+            [status-im.ui.components.fast-image :as fast-image]))
 
 (def memo-photo-rend
   (memoize
    (fn [photo-path size accessibility-label _]
      (let [identicon? (when photo-path (profile.db/base64-png? photo-path))]
        [react/view {:style (style/photo-container size)}
-        [react/fast-image {:source              (utils.image/source photo-path)
-                           :style               (style/photo size)
-                           :accessibility-label (or accessibility-label :chat-icon)}]
+        [fast-image/fast-image {:source              (utils.image/source photo-path)
+                                :style               (style/photo size)
+                                :accessibility-label (or accessibility-label :chat-icon)}]
         (when identicon?
           [react/view {:style (style/photo-border size)}])]))))
 
@@ -36,7 +37,7 @@
 (defn member-identicon [identicon]
   (let [size style/default-size]
     [react/view {:style (style/photo-container size)}
-     [react/fast-image {:source              {:uri identicon}
-                        :style               (style/photo size)
-                        :accessibility-label :member-photo}]
+     [fast-image/fast-image {:source              {:uri identicon}
+                             :style               (style/photo size)
+                             :accessibility-label :member-photo}]
      [react/view {:style (style/photo-border size)}]]))

@@ -6,15 +6,16 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.stickers.styles :as styles]
             [status-im.utils.money :as money]
-            [status-im.utils.handlers :refer [<sub]])
+            [status-im.utils.handlers :refer [<sub]]
+            [status-im.ui.components.fast-image :as fast-image])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn cache [url]
   (str url "&download=true"))
 
 (defn- thumbnail-icon [uri size]
-  [react/fast-image {:style  {:width size :height size :border-radius (/ size 2)}
-                     :source {:uri (cache uri)}}])
+  [fast-image/fast-image {:style  {:width size :height size :border-radius (/ size 2)}
+                          :source {:uri (cache uri)}}])
 
 (defn price-badge [_]
   (let [chain (<sub [:ethereum/chain-keyword])
@@ -47,7 +48,7 @@
 (defn pack-badge [{:keys [name author thumbnail preview id] :as pack}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :stickers-pack {:id id}])}
    [react/view {:margin-bottom 27}
-    [react/fast-image {:style {:height 200 :border-radius 20} :source {:uri (cache preview)}}]
+    [fast-image/fast-image {:style {:height 200 :border-radius 20} :source {:uri (cache preview)}}]
     [react/view {:height 64 :align-items :center :flex-direction :row}
      [thumbnail-icon thumbnail 40]
      [react/view {:padding-horizontal 16 :flex 1}
@@ -89,8 +90,8 @@
           [react/view {:flex-direction :row :flex-wrap :wrap}
            (for [{:keys [url]} stickers]
              ^{:key url}
-             [react/fast-image {:style  (styles/sticker-image sticker-icon-size)
-                                :source {:uri (cache url)}}])]]]]
+             [fast-image/fast-image {:style  (styles/sticker-image sticker-icon-size)
+                                     :source {:uri (cache url)}}])]]]]
        [react/view {:flex 1 :align-items :center :justify-content :center}
         [react/activity-indicator {:animating true}]])]))
 

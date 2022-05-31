@@ -33,7 +33,7 @@
 
 (def image-class (reagent/adapt-react-class (reactjs/memo (.-Image react-native))))
 
-(def fast-image (reagent/adapt-react-class FastImage))
+(def fast-image-class (reagent/adapt-react-class FastImage))
 
 (defn image-get-size [uri callback] (.getSize (.-Image react-native) uri callback))
 (defn resolve-asset-source [uri] (js->clj (.resolveAssetSource (.-Image react-native) uri) :keywordize-keys true))
