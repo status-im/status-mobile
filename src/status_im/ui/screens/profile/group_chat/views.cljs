@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.group-chat.views
   (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
@@ -9,14 +10,8 @@
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.sheets :as chat.sheets]
-            [status-im.ui.screens.profile.components.styles
-             :as
-             profile.components.styles]
+            [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.components.topbar :as topbar]
-            [quo.design-system.colors :as colors]
-            [status-im.ui.components.copyable-text :as copyable-text]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.utils.universal-links.core :as universal-links]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.chat.photos :as photos]
@@ -146,30 +141,12 @@
                                                  [invitation-sheet invitation contact])}])}]))
 
 (defview group-chat-invite []
-  (letsubs [{:keys [chat-id  chat-name]} [:chats/current-chat]
-            current-pk   [:multiaccount/public-key]]
-    (let [invite-link (universal-links/generate-link
-                       :group-chat
-                       :external
-                       (str "args?a=" current-pk "&a1=" (js/encodeURI chat-name) "&a2=" chat-id))
-          invitations  @(re-frame/subscribe [:group-chat/pending-invitations-by-chat-id chat-id])]
+  (letsubs [{:keys [chat-id]} [:chats/current-chat]]
+    (let [invitations  @(re-frame/subscribe [:group-chat/pending-invitations-by-chat-id chat-id])]
       [react/view {:flex 1}
-       [topbar/topbar {:title       (i18n/label :t/group-invite)
-                       :accessories [{:icon    :main-icons/share
-                                      :handler #(list-selection/open-share {:message invite-link})}]}]
+       [topbar/topbar {:title (i18n/label :t/group-invite)}]
        [react/scroll-view {:flex 1}
         [react/view {:margin-top 26}
-         [react/view {:padding-horizontal 16}
-          [react/text {:style {:color colors/gray}} (i18n/label :t/group-invite-link)]
-          [copyable-text/copyable-text-view
-           {:copied-text invite-link}
-           [react/view {:accessibility-label :invitation-link
-                        :border-width 1 :border-color colors/gray-lighter
-                        :justify-content :center :margin-top 10
-                        :border-radius 8 :padding-horizontal 16 :padding-vertical 11}
-            [react/text invite-link]]]
-          [react/text {:style {:color colors/gray :margin-top 22}}
-           (i18n/label :t/pending-invitations)]]
          (if (seq invitations)
            [list/flat-list
             {:data                      invitations
@@ -207,7 +184,7 @@
            (when admin?
              [quo/list-item
               {:chevron             true
-               :title               (i18n/label :t/group-invite)
+               :title               (i18n/label :t/membership-requests)
                :accessibility-label :invite-chat-button
                :icon                :main-icons/share
                :accessory           (let [invitations
