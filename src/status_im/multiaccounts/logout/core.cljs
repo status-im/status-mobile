@@ -15,6 +15,7 @@
   (let [key-uid              (get-in db [:multiaccount :key-uid])]
     (fx/merge cofx
               {:init-root-fx                         :progress
+               :chat.ui/clear-inputs                 nil
                :hide-popover                         nil
                ::logout                              nil
                ::multiaccounts/webview-debug-changed false
