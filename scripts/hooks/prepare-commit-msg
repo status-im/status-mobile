@@ -10,7 +10,7 @@ GO_COMMIT_MERGE_BASE=$(git show "${MERGE_BASE}":status-go-version.json | jq -r '
 GO_COMMIT_CURRENT=$(jq -r '."commit-sha1"' status-go-version.json)
 GITHUB_LINK_PREFIX="https://github.com/status-im/status-go/compare/"
 # Link to the current StatusGo changelog being updated.
-GITHUB_LINK="${GITHUB_LINK_PREFIX}${GO_COMMIT_MERGE_BASE}...${GO_COMMIT_CURRENT}"
+GITHUB_LINK="${GITHUB_LINK_PREFIX}${GO_COMMIT_MERGE_BASE::8}...${GO_COMMIT_CURRENT::8}"
 
 COMMIT_MSG_FILE=$1
 # Check if the commit message already contains the link (rebase) and update otherwise insert into line2
