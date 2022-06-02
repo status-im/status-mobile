@@ -114,6 +114,13 @@
 (defonce mentions-enabled (reagent/atom {}))
 (defonce chat-input-key (reagent/atom 1))
 
+(re-frame/reg-fx
+ :chat.ui/clear-inputs
+ (fn []
+   (reset! input-texts {})
+   (reset! mentions-enabled {})
+   (reset! chat-input-key 1)))
+
 (defn force-text-input-update!
   "force-text-input-update! forces the
   input to re-render, necessary when we are setting value"
