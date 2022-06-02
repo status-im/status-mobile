@@ -126,7 +126,7 @@ public class PushNotification extends ReactContextBaseJavaModule implements Acti
 
     @ReactMethod
     public void clearAllMessageNotifications() {
-	pushNotificationHelper.clearAllMessageNotifications();
+        pushNotificationHelper.clearAllMessageNotifications();
     }
 
     @ReactMethod
