@@ -403,12 +403,24 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void logout() {
         Log.d(TAG, "logout");
-        String result = Statusgo.logout();
-        if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "Logout result: " + result);
-        } else {
-            Log.e(TAG, "Logout failed: " + result);
+        if (!checkAvailability()) {
+            System.exit(0);
+            return;
         }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String result = Statusgo.logout();
+                if (result.startsWith("{\"error\":\"\"")) {
+                    Log.d(TAG, "Logout result: " + result);
+                } else {
+                    Log.e(TAG, "Logout failed: " + result);
+                }
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
     private void deleteDirectory(File folder) {
