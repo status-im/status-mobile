@@ -375,8 +375,16 @@
                                      :disabled      in-popover?}
           [react/view {:style               (style/image-message style-opts)
                        :accessibility-label :image-message}
+           (when (or (:error @dimensions) (not (:loaded @dimensions)))
+             [react/view
+              (merge (dissoc style-opts :opacity)
+                     {:flex 1 :align-items :center :justify-content :center :position :absolute})
+              (if (:error @dimensions)
+                [icons/icon :main-icons/cancel]
+                [react/activity-indicator {:animating true}])])
            [fast-image/fast-image {:style       (dissoc style-opts :outgoing)
                                    :on-load     (image-set-size dimensions)
+                                   :on-error    #(swap! dimensions assoc :error true)
                                    :source      {:uri uri}}]
            [react/view {:style (style/image-message-border style-opts)}]]]]))))
 

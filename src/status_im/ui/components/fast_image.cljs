@@ -7,14 +7,20 @@
   [react/view {:style (merge style {:flex 1 :justify-content :center :align-items :center})}
    child])
 
-(defn fast-image [props]
+(defn fast-image [_]
   (let [loaded? (reagent/atom false)
         error? (reagent/atom false)]
-    (fn []
+    (fn [props]
       [react/fast-image-class (merge
-                               {:on-error #(reset! error? true)
-                                :on-load #(reset! loaded? true)}
-                               props)
+                               props
+                               {:on-error (fn [e]
+                                            (when-let [on-error (:on-error props)]
+                                              (on-error e))
+                                            (reset! error? true))
+                                :on-load (fn [e]
+                                           (when-let [on-load (:on-load props)]
+                                             (on-load e))
+                                           (reset! loaded? true))})
        (when (or @error? (not @loaded?))
          [placeholder (:style props)
           (if @error?

@@ -400,7 +400,8 @@
 
 (defn image-message-border [opts]
   (merge (image-message opts)
-         {:border-width     1
+         {:opacity          (:opacity opts)
+          :border-width     1
           :top              0
           :left             0
           :position         :absolute
