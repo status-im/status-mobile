@@ -67,10 +67,8 @@
 
 (fx/defn handle-mark-all-read-successful
   {:events [::mark-all-read-successful]}
-  [{:keys [db] :as cofx} chat-id]
-  (fx/merge cofx
-            {:db (mark-chat-all-read db chat-id)}
-            (notification-center/get-activity-center-notifications-count)))
+  [cofx]
+  (notification-center/get-activity-center-notifications-count cofx))
 
 (fx/defn handle-mark-all-read-in-community-successful
   {:events [::mark-all-read-in-community-successful]}
@@ -82,11 +80,12 @@
 (fx/defn handle-mark-all-read
   {:events [:chat.ui/mark-all-read-pressed :chat/mark-all-as-read]}
   [{db :db} chat-id]
-  {:clear-message-notifications  [[chat-id]
+  {:db (mark-chat-all-read db chat-id)
+   :clear-message-notifications  [[chat-id]
                                   (get-in db [:multiaccount :remote-push-notifications-enabled?])]
    ::json-rpc/call [{:method     "wakuext_markAllRead"
                      :params     [chat-id]
-                     :on-success #(re-frame/dispatch [::mark-all-read-successful chat-id])}]})
+                     :on-success #(re-frame/dispatch [::mark-all-read-successful])}]})
 
 (fx/defn handle-mark-mark-all-read-in-community
   {:events [:chat.ui/mark-all-read-in-community-pressed]}
@@ -157,8 +156,7 @@
         (when (or first-request cursor)
           (merge
            {:db (assoc-in db [:pagination-info chat-id :loading-messages?] true)}
-           {:utils/dispatch-later [{:ms 100 :dispatch [:load-more-reactions cursor chat-id]}
-                                   {:ms 100 :dispatch [::models.pin-message/load-pin-messages chat-id]}]}
+           {:utils/dispatch-later [{:ms 100 :dispatch [:load-more-reactions cursor chat-id]}]}
            (data-store.messages/messages-by-chat-id-rpc
             chat-id
             cursor
@@ -176,5 +174,7 @@
   (when-not (get-in db [:pagination-info chat-id :messages-initialized?])
     (fx/merge cofx
               {:db (assoc-in db [:pagination-info chat-id :messages-initialized?] now)
-               :utils/dispatch-later [{:ms 500 :dispatch [:chat.ui/mark-all-read-pressed chat-id]}]}
+               :utils/dispatch-later [{:ms 50 :dispatch [:chat.ui/mark-all-read-pressed chat-id]}
+                                      (when-not (get-in cofx [:db :chats chat-id :public?])
+                                        {:ms 100 :dispatch [::models.pin-message/load-pin-messages chat-id]})]}
               (load-more-messages chat-id true))))
