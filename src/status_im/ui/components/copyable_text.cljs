@@ -117,8 +117,8 @@
            [copy-action-visual-cue anim-opacity anim-y width cue-atom]
            [react/touchable-highlight
             {:active-opacity (if @cue-atom 1 0.85)
-             :underlay-color colors/black
+             :underlay-color "rgba(255, 255, 255, 0.2)"
              :on-press       copy-fn
              :on-long-press  copy-fn}
-            [react/view {:background-color colors/white}
+            [react/view {:background-color (if container-style container-style colors/white)}
              content]]]))})))

@@ -1757,5 +1757,17 @@
     "pending": "Pending",
     "negative": "Negative",
     "positive": "Positive",
+    "public": "Public",
+    "switcher-nav-switch": "Switch",
+    "switcher-nav-scan": "Scan",
+    "switcher-nav-share": "Share",
+    "switcher-nav-activity":"Activity",
+    "link-to-profile": "Link to Profile",
+    "emoji-hash": "Emoji Hash",
+    "legacy": "Legacy",
+    "multichain": "Multichain",
+    "pending": "Pending",
+    "negative": "Negative",
+    "positive": "Positive",
     "public": "Public"
 }
