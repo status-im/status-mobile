@@ -4,6 +4,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chat.models.message-list :as message-list]
             [status-im.data-store.chats :as chats-store]
+            [status-im.mailserver.core :as mailserver]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
@@ -465,12 +466,14 @@
 (fx/defn chat-ui-fill-gaps
   {:events [:chat.ui/fill-gaps]}
   [{:keys [db] :as cofx} chat-id gap-ids]
-  (log/info "filling gaps" chat-id gap-ids)
-  (fx/merge cofx
-            {:db (assoc db :mailserver/fetching-gaps-in-progress gap-ids)}
-            (if (= gap-ids #{:first-gap})
-              (sync-chat-from-sync-from chat-id)
-              (fill-gaps chat-id gap-ids))))
+  (let [use-status-nodes? (mailserver/fetch-use-mailservers? {:db db})]
+    (log/info "filling gaps if use-status-nodes = true" chat-id gap-ids)
+    (when use-status-nodes?
+      (fx/merge cofx
+                {:db (assoc db :mailserver/fetching-gaps-in-progress gap-ids)}
+                (if (= gap-ids #{:first-gap})
+                  (sync-chat-from-sync-from chat-id)
+                  (fill-gaps chat-id gap-ids))))))
 
 (fx/defn chat-ui-remove-chat-pressed
   {:events [:chat.ui/remove-chat-pressed]}
