@@ -19,7 +19,8 @@
             [status-im.chat.models.reactions :as models.reactions]
             [status-im.ui.screens.chat.components.reply :as components.reply]
             [status-im.ui.screens.chat.message.link-preview :as link-preview]
-            [status-im.chat.models :as chat]))
+            [status-im.chat.models :as chat]
+            [status-im.ui.components.fast-image :as fast-image]))
 
 (defonce messages-list-ref (atom nil))
 (def image-max-dimension 192)
@@ -40,10 +41,10 @@
                                          :border-radius 16
                                          :margin-top    8}
                    :accessibility-label :image-message}
-       [react/fast-image {:style       {:width  @width
-                                        :height image-max-dimension}
-                          :on-load     (image-set-size width)
-                          :source      {:uri uri}}]
+       [fast-image/fast-image {:style   {:width      @width
+                                         :height image-max-dimension}
+                               :on-load (image-set-size width)
+                               :source  {:uri uri}}]
        [react/view {:border-width     1
                     :top              0
                     :left             0
@@ -188,10 +189,10 @@
        (if no-messages?
          [react/view {:padding-horizontal 32
                       :margin-top         64}
-          [react/fast-image {:style  {:width      140
-                                      :height     140
-                                      :align-self :center}
-                             :source {:uri "https://bafybeieayj76s4vjlw5uwdvnakosy46rqyioqsp2ygl6sedivemhkxrbwi.ipfs.cf-ipfs.com"}}]
+          [fast-image/fast-image {:style  {:width      140
+                                           :height     140
+                                           :align-self :center}
+                                  :source {:uri "https://bafybeieayj76s4vjlw5uwdvnakosy46rqyioqsp2ygl6sedivemhkxrbwi.ipfs.cf-ipfs.com"}}]
           [react/view (styles/descr-container)
            [react/text {:style {:color       colors/gray
                                 :line-height 22}}

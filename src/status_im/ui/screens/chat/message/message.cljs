@@ -25,7 +25,8 @@
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.ui.components.animation :as animation]
             [status-im.chat.models.images :as images]
-            [status-im.chat.models.pin-message :as models.pin-message])
+            [status-im.chat.models.pin-message :as models.pin-message]
+            [status-im.ui.components.fast-image :as fast-image])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn message-timestamp-anim
@@ -99,11 +100,11 @@
      (if (and image
               ;; Disabling images for public-chats
               (not public?))
-       [react/fast-image {:style  {:width            56
-                                   :height           56
-                                   :background-color :black
-                                   :border-radius    4}
-                          :source {:uri image}}]
+       [fast-image/fast-image {:style  {:width            56
+                                        :height           56
+                                        :background-color :black
+                                        :border-radius    4}
+                               :source {:uri image}}]
        [react/text {:style           (style/quoted-message-text (and outgoing (not pinned)))
                     :number-of-lines 5}
         (components.reply/get-quoted-text-with-mentions parsed-text)])]))
@@ -374,9 +375,17 @@
                                      :disabled      in-popover?}
           [react/view {:style               (style/image-message style-opts)
                        :accessibility-label :image-message}
-           [react/fast-image {:style       (dissoc style-opts :outgoing)
-                              :on-load     (image-set-size dimensions)
-                              :source      {:uri uri}}]
+           (when (or (:error @dimensions) (not (:loaded @dimensions)))
+             [react/view
+              (merge (dissoc style-opts :opacity)
+                     {:flex 1 :align-items :center :justify-content :center :position :absolute})
+              (if (:error @dimensions)
+                [icons/icon :main-icons/cancel]
+                [react/activity-indicator {:animating true}])])
+           [fast-image/fast-image {:style       (dissoc style-opts :outgoing)
+                                   :on-load     (image-set-size dimensions)
+                                   :on-error    #(swap! dimensions assoc :error true)
+                                   :source      {:uri uri}}]
            [react/view {:style (style/image-message-border style-opts)}]]]]))))
 
 (defmulti ->message :content-type)
@@ -567,8 +576,8 @@
                                                              [{:on-press #(when pack
                                                                             (re-frame/dispatch [:chat.ui/show-profile from]))
                                                                :label    (i18n/label :t/view-details)}])))})
-      [react/fast-image {:style  {:margin 10 :width 140 :height 140}
-                         :source {:uri (str (-> content :sticker :url) "&download=true")}}]]
+      [fast-image/fast-image {:style  {:margin 10 :width 140 :height 140}
+                              :source {:uri (str (-> content :sticker :url) "&download=true")}}]]
      reaction-picker]))
 
 (defmethod ->message constants/content-type-image

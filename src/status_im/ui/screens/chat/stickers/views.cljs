@@ -8,7 +8,8 @@
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [status-im.ui.screens.chat.stickers.styles :as styles]
-            [status-im.utils.debounce :as debounce]))
+            [status-im.utils.debounce :as debounce]
+            [status-im.ui.components.fast-image :as fast-image]))
 
 (def icon-size 28)
 (def icon-horizontal-margin 8)
@@ -35,9 +36,9 @@
        ^{:key (str url)}
        [react/touchable-highlight {:style    {:height 75 :width 75 :margin 5}
                                    :on-press #(debounce/dispatch-and-chill [:chat/send-sticker sticker] 1000)}
-        [react/fast-image {:style {:width "100%" :height "100%"}
-                           :accessibility-label :sticker-icon
-                           :source {:uri (str url "&download=true")}}]])]]])
+        [fast-image/fast-image {:style               {:width "100%" :height "100%"}
+                                :accessibility-label :sticker-icon
+                                :source              {:uri (str url "&download=true")}}]])]]])
 
 (defview recent-stickers-panel [window-width]
   (letsubs [stickers [:stickers/recent-stickers]]
@@ -137,6 +138,6 @@
            ^{:key (str "pack-icon" id)}
            [pack-icon {:id               id
                        :background-color colors/white}
-            [react/fast-image {:style  {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
-                               :source {:uri (str thumbnail "&download=true")}}]])]
+            [fast-image/fast-image {:style  {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
+                                    :source {:uri (str thumbnail "&download=true")}}]])]
         [scroll-indicator]]]]]))
