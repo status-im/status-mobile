@@ -696,7 +696,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="one_3")
 @marks.medium
-class TestGroupChatMultipleDevice(MultipleSharedDeviceTestCase):
+class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
     @classmethod
     def setup_class(cls):
         cls.drivers, cls.loop = create_shared_drivers(3)
@@ -712,10 +712,10 @@ class TestGroupChatMultipleDevice(MultipleSharedDeviceTestCase):
         for member in (cls.public_keys[1], cls.public_keys[2]):
             cls.homes[0].add_contact(member)
             cls.homes[0].home_button.click()
+        [SignInView(cls.drivers[i]).put_app_to_background_and_back() for i in range(1, 3)]
         cls.chat_name = cls.homes[0].get_random_chat_name()
         cls.invite_chat_name = '%s_invite' % cls.homes[0].get_random_chat_name()
         cls.chats[0] = cls.homes[0].create_group_chat([], cls.invite_chat_name)
-        [SignInView(cls.drivers[i]).put_app_to_background_and_back() for i in range(1, 3)]
         cls.link = cls.chats[0].get_group_invite_via_group_info()
         cls.chats[0].home_button.double_click()
 

@@ -95,8 +95,8 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.just_fyi('Opening url containing ipns name')
         dapp = self.home.dapp_tab_button.click()
         web_page = dapp.open_url(ipns_url)
-        if not dapp.allow_button.is_element_displayed(30):
-            self.driver.fail('No permission is asked for dapp, so IPNS name is not resolved')
+        if not dapp.allow_button.is_element_displayed(60):
+            self.home.driver.fail('No permission is asked for dapp, so IPNS name is not resolved')
         dapp.allow_button.click()
 
         # Switching back to ropsten
@@ -129,7 +129,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         browsing.allow_button.click()
         browsing.options_button.click()
         if not browsing.connected_account_button.is_element_displayed():
-            self.driver.fail("Account is not connected")
+            self.home.driver.fail("Account is not connected")
         browsing.click_system_back_button()
         profile = browsing.profile_button.click()
         profile.privacy_and_security_button.click()
@@ -161,7 +161,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         browsing.open_chat_from_dapp_button.click()
         public_chat = browsing.get_chat_view()
         if not public_chat.element_by_text('#wikipedia-org').is_element_displayed():
-            self.driver.fail("No redirect to public chat")
+            self.home.driver.fail("No redirect to public chat")
         message = public_chat.get_random_message()
         public_chat.send_message(message)
         public_chat.dapp_tab_button.click(desired_element_text=self.wiki_texts[0])
@@ -212,7 +212,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.profile_button.click()
         profile.contacts_button.click()
         if not profile.add_new_contact_button.is_element_displayed():
-            self.driver.fail('No expected element on contacts view')
+            self.home.driver.fail('No expected element on contacts view')
 
         users = {
             'scanning_ens_with_stateofus_domain_deep_link': {
@@ -280,8 +280,8 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702166)
     def test_profile_add_custom_network(self):
-        profile = self.home.profile_button.click()
         self.home.get_back_to_home_view()
+        profile = self.home.profile_button.click()
         profile.add_custom_network()
         self.sign_in.sign_in()
         self.home.profile_button.click()

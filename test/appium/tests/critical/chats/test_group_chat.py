@@ -143,14 +143,12 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.homes[0].just_fyi("Put admin device to online and check that messages and PNs will be fetched")
         self.homes[0].toggle_airplane_mode()
         self.homes[0].connection_offline_icon.wait_for_invisibility_of_element(60)
-        unread_group = self.homes[0].get_chat(chat_name)
-        unread_group.new_messages_counter.wait_for_element_text('2', 60)
         self.homes[0].open_notification_bar()
         for message in (message_1, message_2):
-            if not self.homes[0].get_pn(message):
+            if not self.homes[0].element_by_text(message).is_element_displayed(30):
                 self.errors.append('%s PN was not fetched from offline' % message)
         self.homes[0].click_system_back_button()
-        unread_group.click()
+        self.homes[0].get_chat(chat_name).click()
 
         self.homes[0].just_fyi("check that messages are shown for every member")
         for i in range(3):

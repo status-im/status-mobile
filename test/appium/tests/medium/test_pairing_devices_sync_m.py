@@ -36,6 +36,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         cls.channel_before_1 = cls.comm_before_1.add_channel(cls.channel)
         cls.channel_before_1.send_message(cls.message)
         cls.home_1.home_button.double_click()
+        cls.device_3.put_app_to_background_and_back()
 
         cls.device_1.just_fyi('Edit profile picture')
         cls.home_1.profile_button.double_click()

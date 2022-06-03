@@ -705,6 +705,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
 
         wallet_1 = self.chat_1.wallet_button.click()
         wallet_1.find_transaction_in_history(amount=amount)
+        self.home_2.put_app_to_background_and_back()
         self.network_api.wait_for_confirmation_of_transaction(self.sender['address'], amount, confirmations=3)
         wallet_1.home_button.click(desired_view='chat')
 
@@ -1110,7 +1111,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         else:
             self.errors.append('No PN on mention in public chat! ')
             self.home_2.click_system_back_button(2)
-        if self.home_2.element_starts_with_text(self.reciever['ens']).is_element_differs_from_template('ment_new.png'):
+        if self.home_2.element_starts_with_text(self.reciever['ens']).is_element_differs_from_template('ment_new.png', 2):
             self.errors.append('Mention is not highlighted!')
         self.errors.verify_no_errors()
 
@@ -1118,17 +1119,17 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
     def test_sticker_1_1_public_chat(self):
         self.home_2.status_in_background_button.click_if_shown()
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
-        (profile_1, profile_2) = (home.profile_button.click() for home in (self.home_1, self.home_2))
-        [profile.switch_network() for profile in (profile_1, profile_2)]
+        profile_2 = self.home_2.profile_button.click()
+        profile_2.switch_network()
 
-        self.home_2.just_fyi('Check that can use purchased stickerpack')
+        self.home_2.just_fyi('Check that can use purchased stickerpack on Mainnet')
         self.home_2.get_chat('#%s' % self.pub_chat_name).click()
         self.chat_2.install_sticker_pack_by_name('Tozemoon')
         self.chat_2.sticker_icon.click()
         if not self.chat_2.chat_item.is_element_displayed():
             self.errors.append('Cannot use purchased stickers')
 
-        self.home_1.just_fyi('Install free sticker pack and use it in 1-1 chat')
+        self.home_1.just_fyi('Install free sticker pack and use it in 1-1 chat on Ropsten')
         self.home_1.get_chat(self.ens).click()
         self.chat_1.install_sticker_pack_by_name('Status Cat')
         self.chat_1.sticker_icon.click()
@@ -1150,9 +1151,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.home_2.home_button.double_click()
         self.home_2.get_chat(self.sender['username']).click()
         self.chat_2.chat_item.click()
-        if not self.chat_2.element_by_text_part('Status Cat').is_element_displayed():
-            self.errors.append('Stickerpack is not available for installation after tapping on sticker message')
-        self.chat_2.element_by_text_part('Free').click()
+        self.chat_2.element_by_text_part('Free').wait_and_click(40)
         if self.chat_2.element_by_text_part('Free').is_element_displayed():
             self.errors.append('Stickerpack was not installed')
 
