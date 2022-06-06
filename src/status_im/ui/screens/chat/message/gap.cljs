@@ -22,7 +22,7 @@
     (when (or (not first-gap?) public? community?)
       [react/view {:style (style/gap-container)}
        [react/touchable-highlight
-        {:on-press (when (and connected? (and (not in-progress?) use-status-nodes?))
+        {:on-press (when (and (not in-progress?) use-status-nodes? connected?)
                      (on-press chat-id gap-ids))
          :style    style/touchable}
         [react/view {:style style/label-container}
