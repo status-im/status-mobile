@@ -28,12 +28,9 @@ let
     "-s" # -s disabled symbol table
     "-w" # -w disables DWARF debugging information
   ];
-
-  goBuildFlags = [ "-v" ];
-
 in rec {
   mobile = callPackage ./mobile {
-    inherit meta source goBuildFlags goBuildLdFlags;
+    inherit meta source goBuildLdFlags;
   };
 
   library = callPackage ./library {
