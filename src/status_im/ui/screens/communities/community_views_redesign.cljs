@@ -5,23 +5,19 @@
    [status-im.communities.core :as communities]
    [status-im.utils.handlers :refer [>evt <sub]]
    [status-im.ui.components.react :as react]
-   [status-im.ui.screens.communities.community-redesign :as community-redesign]
+   [status-im.ui.screens.communities.community :as community]
    [status-im.ui.screens.communities.icon :as communities.icon]
    [status-im.ui.screens.communities.styles :as styles]
    [quo2.components.filter-tag :as quo2.filter-tag]
    [status-im.ui.components.icons.icons :as icons]
    [quo2.foundations.typography :as typography]
-   [quo2.foundations.colors :as quo2.colors]
-   [quo.design-system.colors :as quo.colors]))
+   [quo2.foundations.colors :as quo2.colors]))
 
 (defn stats-column []
   [react/view {:flex-direction :row
                :align-items    :center}
-   [react/view {:flex-direction :row
-                :align-items    :center
-                :margin-right   16}
-    [icons/icon :main-icons2/group16 {:container-style {:opacity         0.4
-                                                        :align-items     :center
+   [react/view {:style (styles/stats-container)}
+    [icons/icon :main-icons2/group16 {:container-style {:align-items     :center
                                                         :justify-content :center}
                                       :resize-mode      :center
                                       :color            (quo2.colors/theme-colors
@@ -30,11 +26,8 @@
     [text/text {:style (merge typography/font-regular
                               typography/paragraph-1)}
      (i18n/format-members 630000)]]
-   [react/view {:flex-direction :row
-                :align-items    :center
-                :margin-right 16}
-    [icons/icon :main-icons2/lightning16 {:container-style {:opacity         0.4
-                                                            :align-items     :center
+   [react/view {:style (styles/stats-container)}
+    [icons/icon :main-icons2/lightning16 {:container-style {:align-items     :center
                                                             :justify-content :center}
                                           :resize-mode      :center
                                           :color            (quo2.colors/theme-colors
@@ -43,11 +36,8 @@
     [text/text {:style (merge typography/font-regular
                               typography/paragraph-1)}
      (i18n/format-members 3300)]]
-   [react/view {:flex-direction :row
-                :align-items    :center
-                :margin-right   16}
-    [icons/icon :main-icons2/placeholder16 {:container-style {:opacity         0.4
-                                                              :align-items     :center
+   [react/view {:style (styles/stats-container)}
+    [icons/icon :main-icons2/placeholder16 {:container-style {:align-items     :center
                                                               :justify-content :center}
                                             :resize-mode      :center
                                             :color            (quo2.colors/theme-colors
@@ -73,7 +63,7 @@
                                         type tags section] :as community}]
   (let [permissions-bg-color (quo2.colors/theme-colors quo2.colors/neutral-10 quo2.colors/neutral-80)
         theme-color         (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
-        window-width (* (<sub [:dimensions/window-width]) 0.90)]
+        window-width (* (<sub [:dimensions/window-width]) 0.91)]
     [react/view {:style (merge (styles/card-redesign window-width theme-color)
                                {:margin-bottom  12}
                                (if (= section "featured")
@@ -88,7 +78,7 @@
                                                 (>evt [:navigate-to :community {:community-id id}]))
                                :on-long-press #(>evt [:bottom-sheet/show-sheet
                                                       {:content (fn []
-                                                                  [community-redesign/community-actions community])}])}
+                                                                  [community/community-actions community])}])}
       [:<>
        [react/view {:height                  64
                     :border-top-right-radius 20
@@ -116,11 +106,12 @@
                                 :padding          2
                                 :background-color permissions-bg-color}}
             [icons/icon (if permissions-granted :main-icons2/unlocked16 :main-icons2/locked16)
-             {:container-style {:opacity          0.4
-                                :align-items      :center
+             {:container-style {:align-items      :center
                                 :justify-content  :center}
               :resize-mode      :center
-              :color            (:icon-02 @quo.colors/theme)}]
+              :color            (quo2.colors/theme-colors
+                                 quo2.colors/neutral-50
+                                 quo2.colors/neutral-40)}]
             [communities.icon/community-icon-redesign community 20]])]
         [text/text
          {:style (merge
@@ -148,7 +139,7 @@
   (let [card-bg-color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
         permissions-bg-color (quo2.colors/theme-colors quo2.colors/neutral-10 quo2.colors/neutral-80)
         permissions-granted  false
-        window-width (* (<sub [:dimensions/window-width]) 0.90)]
+        window-width (* (<sub [:dimensions/window-width]) 0.91)]
     [react/view {:style (merge (styles/card-redesign window-width card-bg-color)
                                {:margin-bottom  12})}
      [react/touchable-opacity {:border-radius        20
@@ -158,7 +149,7 @@
                                                 (>evt [:navigate-to :community {:community-id id}]))
                                :on-long-press #(>evt [:bottom-sheet/show-sheet
                                                       {:content (fn []
-                                                                  [community-redesign/community-actions community])}])}
+                                                                  [community/community-actions community])}])}
       [react/view {:flex               1}
        [react/view {:flex-direction    :row
                     :border-radius      16
@@ -193,11 +184,12 @@
                         :padding          2
                         :background-color permissions-bg-color}
             [icons/icon (if permissions-granted :main-icons2/unlocked16 :main-icons2/locked16)
-             {:container-style {:opacity          0.4
-                                :align-items      :center
+             {:container-style {:align-items      :center
                                 :justify-content  :center}
               :resize-mode      :center
-              :color            (:icon-02 @quo.colors/theme)}]
+              :color            (quo2.colors/theme-colors
+                                 quo2.colors/neutral-50
+                                 quo2.colors/neutral-40)}]
             [communities.icon/community-icon-redesign community 20]]])]]]]))
 
 

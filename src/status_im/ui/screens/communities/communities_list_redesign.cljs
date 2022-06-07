@@ -9,6 +9,7 @@
             [quo.components.separator :as separator]
             [quo2.components.text :as quo2.text]
             [quo2.components.button :as quo2.button]
+            [quo2.components.counter :as quo2.counter]
             [quo2.components.filter-tags :as quo2.filter-tags]
             [quo2.foundations.typography :as typography]
             [quo2.foundations.colors :as quo2.colors]
@@ -34,7 +35,7 @@
     :on-press #(re-frame/dispatch [::qr-scanner/scan-code
                                    {:title   (i18n/label :t/add-bootnode)
                                     :handler :bootnodes.callback/qr-code-scanned}])}
-   :main-icons2/placeholder])
+   :main-icons2/scanner])
 
 (defn qr-code []
   [quo2.button/button
@@ -43,33 +44,33 @@
     :size                32
     :style               {:margin-left 10}
     :accessibility-label :contact-qr-code-button}
-   :main-icons2/placeholder])
+   :main-icons2/qr-code])
 
 (views/defview notifications-button []
   (views/letsubs [notif-count [:activity.center/notifications-count]]
-    [react/view
-     [quo2.button/button {:icon                true
-                          :type                :grey
-                          :size                32
-                          :style               {:margin-left 10}
-                          :accessibility-label "notifications-button"
-                          :on-press #(do
-                                       (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
-                                       (re-frame/dispatch [:navigate-to :notifications-center]))}
-      :main-icons2/placeholder]
-     (when (pos? notif-count)
-       [react/view {:style (merge (styles/counter-public-container) {:top 5 :right 5})
-                    :pointer-events :none}
-        [react/view {:style               styles/counter-public
-                     :accessibility-label :notifications-unread-badge}]])]))
+                 [react/view
+                  [quo2.button/button {:icon                true
+                                       :type                :grey
+                                       :size                32
+                                       :style               {:margin-left 10}
+                                       :accessibility-label "notifications-button"
+                                       :on-press #(do
+                                                    (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
+                                                    (re-frame/dispatch [:navigate-to :notifications-center]))}
+                   :main-icons2/notifications]
+                  (when (pos? notif-count)
+                    [react/view {:style (merge (styles/counter-public-container) {:top 5 :right 5})
+                                 :pointer-events :none}
+                     [react/view {:style               styles/counter-public
+                                  :accessibility-label :notifications-unread-badge}]])]))
 
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]
-    [components.plus-button/plus-button
-     {:on-press (when-not logging-in?
-                  #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
-      :loading logging-in?
-      :accessibility-label :new-chat-button}]))
+                 [components.plus-button/plus-button
+                  {:on-press (when-not logging-in?
+                               #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+                   :loading logging-in?
+                   :accessibility-label :new-chat-button}]))
 
 (defn render-popular-fn [{:keys [chat-id] :as community-item}]
   (when-not chat-id
@@ -194,13 +195,28 @@
     [react/view {:margin-top          8
                  :margin-bottom       4
                  :padding-horizontal  20}
-     [react/view {:padding-vertical   12}
-      [quo2.tabs/tabs {:size              32
-                       :on-change         #(reset! selected-tab %)
-                       :default-active    :all
-                       :data [{:id :all   :label "All"}
-                              {:id :open  :label "Open"}
-                              {:id :gated :label "Token Gated"}]}]]
+     [react/view {:flex-direction     :row
+                  :align-items        :center
+                  :padding-vertical   12}
+      [react/view {:flex   1}
+       [quo2.tabs/tabs {:size              32
+                        :on-change         #(reset! selected-tab %)
+                        :default-active    :all
+                        :data [{:id :all   :label "All"}
+                               {:id :open  :label "Open"}
+                               {:id :gated :label "Gated"}]}]]
+      [react/view {:flex-direction :row}
+       [quo2.button/button
+        {:icon                true
+         :type                :outline
+         :size                32
+         :style               {:margin-right 12}}
+        :main-icons2/lightning]
+       [quo2.button/button
+        {:icon                true
+         :type                :outline
+         :size                32}
+        :main-icons2/placeholder]]]
      (cond
        (= tab :all)
        [react/view
@@ -213,29 +229,42 @@
         [all-communities]])]))
 
 (defn communities-sections []
-  [:<>
-   [react/view {:padding-left 20}
-    [react/view {:flex-direction      :row
-                 :align-items         :center
-                 :padding-bottom      8}
-     [quo2.text/text
-      {:style (merge {:accessibility-label :featured-communities-title}
-                     typography/paragraph-1
-                     typography/font-semi-bold)}
-      "Featured"]]
-    [featured-communities]]
-   [react/view {:margin-vertical    20
-                :padding-horizontal 20}
-    [separator/separator-redesign]]
-   [react/view {:padding-horizontal 20}
-    [quo2.text/text
-     {:style (merge {:accessibility-label :popular-communities-title
-                     :padding-bottom      8}
-                    typography/paragraph-1
-                    typography/font-semi-bold)}
-     "Popular"]
-    [popular-communities]]
-   [community-tabs]])
+  (let [count (reagent/atom {:value 2 :type :grey})]
+    [:<>
+     [react/view {:padding-left   20}
+      [react/view {:flex-direction  :row
+                   :align-item      :center
+                   :justify-content :space-between
+                   :padding-bottom  8
+                   :padding-right   20}
+       [react/view {:flex-direction  :row
+                    :align-items     :center}
+        [quo2.text/text
+         {:style (merge {:accessibility-label :featured-communities-title
+                         :margin-right        6}
+                        typography/paragraph-1
+                        typography/font-semi-bold)}
+         "Featured"]
+        [quo2.counter/counter @count (:value @count)]]
+       [react/view {:align-items :center}
+        [icons/icon :main-icons2/info {:height 20
+                                       :color  (quo2.colors/theme-colors
+                                                quo2.colors/neutral-50
+                                                quo2.colors/neutral-40)
+                                       :width  20}]]]
+      [featured-communities]]
+     [react/view {:margin-vertical    20
+                  :padding-horizontal 20}
+      [separator/separator-redesign]]
+     [react/view {:padding-left 20}
+      [quo2.text/text
+       {:style (merge {:accessibility-label :popular-communities-title
+                       :padding-bottom      8}
+                      typography/paragraph-1
+                      typography/font-semi-bold)}
+       "Popular"]
+      [popular-communities]]
+     [community-tabs]]))
 
 (defn title-column []
   [react/view
@@ -247,7 +276,6 @@
    [react/view
     {:flex-direction :row
      :flex           1
-     :padding-right  16
      :align-items    :center}
     [quo2.text/text
      {:style (merge {:accessibility-label :community-name-text
@@ -255,7 +283,7 @@
                      :number-of-lines     1}
                     typography/font-semi-bold
                     typography/heading-1)}
-     :Communities]]
+     "Communities"]]
    [plus-button]])
 
 (views/defview community-filter-tags []
@@ -294,20 +322,18 @@
                               :data           filters}]]]))
 
 (defn views []
-  (fn [insets]
-    [react/view {:style {:flex             1
-                         :padding-top      (:top insets)
-                         :background-color (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}}
-     [react/view
-      {:flex-direction     :row
-       :padding-horizontal 20
-       :padding-vertical   12
-       :align-items        :center
-       :justify-content    :flex-end}
-      [qr-scanner]
-      [qr-code]
-      [notifications-button]]
-     [react/scroll-view
-      [title-column]
-      [community-filter-tags]
-      [communities-sections]]]))
+  [react/view {:style {:flex             1
+                       :background-color (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}}
+   [react/view
+    {:flex-direction     :row
+     :padding-horizontal 20
+     :padding-vertical   12
+     :align-items        :center
+     :justify-content    :flex-end}
+    [qr-scanner]
+    [qr-code]
+    [notifications-button]]
+   [react/scroll-view
+    [title-column]
+    [community-filter-tags]
+    [communities-sections]]])

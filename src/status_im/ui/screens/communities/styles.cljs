@@ -17,3 +17,8 @@
    :border-radius    20
    :justify-content  :space-between
    :elevation        2})
+
+(defn stats-container []
+  {:flex-direction :row
+:align-items    :center
+:margin-right   16})
