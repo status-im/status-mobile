@@ -14,10 +14,9 @@ fi
 # required to build the project
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
-THIS_SCRIPT=$(realpath --relative-to="${GIT_ROOT}" ${BASH_SOURCE})
-CUR_DIR=$(cd "${BASH_SOURCE%/*}" && pwd)
 source "${GIT_ROOT}/scripts/colors.sh"
 
+CUR_DIR=$(cd "${BASH_SOURCE%/*}" && pwd)
 PROJ_LIST="${CUR_DIR}/proj.list"
 DEPS_LIST="${CUR_DIR}/deps.list"
 DEPS_URLS="${CUR_DIR}/deps.urls"

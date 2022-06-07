@@ -45,7 +45,7 @@ One dependency these scripts require is the [go-maven-resolver](https://github.c
 
 # Known Issues
 
-One edge case that is currently not handled by this setup is an addition of a new dependency that requires a version of Gradle we don't have. In that case running `make nix-update-gradle` would fail with:
+One edge case that is currently not automatically handled by this setup is an addition of a new dependency that requires a version of Gradle we don't have. In that case running `make nix-update-gradle` would fail with:
 ```
 AILURE: Build failed with an exception.
 
@@ -61,16 +61,14 @@ A problem occurred configuring project ':react-native-example-project'.
 ```
 This happens because `get_projects.sh` and `get_deps.sh` depend on running Gradle to generate their output, and that will not work because Gradle cannot find the matching JAR for the new dependency.
 
-A manual solution would involve adding that specific Gradle version into `deps.urls`:
+You can use the `add_package.sh` script to add missing Gradle dependencies:
 ```
-echo com.android.tools.build:gradle:3.4.0 | go-maven-resolver >> nix/deps/gradle/deps.urls
+ > make shell TARGET=gradle
+Configuring Nix shell for target 'gradle'...
+
+[nix-shell:~/status-react]$ nix/deps/gradle/add_package.sh com.android.tools.build:gradle:3.4.0
+Regenerating Nix files...
+Found 548 direct dependencies...
+Successfully added: com.android.tools.build:gradle:3.4.0
 ```
-Then you'll need to remove duplicates and sort `deps.urls`:
-```
-sort -uo nix/deps/gradle/deps.urls nix/deps/gradle/deps.urls
-```
-And finally generate the `deps.json` for Nix using:
-```
-nix/deps/gradle/generate.sh gen_deps_json
-```
-After run `make nix-update-gradle` and it should work just fine.
+This may take a bit longer than normal `make nix-update-gradle` but should add the missing package.
