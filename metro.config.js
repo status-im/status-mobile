@@ -4,16 +4,14 @@
  *
  * @format
  */
+
 module.exports = {
-    transformer: {
-        getTransformOptions: async () => ({
-            transform: {
-                experimentalImportSupport: false,
-                inlineRequires: true,
-            },
-        }),
-    },
-    resolver: {
-        extraNodeModules: require('node-libs-react-native'),
-    },
+  transformer: {
+    getTransformOptions: async () => ({
+      transform: {
+        experimentalImportSupport: false,
+        inlineRequires: true,
+      },
+    }),
+  },
 };

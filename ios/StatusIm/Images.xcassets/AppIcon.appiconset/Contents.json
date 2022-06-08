@@ -150,5 +150,9 @@
       "filename" : "ios-marketing.png",
       "scale" : "1x"
     }
-  ]
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
 }
