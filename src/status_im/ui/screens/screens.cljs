@@ -885,14 +885,13 @@
             :options   {:topBar {:visible false}}
             :component bug-report/bug-report}]
 
+          navigation2.screens/screens
           (when config/quo-preview-enabled?
             quo.preview/screens)
           (when config/quo-preview-enabled?
             quo.preview/main-screens)
           (when config/quo-preview-enabled?
             quo2.preview/screens)
-          (when config/quo-preview-enabled?
-            navigation2.screens/screens)
           (when @config/new-ui-enabled?
             navigation2.screens/screen-overwrites)
           (when config/quo-preview-enabled?

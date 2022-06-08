@@ -108,7 +108,7 @@
                                                               :property (:opacity layout-animation-properties)}}})
 
 (defonce enable-layout-animations
-  (when (and platform/android? config/quo-preview-enabled?)
+  (when platform/android?
     (.setLayoutAnimationEnabledExperimental ^js ui-manager true)))
 
 (def activity-indicator (reagent/adapt-react-class (.-ActivityIndicator ^js rn)))
