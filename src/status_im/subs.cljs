@@ -267,9 +267,9 @@
 (reg-root-key-sub :wallet-connect/session-managed :wallet-connect/session-managed)
 (reg-root-key-sub :contact-requests/pending :contact-requests/pending)
 
-(reg-root-key-sub :mutual-contact-requests/enabled? :mutual-contact-requests/enabled?)
 
 ; Testing
+
 
 (reg-root-key-sub :messenger/started? :messenger/started?)
 
@@ -2255,6 +2255,12 @@
  :<- [:multiaccount]
  (fn [multiaccount]
    (get multiaccount :profile-pictures-show-to)))
+
+(re-frame/reg-sub
+ :mutual-contact-requests/enabled?
+ :<- [:multiaccount]
+ (fn [settings]
+   (boolean (:mutual-contact-enabled? settings))))
 
 (re-frame/reg-sub
  ::profile-pictures-visibility

@@ -4,8 +4,8 @@
             [status-im.data-store.contacts :as contacts-store]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.navigation :as navigation]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.utils.fx :as fx]
-            [status-im.async-storage.core :as async-storage]
             [taoensso.timbre :as log]
             [status-im.constants :as constants]
             [status-im.contact.block :as contact.block]))
@@ -144,6 +144,9 @@
 
 (fx/defn switch-mutual-contact-requests-enabled
   {:events [:multiaccounts.ui/switch-mutual-contact-requests-enabled]}
-  [{:keys [db]} enabled?]
-  {::async-storage/set! {:mutual-contact-requests-enabled? enabled?}
-   :db (assoc db :mutual-contact-requests/enabled? enabled?)})
+  [cofx enabled?]
+  (multiaccounts.update/multiaccount-update
+   cofx
+   :mutual-contact-enabled?
+   enabled?
+   nil))
