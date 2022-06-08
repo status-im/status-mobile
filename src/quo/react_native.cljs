@@ -6,8 +6,7 @@
             ["@react-native-community/hooks" :as hooks]
             ["react-native-navigation" :refer (Navigation)]
             ["rn-emoji-keyboard" :refer (EmojiKeyboard)]
-            ["react-native-draggable-flatlist" :default DraggableFlatList]
-            [status-im.utils.config :as config]))
+            ["react-native-draggable-flatlist" :default DraggableFlatList]))
 
 (def rn-draggable-flatlist (reagent/adapt-react-class DraggableFlatList))
 
