@@ -63,7 +63,7 @@
 (re-frame/reg-fx
  ::login
  (fn [[key-uid account-data hashed-password]]
-   (status/login key-uid account-data hashed-password)))
+   (status/login-with-config key-uid account-data hashed-password nil)))
 
 (re-frame/reg-fx
  ::export-db

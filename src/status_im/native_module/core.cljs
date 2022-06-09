@@ -64,6 +64,16 @@
    key-uid
    #(.login ^js (status) account-data hashed-password)))
 
+(defn login-with-config
+  "NOTE: beware, the password has to be sha3 hashed"
+  [key-uid account-data hashed-password config]
+  (log/debug "[native-module] loginWithConfig")
+  (clear-web-data)
+  (let [config (if config (types/clj->json config) "")]
+    (init-keystore
+     key-uid
+     #(.loginWithConfig ^js (status) account-data hashed-password config))))
+
 (defn export-db
   "NOTE: beware, the password has to be sha3 hashed"
   [key-uid account-data hashed-password callback]
