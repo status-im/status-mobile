@@ -716,13 +716,11 @@ class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
         cls.chat_name = cls.homes[0].get_random_chat_name()
         cls.invite_chat_name = '%s_invite' % cls.homes[0].get_random_chat_name()
         cls.chats[0] = cls.homes[0].create_group_chat([], cls.invite_chat_name)
-        cls.link = cls.chats[0].get_group_invite_via_group_info()
         cls.chats[0].home_button.double_click()
 
         cls.chats[0] = cls.homes[0].create_group_chat([cls.usernames[1], cls.usernames[2]], cls.chat_name)
         for i in range(1, 3):
             cls.chats[i] = cls.homes[i].get_chat(cls.chat_name).click()
-            cls.chats[i].join_chat_button.click()
 
     @marks.testrail_id(702259)
     def test_group_chat_remove_member(self):
@@ -775,59 +773,6 @@ class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
                 self.errors.append("Admin user is not marked as admin")
         if not group_info_1.add_members.is_element_displayed():
             self.errors.append("Add member button is not available for new admin")
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(702261)
-    def test_group_chat_accept_decline_invite(self):
-        [driver.close_app() for driver in (self.drivers[1], self.drivers[2])]
-        self.homes[0].home_button.double_click()
-        self.chats[0].just_fyi('Member_1, member_2: both users send requests to join group chat')
-        [sign_in.open_weblink_and_login(self.link) for sign_in in (self.sign_ins[1], self.sign_ins[2])]
-        introduction_messages = ['message for retrying']
-        for i in range(1, 3):
-            self.homes[i].element_by_text_part(self.invite_chat_name).click()
-            introduction_messages.append('Please add me, member_%s to your gorgeous group chat' % str(i))
-            self.chats[i].request_membership_for_group_chat(introduction_messages[i])
-
-        self.chats[0].just_fyi('Admin: accept request for Member_1 and decline for Member_2')
-        self.homes[0].get_chat(self.invite_chat_name).click()
-        self.chats[0].group_membership_request_button.wait_and_click()
-        self.chats[0].element_by_text(self.usernames[1]).click()
-        if not self.chats[0].element_by_text_part(introduction_messages[1]).is_element_displayed():
-            self.errors.append('Introduction message is not shown!')
-        self.chats[0].accept_group_invitation_button.wait_and_click()
-        self.chats[0].accept_membership_for_group_chat_via_chat_view(self.usernames[2], accept=False)
-        self.chats[0].click_system_back_button()
-
-        self.chats[2].just_fyi('Member_2: retry request')
-        self.chats[2].retry_group_invite_button.wait_and_click()
-        self.chats[2].request_membership_for_group_chat(introduction_messages[0])
-
-        self.chats[2].just_fyi('Admin: decline request for Member_2')
-        self.chats[0].group_membership_request_button.wait_and_click()
-        self.chats[0].element_by_text(self.usernames[2]).click()
-        if not self.chats[0].element_by_text_part(introduction_messages[0]).is_element_displayed():
-            self.errors.append('Introduction message that was set after retrying attempt is not shown for admin!')
-        self.chats[0].decline_group_invitation_button.wait_and_click()
-        self.chats[0].click_system_back_button()
-
-        self.chats[2].just_fyi('Member_2: remove chat')
-        self.chats[2].remove_group_invite_button.wait_and_click()
-
-        self.chats[2].just_fyi('Double check after relogin')
-        if self.chats[0].group_membership_request_button.is_element_displayed():
-            self.errors.append('Group membership request is still shown when there are no pending requests anymore')
-        [self.homes[i].reopen_app() for i in range(0, 3)]
-        if self.homes[2].element_by_text_part(self.invite_chat_name).is_element_displayed():
-            self.errors.append('Group chat was not removed when removing after declining group invite')
-        [home.get_chat(self.invite_chat_name).click() for home in (self.homes[0], self.homes[1])]
-        if self.chats[0].group_membership_request_button.is_element_displayed():
-            self.errors.append(
-                'Group membership request is shown after relogin when there are no pending requests anymore')
-        join_system_message = self.chats[0].join_system_message(self.usernames[1])
-        for chat in (self.chats[1], self.chats[0]):
-            if not chat.chat_element_by_text(join_system_message).is_element_displayed():
-                self.errors.append('%s is not shown after joining to group chat via invite' % join_system_message)
         self.errors.verify_no_errors()
 
 

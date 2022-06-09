@@ -1008,16 +1008,16 @@ class ChatView(BaseView):
         return '%s has invited %s' % (admin, invited_user)
 
     @staticmethod
+    def has_added_system_message(admin, invited_user):
+        return '%s has added %s' % (admin, invited_user)
+
+    @staticmethod
     def invited_to_join_system_message(username, chat_name):
         return '%s invited you to join the group %s' % (username, chat_name)
 
     @staticmethod
     def join_system_message(username):
         return '%s joined the group' % username
-
-    @staticmethod
-    def create_for_admin_system_message(chat_name):
-        return 'You created the group %s' % chat_name
 
     @staticmethod
     def changed_group_name_system_message(admin, chat_name):

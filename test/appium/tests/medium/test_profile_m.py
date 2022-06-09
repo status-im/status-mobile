@@ -34,7 +34,6 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         cls.group_chat_1 = cls.home_1.create_group_chat(user_names_to_add=[cls.default_username_2],
                                                         group_chat_name=cls.group_chat_name)
         cls.group_chat_2 = cls.home_2.get_chat(cls.group_chat_name).click()
-        cls.group_chat_2.join_chat_button.click()
         [home.home_button.click() for home in (cls.home_1, cls.home_2)]
 
         cls.home_1.just_fyi("Creating public chats")

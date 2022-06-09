@@ -61,16 +61,19 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.homes[1].just_fyi("Check system messages in group chat for admin and member")
         create_system_message = self.chats[0].create_system_message(self.usernames[0], self.chat_name)
-        invite_system_message = self.chats[0].invite_system_message(self.usernames[0], self.usernames[1])
+        has_added_system_message = self.chats[0].has_added_system_message(self.usernames[0], self.usernames[1])
 
-        invited_to_join = self.chats[0].invited_to_join_system_message(self.usernames[0], self.chat_name)
-        create_for_admin_system_message = self.chats[0].create_for_admin_system_message(self.chat_name)
-        for message in [create_for_admin_system_message, create_system_message, invite_system_message]:
-            if not self.chats[0].chat_element_by_text(message):
+        create_for_admin_system_message = 'You created the group %s' % self.chat_name
+        joined_message = "You've joined %s from invitation by %s" % (self.chat_name, self.usernames[0])
+
+        for message in [create_for_admin_system_message, create_system_message, has_added_system_message]:
+            if not self.chats[0].element_by_text(message).is_element_displayed():
                 self.errors.append('%s system message is not shown' % message)
-        for message in [invited_to_join, create_system_message, invite_system_message]:
-            if not self.chats[1].chat_element_by_text(message):
+
+        for message in [joined_message, create_system_message, has_added_system_message]:
+            if not self.chats[1].element_by_text(message).is_element_displayed():
                 self.errors.append('%s system message is not shown' % message)
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700731)
@@ -79,11 +82,6 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         [self.homes[i].home_button.double_click() for i in range(3)]
         self.homes[1].get_chat(self.chat_name).click()
 
-        self.chats[1].just_fyi('Join to group chat')
-        join_system_message = self.chats[1].join_system_message(self.usernames[1])
-        self.chats[1].join_chat_button.click()
-        if not self.chats[1].chat_element_by_text(join_system_message).is_element_displayed(30):
-            self.drivers[1].fail('System message after joining group chat is not shown')
         self.chats[1].send_message(message_to_admin)
 
         self.chats[0].just_fyi('check that PN is received and after tap you are redirected to group chat')
@@ -99,9 +97,8 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         message_status = self.chats[1].chat_element_by_text(message_to_admin).status
         if message_status != 'delivered':
             self.errors.append('Message status is not delivered, it is %s!' % message_status)
-        for message in (join_system_message, message_to_admin):
-            if not self.chats[0].chat_element_by_text(message).is_element_displayed(30):
-                self.drivers[0].fail('Message %s was not received by admin' % message)
+        if not self.chats[0].chat_element_by_text(message_to_admin).is_element_displayed(30):
+            self.drivers[0].fail('Message %s was not received by admin' % message_to_admin)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700732)
@@ -116,9 +113,10 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.homes[2].open_notification_bar()
         if self.homes[2].element_by_text_part(self.usernames[0]).is_element_displayed():
             self.errors.append("PN about group chat invite is shown when invited by non-contact")
+
         self.homes[2].click_system_back_button()
         self.homes[2].get_chat(self.chat_name).click()
-        self.chats[2].join_chat_button.click()
+
         for message in (self.message_to_admin, self.message_before_adding):
             if self.chats[2].chat_element_by_text(message).is_element_displayed():
                 self.errors.append('%s is shown for new user' % message)
@@ -132,7 +130,7 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.homes[0].home_button.double_click()
         for i in range(1, 3):
             self.homes[i].get_chat(chat_name).click()
-            self.chats[i].join_chat_button.click()
+
         message_1, message_2 = 'message from old member', 'message from new member'
 
         self.homes[0].just_fyi("Put admin device to offline and send messages from members")
@@ -158,9 +156,8 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5756)
-    def test_group_chat_decline_invite_chat_highligted(self):
+    def test_group_chat_highligted(self):
         chat_name = 'for_invited'
-        left_system_message = self.chats[0].leave_system_message(self.usernames[1])
         [self.homes[i].home_button.double_click() for i in range(3)]
         self.homes[0].create_group_chat([self.usernames[1]], chat_name)
 
@@ -172,32 +169,21 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         chat_2.home_button.click()
         if not chat_2_element.no_message_preview.is_element_differs_from_template('highligted_preview_group.png', 0):
             self.errors.append("Preview message is still hightligted after opening! ")
-        self.homes[1].get_chat(chat_name).click()
-        chat_2.decline_invitation_button.click()
-        if self.chats[0].chat_element_by_text(left_system_message).is_element_displayed():
-            self.errors.append('System message when user declined invite is shown')
-        if self.homes[1].element_by_text(chat_name).is_element_displayed():
-            self.errors.append("Group chat '%s' is shown, but user declined invite" % chat_name)
-
-        self.homes[0].just_fyi('Send message after invite is declined and check that it is not reappeared')
-        message = 'sent after leaving'
-        self.chats[0].send_message(message)
-        if self.homes[1].element_by_text(chat_name).is_element_displayed():
-            self.errors.append("Group chat '%s' reappeared when new message is sent" % chat_name)
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(3997)
     def test_group_chat_leave_relogin(self):
+        left_system_message = self.chats[1].leave_system_message(self.usernames[0])
         self.drivers[2].quit()
         [self.homes[i].home_button.double_click() for i in range(2)]
         self.homes[0].home_button.double_click()
         self.homes[1].get_chat(self.chat_name).click()
-        join_button = self.chats[1].join_chat_button
-        if join_button.is_element_displayed():
-            join_button.click()
 
         self.homes[0].just_fyi("Admin deleted chat via long press")
         self.homes[0].leave_chat_long_press(self.chat_name)
+
+        self.homes[1].just_fyi('Check that leave system message is presented after user left the group chat')
+        if not self.chats[1].chat_element_by_text(left_system_message).is_element_displayed():
+            self.errors.append('System message when user leaves the chat is not shown')
 
         self.homes[0].just_fyi("Member sends some message, admin relogins and check chat does not reappear")
         self.chats[1].send_message(self.message_to_admin)
