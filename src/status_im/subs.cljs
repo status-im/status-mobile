@@ -13,6 +13,7 @@
             [status-im.ethereum.tokens :as tokens]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
+            [status-im.mailserver.core :as mailserver]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]
@@ -2485,6 +2486,11 @@
  (fn [[mailserver current-mailserver-id]]
    (= (get-in mailserver [:id :value])
       current-mailserver-id)))
+
+(re-frame/reg-sub
+ :mailserver/use-status-nodes?
+ (fn [db _]
+   (boolean (mailserver/fetch-use-mailservers? {:db db}))))
 
 (re-frame/reg-sub
  :mailserver.edit/validation-errors

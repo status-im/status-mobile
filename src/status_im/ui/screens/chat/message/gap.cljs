@@ -17,18 +17,19 @@
                                 gap-ids
                                 chat-id]
                   connected?   [:mailserver/connected?]
+                  use-status-nodes? [:mailserver/use-status-nodes?]
                   first-gap?   (= gap-ids #{:first-gap})]
     (when (or (not first-gap?) public? community?)
       [react/view {:style (style/gap-container)}
        [react/touchable-highlight
-        {:on-press (when (and connected? (not in-progress?))
+        {:on-press (when (and (not in-progress?) use-status-nodes? connected?)
                      (on-press chat-id gap-ids))
          :style    style/touchable}
         [react/view {:style style/label-container}
          (if in-progress?
            [react/activity-indicator]
            [react/nested-text
-            {:style (style/gap-text connected?)}
+            {:style (style/gap-text (and connected? use-status-nodes?))}
             (i18n/label (if first-gap? :t/load-more-messages :t/fetch-messages))
             (when first-gap?
               [{:style style/date}
