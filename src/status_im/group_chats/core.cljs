@@ -21,7 +21,8 @@
   {:events [:chat-removed]}
   [cofx response]
   (fx/merge cofx
-            {:dispatch-n [[:sanitize-messages-and-process-response response]
+            {:db (dissoc (:db cofx) :current-chat-id)
+             :dispatch-n [[:sanitize-messages-and-process-response response]
                           [:pop-to-root-tab :chat-stack]]}
             (notification-center/get-activity-center-notifications-count)))
 
