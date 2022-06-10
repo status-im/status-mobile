@@ -284,8 +284,11 @@
            comp               (get tab-root-ids selected-tab-index)
            tab-key            (get (clojure.set/map-invert tab-key-idx) selected-tab-index)]
        (re-frame/dispatch [:set :current-tab tab-key])
-       (when (and platform/android? (= @state/root-comp-id comp))
-         (.popToRoot Navigation (name comp)))
+       (when (= @state/root-comp-id comp)
+         (when (= :chat tab-key)
+           (re-frame/dispatch [:close-chat]))
+         (when platform/android?
+           (.popToRoot Navigation (name comp))))
        (reset! state/root-comp-id comp)))))
 
 ;; OVERLAY (Popover and bottom sheets)
