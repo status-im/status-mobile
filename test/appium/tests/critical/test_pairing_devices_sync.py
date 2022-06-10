@@ -11,27 +11,26 @@ from views.sign_in_view import SignInView
 @marks.skip
 class TestPairingMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
+    def prepare_devices(self):
         from views.dbs.main_pairing.data import seed_phrase, password
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.home_1 = cls.device_1.import_db(seed_phrase=seed_phrase, import_db_folder_name='main_pairing',
-                                            password=password)
-        cls.home_2 = cls.device_2.recover_access(seed_phrase)
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.home_1 = self.device_1.import_db(seed_phrase=seed_phrase, import_db_folder_name='main_pairing',
+                                              password=password)
+        self.home_2 = self.device_2.recover_access(seed_phrase)
 
-        cls.home_1.just_fyi('Pair main and secondary devices')
-        [cls.profile_1, cls.profile_2] = [home.profile_button.click() for home in (cls.home_1, cls.home_2)]
-        name_1, name_2 = 'device_1', 'a_%s_2' % cls.device_2.get_unique_amount()
-        cls.profile_2.discover_and_advertise_device(name_2)
-        cls.profile_1.sync_settings_button.scroll_and_click()
-        cls.profile_1.devices_button.scroll_to_element()
-        cls.profile_1.devices_button.click()
-        cls.home_1.element_by_text_part(name_2).scroll_and_click()
-        cls.profile_1.sync_all_button.click()
-        cls.profile_1.sync_all_button.wait_for_visibility_of_element(20)
-        [profile.get_back_to_home_view() for profile in [cls.profile_1, cls.profile_2]]
-        [home.home_button.click() for home in [cls.home_1, cls.home_2]]
+        self.home_1.just_fyi('Pair main and secondary devices')
+        [self.profile_1, self.profile_2] = [home.profile_button.click() for home in (self.home_1, self.home_2)]
+        name_1, name_2 = 'device_1', 'a_%s_2' % self.device_2.get_unique_amount()
+        self.profile_2.discover_and_advertise_device(name_2)
+        self.profile_1.sync_settings_button.scroll_and_click()
+        self.profile_1.devices_button.scroll_to_element()
+        self.profile_1.devices_button.click()
+        self.home_1.element_by_text_part(name_2).scroll_and_click()
+        self.profile_1.sync_all_button.click()
+        self.profile_1.sync_all_button.wait_for_visibility_of_element(20)
+        [profile.get_back_to_home_view() for profile in [self.profile_1, self.profile_2]]
+        [home.home_button.click() for home in [self.home_1, self.home_2]]
 
     def test_pairing_initial_sync_chats(self):
         self.profile_2.just_fyi("Check chats and previews")
@@ -92,62 +91,61 @@ class TestPairingMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 @marks.critical
 class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        cls.no_contact_nickname = 'no_contact_nickname'
-        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.home_1 = cls.device_1.create_user()
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.no_contact_nickname = 'no_contact_nickname'
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.home_1 = self.device_1.create_user()
 
-        cls.name_1, cls.name_2 = 'device_%s' % cls.drivers[0].number, 'device_%s' % cls.drivers[1].number
-        cls.message_before_sync, cls.message_after_sync = 'sent before sync', 'sent after sync'
-        cls.contact_before_sync = basic_user
-        cls.public_chat_before_sync, cls.public_chat_after_sync = cls.home_1.get_random_chat_name(), 'after-pairing'
+        self.name_1, self.name_2 = 'device_%s' % self.drivers[0].number, 'device_%s' % self.drivers[1].number
+        self.message_before_sync, self.message_after_sync = 'sent before sync', 'sent after sync'
+        self.contact_before_sync = basic_user
+        self.public_chat_before_sync, self.public_chat_after_sync = self.home_1.get_random_chat_name(), 'after-pairing'
 
-        cls.home_1.just_fyi("(main device): get recovery phrase")
-        cls.profile_1 = cls.home_1.profile_button.click()
-        cls.profile_1.privacy_and_security_button.click()
-        cls.profile_1.backup_recovery_phrase_button.click()
-        cls.profile_1.ok_continue_button.click()
-        cls.recovery_phrase = cls.profile_1.get_recovery_phrase()
-        cls.profile_1.close_button.click()
-        cls.profile_1.home_button.click()
-        cls.profile_1.get_recovery_phrase()
-        cls.device_2.put_app_to_background_and_back()
+        self.home_1.just_fyi("(main device): get recovery phrase")
+        self.profile_1 = self.home_1.profile_button.click()
+        self.profile_1.privacy_and_security_button.click()
+        self.profile_1.backup_recovery_phrase_button.click()
+        self.profile_1.ok_continue_button.click()
+        self.recovery_phrase = self.profile_1.get_recovery_phrase()
+        self.profile_1.close_button.click()
+        self.profile_1.home_button.click()
+        self.profile_1.get_recovery_phrase()
+        self.device_2.put_app_to_background_and_back()
 
-        cls.home_1.just_fyi('Add contact, 1-1 chat (main device): 3-random, contact with ENS, start 1-1')
-        cls.chat_1 = cls.home_1.add_contact(cls.contact_before_sync['public_key'])
-        cls.chat_1.send_message(cls.message_before_sync)
-        cls.chat_1.home_button.click()
-        cls.home_1.add_contact(ens_user['ens'])
-        cls.chat_1.home_button.click()
+        self.home_1.just_fyi('Add contact, 1-1 chat (main device): 3-random, contact with ENS, start 1-1')
+        self.chat_1 = self.home_1.add_contact(self.contact_before_sync['public_key'])
+        self.chat_1.send_message(self.message_before_sync)
+        self.chat_1.home_button.click()
+        self.home_1.add_contact(ens_user['ens'])
+        self.chat_1.home_button.click()
 
-        cls.home_1.just_fyi('Chats, contacts (main device): join public chat, block user, set nickname')
-        public_chat_1 = cls.home_1.join_public_chat(cls.public_chat_before_sync)
+        self.home_1.just_fyi('Chats, contacts (main device): join public chat, block user, set nickname')
+        public_chat_1 = self.home_1.join_public_chat(self.public_chat_before_sync)
         public_chat_1.home_button.click()
-        cls.home_1.add_contact(transaction_senders['A']['public_key'], add_in_contacts=False,
-                               nickname=cls.no_contact_nickname)
-        cls.chat_1.open_user_profile_from_1_1_chat()
-        cls.chat_1.block_contact()
+        self.home_1.add_contact(transaction_senders['A']['public_key'], add_in_contacts=False,
+                                nickname=self.no_contact_nickname)
+        self.chat_1.open_user_profile_from_1_1_chat()
+        self.chat_1.block_contact()
 
-        cls.device_2.just_fyi("(secondary device): restore same multiaccount on another device")
-        cls.home_2 = cls.device_2.recover_access(passphrase=' '.join(cls.recovery_phrase.values()))
-        cls.profile_1, cls.profile_2 = cls.home_1.profile_button.click(), cls.home_2.profile_button.click()
+        self.device_2.just_fyi("(secondary device): restore same multiaccount on another device")
+        self.home_2 = self.device_2.recover_access(passphrase=' '.join(self.recovery_phrase.values()))
+        self.profile_1, self.profile_2 = self.home_1.profile_button.click(), self.home_2.profile_button.click()
 
-        cls.device_2.just_fyi('Nicknames (main device): set nickname for contact')
-        cls.profile_1.profile_button.click()
-        cls.profile_1.open_contact_from_profile(cls.contact_before_sync['username'])
-        cls.nickname = 'my_basic_user'
-        cls.chat_1.set_nickname(cls.nickname)
-        cls.device_1.get_back_to_home_view()
+        self.device_2.just_fyi('Nicknames (main device): set nickname for contact')
+        self.profile_1.profile_button.click()
+        self.profile_1.open_contact_from_profile(self.contact_before_sync['username'])
+        self.nickname = 'my_basic_user'
+        self.chat_1.set_nickname(self.nickname)
+        self.device_1.get_back_to_home_view()
 
-        cls.device_2.just_fyi('Pair main and secondary devices')
-        cls.profile_2.discover_and_advertise_device(cls.name_2)
-        cls.profile_1.discover_and_advertise_device(cls.name_1)
-        cls.profile_1.get_toggle_device_by_name(cls.name_2).wait_and_click()
-        cls.profile_1.sync_all_button.click()
-        cls.profile_1.sync_all_button.wait_for_visibility_of_element(20)
-        [device.profile_button.double_click() for device in (cls.profile_1, cls.profile_2)]
+        self.device_2.just_fyi('Pair main and secondary devices')
+        self.profile_2.discover_and_advertise_device(self.name_2)
+        self.profile_1.discover_and_advertise_device(self.name_1)
+        self.profile_1.get_toggle_device_by_name(self.name_2).wait_and_click()
+        self.profile_1.sync_all_button.click()
+        self.profile_1.sync_all_button.wait_for_visibility_of_element(20)
+        [device.profile_button.double_click() for device in (self.profile_1, self.profile_2)]
 
     @marks.testrail_id(702194)
     def test_pairing_sync_initial_contacts_blocked_users(self):

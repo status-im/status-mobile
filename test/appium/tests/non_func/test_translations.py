@@ -17,7 +17,7 @@ class TestTranslations(NoDeviceTestCase):
         with open(os.path.join(directory, 'translations/en.json'), 'r') as f:
             data = set(json.load(f).keys())
         result = []
-        paths = ['src/status_im', 'components/src']
+        paths = ['src/status_im', 'components/src', 'src']
         for root, dirs, files in chain.from_iterable(os.walk(os.path.join(directory, path)) for path in paths):
             dirs[:] = [d for d in dirs if d not in ['test', 'translations']]
             for file in [file for file in files if file.endswith('.cljs')]:

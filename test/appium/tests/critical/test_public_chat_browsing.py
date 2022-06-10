@@ -15,22 +15,21 @@ from selenium.common.exceptions import NoSuchElementException
 @marks.critical
 class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        device_1, device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.home_1, cls.home_2 = device_1.create_user(), device_2.create_user()
-        profile_1 = cls.home_1.profile_button.click()
-        cls.username_1 = profile_1.default_username_text.text
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.home_1, self.home_2 = device_1.create_user(), device_2.create_user()
+        profile_1 = self.home_1.profile_button.click()
+        self.username_1 = profile_1.default_username_text.text
         profile_1.home_button.click()
-        cls.pub_chat_delete_long_press = 'pub-chat'
-        cls.text_message = 'hello'
-        cls.home_1.join_public_chat(cls.pub_chat_delete_long_press)
-        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
-        cls.public_chat_name = cls.home_1.get_random_chat_name()
-        cls.chat_1 = cls.home_1.join_public_chat(cls.public_chat_name)
-        cls.chat_2 = cls.home_2.join_public_chat(cls.public_chat_name)
-        cls.chat_1.send_message(cls.text_message)
+        self.pub_chat_delete_long_press = 'pub-chat'
+        self.text_message = 'hello'
+        self.home_1.join_public_chat(self.pub_chat_delete_long_press)
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
+        self.public_chat_name = self.home_1.get_random_chat_name()
+        self.chat_1 = self.home_1.join_public_chat(self.public_chat_name)
+        self.chat_2 = self.home_2.join_public_chat(self.public_chat_name)
+        self.chat_1.send_message(self.text_message)
 
     @marks.testrail_id(5313)
     def test_public_chat_message_send_check_timestamps_while_on_different_tab(self):
@@ -229,14 +228,13 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 @marks.critical
 class TestPublicChatBrowserOneDeviceMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        cls.sign_in = SignInView(cls.drivers[0])
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in = SignInView(self.drivers[0])
 
-        cls.home = cls.sign_in.create_user()
-        cls.public_chat_name = cls.home.get_random_chat_name()
-        cls.chat = cls.home.join_public_chat(cls.public_chat_name)
+        self.home = self.sign_in.create_user()
+        self.public_chat_name = self.home.get_random_chat_name()
+        self.chat = self.home.join_public_chat(self.public_chat_name)
 
     @marks.testrail_id(5675)
     def test_public_chat_fetch_more_history(self):

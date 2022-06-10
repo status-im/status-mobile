@@ -1,7 +1,6 @@
 (ns status-im.ethereum.json-rpc
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.native-module.core :as status]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
@@ -39,23 +38,6 @@
              (on-success (if js-response
                            (.-result response-js)
                            (types/js->clj (.-result response-js)))))))))))
-
-(defn eth-call
-  [{:keys [contract method params outputs on-success block]
-    :or {block "latest" params []}
-    :as arg}]
-  (call {:method "eth_call"
-         :params [{:to contract
-                   :data (abi-spec/encode method params)}
-                  (if (int? block)
-                    (abi-spec/number-to-hex block)
-                    block)]
-         :on-success
-         (if outputs
-           #(on-success (abi-spec/decode % outputs))
-           on-success)
-         :on-error
-         (on-error-retry eth-call arg)}))
 
 (re-frame/reg-fx
  ::call

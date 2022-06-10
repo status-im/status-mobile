@@ -1,18 +1,10 @@
-import re
-import random
-import string
 import pytest
-
-from tests import marks, mailserver_ams, mailserver_gc, mailserver_hk, used_fleet, common_password, test_dapp_name,\
-    test_dapp_url, pair_code, unique_password
-from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
-from tests.users import user_mainnet, chat_users, dummy_user, recovery_users, transaction_senders, basic_user,\
-    wallet_users, ens_user_ropsten, ens_user
 from selenium.common.exceptions import NoSuchElementException
 
-from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from views.send_transaction_view import SendTransactionView
-from views.chat_view import ChatView
+from tests import marks, test_dapp_url
+from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
+from tests.users import dummy_user, transaction_senders, basic_user, \
+    ens_user_ropsten, ens_user
 from views.sign_in_view import SignInView
 
 
@@ -20,25 +12,24 @@ from views.sign_in_view import SignInView
 @marks.medium
 class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        cls.sign_in = SignInView(cls.drivers[0])
-        cls.home = cls.sign_in.create_user()
-        cls.public_key, cls.default_username = cls.home.get_public_key_and_username(return_username=True)
-        cls.home.home_button.click()
-        cls.public_chat_name = 'pubchat'
-        cls.nickname = 'dummy_user'
-        cls.search_list_1 = {
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in = SignInView(self.drivers[0])
+        self.home = self.sign_in.create_user()
+        self.public_key, self.default_username = self.home.get_public_key_and_username(return_username=True)
+        self.home.home_button.click()
+        self.public_chat_name = 'pubchat'
+        self.nickname = 'dummy_user'
+        self.search_list_1 = {
             basic_user['username']: basic_user['username'],
             ens_user_ropsten['username']: ens_user_ropsten['ens'],
-            cls.public_chat_name: cls.public_chat_name,
-            cls.nickname: cls.nickname,
-            dummy_user['username']: cls.nickname,
+            self.public_chat_name: self.public_chat_name,
+            self.nickname: self.nickname,
+            dummy_user['username']: self.nickname,
             ens_user_ropsten['ens']: ens_user_ropsten['ens']
         }
-        cls.public_chat = cls.home.join_public_chat(cls.public_chat_name)
-        cls.public_chat.get_back_to_home_view()
+        self.public_chat = self.home.join_public_chat(self.public_chat_name)
+        self.public_chat.get_back_to_home_view()
 
     @marks.testrail_id(702244)
     def test_deep_link_with_invalid_user_public_key_own_profile_key(self):
@@ -117,7 +108,8 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.public_chat.chat_options.click()
         self.public_chat.share_chat_button.click()
         self.public_chat.share_via_messenger()
-        if not self.public_chat.element_by_text_part('https://join.status.im/%s' % self.public_chat_name).is_element_present():
+        if not self.public_chat.element_by_text_part(
+                'https://join.status.im/%s' % self.public_chat_name).is_element_present():
             self.errors.append("Can't share link to public chat")
         for _ in range(2):
             self.public_chat.click_system_back_button()
@@ -260,7 +252,8 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         message_input.delete_last_symbols(2)
         current_text = message_input.text
         if current_text != message_text[:-2]:
-            self.errors.append("Message input text '%s' doesn't match expected '%s'" % (current_text, message_text[:-2]))
+            self.errors.append(
+                "Message input text '%s' doesn't match expected '%s'" % (current_text, message_text[:-2]))
 
         """self.home.just_fyi('Cutting message text from input field')
         message_input.cut_text()
@@ -273,7 +266,8 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.just_fyi('Pasting the cut message back to the input field')
         message_input.paste_text_from_clipboard()
         if current_text != message_text[:-2]:
-            self.errors.append("Message input text '%s' doesn't match expected '%s'" % (current_text, message_text[:-2]))
+            self.errors.append(
+                "Message input text '%s' doesn't match expected '%s'" % (current_text, message_text[:-2]))
 
         chat.send_message_button.click()
 

@@ -4,6 +4,7 @@ import hmac
 import os
 from hashlib import md5
 from sauceclient import SauceException
+import re
 
 from support.test_data import SingleTestData
 
@@ -42,7 +43,10 @@ class BaseTestReport:
         if geth:
             geth_paths = self.save_geth(geth)
         else:
-            geth_paths = test.geth_paths
+            if hasattr(test, 'geth_paths'):
+                geth_paths = test.geth_paths
+            else:
+                geth_paths = ''
         file_path = self.get_test_report_file_path(test.name)
         test_dict = {
             'testrail_case_id': test.testrail_case_id,
@@ -67,7 +71,8 @@ class BaseTestReport:
                     steps=testrun_data['steps'],
                     jobs=testrun_data['jobs'],
                     error=testrun_data['error'],
-                    first_commands=testrun_data['first_commands']))
+                    first_commands=testrun_data['first_commands'],
+                    xfail=testrun_data['xfail']))
             tests.append(SingleTestData(name=test_data['name'],
                                         geth_paths=test_data['geth_paths'],
                                         testruns=testruns,
@@ -121,3 +126,15 @@ class BaseTestReport:
     def is_test_successful(test):
         # Test passed if last testrun has passed
         return test.testruns[-1].error is None
+
+    @staticmethod
+    def separate_xfail_error(error):
+        issue_id_list = re.findall(r'#\d+', error)
+        main_error, no_code_error_str, issue_id = error, '', ''
+        if issue_id_list:
+            issue_id = issue_id_list[0]
+            xfail_error = re.findall(r'\[\[.*\]\]', error)
+            if xfail_error:
+                no_code_error_str = xfail_error[0]
+                main_error = error.replace(no_code_error_str, '')
+        return (main_error, no_code_error_str, issue_id)

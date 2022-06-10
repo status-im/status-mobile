@@ -13,23 +13,23 @@ import pytest
 @marks.critical
 class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.sender = transaction_senders['ETH_STT_3']
-        cls.home_1 = cls.device_1.recover_access(passphrase=cls.sender['passphrase'], enable_notifications=True)
-        cls.home_2 = cls.device_2.create_user()
-        for home in cls.home_1, cls.home_2:
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.sender = transaction_senders['ETH_STT_3']
+        self.home_1 = self.device_1.recover_access(passphrase=self.sender['passphrase'], enable_notifications=True)
+        self.home_2 = self.device_2.create_user()
+        for home in self.home_1, self.home_2:
             profile = home.profile_button.click()
             profile.profile_notifications_button.scroll_and_click()
             profile.wallet_push_notifications.click()
-        cls.recipient_public_key, cls.recipient_username = cls.home_2.get_public_key_and_username(return_username=True)
-        cls.wallet_1, cls.wallet_2 = cls.home_1.wallet_button.click(), cls.home_2.wallet_button.click()
-        [wallet.home_button.click() for wallet in (cls.wallet_1, cls.wallet_2)]
-        cls.chat_1 = cls.home_1.add_contact(cls.recipient_public_key)
-        cls.chat_1.send_message("hello!")
-        cls.account_name_1 = cls.wallet_1.status_account_name
+        self.recipient_public_key, self.recipient_username = self.home_2.get_public_key_and_username(
+            return_username=True)
+        self.wallet_1, self.wallet_2 = self.home_1.wallet_button.click(), self.home_2.wallet_button.click()
+        [wallet.home_button.click() for wallet in (self.wallet_1, self.wallet_2)]
+        self.chat_1 = self.home_1.add_contact(self.recipient_public_key)
+        self.chat_1.send_message("hello!")
+        self.account_name_1 = self.wallet_1.status_account_name
 
     @marks.testrail_id(6253)
     def test_1_1_chat_command_send_tx_eth_outgoing_tx_push(self):
@@ -212,20 +212,19 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 @marks.critical
 class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.home_1 = cls.device_1.create_user(enable_notifications=True)
-        cls.home_2 = cls.device_2.create_user(enable_notifications=True)
-        cls.profile_1 = cls.home_1.profile_button.click()
-        cls.default_username_1 = cls.profile_1.default_username_text.text
-        cls.profile_1.home_button.click()
-        cls.public_key_2, cls.default_username_2 = cls.home_2.get_public_key_and_username(return_username=True)
-        cls.chat_1 = cls.home_1.add_contact(cls.public_key_2)
-        cls.chat_1.send_message('hey')
-        cls.home_2.home_button.double_click()
-        cls.chat_2 = cls.home_2.get_chat(cls.default_username_1).click()
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.home_1 = self.device_1.create_user(enable_notifications=True)
+        self.home_2 = self.device_2.create_user(enable_notifications=True)
+        self.profile_1 = self.home_1.profile_button.click()
+        self.default_username_1 = self.profile_1.default_username_text.text
+        self.profile_1.home_button.click()
+        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        self.chat_1 = self.home_1.add_contact(self.public_key_2)
+        self.chat_1.send_message('hey')
+        self.home_2.home_button.double_click()
+        self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
 
     @marks.testrail_id(6315)
     def test_1_1_chat_message_reaction(self):
@@ -621,33 +620,32 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
 @marks.critical
 class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.sender = transaction_senders['ETH_2']
-        cls.nick = "FFOO_brak!1234"
-        cls.message = cls.device_1.get_random_message()
-        cls.pub_chat_name = cls.device_1.get_random_chat_name()
-        cls.home_1 = cls.device_1.recover_access(cls.sender['passphrase'], keycard=True)
-        cls.home_2 = cls.device_2.create_user()
-        cls.profile_2 = cls.home_2.profile_button.click()
-        cls.profile_2.privacy_and_security_button.click()
-        cls.profile_2.backup_recovery_phrase_button.click()
-        recovery_phrase = cls.profile_2.backup_recovery_phrase()
-        cls.recovery_phrase = ' '.join(recovery_phrase.values())
-        cls.public_key_2, cls.default_username_2 = cls.home_2.get_public_key_and_username(return_username=True)
-        cls.chat_1 = cls.home_1.add_contact(cls.public_key_2, add_in_contacts=False)
-        cls.chat_1.chat_options.click()
-        cls.chat_1.view_profile_button.click()
-        cls.chat_1.set_nickname(cls.nick)
-        [home.home_button.click() for home in [cls.home_1, cls.home_2]]
-        cls.home_2.add_contact(cls.sender['public_key'])
-        cls.home_2.home_button.click()
-        [home.join_public_chat(cls.pub_chat_name) for home in [cls.home_1, cls.home_2]]
-        cls.chat_2 = cls.home_2.get_chat_view()
-        cls.chat_2.send_message(cls.message)
-        [home.home_button.click() for home in [cls.home_1, cls.home_2]]
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.sender = transaction_senders['ETH_2']
+        self.nick = "FFOO_brak!1234"
+        self.message = self.device_1.get_random_message()
+        self.pub_chat_name = self.device_1.get_random_chat_name()
+        self.home_1 = self.device_1.recover_access(self.sender['passphrase'], keycard=True)
+        self.home_2 = self.device_2.create_user()
+        self.profile_2 = self.home_2.profile_button.click()
+        self.profile_2.privacy_and_security_button.click()
+        self.profile_2.backup_recovery_phrase_button.click()
+        recovery_phrase = self.profile_2.backup_recovery_phrase()
+        self.recovery_phrase = ' '.join(recovery_phrase.values())
+        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        self.chat_1 = self.home_1.add_contact(self.public_key_2, add_in_contacts=False)
+        self.chat_1.chat_options.click()
+        self.chat_1.view_profile_button.click()
+        self.chat_1.set_nickname(self.nick)
+        [home.home_button.click() for home in [self.home_1, self.home_2]]
+        self.home_2.add_contact(self.sender['public_key'])
+        self.home_2.home_button.click()
+        [home.join_public_chat(self.pub_chat_name) for home in [self.home_1, self.home_2]]
+        self.chat_2 = self.home_2.get_chat_view()
+        self.chat_2.send_message(self.message)
+        [home.home_button.click() for home in [self.home_1, self.home_2]]
 
     @marks.testrail_id(702186)
     def test_keycard_command_send_tx_eth_1_1_chat(self):
@@ -849,6 +847,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702188)
+    @marks.xfail(reason="flaky; issue when sometimes history is not fetched from offline for public chat, needs investigation")
     def test_cellular_settings_on_off_public_chat_fetching_history(self):
         [home.home_button.double_click() for home in [self.home_1, self.home_2]]
         public_chat_name, public_chat_message = 'e2e-started-before', 'message to pub chat'
@@ -962,26 +961,25 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
 @marks.critical
 class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.sender, cls.reciever = transaction_senders['ETH_3'], ens_user
-        cls.home_1 = cls.device_1.recover_access(passphrase=cls.sender['passphrase'])
-        cls.home_2 = cls.device_2.recover_access(ens_user['passphrase'], enable_notifications=True)
-        cls.ens = '@%s' % cls.reciever['ens']
-        cls.pub_chat_name = cls.home_1.get_random_chat_name()
-        cls.chat_1 = cls.home_1.join_public_chat(cls.pub_chat_name)
-        cls.chat_2 = cls.home_2.join_public_chat(cls.pub_chat_name)
-        [home.home_button.double_click() for home in (cls.home_1, cls.home_2)]
-        cls.profile_2 = cls.home_2.profile_button.click()
-        cls.profile_2.connect_existing_ens(cls.reciever['ens'])
-        cls.home_1.add_contact(cls.reciever['ens'])
-        cls.home_2.home_button.click()
-        cls.home_2.add_contact(cls.sender['public_key'])
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.sender, self.reciever = transaction_senders['ETH_3'], ens_user
+        self.home_1 = self.device_1.recover_access(passphrase=self.sender['passphrase'])
+        self.home_2 = self.device_2.recover_access(ens_user['passphrase'], enable_notifications=True)
+        self.ens = '@%s' % self.reciever['ens']
+        self.pub_chat_name = self.home_1.get_random_chat_name()
+        self.chat_1 = self.home_1.join_public_chat(self.pub_chat_name)
+        self.chat_2 = self.home_2.join_public_chat(self.pub_chat_name)
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        self.profile_2 = self.home_2.profile_button.click()
+        self.profile_2.connect_existing_ens(self.reciever['ens'])
+        self.home_1.add_contact(self.reciever['ens'])
+        self.home_2.home_button.click()
+        self.home_2.add_contact(self.sender['public_key'])
         # To avoid activity centre for restored users
-        [chat.send_message("hey!") for chat in (cls.chat_1, cls.chat_2)]
-        [home.home_button.double_click() for home in (cls.home_1, cls.home_2)]
+        [chat.send_message("hey!") for chat in (self.chat_1, self.chat_2)]
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
 
     @marks.testrail_id(702152)
     def test_ens_purchased_in_profile(self):
@@ -1104,14 +1102,16 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
                 'ENS username is not resolved in chat input after selecting it in mention suggestions list!')
         self.chat_1.send_message_button.click()
 
-        self.home_2.just_fyi('check that PN is received and after tap you are redirected to chat, mention is highligted')
+        self.home_2.just_fyi(
+            'check that PN is received and after tap you are redirected to chat, mention is highligted')
         pn = self.home_2.get_pn(self.reciever['username'])
         if pn:
             pn.click()
         else:
             self.errors.append('No PN on mention in public chat! ')
             self.home_2.click_system_back_button(2)
-        if self.home_2.element_starts_with_text(self.reciever['ens']).is_element_differs_from_template('ment_new.png', 2):
+        if self.home_2.element_starts_with_text(self.reciever['ens']).is_element_differs_from_template('ment_new.png',
+                                                                                                       2):
             self.errors.append('Mention is not highlighted!')
         self.errors.verify_no_errors()
 
@@ -1131,6 +1131,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi('Install free sticker pack and use it in 1-1 chat on Ropsten')
         self.home_1.get_chat(self.ens).click()
+        self.chat_1.chat_message_input.clear()
         self.chat_1.install_sticker_pack_by_name('Status Cat')
         self.chat_1.sticker_icon.click()
         if not self.chat_1.sticker_message.is_element_displayed():

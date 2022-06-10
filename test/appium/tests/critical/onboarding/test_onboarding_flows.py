@@ -12,17 +12,16 @@ from tests.users import basic_user, transaction_senders
 @marks.critical
 class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        cls.sign_in = SignInView(cls.drivers[0])
-        cls.password = basic_user['special_chars_password']
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in = SignInView(self.drivers[0])
+        self.password = basic_user['special_chars_password']
 
-        cls.home = cls.sign_in.create_user(password=cls.password)
-        cls.public_chat_name = cls.home.get_random_chat_name()
-        cls.chat = cls.home.join_public_chat(cls.public_chat_name)
-        cls.profile = cls.home.profile_button.click()
-        cls.username = cls.profile.default_username_text.text
+        self.home = self.sign_in.create_user(password=self.password)
+        self.public_chat_name = self.home.get_random_chat_name()
+        self.chat = self.home.join_public_chat(self.public_chat_name)
+        self.profile = self.home.profile_button.click()
+        self.username = self.profile.default_username_text.text
 
     @marks.testrail_id(700742)
     def test_onboarding_home_initial_popup(self):
@@ -195,7 +194,8 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.sign_in.just_fyi('Checking case when %s' % cases[1])
         self.sign_in.create_password_input.send_keys('123456')
-        [field.send_keys('123456') for field in (self.sign_in.create_password_input, self.sign_in.confirm_your_password_input)]
+        [field.send_keys('123456') for field in
+         (self.sign_in.create_password_input, self.sign_in.confirm_your_password_input)]
         self.sign_in.confirm_your_password_input.delete_last_symbols(1)
         self.sign_in.create_password_input.delete_last_symbols(1)
         self.sign_in.next_button.click()
@@ -226,15 +226,15 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
 @pytest.mark.xdist_group(name="two_1")
 @marks.critical
 class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
-    @classmethod
-    def setup_class(cls):
-        cls.user = transaction_senders['ETH_ADI_STT_2']
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        cls.sign_in = SignInView(cls.drivers[0])
-        cls.passphrase = fill_string_with_char(cls.user['passphrase'].upper(), ' ', 3, True, True)
-        cls.password = basic_user['special_chars_password']
 
-        cls.home = cls.sign_in.recover_access(passphrase=cls.passphrase, password=cls.password)
+    def prepare_devices(self):
+        self.user = transaction_senders['ETH_ADI_STT_2']
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in = SignInView(self.drivers[0])
+        self.passphrase = fill_string_with_char(self.user['passphrase'].upper(), ' ', 3, True, True)
+        self.password = basic_user['special_chars_password']
+
+        self.home = self.sign_in.recover_access(passphrase=self.passphrase, password=self.password)
 
     @marks.testrail_id(700748)
     def test_restore_uppercase_whitespaces_seed_phrase_special_char_passw_logcat(self):

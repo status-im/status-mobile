@@ -1,45 +1,43 @@
-from views.chat_view import CommunityView
+import time
+
 import pytest
+
+from tests import common_password
 from tests import marks
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
+from views.chat_view import CommunityView
 from views.sign_in_view import SignInView
-import time
-from tests import bootnode_address, mailserver_address, mailserver_ams,  mailserver_hk, used_fleet, common_password
-from tests.users import transaction_senders, basic_user, ens_user
-from tests import marks
-from tests.base_test_case import MultipleDeviceTestCase
-from views.sign_in_view import SignInView
+
 
 @pytest.mark.xdist_group(name='five_2')
 @marks.medium
 class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.home_1, cls.home_2 = cls.device_1.create_user(), cls.device_2.create_user(enable_notifications=True)
-        cls.public_key_1, cls.default_username_1 = cls.home_1.get_public_key_and_username(return_username=True)
-        cls.public_key_2, cls.default_username_2 = cls.home_2.get_public_key_and_username(return_username=True)
-        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.home_1, self.home_2 = self.device_1.create_user(), self.device_2.create_user(enable_notifications=True)
+        self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
+        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
 
-        cls.home_1.just_fyi("Creating 1-1 chats")
-        cls.chat_1 = cls.home_1.add_contact(cls.public_key_2)
-        cls.first_message = 'first message'
-        cls.chat_2 = cls.home_2.add_contact(cls.public_key_1, add_in_contacts=False)
-        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
+        self.home_1.just_fyi("Creating 1-1 chats")
+        self.chat_1 = self.home_1.add_contact(self.public_key_2)
+        self.first_message = 'first message'
+        self.chat_2 = self.home_2.add_contact(self.public_key_1, add_in_contacts=False)
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
 
-        cls.home_1.just_fyi("Creating group chat")
-        cls.group_chat_name = "gr_chat_%s" % cls.home_1.get_random_chat_name()
-        cls.group_chat_1 = cls.home_1.create_group_chat(user_names_to_add=[cls.default_username_2],
-                                                        group_chat_name=cls.group_chat_name)
-        cls.group_chat_2 = cls.home_2.get_chat(cls.group_chat_name).click()
-        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
+        self.home_1.just_fyi("Creating group chat")
+        self.group_chat_name = "gr_chat_%s" % self.home_1.get_random_chat_name()
+        self.group_chat_1 = self.home_1.create_group_chat(user_names_to_add=[self.default_username_2],
+                                                          group_chat_name=self.group_chat_name)
+        self.group_chat_2 = self.home_2.get_chat(self.group_chat_name).click()
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
 
-        cls.home_1.just_fyi("Creating public chats")
-        cls.public_chat_name = cls.home_1.get_random_chat_name()
-        cls.public_chat_1, cls.public_chat_2 = cls.home_1.join_public_chat(
-            cls.public_chat_name), cls.home_2.join_public_chat(cls.public_chat_name)
+        self.home_1.just_fyi("Creating public chats")
+        self.public_chat_name = self.home_1.get_random_chat_name()
+        self.public_chat_1, self.public_chat_2 = self.home_1.join_public_chat(
+            self.public_chat_name), self.home_2.join_public_chat(self.public_chat_name)
 
     @marks.testrail_id(702281)
     def test_profile_show_profile_picture_and_online_indicator_settings(self):
@@ -87,7 +85,8 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
             self.errors.append('Profile picture was not updated on user Profile view')
         profile_2.close_button.click()
         self.home_2.home_button.double_click()
-        if not self.home_2.get_chat(self.default_username_1).chat_image.is_element_image_similar_to_template(logo_chats):
+        if not self.home_2.get_chat(self.default_username_1).chat_image.is_element_image_similar_to_template(
+                logo_chats):
             self.errors.append('User profile picture was not updated on Chats view')
 
         profile_1.just_fyi('Check profile image updated in user profile view in Group chat views')
@@ -97,8 +96,9 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         group_chat_1 = self.home_1.get_chat(self.group_chat_name).click()
         group_chat_1.send_message(group_chat_message)
         self.group_chat_2.chat_element_by_text(group_chat_message).wait_for_element(20)
-        if not self.group_chat_2.chat_element_by_text(group_chat_message).member_photo.is_element_image_similar_to_template(
-                logo_default):
+        if not self.group_chat_2.chat_element_by_text(
+                group_chat_message).member_photo.is_element_image_similar_to_template(
+            logo_default):
             self.errors.append('User profile picture was not updated in message Group chat view')
         self.home_2.put_app_to_background()
 
@@ -154,7 +154,8 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         profile_2.element_by_translation_id("everyone").click()
         group_chat_1.send_message(group_chat_message)
         profile_2.home_button.click(desired_view='home')
-        if not self.home_2.get_chat(self.default_username_1).chat_image.is_element_image_similar_to_template(logo_chats):
+        if not self.home_2.get_chat(self.default_username_1).chat_image.is_element_image_similar_to_template(
+                logo_chats):
             self.errors.append('User profile picture is not returned to default after user removed from Contacts')
         self.errors.verify_no_errors()
 
@@ -202,11 +203,11 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
     @marks.testrail_id(702283)
     def test_community_create_approve_membership(self):
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
-        community_name, channel_name = "some name",  "first_channel"
+        community_name, channel_name = "some name", "first_channel"
         community_description, community_pic = "something in community", 'sauce_logo.png'
         message, message_member = "message", "from member"
         community_1 = self.home_1.create_community(community_name, community_description, set_image=True,
-                                              file_name=community_pic)
+                                                   file_name=community_pic)
         channel_1 = community_1.add_channel(channel_name)
         channel_1.send_message(message)
         self.home_1.home_button.double_click()
@@ -247,7 +248,8 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         self.home_1.just_fyi("Approve membership")
         community_1.handle_membership_request(self.default_username_2, approve=True)
         if not community_1.element_by_text(self.default_username_2).is_element_displayed():
-            self.errors.append("New member %s is not shown as added to community on info page!" % self.default_username_2)
+            self.errors.append(
+                "New member %s is not shown as added to community on info page!" % self.default_username_2)
         if not community_2.community_info_picture.is_element_image_similar_to_template(community_pic):
             self.errors.append("Community image is different!")
         channel_2 = community_2.get_chat(channel_name).click()
@@ -263,5 +265,3 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
             self.errors.append("Message from member is not shown for community channel!")
 
         self.errors.verify_no_errors()
-
-

@@ -13,19 +13,18 @@ from support.utilities import get_merged_txs_list
 @marks.critical
 class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.user = wallet_users['D']
-        cls.account_seed_collectibles = 'acc_collectibles'
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        cls.sign_in = SignInView(cls.drivers[0])
-        cls.sign_in.switch_to_mobile(before_login=True)
-        cls.home = cls.sign_in.recover_access(cls.user['passphrase'])
-        cls.wallet = cls.home.wallet_button.click()
-        [cls.wallet.wait_balance_is_changed(asset) for asset in ('ETH', 'MDS', 'STT')]
-        cls.initial_balances = {'ETH': cls.wallet.get_asset_amount_by_name('ETH'),
-                                'ADI': 0,
-                                'STT': cls.wallet.get_asset_amount_by_name('STT')}
+    def prepare_devices(self):
+        self.user = wallet_users['D']
+        self.account_seed_collectibles = 'acc_collectibles'
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in = SignInView(self.drivers[0])
+        self.sign_in.switch_to_mobile(before_login=True)
+        self.home = self.sign_in.recover_access(self.user['passphrase'])
+        self.wallet = self.home.wallet_button.click()
+        [self.wallet.wait_balance_is_changed(asset) for asset in ('ETH', 'MDS', 'STT')]
+        self.initial_balances = {'ETH': self.wallet.get_asset_amount_by_name('ETH'),
+                                 'ADI': 0,
+                                 'STT': self.wallet.get_asset_amount_by_name('STT')}
 
     @marks.testrail_id(700756)
     def test_wallet_tx_history_copy_tx_hash_on_cellular(self):
@@ -246,14 +245,15 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
             self.wallet.accounts_status_account.swipe_left_on_element()
 
         if not self.wallet.get_account_by_name(account_name_private).is_element_displayed():
-            self.errors.append("Unhidden %s is shown on main wallet view after hiding via 'Show icon'" % account_name_private)
+            self.errors.append(
+                "Unhidden %s is shown on main wallet view after hiding via 'Show icon'" % account_name_private)
         for asset in self.initial_balances:
             self.wallet.wait_balance_is_changed(asset=asset, initial_balance=self.initial_balances[asset])
 
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700762)
-    def test_wallet_add_account_seed_phrase_collectibles_rinkeby_set_as_profile_image(self):
+    def test_wallet_add_account_seed_phrase_validation(self):
         user = wallet_users['E']
         self.wallet.driver.set_network_connection(6)
         account_seed_collectibles = self.account_seed_collectibles
@@ -269,71 +269,19 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.wallet.account_name_input.send_keys(account_seed_collectibles)
         self.wallet.add_account_generate_account_button.click()
         if self.wallet.get_account_by_name(account_seed_collectibles).is_element_displayed():
-            self.driver.fail('Account is added without seed phrase')
+            self.wallet.driver.fail('Account is added without seed phrase')
         self.wallet.enter_seed_phrase_input.set_value(str(wallet_users['D']['passphrase']).upper())
         self.wallet.add_account_generate_account_button.click()
         if self.wallet.get_account_by_name(account_seed_collectibles).is_element_displayed():
-            self.driver.fail('Same account was added twice')
+            self.wallet.driver.fail('Same account was added twice')
 
         self.wallet.enter_your_password_input.send_keys(common_password)
         self.wallet.enter_seed_phrase_input.set_value(str(user['passphrase']).upper())
         self.wallet.account_name_input.send_keys(account_seed_collectibles)
         self.wallet.add_account_generate_account_button.click()
         account_button = self.wallet.get_account_by_name(account_seed_collectibles)
-
-        self.home.just_fyi('Check that collectibles amount is shown on Rinkeby')
-        profile = self.home.profile_button.click()
-        profile.switch_network('Rinkeby with upstream RPC')
-        profile.wallet_button.click()
-        if not account_button.is_element_displayed():
-            self.wallet.accounts_status_account.swipe_left_on_element()
-        account_button.click()
-        self.wallet.collectibles_button.click()
-        self.wallet.element_by_translation_id("display-collectibles").scroll_and_click()
-        # Workaround for situation when after switching network from Ropsten collectibles are not shown
-        self.wallet.pull_to_refresh(5)
-        if self.wallet.element_by_translation_id("no-collectibles").is_element_displayed():
-            self.wallet.reopen_app()
-            profile.wallet_button.click()
-            if not account_button.is_element_displayed():
-                self.wallet.accounts_status_account.swipe_left_on_element()
-            account_button.click()
-            self.wallet.collectibles_button.click()
-        for asset in user['collectibles']:
-            self.wallet.get_collectibles_amount(asset).scroll_to_element()
-            if self.wallet.get_collectibles_amount(asset).text != user['collectibles'][asset]:
-                self.errors.append(
-                    '%s %s is not shown in Collectibles for Rinkeby!' % (user['collectibles'][asset], asset))
-
-        self.wallet.just_fyi('Check that you can open collectible to view')
-        nft, nft_name = 'Coins & Steel Exclusive Item Skin V2', "Warlock's Arm"
-        self.wallet.get_collectibles_amount(nft).click()
-        if not self.wallet.nft_asset_button.is_element_displayed(60):
-            self.driver.fail("No card is not shown for %s after opening it from collectibles!" % nft)
-        self.wallet.nft_asset_button.click()
-        self.wallet.set_collectible_as_profile_photo_button.scroll_and_click()
-
-        self.wallet.just_fyi('Check that you can set collectible as profile photo')
-        web_view = self.wallet.get_base_web_view()
-        self.wallet.view_collectible_on_opensea_button.click_until_presence_of_element(
-            web_view.browser_previous_page_button)
-        web_view.wait_for_d_aap_to_load()
-        if not web_view.element_by_text(nft_name).is_element_displayed(30):
-            self.errors.append("Collectible can't be opened when tapping 'View on OpenSea' via NFT page")
-        self.wallet.wallet_button.click()
-
-        self.wallet.just_fyi('Check that collectibles are not shown when sending assets from wallet')
-        send_transaction = self.wallet.send_transaction_button.click()
-        send_transaction.select_asset_button.click()
-        if send_transaction.asset_by_name(nft).is_element_displayed():
-            self.errors.append('Collectibles can be sent from wallet')
-        self.wallet.close_send_transaction_view_button.double_click()
-
-        self.wallet.just_fyi("Check that custom image from collectible is set as profile photo")
-        self.wallet.profile_button.double_click()
-        if not profile.profile_picture.is_element_image_similar_to_template('collectible_pic.png'):
-            self.errors.append("Collectible image is not set as profile image")
-        self.errors.verify_no_errors()
+        if not account_button.is_element_displayed(10):
+            self.wallet.driver.fail("No multiaccount from seed is added")
 
     @marks.testrail_id(700766)
     def test_wallet_fetching_balance_after_offline_insufficient_funds_errors(self):

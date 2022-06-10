@@ -1,19 +1,32 @@
-# Using IntelliJ IDEA and Cursive
+# Setup your Editor/IDE
+
+You can use any Clojure enabled editor. Here are instructions for developing the status-react app using:
+
+* IntelliJ IDEA and Cursive
+* VS Code and Calva
+
+(Please add instructions for your favorite editor.)
 
 ## Table of Contents
 
-- [Install Cursive](#install-cursive)
-- [Getting Cursive to understand `status-react`](#getting-cursive-to-understand-status-react)
-- [I get a lot of `cannot be resolved`](#i-get-a-lot-of-cannot-be-resolved)
-- [REPL!](#repl)
-  - [Connecting to REPL to IntelliJ](#connecting-to-repl-to-intellij)
-  - [Connecting REPL and IntelliJ to `status-react`](#connecting-repl-and-intellij-to-status-react)
+- [Using Cursive](#using-cursive)
+  - [Install Cursive](#install-cursive)
+  - [Getting Cursive to understand `status-react`](#getting-cursive-to-understand-status-react)
+  - [I get a lot of `cannot be resolved`](#i-get-a-lot-of-cannot-be-resolved)
+  - [REPL!](#repl)
+    - [Connecting to REPL to IntelliJ](#connecting-to-repl-to-intellij)
+    - [Connecting REPL and IntelliJ to `status-react`](#connecting-repl-and-intellij-to-status-react)
+- [Using Calva](#using-calva)
+  - [Start and connect the REPL](#start-and-connect-the-repl)
+  - [Use the REPL](#use-the-repl)
 
-## Install Cursive
+## Using Cursive
+
+### Install Cursive
 
 See https://cursive-ide.com/userguide/index.html
 
-## Getting Cursive to understand `status-react`
+### Getting Cursive to understand `status-react`
 
 - Add this file to the root of the `status-react` project dir
   - https://gist.github.com/Samyoul/f71a0593ba7a12d24dd0d5ef986ebbec
@@ -34,9 +47,9 @@ See https://cursive-ide.com/userguide/macros.html
 - move selection on resolve and hit enter
 - and select defn for defview and let for letsubs
 
-## REPL!
+### REPL!
 
-### Connecting to REPL to IntelliJ
+#### Connecting to REPL to IntelliJ
 
 I had a number of problems connecting to REPL, the solution is as follows:
 
@@ -101,7 +114,7 @@ See below:
 
 <img src="images/IDE_SETUP/9_REPL_7.png" width=75% />
 
-### Connecting REPL and IntelliJ to `status-react`
+#### Connecting REPL and IntelliJ to `status-react`
 
 **The important next step is telling REPL the context in which to interact with the code.**
 
@@ -145,3 +158,30 @@ Following the above should give you the below result:
 ---
 
 For additional details on issues you may face when setting up REPL with Cursive [see this document](https://notes.status.im/9Gr7kqF8SzC_SmYK0eB7uQ?view#Connecting-Cursive--IntelliJ-IDEA-to-REPL-Problems)
+
+## Using Calva
+
+For VS Code users.
+
+0. Install Calva.
+
+### Start and connect the REPL
+
+1. Open the `status-react` folder.
+1. Start [Status development](STARTING_GUIDE.md#development) (Starting the `run-clojure` and `run-metro` jobs in split view in the VS Code integrated terminal works great.)
+1. Run the VS Code command: **Calva: Connect to a running REPL Server in the project**
+   1. Select the project type `shadow-cljs`
+   1. Accept the suggested connection `host:port`
+   1. Select to connect to the `:mobile` build
+
+### Use the REPL
+
+Open any `.cljs` file in the project and evaluate forms in it. See https://calva.io/try-first/ for some starter tips and links. Confirm that your REPL is connected to the app by evaluating:
+
+```clojure
+(js/alert "Hello from Status App!")
+```
+
+🎉 Tada! You are ready to use the REPL to improve Status.im! 🎉
+
+Please consider bookmarking [calva.io](https://calva.io/) for quick access to the Calva documentation. 

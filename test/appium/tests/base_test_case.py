@@ -302,7 +302,7 @@ def create_shared_drivers(quantity):
     else:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        capabilities = {'maxDuration': 2700}
+        capabilities = {'maxDuration': 3600}
         drivers = loop.run_until_complete(start_threads(quantity,
                                                         Driver,
                                                         drivers,
@@ -329,6 +329,14 @@ class LocalSharedMultipleDeviceTestCase(AbstractTestCase):
                 self.add_alert_text_to_report(self.drivers[driver])
             except WebDriverException:
                 pass
+
+    @pytest.fixture(scope='class', autouse=True)
+    def prepare(self, request):
+        try:
+            request.cls.prepare_devices(request)
+        finally:
+            for item, value in request.__dict__.items():
+                setattr(request.cls, item, value)
 
     @classmethod
     def teardown_class(cls):
@@ -366,6 +374,14 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
             finally:
                 geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
                 test_suite_data.current_test.geth_paths = self.github_report.save_geth(geth)
+
+    @pytest.fixture(scope='class', autouse=True)
+    def prepare(self, request):
+        try:
+            request.cls.prepare_devices(request)
+        finally:
+            for item, value in request.__dict__.items():
+                setattr(request.cls, item, value)
 
     @classmethod
     def teardown_class(cls):

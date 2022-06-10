@@ -182,7 +182,14 @@ class TestrailReport(BaseTestReport):
             if test.group_name:
                 comment += "# Class: %s \n" % test.group_name
             if last_testrun.error:
-                comment += '%s' % ('# Error: \n %s \n' % emoji.demojize(last_testrun.error)) + devices + test_steps
+                full_error = last_testrun.error
+                (code_error, no_code_error_str, issue_id) = self.separate_xfail_error(full_error)
+                if issue_id:
+                    test_rail_xfail = self.make_error_with_gh_issue_link(no_code_error_str, issue_id)
+                    error = "%s %s" % (code_error, test_rail_xfail)
+                else:
+                    error = full_error
+                comment += '%s' % ('# Error: \n %s \n' % emoji.demojize(error)) + devices + test_steps
             else:
                 comment += devices + test_steps
             data.append(
@@ -246,7 +253,13 @@ class TestrailReport(BaseTestReport):
                     case_title += '-------\n'
                     case_title += "## %s) ID %s: [%s](%s) \n" % (
                         i + 1, test.testrail_case_id, test.name, test_rail_link)
-                    error = "```%s```\n" % last_testrun.error[:255]
+                    full_error = last_testrun.error[:255]
+                    (code_error, no_code_error_str, issue_id) = self.separate_xfail_error(full_error)
+                    if issue_id:
+                        test_rail_xfail = self.make_error_with_gh_issue_link(no_code_error_str, issue_id)
+                        error = "```%s```\n %s  \n" % (code_error, test_rail_xfail)
+                    else:
+                        error = "```%s```\n" % full_error
                     for job_id, f in last_testrun.jobs.items():
                         if last_testrun.first_commands:
                             job_url = self.get_sauce_job_url(job_id=job_id,
@@ -289,3 +302,8 @@ class TestrailReport(BaseTestReport):
     def get_not_executed_tests(self, test_run_id):
         results = self.get("get_tests/%s&status_id=3" % test_run_id)
         return [result['case_id'] for result in results["tests"]]
+
+    @staticmethod
+    def make_error_with_gh_issue_link(error, issue_id):
+        return error.replace(issue_id, '[%s](https://github.com/status-im/status-react/issues/%s)' % (issue_id, issue_id[1:]))
+

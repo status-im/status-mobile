@@ -8,3 +8,4 @@ medium = pytest.mark.medium
 flaky = pytest.mark.flaky
 upgrade = pytest.mark.upgrade
 skip = pytest.mark.skip
+xfail = pytest.mark.xfail

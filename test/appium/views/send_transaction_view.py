@@ -153,7 +153,7 @@ class SendTransactionView(BaseView):
             if self.element_by_text_part('Transaction failed').is_element_displayed():
                 self.driver.fail('Transaction failed')
         self.driver.info("## Transaction is signed!", device=False)
-        self.ok_button.click()
+        self.ok_button.click_until_absense_of_element(self.ok_button)
         return error_text
 
     @staticmethod

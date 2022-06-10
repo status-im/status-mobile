@@ -445,15 +445,6 @@
             {:db (update db :signing/queue conj (normalize-tx-obj db tx))}
             (check-queue)))
 
-(fx/defn eth-transaction-call
-  "Prepares tx-obj for contract call and show signing sheet"
-  [cofx {:keys [contract method params on-result on-error from]}]
-  (sign cofx {:tx-obj    {:to   contract
-                          :data (abi-spec/encode method params)
-                          :from from}
-              :on-result on-result
-              :on-error  on-error}))
-
 (fx/defn sign-transaction-button-clicked-from-chat
   {:events  [:wallet.ui/sign-transaction-button-clicked-from-chat]}
   [{:keys [db] :as cofx} {:keys [to amount from token]}]
