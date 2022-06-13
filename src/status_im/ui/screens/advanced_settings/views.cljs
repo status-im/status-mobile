@@ -127,14 +127,13 @@
        [:multiaccounts.ui/switch-wallet-connect-enabled (not wallet-connect-enabled?)])
      :accessory               :switch
      :active                  wallet-connect-enabled?}
-    (when config/quo-preview-enabled?
-      {:size                    :small
-       :title                   (i18n/label :t/new-ui)
-       :accessibility-label     :new-ui-toggle
-       :container-margin-bottom 8
-       :on-press                #(re-frame/dispatch [:toggle-new-ui])
-       :accessory               :switch
-       :active                  new-ui-enabled?})]))
+    {:size                    :small
+     :title                   (i18n/label :t/new-ui)
+     :accessibility-label     :new-ui-toggle
+     :container-margin-bottom 8
+     :on-press                #(re-frame/dispatch [:toggle-new-ui])
+     :accessory               :switch
+     :active                  new-ui-enabled?}]))
 
 (defn- flat-list-data [options]
   (normal-mode-settings-data options))

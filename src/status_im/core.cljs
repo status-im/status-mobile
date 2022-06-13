@@ -40,8 +40,7 @@
 
   (utils.universal-links/initialize)
 
-  (when config/quo-preview-enabled?
-    (async-storage/get-item :new-ui-enabled? #(reset! config/new-ui-enabled? %)))
+  (async-storage/get-item :new-ui-enabled? #(reset! config/new-ui-enabled? %))
 
   ;;DEV
   (snoopy/subscribe!)
