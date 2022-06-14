@@ -77,6 +77,7 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700731)
+    @marks.xfail(reason="test may fail as sometimes message 'Hey admin' is not delivered; needs investigation")
     def test_group_chat_join_send_text_messages_push(self):
         message_to_admin = self.message_to_admin
         [self.homes[i].home_button.double_click() for i in range(3)]
@@ -123,6 +124,7 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(3998)
+    @marks.xfail(reason="mysterious issue when PNs are not fetched from offline, can not reproduce on real devices; needs investigation")
     def test_group_chat_offline_pn(self):
         [self.homes[i].home_button.double_click() for i in range(3)]
         chat_name = 'for_offline_pn'

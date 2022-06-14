@@ -1,6 +1,7 @@
 import os
 from support.base_test_report import BaseTestReport
 from support.testrail_report import TestrailReport
+import re
 
 
 class GithubHtmlReport(BaseTestReport):
@@ -109,6 +110,7 @@ class GithubHtmlReport(BaseTestReport):
         for step in last_testrun.steps:
             test_steps_html.append("<div>%s</div>" % step)
         if last_testrun.error:
+            error = last_testrun.error[:255]
             if test_steps_html:
                 html += "<p>"
                 html += "<blockquote>"
@@ -116,7 +118,12 @@ class GithubHtmlReport(BaseTestReport):
                 html += "%s" % ''.join(test_steps_html[-2:])
                 html += "</blockquote>"
                 html += "</p>"
-            html += "<code>%s</code>" % last_testrun.error[:255]
+            (code_error, no_code_error_str, issue_id) = self.separate_xfail_error(error)
+            if no_code_error_str:
+                html += "<code>%s</code>" % code_error
+                html += no_code_error_str
+            else:
+                html += "<code>%s</code>" % error
             html += "<br/><br/>"
         if test.group_name:
             html += "<p><b>Class: %s</b></p>" % test.group_name

@@ -37,6 +37,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         cls.channel_before_1.send_message(cls.message)
         cls.home_1.home_button.double_click()
         cls.device_3.put_app_to_background_and_back()
+        cls.device_2.put_app_to_background_and_back()
 
         cls.device_1.just_fyi('Edit profile picture')
         cls.home_1.profile_button.double_click()
@@ -45,11 +46,10 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         cls.device_1.just_fyi('Add contact, start group chat')
         cls.home_1.home_button.click()
         cls.home_1.add_contact(cls.public_key_3)
-        cls.device_2.put_app_to_background_and_back()
         cls.home_1.get_back_to_home_view()
         cls.chat_1 = cls.home_1.create_group_chat([cls.username_3], cls.group_chat_name)
         cls.chat_3 = cls.home_3.get_chat(cls.group_chat_name).click()
-        cls.chat_3.join_chat_button.click()
+        cls.chat_3.join_chat_button.click_if_shown()
 
         cls.device_2.just_fyi("(secondary device): restore same multiaccount on another device")
         cls.home_2 = cls.device_2.recover_access(passphrase=' '.join(cls.recovery_phrase.values()))
@@ -67,6 +67,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         [device.home_button.double_click() for device in (cls.profile_1, cls.profile_2, cls.device_3)]
 
     @marks.testrail_id(702269)
+    @marks.xfail(reason="too long setup, can fail with Remote end closed connection")
     def test_pairing_sync_initial_community_send_message(self):
         # Pricture sync is not implemented yet
         self.device_2.just_fyi('check that created/joined community and profile details are updated')

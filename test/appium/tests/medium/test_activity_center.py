@@ -161,7 +161,7 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Device1 joins Group chat 3")
         group_chat_1 = self.home_1.get_chat(self.group_chat_name_3).click()
-        group_chat_1.join_chat_button.click()
+        group_chat_1.join_chat_button.click_if_shown()
         group_chat_1.home_button.double_click()
 
         self.home_2.just_fyi("Device2 mentions Device1 in Group chat 3")

@@ -253,6 +253,7 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700762)
+    @marks.xfail(reason="flaky; on e2e builds when switching on rinkeby sometimes no collectibles")
     def test_wallet_add_account_seed_phrase_collectibles_rinkeby_set_as_profile_image(self):
         user = wallet_users['E']
         self.wallet.driver.set_network_connection(6)

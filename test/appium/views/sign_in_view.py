@@ -3,7 +3,8 @@ import os
 from tests import common_password, appium_root_project_path
 from views.base_element import Button, EditBox, Text
 from views.base_view import BaseView
-
+import base64
+from tests.base_test_case import AbstractTestCase
 
 class MultiAccountButton(Button):
     class Username(Text):
@@ -262,7 +263,6 @@ class SignInView(BaseView):
         self.sign_in()
 
     def import_db(self, seed_phrase, import_db_folder_name, password=common_password):
-        from tests.base_test_case import AbstractTestCase
         self.driver.info('## Importing database', device=False)
         import_file_name = 'export.db'
         home = self.recover_access(passphrase=seed_phrase, password=password)
@@ -282,3 +282,25 @@ class SignInView(BaseView):
         self.home_button.wait_for_element(40)
         self.driver.info('## Importing database is finished!', device=False)
         return self.get_home_view()
+
+    def export_db(self, seed_phrase, file_to_export='export.db', password=common_password):
+        self.driver.info('## Export database', device=False)
+        home = self.recover_access(passphrase=seed_phrase, password=password)
+        profile = home.profile_button.click()
+        full_path_to_file = os.path.join(appium_root_project_path, 'views/dbs/%s' % file_to_export)
+        profile.logout()
+        self.multi_account_on_login_button.wait_for_visibility_of_element(30)
+        self.get_multiaccount_by_position(1).click()
+        self.password_input.set_value(common_password)
+        self.options_button.click()
+        self.element_by_text('Export unencrypted').wait_and_click(40)
+        self.element_by_text('Export unencrypted').wait_for_invisibility_of_element(40)
+        file_base_64 = self.driver.pull_file('%s/export.db' % AbstractTestCase().app_path)
+        try:
+            with open(full_path_to_file, "wb") as f:
+                f.write(base64.b64decode(file_base_64))
+        except Exception as e:
+            print(str(e))
+        self.driver.info('## Exporting database is finished!', device=False)
+
+

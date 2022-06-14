@@ -315,7 +315,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         cls.new_group_chat_name = "GroupChat after rename"
         cls.group_chat_1 = cls.home_1.create_group_chat(user_names_to_add=[cls.default_username_2], group_chat_name=cls.initial_group_chat_name)
         cls.group_chat_2 = cls.home_2.get_chat(cls.initial_group_chat_name).click()
-        cls.group_chat_2.join_chat_button.click()
+        cls.group_chat_2.join_chat_button.click_if_shown()
         [home.home_button.click() for home in (cls.home_1, cls.home_2)]
 
         cls.home_1.just_fyi("Creating public chats")
@@ -329,6 +329,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         cls.message_1, cls.message_2, cls.message_3, cls.message_4 = "Message1", "Message2", "Message3", "Message4"
 
     @marks.testrail_id(702066)
+    @marks.xfail(reason="may fail on setup with remote disconnected error, needs investigation")
     def test_chat_1_1_push_and_reaction_for_messages_sticker_audio_image(self):
 
         # methods with steps to use later in loop
@@ -631,7 +632,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         chat_1.home_button.click()
         chat_1 = self.home_1.create_group_chat([full_ens], group_name)
         chat_2 = self.home_2.get_chat(group_name).click()
-        chat_2.join_chat_button.click()
+        chat_2.join_chat_button.click_if_shown()
 
         self.home_1.just_fyi('Check ENS and in group chat and suggestions list')
         chat_1.element_by_text_part(full_ens).wait_for_visibility_of_element(60)
@@ -842,6 +843,7 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702295)
+    @marks.xfail(reason="mysterious issue when PNs are not fetched from offline, can not reproduce on real devices; needs investigation")
     def test_keycard_1_1_chat_command_request_and_send_tx_stt_in_1_1_chat_offline_opened_from_push(self):
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
         self.home_1.get_chat(self.sender['username']).click()

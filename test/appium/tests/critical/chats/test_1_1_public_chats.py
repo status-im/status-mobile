@@ -849,6 +849,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702188)
+    @marks.xfail(reason="flaky; issue when sometimes history is not fetched from offline for public chat, needs investigation")
     def test_cellular_settings_on_off_public_chat_fetching_history(self):
         [home.home_button.double_click() for home in [self.home_1, self.home_2]]
         public_chat_name, public_chat_message = 'e2e-started-before', 'message to pub chat'
@@ -1132,6 +1133,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi('Install free sticker pack and use it in 1-1 chat on Ropsten')
         self.home_1.get_chat(self.ens).click()
         self.chat_1.install_sticker_pack_by_name('Status Cat')
+        self.chat_1.chat_message_input.clear()
         self.chat_1.sticker_icon.click()
         if not self.chat_1.sticker_message.is_element_displayed():
             self.errors.append('Sticker was not sent')

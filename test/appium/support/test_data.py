@@ -10,14 +10,15 @@ class SingleTestData(object):
         self.group_name = grop_name
 
     class TestRunData(object):
-        def __init__(self, steps, jobs, error, first_commands: Dict[str, int]):
+        def __init__(self, steps, jobs, error, first_commands: Dict[str, int], xfail):
             self.steps = steps
             self.jobs = jobs
             self.error = error
             self.first_commands = first_commands
+            self.xfail = xfail
 
     def create_new_testrun(self):
-        self.testruns.append(SingleTestData.TestRunData(list(), dict(), None, dict()))
+        self.testruns.append(SingleTestData.TestRunData(list(), dict(), None, dict(), xfail=''))
 
 
 class TestSuiteData(object):
