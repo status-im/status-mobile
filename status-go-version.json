@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.101.1",
-    "commit-sha1": "cc80f5753baf4701cfabcde8d01c2e8b9deebd6f",
-    "src-sha256": "1sc4a8qnmb64dn0x9s4r1m42dwzr70jh2mzgyhn2mavx33abr8kn"
+    "version": "feat/ShortNameColorForNetworks",
+    "commit-sha1": "a546eab5f0d368e222226ec91abbe9082e93006b",
+    "src-sha256": "08zsyqzlc7hxfd9lfn8lrq5j6q0rs4frmgrkrq74ayy5fq0z2svp"
 }
