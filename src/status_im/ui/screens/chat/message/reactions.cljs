@@ -55,8 +55,7 @@
                               (fn []
                                 (reset! actions nil)
                                 (reset! visible false)
-                                (picker-on-close))
-                              reaction-picker/animation-duration))
+                                (picker-on-close))))
             on-open        (fn [pos]
                              (picker-on-open)
                              (reset! position pos)
