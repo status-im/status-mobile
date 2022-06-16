@@ -665,6 +665,56 @@ class TestChatManagement(SingleDeviceTestCase):
         #     self.driver.fail("Custom fee is not applied!")
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(702360)
+    @marks.xfail(reason="flaky; on e2e builds when switching on rinkeby sometimes no collectibles")
+    def test_collectibles_rinkeby_set_as_profile_image(self):
+        user = wallet_users['E']
+        sign_in = SignInView(self.driver)
+        home = sign_in.recover_access(user['passphrase'])
+
+        home.just_fyi('Check that collectibles amount is shown on Rinkeby')
+        profile = home.profile_button.click()
+        profile.switch_network('Rinkeby with upstream RPC')
+        wallet = profile.wallet_button.click()
+        wallet.accounts_status_account.click()
+        wallet.collectibles_button.click()
+        wallet.element_by_translation_id("display-collectibles").scroll_and_click()
+        for asset in user['collectibles']:
+            wallet.get_collectibles_amount(asset).scroll_to_element()
+            if wallet.get_collectibles_amount(asset).text != user['collectibles'][asset]:
+                self.errors.append(
+                    '%s %s is not shown in Collectibles for Rinkeby!' % (user['collectibles'][asset], asset))
+
+        wallet.just_fyi('Check that you can open collectible to view')
+        nft, nft_name = 'Coins & Steel Exclusive Item Skin V2', "Warlock's Arm"
+        wallet.get_collectibles_amount(nft).click()
+        if not wallet.nft_asset_button.is_element_displayed(60):
+            self.driver.fail("No card is not shown for %s after opening it from collectibles!" % nft)
+        wallet.nft_asset_button.click()
+        wallet.set_collectible_as_profile_photo_button.scroll_and_click()
+
+        wallet.just_fyi('Check that you can set collectible as profile photo')
+        web_view = wallet.get_base_web_view()
+        wallet.view_collectible_on_opensea_button.click_until_presence_of_element(
+            web_view.browser_previous_page_button)
+        web_view.wait_for_d_aap_to_load()
+        if not web_view.element_by_text(nft_name).is_element_displayed(30):
+            self.errors.append("Collectible can't be opened when tapping 'View on OpenSea' via NFT page")
+        wallet.wallet_button.click()
+
+        wallet.just_fyi('Check that collectibles are not shown when sending assets from wallet')
+        send_transaction = wallet.send_transaction_button.click()
+        send_transaction.select_asset_button.click()
+        if send_transaction.asset_by_name(nft).is_element_displayed():
+            self.errors.append('Collectibles can be sent from wallet')
+        wallet.close_send_transaction_view_button.double_click()
+
+        wallet.just_fyi("Check that custom image from collectible is set as profile photo")
+        wallet.profile_button.double_click()
+        if not profile.profile_picture.is_element_image_similar_to_template('collectible_pic.png'):
+            self.errors.append("Collectible image is not set as profile image")
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(695890)
     def test_profile_use_another_fleets_balance_bsc_xdai_advanced_set_nonce(self):
         user = user_mainnet
@@ -701,12 +751,12 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet = home.wallet_button.click()
         wallet.scan_tokens()
         [wallet.wait_balance_is_equal_expected_amount(asset, value) for asset, value in user['mainnet'].items()]
-
-        home.just_fyi("Check balance on xDai and default network fee")
-        profile = home.profile_button.click()
-        profile.switch_network('xDai Chain')
-        home.wallet_button.click()
-        wallet.element_by_text(user['xdai']).wait_for_element(30)
+        # TODO: blocked due to 695890
+        # home.just_fyi("Check balance on xDai and default network fee")
+        # profile = home.profile_button.click()
+        # profile.switch_network('xDai Chain')
+        # home.wallet_button.click()
+        # wallet.element_by_text(user['xdai']).wait_for_element(30)
 
         home.just_fyi("Check balance on BSC and default network fee")
         profile = home.profile_button.click()
