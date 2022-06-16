@@ -39,8 +39,7 @@ local.properties
 .tags*
 
 # VS Code
-.vscode/ipch/
-.vscode/settings.json
+.vscode/
 workspace.code-workspace
 
 # node.js
