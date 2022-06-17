@@ -92,31 +92,31 @@
   [{:keys [db] :as cofx} network-id]
   (if-let [config (get-in db [:networks/networks network-id :config])]
     (if-let [upstream-url (get-in config [:UpstreamConfig :URL])]
-      {:http-post {:url        upstream-url
-                   :data       (types/clj->json [{:jsonrpc "2.0"
-                                                  :method  "web3_clientVersion"
-                                                  :id      1}
-                                                 {:jsonrpc "2.0"
-                                                  :method  "net_version"
-                                                  :id      2}])
-                   :opts       {:headers {"Content-Type" "application/json"}}
-                   :on-success (fn [{:keys [response-body]}]
-                                 (let [responses           (http/parse-payload response-body)
-                                       client-version      (:result (first responses))
-                                       expected-network-id (:NetworkId config)
-                                       rpc-network-id      (when-let [res (:result (second responses))]
-                                                             (js/parseInt res))]
-                                   (if (and client-version network-id
-                                            (= expected-network-id rpc-network-id))
-                                     (re-frame/dispatch [::connect-success network-id])
-                                     (re-frame/dispatch [::connect-failure (if (not= expected-network-id rpc-network-id)
-                                                                             (i18n/label :t/network-invalid-network-id)
-                                                                             (i18n/label :t/network-invalid-url))]))))
-                   :on-error   (fn [{:keys [response-body status-code]}]
-                                 (let [reason (if status-code
-                                                (i18n/label :t/network-invalid-status-code {:code status-code})
-                                                (str response-body))]
-                                   (re-frame/dispatch [::connect-failure reason])))}}
+        {:http-post {:url        upstream-url
+                     :data       (types/clj->json [{:jsonrpc "2.0"
+                                                    :method  "web3_clientVersion"
+                                                    :id      1}
+                                                   {:jsonrpc "2.0"
+                                                    :method  "net_version"
+                                                    :id      2}])
+                     :opts       {:headers {"Content-Type" "application/json"}}
+                     :on-success (fn [{:keys [response-body]}]
+                                   (let [responses           (reduce #(assoc % (:id %2) %2) {} (http/parse-payload response-body))
+                                         client-version      (:result (get responses 1))
+                                         expected-network-id (:NetworkId config)
+                                         rpc-network-id      (when-let [res (:result (get responses 2))]
+                                                               (js/parseInt res))]
+                                     (if (and client-version network-id
+                                              (= expected-network-id rpc-network-id))
+                                       (re-frame/dispatch [::connect-success network-id])
+                                       (re-frame/dispatch [::connect-failure (if (not= expected-network-id rpc-network-id)
+                                                                               (i18n/label :t/network-invalid-network-id)
+                                                                               (i18n/label :t/network-invalid-url))]))))
+                     :on-error   (fn [{:keys [response-body status-code]}]
+                                   (let [reason (if status-code
+                                                  (i18n/label :t/network-invalid-status-code {:code status-code})
+                                                  (str response-body))]
+                                     (re-frame/dispatch [::connect-failure reason])))}}
       (connect-success cofx network-id))
     (connect-failure cofx "A network with the specified id doesn't exist")))
 
