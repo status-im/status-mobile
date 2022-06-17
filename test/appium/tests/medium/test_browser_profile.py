@@ -10,12 +10,11 @@ from tests.users import basic_user, ens_user, ens_user_ropsten, transaction_send
 @marks.medium
 class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        cls.sign_in = SignInView(cls.drivers[0])
-        cls.home = cls.sign_in.create_user()
-        cls.wiki_texts = ['Español', '日本語', 'Français', '中文', 'Português']
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in = SignInView(self.drivers[0])
+        self.home = self.sign_in.create_user()
+        self.wiki_texts = ['Español', '日本語', 'Français', '中文', 'Português']
 
     @marks.testrail_id(702149)
     def test_browser_can_access_images_by_link(self):

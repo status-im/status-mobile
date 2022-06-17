@@ -217,6 +217,8 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
 
+    is_sauce_env = item.config.getoption('env') == 'sauce'
+
     def catch_error():
         error = report.longreprtext
         failure_pattern = 'E.*Message:|E.*Error:|E.*Failed:'
@@ -226,32 +228,36 @@ def pytest_runtest_makereport(item, call):
         return error
 
     if report.when == 'setup':
+        is_group = "xdist_group" in item.keywords._markers or "xdist_group" in item.parent.keywords._markers
         error_intro, error = 'Test setup failed:', ''
         final_error = '%s %s' % (error_intro, error)
         if hasattr(report, 'wasxfail'):
             if '[NOTRUN]' in report.wasxfail:
                 test_suite_data.set_current_test(item.name, testrail_case_id=get_testrail_case_id(item))
                 test_suite_data.current_test.create_new_testrun()
-                if "xdist_group" in item.keywords._markers:
+                if is_group:
                     test_suite_data.current_test.group_name = item.instance.__class__.__name__
                 error_intro, error = 'Test is not run, e2e blocker ', report.wasxfail
                 final_error = "%s [[%s]]" % (error_intro, error)
             else:
-                if "xdist_group" in item.keywords._markers:
+                if is_group:
                     test_suite_data.current_test.group_name = item.instance.__class__.__name__
                 error = catch_error()
                 final_error = '%s %s [[%s]]' % (error_intro, error, report.wasxfail)
         else:
-            if "xdist_group" in item.keywords._markers and report.failed:
+            if is_group and report.failed:
                 test_suite_data.current_test.group_name = item.instance.__class__.__name__
                 error = catch_error()
                 final_error = '%s %s' % (error_intro, error)
+                if is_sauce_env:
+                    update_sauce_jobs(test_suite_data.current_test.group_name,
+                                      test_suite_data.current_test.testruns[-1].jobs,
+                                      report.passed)
         if error:
             test_suite_data.current_test.testruns[-1].error = final_error
             github_report.save_test(test_suite_data.current_test)
 
     if report.when == 'call':
-        is_sauce_env = item.config.getoption('env') == 'sauce'
         current_test = test_suite_data.current_test
         error = catch_error()
         if report.failed:

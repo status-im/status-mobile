@@ -1,26 +1,25 @@
 import pytest
 
 from tests import marks
-from tests.users import transaction_senders, basic_user, ens_user_ropsten, ens_user
-from views.web_views.base_web_view import BaseWebView
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
-from views.send_transaction_view import SendTransactionView
+from tests.users import transaction_senders, basic_user, ens_user_ropsten, ens_user
 from views.chat_view import ChatView
-from views.sign_in_view import SignInView
 from views.profile_view import ProfileView
+from views.send_transaction_view import SendTransactionView
+from views.sign_in_view import SignInView
+from views.web_views.base_web_view import BaseWebView
 
 
 @pytest.mark.xdist_group(name="one_2")
 @marks.medium
 class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        cls.sign_in = SignInView(cls.drivers[0])
-        cls.home = cls.sign_in.recover_access(transaction_senders['C']['passphrase'])
-        cls.public_key = cls.home.get_public_key_and_username()
-        cls.home.home_button.click()
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in = SignInView(self.drivers[0])
+        self.home = self.sign_in.recover_access(transaction_senders['C']['passphrase'])
+        self.public_key = self.home.get_public_key_and_username()
+        self.home.home_button.click()
 
     @marks.testrail_id(702289)
     def test_permissions_deny_access_camera_and_gallery(self):

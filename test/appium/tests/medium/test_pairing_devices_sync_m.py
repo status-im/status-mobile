@@ -1,4 +1,5 @@
 import pytest
+
 from tests import marks
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from views.sign_in_view import SignInView
@@ -8,63 +9,64 @@ from views.sign_in_view import SignInView
 @marks.medium
 class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(3)
-        cls.device_1, cls.device_2, cls.device_3 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1]),  SignInView(cls.drivers[2])
-        cls.home_1 = cls.device_1.create_user()
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(3)
+        self.device_1, self.device_2, self.device_3 = SignInView(self.drivers[0]), SignInView(
+            self.drivers[1]), SignInView(self.drivers[2])
+        self.home_1 = self.device_1.create_user()
 
-        cls.profile_1 = cls.home_1.profile_button.click()
-        cls.profile_1.privacy_and_security_button.click()
-        cls.profile_1.backup_recovery_phrase_button.click()
-        cls.profile_1.ok_continue_button.click()
-        cls.recovery_phrase = cls.profile_1.get_recovery_phrase()
-        cls.profile_1.close_button.click()
-        cls.profile_1.home_button.click()
-        cls.device_2.put_app_to_background_and_back()
-        cls.home_3 = cls.device_3.create_user()
-        cls.public_key_3, cls.username_3 = cls.home_3.get_public_key_and_username(return_username=True)
-        cls.device_3.home_button.click()
-        cls.device_1.put_app_to_background_and_back()
-        cls.comm_before_sync_name, cls.channel, cls.message = 'b-%s' % cls.home_1.get_random_chat_name(), 'some-rand-chann', 'comm_message'
-        cls.device_1_name, cls.device_2_name, cls.group_chat_name = 'creator', 'paired', 'some group chat'
-        cls.comm_after_sync_name = 'a-public-%s' % cls.home_1.get_random_chat_name()
-        cls.channel_after_sync, cls.message_after_sync = 'chann-after-sync', 'sent after sync'
+        self.profile_1 = self.home_1.profile_button.click()
+        self.profile_1.privacy_and_security_button.click()
+        self.profile_1.backup_recovery_phrase_button.click()
+        self.profile_1.ok_continue_button.click()
+        self.recovery_phrase = self.profile_1.get_recovery_phrase()
+        self.profile_1.close_button.click()
+        self.profile_1.home_button.click()
+        self.device_2.put_app_to_background_and_back()
+        self.home_3 = self.device_3.create_user()
+        self.public_key_3, self.username_3 = self.home_3.get_public_key_and_username(return_username=True)
+        self.device_3.home_button.click()
+        self.device_1.put_app_to_background_and_back()
+        self.comm_before_sync_name, self.channel, self.message = 'b-%s' % self.home_1.get_random_chat_name(), 'some-rand-chann', 'comm_message'
+        self.device_1_name, self.device_2_name, self.group_chat_name = 'creator', 'paired', 'some group chat'
+        self.comm_after_sync_name = 'a-public-%s' % self.home_1.get_random_chat_name()
+        self.channel_after_sync, self.message_after_sync = 'chann-after-sync', 'sent after sync'
 
-        cls.device_1.just_fyi('Create community, create group chat, edit user picture')
-        cls.comm_before_1 = cls.home_1.create_community(cls.comm_before_sync_name)
-        cls.channel_before_1 = cls.comm_before_1.add_channel(cls.channel)
-        cls.channel_before_1.send_message(cls.message)
-        cls.home_1.home_button.double_click()
-        cls.device_3.put_app_to_background_and_back()
-        cls.device_2.put_app_to_background_and_back()
+        self.device_1.just_fyi('Create community, create group chat, edit user picture')
+        self.comm_before_1 = self.home_1.create_community(self.comm_before_sync_name)
+        self.channel_before_1 = self.comm_before_1.add_channel(self.channel)
+        self.channel_before_1.send_message(self.message)
+        self.home_1.home_button.double_click()
+        self.device_3.put_app_to_background_and_back()
+        self.device_2.put_app_to_background_and_back()
 
-        cls.device_1.just_fyi('Edit profile picture')
-        cls.home_1.profile_button.double_click()
-        cls.profile_1.edit_profile_picture('sauce_logo.png')
+        self.device_1.just_fyi('Edit profile picture')
+        self.home_1.profile_button.double_click()
+        self.profile_1.edit_profile_picture('sauce_logo.png')
 
-        cls.device_1.just_fyi('Add contact, start group chat')
-        cls.home_1.home_button.click()
-        cls.home_1.add_contact(cls.public_key_3)
-        cls.home_1.get_back_to_home_view()
-        cls.chat_1 = cls.home_1.create_group_chat([cls.username_3], cls.group_chat_name)
-        cls.chat_3 = cls.home_3.get_chat(cls.group_chat_name).click()
-        cls.chat_3.join_chat_button.click_if_shown()
+        self.device_1.just_fyi('Add contact, start group chat')
+        self.home_1.home_button.click()
+        self.home_1.add_contact(self.public_key_3)
+        self.device_2.put_app_to_background_and_back()
+        self.home_1.get_back_to_home_view()
+        self.chat_1 = self.home_1.create_group_chat([self.username_3], self.group_chat_name)
+        self.chat_3 = self.home_3.get_chat(self.group_chat_name).click()
+        self.chat_3.join_chat_button.click_if_shown()
 
-        cls.device_2.just_fyi("(secondary device): restore same multiaccount on another device")
-        cls.home_2 = cls.device_2.recover_access(passphrase=' '.join(cls.recovery_phrase.values()))
-        cls.profile_1, cls.profile_2 = cls.home_1.profile_button.click(), cls.home_2.profile_button.click()
-        cls.device_1.put_app_to_background_and_back()
+        self.device_2.just_fyi("(secondary device): restore same multiaccount on another device")
+        self.home_2 = self.device_2.recover_access(passphrase=' '.join(self.recovery_phrase.values()))
+        self.profile_1, self.profile_2 = self.home_1.profile_button.click(), self.home_2.profile_button.click()
+        self.device_1.put_app_to_background_and_back()
 
-        cls.device_2.just_fyi('Pair main and secondary devices')
-        cls.name_1, cls.name_2 = 'device_%s' % cls.device_1.driver.number, 'device_%s' % cls.device_2.driver.number
-        cls.profile_2.discover_and_advertise_device(cls.name_2)
-        cls.profile_1.discover_and_advertise_device(cls.name_1)
-        cls.profile_1.get_toggle_device_by_name(cls.name_2).wait_and_click()
-        cls.profile_1.sync_all_button.click()
-        cls.profile_1.sync_all_button.wait_for_visibility_of_element(20)
-        [device.profile_button.double_click() for device in (cls.profile_1, cls.profile_2)]
-        [device.home_button.double_click() for device in (cls.profile_1, cls.profile_2, cls.device_3)]
+        self.device_2.just_fyi('Pair main and secondary devices')
+        self.name_1, self.name_2 = 'device_%s' % self.device_1.driver.number, 'device_%s' % self.device_2.driver.number
+        self.profile_2.discover_and_advertise_device(self.name_2)
+        self.profile_1.discover_and_advertise_device(self.name_1)
+        self.profile_1.get_toggle_device_by_name(self.name_2).wait_and_click()
+        self.profile_1.sync_all_button.click()
+        self.profile_1.sync_all_button.wait_for_visibility_of_element(20)
+        [device.profile_button.double_click() for device in (self.profile_1, self.profile_2)]
+        [device.home_button.double_click() for device in (self.profile_1, self.profile_2, self.device_3)]
 
     @marks.testrail_id(702269)
     @marks.xfail(reason="too long setup, can fail with Remote end closed connection")
@@ -151,7 +153,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.chat_1.record_audio_message(message_length_in_seconds=3)
         self.device_1.send_message_button.click()
         self.chat_1.chat_message_input.click()
-        for chat in(self.chat_1, self.chat_2, self.chat_3):
+        for chat in (self.chat_1, self.chat_2, self.chat_3):
             if not chat.play_pause_audio_message_button.is_element_displayed(30):
                 self.errors.append('Audio message is not shown in chat after sending!')
         self.errors.verify_no_errors()

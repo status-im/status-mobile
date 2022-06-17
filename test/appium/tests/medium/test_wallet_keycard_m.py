@@ -2,8 +2,9 @@ import random
 import string
 
 import pytest
-from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
+
 from tests import common_password, marks, test_dapp_name
+from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from tests.users import transaction_senders, basic_user, ens_user_ropsten
 from views.sign_in_view import SignInView
 
@@ -12,16 +13,15 @@ from views.sign_in_view import SignInView
 @marks.medium
 class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.user = transaction_senders['ETH_STT_4']
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        cls.sign_in = SignInView(cls.drivers[0])
-        cls.home = cls.sign_in.recover_access(passphrase=cls.user['passphrase'], keycard=True)
-        cls.profile = cls.home.get_profile_view()
-        cls.wallet = cls.home.wallet_button.click()
-        cls.wallet.wait_balance_is_changed('STT')
-        cls.home.home_button.click()
+    def prepare_devices(self):
+        self.user = transaction_senders['ETH_STT_4']
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in = SignInView(self.drivers[0])
+        self.home = self.sign_in.recover_access(passphrase=self.user['passphrase'], keycard=True)
+        self.profile = self.home.get_profile_view()
+        self.wallet = self.home.wallet_button.click()
+        self.wallet.wait_balance_is_changed('STT')
+        self.home.home_button.click()
 
     @marks.testrail_id(702317)
     def test_keycard_testdapp_sign_typed_message(self):
@@ -202,21 +202,20 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 @marks.medium
 class TestWalletTestDappMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.user = transaction_senders['ETH_5']
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        cls.sign_in = SignInView(cls.drivers[0])
-        cls.home = cls.sign_in.recover_access(passphrase=cls.user['passphrase'])
-        cls.profile = cls.home.get_profile_view()
-        cls.wallet = cls.home.wallet_button.click()
-        cls.wallet.wait_balance_is_changed()
-        cls.wallet.just_fyi('create new account in multiaccount')
-        cls.status_account = cls.home.status_account_name
-        cls.account_name = 'Subaccount'
-        cls.wallet.add_account(cls.account_name)
-        cls.sub_acc_address = cls.wallet.get_wallet_address(cls.account_name)
-        cls.home.wallet_button.double_click()
+    def prepare_devices(self):
+        self.user = transaction_senders['ETH_5']
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in = SignInView(self.drivers[0])
+        self.home = self.sign_in.recover_access(passphrase=self.user['passphrase'])
+        self.profile = self.home.get_profile_view()
+        self.wallet = self.home.wallet_button.click()
+        self.wallet.wait_balance_is_changed()
+        self.wallet.just_fyi('create new account in multiaccount')
+        self.status_account = self.home.status_account_name
+        self.account_name = 'Subaccount'
+        self.wallet.add_account(self.account_name)
+        self.sub_acc_address = self.wallet.get_wallet_address(self.account_name)
+        self.home.wallet_button.double_click()
 
     @marks.testrail_id(702324)
     def test_testdapp_request_public_key(self):

@@ -13,19 +13,18 @@ from support.utilities import get_merged_txs_list
 @marks.critical
 class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.user = wallet_users['D']
-        cls.account_seed_collectibles = 'acc_collectibles'
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        cls.sign_in = SignInView(cls.drivers[0])
-        cls.sign_in.switch_to_mobile(before_login=True)
-        cls.home = cls.sign_in.recover_access(cls.user['passphrase'])
-        cls.wallet = cls.home.wallet_button.click()
-        [cls.wallet.wait_balance_is_changed(asset) for asset in ('ETH', 'MDS', 'STT')]
-        cls.initial_balances = {'ETH': cls.wallet.get_asset_amount_by_name('ETH'),
-                                'ADI': 0,
-                                'STT': cls.wallet.get_asset_amount_by_name('STT')}
+    def prepare_devices(self):
+        self.user = wallet_users['D']
+        self.account_seed_collectibles = 'acc_collectibles'
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in = SignInView(self.drivers[0])
+        self.sign_in.switch_to_mobile(before_login=True)
+        self.home = self.sign_in.recover_access(self.user['passphrase'])
+        self.wallet = self.home.wallet_button.click()
+        [self.wallet.wait_balance_is_changed(asset) for asset in ('ETH', 'MDS', 'STT')]
+        self.initial_balances = {'ETH': self.wallet.get_asset_amount_by_name('ETH'),
+                                 'ADI': 0,
+                                 'STT': self.wallet.get_asset_amount_by_name('STT')}
 
     @marks.testrail_id(700756)
     def test_wallet_tx_history_copy_tx_hash_on_cellular(self):
@@ -246,7 +245,8 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
             self.wallet.accounts_status_account.swipe_left_on_element()
 
         if not self.wallet.get_account_by_name(account_name_private).is_element_displayed():
-            self.errors.append("Unhidden %s is shown on main wallet view after hiding via 'Show icon'" % account_name_private)
+            self.errors.append(
+                "Unhidden %s is shown on main wallet view after hiding via 'Show icon'" % account_name_private)
         for asset in self.initial_balances:
             self.wallet.wait_balance_is_changed(asset=asset, initial_balance=self.initial_balances[asset])
 

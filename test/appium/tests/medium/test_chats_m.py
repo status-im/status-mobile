@@ -1,35 +1,36 @@
 import random
 from time import sleep
+
 import emoji
 import pytest
-from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 
 from tests import bootnode_address, mailserver_address, mailserver_ams, used_fleet, background_service_message
-from tests.users import transaction_senders, ens_user
 from tests import marks
+from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
+from tests.users import transaction_senders, ens_user
 from views.sign_in_view import SignInView
 
 
 @pytest.mark.xdist_group(name="two_2")
 @marks.medium
 class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleSharedDeviceTestCase):
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        device_1, device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.home_1, cls.home_2 = device_1.create_user(), device_2.create_user()
-        cls.profile_1, cls.profile_2 = cls.home_1.profile_button.click(), cls.home_2.profile_button.click()
-        cls.public_key_1, cls.username_1 = cls.profile_1.get_public_key_and_username(return_username=True)
-        cls.public_key_2, cls.username_2 = cls.profile_2.get_public_key_and_username(return_username=True)
-        cls.text_message = 'hello'
-        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
-        cls.public_chat_name = cls.home_1.get_random_chat_name()
-        cls.chat_1, cls.chat_2 = cls.home_1.join_public_chat(cls.public_chat_name), cls.home_2.join_public_chat(
-            cls.public_chat_name)
-        cls.chat_1.send_message(cls.text_message)
-        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
-        cls.home_1.add_contact(cls.public_key_2, add_in_contacts=False)
-        cls.home_2.add_contact(cls.public_key_1, add_in_contacts=False)
+
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.home_1, self.home_2 = device_1.create_user(), device_2.create_user()
+        self.profile_1, self.profile_2 = self.home_1.profile_button.click(), self.home_2.profile_button.click()
+        self.public_key_1, self.username_1 = self.profile_1.get_public_key_and_username(return_username=True)
+        self.public_key_2, self.username_2 = self.profile_2.get_public_key_and_username(return_username=True)
+        self.text_message = 'hello'
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
+        self.public_chat_name = self.home_1.get_random_chat_name()
+        self.chat_1, self.chat_2 = self.home_1.join_public_chat(self.public_chat_name), self.home_2.join_public_chat(
+            self.public_chat_name)
+        self.chat_1.send_message(self.text_message)
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
+        self.home_1.add_contact(self.public_key_2, add_in_contacts=False)
+        self.home_2.add_contact(self.public_key_1, add_in_contacts=False)
 
     @marks.testrail_id(702284)
     def test_public_chat_timeline_different_statuses_reaction(self):
@@ -252,7 +253,8 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         public_chat_2.send_message_button.click()
         public_chat_2.back_button.click()
 
-        self.profile_1.just_fyi('join same public chat and try to reconnect via "Tap to reconnect" and check "Connecting"')
+        self.profile_1.just_fyi(
+            'join same public chat and try to reconnect via "Tap to reconnect" and check "Connecting"')
         self.profile_1.home_button.double_click()
         public_chat_1 = self.home_1.join_public_chat(public_chat_name)
         public_chat_1.reopen_app()
@@ -295,39 +297,40 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
 @marks.medium
 class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.home_1, cls.home_2 = cls.device_1.create_user(enable_notifications=True), cls.device_2.create_user()
-        cls.public_key_1, cls.default_username_1 = cls.home_1.get_public_key_and_username(return_username=True)
-        cls.public_key_2, cls.default_username_2 = cls.home_2.get_public_key_and_username(return_username=True)
-        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.home_1, self.home_2 = self.device_1.create_user(enable_notifications=True), self.device_2.create_user()
+        self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
+        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
 
-        cls.home_1.just_fyi("Creating 1-1 chats")
-        cls.chat_1 = cls.home_1.add_contact(cls.public_key_2)
-        cls.chat_2 = cls.home_2.add_contact(cls.public_key_1)
-        cls.home_2.just_fyi('Install free sticker pack and use it in 1-1 chat')
-        cls.chat_2.install_sticker_pack_by_name()
-        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
+        self.home_1.just_fyi("Creating 1-1 chats")
+        self.chat_1 = self.home_1.add_contact(self.public_key_2)
+        self.chat_2 = self.home_2.add_contact(self.public_key_1)
+        self.home_2.just_fyi('Install free sticker pack and use it in 1-1 chat')
+        self.chat_2.install_sticker_pack_by_name()
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
 
-        cls.home_1.just_fyi("Creating group chats")
-        cls.initial_group_chat_name = "GroupChat before rename"
-        cls.new_group_chat_name = "GroupChat after rename"
-        cls.group_chat_1 = cls.home_1.create_group_chat(user_names_to_add=[cls.default_username_2], group_chat_name=cls.initial_group_chat_name)
-        cls.group_chat_2 = cls.home_2.get_chat(cls.initial_group_chat_name).click()
-        cls.group_chat_2.join_chat_button.click_if_shown()
-        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
+        self.home_1.just_fyi("Creating group chats")
+        self.initial_group_chat_name = "GroupChat before rename"
+        self.new_group_chat_name = "GroupChat after rename"
+        self.group_chat_1 = self.home_1.create_group_chat(user_names_to_add=[self.default_username_2],
+                                                          group_chat_name=self.initial_group_chat_name)
+        self.group_chat_2 = self.home_2.get_chat(self.initial_group_chat_name).click()
+        self.group_chat_2.join_chat_button.click_if_shown()
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
 
-        cls.home_1.just_fyi("Creating public chats")
-        cls.public_chat_name = cls.home_1.get_random_chat_name()
-        cls.public_chat_1, cls.public_chat_2 = cls.home_1.join_public_chat(cls.public_chat_name), cls.home_2.join_public_chat(cls.public_chat_name)
-        [home.home_button.click() for home in (cls.home_1, cls.home_2)]
+        self.home_1.just_fyi("Creating public chats")
+        self.public_chat_name = self.home_1.get_random_chat_name()
+        self.public_chat_1, self.public_chat_2 = self.home_1.join_public_chat(
+            self.public_chat_name), self.home_2.join_public_chat(self.public_chat_name)
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
 
-        cls.home_1.get_chat(cls.default_username_2).click()
-        cls.home_2.get_chat(cls.default_username_1).click()
+        self.home_1.get_chat(self.default_username_2).click()
+        self.home_2.get_chat(self.default_username_1).click()
 
-        cls.message_1, cls.message_2, cls.message_3, cls.message_4 = "Message1", "Message2", "Message3", "Message4"
+        self.message_1, self.message_2, self.message_3, self.message_4 = "Message1", "Message2", "Message3", "Message4"
 
     @marks.testrail_id(702066)
     @marks.xfail(reason="may fail on setup with remote disconnected error, needs investigation")
@@ -516,7 +519,8 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.group_chat_1.rename_chat_via_group_info(self.new_group_chat_name)
         for chat in (self.group_chat_1, self.group_chat_2):
             if not chat.element_by_text(
-                    chat.create_system_message(self.default_username_1, self.initial_group_chat_name)).is_element_displayed():
+                    chat.create_system_message(self.default_username_1,
+                                               self.initial_group_chat_name)).is_element_displayed():
                 self.errors.append('Initial system message about creating chat was changed!')
             if not chat.element_by_text(
                     chat.changed_group_name_system_message(self.default_username_1,
@@ -611,7 +615,8 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         nickname_expected = emoji_unicode + special_char + cyrrilic
         chat_1 = self.home_1.add_contact(ens, add_in_contacts=False, nickname=nickname_to_set)
         if chat_1.user_name_text.text != nickname_expected:
-            self.errors.append('Expected special char nickname %s does not match actual %s' % (nickname_expected, chat_1.user_name_text.text))
+            self.errors.append('Expected special char nickname %s does not match actual %s' % (
+                nickname_expected, chat_1.user_name_text.text))
 
         self.home_1.just_fyi('Can remove nickname without adding to contact')
         chat_1.chat_options.click()
@@ -648,7 +653,8 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         if not chat_1.chat_element_by_text(message_text).is_element_displayed():
             self.errors.append("ENS name is not resolved on sent message")
 
-        self.home_1.just_fyi('Set nickname via group info and check that can mention by nickname /username in group chat')
+        self.home_1.just_fyi(
+            'Set nickname via group info and check that can mention by nickname /username in group chat')
         nickname = 'funny_bunny'
         device_2_options = chat_1.get_user_options(full_ens)
         device_2_options.view_profile_button.click()
@@ -699,30 +705,30 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
 @pytest.mark.xdist_group(name="one_3")
 @marks.medium
 class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(3)
-        cls.sign_ins, cls.homes, cls.public_keys, cls.usernames, cls.chats = {}, {}, {}, {}, {}
-        for key in cls.drivers:
-            cls.sign_ins[key] = SignInView(cls.drivers[key])
-            cls.homes[key] = cls.sign_ins[key].create_user()
-            SignInView(cls.drivers[2]).put_app_to_background_and_back()
-            cls.public_keys[key], cls.usernames[key] = cls.sign_ins[key].get_public_key_and_username(True)
-            cls.sign_ins[key].home_button.click()
-            SignInView(cls.drivers[0]).put_app_to_background_and_back()
 
-        for member in (cls.public_keys[1], cls.public_keys[2]):
-            cls.homes[0].add_contact(member)
-            cls.homes[0].home_button.click()
-        [SignInView(cls.drivers[i]).put_app_to_background_and_back() for i in range(1, 3)]
-        cls.chat_name = cls.homes[0].get_random_chat_name()
-        cls.invite_chat_name = '%s_invite' % cls.homes[0].get_random_chat_name()
-        cls.chats[0] = cls.homes[0].create_group_chat([], cls.invite_chat_name)
-        cls.chats[0].home_button.double_click()
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(3)
+        self.sign_ins, self.homes, self.public_keys, self.usernames, self.chats = {}, {}, {}, {}, {}
+        for key in self.drivers:
+            self.sign_ins[key] = SignInView(self.drivers[key])
+            self.homes[key] = self.sign_ins[key].create_user()
+            SignInView(self.drivers[2]).put_app_to_background_and_back()
+            self.public_keys[key], self.usernames[key] = self.sign_ins[key].get_public_key_and_username(True)
+            self.sign_ins[key].home_button.click()
+            SignInView(self.drivers[0]).put_app_to_background_and_back()
 
-        cls.chats[0] = cls.homes[0].create_group_chat([cls.usernames[1], cls.usernames[2]], cls.chat_name)
+        for member in (self.public_keys[1], self.public_keys[2]):
+            self.homes[0].add_contact(member)
+            self.homes[0].home_button.click()
+        [SignInView(self.drivers[i]).put_app_to_background_and_back() for i in range(1, 3)]
+        self.chat_name = self.homes[0].get_random_chat_name()
+        self.invite_chat_name = '%s_invite' % self.homes[0].get_random_chat_name()
+        self.chats[0] = self.homes[0].create_group_chat([], self.invite_chat_name)
+        self.chats[0].home_button.double_click()
+
+        self.chats[0] = self.homes[0].create_group_chat([self.usernames[1], self.usernames[2]], self.chat_name)
         for i in range(1, 3):
-            cls.chats[i] = cls.homes[i].get_chat(cls.chat_name).click()
+            self.chats[i] = self.homes[i].get_chat(self.chat_name).click()
 
     @marks.testrail_id(702259)
     def test_group_chat_remove_member(self):
@@ -782,32 +788,32 @@ class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
 @marks.medium
 class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.sender = transaction_senders['ETH_STT_1']
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.sender = transaction_senders['ETH_STT_1']
 
-        cls.device_1.just_fyi('Grab user data for transactions and public chat, set up wallets')
-        cls.home_1 = cls.device_1.create_user(keycard=True, enable_notifications=True)
-        cls.device_2.put_app_to_background_and_back()
-        cls.recipient_public_key, cls.recipient_username = cls.home_1.get_public_key_and_username(return_username=True)
-        cls.amount = cls.device_1.get_unique_amount()
-        cls.asset_name = 'STT'
-        cls.wallet_1 = cls.home_1.wallet_button.click()
-        cls.wallet_1.select_asset(cls.asset_name)
-        cls.wallet_1.home_button.click()
+        self.device_1.just_fyi('Grab user data for transactions and public chat, set up wallets')
+        self.home_1 = self.device_1.create_user(keycard=True, enable_notifications=True)
+        self.device_2.put_app_to_background_and_back()
+        self.recipient_public_key, self.recipient_username = self.home_1.get_public_key_and_username(
+            return_username=True)
+        self.amount = self.device_1.get_unique_amount()
+        self.asset_name = 'STT'
+        self.wallet_1 = self.home_1.wallet_button.click()
+        self.wallet_1.select_asset(self.asset_name)
+        self.wallet_1.home_button.click()
 
-        cls.home_2 = cls.device_2.recover_access(passphrase=cls.sender['passphrase'],
-                                                 keycard=True, enable_notifications=True)
-        cls.wallet_2 = cls.home_2.wallet_button.click()
-        cls.initial_amount_stt = cls.wallet_2.get_asset_amount_by_name('STT')
-        cls.wallet_2.home_button.click()
+        self.home_2 = self.device_2.recover_access(passphrase=self.sender['passphrase'],
+                                                   keycard=True, enable_notifications=True)
+        self.wallet_2 = self.home_2.wallet_button.click()
+        self.initial_amount_stt = self.wallet_2.get_asset_amount_by_name('STT')
+        self.wallet_2.home_button.click()
 
-        cls.device_2.just_fyi('Add recipient to contact and send 1 message')
-        cls.chat_2 = cls.home_2.add_contact(cls.recipient_public_key)
-        cls.chat_2.send_message("test message")
-        cls.chat_1 = cls.home_1.get_chat(cls.sender['username']).click()
+        self.device_2.just_fyi('Add recipient to contact and send 1 message')
+        self.chat_2 = self.home_2.add_contact(self.recipient_public_key)
+        self.chat_2.send_message("test message")
+        self.chat_1 = self.home_1.get_chat(self.sender['username']).click()
 
     @marks.testrail_id(702294)
     def test_chat_1_1_unread_counter_highligted(self):
@@ -839,7 +845,8 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
             self.errors.append("Preview message is not hightligted or text is not shown! ")
         self.home_1.get_chat(self.sender['username']).click()
         self.home_1.home_button.double_click()
-        if not self.home_1.get_chat(self.sender['username']).chat_preview.is_element_differs_from_template('highligted_preview.png', 0):
+        if not self.home_1.get_chat(self.sender['username']).chat_preview.is_element_differs_from_template(
+                'highligted_preview.png', 0):
             self.errors.append("Preview message is still highlighted after opening ")
         self.errors.verify_no_errors()
 
@@ -896,7 +903,8 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
         [home.wallet_button.click() for home in (self.home_1, self.home_2)]
         self.wallet_2.wait_balance_is_changed('STT', self.initial_amount_stt)
         self.wallet_1.wait_balance_is_changed('STT', scan_tokens=True)
-        [wallet.find_transaction_in_history(amount=self.amount, asset='STT') for wallet in (self.wallet_1, self.wallet_2)]
+        [wallet.find_transaction_in_history(amount=self.amount, asset='STT') for wallet in
+         (self.wallet_1, self.wallet_2)]
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702296)
@@ -966,8 +974,9 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
         if blocked_chat_user.is_element_displayed():
             self.errors.append("Chat with blocked user is reappeared after fetching new messages from offline")
 
-        self.device_1.just_fyi("check that PNs are still enabled in profile after closing 'background notification centre' "
-                          "message and relogin")
+        self.device_1.just_fyi(
+            "check that PNs are still enabled in profile after closing 'background notification centre' "
+            "message and relogin")
         self.device_1.open_notification_bar()
         if not self.device_1.element_by_text_part(background_service_message).is_element_displayed():
             self.errors.append("Background notification service is not started after relogin")

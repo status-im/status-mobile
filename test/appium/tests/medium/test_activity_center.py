@@ -9,19 +9,18 @@ from views.sign_in_view import SignInView
 @marks.medium
 class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(2)
-        cls.device_1, cls.device_2 = SignInView(cls.drivers[0]), SignInView(cls.drivers[1])
-        cls.home_1, cls.home_2 = cls.device_1.create_user(enable_notifications=True), cls.device_2.create_user()
-        cls.public_key_user_1, cls.username_1 = cls.home_1.get_public_key_and_username(return_username=True)
-        cls.public_key_user_2, cls.username_2 = cls.home_2.get_public_key_and_username(return_username=True)
-        [cls.group_chat_name_1, cls.group_chat_name_2, cls.group_chat_name_3, cls.group_chat_name_4, \
-         cls.group_chat_name_5] = "GroupChat1", "GroupChat2", "GroupChat3", "GroupChat4", "GroupChat5"
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.home_1, self.home_2 = self.device_1.create_user(enable_notifications=True), self.device_2.create_user()
+        self.public_key_user_1, self.username_1 = self.home_1.get_public_key_and_username(return_username=True)
+        self.public_key_user_2, self.username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        [self.group_chat_name_1, self.group_chat_name_2, self.group_chat_name_3, self.group_chat_name_4, \
+         self.group_chat_name_5] = "GroupChat1", "GroupChat2", "GroupChat3", "GroupChat4", "GroupChat5"
 
-        cls.message_from_sender = "Message sender"
-        cls.home_2.home_button.double_click()
-        cls.device_2_one_to_one_chat = cls.home_2.add_contact(cls.public_key_user_1)
+        self.message_from_sender = "Message sender"
+        self.home_2.home_button.double_click()
+        self.device_2_one_to_one_chat = self.home_2.add_contact(self.public_key_user_1)
 
     @marks.testrail_id(702183)
     def test_activity_center_reject_chats_no_pn(self):
@@ -161,7 +160,7 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Device1 joins Group chat 3")
         group_chat_1 = self.home_1.get_chat(self.group_chat_name_3).click()
-        group_chat_1.join_chat_button.click_if_shown()
+        group_chat_1.join_chat_button.click()
         group_chat_1.home_button.double_click()
 
         self.home_2.just_fyi("Device2 mentions Device1 in Group chat 3")
@@ -177,7 +176,8 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
         self.home_1.notifications_unread_badge.click_until_absense_of_element(self.home_1.plus_button)
 
         self.home_1.just_fyi("Check that notification from group is presented in Activity Center")
-        if not self.home_1.get_chat_from_activity_center_view(self.username_2).chat_message_preview == group_chat_message:
+        if not self.home_1.get_chat_from_activity_center_view(
+                self.username_2).chat_message_preview == group_chat_message:
             self.errors.append("No mention in Activity Center for Group Chat")
 
         self.home_1.just_fyi("Open group chat where user mentioned")

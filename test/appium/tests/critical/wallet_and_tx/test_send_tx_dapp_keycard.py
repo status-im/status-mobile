@@ -12,22 +12,23 @@ from views.sign_in_view import SignInView
 @pytest.mark.xdist_group(name="one_1")
 @marks.critical
 class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
-    @classmethod
-    def setup_class(cls):
-        cls.user = transaction_senders['ETH_STT_4']
-        cls.recipient_address = '0x%s' % transaction_senders['ETH_ADI_STT_3']['address']
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        [cls.amount_adi, cls.amount_eth, cls.amount_stt] = ['0.000%s' % str(random.randint(100, 999)) + '1' for _ in range(3)]
-        cls.sign_in = SignInView(cls.drivers[0])
-        cls.home = cls.sign_in.recover_access(cls.user['passphrase'])
-        cls.wallet = cls.home.wallet_button.click()
-        cls.assets = ('ETH', 'ADI', 'STT')
-        [cls.wallet.wait_balance_is_changed(asset) for asset in cls.assets]
-        cls.initial_balances = dict()
-        for asset in cls.assets:
-            cls.initial_balances[asset] = cls.wallet.get_asset_amount_by_name(asset)
-        cls.wallet.send_transaction(amount=cls.amount_eth, recipient=cls.recipient_address)
-        cls.wallet.send_transaction(amount=cls.amount_adi, recipient=cls.recipient_address, asset_name='ADI')
+
+    def prepare_devices(self):
+        self.user = transaction_senders['ETH_STT_4']
+        self.recipient_address = '0x%s' % transaction_senders['ETH_ADI_STT_3']['address']
+        self.drivers, self.loop = create_shared_drivers(1)
+        [self.amount_adi, self.amount_eth, self.amount_stt] = ['0.000%s' % str(random.randint(100, 999)) + '1' for _ in
+                                                               range(3)]
+        self.sign_in = SignInView(self.drivers[0])
+        self.home = self.sign_in.recover_access(self.user['passphrase'])
+        self.wallet = self.home.wallet_button.click()
+        self.assets = ('ETH', 'ADI', 'STT')
+        [self.wallet.wait_balance_is_changed(asset) for asset in self.assets]
+        self.initial_balances = dict()
+        for asset in self.assets:
+            self.initial_balances[asset] = self.wallet.get_asset_amount_by_name(asset)
+        self.wallet.send_transaction(amount=self.amount_eth, recipient=self.recipient_address)
+        self.wallet.send_transaction(amount=self.amount_adi, recipient=self.recipient_address, asset_name='ADI')
 
     @marks.testrail_id(700763)
     def test_send_tx_eth_check_logcat(self):
@@ -267,20 +268,20 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
 @pytest.mark.xdist_group(name="two_1")
 @marks.critical
 class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
-    @classmethod
-    def setup_class(cls):
-        cls.user = transaction_senders['ETH_STT_ADI_1']
-        cls.address = '0x%s' % transaction_senders['ETH_7']['address']
-        cls.drivers, cls.loop = create_shared_drivers(1)
-        cls.sign_in = SignInView(cls.drivers[0])
 
-        cls.home = cls.sign_in.recover_access(passphrase=cls.user['passphrase'], keycard=True)
-        cls.wallet = cls.home.wallet_button.click()
-        cls.assets = ('ETH', 'ADI', 'STT')
-        [cls.wallet.wait_balance_is_changed(asset) for asset in cls.assets]
-        cls.initial_balances = dict()
-        for asset in cls.assets:
-            cls.initial_balances[asset] = cls.wallet.get_asset_amount_by_name(asset)
+    def prepare_devices(self):
+        self.user = transaction_senders['ETH_STT_ADI_1']
+        self.address = '0x%s' % transaction_senders['ETH_7']['address']
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in = SignInView(self.drivers[0])
+
+        self.home = self.sign_in.recover_access(passphrase=self.user['passphrase'], keycard=True)
+        self.wallet = self.home.wallet_button.click()
+        self.assets = ('ETH', 'ADI', 'STT')
+        [self.wallet.wait_balance_is_changed(asset) for asset in self.assets]
+        self.initial_balances = dict()
+        for asset in self.assets:
+            self.initial_balances[asset] = self.wallet.get_asset_amount_by_name(asset)
 
     @marks.testrail_id(700767)
     def test_keycard_send_tx_eth(self):
@@ -417,7 +418,8 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.accept_tos_checkbox.enable()
         self.sign_in.get_started_button.click()
         self.sign_in.generate_key_button.click_until_presence_of_element(self.sign_in.next_button)
-        self.sign_in.next_button.click_until_absense_of_element(self.sign_in.element_by_translation_id("intro-wizard-title2"))
+        self.sign_in.next_button.click_until_absense_of_element(
+            self.sign_in.element_by_translation_id("intro-wizard-title2"))
         keycard_flow = self.sign_in.keycard_storage_button.click()
         keycard_flow.confirm_pin_and_proceed()
         seed_phrase = keycard_flow.backup_seed_phrase()

@@ -9,37 +9,36 @@ from views.chat_view import ChatView
 @marks.critical
 class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.drivers, cls.loop = create_shared_drivers(3)
-        cls.message_before_adding = 'message before adding new user'
-        cls.message_to_admin = 'Hey, admin!'
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(3)
+        self.message_before_adding = 'message before adding new user'
+        self.message_to_admin = 'Hey, admin!'
 
-        cls.homes, cls.public_keys, cls.usernames, cls.chats = {}, {}, {}, {}
-        for key in cls.drivers:
-            sign_in = SignInView(cls.drivers[key])
-            cls.homes[key] = sign_in.create_user(enable_notifications=True)
-            SignInView(cls.drivers[2]).put_app_to_background_and_back()
-            cls.public_keys[key], cls.usernames[key] = sign_in.get_public_key_and_username(True)
+        self.homes, self.public_keys, self.usernames, self.chats = {}, {}, {}, {}
+        for key in self.drivers:
+            sign_in = SignInView(self.drivers[key])
+            self.homes[key] = sign_in.create_user(enable_notifications=True)
+            SignInView(self.drivers[2]).put_app_to_background_and_back()
+            self.public_keys[key], self.usernames[key] = sign_in.get_public_key_and_username(True)
             sign_in.home_button.click()
-            SignInView(cls.drivers[0]).put_app_to_background_and_back()
-        cls.chat_name = cls.homes[0].get_random_chat_name()
+            SignInView(self.drivers[0]).put_app_to_background_and_back()
+        self.chat_name = self.homes[0].get_random_chat_name()
 
-        cls.homes[0].just_fyi('Admin adds future members to contacts')
+        self.homes[0].just_fyi('Admin adds future members to contacts')
         for i in range(1, 3):
-            cls.homes[0].add_contact(cls.public_keys[i])
-            cls.homes[0].home_button.double_click()
+            self.homes[0].add_contact(self.public_keys[i])
+            self.homes[0].home_button.double_click()
 
-        cls.homes[0].just_fyi('Member adds admin to contacts to see PNs and put app in background')
-        cls.homes[1].add_contact(cls.public_keys[0])
-        cls.homes[1].home_button.double_click()
+        self.homes[0].just_fyi('Member adds admin to contacts to see PNs and put app in background')
+        self.homes[1].add_contact(self.public_keys[0])
+        self.homes[1].home_button.double_click()
 
-        cls.homes[0].just_fyi('Admin creates group chat')
-        cls.chats[0] = cls.homes[0].create_group_chat([cls.usernames[1]], cls.chat_name)
+        self.homes[0].just_fyi('Admin creates group chat')
+        self.chats[0] = self.homes[0].create_group_chat([self.usernames[1]], self.chat_name)
         for i in range(1, 3):
-            cls.chats[i] = ChatView(cls.drivers[i])
+            self.chats[i] = ChatView(self.drivers[i])
 
-        cls.chats[0].send_message(cls.message_before_adding)
+        self.chats[0].send_message(self.message_before_adding)
 
     @marks.testrail_id(3994)
     def test_group_chat_push_system_messages_when_invited(self):
