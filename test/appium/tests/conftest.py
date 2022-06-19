@@ -1,3 +1,5 @@
+import time
+
 import requests
 import pytest
 import re
@@ -178,11 +180,16 @@ def pytest_configure(config):
                         response.raise_for_status()
                         file = BytesIO(response.content)
                         del response
-                        requests.post('http://saucelabs.com/rest/v1/storage/'
-                                      + sauce_username + '/' + test_suite_data.apk_name + '?overwrite=true',
-                                      auth=(sauce_username, sauce_access_key),
-                                      data=file,
-                                      headers={'Content-Type': 'application/octet-stream'})
+                        for _ in range(3):
+                            try:
+                                requests.post('http://saucelabs.com/rest/v1/storage/'
+                                              + sauce_username + '/' + test_suite_data.apk_name + '?overwrite=true',
+                                              auth=(sauce_username, sauce_access_key),
+                                              data=file,
+                                              headers={'Content-Type': 'application/octet-stream'})
+                                break
+                            except ConnectionError:
+                                time.sleep(3)
                     else:
                         sauce.storage.upload_file(config.getoption('apk'))
 
