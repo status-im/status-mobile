@@ -189,6 +189,7 @@ class TestrailReport(BaseTestReport):
                     error = "%s %s" % (code_error, test_rail_xfail)
                 else:
                     error = full_error
+                error = error.replace("[[", "**").replace("]]", "**")
                 comment += '%s' % ('# Error: \n %s \n' % emoji.demojize(error)) + devices + test_steps
             else:
                 comment += devices + test_steps
@@ -257,9 +258,9 @@ class TestrailReport(BaseTestReport):
                     (code_error, no_code_error_str, issue_id) = self.separate_xfail_error(full_error)
                     if issue_id:
                         test_rail_xfail = self.make_error_with_gh_issue_link(no_code_error_str, issue_id)
-                        error = "```%s```\n %s  \n" % (code_error, test_rail_xfail)
+                        error = "```%s```\n **%s**  \n" % (code_error, test_rail_xfail)
                     else:
-                        error = "```%s```\n" % full_error
+                        error = "```%s```\n **%s**  \n" % (code_error, no_code_error_str)
                     for job_id, f in last_testrun.jobs.items():
                         if last_testrun.first_commands:
                             job_url = self.get_sauce_job_url(job_id=job_id,
@@ -305,5 +306,5 @@ class TestrailReport(BaseTestReport):
 
     @staticmethod
     def make_error_with_gh_issue_link(error, issue_id):
-        return error.replace(issue_id, '[%s](https://github.com/status-im/status-react/issues/%s)' % (issue_id, issue_id[1:]))
-
+        return error.replace(issue_id,
+                             '[%s](https://github.com/status-im/status-react/issues/%s)' % (issue_id, issue_id[1:]))

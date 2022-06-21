@@ -130,11 +130,14 @@ class BaseTestReport:
     @staticmethod
     def separate_xfail_error(error):
         issue_id_list = re.findall(r'#\d+', error)
-        main_error, no_code_error_str, issue_id = error, '', ''
-        if issue_id_list:
-            issue_id = issue_id_list[0]
-            xfail_error = re.findall(r'\[\[.*\]\]', error)
-            if xfail_error:
-                no_code_error_str = xfail_error[0]
-                main_error = error.replace(no_code_error_str, '')
-        return (main_error, no_code_error_str, issue_id)
+        issue_id = issue_id_list[0] if issue_id_list else ''
+
+        xfail_error = re.findall(r'\[\[.*\]\]', error)
+        if xfail_error:
+            no_code_error_str = xfail_error[0]
+            main_error = error.replace(no_code_error_str, '')
+        else:
+            no_code_error_str = ''
+            main_error = error
+
+        return main_error, no_code_error_str, issue_id
