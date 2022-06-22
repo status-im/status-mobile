@@ -179,6 +179,8 @@
                      :accessibility-label :notifications-unread-badge}]])]))
 
 (defn home []
+  [:f>
+   (fn []
   [react/keyboard-avoiding-view {:style {:flex 1}
                                  :ignore-offset true}
    [topbar/topbar {:title           (i18n/label :t/chat)
@@ -188,4 +190,4 @@
                                      [notifications-button]]}]
    [chats-list]
    [plus-button]
-   [tabbar/tabs-counts-subscriptions]])
+   [tabbar/tabs-counts-subscriptions]])])
