@@ -6,6 +6,7 @@ from tests.users import user_mainnet, chat_users, recovery_users, transaction_se
     wallet_users, ens_user_ropsten, ens_user
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
+import support.api.web3_api as w3
 
 
 @marks.medium
@@ -1041,6 +1042,56 @@ class TestChatManagement(SingleDeviceTestCase):
             profile.delete_my_profile_password_input.set_value(unique_password)
             profile.delete_profile_button.click()
             profile.ok_button.click()
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702167)
+    def test_ens_dapp_purchase(self):
+        sign_in = SignInView(self.driver)
+        self.home = sign_in.create_user()
+        self.ens_name = 'purchased%s' % self.home.get_random_chat_name()
+        self.wallet = self.home.wallet_button.click()
+        self.address = self.wallet.get_wallet_address()
+        self.chat_key = self.home.get_public_key_and_username()
+        w3.donate_testnet_eth(self.address, amount=0.1, inscrease_default_gas_price=10)
+        self.home.wallet_button.click()
+        self.wallet.wait_balance_is_changed()
+        w3.donate_testnet_token('STT', address=self.address, amount=10, inscrease_default_gas_price=10)
+        self.wallet.wait_balance_is_changed('STT', scan_tokens=True)
+
+        self.profile = self.home.profile_button.click()
+        self.profile.ens_usernames_button.wait_and_click()
+        self.dapp = self.home.get_dapp_view()
+        self.dapp.get_started_ens.click()
+        self.dapp.ens_name_input.set_value(self.ens_name)
+        self.dapp.check_ens_name.click_until_presence_of_element(self.dapp.register_ens_button)
+        self.dapp.agree_on_terms_ens.scroll_and_click()
+        if not self.dapp.element_by_text(self.chat_key).is_element_displayed():
+            self.error.append("No chat key for user is shown when register requested chat key")
+        self.dapp.register_ens_button.click()
+        self.send_tx = self.home.get_send_transaction_view()
+        self.send_tx.sign_transaction()
+        if not self.dapp.element_by_text('Nice! You own %s.stateofus.eth once the transaction is complete.' % self.ens_name).is_element_displayed(60):
+            self.error.append("ENS name %s is not purchasing" % self.ens_name)
+        self.dapp.ens_got_it.click()
+        if self.dapp.registration_in_progress.is_element_displayed(10):
+            self.dapp.registration_in_progress.wait_for_invisibility_of_element(300)
+        self.dapp.element_by_text(self.ens_name).click()
+        for text in ("10 SNT, deposit unlocked", self.chat_key, self.address.lower()):
+            if not self.dapp.element_by_text(text).is_element_displayed(10):
+                self.errors.append("%s is not displayed after ENS purchasing" % text)
+
+        if not w3.get_address_from_ens(self.ens_name) == self.address:
+            self.errors.append("ENS name %s is not resolved to correct address %s" % (self.ens_name, self.address))
+
+        self.wallet.just_fyi("Send leftovers")
+        self.wallet.wallet_button.click()
+        send_transaction = self.wallet.send_transaction_from_main_screen.click()
+        send_transaction.set_max_button.click()
+        send_transaction.confirm()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.set_recipient_address(w3.ACCOUNT_ADDRESS)
+        send_transaction.sign_transaction_button.click()
+        send_transaction.sign_transaction()
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6300)

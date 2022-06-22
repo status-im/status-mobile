@@ -482,6 +482,10 @@ class BaseView(object):
         from views.web_views.status_test_dapp import StatusTestDAppView
         return StatusTestDAppView(self.driver)
 
+    def get_dapp_view(self):
+        from views.dapps_view import DappsView
+        return DappsView(self.driver)
+
     def get_home_view(self):
         from views.home_view import HomeView
         return HomeView(self.driver)

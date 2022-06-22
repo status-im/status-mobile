@@ -1,5 +1,8 @@
+import pprint
+
 from eth_utils import to_checksum_address, is_address
 from web3.auto.infura.ropsten import w3
+from ens import ENS
 
 
 token_data = {"STT": [{
@@ -7,6 +10,7 @@ token_data = {"STT": [{
                           "address": "0xc55cF4B03948D7EBc8b9E8BAD92643703811d162"}]}
 
 ACCOUNT_PRIVATE_KEY = '0x5507f8c5c12707770c12fd0fae5d012b947d61f43b9203ae67916e703fd12ad7'
+ACCOUNT_ADDRESS = '0xE2363E6e91d1a29d82C2c695fa8fa2e3Fa5d55eA'
 
 
 class Account(object):
@@ -73,8 +77,10 @@ def balance_of_address(address):
     else:
         return w3.eth.getBalance(to_checksum_address(address))
 
+
 def transaction_status(hash):
     return w3.eth.getTransaction(hash)
+
 
 def get_tx_param_by_hash(hash: str, param: str):
     return getattr(w3.eth.getTransaction(hash), param)
@@ -95,6 +101,12 @@ def sign_transaction(tx_data, pk):
 def broadcast_signed_tx(signed_txn):
     w3.eth.sendRawTransaction(signed_txn.rawTransaction)
     return w3.toHex(w3.sha3(signed_txn.rawTransaction))
+
+
+def get_address_from_ens(ens_name, is_stateofus=True):
+    ns = ENS.fromWeb3(w3)
+    eth_address = ns.address('%s.stateofus.eth' % ens_name) if is_stateofus is True else ns.address(ens_name)
+    return eth_address if eth_address else None
 
 
 account = Account(ACCOUNT_PRIVATE_KEY)
