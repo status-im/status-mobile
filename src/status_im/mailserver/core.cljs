@@ -189,26 +189,18 @@
       :on-accept #(re-frame/dispatch [:mailserver.ui/retry-request-pressed])
       :confirm-button-text (i18n/label :t/mailserver-request-retry)}}))
 
-(def enode-address-regex
-  #"enode://[a-zA-Z0-9]+\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
 (def enode-url-regex
-  #"enode://[a-zA-Z0-9]+:(.+)\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
-
-(defn- extract-address-components [address]
-  (rest (re-matches #"enode://(.*)@(.*)" address)))
+  #"enode://[a-zA-Z0-9]+\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")
 
 (defn- extract-url-components [address]
-  (rest (re-matches #"enode://(.*?):(.*)@(.*)" address)))
+  (rest (re-matches #"enode://(.*)@(.*)" address)))
 
 (defn valid-enode-url? [address]
   (re-matches enode-url-regex address))
 
-(defn valid-enode-address? [address]
-  (re-matches enode-address-regex address))
-
-(defn build-url [address password]
-  (let [[initial host] (extract-address-components address)]
-    (str "enode://" initial ":" password "@" host)))
+(defn build-url [address]
+  (let [[initial host] (extract-url-components address)]
+    (str "enode://" initial "@" host)))
 
 (fx/defn set-input
   {:events [:mailserver.ui/input-changed]}
@@ -225,12 +217,11 @@
                   :url  (not (valid-enode-url? value)))})})
 
 (defn- address->mailserver [address]
-  (let [[enode password url :as response] (extract-url-components address)]
-    (cond-> {:address      (if (seq response)
-                             (str "enode://" enode "@" url)
-                             address)
-             :custom true}
-      password (assoc :password password))))
+  (let [[enode url :as response] (extract-url-components address)]
+    {:address (if (seq response)
+                (str "enode://" enode "@" url)
+                address)
+     :custom true}))
 
 (defn- build [id mailserver-name address]
   (assoc (address->mailserver address)
@@ -242,8 +233,8 @@
 (fx/defn edit
   {:events [:mailserver.ui/custom-mailserver-selected]}
   [{:keys [db] :as cofx} id]
-  (let [{:keys [id address password name]} (fetch db id)
-        url (when address (build-url address password))]
+  (let [{:keys [id address name]} (fetch db id)
+        url (when address (build-url address))]
     (fx/merge cofx
               (set-input :id id)
               (set-input :url (str url))
