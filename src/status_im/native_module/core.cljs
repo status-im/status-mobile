@@ -27,6 +27,11 @@
   (log/debug "[native-module] open-accounts")
   (.openAccounts ^js (status) #(callback (types/json->clj %))))
 
+(defn draw-identity-image-ring [draw-ring-params callback]
+  (log/debug "[native-module] draw-identity-image-ring")
+  (let [draw-ring-params-json (status-im.utils.types/clj->json draw-ring-params)]
+    (.drawIdentityImageRing ^js (status) draw-ring-params-json #(callback (types/json->clj %)))))
+
 (defn prepare-dir-and-update-config
   [key-uid config callback]
   (log/debug "[native-module] prepare-dir-and-update-config")

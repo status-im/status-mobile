@@ -594,6 +594,16 @@ RCT_EXPORT_METHOD(openAccounts:(RCTResponseSenderBlock)callback) {
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// drawIdentityImageRing
+RCT_EXPORT_METHOD(drawIdentityImageRing:(NSString *)drawRingParamsJson
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"DrawIdentityImageRing() method called");
+#endif
+    NSString *result = StatusgoDrawIdentityImageRing(drawRingParamsJson);
+    callback(@[result]);
+}
+
 //////////////////////////////////////////////////////////////////// verityAccountPassword
 RCT_EXPORT_METHOD(verify:(NSString *)address
                   password:(NSString *)password

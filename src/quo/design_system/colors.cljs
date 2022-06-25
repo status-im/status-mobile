@@ -191,6 +191,12 @@
 
 (def theme-type (reagent/atom :light))
 
+(defn current-theme []
+  (let [theme-type @theme-type]
+    (case theme-type
+      :light 1
+      :dark 2)))
+
 (defn dark? []
   (= :dark @theme-type))
 

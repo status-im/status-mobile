@@ -15,4 +15,9 @@
 (defn base64-jpeg? [photo-path]
   (string/starts-with? photo-path "data:image/jpeg;base64,"))
 
+(defn draw-ring? [photo-path]
+  (and (string/starts-with? photo-path "http")
+       (or (string/includes? photo-path "messages/drawRing")
+           (string/includes? photo-path "messages/identicons"))))
+
 (spec/def :profile/name correct-name?)

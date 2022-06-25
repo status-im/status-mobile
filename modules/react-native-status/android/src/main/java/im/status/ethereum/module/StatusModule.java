@@ -528,6 +528,21 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    private void drawIdentityImageRing(final String drawRingParamsJson, final Callback callback) {
+        Log.d(TAG, "drawIdentityImageRing");
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String result = Statusgo.drawIdentityImageRing(drawRingParamsJson);
+                callback.invoke(result);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void verify(final String address, final String password, final Callback callback) {
         Log.d(TAG, "verify");
         if (!checkAvailability()) {

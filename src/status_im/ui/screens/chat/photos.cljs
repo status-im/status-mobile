@@ -10,8 +10,10 @@
 
 (def memo-photo-rend
   (memoize
-   (fn [photo-path size accessibility-label _]
-     (let [identicon? (when photo-path (profile.db/base64-png? photo-path))]
+   (fn [photo-path size accessibility-label theme]
+     (let [identicon? (when photo-path (profile.db/base64-png? photo-path))
+           draw-ring? (profile.db/draw-ring? photo-path)
+           photo-path (if draw-ring? (str photo-path "&theme=" theme) photo-path)]
        [react/view {:style (style/photo-container size)}
         [fast-image/fast-image {:source              (utils.image/source photo-path)
                                 :style               (style/photo size)
@@ -21,7 +23,7 @@
 
 ;; "(colors/dark?)" is passed to memoized function to avoid previous themes cache
 (defn photo [photo-path {:keys [size accessibility-label]}]
-  [memo-photo-rend photo-path size accessibility-label (colors/dark?)])
+  [memo-photo-rend photo-path size accessibility-label (colors/current-theme)])
 
 ;; We optionally pass identicon for perfomance reason, so it does not have to be calculated for each message
 (defn member-photo [pub-key identicon]

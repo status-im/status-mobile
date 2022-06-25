@@ -1,9 +1,9 @@
 {
     "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
-    "owner": "status-im",
+    "owner": "qfrank",
     "repo": "status-go",
-    "version": "v0.102.2",
-    "commit-sha1": "22669d0423bc792e650150b01568870699ff1d25",
-    "src-sha256": "1lbk6df46p2zdjbffpyk0l21nqm0qv9c9zs3p4d16sii0b5d7syv"
+    "version": "feature/13334",
+    "commit-sha1": "1e826088ff42e7f40c7b5d6d4a3a8c770d21824d",
+    "src-sha256": "0bpsya0v907czwlk7mlm29l47gzrjhw5sqmxkiddhd6k6bx6sgsb"
 }
