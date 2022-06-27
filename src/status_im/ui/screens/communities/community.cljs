@@ -24,7 +24,7 @@
             [status-im.ui.components.accordion :as accordion]
             [status-im.ui.screens.communities.styles :as styles]))
 
-(def request-cooldown-ms (* 60 1000))
+(def request-cooldown-ms (* 24 60 60 1000))
 
 (defn can-request-access-again? [requested-at]
   (> (datetime/timestamp) (+ (* requested-at 1000) request-cooldown-ms)))
