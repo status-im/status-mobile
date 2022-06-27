@@ -824,7 +824,7 @@
     "mailserver-details": "Status node details",
     "mailserver-error-content": "The Status node you selected couldn't be reached.",
     "mailserver-error-title": "Error connecting to Status node",
-    "mailserver-format": "enode://{enode-id}:{password}@{ip-address}:{port}",
+    "mailserver-format": "enode://{enode-id}@{ip-address}:{port}",
     "mailserver-pick-another": "Pick another Status node",
     "mailserver-reconnect": "Could not connect to Status node. Tap to reconnect",
     "mailserver-request-error-content": "The following error was returned by the Status node: {{error}}",
