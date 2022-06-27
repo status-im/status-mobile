@@ -16,7 +16,7 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.home_1, self.home_2 = self.device_1.create_user(), self.device_2.create_user(enable_notifications=True)
+        self.home_1, self.home_2 = self.device_1.create_user(enable_notifications=True), self.device_2.create_user(enable_notifications=True)
         self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
         self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
         [home.home_button.click() for home in (self.home_1, self.home_2)]
@@ -198,6 +198,68 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
                 self.errors.append(
                     "Message in {} chat has not been fetched automatically".format(chat.user_name_text.text))
             chat_view.back_button.click()
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702367)
+    def test_chat_push_on_mute_unmute_contact(self):
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        chat_1 = self.home_1.get_chat(self.default_username_2).click()
+        chat_2 = self.home_2.get_chat(self.default_username_1).click()
+
+        self.home_1.just_fyi('Mute a contact and verify notifications are not received from muted contact')
+        chat_1.chat_options.click()
+        chat_1.view_profile_button.click()
+        chat_1.profile_mute_contact.scroll_and_click()
+        chat_1.close_button.click()
+        chat_1.put_app_to_background()
+
+        self.home_2.just_fyi('Muted contact sends a message')
+        message_after_mute = 'message after mute'
+        chat_2.send_message(message_after_mute)
+
+        self.device_1.open_notification_bar()
+        if self.device_1.element_by_text(message_after_mute).is_element_displayed(15):
+            self.errors.append("Push notification is received from muted contact")
+        # self.device_1.click_system_back_button()
+        self.device_1.get_app_from_background()
+
+        chat_1.just_fyi('Verify that message from muted user is actually received')
+        if not chat_1.chat_element_by_text(message_after_mute).is_element_displayed():
+            self.errors.append("Message from muted contact hasn't been received")
+
+        self.home_1.just_fyi('Unmute contact and verify that notifications are received after unmute')
+        chat_1.chat_options.click()
+        chat_1.view_profile_button.click()
+        chat_1.profile_unmute_contact.scroll_and_click()
+        chat_1.close_button.click()
+        chat_1.put_app_to_background()
+
+        self.home_2.just_fyi('Unmuted contact sends a message')
+        message_after_unmute = 'message after unmute'
+        chat_2.send_message(message_after_unmute)
+
+        self.device_1.open_notification_bar()
+        if not self.device_1.element_by_text(message_after_unmute).is_element_displayed(15):
+            self.errors.append("Push notification is not received from unmuted contact")
+        # self.device_1.click_system_back_button()
+        self.device_1.get_app_from_background()
+
+        chat_1.just_fyi('Verify that message from unmuted user is actually received')
+        if not chat_1.chat_element_by_text(message_after_unmute).is_element_displayed():
+            self.errors.append("Message from unmuted contact hasn't been received")
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702368)
+    def test_chat_reopen_app_on_last_viewed_chat(self):
+        self.home_2.home_button.double_click()
+        chat_2 = self.home_2.add_contact(self.public_key_1)
+        self.home_2.reopen_app()
+        if not chat_2.chat_message_input.is_element_displayed():
+            self.errors.append('last viewed chat is not opened after app reopening')
+        if not chat_2.element_by_text(self.default_username_1).is_element_displayed():
+            self.errors.append('wrong chat is opened after app reopening')
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702283)

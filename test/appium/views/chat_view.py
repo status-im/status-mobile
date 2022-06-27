@@ -113,7 +113,6 @@ class ProfileBlockContactButton(Button):
         self.scroll_to_element()
         self.wait_for_element().click()
 
-
 class ChatElementByText(Text):
     def __init__(self, driver, text):
         self.message_text = text
@@ -669,6 +668,8 @@ class ChatView(BaseView):
         self.profile_block_contact = ProfileBlockContactButton(self.driver)
         self.confirm_block_contact_button = Button(self.driver, accessibility_id="block-contact-confirm")
         self.unblock_contact_button = UnblockContactButton(self.driver)
+        self.profile_mute_contact = Button(self.driver, accessibility_id="Mute-item-button")
+        self.profile_unmute_contact = Button(self.driver, accessibility_id="Unmute-item-button")
         self.profile_add_to_contacts = Button(self.driver, accessibility_id="Add to contacts-item-button")
         self.profile_details = Button(self.driver, accessibility_id="share-button")
         self.profile_nickname = Text(self.driver,

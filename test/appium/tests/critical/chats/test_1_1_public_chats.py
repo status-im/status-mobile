@@ -825,6 +825,14 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
                 self.errors.append(
                     "'%s' from blocked user is fetched from offline in public chat" % message)
 
+        self.home_1.just_fyi('Verify input field is disabled in 1-1 chat with blocked user')
+        self.home_1.home_button.double_click()
+        chat_1_1 = self.home_1.add_contact(self.public_key_2, add_in_contacts=False)
+        if chat_1_1.chat_message_input.is_element_displayed():
+            self.errors.append("Chat input field is displayed in chat with blocked user")
+        self.home_1.home_button.double_click()
+        self.home_1.get_chat("#%s" % self.pub_chat_name).click()
+
         self.chat_2.just_fyi('Unblock user and check that can see further messages')
         profile_1 = self.home_1.get_profile_view()
         self.chat_1.profile_button.double_click()
