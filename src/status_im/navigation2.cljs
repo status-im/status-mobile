@@ -12,8 +12,9 @@
   [_]
   (swap! config/new-ui-enabled? not)
   (reloader/reload)
-  {:dispatch [:init-root (if @config/new-ui-enabled? :home-stack :chat-stack)]
-   ::async-storage/set! {:new-ui-enabled? @config/new-ui-enabled?}})
+  {:new-ui/reset-bottom-tabs nil
+   :dispatch                 [:init-root (if @config/new-ui-enabled? :home-stack :chat-stack)]
+   ::async-storage/set!      {:new-ui-enabled? @config/new-ui-enabled?}})
 
 (fx/defn init-root-nav2
   {:events [:init-root-nav2]}

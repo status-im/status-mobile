@@ -28,7 +28,5 @@
                     :num-columns               2
                     :key-fn                    str}]]))
 
-(defn container [view-id switcher-screen-radius toggle-switcher-screen]
-  [rn/view {:style (styles/switcher-screen-container
-                    view-id switcher-screen-radius)}
-   [switch-screen toggle-switcher-screen]])
+(defn tabs [toggle-switcher-screen]
+  [switch-screen toggle-switcher-screen])

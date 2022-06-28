@@ -1,47 +1,46 @@
 (ns status-im.switcher.styles
   (:require [quo.theme :as theme]
             [quo2.foundations.colors :as colors]
-            [status-im.switcher.constants :as constants]
-            [status-im.switcher.animation :as animation]))
+            [status-im.switcher.constants :as constants]))
 
 (def themes
   {:light {:bottom-tabs-bg-color           colors/neutral-80
            :bottom-tabs-on-scroll-bg-color colors/neutral-80-opa-80
            :bottom-tabs-non-selected-tab   colors/neutral-50
-           :bottom-tabs-selected-tab       colors/white}
+           :bottom-tabs-selected-tab       colors/white
+           :switcher-close-button-bg-color colors/white}
    :dark  {:bottom-tabs-bg-color           colors/neutral-80
-           :bottom-tabs-on-scroll-bg-color colors/neutral-80-opa-60
-           :bottom-tabs-non-selected-tab   colors/neutral-40
-           :bottom-tabs-selected-tab       colors/white}})
+           :bottom-tabs-on-scroll-bg-color colors/neutral-80-opa-80
+           :bottom-tabs-non-selected-tab   colors/neutral-50
+           :bottom-tabs-selected-tab       colors/white
+           :switcher-close-button-bg-color colors/white}})
 
 (defn get-color [key]
   (get-in themes [(theme/get-theme) key]))
 
 ;; Bottom Tabs
 (defn bottom-tab-icon [tab-state]
-  {:width  20
-   :height 20
+  {:width  24
+   :height 24
    :color  (get-color tab-state)})
 
-(defn bottom-tabs []
-  {:background-color (get-color :bottom-tabs-bg-color)
-   :flex-direction   :row
-   :flex             1
-   :align-items      :center
-   :justify-content  :space-around
-   :height           (constants/bottom-tabs-height)
-   :position         :absolute
-   :bottom           -1
-   :right            0
-   :left             0
-   :opacity          animation/bottom-tabs-opacity
-   :transform        [{:translateY animation/bottom-tabs-position}]})
+(defn bottom-tabs [icons-only?]
+  {:background-color   (if icons-only? nil (get-color :bottom-tabs-bg-color))
+   :flex-direction     :row
+   :flex               1
+   :justify-content    :space-between
+   :height             (constants/bottom-tabs-height)
+   :position           :absolute
+   :bottom             -1
+   :right              0
+   :left               0
+   :padding-horizontal 16})
 
 ;; Switcher
-(defn switcher-button [opacity]
+(defn switcher-button []
   {:width      constants/switcher-button-size
    :height     constants/switcher-button-size
-   :opacity    opacity})
+   :z-index    2})
 
 (defn merge-switcher-button-common-styles [style]
   (merge
@@ -49,8 +48,7 @@
     :height          constants/switcher-button-size
     :border-radius   constants/switcher-button-radius
     :position        :absolute
-    :bottom          0
-    :z-index         3
+    :z-index         2
     :align-items     :center
     :align-self      :center
     :justify-content :center}
@@ -58,39 +56,26 @@
 
 (defn switcher-button-touchable [view-id]
   (merge-switcher-button-common-styles
-   {:align-self :center
-    :bottom     (constants/switcher-bottom-position view-id)}))
+   {:bottom (constants/switcher-bottom-position view-id)}))
 
-(defn switcher-close-button-background [opacity]
+(defn switcher-close-button []
   (merge-switcher-button-common-styles
-   {:background-color colors/switcher-background
-    :opacity          opacity}))
+   {:backgroundColor (get-color :switcher-close-button-bg-color)}))
 
-(defn switcher-close-button-icon [opacity]
-  (merge-switcher-button-common-styles
-   {:opacity          opacity}))
+(defn switcher-screen []
+  (dissoc
+   (merge-switcher-button-common-styles
+    {:background-color colors/switcher-background-opa-80
+     :z-index          1
+     :overflow         :hidden})
+   :justify-content))
 
-(defn switcher-screen [view-id radius]
-  (let [bottom (- (constants/switcher-center-position view-id) radius)
-        size   (* 2 radius)]
-    (merge-switcher-button-common-styles
-     {:background-color colors/switcher-background-opa-80
-      :bottom           bottom
-      :border-radius    1000
-      :width            size
-      :overflow         :hidden
-      :height           size})))
-
-(defn switcher-screen-container [view-id radius]
-  (let [radius                 radius
-        bottom                 (- radius (constants/switcher-center-position view-id))
-        {:keys [width height]} (constants/dimensions)]
-    {:position         :absolute
-     :align-self       :center
-     :bottom           bottom
-     :width            width
-     :height           (- height 25)
-     :align-items      :center}))
+(defn switcher-screen-container []
+  (let [{:keys [width height]} (constants/dimensions)]
+    {:width            width
+     :height           (+ height constants/switcher-container-height-padding)
+     :align-items      :center
+     :position         :absolute}))
 
 (defn switcher-switch-screen []
   {:margin-top  40

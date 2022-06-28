@@ -16,6 +16,7 @@
     (fx/merge cofx
               {:init-root-fx                         :progress
                :chat.ui/clear-inputs                 nil
+               :new-ui/reset-bottom-tabs             nil
                :hide-popover                         nil
                ::logout                              nil
                ::multiaccounts/webview-debug-changed false

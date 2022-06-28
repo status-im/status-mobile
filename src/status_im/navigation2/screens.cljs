@@ -1,6 +1,6 @@
 (ns status-im.navigation2.screens
   (:require [status-im.ui.screens.chat.views :as chat]
-            [status-im.navigation2.home-stack :as home-stack]
+            [status-im.switcher.home-stack :as home-stack]
             [status-im.navigation2.stack-with-switcher :as stack-with-switcher]))
 
 ;; We have to use the home screen name :chat-stack for now, for compatibility with navigation.cljs

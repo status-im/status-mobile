@@ -1,47 +1,65 @@
 (ns status-im.switcher.animation
-  (:require [quo.react-native :as rn]
-            [reagent.core :as reagent]
-            [status-im.switcher.constants :as constants]
-            [status-im.ui.components.animation :as anim]))
+  (:require [quo2.reanimated :as reanimated]
+            [status-im.switcher.constants :as constants]))
 
-(def bottom-tabs-opacity (anim/create-value 1))
-(def bottom-tabs-position (anim/create-value 0))
+;;;; Switcher Animations
 
-;; TODO(parvesh): Use 300, after using dispatch-later for opening card(otherwise pending animation issue)
-;; or OnAnimationEnd
-(def layout-animation #js {:duration 250
-                           :create   #js {:type     (:ease-in-ease-out rn/layout-animation-types)
-                                          :property (:scale-xy rn/layout-animation-properties)}
-                           :update   #js {:type     (:ease-in-ease-out rn/layout-animation-types)
-                                          :property (:scale-xy rn/layout-animation-properties)}
-                           :delete   #js {:type     (:ease-in-ease-out rn/layout-animation-types)
-                                          :property (:scale-xy rn/layout-animation-properties)}})
+;; Component Animations
+(defn switcher-touchable-on-press-in
+  [touchable-scale]
+  (reanimated/animate-shared-value-with-timing touchable-scale constants/switcher-pressed-scale 300 :easing1))
 
-(defn animate-layout [show? anim-values]
-  (let [{:keys [width height]} (constants/dimensions)
-        target-radius          (- (max width height)
-                                  constants/switcher-button-radius)]
-    (rn/configure-next layout-animation)
-    (reset! (:switcher-screen-radius anim-values) (if show? target-radius 1))
-    (reagent/flush)))
+(defn switcher-touchable-on-press-out [switcher-opened? view-id shared-values]
+  (let [{:keys [width height]}       (constants/dimensions)
+        switcher-bottom-position     (constants/switcher-pressed-bottom-position view-id)
+        switcher-target-radius       (Math/hypot
+                                      (/ width 2)
+                                      (- height constants/switcher-pressed-radius switcher-bottom-position))
+        switcher-size                (* 2 switcher-target-radius)]
+    (reanimated/animate-shared-value-with-timing (:button-touchable-scale shared-values) 1 300 :easing1)
+    (if @switcher-opened?
+      (do
+        (reanimated/animate-shared-value-with-timing (:switcher-button-opacity shared-values) 1 300 :easing1)
+        (reanimated/animate-shared-value-with-timing (:switcher-screen-size shared-values) constants/switcher-pressed-size 300 :linear)
+        (reanimated/animate-shared-value-with-timing (:switcher-container-scale shared-values) 0.9 300 :linear))
+      (do
+        (reanimated/animate-shared-value-with-timing (:switcher-button-opacity shared-values) 0 300 :easing1)
+        (reanimated/animate-shared-value-with-timing (:switcher-screen-size shared-values) switcher-size 300 :linear)
+        (reanimated/animate-shared-value-with-timing (:switcher-container-scale shared-values) 1 300 :linear)))
+    (swap! switcher-opened? not)))
 
-(defn timing-animation [property toValue]
-  (anim/timing property {:toValue         toValue
-                         :duration        300
-                         :useNativeDriver true}))
+;; Derived Values
 
-(defn animate-components [show? view-id anim-values]
-  (anim/start
-   (anim/parallel
-    (into
-     [(timing-animation (:switcher-button-opacity anim-values) (if show? 0 1))
-      (timing-animation (:switcher-close-button-icon-opacity anim-values) (if show? 1 0))
-      (timing-animation (:switcher-close-button-background-opacity anim-values) (if show? 0.2 0))]
-     (when (= view-id :home-stack)
-       [(timing-animation bottom-tabs-opacity (if show? 0 1))
-        (timing-animation bottom-tabs-position (if show? (constants/bottom-tabs-height) 0))])))))
+(defn switcher-close-button-opacity [switcher-button-opacity]
+  (.switcherCloseButtonOpacity ^js reanimated/worklet-factory switcher-button-opacity))
 
-(defn animate [show? view-id anim-values]
-  (reagent/flush)
-  (animate-layout show? anim-values)
-  (animate-components show? view-id anim-values))
+(defn switcher-screen-radius [switcher-screen-size]
+  (.switcherScreenRadius ^js reanimated/worklet-factory switcher-screen-size))
+
+(defn switcher-screen-bottom-position [switcher-screen-radius view-id]
+  (.switcherScreenBottomPosition ^js reanimated/worklet-factory
+                                 switcher-screen-radius
+                                 constants/switcher-pressed-radius
+                                 (constants/switcher-pressed-bottom-position view-id)))
+
+(defn switcher-container-bottom-position [switcher-screen-bottom]
+  (.switcherContainerBottomPosition ^js reanimated/worklet-factory
+                                    switcher-screen-bottom
+                                    (+ constants/switcher-container-height-padding
+                                       constants/switcher-height-offset)))
+
+
+;;;; Bottom Tabs & Home Stack Animations
+
+
+(defn bottom-tab-on-press [shared-values selected-stack-id]
+  (doseq [id constants/stacks-ids]
+    (let [selected-tab?              (= id selected-stack-id)
+          tab-opacity-shared-value   (get shared-values (get constants/tabs-opacity-keywords id))
+          stack-opacity-shared-value (get shared-values (get constants/stacks-opacity-keywords id))
+          stack-pointer-shared-value (get shared-values (get constants/stacks-pointer-keywords id))]
+      (reanimated/animate-shared-value-with-timing tab-opacity-shared-value (if selected-tab? 1 0) 300 :easing3)
+      (reanimated/set-shared-value stack-pointer-shared-value (if selected-tab? "auto" "none"))
+      (if selected-tab?
+        (reanimated/animate-shared-value-with-delay stack-opacity-shared-value 1 300 :easing3 150)
+        (reanimated/animate-shared-value-with-timing stack-opacity-shared-value 0 300 :easing3)))))

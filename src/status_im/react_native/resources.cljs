@@ -46,7 +46,8 @@
    :collectible        (js/require "../resources/images/ui/collectible.png")
    :collectible-dark   (js/require "../resources/images/ui/collectible-dark.png")
    :hand-wave          (js/require "../resources/images/ui/hand-wave.png")
-   :graph              (js/require "../resources/images/ui/graph.png")})
+   :graph              (js/require "../resources/images/ui/graph.png")
+   :switcher           (js/require "../resources/images/ui/switcher.png")})
 
 (defn get-theme-image [k]
   (get ui (when (colors/dark?) (keyword (str (name k) "-dark"))) (get ui k)))

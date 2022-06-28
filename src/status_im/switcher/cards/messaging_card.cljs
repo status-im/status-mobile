@@ -6,8 +6,10 @@
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.switcher.cards.styles :as styles]))
 
+;; TODO - Add switcher close animation (fade) while opening screen from cards
+;; currently dealy is added to avoid default circular animation
 (defn on-press [id toggle-switcher-screen]
-  (toggle-switcher-screen)
+  (js/setTimeout toggle-switcher-screen 100)
   (>evt [:chat.ui/navigate-to-chat-nav2 id true]))
 
 ;; TODO - add last message for other content types

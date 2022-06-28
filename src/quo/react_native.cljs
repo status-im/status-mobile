@@ -74,9 +74,6 @@
 (def animated-view
   (reagent/adapt-react-class (.-View ^js animated)))
 
-(def animated-image-view
-  (reagent/adapt-react-class (.-Image ^js animated)))
-
 (def ui-manager  (.-UIManager ^js rn))
 
 (def layout-animation (.-LayoutAnimation ^js rn))
