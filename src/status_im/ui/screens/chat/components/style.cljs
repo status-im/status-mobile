@@ -19,7 +19,7 @@
    :border-top-right-radius    (if contact-request 8 16)
    :border-bottom-right-radius (if contact-request 8 4)
    :border-bottom-left-radius  (if contact-request 8 16)
-   :margin-horizontal          (when contact-request 8)})
+   :margin-horizontal          8})
 
 (def input-row
   {:flex-direction :row
