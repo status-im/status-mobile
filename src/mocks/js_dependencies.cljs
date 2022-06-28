@@ -50,7 +50,6 @@
                                        :ValueXY                 (fn [])
                                        :View                    {}
                                        :FlatList                {}
-                                       :Image                   {}
                                        :ScrollView              {}
                                        :Text                    {}}
             :Easing                   {:bezier (fn [])
@@ -152,46 +151,53 @@
 
 (def react-native-haptic-feedback #js {:default #js {:trigger nil}})
 
-(def react-native-reanimated #js {:default      #js {:createAnimatedComponent identity
-                                                     :eq                      nil
-                                                     :greaterOrEq             nil
-                                                     :greaterThan             nil
-                                                     :lessThan                nil
-                                                     :lessOrEq                nil
-                                                     :add                     nil
-                                                     :diff                    nil
-                                                     :divide                  nil
-                                                     :sub                     nil
-                                                     :multiply                nil
-                                                     :abs                     nil
-                                                     :min                     nil
-                                                     :max                     nil
-                                                     :neq                     nil
-                                                     :and                     nil
-                                                     :or                      nil
-                                                     :not                     nil
-                                                     :set                     nil
-                                                     :startClock              nil
-                                                     :stopClock               nil
-                                                     :Value                   nil
-                                                     :Clock                   nil
-                                                     :debug                   nil
-                                                     :log                     nil
-                                                     :event                   nil
-                                                     :cond                    nil
-                                                     :block                   nil
-                                                     :interpolateNode         nil
-                                                     :call                    nil
-                                                     :timing                  nil
-                                                     :onChange                nil
-                                                     :View                    #js {}
-                                                     :ScrollView              #js {}
-                                                     :Text                    #js {}
-                                                     :Extrapolate             #js {:CLAMP nil}
-                                                     :Code                    #js {}}
-                                  :EasingNode   #js {:bezier identity
-                                                     :linear identity}
-                                  :clockRunning nil})
+(def react-native-reanimated #js {:default                #js {:createAnimatedComponent identity
+                                                               :eq                      nil
+                                                               :greaterOrEq             nil
+                                                               :greaterThan             nil
+                                                               :lessThan                nil
+                                                               :lessOrEq                nil
+                                                               :add                     nil
+                                                               :diff                    nil
+                                                               :divide                  nil
+                                                               :sub                     nil
+                                                               :multiply                nil
+                                                               :abs                     nil
+                                                               :min                     nil
+                                                               :max                     nil
+                                                               :neq                     nil
+                                                               :and                     nil
+                                                               :or                      nil
+                                                               :not                     nil
+                                                               :set                     nil
+                                                               :startClock              nil
+                                                               :stopClock               nil
+                                                               :Value                   nil
+                                                               :Clock                   nil
+                                                               :debug                   nil
+                                                               :log                     nil
+                                                               :event                   nil
+                                                               :cond                    nil
+                                                               :block                   nil
+                                                               :interpolateNode         nil
+                                                               :call                    nil
+                                                               :timing                  nil
+                                                               :onChange                nil
+                                                               :View                    #js {}
+                                                               :Image                   #js {}
+                                                               :ScrollView              #js {}
+                                                               :Text                    #js {}
+                                                               :Extrapolate             #js {:CLAMP nil}
+                                                               :Code                    #js {}}
+                                  :EasingNode             #js {:bezier identity
+                                                               :linear identity}
+                                  :clockRunning nil
+                                  :useSharedValue         (fn [])
+                                  :useAnimatedStyle       (fn [])
+                                  :withTiming             (fn [])
+                                  :withDelay              (fn [])
+                                  :Easing                 #js {:bezier identity}
+                                  :Keyframe               (fn [])})
 (def react-native-gesture-handler #js {:default                  #js {}
                                        :State                    #js {:BEGAN        nil
                                                                       :ACTIVE       nil
@@ -256,6 +262,9 @@
                                                                   :proposal nil
                                                                   :updated nil}}})
 
+(def worklet-factory
+  #js {:applyAnimationsToStyle (fn [])})
+
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -299,6 +308,7 @@
     "react-native-share" react-native-share
     "@react-native-community/async-storage" async-storage
     "react-native-svg" react-native-svg
+    "../src/js/worklet_factory.js" worklet-factory
     "./fleets.js" default-fleets
     "./chats.js" default-chats
     "@walletconnect/client" wallet-connect-client

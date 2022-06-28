@@ -13,6 +13,7 @@
     "app:android": "react-native run-android"
   },
   "dependencies": {
+    "@babel/preset-typescript": "^7.17.12",
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/audio-toolkit": "git+https://github.com/tbenr/react-native-audio-toolkit.git#refs/tags/v2.0.3-status-v6",
     "@react-native-community/blur": "^3.6.0",
@@ -60,7 +61,7 @@
     "react-native-navigation": "^7.27.1",
     "react-native-permissions": "^2.1.5",
     "react-native-randombytes": "^3.6.1",
-    "react-native-reanimated": "^2.1.0",
+    "react-native-reanimated": "2.3.3",
     "react-native-redash": "^16.0.11",
     "react-native-safe-area-context": "^2.0.0",
     "react-native-shake": "^3.3.1",
@@ -75,12 +76,12 @@
     "web3-utils": "^1.2.1"
   },
   "devDependencies": {
-    "@mapbox/node-pre-gyp": "^1.0.9",
     "@babel/generator": "7.0.0",
     "@babel/helper-builder-react-jsx": "7.0.0",
     "@babel/plugin-transform-block-scoping": "7.0.0",
     "@babel/preset-env": "7.1.0",
     "@babel/register": "7.0.0",
+    "@mapbox/node-pre-gyp": "^1.0.9",
     "clj-kondo": "^2020.1.13",
     "coveralls": "^3.0.4",
     "jest": "^25.1.0",
