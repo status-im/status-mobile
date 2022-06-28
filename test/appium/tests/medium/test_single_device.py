@@ -1011,6 +1011,9 @@ class TestChatManagement(SingleDeviceTestCase):
 
         for user in users:
             usernames.append(user['username'])
+        profile = home.profile_button.click()
+        profile.element_by_text('20').wait_for_visibility_of_element(120)
+        home.home_button.double_click()
 
         home.just_fyi('Create group chat with max amount of users')
         chat = home.create_group_chat(usernames, 'some_group_chat')

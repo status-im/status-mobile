@@ -33,6 +33,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.home_2.add_contact(self.public_key_1, add_in_contacts=False)
 
     @marks.testrail_id(702284)
+    @marks.xfail(reason='flaky; sometimes can be errorred due to scroll of long timeline')
     def test_public_chat_timeline_different_statuses_reaction(self):
         emoji_message = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_message]

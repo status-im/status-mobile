@@ -45,6 +45,7 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
         self.home_1.notifications_unread_badge.wait_and_click(20)
         self.home_1.notifications_select_button.click()
         self.home_1.element_by_text_part(self.username_2[:10]).click()
+        self.home_1.element_by_text_part("Please add me to your contacts").click()
         self.home_1.element_by_text_part(self.group_chat_name_1).click()
         self.home_1.notifications_reject_and_delete_button.click()
         if self.home_1.element_by_text_part(self.username_2[:20]).is_element_displayed(2):
@@ -160,7 +161,7 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Device1 joins Group chat 3")
         group_chat_1 = self.home_1.get_chat(self.group_chat_name_3).click()
-        group_chat_1.join_chat_button.click()
+        group_chat_1.join_chat_button.click_if_shown()
         group_chat_1.home_button.double_click()
 
         self.home_2.just_fyi("Device2 mentions Device1 in Group chat 3")

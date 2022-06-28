@@ -17,11 +17,13 @@
 
 (defn contact-request-actions [request-id]
   [react/view {:flex-direction :row}
-   [animation/pressable {:on-press #(re-frame/dispatch [:contact-requests.ui/accept-request request-id])}
+   [animation/pressable {:on-press            #(re-frame/dispatch [:contact-requests.ui/accept-request request-id])
+                         :accessibility-label :accept-cr}
     [icons/icon :main-icons/checkmark-circle {:width 35
                                               :height 35
                                               :color colors/green}]]
-   [animation/pressable {:on-press #(re-frame/dispatch [:contact-requests.ui/decline-request request-id])}
+   [animation/pressable {:on-press            #(re-frame/dispatch [:contact-requests.ui/decline-request request-id])
+                         :accessibility-label :decline-cr}
     [icons/icon :main-icons/cancel {:width 35
                                     :height 35
                                     :container-style {:margin-left 16}

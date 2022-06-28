@@ -136,6 +136,22 @@ class ActivityCenterChatElement(SilentButton):
         except NoSuchElementException:
             return ''
 
+    def accept_contact_request(self):
+        try:
+            accept_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="accept-cr"]').find_element()
+        except NoSuchElementException:
+            return ''
+        if accept_element:
+            accept_element.click()
+
+    def decline_contact_request(self):
+        try:
+            decline_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="decline-cr"]').find_element()
+        except NoSuchElementException:
+            return ''
+        if decline_element:
+            decline_element.click()
+
 
 class PushNotificationElement(SilentButton):
     def __init__(self, driver, pn_text):
@@ -250,6 +266,17 @@ class HomeView(BaseView):
         self.driver.info("Looking for chat: '%s'" % chat_name)
         chat_element = ActivityCenterChatElement(self.driver, chat_name[:25])
         return chat_element
+
+    def handle_contact_request(self, username: str, accept=True):
+        self.notifications_unread_badge.wait_and_click()
+        chat_element = ActivityCenterChatElement(self.driver, username[:25])
+        if accept:
+            self.driver.info("Accepting contact request for %s" % username)
+            chat_element.accept_contact_request()
+            chat_element.click()
+        else:
+            self.driver.info("Rejecting contact request for %s" % username)
+            chat_element.decline_contact_request()
 
     def get_username_below_start_new_chat_button(self, username_part):
         return Text(self.driver,

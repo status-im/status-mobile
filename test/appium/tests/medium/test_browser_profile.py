@@ -61,28 +61,6 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(702179)
-    def test_browser_refresh_page(self):
-
-        dapp = self.home.dapp_tab_button.click()
-        url = 'app.uniswap.org'
-
-        dapp.just_fyi("Check refresh button")
-        web_page = dapp.open_url(url)
-        dapp.allow_button.click()
-        element_on_start_page = dapp.element_by_text('Select a token')
-        dapp.allow_button.click()
-        element_on_start_page.scroll_and_click()
-
-        # when bottom sheet is opened, elements by text couldn't be found
-        element_on_start_page.wait_for_invisibility_of_element(20)
-        web_page.browser_refresh_page_button.click()
-
-        if not element_on_start_page.is_element_displayed(30):
-            self.errors.append("Page failed to be refreshed")
-
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(702201)
     def test_browser_resolve_ipns_name(self):
         ipns_url = 'uniswap.eth'
@@ -94,13 +72,35 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.just_fyi('Opening url containing ipns name')
         dapp = self.home.dapp_tab_button.click()
         web_page = dapp.open_url(ipns_url)
-        if not dapp.allow_button.is_element_displayed(60):
-            self.home.driver.fail('No permission is asked for dapp, so IPNS name is not resolved')
-        dapp.allow_button.click()
+        element_on_start_page = dapp.element_by_text('Select a token')
+        if not element_on_start_page.is_element_displayed(60):
+            self.home.driver.fail('No start element is shown for dapp, so IPNS name is not resolved')
 
         # Switching back to ropsten
         web_page.profile_button.click()
         profile.switch_network('Ropsten with upstream RPC')
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702179)
+    def test_browser_refresh_page(self):
+
+        dapp = self.home.dapp_tab_button.click()
+        url = 'app.uniswap.org'
+
+        dapp.just_fyi("Check refresh button")
+        web_page = dapp.open_url(url)
+        dapp.allow_button.click_if_shown()
+        element_on_start_page = dapp.element_by_text('Select a token')
+        dapp.allow_button.click_if_shown()
+        element_on_start_page.scroll_and_click()
+
+        # when bottom sheet is opened, elements by text couldn't be found
+        element_on_start_page.wait_for_invisibility_of_element(20)
+        web_page.browser_refresh_page_button.click()
+
+        if not element_on_start_page.is_element_displayed(30):
+            self.errors.append("Page failed to be refreshed")
 
         self.errors.verify_no_errors()
 
@@ -227,8 +227,8 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
                 'username': basic_user['username'],
             },
             'pasting_ens_another_domain': {
-                'contact_code': ens_user['ens_another'],
-                'username': '@%s' % ens_user['ens_another'],
+                'contact_code': ens_user['ens'],
+                'username': '@%s' % ens_user['ens'],
                 'nickname': 'my_dear_friend'
             },
 
@@ -258,7 +258,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
                                        (key, users[key]['nickname']))
 
         self.home.just_fyi('Remove contact and check that it disappeared')
-        user_to_remove = '@%s' % ens_user['ens_another']
+        user_to_remove = '@%s' % ens_user['ens']
         profile.element_by_text(user_to_remove).click()
         chat.remove_from_contacts.click()
         chat.close_button.click()
@@ -269,7 +269,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
             'Relogin and open profile view of the contact removed from Contact list to ensure there is no crash')
         profile.profile_button.click()
         profile.relogin()
-        one_to_one_chat = self.home.add_contact(public_key=ens_user['ens_another'], add_in_contacts=False)
+        one_to_one_chat = self.home.add_contact(public_key=ens_user['ens'], add_in_contacts=False)
         one_to_one_chat.chat_options.click()
         profile = one_to_one_chat.view_profile_button.click()
         if profile.remove_from_contacts.is_element_displayed():
