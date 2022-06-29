@@ -144,7 +144,7 @@
       :color      colors/blue-persist
       :wallet     true
       :path       constants/path-default-wallet
-      :name       (i18n/label :t/ethereum-account)})
+      :name       (i18n/label :t/main-account)})
    (let [{:keys [public-key address name identicon]}
          (get-in multiaccount [:derived constants/path-whisper-keyword])]
      {:public-key public-key

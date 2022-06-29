@@ -1513,7 +1513,7 @@
     "once-enabled-share-metadata": "Once enabled, links posted in the chat may share your metadata with the site",
     "external-storage-denied": "Access to external storage is denied",
     "timeline": "Timeline",
-    "ethereum-account": "Ethereum account",
+    "main-account": "Main account",
     "ethereum-address":"Ethereum address",
     "default-assets": "Default ERC20 and ERC721",
     "increase-gas": "Increase Gas",
@@ -1753,5 +1753,8 @@
     "contact-request-accepted": "Accepted ✓",
     "contact-request-pending": "Pending...",
     "removed-from-contacts": "Removed from contacts",
-    "mutual-contact-requests": "Mutual contact requests"
+    "mutual-contact-requests": "Mutual contact requests",
+    "pending": "Pending",
+    "negative": "Negative",
+    "positive": "Positive"
 }
