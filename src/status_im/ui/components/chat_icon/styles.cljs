@@ -17,6 +17,18 @@
           :height        40
           :border-radius 20}))
 
+(defn default-community-icon-chat-list [color]
+  (merge (default-chat-icon color)
+         {:width         48
+          :height        48
+          :border-radius 48}))
+
+(defn default-token-icon-chat-list [color]
+  (merge (default-chat-icon color)
+         {:width         20
+          :height        20
+          :border-radius 20}))
+
 (defn default-chat-icon-chat-toolbar [color]
   (merge (default-chat-icon color)
          {:width         36
@@ -52,6 +64,18 @@
           :height 40
           :margin 0}))
 
+(def community-icon-chat-list
+  (merge chat-icon
+         {:width  48
+          :height 48
+          :margin 0}))
+
+(def token-icon-chat-list
+  (merge chat-icon
+         {:width  20
+          :height 20
+          :margin 0}))
+
 (def chat-icon-chat-toolbar
   (merge chat-icon
          {:width  36
@@ -73,6 +97,14 @@
 (def container-chat-list
   {:width  40
    :height 40})
+
+(def token-icon-container-chat-list
+  {:width  20
+   :height 20})
+
+(def community-icon-container-chat-list
+  {:width  48
+   :height 48})
 
 (defn container-list-size [size]
   {:width  size

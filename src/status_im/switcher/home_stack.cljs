@@ -1,12 +1,12 @@
 (ns status-im.switcher.home-stack
   (:require [quo2.reanimated :as reanimated]
-            [quo2.screens.main :as quo2.preview]
             [status-im.utils.platform :as platform]
             [status-im.switcher.switcher :as switcher]
             [status-im.ui.screens.home.views :as home]
             [status-im.switcher.constants :as constants]
             [status-im.switcher.bottom-tabs :as bottom-tabs]
             [status-im.ui.screens.profile.user.views :as profile.user]
+            [status-im.ui.screens.communities.communities-list-redesign :as communities]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]))
 
 (defn load-stack? [stack-id]
@@ -29,7 +29,7 @@
                                   :right            0
                                   :position         :absolute})}
         (case stack-id
-          :communities-stack [quo2.preview/main-screen]
+          :communities-stack [communities/views]
           :chats-stack       [home/home]
           :wallet-stack      [wallet.accounts/accounts-overview]
           :browser-stack     [profile.user/my-profile])])]))
