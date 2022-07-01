@@ -11,7 +11,9 @@
 (defn action-button []
   {:width            32
    :height           32
-   :background-color (colors/theme-colors colors/primary-50 colors/primary-60)
+   :background-color (colors/theme-colors
+                      colors/primary-50
+                      colors/primary-60)
    :border-radius    20
    :align-items      :center
    :justify-content  :center})
@@ -26,4 +28,6 @@
      (if loading
        [react/activity-indicator {:color     colors/white
                                   :animating true}]
-       [icons/icon :main-icons/add {:color colors/white}])]]])
+       [icons/icon :main-icons/add {:color (colors/theme-colors
+                                            colors/white
+                                            colors/black)}])]]])

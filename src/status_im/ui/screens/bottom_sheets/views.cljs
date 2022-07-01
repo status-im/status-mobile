@@ -7,6 +7,7 @@
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.communities.sort-communities-redesign :as sort-communities-redesign]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
+            [quo.components.bottom-sheet.view :as bottom-sheet]
             [quo.core :as quo]))
 
 (defn bottom-sheet []

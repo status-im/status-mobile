@@ -1602,19 +1602,6 @@
      ;;we want to keep data unchanged so react doesn't change component when we leave screen
      @memo-home-items)))
 
-(def memo-community-items (atom nil))
-
-(re-frame/reg-sub
- :community-items
- :<- [:communities/communities]
- :<- [:view-id]
- (fn [[communities]]
-   (let [res {:items  communities}]
-     (reset! memo-community-items res)
-     res)
-     ;;we want to keep data unchanged so react doesn't change component when we leave screen
-   @memo-community-items))
-
 (re-frame/reg-sub
  :hide-home-tooltip?
  :<- [:multiaccount]

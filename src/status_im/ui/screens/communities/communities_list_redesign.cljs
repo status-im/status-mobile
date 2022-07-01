@@ -29,6 +29,7 @@
 (def selected-tag (reagent/atom 0))
 (def selected-tab (reagent/atom :all))
 (def view-style   (reagent/atom :card-view))
+(def sort-list-by (reagent/atom :name))
 
 (defn qr-scanner []
   [quo2.button/button
@@ -130,70 +131,51 @@
            :description    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
            :status         "gated"
            :section        "popular"
-           :permissions-granted true
+           :permissions    true
            :community-icon      (resources/get-image :status-logo)
            :color               (rand-nth colors/chat-colors)
            :tags [{:id 1 :label "Crypto" :resource (resources/reactions :angry)}
                   {:id 2 :label "NFT"    :resource (resources/reactions :love)}
                   {:id 3 :label "DeFi"   :resource (resources/reactions :thumbs-up)}]}
           {:id             2
-           :name           "Status"
+           :name           "Politics"
            :description    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
            :status         "gated"
            :section        "popular"
+           :permissions    true
            :community-icon (resources/get-image :status-logo)
            :color               (rand-nth colors/chat-colors)
            :tags [{:id 1 :label "Crypto" :resource (resources/reactions :angry)}
                   {:id 2 :label "NFT"    :resource (resources/reactions :love)}
                   {:id 3 :label "DeFi"   :resource (resources/reactions :thumbs-up)}]}
           {:id             3
-           :name           "Status"
+           :name           "Sports"
            :description    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
            :status         "open"
            :section        "popular"
+           :permissions    false
            :community-icon (resources/get-image :status-logo)
            :color               (rand-nth colors/chat-colors)
            :tags [{:id 1 :label "Crypto" :resource (resources/reactions :angry)}
                   {:id 2 :label "NFT"    :resource (resources/reactions :love)}
                   {:id 3 :label "DeFi"   :resource (resources/reactions :thumbs-up)}]}
           {:id             4
-           :name           "Status"
+           :name           "News"
            :description    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
            :status         "open"
            :section        "popular"
+           :permissions    true
            :community-icon (resources/get-image :status-logo)
            :color               (rand-nth colors/chat-colors)
            :tags [{:id 1 :label "Crypto" :resource (resources/reactions :angry)}
                   {:id 2 :label "NFT"    :resource (resources/reactions :love)}
                   {:id 3 :label "DeFi"   :resource (resources/reactions :thumbs-up)}]}
           {:id             5
-           :name           "Status"
+           :name           "Technology"
            :description    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
            :status         "open"
            :section        "popular"
-           :community-icon (resources/get-image :status-logo)
-           :color               (rand-nth colors/chat-colors)
-           :tags [{:id 1 :label "Crypto" :resource (resources/reactions :angry)}
-                  {:id 2 :label "NFT"    :resource (resources/reactions :love)}
-                  {:id 3 :label "DeFi"   :resource (resources/reactions :thumbs-up)}]}]})
-
-(def all-communities-items
-  {:data [{:id             constants/status-community-id
-           :name           "Status"
-           :description    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
-           :status         "gated"
-           :section        "all"
-           :permissions-granted true
-           :community-icon (resources/get-image :status-logo)
-           :color               (rand-nth colors/chat-colors)
-           :tags [{:id 1 :label "Crypto" :resource (resources/reactions :angry)}
-                  {:id 2 :label "NFT"    :resource (resources/reactions :love)}
-                  {:id 3 :label "DeFi"   :resource (resources/reactions :thumbs-up)}]}
-          {:id             2
-           :name           "Status"
-           :description    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
-           :status         "gated"
-           :section        "all"
+           :permissions    false
            :community-icon (resources/get-image :status-logo)
            :color               (rand-nth colors/chat-colors)
            :tags [{:id 1 :label "Crypto" :resource (resources/reactions :angry)}
@@ -205,7 +187,8 @@
                :padding-horizontal 20}
    [react/view {:flex-direction     :row
                 :align-items        :center
-                :padding-bottom     16}
+                :padding-top        20
+                :padding-bottom     8}
     [react/view {:flex   1}
      [quo2.tabs/tabs {:size              32
                       :on-change         #(reset! selected-tab %)
@@ -243,31 +226,33 @@
       :data                              items
       :render-fn                         render-featured-fn}]))
 
-(views/defview popular-communities []
-  (let [items (get communities-items-popular :data)]
+(views/defview popular-communities [sort-list-by]
+  (let [items (get communities-items-popular :data)
+        sorted-items (sort-by sort-list-by items)]
     [list/flat-list
      {:key-fn                            community-list-key-fn
       :getItemLayout                     get-item-layout
       :keyboard-should-persist-taps      :always
       :shows-horizontal-scroll-indicator false
-      :data                              items
+      :data                              sorted-items
       :render-fn                         render-popular-fn}]))
 
 (defn community-tabs-view []
-  (let [tab @selected-tab]
+  (let [tab @selected-tab
+        sort-list-by @sort-list-by]
     [react/view {:padding-horizontal  20}
      (cond
        (= tab :all)
        [react/view
-        [popular-communities]]
+        [popular-communities sort-list-by]]
        (= tab :open)
        [react/view
-        [popular-communities]]
+        [popular-communities sort-list-by]]
        (= tab :gated)
        [react/view
-        [popular-communities]])]))
+        [popular-communities sort-list-by]])]))
 
-(defn communities-sections []
+(defn featured-communities-section []
   (let [count (reagent/atom {:value 2 :type :grey})]
     [:<>
      [react/view {:padding-left 20}
@@ -300,7 +285,7 @@
    {:flex-direction     :row
     :align-items        :center
     :justify-content    :center
-    :padding-vertical   8
+    :padding-vertical   12
     :padding-horizontal 20}
    [react/view
     {:flex           1}
@@ -317,7 +302,7 @@
   (let [filters [{:id 1 :label "Crypto"  :resource (resources/reactions :angry)}
                  {:id 2 :label "NFT"     :resource (resources/reactions :love)}
                  {:id 3 :label "DeFi"    :resource (resources/reactions :thumbs-up)}
-                 {:id 2 :label "NFT"     :resource (resources/reactions :laugh)}]
+                 {:id 4 :label "NFT"     :resource (resources/reactions :laugh)}]
         tags (for [tag filters]
                {:label (:label tag)
                 :id    (:id    tag)
@@ -339,11 +324,13 @@
                    :border-color  (quo2.colors/theme-colors
                                    quo2.colors/neutral-30
                                    quo2.colors/neutral-70)}
-       [icons/icon :main-icons2/search20 {:height 20
-                                          :color  (quo2.colors/theme-colors
-                                                   quo2.colors/black
-                                                   quo2.colors/white)
-                                          :width  20}]]
+       [icons/icon :main-icons2/search {:container-style {:align-items     :center
+                                                          :justify-content :center}
+                                        :resize-mode      :center
+                                        :size             20
+                                        :color            (quo2.colors/theme-colors
+                                                           quo2.colors/neutral-50
+                                                           quo2.colors/neutral-40)}]]
       [quo2.filter-tags/tags {:default-active (:id (first tags))
                               :on-change      #(reset! selected-tag %)
                               :data           filters}]]]))
@@ -356,7 +343,9 @@
        (fn [insets]
          [react/view {:style {:flex             1
                               :padding-top      (:top insets)
-                              :background-color (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}}
+                              :background-color (quo2.colors/theme-colors
+                                                 quo2.colors/neutral-5
+                                                 quo2.colors/neutral-95)}}
           [topbar/topbar
            {:navigation      :none
             :left-component  [react/view {:margin-left 20}
@@ -370,11 +359,10 @@
                               [qr-code]
                               [notifications-button]]}]
           [title-column]
-          [react/scroll-view {:stickyHeaderIndices 1}
+          [react/scroll-view
            [community-filter-tags]
-           [communities-sections]
-           [react/view {:margin-top         20
-                        :margin-bottom      24
+           [featured-communities-section]
+           [react/view {:margin-vertical    4
                         :padding-horizontal 20}
             [separator/separator]]
            [community-tabs]

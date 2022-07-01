@@ -9,7 +9,7 @@
    :height         52
    :padding-left   18})
 
-(defn card-redesign [window-width color]
+(defn community-card [window-width color]
   {:width            window-width
    :background-color color
    :shadow-offset    {:width 0 :height 2}
@@ -43,17 +43,19 @@
    :left      12
    :right     12})
 
-(defn community-status-container [color]
-  {:flex-direction   :row
-   :border-radius    200
-   :width            48
-   :align-items      :center
-   :justify-content  :flex-end
-   :position         :absolute
-   :top              8
-   :right            8
-   :padding          2
-   :background-color color})
+(defn permission-tag-container [color view]
+  (merge {:flex-direction   :row
+          :border-radius    200
+          :width            48
+          :align-items      :center
+          :justify-content  :flex-end
+          :background-color color
+          :padding          2}
+         (if (= view :card-view)
+           {:position         :absolute
+            :top              8
+            :right            8}
+           {:margin-right     12})))
 
 (defn community-card-content-container [color]
   {:flex               1
