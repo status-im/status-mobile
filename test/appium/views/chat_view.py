@@ -601,6 +601,7 @@ class ChatView(BaseView):
         # General chat view
         self.history_start_icon = Button(self.driver, accessibility_id="history-chat")
         self.unpin_message_popup = UnpinMessagePopUp(self.driver)
+        self.contact_request_button = Button(self.driver, accessibility_id="contact-request--button")
 
         # Stickers
         self.show_stickers_button = Button(self.driver, accessibility_id="show-stickers-icon")
@@ -809,6 +810,13 @@ class ChatView(BaseView):
         self.chat_message_input.wait_for_element(wait_chat_input_sec)
         self.chat_message_input.send_keys(message)
         self.send_message_button.click()
+
+    def send_contact_request(self, message:str = 'Contact request message', wait_chat_input_sec=5):
+        self.driver.info("Sending contact request message '%s'" % BaseElement(self.driver).exclude_emoji(message))
+        self.contact_request_button.wait_and_click()
+        self.chat_message_input.wait_for_element(wait_chat_input_sec)
+        self.chat_message_input.send_keys(message)
+        self.send_contact_request_button.click()
 
     def pin_message(self, message, action="pin"):
         self.driver.info("Looking for message '%s' pin" % message)

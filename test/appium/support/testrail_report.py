@@ -135,6 +135,7 @@ class TestrailReport(BaseTestReport):
         test_cases['nightly']['permissions'] = 50843
         test_cases['nightly']['scan qr'] = 50844
         test_cases['nightly']['mentions'] = 50845
+        test_cases['nightly']['mutual_contact_requests'] = 50857
         test_cases['nightly']['keycard'] = 50850
         test_cases['nightly']['wallet'] = 50851
         ## Upgrade e2e

@@ -996,3 +996,104 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
             self.errors.append("Background notification service is not started after relogin")
 
         self.errors.verify_no_errors()
+
+
+@pytest.mark.xdist_group(name="four_2")
+@marks.medium
+class TestMutualContactRequests(MultipleSharedDeviceTestCase):
+
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.home_1, self.home_2 = self.device_1.create_user(enable_notifications=True), self.device_2.create_user()
+        self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
+        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        [home.tap_mutual_cr_switcher() for home in (self.home_1, self.home_2)]
+        [home.home_button.click() for home in (self.home_1, self.home_2)]
+
+    @marks.testrail_id(702375)
+    def test_mutual_cr_unable_send_messages_if_users_not_contacts(self):
+        self.home_1.just_fyi("Creating 1-1 chats")
+        self.chat_1 = self.home_1.add_contact(self.public_key_2, add_in_contacts=False)
+        if self.chat_1.chat_message_input.is_element_displayed():
+            self.errors.append('Input field is displayed in chat with not a contact')
+        if not self.chat_1.contact_request_button.is_element_displayed():
+            self.errors.append('Send contact request button is not displayed in chat with not a contact')
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702376)
+    def test_mutual_cr_send_and_accept_cr(self):
+        self.home_1.home_button.click()
+
+        self.home_1.just_fyi('Entering 1-1 chat and sending contact request')
+        self.chat_1 = self.home_1.add_contact(self.public_key_2, add_in_contacts=False)
+        self.chat_1.send_contact_request("Hi, please add me to contacts")
+
+        self.home_1.just_fyi('Check pending request is displayed, input field still disabled')
+        if not self.chat_1.element_by_translation_id('contact-request-pending').is_element_displayed():
+            self.errors.append('Pending request is not displayed after request was sent')
+        if self.chat_1.chat_message_input.is_element_displayed():
+            self.errors.append('Input field is displayed despite request has not been accepted yet')
+
+        self.home_2.just_fyi('Accepting of a new contact request')
+        self.home_2.handle_contact_request(self.default_username_1)
+        chat_2 = self.home_2.get_chat_view()
+
+        self.home_2.just_fyi('Verify request acceptor can send messages to request sender after acceptance of cr')
+        message_from_receiver = 'Message from user who has accepted contact request'
+        chat_2.send_message(message_from_receiver)
+        if not self.chat_1.chat_element_by_text(message_from_receiver).is_element_displayed():
+            self.errors.append('Message from accepted user has not been received')
+
+        self.home_1.just_fyi('Verify chat input field has appeared after contact request has been accepted')
+        if not self.chat_1.chat_message_input.is_element_displayed():
+            self.drivers[0].fail('Chat input field has not appeared after contact request has been accepted')
+
+        self.home_1.just_fyi('Verify request sender can send messages to request acceptor after acceptance of cr')
+
+        #TODO: Clicking send button to clear input field from remained request message. Should be removed after fix of #13610
+        self.chat_1.send_message_button.click()
+
+        message_from_sender = 'Message sent after my contact request has been accepted'
+        self.chat_1.send_message(message_from_sender)
+        if not chat_2.chat_element_by_text(message_from_sender).is_element_displayed():
+            self.errors.append('Message from request sender has not been received after acceptance of his request')
+
+        self.home_2.just_fyi('Verify contacts are mutually removed for users with enabled contact request')
+        chat_2.chat_options.click()
+        chat_2.view_profile_button.click()
+        chat_2.remove_from_contacts.click_until_absense_of_element(chat_2.remove_from_contacts)
+        chat_2.back_button.click()
+
+        chat_2.just_fyi('Verify cannot send messages to user who was removed from contacts')
+        if not chat_2.contact_request_button.is_element_displayed():
+            self.errors.append('Send contact request button is not displayed after removing user from contacts')
+        if chat_2.chat_message_input.is_element_displayed():
+            self.errors.append('Chat input field is displayed after removing user from contacts')
+
+        self.chat_1.just_fyi('Verify users are mutually removed from contacts')
+        if not self.chat_1.element_by_text('Not a contact').is_element_displayed():
+            self.errors.append('User has not been mutually removed from contacts of removed contact')
+        if not self.chat_1.contact_request_button.is_element_displayed():
+            self.errors.append('Send contact request button is not displayed after user has been removed from contacts')
+        if self.chat_1.chat_message_input.is_element_displayed():
+            self.errors.append('Chat input field is displayed after user has been removed from contacts')
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702377)
+    def test_mutual_cr_decline_contact_request(self):
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        self.chat_1 = self.home_1.add_contact(self.public_key_2, add_in_contacts=False)
+        self.chat_1.send_contact_request('Contact request to decline')
+        self.home_2.handle_contact_request(self.default_username_1, accept=False)
+        self.home_2.home_button.click()
+        chat_2 = self.home_2.add_contact(self.public_key_1, add_in_contacts=False)
+
+        self.chat_1.just_fyi('Verify cannot send messages to user who declined contact request')
+        if self.chat_1.chat_message_input.is_element_displayed():
+            self.drivers[0].fail('Chat input field is displayed despite contact request has been declined')
+
+        chat_2.just_fyi('Verify cannot send messages to user whos request has been declined')
+        if chat_2.chat_message_input.is_element_displayed():
+            self.drivers[1].fail('Chat input field is displayed in 1-1 chat with user whos cr was declined')

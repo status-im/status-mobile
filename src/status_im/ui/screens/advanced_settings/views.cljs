@@ -111,7 +111,7 @@
      :active                  waku-bloom-filter-mode}
     {:size                    :small
      :title                   (i18n/label :t/mutual-contact-requests)
-     :accessibility-label     :wallet-connect-settings-switch
+     :accessibility-label     :mutual-contact-requests-switch
      :container-margin-bottom 8
      :on-press
      #(re-frame/dispatch

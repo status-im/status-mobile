@@ -223,6 +223,7 @@ class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
         self.send_message_button = SendMessageButton(self.driver)
+        self.send_contact_request_button = Button(self.driver, translation_id="send-request")
 
         # Tabs
         self.home_button = HomeButton(self.driver)
@@ -583,6 +584,12 @@ class BaseView(object):
         self.click_system_back_button()
         user_data = (public_key, default_username) if return_username else public_key
         return user_data
+
+    def tap_mutual_cr_switcher(self):
+        profile_view = self.profile_button.click()
+        profile_view.advanced_button.scroll_and_click()
+        profile_view.mutual_contact_request_switcher.scroll_and_click()
+        profile_view.click_system_back_button()
 
     def share_via_messenger(self):
         self.driver.info("Sharing via messenger", device=False)
