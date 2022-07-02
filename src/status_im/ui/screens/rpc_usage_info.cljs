@@ -1,15 +1,16 @@
 (ns status-im.ui.screens.rpc-usage-info
-  (:require [status-im.ui.components.react :as react]
-            [status-im.i18n.i18n :as i18n]
-            [reagent.core :as reagent]
+  (:require [clojure.string :as string]
             [quo.core :as quo.core]
+            [quo.design-system.typography :as typography]
             [quo.react-native :as quo.react-native]
             [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
+            [reagent.core :as reagent]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [taoensso.timbre :as log]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
-            [clojure.string :as clojure.string]))
+            [taoensso.timbre :as log]))
 
 (re-frame/reg-sub :rpc-usage/raw-data (fn [db] (get db :rpc-usage/data)))
 (re-frame/reg-sub :rpc-usage/filter (fn [db] (get db :rpc-usage/filter)))
@@ -24,27 +25,27 @@
               (map (fn [[k v]]
                      [(name k) v]))
               (filter (fn [[k]]
-                        (clojure.string/includes? k method-filter)))
+                        (string/includes? k method-filter)))
               (sort-by second >))
          filtered-total (reduce + (map second data))]
      {:stats          data
       :filtered-total filtered-total
-      :total          total})))
+      :total          (or total 0)})))
 
 (re-frame/reg-fx
  ::get-stats
  (fn []
    (status-im.ethereum.json-rpc/call
-    {:method "rpcstats_getStats"
-     :params []
+    {:method     "rpcstats_getStats"
+     :params     []
      :on-success #(re-frame/dispatch [::handle-stats %])})))
 
 (re-frame/reg-fx
  ::reset
  (fn []
    (status-im.ethereum.json-rpc/call
-    {:method "rpcstats_reset"
-     :params []
+    {:method     "rpcstats_reset"
+     :params     []
      :on-success #(log/debug "rpcstats_reset success")})))
 
 ;; RPC refresh interval ID
@@ -86,35 +87,43 @@
   [quo.react-native/scroll-view
    {:style {:padding-horizontal 8}}
    [quo.react-native/view
-    {:style {:flex-direction :row
-             :justify-content :space-between}}
-    [quo.core/text "TOTAL"]
-    [quo.core/text (str filtered-total " of " total)]]
+    {:style {:flex-direction  :row
+             :justify-content :space-between
+             :margin-bottom 2}}
+    [quo.core/text {:style typography/font-semi-bold}
+     (i18n/label :t/rpc-usage-total)]
+    [quo.core/text {:style typography/font-semi-bold}
+     (i18n/label :t/rpc-usage-filtered-total {:filtered-total filtered-total :total total})]]
    (when (seq stats)
      (for [[k v] stats]
        ^{:key (str k v)}
-       [quo.react-native/view
-        {:style {:flex-direction :row
-                 :align-items     :center}}
-        [quo.core/text {:style {:flex 1}} k]
-        [quo.core/text  {:style {:margin-left 16}} v]]))])
+       [:<>
+        [quo.react-native/view
+         {:style {:flex-direction  :row
+                  :align-items     :center
+                  :margin-vertical 10}}
+         [quo.core/text {:style {:flex 1}}
+          k]
+         [quo.core/text {:style {:margin-left 16}}
+          v]]
+        [quo.core/separator]]))])
 
 (defn prepare-stats [{:keys [stats]}]
-  (clojure.string/join
+  (string/join
    "\n"
    (map (fn [[k v]]
           (str k " " v))
         stats)))
 
 (defn usage-info-render []
-  (let [stats @(re-frame/subscribe [:rpc-usage/data])
+  (let [stats          @(re-frame/subscribe [:rpc-usage/data])
         methods-filter @(re-frame/subscribe [:rpc-usage/filter])]
-    [react/view {:flex 1
+    [react/view {:flex              1
                  :margin-horizontal 8}
      [quo.react-native/view
       {:style {:flex-direction  :row
-               :margin-top      8
-               :justify-content :space-around}}
+               :margin-vertical 8
+               :justify-content :space-between}}
       [quo.core/button
        {:on-press            #(re-frame/dispatch [::reset])
         :accessibility-label :rpc-usage-reset}
@@ -126,7 +135,11 @@
        (i18n/label :t/rpc-usage-copy)]]
      [quo.core/text-input
       {:on-change-text  #(re-frame/dispatch [::set-filter %])
-       :label           (i18n/label :t/rpc-usage-filter)
+       :label           (i18n/label :t/rpc-usage-filter-methods)
+       :placeholder     (i18n/label :t/rpc-usage-filter)
+       :container-style {:margin-vertical 18}
+       :before          {:icon  :main-icons/search
+                         :style {:padding-horizontal 8}}
        :default-value   methods-filter
        :auto-capitalize :none
        :show-cancel     false
@@ -134,9 +147,13 @@
      [stats-table stats]]))
 
 (defn usage-info []
-  (reagent/create-class {:component-did-mount (fn []
-                                                (reset! rpc-refresh-interval (utils/set-interval #(re-frame/dispatch [::get-stats]) rpc-usage-refresh-interval-ms)))
-                         :component-will-unmount (fn []
-                                                   (utils/clear-interval @rpc-refresh-interval)
-                                                   (reset! rpc-refresh-interval nil))
-                         :reagent-render usage-info-render}))
+  (reagent/create-class
+   {:component-did-mount
+    (fn []
+      (reset! rpc-refresh-interval
+              (utils/set-interval #(re-frame/dispatch [::get-stats]) rpc-usage-refresh-interval-ms)))
+
+    :component-will-unmount (fn []
+                              (utils/clear-interval @rpc-refresh-interval)
+                              (reset! rpc-refresh-interval nil))
+    :reagent-render         usage-info-render}))

@@ -39,7 +39,8 @@
 (s/def ::before (s/nilable ::accessory))
 
 (s/def ::style (s/nilable map?))
-(s/def ::input-style (s/nilable map?))
+(s/def ::input-style ::style)
+(s/def ::container-style ::style)
 
 (s/def ::text-input (s/keys :opt-un
                             [::label
@@ -53,6 +54,7 @@
                              ::cancel-label
                              ::on-focus
                              ::on-blur
+                             ::container-style
                              ::show-cancel
                              ::accessibility-label
                              ::bottom-value
