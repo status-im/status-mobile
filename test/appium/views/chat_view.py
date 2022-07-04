@@ -1039,4 +1039,4 @@ class ChatView(BaseView):
 
     @staticmethod
     def pn_wants_you_to_join_to_group_chat(admin, chat_name):
-        return '%s wants you to join group %s' % (admin, chat_name)
+        return '%s added you to group %s' % (admin, chat_name)
