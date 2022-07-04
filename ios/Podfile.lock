@@ -349,7 +349,7 @@ PODS:
     - React
   - RNReactNativeHapticFeedback (1.9.0):
     - React
-  - RNReanimated (2.1.0):
+  - RNReanimated (2.3.3):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -375,7 +375,6 @@ PODS:
     - React-RCTNetwork
     - React-RCTSettings
     - React-RCTText
-    - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
   - RNShare (7.0.1):
@@ -638,7 +637,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 2d7c14bbcd0c3139c6258f813895cb61d7860fcc
+  glog: 64a900d72fb14cd1b2cdf3b717a5555ceb889d49
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: 07f1b4d4fadcf1218084cb3e1bb3a8bac3870c5a
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
@@ -668,7 +667,7 @@ SPEC CHECKSUMS:
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
-  react-native-status: 45dbf1302ce3c258b459dfab137cd1c2c68c295d
+  react-native-status: 21f75d492fd311dc111303da38a7a2b23a8a8466
   react-native-status-keycard: 961d01ca190889ddf220206822fd752f8f4f3f7a
   react-native-webview: 28a8636d97ee641f2ee8f20492d7a6c269c1d703
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
@@ -695,7 +694,7 @@ SPEC CHECKSUMS:
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
-  RNReanimated: 70f662b5232dd5d19ccff581e919a54ea73df51c
+  RNReanimated: 69eda0e8790a2ee00de2fff03e89361e9bac749a
   RNShare: 2dc2fcac3f7321cfd6b60a23ed4bf4d549f86f5f
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
@@ -710,4 +709,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 1a5b8878f89edd08eb4d37898a3a8721a7bb3388
 
-COCOAPODS: 1.11.0
+COCOAPODS: 1.11.3
