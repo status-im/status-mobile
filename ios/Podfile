@@ -13,7 +13,7 @@ abstract_target 'Status' do
   pod 'react-native-config', :path => '../node_modules/react-native-config'
 
   pod 'SQLCipher', '~>3.0'
-  pod 'SSZipArchive'
+  pod 'SSZipArchive', '2.4.3'
 
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone.podspec"

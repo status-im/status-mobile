@@ -23,10 +23,10 @@ PODS:
     - glog
   - glog (0.3.5)
   - HMSegmentedControl (1.5.6)
-  - Keycard (3.0.5):
+  - Keycard (3.0.6):
     - CryptoSwift
     - secp256k1
-    - Zip
+    - SSZipArchive
   - libwebp (1.2.1):
     - libwebp/demux (= 1.2.1)
     - libwebp/mux (= 1.2.1)
@@ -399,7 +399,6 @@ PODS:
   - TouchID (4.4.1):
     - React
   - Yoga (1.14.0)
-  - Zip (2.1.2)
 
 DEPENDENCIES:
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
@@ -484,7 +483,6 @@ SPEC REPOS:
     - SQLCipher
     - SSZipArchive
     - TOCropViewController
-    - Zip
 
 EXTERNAL SOURCES:
   BVLinearGradient:
@@ -623,7 +621,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Keycard:
-    :commit: 29c26b51ef76304e9551657c605fb55b2540a077
+    :commit: 17381678bb981c3c553bb7202a26e642cecb1817
     :git: https://github.com/status-im/Keycard.swift.git
   secp256k1:
     :commit: 46a1fa30d9b8babeae85ff519050f42394ab5fcc
@@ -706,7 +704,6 @@ SPEC CHECKSUMS:
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
-  Zip: b3fef584b147b6e582b2256a9815c897d60ddc67
 
 PODFILE CHECKSUM: 1a5b8878f89edd08eb4d37898a3a8721a7bb3388
 
