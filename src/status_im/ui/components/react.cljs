@@ -248,6 +248,14 @@
                   (update props :keyboardVerticalOffset + 44 (:status-bar-height @navigation-const))))]
         children))
 
+(defn keyboard-avoiding-view-new [props & children]
+  (into [keyboard-avoiding-view-class
+         (merge (when platform/ios? {:behavior :padding})
+                (if (:ignore-offset props)
+                  props
+                  (update props :keyboardVerticalOffset + 44)))]
+        children))
+
 (defn scroll-view [props & children]
   (vec (conj children props scroll-view-class)))
 
