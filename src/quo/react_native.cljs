@@ -55,12 +55,13 @@
 
 (def keyboard (.-Keyboard ^js rn))
 
-(defn alert [alert-title alert-msg & btns]
-  (.alert (.-Alert ^js rn) alert-title alert-msg (clj->js (mapv (fn [{:keys [text on-press cancelable on-dismiss]}]
-                                                                  {:text text
-                                                                   :on-press on-press
-                                                                   :cancelable (boolean cancelable)
-                                                                   :on-dismiss on-dismiss}) btns))))
+(defn alert [alert-title alert-description btns]
+  (.alert (.-Alert ^js rn) alert-title alert-description (clj->js
+                                                          (map (fn [{:keys [text on-press cancelable on-dismiss]}]
+                                                                 {:text text
+                                                                  :on-press on-press
+                                                                  :cancelable (boolean cancelable)
+                                                                  :on-dismiss on-dismiss}) btns))))
 
 (def dismiss-keyboard! #(.dismiss ^js keyboard))
 
