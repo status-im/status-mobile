@@ -24,7 +24,7 @@
         from                 (or (get-in db [:signing/tx :from :address]) (get-in db [:signing/tx :message :from]) (ethereum/default-address db))
         path                 (reduce
                               (fn [_ {:keys [address path]}]
-                                (when (= from address)
+                                (when (ethereum/address= from address)
                                   (reduced path)))
                               nil
                               (:multiaccount/accounts db))]

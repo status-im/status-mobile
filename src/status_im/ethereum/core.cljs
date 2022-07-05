@@ -153,8 +153,8 @@
 
 (defn address= [address1 address2]
   (and address1 address2
-       (= (normalized-hex address1)
-          (normalized-hex address2))))
+       (= (string/lower-case (normalized-hex address1))
+          (string/lower-case (normalized-hex address2)))))
 
 (defn public-key->address [public-key]
   (let [length (count public-key)
