@@ -285,7 +285,7 @@ class BaseView(object):
 
     @property
     def status_account_name(self):
-        return self.get_translation_by_key('ethereum-account')
+        return self.get_translation_by_key('main-account')
 
     def accept_agreements(self):
         iterations = int()
