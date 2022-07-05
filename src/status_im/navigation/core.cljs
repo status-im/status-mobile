@@ -338,8 +338,17 @@
                       (fn [] (gestureHandlerRootHOC views/sheet-comp))
                       (fn [] views/sheet-comp)))
 
+(defonce bottom-sheet-redesign-reg
+  (.registerComponent Navigation
+                      "bottom-sheet-redesign"
+                      (fn [] (gestureHandlerRootHOC views/sheet-comp-redesign))
+                      (fn [] views/sheet-comp-redesign)))
+
 (re-frame/reg-fx :show-bottom-sheet (fn [] (show-overlay "bottom-sheet")))
 (re-frame/reg-fx :hide-bottom-sheet (fn [] (dissmiss-overlay "bottom-sheet")))
+
+(re-frame/reg-fx :show-bottom-sheet-redesign (fn [] (show-overlay "bottom-sheet-redesign")))
+(re-frame/reg-fx :hide-bottom-sheet-redesign (fn [] (dissmiss-overlay "bottom-sheet-redesign")))
 
 ;; WALLET CONNECT
 

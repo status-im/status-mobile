@@ -1,4 +1,4 @@
-(ns quo2.components.header-redesign
+(ns quo2.components.header
   (:require [oops.core :refer [oget]]
             [quo.animated :as animated]
             [quo2.components.button :as button]
@@ -12,7 +12,6 @@
 
 (defn header-wrapper-style [{:keys [height border-bottom background]}]
   (merge
-   (:x-tiny spacing/padding-horizontal)
    {:background-color (colors/theme-colors
                        colors/neutral-5
                        colors/neutral-95)

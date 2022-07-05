@@ -1,9 +1,9 @@
 (ns status-im.ui.components.topbar-redesign
   (:require [re-frame.core :as re-frame]
             [quo.core :as quo]
-            [quo2.components.header-redesign :as header]))
+            [quo2.components.header :as header]))
 
-(def default-button-width 48)
+(def default-button-width 56)
 
 (defn default-navigation [modal? {:keys [on-press label icon]}]
   (cond-> {:icon                (if modal? :main-icons/close :main-icons/arrow-left)

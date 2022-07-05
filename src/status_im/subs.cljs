@@ -57,6 +57,10 @@
 (reg-root-key-sub :bottom-sheet/view :bottom-sheet/view)
 (reg-root-key-sub :bottom-sheet/options :bottom-sheet/options)
 
+(reg-root-key-sub :bottom-sheet-redesign/show? :bottom-sheet-redesign/show?)
+(reg-root-key-sub :bottom-sheet-redesign/view :bottom-sheet-redesign/view)
+(reg-root-key-sub :bottom-sheet-redesign/options :bottom-sheet-redesign/options)
+
 ;;general
 (reg-root-key-sub :sync-state :sync-state)
 (reg-root-key-sub :network-status :network-status)
@@ -653,6 +657,16 @@
  :<- [:bottom-sheet/show?]
  :<- [:bottom-sheet/view]
  :<- [:bottom-sheet/options]
+ (fn [[show? view options]]
+   {:show? show?
+    :view view
+    :options options}))
+
+(re-frame/reg-sub
+ :bottom-sheet-redesign
+ :<- [:bottom-sheet-redesign/show?]
+ :<- [:bottom-sheet-redesign/view]
+ :<- [:bottom-sheet-redesign/options]
  (fn [[show? view options]]
    {:show? show?
     :view view

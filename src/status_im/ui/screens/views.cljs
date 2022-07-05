@@ -114,6 +114,18 @@
       (when config/keycard-test-menu-enabled?
         [keycard.test-menu/test-menu])])))
 
+(def sheet-comp-redesign
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "seet" @reloader/cnt)}
+     [react/safe-area-provider
+      [inactive]
+      [bottom-sheets/bottom-sheet-redesign]
+      (when js/goog.DEBUG
+        [reloader/reload-view])
+      (when config/keycard-test-menu-enabled?
+        [keycard.test-menu/test-menu])])))
+
 (def signing-comp
   (reagent/reactify-component
    (fn []

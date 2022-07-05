@@ -1,4 +1,4 @@
-(ns quo2.components.item-redesign
+(ns quo2.components.item
   (:require [quo.react-native :as rn]
             [quo.platform :as platform]
             [quo.haptic :as haptic]
@@ -16,17 +16,12 @@
   (case theme
     :light  {:icon-color          colors/white
              :active-background   colors/primary-50-opa-5
-             :passive-background  colors/neutral-5
+             :passive-background  colors/white
              :text-color          colors/black}
     :dark   {:icon-color          colors/white
              :active-background   colors/neutral-80
-             :passive-background  colors/neutral-95
+             :passive-background  colors/neutral-90
              :text-color          colors/white}))
-
-(defn size->icon-size [size]
-  (case size
-    :small 36
-    40))
 
 (defn size->container-size [size]
   (case size
@@ -35,8 +30,8 @@
 
 (defn size->single-title-size [size]
   (case size
-    :small :base
-    :large))
+    :small :paragraph-2
+    :paragraph-1))
 
 (defn container [{:keys [size container-style]} & children]
   (into [rn/view {:style (merge (:tiny spacing/padding-horizontal)
@@ -122,12 +117,12 @@
 
      title
      (if (string? title)
-       [text/text {:weight                    (or title-text-weight :regular)
+       [text/text {:weight                    :medium
                    :number-of-lines           1
                    :style                     {:color text-color}
                    :title-accessibility-label title-accessibility-label
                    :ellipsize-mode            :tail
-                   :size                      size}
+                   :size                      (or text-size (size->single-title-size size))}
         title]
        title))])
 
@@ -183,7 +178,7 @@
            haptic-feedback haptic-type error animated animated-accessory? title-text-weight container-style
            active-background-enabled]
     :or   {subtitle-max-lines        1
-           theme                     :dark
+           theme                     :light
            haptic-feedback           true
            animated                  platform/ios?
            active-background-enabled true

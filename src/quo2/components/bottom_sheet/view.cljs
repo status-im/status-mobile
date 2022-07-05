@@ -1,4 +1,4 @@
-(ns quo.components.bottom-sheet.view
+(ns quo2.components.bottom-sheet.view
   (:require [reagent.core :as reagent]
             [quo.animated :as animated]
             [quo.react-native :as rn]
@@ -6,9 +6,9 @@
             [quo.platform :as platform]
             [cljs-bean.core :as bean]
             [quo.components.safe-area :as safe-area]
-            [quo.components.bottom-sheet.style :as styles]
+            [quo2.components.bottom-sheet.style :as styles]
             [quo.gesture-handler :as gesture-handler]
-            [quo.design-system.colors :as colors]))
+            [quo2.foundations.colors :as quo2.colors]))
 
 (def opacity-coeff 0.8)
 (def close-duration 150)
@@ -184,7 +184,9 @@
        [animated/view {:style (merge (styles/backdrop)
                                      (when platform/ios?
                                        {:opacity          opacity
-                                        :background-color (:backdrop @colors/theme)}))}]]
+                                        :background-color (:backdrop (quo2.colors/theme-colors
+                                                                      quo2.colors/white
+                                                                      quo2.colors/neutral-90))}))}]]
       [animated/view {:style (merge (styles/content-container window-height)
                                     {:transform [{:translateY (if (= sheet-height max-height)
                                                                 (animated/add translate-y keyboard-height-android-delta)

@@ -153,6 +153,8 @@
                    {:utils/dispatch-later dispatch-later}))
                 (when (get-in db [:bottom-sheet/show?])
                   (bottom-sheet/hide-bottom-sheet))
+                (when (get-in db [:bottom-sheet-redesign/show?])
+                  (bottom-sheet/hide-bottom-sheet-redesign))
                 (when (get-in db [:popover/popover])
                   (popover/hide-popover))
                 (when (get-in db [:visibility-status-popover/popover])

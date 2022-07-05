@@ -9,9 +9,9 @@
    :height         52
    :padding-left   18})
 
-(defn community-card [window-width color]
+(defn community-card [window-width bg-color]
   {:width            window-width
-   :background-color color
+   :background-color bg-color
    :shadow-offset    {:width 0 :height 2}
    :shadow-radius    20
    :shadow-opacity   1
@@ -26,11 +26,11 @@
    :margin-right   16})
 
 (defn card-stats-container []
-  {:flex-direction    :row
-   :position  :absolute
-   :top       116
-   :left      12
-   :right     12})
+  {:flex-direction :row
+   :position       :absolute
+   :top            116
+   :left           12
+   :right          12})
 
 (defn list-stats-container []
   {:flex-direction :row
@@ -57,7 +57,7 @@
             :right            8}
            {:margin-right     12})))
 
-(defn community-card-content-container [color]
+(defn card-view-content-container [bg-color]
   {:flex               1
    :position           :absolute
    :top                40
@@ -66,15 +66,26 @@
    :bottom             0
    :border-radius      16
    :padding-horizontal 12
-   :background-color   color})
+   :background-color   bg-color})
 
-(defn community-card-chat-icon [color]
-  {:border-radius    32
+(defn card-view-chat-icon [bg-color]
+  {:border-radius    48
    :position         :absolute
-   :top              -20
+   :top              -24
    :left             12
    :padding          2
-   :background-color color})
+   :background-color bg-color})
+
+(defn list-view-content-container [bg-color]
+  {:flex-direction    :row
+   :border-radius     16
+   :align-items       :center
+   :background-color  bg-color})
+
+(defn list-view-chat-icon [bg-color]
+  {:border-radius    32
+   :padding          12
+   :background-color bg-color})
 
 (defn community-title-description-container []
   {:position  :absolute

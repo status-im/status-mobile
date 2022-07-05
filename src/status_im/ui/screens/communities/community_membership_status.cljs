@@ -71,7 +71,7 @@
       :loading logging-in?
       :accessibility-label :new-chat-button}]))
 
-(defn render-popular-fn [community-item]
+(defn render-fn [community-item]
   [community-views/communities-membership-list-item community-item])
 
 (defn community-list-key-fn [item]
@@ -88,6 +88,7 @@
            :section        "popular"
            :permissions-granted true
            :community-icon      (resources/get-image :status-logo)
+           :tokens [{:id 1 :token-icon (resources/get-image :status-logo)}]
            :color               (rand-nth colors/chat-colors)
            :tags [{:id 1 :label "Crypto" :resource (resources/reactions :angry)}
                   {:id 2 :label "NFT"    :resource (resources/reactions :love)}
@@ -98,6 +99,7 @@
            :status         "gated"
            :section        "popular"
            :community-icon (resources/get-image :status-logo)
+           :tokens [{:id 1 :token-icon (resources/get-image :status-logo)}]
            :color               (rand-nth colors/chat-colors)
            :tags [{:id 1 :label "Crypto" :resource (resources/reactions :angry)}
                   {:id 2 :label "NFT"    :resource (resources/reactions :love)}
@@ -108,6 +110,7 @@
            :status         "open"
            :section        "popular"
            :community-icon (resources/get-image :status-logo)
+           :tokens [{:id 1 :token-icon (resources/get-image :status-logo)}]
            :color               (rand-nth colors/chat-colors)
            :tags [{:id 1 :label "Crypto" :resource (resources/reactions :angry)}
                   {:id 2 :label "NFT"    :resource (resources/reactions :love)}
@@ -138,6 +141,7 @@
                :align-items        :center
                :padding-bottom     8
                :padding-top        16
+               :height             56
                :padding-horizontal 20}
    [react/view {:flex   1}
     [quo2.tabs/tabs {:size              32
@@ -155,7 +159,7 @@
       :keyboard-should-persist-taps      :always
       :shows-horizontal-scroll-indicator false
       :data                              items
-      :render-fn                         render-popular-fn}]))
+      :render-fn                         render-fn}]))
 
 (defn community-tabs-view []
   (let [tab @selected-tab]
@@ -175,31 +179,27 @@
   [react/view
    {:flex-direction     :row
     :align-items        :center
-    :justify-content    :center
     :padding-vertical   12
     :padding-horizontal 20}
    [react/view
     {:flex           1}
-    [quo2.text/text
-     {:style (merge {:accessibility-label :community-name-text
-                     :ellipsize-mode      :tail
-                     :number-of-lines     1}
-                    typography/font-semi-bold
-                    typography/heading-1)}
+    [quo2.text/text {:accessibility-label :communities-screen-title
+                     :margin-right        6
+                     :weight              :semi-bold
+                     :size                :heading-1}
      "Communities"]]
    [plus-button]])
-
 (defn discover-card []
   [react/view
    {:background-color   (quo2.colors/theme-colors
                          quo2.colors/white
                          quo2.colors/neutral-80)
-    :justify-content    :center
+    :align-items        :center
     :padding-horizontal 12
-    :padding-vertical   8
     :margin-vertical    8
     :border-radius      12
     :margin-horizontal  20
+    :height             56
     :flex-direction     :row}
    [react/view
     {:flex           1}
@@ -220,16 +220,19 @@
                     typography/font-medium
                     typography/paragraph-2)}
      "See what`s trending"]]
-   [react/image {:source (resources/get-image :discover)}]])
+   [react/image {:source         (resources/get-image :discover)
+                 :position       :absolute
+                 :top            6
+                 :right          24
+                 :style {:width  56
+                         :height 50}}]])
 
 (defn views []
   (let [multiaccount @(re-frame/subscribe [:multiaccount])]
-
     (fn []
       [safe-area/consumer
-       (fn [insets]
+       (fn []
          [react/view {:style {:flex             1
-                              :padding-top      (:top insets)
                               :background-color (quo2.colors/theme-colors
                                                  quo2.colors/neutral-5
                                                  quo2.colors/neutral-95)}}

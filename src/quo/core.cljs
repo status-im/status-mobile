@@ -25,7 +25,7 @@
 (def list-footer list-footer/footer)
 (def list-item list-item/list-item)
 (def list-index list-index/index)
-(def bottom-sheet bottom-sheet/bottom-sheet-redesign)
+(def bottom-sheet bottom-sheet/bottom-sheet)
 (def switch controls/switch)
 (def radio controls/radio)
 (def checkbox controls/checkbox)
