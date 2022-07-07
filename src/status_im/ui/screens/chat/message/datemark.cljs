@@ -8,7 +8,5 @@
    {:on-press (fn [_]
                 (react/dismiss-keyboard!))}
    [react/view style/datemark-mobile
-
     [react/text {:style (style/datemark-text)}
-     (string/capitalize value)]
-    [react/view (style/divider)]]])
+     (string/capitalize value)]]])

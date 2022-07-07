@@ -5,8 +5,7 @@
             [status-im.utils.handlers :refer [<sub]]
             [status-im.utils.datetime :as datetime]
             [quo.design-system.colors :as colors]
-            [clojure.string :as string]
-            [quo2.foundations.colors :as quo2.colors]))
+            [clojure.string :as string]))
 
 ;; Specs:
 ;; :visibility-status-automatic
@@ -20,26 +19,6 @@
 ;;        Display - Offline forever
 ;; Note: Only send pings if the user interacted with the app in the last x minutes.
 (def visibility-status-type-data
-  {constants/visibility-status-unknown
-   {:color    colors/red
-    :title    (i18n/label :t/error)}
-   constants/visibility-status-automatic
-   {:color    quo2.colors/color-online
-    :title    (i18n/label :t/status-automatic)
-    :subtitle (i18n/label :t/status-automatic-subtitle)}
-   constants/visibility-status-dnd
-   {:color    colors/color-dnd
-    :title    (i18n/label :t/status-dnd)
-    :subtitle (i18n/label :t/status-dnd-subtitle)}
-   constants/visibility-status-always-online
-   {:color    quo2.colors/color-online
-    :title    (i18n/label :t/status-always-online)}
-   constants/visibility-status-inactive
-   {:color    colors/color-inactive
-    :title    (i18n/label :t/status-inactive)
-    :subtitle (i18n/label :t/status-inactive-subtitle)}})
-
-(def visibility-status-type-data-old
   {constants/visibility-status-unknown
    {:color    colors/red
     :title    (i18n/label :t/error)}
@@ -84,19 +63,10 @@
   [{:keys [status-type] :as visibility-status-update} my-icon?]
   (if my-icon?
     (if (= status-type constants/visibility-status-inactive)
-      colors/color-inactive quo2.colors/color-online)
-    (let [{:keys [real-status-type]}
-          (calculate-real-status-type-and-time-left visibility-status-update)]
-      (:color (get visibility-status-type-data real-status-type)))))
-
-(defn dot-color-old
-  [{:keys [status-type] :as visibility-status-update} my-icon?]
-  (if my-icon?
-    (if (= status-type constants/visibility-status-inactive)
       colors/color-inactive colors/color-online)
     (let [{:keys [real-status-type]}
           (calculate-real-status-type-and-time-left visibility-status-update)]
-      (:color (get visibility-status-type-data-old real-status-type)))))
+      (:color (get visibility-status-type-data real-status-type)))))
 
 (defn my-icon? [public-key]
   (or (string/blank? public-key)
@@ -107,31 +77,16 @@
     (<sub [:multiaccount/current-user-visibility-status])
     (<sub [:visibility-status-updates/visibility-status-update public-key])))
 
-(defn icon-visibility-status-dot [public-key container-size _]
-  (let [my-icon?                 (my-icon? public-key)
-        visibility-status-update (visibility-status-update public-key my-icon?)
-        size                     (/ container-size 2.4)
-        margin                   -2
-        dot-color                (dot-color visibility-status-update my-icon?)
-        accessibility-label      (if (= dot-color quo2.colors/color-online)
-                                   :online-profile-photo-dot
-                                   :offline-profile-photo-dot)]
-    (merge (styles/visibility-status-dot dot-color size)
-           {:bottom              margin
-            :right               margin
-            :position            :absolute
-            :accessibility-label accessibility-label})))
-
-(defn icon-visibility-status-dot-old [public-key container-size identicon?]
+(defn icon-visibility-status-dot [public-key container-size identicon?]
   (let [my-icon?                 (my-icon? public-key)
         visibility-status-update (visibility-status-update public-key my-icon?)
         size                     (/ container-size 4)
         margin                   (if identicon? (/ size 6) (/ size 7))
-        dot-color                (dot-color-old visibility-status-update my-icon?)
+        dot-color                (dot-color visibility-status-update my-icon?)
         accessibility-label      (if (= dot-color colors/color-online)
                                    :online-profile-photo-dot
                                    :offline-profile-photo-dot)]
-    (merge (styles/visibility-status-dot-old dot-color size)
+    (merge (styles/visibility-status-dot dot-color size)
            {:bottom              margin
             :right               margin
             :position            :absolute

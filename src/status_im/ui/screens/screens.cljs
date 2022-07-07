@@ -216,7 +216,7 @@
 
            ;Home
            {:name      :home
-            :component home/home-old}
+            :component home/home}
 
            ;Chat
            {:name          :chat
@@ -224,7 +224,7 @@
                             :hardwareBackButton {:dismissModalOnPress false
                                                  :popStackOnPress     false}
                             :topBar             {:visible false}}
-            :component     chat/chat-old}
+            :component     chat/chat}
 
            ;Pinned messages
            {:name      :chat-pinned-messages
