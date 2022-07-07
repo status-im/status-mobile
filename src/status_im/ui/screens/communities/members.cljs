@@ -51,7 +51,7 @@
      {:title               first-name
       :subtitle            second-name
       :accessibility-label :member-item
-      :icon                 [chat-icon/profile-photo-plus-dot-view
+      :icon                 [chat-icon/profile-photo-plus-dot-view-old
                              {:public-key public-key
                               :photo-path (multiaccounts/displayed-photo member)}]
       :accessory           (when (not= public-key my-public-key)

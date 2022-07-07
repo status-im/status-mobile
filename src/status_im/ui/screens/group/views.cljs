@@ -149,8 +149,8 @@
     (fn [{:keys [contacts no-contacts-label toggle-fn allow-new-users?]}]
       [react/view {:style {:flex 1}}
        [react/view {:style (styles/search-container)}
-        [search/search-input {:on-cancel #(reset! search-value nil)
-                              :on-change #(reset! search-value %)}]]
+        [search/search-input-old {:on-cancel #(reset! search-value nil)
+                                  :on-change #(reset! search-value %)}]]
        [react/view {:style {:flex             1
                             :padding-vertical 8}}
         (if (seq contacts)

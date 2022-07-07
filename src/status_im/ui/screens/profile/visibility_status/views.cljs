@@ -36,9 +36,9 @@
         [border-width margin-left size] (if automatic? [1 -10 12] [0 6 10])]
     [:<>
      (when automatic?
-       [rn/view {:style (styles/visibility-status-profile-dot
+       [rn/view {:style (styles/visibility-status-profile-dot-old
                          colors/color-inactive size border-width 6)}])
-     [rn/view {:style (styles/visibility-status-profile-dot
+     [rn/view {:style (styles/visibility-status-profile-dot-old
                        color size border-width margin-left)}]]))
 
 (defn visibility-status-button [on-press props]
@@ -50,7 +50,7 @@
                                    constants/visibility-status-automatic)
                                   constants/visibility-status-automatic)
                                 status-type)
-        {:keys [color title]} (get utils/visibility-status-type-data status-type)]
+        {:keys [color title]} (get utils/visibility-status-type-data-old status-type)]
     [rn/touchable-opacity
      (merge
       {:on-press             on-press
@@ -97,7 +97,7 @@
 
 (defn status-option [{:keys [request-close status-type]}]
   (let [{:keys [color title subtitle]}
-        (get utils/visibility-status-type-data status-type)]
+        (get utils/visibility-status-type-data-old status-type)]
     [rn/touchable-opacity {:style               {:padding 6}
                            :accessibility-label :visibility-status-option
                            :on-press            #(status-option-pressed

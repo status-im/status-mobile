@@ -71,5 +71,5 @@
                       :key-fn    :browser-id
                       :render-fn list-item}]
 
-     [components.plus-button/plus-button
+     [components.plus-button/plus-button-old
       {:on-press #(re-frame/dispatch [:browser.ui/open-empty-tab])}]]))

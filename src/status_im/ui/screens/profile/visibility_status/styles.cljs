@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.visibility-status.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as quo2.colors]))
 
 (defn visibility-status-button-container []
   {:background-color       (:interactive-02 @colors/theme)
@@ -18,11 +19,19 @@
    :width            size
    :height           size
    :border-radius    (/ size 2)
+   :border-width     3.5
+   :border-color     (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)})
+
+(defn visibility-status-dot-old [dot-color size]
+  {:background-color dot-color
+   :width            size
+   :height           size
+   :border-radius    (/ size 2)
    :border-width     1
    :border-color     colors/white})
 
-(defn visibility-status-profile-dot [color size border-width margin-left]
-  (merge (visibility-status-dot color size)
+(defn visibility-status-profile-dot-old [color size border-width margin-left]
+  (merge (visibility-status-dot-old color size)
          {:margin-right 6
           :margin-left  margin-left
           :border-width border-width}))

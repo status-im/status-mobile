@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.status.views
-  (:require [status-im.ui.screens.chat.message.message :as message]
+  (:require [status-im.ui.screens.chat.message.message-old :as message]
             [status-im.ui.components.react :as react]
             [quo.design-system.colors :as colors]
             [status-im.utils.datetime :as datetime]
@@ -210,5 +210,5 @@
            :on-scroll-to-index-failed #()
            :header                    [react/view {:height 8}]
            :footer                    [react/view {:height 68}]}]))
-     [components.plus-button/plus-button
+     [components.plus-button/plus-button-old
       {:on-press #(re-frame/dispatch [:open-modal :my-status])}]]))

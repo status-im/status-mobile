@@ -148,7 +148,7 @@
     text]])
 
 (defn community-chat-item [{:keys [chat-id] :as home-item} _ _ _]
-  [inner-item/home-list-item
+  [inner-item/home-list-item-old
    ;; We want communities to behave as public chats when it comes to
    ;; unread indicator
    (assoc home-item :public? true)
@@ -271,7 +271,7 @@
              [community-chat-list id categories false from-chat]
              [community-channel-preview-list id chats])
            (when admin
-             [components.plus-button/plus-button
+             [components.plus-button/plus-button-old
               {:on-press #(>evt [:bottom-sheet/show-sheet
                                  {:content (fn []
                                              [community-plus-actions community])}])

@@ -9,11 +9,10 @@
 
 (def public-unread
   {:background-color colors/blue
-   :border-radius    6
-   :margin-right     5
-   :margin-bottom    5
-   :width            12
-   :height           12})
+   :border-radius    5
+   :margin-right     16
+   :width            10
+   :height           10})
 
 (def datetime-text
   {:color          colors/text-gray

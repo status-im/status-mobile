@@ -224,7 +224,7 @@
                             :hardwareBackButton {:dismissModalOnPress false
                                                  :popStackOnPress     false}
                             :topBar             {:visible false}}
-            :component     chat/chat}
+            :component     chat/chat-old}
 
            ;Pinned messages
            {:name      :chat-pinned-messages

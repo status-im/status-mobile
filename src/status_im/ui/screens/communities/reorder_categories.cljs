@@ -54,7 +54,7 @@
        :on-press            #(show-delete-chat-confirmation community-id chat-id)}
       [icons/icon :main-icons/delete-circle {:no-color true}]]
      [rn/view {:flex 1}
-      [inner-item/home-list-item (assoc home-item :edit? true) {:active-opacity 1}]]
+      [inner-item/home-list-item-old (assoc home-item :edit? true) {:active-opacity 1}]]
      [rn/touchable-opacity {:on-long-press       drag
                             :delay-long-press    100
                             :accessibility-label :chat-drag-handle

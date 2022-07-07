@@ -55,7 +55,7 @@
                  (i18n/label :t/select-token-to-receive))
        :modal? true}]
 
-     [search-input/search-input
+     [search-input/search-input-old
       {:search-active? true}]
 
      [react/scroll-view

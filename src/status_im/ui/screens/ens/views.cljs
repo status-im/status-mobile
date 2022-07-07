@@ -17,7 +17,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.screens.chat.message.message :as message]
+            [status-im.ui.screens.chat.message.message-old :as message]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.utils.debounce :as debounce]
@@ -639,10 +639,10 @@
 (views/defview my-name []
   (views/letsubs [contact-name [:multiaccount/preferred-name]]
     (when-not (string/blank? contact-name)
-      (chat.utils/format-author {:names {:ens-name
-                                         (str "@"
-                                              (or (stateofus/username contact-name)
-                                                  contact-name))}}))))
+      (chat.utils/format-author-old {:names {:ens-name
+                                             (str "@"
+                                                  (or (stateofus/username contact-name)
+                                                      contact-name))}}))))
 
 (views/defview registered [names {:keys [preferred-name] :as account} _ registrations]
   [react/view {:style {:flex 1}}

@@ -1756,5 +1756,6 @@
     "mutual-contact-requests": "Mutual contact requests",
     "pending": "Pending",
     "negative": "Negative",
-    "positive": "Positive"
+    "positive": "Positive",
+    "public": "Public"
 }
