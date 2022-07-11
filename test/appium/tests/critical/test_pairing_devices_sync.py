@@ -139,6 +139,10 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.chat_1.set_nickname(self.nickname)
         self.device_1.get_back_to_home_view()
 
+        self.device_1.just_fyi('Add profile picture')
+        self.home_1.profile_button.double_click()
+        self.profile_1.edit_profile_picture('sauce_logo.png')
+
         self.device_2.just_fyi('Pair main and secondary devices')
         self.profile_2.discover_and_advertise_device(self.name_2)
         self.profile_1.discover_and_advertise_device(self.name_1)
@@ -251,3 +255,8 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         if not self.home_2.element_by_text('#%s' % self.public_chat_after_sync).is_element_disappeared(60):
             self.errors.append('Remove of "%s" public chat is not synced!' % self.public_chat_after_sync)
         self.errors.verify_no_errors()
+
+    @marks.testrail_id()
+    def test_pairing_sync_profile_picture(self):
+        if not self.chat_2.contact_profile_picture.is_element_image_equals_template('sauce_logo.png'):
+            self.errors.append("Updated profile picture is not shown in one-to-one chat")
