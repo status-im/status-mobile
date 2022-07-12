@@ -342,6 +342,7 @@ class BaseView(object):
 
     def just_fyi(self, some_str):
         self.driver.info('# STEP: %s' % some_str, device=False)
+        self.driver.execute_script("sauce:context=STEP: %s" % some_str)
 
     def click_system_back_button(self, times=1):
         self.driver.info('Click system back button')
