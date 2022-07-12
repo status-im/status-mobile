@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.102.7",
-    "commit-sha1": "6df2033179083596447469f7e160a657de0020af",
-    "src-sha256": "17h6g0pjlynsr32dhiqaxyaybaqdbr4y9ivyjbdbwm0z5k1v82af"
+    "version": "feat/addReroutingWithDisabledNetworks",
+    "commit-sha1": "30107f15866704ff4e0c77b0b522a53500f880d5",
+    "src-sha256": "0r3k9rb6qysh3dvijgw5v02az5q0pfar6rr224cnadladr8wa1hl"
 }
