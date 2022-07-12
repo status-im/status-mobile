@@ -256,7 +256,12 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             self.errors.append('Remove of "%s" public chat is not synced!' % self.public_chat_after_sync)
         self.errors.verify_no_errors()
 
-    @marks.testrail_id()
+    @marks.testrail_id(702370)
     def test_pairing_sync_profile_picture(self):
-        if not self.chat_2.contact_profile_picture.is_element_image_equals_template('sauce_logo.png'):
-            self.errors.append("Updated profile picture is not shown in one-to-one chat")
+        [device.home_button.double_click() for device in (self.profile_1, self.profile_2)]
+        self.home_2.profile_button.double_click()
+
+        self.home_2.just_fyi("Check that profile picture is synced")
+        if not self.profile_2.profile_picture.is_element_image_equals_template('sauce_logo.png'):
+            self.errors.append("Profile picture is not synced")
+        self.errors.verify_no_errors()
