@@ -325,6 +325,7 @@ dependencies {
 
     implementation 'androidx.multidex:multidex:2.0.1' // only needed if minSdkVersion is less than 21 (https://developer.android.com/studio/build/multidex)
     implementation project(':react-native-dialogs')
+    implementation project(':react-native-blur')
     // Force using exact RN version instead of relying on gradle dependency resolution
     // https://docs.gradle.org/current/userguide/introduction_dependency_management.html#sec:dependency_resolution
     // NOTE: Uncomment if building RN from a fork

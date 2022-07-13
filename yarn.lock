@@ -1473,10 +1473,9 @@
     eventemitter3 "^1.2.0"
     lodash "^4.17.15"
 
-"@react-native-community/blur@^3.6.0":
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/blur/-/blur-3.6.0.tgz#31c9e0f2770519c9b5c4f99418f192246f0d4db8"
-  integrity sha512-GtDBhpX2pQcjl4VopOC8FktrVufrEfYRwVeMQ2WWckqKIv2BdwvlvWvj88L1WmEdBr9UNcm3rtgz+d+YXkmirA==
+"@react-native-community/blur@git+https://github.com/Kureev/react-native-blur#refs/tags/v3.6.1":
+  version "3.6.1"
+  resolved "git+https://github.com/Kureev/react-native-blur#9d2d744a5171f3a77564a43f87c2cfb3fbcf597e"
   dependencies:
     prop-types "^15.5.10"
 
@@ -7773,9 +7772,9 @@ prop-types@15.x.x, prop-types@^15.6.2, prop-types@^15.7.2:
     react-is "^16.8.1"
 
 prop-types@^15.5.10:
-  version "15.8.0"
-  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.0.tgz#d237e624c45a9846e469f5f31117f970017ff588"
-  integrity sha512-fDGekdaHh65eI3lMi5OnErU6a8Ighg2KjcjQxO7m8VHyWjcPyj5kiOgV1LQDOOOgVy3+5FgjXvdSSX7B8/5/4g==
+  version "15.8.1"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
+  integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
   dependencies:
     loose-envify "^1.4.0"
     object-assign "^4.1.1"
