@@ -104,6 +104,7 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("(main device): get recovery phrase")
         self.profile_1 = self.home_1.profile_button.click()
+        self.device_2.put_app_to_background_and_back()
         self.profile_1.privacy_and_security_button.click()
         self.profile_1.backup_recovery_phrase_button.click()
         self.profile_1.ok_continue_button.click()
@@ -259,9 +260,9 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702370)
     def test_pairing_sync_profile_picture(self):
         [device.home_button.double_click() for device in (self.profile_1, self.profile_2)]
-        self.home_2.profile_button.double_click()
+        self.home_1.profile_button.double_click()
 
         self.home_2.just_fyi("Check that profile picture is synced")
-        if not self.profile_2.profile_picture.is_element_image_equals_template('sauce_logo.png'):
+        if not self.profile_2.profile_picture.is_element_image_equals_template('sauce_logo_profile_picture.png'):
             self.errors.append("Profile picture is not synced")
         self.errors.verify_no_errors()
