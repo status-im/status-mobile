@@ -216,7 +216,7 @@
 
            ;Home
            {:name      :home
-            :component home/home}
+            :component home/home-old}
 
            ;Chat
            {:name          :chat
