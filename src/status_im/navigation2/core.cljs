@@ -1,9 +1,11 @@
 (ns status-im.navigation2.core
   (:require [re-frame.core :as re-frame]
+            [quo2.foundations.colors :as colors]
             [status-im.ui.screens.views :as views]
-            [status-im.navigation2.utils :as nav2-utils]
             [status-im.navigation2.roots :as roots]
+            [status-im.utils.platform :as platform]
             [status-im.navigation.roots :as nav-roots]
+            [status-im.navigation2.utils :as nav2-utils]
             ["react-native-navigation" :refer (Navigation)]))
 
 (def tab-key-idx {:home        0
@@ -32,11 +34,13 @@
   (str comp "-" id))
 
 (defn get-options [show-topbar? options]
-  (if show-topbar?
-    (merge options
-           (nav-roots/status-bar-options)
-           (nav-roots/merge-top-bar (nav-roots/topbar-options) options))
-    {:topBar {:visible false}}))
+  (merge options
+         (nav-roots/status-bar-options)
+         (when platform/android?
+           {:navigationBar {:backgroundColor (colors/theme-colors colors/white colors/neutral-90)}})
+         (if show-topbar?
+           (nav-roots/merge-top-bar (nav-roots/topbar-options) options)
+           {:topBar {:visible false}})))
 
 (defn change-stack-root [[comp _]]
   (let [{:keys [options]} (get views/screens comp)]

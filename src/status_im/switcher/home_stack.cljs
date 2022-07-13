@@ -16,15 +16,15 @@
     :browser-stack @bottom-tabs/load-browser-tab?
     :wallet-stack @bottom-tabs/load-wallet-tab?))
 
-(defn stack-view [stack-id shared-values top-margin]
+(defn stack-view [stack-id shared-values]
   (when (load-stack? stack-id)
     [:f>
      (fn []
        [reanimated/view {:style (reanimated/apply-animations-to-style
                                  {:opacity        (get shared-values (get constants/stacks-opacity-keywords stack-id))
                                   :pointer-events (get shared-values (get constants/stacks-pointer-keywords stack-id))}
-                                 {:top              top-margin
-                                  :bottom           (if platform/ios? 79 55)
+                                 {:top              0
+                                  :bottom           (if platform/ios? 79 54)
                                   :left             0
                                   :right            0
                                   :position         :absolute})}
@@ -36,10 +36,10 @@
 
 (defn home-stack [shared-values]
   [:<>
-   [stack-view :communities-stack shared-values (if platform/ios? 47 0)]
-   [stack-view :chats-stack shared-values (if platform/ios? 47 0)]
-   [stack-view :browser-stack shared-values 0]
-   [stack-view :wallet-stack shared-values 0]])
+   [stack-view :communities-stack shared-values]
+   [stack-view :chats-stack shared-values]
+   [stack-view :browser-stack shared-values]
+   [stack-view :wallet-stack shared-values]])
 
 (defn home []
   [:f>

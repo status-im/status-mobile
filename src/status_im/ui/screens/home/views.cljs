@@ -18,6 +18,7 @@
             [status-im.add-new.db :as db]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
+            [quo.components.safe-area :as safe-area]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.screens.chat.sheets :as sheets]
@@ -179,6 +180,20 @@
                      :accessibility-label :notifications-unread-badge}]])]))
 
 (defn home []
+  [safe-area/consumer
+   (fn [insets]
+     [react/keyboard-avoiding-view {:style {:flex 1 :padding-top (:top insets)}
+                                    :ignore-offset true}
+      [topbar/topbar {:title           (i18n/label :t/chat)
+                      :navigation      :none
+                      :right-component [react/view {:flex-direction :row :margin-right 16}
+                                        [connectivity/connectivity-button]
+                                        [notifications-button]]}]
+      [chats-list]
+      [plus-button]
+      [tabbar/tabs-counts-subscriptions]])])
+
+(defn home-old []
   [react/keyboard-avoiding-view {:style {:flex 1}
                                  :ignore-offset true}
    [topbar/topbar {:title           (i18n/label :t/chat)
