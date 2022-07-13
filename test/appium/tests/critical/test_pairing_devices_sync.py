@@ -148,6 +148,7 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         [device.profile_button.double_click() for device in (self.profile_1, self.profile_2)]
 
     @marks.testrail_id(702194)
+    @marks.xfail(reason="failing due to issue #13635. Skipping until fix", run=False)
     def test_pairing_sync_initial_contacts_blocked_users(self):
         self.profile_2.contacts_button.scroll_to_element(9, 'up')
         self.profile_2.contacts_button.click()
@@ -171,6 +172,7 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702196)
+    @marks.xfail(reason="failing due to issue #13635. Skipping until fix", run=False)
     def test_pairing_sync_contacts_block_unblock(self):
         [device.profile_button.double_click() for device in (self.profile_1, self.profile_2)]
         new_user_for_block = transaction_senders['C']

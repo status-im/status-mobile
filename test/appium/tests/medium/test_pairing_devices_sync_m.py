@@ -162,7 +162,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.device_3.put_app_to_background_and_back()
 
-    @marks.testrail_id(702288)
+    @marks.testrail_id(702266)
     def test_pairing_sync_currency(self):
         self.wallet_2 = self.home_2.wallet_button.click()
         self.wallet_2.just_fyi('Check currency is set to AFN on device 2 after sync')
