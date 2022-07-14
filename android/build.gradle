@@ -59,6 +59,7 @@ allprojects {
         flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
         // Everything Else
         google()
+        jcenter() // Required for @react-native-community/blur:3.6.1, can be removed after updating to 3.6.1+
         mavenCentral()
         maven { url "https://www.jitpack.io" }
     }
