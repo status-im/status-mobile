@@ -1051,9 +1051,6 @@ class TestMutualContactRequests(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi('Verify request sender can send messages to request acceptor after acceptance of cr')
 
-        #TODO: Clicking send button to clear input field from remained request message. Should be removed after fix of #13610
-        self.chat_1.send_message_button.click()
-
         message_from_sender = 'Message sent after my contact request has been accepted'
         self.chat_1.send_message(message_from_sender)
         if not chat_2.chat_element_by_text(message_from_sender).is_element_displayed():
