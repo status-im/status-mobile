@@ -244,8 +244,10 @@
                                                 contact.db/enrich-contact)))
 
       (= chat-type constants/community-chat-type)
-      (merge mentionable-users
-             (mentionable-contacts-from-identites all-contacts public-key (keys community-members)))
+      (mentionable-contacts-from-identites
+       all-contacts
+       public-key
+       (distinct (concat (keys community-members) (keys mentionable-users))))
 
       (= chat-type constants/public-chat-type)
       (merge mentionable-users (select-keys mentionable-contacts (keys mentionable-users)))
