@@ -188,7 +188,14 @@
         if (!this._events[name]) {
           return
         }
-        this._events[name].forEach(cb => cb(data));
+        this._events[name].forEach(cb => {
+            // Fixes: https://github.com/status-im/status-react/issues/13642
+            // Metamask also errors on the same issue, but it's using https://github.com/MetaMask/safe-event-emitter and therefore the dapp still works
+            try{
+                cb(data)
+            } catch(e){
+                setTimeout((()=>{throw e}))
+            }});
     }
     EthereumProvider.prototype.enable = function () {
         if (window.statusAppDebug) { console.log("enable"); }
