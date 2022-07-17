@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.4.3'
+library 'status-jenkins-lib@v1.5.0'
 
 pipeline {
   agent { label params.AGENT_LABEL }
@@ -97,7 +97,7 @@ pipeline {
         sshagent(credentials: ['nix-cache-ssh']) {
           nix.shell("""
               find /nix/store/ -mindepth 1 -maxdepth 1 -type d \
-                -not -name '*.links' -and -not -name '*-status-react-*' \
+                -not -name '*.links' -and -not -name '*-status-mobile-*' \
                 | xargs nix copy \
                   --to ssh-ng://${params.NIX_CACHE_USER}@${params.NIX_CACHE_HOST}
             """,

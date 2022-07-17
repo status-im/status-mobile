@@ -6,7 +6,7 @@
 
 # PARAMETERS ----------------------------
 # Github repo to scan
-GITHUB_REPO="status-im/status-react"
+GITHUB_REPO="status-im/status-mobile"
 
 # Computational mode
 # available values :

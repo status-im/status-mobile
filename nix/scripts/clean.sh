@@ -23,7 +23,7 @@ findRelated() {
     elif [[ "${path}" =~ .*.lock ]]; then
         log " ! Lock:       ${path}"
         return
-    elif [[ "${path}" =~ .*status-react-shell.drv ]]; then
+    elif [[ "${path}" =~ .*status-mobile-shell.drv ]]; then
         echo -n "${path}"
         return
     fi
@@ -88,7 +88,7 @@ if [[ -n "${nixResultPath}" ]]; then
     # if provided we can narrow down what to clean based on result path
     toDelete=$(findByResult "${nixResultPath}")
 else 
-    # use regular expression that should match all status-react build artifacts
+    # use regular expression that should match all status-mobile build artifacts
     toDelete=$(findByRegex '.*-status-(react|go)-(shell|source|build|patched-npm-gradle-modules).*')
 fi
 

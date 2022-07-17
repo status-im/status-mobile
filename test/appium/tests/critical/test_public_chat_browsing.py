@@ -165,8 +165,8 @@ class TestPublicChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         [chat.home_button.double_click() for chat in (self.chat_1, self.chat_2)]
         [home.get_chat('#' + self.public_chat_name).click() for home in (self.home_1, self.home_2)]
         giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
-        preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-react/pull/11707',
-                                      'txt': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-react',
+        preview_urls = {'github_pr': {'url': 'https://github.com/status-im/status-mobile/pull/11707',
+                                      'txt': 'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-mobile',
                                       'subtitle': 'GitHub'},
                         'yotube': {
                             'url': 'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',

@@ -189,7 +189,7 @@
           return
         }
         this._events[name].forEach(cb => {
-            // Fixes: https://github.com/status-im/status-react/issues/13642
+            // Fixes: https://github.com/status-im/status-mobile/issues/13642
             // Metamask also errors on the same issue, but it's using https://github.com/MetaMask/safe-event-emitter and therefore the dapp still works
             try{
                 cb(data)

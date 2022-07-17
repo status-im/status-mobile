@@ -15,8 +15,8 @@ let
   # Combines with many other shells
   node-sh = mkShell {
     shellHook = ''
-      export STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
-      $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${pkgs.deps.nodejs-patched}
+      export STATUS_MOBILE_HOME=$(git rev-parse --show-toplevel)
+      $STATUS_MOBILE_HOME/nix/scripts/node_modules.sh ${pkgs.deps.nodejs-patched}
     '';
   };
 

@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.4.3'
+library 'status-jenkins-lib@v1.5.0'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
@@ -25,7 +25,7 @@ pipeline {
       artifactNumToKeepStr: '10',
     ))
     /* Allows combined build to copy */
-    copyArtifactPermission('/status-react/*')
+    copyArtifactPermission('/status-mobile/*')
     /* Abort old PR builds. */
     disableConcurrentBuilds(
       abortPrevious: isPRBuild

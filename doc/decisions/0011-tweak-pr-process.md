@@ -29,7 +29,7 @@ As a rule of thumb, coverage should increase.
 **3. Reject PRs that don't write what tests the author have done and what platforms you used to test, including screenshots, videos or logs**
 This means QA and dev have to spend less time catching obvious problems.
 
-**4. Run tests when a PR is at "Review" stage on https://github.com/status-im/status-react/projects/7 (or add new 'e2e stage' between review and `TO TEST`)**
+**4. Run tests when a PR is at "Review" stage on https://github.com/status-im/status-mobile/projects/7 (or add new 'e2e stage' between review and `TO TEST`)**
 
 **5. Dev asks for 2-3 reviewers, including a designer if the change affects UI, and these reviewers review within a day.**
 This ensures we don't have *diffusion of responsibility* and that PRs are reviewed quickly.

@@ -13,10 +13,10 @@
 ; As a user, I want to accept 3 generated words when creating my account so that I can recognize these words when signing transactions
 ; and thus make it hard to create a phishing page and protect myself from phishing attack.
 ;
-; See more info at: https://github.com/status-im/status-react/issues/1585
+; See more info at: https://github.com/status-im/status-mobile/issues/1585
 ;
 ; Currently only English is supported (as the default language),
-; for more details see #https://github.com/status-im/status-react/issues/1679
+; for more details see #https://github.com/status-im/status-mobile/issues/1679
 
 (defn pick-words [dictionary]
   (repeatedly 3 #(rand-nth dictionary)))

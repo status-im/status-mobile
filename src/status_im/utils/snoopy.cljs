@@ -102,6 +102,6 @@
         :tick?             false
         :print-events?     true
         ;; todo(rasom): revisit this number when/if
-        ;; https://github.com/status-im/status-react/pull/2849 will be merged
+        ;; https://github.com/status-im/status-mobile/pull/2849 will be merged
         :threshold         200
         :events            events}))))

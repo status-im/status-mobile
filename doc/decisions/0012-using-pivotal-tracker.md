@@ -23,8 +23,8 @@ The `State` field in the Pivotal story is used to track the progress of a Pivota
 | ---------- | -------- |
 | `Unstarted`  | In backlog     |
 | `Started`    | Developer has started work on story     |
-| `Finished`   | Developer has finished work on story (Pull Request for story is in [REVIEW](https://github.com/status-im/status-react/projects/7#column-1843024) column in [Pipeline for QA](https://github.com/status-im/status-react/projects/7) board) |
-| `Delivered`  | Pull Request for story is in testing in [Pipeline for QA](https://github.com/status-im/status-react/projects/7) board) board     |
+| `Finished`   | Developer has finished work on story (Pull Request for story is in [REVIEW](https://github.com/status-im/status-mobile/projects/7#column-1843024) column in [Pipeline for QA](https://github.com/status-im/status-mobile/projects/7) board) |
+| `Delivered`  | Pull Request for story is in testing in [Pipeline for QA](https://github.com/status-im/status-mobile/projects/7) board) board     |
 | `Accepted`   | PR has been merged     |
 | `Rejected`   | PR has been aborted     |
 

@@ -40,7 +40,7 @@ in {
       export STATUS_GO_ANDROID_LIBDIR=${status-go {}}
 
       # check if node modules changed and if so install them
-      $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${deps.nodejs-patched}
+      $STATUS_MOBILE_HOME/nix/scripts/node_modules.sh ${deps.nodejs-patched}
     '';
   };
 }

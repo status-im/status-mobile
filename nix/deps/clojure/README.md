@@ -27,13 +27,13 @@ The `deps.json` is loaded by the derivation in [`default.nix`](./default.nix) an
 cljfmt/cljfmt/0.6.7/cljfmt-0.6.7.jar
 
  > nix-build --no-out-link -A pkgs.deps.clojure
-/nix/store/d7p8r9vhq6z2jmxwakxpcb262wgkc86s-status-react-clojure-deps
+/nix/store/d7p8r9vhq6z2jmxwakxpcb262wgkc86s-status-mobile-clojure-deps
 
  > DEPS=$(nix-build --no-out-link -A pkgs.deps.clojure)                              
 
  > find $DEPS -iname 'cljfmt-0.6.7.*'
-/nix/store/d7p...86s-status-react-clojure-deps/cljfmt/cljfmt/0.6.7/cljfmt-0.6.7.pom.sha1
-/nix/store/d7p...86s-status-react-clojure-deps/cljfmt/cljfmt/0.6.7/cljfmt-0.6.7.pom
-/nix/store/d7p...86s-status-react-clojure-deps/cljfmt/cljfmt/0.6.7/cljfmt-0.6.7.jar.sha1
-/nix/store/d7p...86s-status-react-clojure-deps/cljfmt/cljfmt/0.6.7/cljfmt-0.6.7.jar
+/nix/store/d7p...86s-status-mobile-clojure-deps/cljfmt/cljfmt/0.6.7/cljfmt-0.6.7.pom.sha1
+/nix/store/d7p...86s-status-mobile-clojure-deps/cljfmt/cljfmt/0.6.7/cljfmt-0.6.7.pom
+/nix/store/d7p...86s-status-mobile-clojure-deps/cljfmt/cljfmt/0.6.7/cljfmt-0.6.7.jar.sha1
+/nix/store/d7p...86s-status-mobile-clojure-deps/cljfmt/cljfmt/0.6.7/cljfmt-0.6.7.jar
 ```

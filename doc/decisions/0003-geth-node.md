@@ -49,7 +49,7 @@ decentralization and security.
 Q2 we will provide two ways of accessing the Ethereum network:
 
 - Upstream RPC with Infura (default)
-- Custom upstream node (https://github.com/status-im/status-react/issues/3994)
+- Custom upstream node (https://github.com/status-im/status-mobile/issues/3994)
 
 From a decentralization point of view we need the latter before we can release
 the beta.

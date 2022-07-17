@@ -8,7 +8,7 @@ This document explains some of the steps that are involved in releases.
 
 All the coordination is done in the `#release` channel on discord.
 
-Release readiness can be tracked by watching an appropriate milestone at [milestones](https://github.com/status-im/status-react/milestones) section in github.
+Release readiness can be tracked by watching an appropriate milestone at [milestones](https://github.com/status-im/status-mobile/milestones) section in github.
 
 When release is building you can check the progress in a testrail. Ask @churik for access if you don't have it
 
@@ -53,7 +53,7 @@ tested successfully.
 
 ## Bugfixes before an app is released
 
-Because both `status-react` and `status-go` might have newer commits that we don't want to include, bug fixes should be applied separately to develop and the release branch.
+Because both `status-mobile` and `status-go` might have newer commits that we don't want to include, bug fixes should be applied separately to develop and the release branch.
 The best workflow is to send a PR to develop, get it merged, and the cherry-pick on the
 release branch.
 
@@ -87,9 +87,9 @@ Push the branch and then the tag to origin:
 `git push --set-upstream origin release/v0.62.3+hotfix.2`
 `git push origin v0.62.3+hotfix.2`
 
-Switch to status-react release branch, and cherry pick the commit you need.
+Switch to status-mobile release branch, and cherry pick the commit you need.
 
-Once that's done, update the status-react release branch with the new tag:
+Once that's done, update the status-mobile release branch with the new tag:
 
 `make shell`
 
@@ -101,9 +101,9 @@ And commit and push the changes
 
 The hotfix process is basically identical to the workflow of a bugfix:
 
-1) Add the changes on status-react
+1) Add the changes on status-mobile
 2) Make sure you use a hotfix branch for status-go (unless we are happy to release from develop)
-3) Update the `VERSION` in status-react
+3) Update the `VERSION` in status-mobile
 
 # PlayStore Metadata Updates
 This section is relevant only for the marketing team, no developer participation is required.
@@ -112,4 +112,4 @@ You can update Play Store release metadata using `fastlane android upload_metada
 
 But that requires credentials necessary for accessing Play Store API. The simpler way is to edit files contained within [`fastlane/metadata`](metadata) and run the following CI job:
 
-https://ci.status.im/job/status-react/job/tools/job/update-playstore-metadata/
+https://ci.status.im/job/status-mobile/job/tools/job/update-playstore-metadata/

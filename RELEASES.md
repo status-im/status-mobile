@@ -2,81 +2,81 @@
 
 ### Features
 
-* 💬 Re-open app on the last open chat ([details](https://github.com/status-im/status-react/issues/12782))
-* 🪙 Support \$UBI token ([details](https://github.com/status-im/status-react/issues/12975))
-* 🔔 Implementation of remote android notifications ([details](https://github.com/status-im/status-react/issues/12866))
-* 🔁 Sync clear history on paired devices ([details](https://github.com/status-im/status-react/issues/13004))
-* 📑 Synchronize browser bookmarks/favorites across devices ([details](https://github.com/status-im/status-react/issues/12961))
-* 🔕 Add mute option to android ([details](https://github.com/status-im/status-react/issues/12890))
-* 👛 Wallet Connect 2.0 integration ([details](https://github.com/status-im/status-react/issues/12546))
-* 💰 Implement Wallet Connect 1.0 ([details](https://github.com/status-im/status-react/issues/12870))
-* ⚙️ Sync settings ([details](https://github.com/status-im/status-react/pull/13053))
+* 💬 Re-open app on the last open chat ([details](https://github.com/status-im/status-mobile/issues/12782))
+* 🪙 Support \$UBI token ([details](https://github.com/status-im/status-mobile/issues/12975))
+* 🔔 Implementation of remote android notifications ([details](https://github.com/status-im/status-mobile/issues/12866))
+* 🔁 Sync clear history on paired devices ([details](https://github.com/status-im/status-mobile/issues/13004))
+* 📑 Synchronize browser bookmarks/favorites across devices ([details](https://github.com/status-im/status-mobile/issues/12961))
+* 🔕 Add mute option to android ([details](https://github.com/status-im/status-mobile/issues/12890))
+* 👛 Wallet Connect 2.0 integration ([details](https://github.com/status-im/status-mobile/issues/12546))
+* 💰 Implement Wallet Connect 1.0 ([details](https://github.com/status-im/status-mobile/issues/12870))
+* ⚙️ Sync settings ([details](https://github.com/status-im/status-mobile/pull/13053))
 
 ### Improvements
 
-* Improve order of mailserver requests ([details](https://github.com/status-im/status-react/issues/12783))
-* Load images from an https server ([details](https://github.com/status-im/status-react/issues/12855))
-* Load audio messages from https server ([details](https://github.com/status-im/status-react/issues/13116))
-* Show message timestamps on tap, remove from bubbles 🕙 ([details](https://github.com/status-im/status-react/pull/12915))
-* support PUK and seed recovery during onboarding ([details](https://github.com/status-im/status-react/pull/12955))
-* update react-native-webview ([details](https://github.com/status-im/status-react/pull/12987))
-* Add group members to mentionable list ([details](https://github.com/status-im/status-react/pull/12994))
-* always use english for fallback text ([details](https://github.com/status-im/status-react/pull/13019))
-* Disable chat input for chats with a blocked user ([details](https://github.com/status-im/status-react/pull/13162))
-* Handle timeouts on mailserver requests ([details](https://github.com/status-im/status-react/issues/13022))
-* Human Readable data display when signing using eth_signTypedData_v3 ([details](https://github.com/status-im/status-react/issues/12535))
+* Improve order of mailserver requests ([details](https://github.com/status-im/status-mobile/issues/12783))
+* Load images from an https server ([details](https://github.com/status-im/status-mobile/issues/12855))
+* Load audio messages from https server ([details](https://github.com/status-im/status-mobile/issues/13116))
+* Show message timestamps on tap, remove from bubbles 🕙 ([details](https://github.com/status-im/status-mobile/pull/12915))
+* support PUK and seed recovery during onboarding ([details](https://github.com/status-im/status-mobile/pull/12955))
+* update react-native-webview ([details](https://github.com/status-im/status-mobile/pull/12987))
+* Add group members to mentionable list ([details](https://github.com/status-im/status-mobile/pull/12994))
+* always use english for fallback text ([details](https://github.com/status-im/status-mobile/pull/13019))
+* Disable chat input for chats with a blocked user ([details](https://github.com/status-im/status-mobile/pull/13162))
+* Handle timeouts on mailserver requests ([details](https://github.com/status-im/status-mobile/issues/13022))
+* Human Readable data display when signing using eth_signTypedData_v3 ([details](https://github.com/status-im/status-mobile/issues/12535))
 
 ### Bug Fixes
 
-* Bug/fix opensea api ([details](https://github.com/status-im/status-react/pull/13021))
-* Show "Fetch more messages" only in public chats and communities ([details](https://github.com/status-im/status-react/pull/12927))
-* Chats are not synced if delete and re-add them on the first device while the second device is offline ([details](https://github.com/status-im/status-react/issues/12913))
-* fix distortion of app theme due to change in system theme ([details](https://github.com/status-im/status-react/pull/12934))
-* Unable to perform swap on 1inch.exchange if initial swap was cancelled by closing bottom sheet ([details](https://github.com/status-im/status-react/issues/12920))
-* Error when trying to edit 'per-gas price limit' on 1inch.exchange ([details](https://github.com/status-im/status-react/issues/12991))
-* Allow adding emoji in status input even if it exceeds limit ([details](https://github.com/status-im/status-react/pull/12949))
-* Allow adding emoji to group intro message if it exceeds limit ([details](https://github.com/status-im/status-react/pull/13024))
-* Use higher base fee value for default tx fee calculation ([details](https://github.com/status-im/status-react/pull/13020))
-* Profile QR code overlaps share menu during sharing (IOS) ([details](https://github.com/status-im/status-react/pull/13050))
-* No value in 'Gas amount limit' field in NFT dapps ([details](https://github.com/status-im/status-react/pull/13051))
-* Stop showing fetch more button for cleared history ([details](https://github.com/status-im/status-react/pull/13084))
-* fix ens resolve issue while following deep link ([details](https://github.com/status-im/status-react/pull/13080))
-* Fix deadlock on syncing all data ([details](https://github.com/status-im/status-react/pull/13128))
-* Fix broken username and timestamp layout for long usernames ([details](https://github.com/status-im/status-react/pull/13174))
+* Bug/fix opensea api ([details](https://github.com/status-im/status-mobile/pull/13021))
+* Show "Fetch more messages" only in public chats and communities ([details](https://github.com/status-im/status-mobile/pull/12927))
+* Chats are not synced if delete and re-add them on the first device while the second device is offline ([details](https://github.com/status-im/status-mobile/issues/12913))
+* fix distortion of app theme due to change in system theme ([details](https://github.com/status-im/status-mobile/pull/12934))
+* Unable to perform swap on 1inch.exchange if initial swap was cancelled by closing bottom sheet ([details](https://github.com/status-im/status-mobile/issues/12920))
+* Error when trying to edit 'per-gas price limit' on 1inch.exchange ([details](https://github.com/status-im/status-mobile/issues/12991))
+* Allow adding emoji in status input even if it exceeds limit ([details](https://github.com/status-im/status-mobile/pull/12949))
+* Allow adding emoji to group intro message if it exceeds limit ([details](https://github.com/status-im/status-mobile/pull/13024))
+* Use higher base fee value for default tx fee calculation ([details](https://github.com/status-im/status-mobile/pull/13020))
+* Profile QR code overlaps share menu during sharing (IOS) ([details](https://github.com/status-im/status-mobile/pull/13050))
+* No value in 'Gas amount limit' field in NFT dapps ([details](https://github.com/status-im/status-mobile/pull/13051))
+* Stop showing fetch more button for cleared history ([details](https://github.com/status-im/status-mobile/pull/13084))
+* fix ens resolve issue while following deep link ([details](https://github.com/status-im/status-mobile/pull/13080))
+* Fix deadlock on syncing all data ([details](https://github.com/status-im/status-mobile/pull/13128))
+* Fix broken username and timestamp layout for long usernames ([details](https://github.com/status-im/status-mobile/pull/13174))
 
 ## 1.18.0 Release notes :package:
 
 ### Features
-* 🚦Online status indicator <https://github.com/status-im/status-react/issues/12547>
-* 👛 Add possibility to select wallet for ENS names <https://github.com/status-im/status-react/pull/12761>
-* 🐞 Bug reporting and logs sharing improvements <https://github.com/status-im/status-react/pull/12773>
-* 🍳 Simplify Keycard onboarding by using defaults for pairing password <https://github.com/status-im/status-react/issues/12685>
-* 💾 Backup contacts via Waku <https://github.com/status-im/status-react/issues/12550>
-* 🪙 Added ENS token <https://github.com/status-im/status-react/issues/12807>
-* 🌠 Using react-native-fast-image for stickers <https://github.com/status-im/status-react/pull/12769>
+* 🚦Online status indicator <https://github.com/status-im/status-mobile/issues/12547>
+* 👛 Add possibility to select wallet for ENS names <https://github.com/status-im/status-mobile/pull/12761>
+* 🐞 Bug reporting and logs sharing improvements <https://github.com/status-im/status-mobile/pull/12773>
+* 🍳 Simplify Keycard onboarding by using defaults for pairing password <https://github.com/status-im/status-mobile/issues/12685>
+* 💾 Backup contacts via Waku <https://github.com/status-im/status-mobile/issues/12550>
+* 🪙 Added ENS token <https://github.com/status-im/status-mobile/issues/12807>
+* 🌠 Using react-native-fast-image for stickers <https://github.com/status-im/status-mobile/pull/12769>
 #### Message reliability improvements
-* 𝌗 Show loading until all messages are processed <https://github.com/status-im/status-react/pull/12834>
-* 💪🏼 More robust message confirmations handling <https://github.com/status-im/status-react/pull/12824>
-* 📶 Allow sending messages when offline <https://github.com/status-im/status-react/issues/11889>
+* 𝌗 Show loading until all messages are processed <https://github.com/status-im/status-mobile/pull/12834>
+* 💪🏼 More robust message confirmations handling <https://github.com/status-im/status-mobile/pull/12824>
+* 📶 Allow sending messages when offline <https://github.com/status-im/status-mobile/issues/11889>
 #### Improvements on device pairing 
-* 🔔💻 Notification in activity centre now sync across devices <https://github.com/status-im/status-react/issues/12571>
-* ✅💻 Sync read messages across devices <https://github.com/status-im/status-react/pull/12698>
+* 🔔💻 Notification in activity centre now sync across devices <https://github.com/status-im/status-mobile/issues/12571>
+* ✅💻 Sync read messages across devices <https://github.com/status-im/status-mobile/pull/12698>
 #### Network settings improvements
-* ✨ Add Binance Smart chain <https://github.com/status-im/status-react/pull/12809>
-* ♏︎ Added custom network symbol <https://github.com/status-im/status-react/commit/c16b0860ec921a61c119857de27c6f29e301e4f6>
-* 💰 Network fee on xDai chain <https://github.com/status-im/status-react/pull/12845>
-* 📇 Support tx history (in a way) when on BSC chains <https://github.com/status-im/status-react/pull/12843>
-* 🙅🏻 Remove POA network from the list <https://github.com/status-im/status-react/pull/12887>
+* ✨ Add Binance Smart chain <https://github.com/status-im/status-mobile/pull/12809>
+* ♏︎ Added custom network symbol <https://github.com/status-im/status-mobile/commit/c16b0860ec921a61c119857de27c6f29e301e4f6>
+* 💰 Network fee on xDai chain <https://github.com/status-im/status-mobile/pull/12845>
+* 📇 Support tx history (in a way) when on BSC chains <https://github.com/status-im/status-mobile/pull/12843>
+* 🙅🏻 Remove POA network from the list <https://github.com/status-im/status-mobile/pull/12887>
 
 ### Bug Fixes
-* Fix activity center community invite preview <https://github.com/status-im/status-react/pull/12803>
-* Missing notifications for some contacts <https://github.com/status-im/status-react/issues/12776>
-* Fixes scrolling issues on the 'Max priority fee' bottom sheet <https://github.com/status-im/status-react/issues/12530>
-* Handle Keycard timeout on iOS 15 <https://github.com/status-im/status-react/pull/12826>
-* Allow user to be reinvited to the same group after leaving <https://github.com/status-im/status-react/pull/12814>
-* Fix for "TypeError: Network request failed" when switching to Goerli network <https://github.com/status-im/status-react/issues/11964>
-* Fix for Spin of death on adding custom NFT token contract <https://github.com/status-im/status-react/issues/12365>
-* Changing screen orientation results in breaking images / layout <https://github.com/status-im/status-react/issues/12858>
+* Fix activity center community invite preview <https://github.com/status-im/status-mobile/pull/12803>
+* Missing notifications for some contacts <https://github.com/status-im/status-mobile/issues/12776>
+* Fixes scrolling issues on the 'Max priority fee' bottom sheet <https://github.com/status-im/status-mobile/issues/12530>
+* Handle Keycard timeout on iOS 15 <https://github.com/status-im/status-mobile/pull/12826>
+* Allow user to be reinvited to the same group after leaving <https://github.com/status-im/status-mobile/pull/12814>
+* Fix for "TypeError: Network request failed" when switching to Goerli network <https://github.com/status-im/status-mobile/issues/11964>
+* Fix for Spin of death on adding custom NFT token contract <https://github.com/status-im/status-mobile/issues/12365>
+* Changing screen orientation results in breaking images / layout <https://github.com/status-im/status-mobile/issues/12858>
 
 
 ## 1.17
@@ -85,41 +85,41 @@
 
 ### Features
 
-- 🖼️ Add ability to Share image from Status ([details](https://github.com/status-im/status-react/pull/12528))
-- 🕵️ Private Profile Photos ([details](https://github.com/status-im/status-react/pull/11768))
-- 🥥 Custom Emoji Thumbnails for Community Channels ([details](https://github.com/status-im/status-react/pull/12594))
-- 🔄 Sync deleted chats ([details](https://github.com/status-im/status-react/pull/12662))
-- 🔃 Sync removed/deleted/blocked contacts ([details](https://github.com/status-im/status-react/pull/12541))
-- 💸 Allow overriding nonce when sending transaction ([details](https://github.com/status-im/status-react/pull/12679))
-- 🗑️ Delete messages ([details](https://github.com/status-im/status-react/pull/12390))
-- 🎨 NFT Support via OpenSea ([details](https://github.com/status-im/status-react/pull/12485))
-- 🤳🏻 Enable collectibles and NFT as profile picture ([details](https://github.com/status-im/status-react/pull/12615))
+- 🖼️ Add ability to Share image from Status ([details](https://github.com/status-im/status-mobile/pull/12528))
+- 🕵️ Private Profile Photos ([details](https://github.com/status-im/status-mobile/pull/11768))
+- 🥥 Custom Emoji Thumbnails for Community Channels ([details](https://github.com/status-im/status-mobile/pull/12594))
+- 🔄 Sync deleted chats ([details](https://github.com/status-im/status-mobile/pull/12662))
+- 🔃 Sync removed/deleted/blocked contacts ([details](https://github.com/status-im/status-mobile/pull/12541))
+- 💸 Allow overriding nonce when sending transaction ([details](https://github.com/status-im/status-mobile/pull/12679))
+- 🗑️ Delete messages ([details](https://github.com/status-im/status-mobile/pull/12390))
+- 🎨 NFT Support via OpenSea ([details](https://github.com/status-im/status-mobile/pull/12485))
+- 🤳🏻 Enable collectibles and NFT as profile picture ([details](https://github.com/status-im/status-mobile/pull/12615))
 
 ### Improvements
 
-- Move pull to refresh to the account overview screen ([details](https://github.com/status-im/status-react/pull/12479))
-- Add $RARE token to our default list ([details](https://github.com/status-im/status-react/pull/12521))
-- Small UI Design Improvements ([details](https://github.com/status-im/status-react/pull/12544))
-- Chats list performance ([details](https://github.com/status-im/status-react/pull/12554))
-- Add push notification on group chat invite ([details](https://github.com/status-im/status-react/pull/12440))
-- Contacts performance ([details](https://github.com/status-im/status-react/pull/12643))
-- Add profile image in push notifications ([details](https://github.com/status-im/status-react/pull/12427))
-- Enable UI for signing legacy txs on networks without eip1559 ([details](https://github.com/status-im/status-react/pull/12692))
-- Doubled the character limit on timeline posts ([details](https://github.com/status-im/status-react/commit/a9333ad52ca71f512d5306f802927d0c20d63944))
+- Move pull to refresh to the account overview screen ([details](https://github.com/status-im/status-mobile/pull/12479))
+- Add $RARE token to our default list ([details](https://github.com/status-im/status-mobile/pull/12521))
+- Small UI Design Improvements ([details](https://github.com/status-im/status-mobile/pull/12544))
+- Chats list performance ([details](https://github.com/status-im/status-mobile/pull/12554))
+- Add push notification on group chat invite ([details](https://github.com/status-im/status-mobile/pull/12440))
+- Contacts performance ([details](https://github.com/status-im/status-mobile/pull/12643))
+- Add profile image in push notifications ([details](https://github.com/status-im/status-mobile/pull/12427))
+- Enable UI for signing legacy txs on networks without eip1559 ([details](https://github.com/status-im/status-mobile/pull/12692))
+- Doubled the character limit on timeline posts ([details](https://github.com/status-im/status-mobile/commit/a9333ad52ca71f512d5306f802927d0c20d63944))
 
 ### Bugfixes
 
-- Don't show notifications from self ([details](https://github.com/status-im/status-react/pull/12505))
-- Request permissions before saving images ([details](https://github.com/status-im/status-react/pull/12516))
-- Re-enable amount/fee validation on tx signing ([details](https://github.com/status-im/status-react/pull/12537))
-- Fix browser history sorting ([details](https://github.com/status-im/status-react/pull/12497))
-- Fix show/hide password on Android ([details](https://github.com/status-im/status-react/pull/12536))
-- Fix connecting autofarm.network dapps with status wallet freezes ([details](https://github.com/status-im/status-react/pull/12529))
-- RPC URL is lower-cased when entered in URL field when adding ([details](https://github.com/status-im/status-react/pull/12574))
-- Allow retrieving of profile updates after removing contact ([details](https://github.com/status-im/status-react/pull/12581))
-- Fetch history on receiving pubchat installation ([details](https://github.com/status-im/status-react/pull/12644))
-- Can't send funds to multisig - Out of gas ([details](https://github.com/status-im/status-react/pull/12648))
-- Fix handling errors on eth_gasPrice ([details](https://github.com/status-im/status-react/pull/12710))
+- Don't show notifications from self ([details](https://github.com/status-im/status-mobile/pull/12505))
+- Request permissions before saving images ([details](https://github.com/status-im/status-mobile/pull/12516))
+- Re-enable amount/fee validation on tx signing ([details](https://github.com/status-im/status-mobile/pull/12537))
+- Fix browser history sorting ([details](https://github.com/status-im/status-mobile/pull/12497))
+- Fix show/hide password on Android ([details](https://github.com/status-im/status-mobile/pull/12536))
+- Fix connecting autofarm.network dapps with status wallet freezes ([details](https://github.com/status-im/status-mobile/pull/12529))
+- RPC URL is lower-cased when entered in URL field when adding ([details](https://github.com/status-im/status-mobile/pull/12574))
+- Allow retrieving of profile updates after removing contact ([details](https://github.com/status-im/status-mobile/pull/12581))
+- Fetch history on receiving pubchat installation ([details](https://github.com/status-im/status-mobile/pull/12644))
+- Can't send funds to multisig - Out of gas ([details](https://github.com/status-im/status-mobile/pull/12648))
+- Fix handling errors on eth_gasPrice ([details](https://github.com/status-im/status-mobile/pull/12710))
 
 ## 1.16
 
@@ -127,88 +127,88 @@
 
 ### Features
 
-- EIP-1159 support ([#12369](https://github.com/status-im/status-react/pull/12369))
-- Hide/show option for accounts in the wallet ([#12438](https://github.com/status-im/status-react/pull/12438))
-- Delete accounts in wallet ([#12444](https://github.com/status-im/status-react/pull/12444))
-- Enable keeping database when migrating account to keycard ([#12306](https://github.com/status-im/status-react/pull/12306))
-- Replies from group chat in activity centre ([#12266](https://github.com/status-im/status-react/pull/12266))
+- EIP-1159 support ([#12369](https://github.com/status-im/status-mobile/pull/12369))
+- Hide/show option for accounts in the wallet ([#12438](https://github.com/status-im/status-mobile/pull/12438))
+- Delete accounts in wallet ([#12444](https://github.com/status-im/status-mobile/pull/12444))
+- Enable keeping database when migrating account to keycard ([#12306](https://github.com/status-im/status-mobile/pull/12306))
+- Replies from group chat in activity centre ([#12266](https://github.com/status-im/status-mobile/pull/12266))
 
 ### Improvements
 
-- Remove clear history from non-public chats ([#12384](https://github.com/status-im/status-react/pull/12384))
-- Clearing push notifications on read (Android) ([#12464](https://github.com/status-im/status-react/pull/12464))
-- Enable migration to keycard from signed-in state ([#11778](https://github.com/status-im/status-react/issues/11778))
+- Remove clear history from non-public chats ([#12384](https://github.com/status-im/status-mobile/pull/12384))
+- Clearing push notifications on read (Android) ([#12464](https://github.com/status-im/status-mobile/pull/12464))
+- Enable migration to keycard from signed-in state ([#11778](https://github.com/status-im/status-mobile/issues/11778))
 
 ### Bug Fixes
 
 #### Chat
 
-- Fix Error when opening 1-1 chat in Activity center for blocked user ([#12399](https://github.com/status-im/status-react/pull/12399))
-- Long press is long and it makes the message disappear entirely ([#12445](https://github.com/status-im/status-react/pull/12445))
-- Sort pinned messages by time of pinning ([#12402](https://github.com/status-im/status-react/pull/12402))
-- Screens with overlapping long usernames ([#12471](https://github.com/status-im/status-react/pull/12471))
+- Fix Error when opening 1-1 chat in Activity center for blocked user ([#12399](https://github.com/status-im/status-mobile/pull/12399))
+- Long press is long and it makes the message disappear entirely ([#12445](https://github.com/status-im/status-mobile/pull/12445))
+- Sort pinned messages by time of pinning ([#12402](https://github.com/status-im/status-mobile/pull/12402))
+- Screens with overlapping long usernames ([#12471](https://github.com/status-im/status-mobile/pull/12471))
 
 #### Browser (Dapp)
 
-- Fix some token swap errors in Uniswap ([#12417](https://github.com/status-im/status-react/pull/12417))
-- Update react-native-webview for better SSL handling ([#12409](https://github.com/status-im/status-react/pull/12409))
+- Fix some token swap errors in Uniswap ([#12417](https://github.com/status-im/status-mobile/pull/12417))
+- Update react-native-webview for better SSL handling ([#12409](https://github.com/status-im/status-mobile/pull/12409))
 
 #### Keycard
 
-- App freezes until reopening when signing tx with frozen Keycard ([#12473](https://github.com/status-im/status-react/pull/12473))
+- App freezes until reopening when signing tx with frozen Keycard ([#12473](https://github.com/status-im/status-mobile/pull/12473))
 
 #### Wallet
 
-- Allow to add assets with same name ([#12466](https://github.com/status-im/status-react/pull/12466))
-- Update DATAcoin name ([#12454](https://github.com/status-im/status-react/pull/12454))
+- Allow to add assets with same name ([#12466](https://github.com/status-im/status-mobile/pull/12466))
+- Update DATAcoin name ([#12454](https://github.com/status-im/status-mobile/pull/12454))
 
 ## 1.15
 
 ### For iOS and Android
 ### Features
-- New improved native navigation, its very fast :dash: [[details](https://github.com/status-im/status-react/pull/12141)]
-- Pinned messages in chats :pushpin: [[details](https://github.com/status-im/status-react/issues/11699)]
-- Add support for ETH2x-FLI ERC20 token ⚫ [[details](https://github.com/status-im/status-react/issues/11885)]
-- Add support for HEZ ERC20 token ⚫ [[details](https://github.com/status-im/status-react/issues/12233)]
-- Show number of unread mentions in public and communities chats :bell: [[details](https://github.com/status-im/status-react/issues/12061)]
-- QR code scanner for browser :ticket: [[details](https://github.com/status-im/status-react/issues/12195)]
-- Edit messages after sending :pencil2: [[details](https://github.com/status-im/status-react/issues/12067)]
-- Allow password reset :abcd: [[details](https://github.com/status-im/status-react/pull/12245)]
+- New improved native navigation, its very fast :dash: [[details](https://github.com/status-im/status-mobile/pull/12141)]
+- Pinned messages in chats :pushpin: [[details](https://github.com/status-im/status-mobile/issues/11699)]
+- Add support for ETH2x-FLI ERC20 token ⚫ [[details](https://github.com/status-im/status-mobile/issues/11885)]
+- Add support for HEZ ERC20 token ⚫ [[details](https://github.com/status-im/status-mobile/issues/12233)]
+- Show number of unread mentions in public and communities chats :bell: [[details](https://github.com/status-im/status-mobile/issues/12061)]
+- QR code scanner for browser :ticket: [[details](https://github.com/status-im/status-mobile/issues/12195)]
+- Edit messages after sending :pencil2: [[details](https://github.com/status-im/status-mobile/issues/12067)]
+- Allow password reset :abcd: [[details](https://github.com/status-im/status-mobile/pull/12245)]
 
 ### Improvements
 - Native modals and tabs :house_with_garden: 
 - Improved time to show login screen :timer_clock: 
-- New, human friendly, terms of use :pencil: [[details](https://github.com/status-im/status-react/issues/12206)]
+- New, human friendly, terms of use :pencil: [[details](https://github.com/status-im/status-mobile/issues/12206)]
 
 ### Bug Fixes
-- No contact request in Activity Center after 1-1 chat deleted of non-contact user :no_good: [[details](https://github.com/status-im/status-react/issues/12218)]
+- No contact request in Activity Center after 1-1 chat deleted of non-contact user :no_good: [[details](https://github.com/status-im/status-mobile/issues/12218)]
 
 ## 1.14
 
 ### For iOS and Android
 ### Features
 
-- Highlight posts that mention you ([details](https://github.com/status-im/status-react/pull/12146))
+- Highlight posts that mention you ([details](https://github.com/status-im/status-mobile/pull/12146))
 - Remove PUK and Pairing Code screen from Keycard onboarding
- [details](https://github.com/status-im/status-react/pull/12155))
-- Added unread messages count for messages with mentions in public chats ([details](https://github.com/status-im/status-react/pull/12152))
-- Sync history setting allowing to sync chat history up to 1 month ([details](https://github.com/status-im/status-react/pull/12166))
+ [details](https://github.com/status-im/status-mobile/pull/12155))
+- Added unread messages count for messages with mentions in public chats ([details](https://github.com/status-im/status-mobile/pull/12152))
+- Sync history setting allowing to sync chat history up to 1 month ([details](https://github.com/status-im/status-mobile/pull/12166))
 
 
 ### Improvements
 
-- "My profile" button for simplification of finding own public key ([details](https://github.com/status-im/status-react/pull/12044))
-- Factory reset option is available on account creation and recovery flows ([details](https://github.com/status-im/status-react/pull/12055))
-- Allow the creation of recovery/backup Keycard from the login interface ([details](https://github.com/status-im/status-react/pull/12115))
-- Reset blocked and/or frozen Keycards ([details](https://github.com/status-im/status-react/pull/12127))
-- Show cached balance ([details](https://github.com/status-im/status-react/pull/12134))
+- "My profile" button for simplification of finding own public key ([details](https://github.com/status-im/status-mobile/pull/12044))
+- Factory reset option is available on account creation and recovery flows ([details](https://github.com/status-im/status-mobile/pull/12055))
+- Allow the creation of recovery/backup Keycard from the login interface ([details](https://github.com/status-im/status-mobile/pull/12115))
+- Reset blocked and/or frozen Keycards ([details](https://github.com/status-im/status-mobile/pull/12127))
+- Show cached balance ([details](https://github.com/status-im/status-mobile/pull/12134))
 
 
 ### Bugfixes
 
-- Pending transactions are stored in the database and shown on history screen after re-login ([details](https://github.com/status-im/status-react/pull/12032))
+- Pending transactions are stored in the database and shown on history screen after re-login ([details](https://github.com/status-im/status-mobile/pull/12032))
 - Multiple fixes for keycard
-- Fixes for resolving ENS name from chat key ([details](https://github.com/status-im/status-react/pull/12100))
+- Fixes for resolving ENS name from chat key ([details](https://github.com/status-im/status-mobile/pull/12100))
 
 
 ## 1.13
@@ -216,7 +216,7 @@
 ### For iOS and Android
 ### Features
 
-- New activity manager https://github.com/status-im/status-react/issues/11958 
+- New activity manager https://github.com/status-im/status-mobile/issues/11958 
 New chats and group chat invitation will appear in a new section, the activity center, where a user will be able to accept or decline the request.
 https://www.figma.com/file/r59kCQxl6tlC0dHkcAJOpP/Action-center-MVP---Mobile?node-id=2%3A8012 (not fully implemented)
 
@@ -290,7 +290,7 @@ V1.11 also makes some improvements to the overall Status experience. Improved co
 
 Update in the App Store or Google Play if you do not have auto updates enabled.
 
-For the full changelog, see Github https://github.com/status-im/status-react/milestone/49?closed=1
+For the full changelog, see Github https://github.com/status-im/status-mobile/milestone/49?closed=1
 
 #### Added
 - Add Giphy url support in chat
@@ -311,7 +311,7 @@ V1.11 also makes some improvements to the overall Status experience. Improved co
 
 Update in the App Store or Google Play if you do not have auto updates enabled.
 
-For the full changelog, see Github https://github.com/status-im/status-react/milestone/49?closed=1
+For the full changelog, see Github https://github.com/status-im/status-mobile/milestone/49?closed=1
 
 #### Added
 - Migrate existing account to Keycard 
@@ -486,7 +486,7 @@ Update in the [App Store](https://apps.apple.com/us/app/status-private-communica
 
 The APK available is [here](https://status-im-files.ams3.cdn.digitaloceanspaces.com/StatusIm-Mobile-v1.8.0.apk).
 
-For the full changelog, see our [Github](https://github.com/status-im/status-react/commits/release/1.8.x).
+For the full changelog, see our [Github](https://github.com/status-im/status-mobile/commits/release/1.8.x).
 > [Verify APK link before publishing blog post]
 > 
 
@@ -496,7 +496,7 @@ This release fixes an issue with fetching ERC20 balance. It was due to a contrac
 
 
 ## 1.7.1
-Full release commits: https://github.com/status-im/status-react/commits/release/1.7.1
+Full release commits: https://github.com/status-im/status-mobile/commits/release/1.7.1
 ### Android + iOS
 #### Excerpt
 Several users have reported an issue in upgrading from release 1.6.1 to release 1.7. This update fixes the issue.
@@ -513,7 +513,7 @@ Retry failed migration
 
 
 ## 1.7  
-Full release commits: https://github.com/status-im/status-react/commits/release/1.7.x
+Full release commits: https://github.com/status-im/status-mobile/commits/release/1.7.x
 
 ### Android
 #### Excerpt (446 characters including spaces)
@@ -639,13 +639,13 @@ For the full changelog, see our Github
 ### Excerpt
 This intermediate release, 1.4.1, includes bug fixes as well as UX and accessibility improvements. Most visibly, a gorgeous set of new icons, accessible input fields and toggling password entry visibility. Next to that the release includes updates to Notifications on Android, like being able to open Status, as well as close the notification service, directly from the notification banner.
 
-For the full changelog, see our [Github](https://github.com/status-im/status-react/commits/release/1.4.x)
+For the full changelog, see our [Github](https://github.com/status-im/status-mobile/commits/release/1.4.x)
 
 
 ### Full
 While focused on building new features there are a few improvements we did not want to hold off on sharing. This intermediate release, 1.4.1, includes bug fixes as well as UX and accessibility improvements. Most visibly, a gorgeous set of new icons, accessible input fields and toggling password entry visibility. Next to that the release includes updates to Notifications on Android, like being able to open Status, as well as close the notification service, directly from the notification banner.
 
-For the full changelog, see our [Github](https://github.com/status-im/status-react/commits/release/1.4.x).
+For the full changelog, see our [Github](https://github.com/status-im/status-mobile/commits/release/1.4.x).
 
 
 
@@ -685,7 +685,7 @@ The final addition to v1.4 is the introduction of  browser support for EIP 1139 
 
 Beyond that, version 1.4 includes some updates to the FAQ, extended translation support, and some fixes to ENS username displays, dark mode contrast, QR code scanner and more. 
 
-For the full changelog, see our [Github](https://github.com/status-im/status-react/commits/release/1.4.x).
+For the full changelog, see our [Github](https://github.com/status-im/status-mobile/commits/release/1.4.x).
 
 #### Added
 - Keycard integration on Android
@@ -706,7 +706,7 @@ For the full changelog, see our [Github](https://github.com/status-im/status-rea
 - Resolved error on scrolling account view
 - Parse markdown in subheader chat list
 - Banner to back up seed phrase tappable
-- [Chat performance improvements](https://github.com/status-im/status-react/pull/10711)
+- [Chat performance improvements](https://github.com/status-im/status-mobile/pull/10711)
 - QR code scanning issue when scanning from join.status.im
 
 
@@ -722,7 +722,7 @@ In the future, we'd like to expand these to host more than 10 members. We'll emb
 
 Lastly, we've changed our webview implementation over to the react-native-community package, to remain in sync with the React Native community and benefit from upstream improvements.
 
-As always, we've also included a few nice fixes in this release. For the full changelog, [see our Github](https://github.com/status-im/status-react/commits/release/1.3.x). 
+As always, we've also included a few nice fixes in this release. For the full changelog, [see our Github](https://github.com/status-im/status-mobile/commits/release/1.3.x). 
 
 
 #### Added
@@ -737,8 +737,8 @@ As always, we've also included a few nice fixes in this release. For the full ch
 - Persistant wallet value
 - Update to all text input, increasing pressable areas
 - Improved seed phrase text input on small screens
-- Easier to find user's public key for sharing (https://github.com/status-im/status-react/pull/10207#event-3163431514)
-- Shortened universal links (https://github.com/status-im/status-react/issues/10083)
+- Easier to find user's public key for sharing (https://github.com/status-im/status-mobile/pull/10207#event-3163431514)
+- Shortened universal links (https://github.com/status-im/status-mobile/issues/10083)
 
 ## 1.2
 
@@ -783,7 +783,7 @@ With further improvements to Waku in the pipeline, Status becomes accessible to 
 
 Biggest changes:
 - Status now support importing private key and seed phrase inside multiaccount!
-(https://github.com/status-im/status-react/pull/10100)
+(https://github.com/status-im/status-mobile/pull/10100)
 - all chat dialogs moved to bottom sheet
 - added "Mark all as read" option
 - unread badge is changed for public chat
@@ -792,41 +792,41 @@ More detailed:
 
 ENS name improvements:
 
-- https://github.com/status-im/status-react/pull/9952 - fixes ENS to new registry 
-- https://github.com/status-im/status-react/pull/9997 - Check for empty public key (for ENS names)
-- https://github.com/status-im/status-react/pull/10007 - improve ENS  display in Public chats
-- https://github.com/status-im/status-react/pull/10022 - fix crash on long ENS names
+- https://github.com/status-im/status-mobile/pull/9952 - fixes ENS to new registry 
+- https://github.com/status-im/status-mobile/pull/9997 - Check for empty public key (for ENS names)
+- https://github.com/status-im/status-mobile/pull/10007 - improve ENS  display in Public chats
+- https://github.com/status-im/status-mobile/pull/10022 - fix crash on long ENS names
 
 
 General improvements:
 
-- https://github.com/status-im/status-react/pull/10027 - deep link handling (rename get.status.im to join.status.im)
-- https://github.com/status-im/status-react/pull/9940 - changed navigation on logout
-- https://github.com/status-im/status-react/pull/9917 - added search to currencies and assets
-- https://github.com/status-im/status-react/pull/9941 - improvement on snackbar by considering login time (less "Offline", "Connected" after login)
-- https://github.com/status-im/status-react/pull/9898 - added qr code reader for scanning QR when add watch-only address
-- https://github.com/status-im/status-react/pull/9882 - Respond to FaceID failure callback
-- https://github.com/status-im/status-react/pull/9915 - Make bottom sheet height dynamical
-- https://github.com/status-im/status-react/pull/9931 - 2 lines for user name on intro screen
+- https://github.com/status-im/status-mobile/pull/10027 - deep link handling (rename get.status.im to join.status.im)
+- https://github.com/status-im/status-mobile/pull/9940 - changed navigation on logout
+- https://github.com/status-im/status-mobile/pull/9917 - added search to currencies and assets
+- https://github.com/status-im/status-mobile/pull/9941 - improvement on snackbar by considering login time (less "Offline", "Connected" after login)
+- https://github.com/status-im/status-mobile/pull/9898 - added qr code reader for scanning QR when add watch-only address
+- https://github.com/status-im/status-mobile/pull/9882 - Respond to FaceID failure callback
+- https://github.com/status-im/status-mobile/pull/9915 - Make bottom sheet height dynamical
+- https://github.com/status-im/status-mobile/pull/9931 - 2 lines for user name on intro screen
 
 Chat improvements:
-- https://github.com/status-im/status-react/pull/10056 - added "Mark all as read" feature
-- https://github.com/status-im/status-react/pull/9993, https://github.com/status-im/status-react/pull/9999 - better handling of ENS names / chat keys when starting new chat
-- https://github.com/status-im/status-react/pull/10117 - reworked unread message indicator in public chats
-- https://github.com/status-im/status-react/pull/9868 - all chat dialogs are moved to bottom sheets
+- https://github.com/status-im/status-mobile/pull/10056 - added "Mark all as read" feature
+- https://github.com/status-im/status-mobile/pull/9993, https://github.com/status-im/status-mobile/pull/9999 - better handling of ENS names / chat keys when starting new chat
+- https://github.com/status-im/status-mobile/pull/10117 - reworked unread message indicator in public chats
+- https://github.com/status-im/status-mobile/pull/9868 - all chat dialogs are moved to bottom sheets
 
 Performance improvements: 
-- https://github.com/status-im/status-react/pull/9995 - Offload chat messages
-- https://github.com/status-im/status-react/pull/10120 - Android app UI is slow after background
+- https://github.com/status-im/status-mobile/pull/9995 - Offload chat messages
+- https://github.com/status-im/status-mobile/pull/10120 - Android app UI is slow after background
 
 Issues fixed:
-- https://github.com/status-im/status-react/issues/10002
-- https://github.com/status-im/status-react/issues/8797
-- https://github.com/status-im/status-react/issues/6839
-- https://github.com/status-im/status-react/issues/9754
-- https://github.com/status-im/status-react/issues/10044
-- https://github.com/status-im/status-react/issues/10041
-- https://github.com/status-im/status-react/issues/9886
+- https://github.com/status-im/status-mobile/issues/10002
+- https://github.com/status-im/status-mobile/issues/8797
+- https://github.com/status-im/status-mobile/issues/6839
+- https://github.com/status-im/status-mobile/issues/9754
+- https://github.com/status-im/status-mobile/issues/10044
+- https://github.com/status-im/status-mobile/issues/10041
+- https://github.com/status-im/status-mobile/issues/9886
 
 ## 1.0
 
@@ -877,7 +877,7 @@ Acolytec3
 • Improvements to wallet transaction flow UI
 • Sticker market and two initial sticker packs
 • Choice of wallet to use when interacting with Dapps
-• [Proper markdown support](https://github.com/status-im/status-react/pull/9409#issue-338045622)
+• [Proper markdown support](https://github.com/status-im/status-mobile/pull/9409#issue-338045622)
 • ENS username setting option for use in chat
 • Improved chat intro screen and public chat list
 • Updated chat command flow, with additional privacy layer to be compatible with multiaccount
@@ -893,7 +893,7 @@ Acolytec3
 • Algorithm for deriving public chat key changed, performance. (andrey review: pubkey or 3 word name?, not sure if Algorithm for deriving pubkey can be changed)
 • Storage of app state moved to Status-go—performance improvements in chat load times
 • Browser privacy mode enabled by default, option removed (EIP1102)
-• Updates to EIP1102 for compatibility (https://github.com/status-im/status-react/pull/9629)
+• Updates to EIP1102 for compatibility (https://github.com/status-im/status-mobile/pull/9629)
 • Protocol breaking changes: removed transit encoding in favor of protobuf, for better performance and interoperability with other languages
 • Roughly 45% improvement in how quickly chats load
 • Profile screen cleaned up
@@ -957,17 +957,17 @@ To get involved, you can find our current bounty issues on Gitcoin [LINK].
 - Moved `Browser privacy Mode` toggle to the browser screen as new preference setting
 - `Fetch more messages` button now retrieves up to 30 days of history in public chats 
 - Long press a chat for more options; no more swiping
-- Fewer messages rendered before a chat is scrolled for better performance ([8191](https://github.com/status-im/status-react/pull/8191))
-- Using checksummed addresses in wallet (EIP55) ([8121](https://github.com/status-im/status-react/issues/8121) and [4959](https://github.com/status-im/status-react/issues/4959)) 
+- Fewer messages rendered before a chat is scrolled for better performance ([8191](https://github.com/status-im/status-mobile/pull/8191))
+- Using checksummed addresses in wallet (EIP55) ([8121](https://github.com/status-im/status-mobile/issues/8121) and [4959](https://github.com/status-im/status-mobile/issues/4959)) 
 - Scanning QR code from a DApp does not cause redirect
 
 **Fixed**
-- Browser crash when incorrect domain entered ([8239](https://github.com/status-im/status-react/issues/8239))
-- ENS registration bug ([8249](https://github.com/status-im/status-react/issues/8249))
-- Wallet balance updates correctly after Tx received ([8107](https://github.com/status-im/status-react/issues/8107))
+- Browser crash when incorrect domain entered ([8239](https://github.com/status-im/status-mobile/issues/8239))
+- ENS registration bug ([8249](https://github.com/status-im/status-mobile/issues/8249))
+- Wallet balance updates correctly after Tx received ([8107](https://github.com/status-im/status-mobile/issues/8107))
 - Support for EIP1577/`contenthash` field for ENS
-- Numeric validation for `send`/`receive` chat commands ([1442](https://github.com/status-im/status-react/issues/1442))
--  Allow to select chat item below plus button ([7859](https://github.com/status-im/status-react/issues/7859))
+- Numeric validation for `send`/`receive` chat commands ([1442](https://github.com/status-im/status-mobile/issues/1442))
+-  Allow to select chat item below plus button ([7859](https://github.com/status-im/status-mobile/issues/7859))
 
 
 ## 0.12.0
@@ -1029,11 +1029,11 @@ Reminder: On April 1st, we'll experiment with eliminating all centralized, third
 - Improved UI performance (https://www.pivotaltracker.com/story/show/164245989)
 
 **Fixed** 
-- Universal link to public chat bug (https://github.com/status-im/status-react/issues/7549)
-- Beta warning popup (https://github.com/status-im/status-react/issues/7771)
-- DApp offline error (https://github.com/status-im/status-react/issues/7188#issuecomment-474308724)
-- Bug with QR code scanner for custom bootnodes (https://github.com/status-im/status-react/pull/7782)
-- Error message when entering an incorrect custom mailserver (https://github.com/status-im/status-react/issues/7752)
+- Universal link to public chat bug (https://github.com/status-im/status-mobile/issues/7549)
+- Beta warning popup (https://github.com/status-im/status-mobile/issues/7771)
+- DApp offline error (https://github.com/status-im/status-mobile/issues/7188#issuecomment-474308724)
+- Bug with QR code scanner for custom bootnodes (https://github.com/status-im/status-mobile/pull/7782)
+- Error message when entering an incorrect custom mailserver (https://github.com/status-im/status-mobile/issues/7752)
 
 
 ## 0.10.1 - Hot Fix
@@ -1080,9 +1080,9 @@ And that concludes the most significant changes of this release! For more, check
 - Minor tweaks to chat UI
 
 **Fixed**
-- Status now works on restricted [ports](https://github.com/status-im/status-react/pull/7382)
+- Status now works on restricted [ports](https://github.com/status-im/status-mobile/pull/7382)
 - Overlap on small screens during log-in
-- False mailserver connection error [removed](https://github.com/status-im/status-react/issues/7531)
+- False mailserver connection error [removed](https://github.com/status-im/status-mobile/issues/7531)
 - Premature sending of contact requests on Profile > Send message
 - DApps on same host (i.e. IPFS) no longer share user-granted permissions
 
@@ -1152,7 +1152,7 @@ For the full list of changes, see below.
 
 _Notes to call out_
 - Privacy mode by default instructions
-- Breaking change: no PNs for old versions after next mobile release - https://github.com/status-im/status-react/pull/6893
+- Breaking change: no PNs for old versions after next mobile release - https://github.com/status-im/status-mobile/pull/6893
 - Setting up device pairing
 
 
@@ -1179,7 +1179,7 @@ Fixed
 - Transaction history fixes 
 - Updating enabled tokens before navigating to wallet 
 
-[All changes](https://github.com/status-im/status-react/compare/release/0.9.31...release/0.9.32)
+[All changes](https://github.com/status-im/status-mobile/compare/release/0.9.31...release/0.9.32)
 
 ## 0.9.31
 
@@ -1210,7 +1210,7 @@ Fixed
 - Restored missing transaction error messages
 - Granting profile access applies per DApp rather than per host
 
-[All changes](https://github.com/status-im/status-react/compare/release/0.9.30...release/0.9.31)
+[All changes](https://github.com/status-im/status-mobile/compare/release/0.9.30...release/0.9.31)
 
 ## 0.9.30
 

@@ -55,7 +55,7 @@ let
     deps));
 
 in makeOverridable stdenv.mkDerivation {
-  name = "status-react-maven-deps";
+  name = "status-mobile-maven-deps";
   buildInputs = [ aapt2 ];
   phases = [ "buildPhase" "patchPhase" ];
   buildPhase = "${script}/bin/create-local-maven-repo";

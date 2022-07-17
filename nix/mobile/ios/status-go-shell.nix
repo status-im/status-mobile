@@ -9,11 +9,11 @@ mkShell {
   shellHook = ''
     export STATUS_GO_IOS_LIBDIR=${status-go {}}/Statusgo.xcframework
 
-    RCTSTATUS_DIR="$STATUS_REACT_HOME/modules/react-native-status/ios/RCTStatus"
+    RCTSTATUS_DIR="$STATUS_MOBILE_HOME/modules/react-native-status/ios/RCTStatus"
     targetBasename='Statusgo.xcframework'
 
     # Compare target folder with source to see if copying is required
-    if [ -d "$RCTSTATUS_DIR/$targetBasename" ] && [ -d $STATUS_REACT_HOME/ios/Pods/ ] && \
+    if [ -d "$RCTSTATUS_DIR/$targetBasename" ] && [ -d $STATUS_MOBILE_HOME/ios/Pods/ ] && \
       diff -qr --no-dereference $RCTSTATUS_DIR/$targetBasename/ $STATUS_GO_IOS_LIBDIR/ > /dev/null; then
       echo "$RCTSTATUS_DIR/$targetBasename already in place"
     else

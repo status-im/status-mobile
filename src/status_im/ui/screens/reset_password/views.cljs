@@ -68,7 +68,7 @@
             :accessibility-label :next-button
             :disabled            (or (not next-enabled?)
                                      ;; disable on resetting? so the user cannot press the next button recklessly
-                                     ;; https://github.com/status-im/status-react/pull/12245#issuecomment-874827573
+                                     ;; https://github.com/status-im/status-mobile/pull/12245#issuecomment-874827573
                                      resetting?)
             :type                :secondary
             :after               :main-icons/next}

@@ -10,18 +10,18 @@ If you look at [`nix/deps/nodejs/default.nix`](./default.nix) you'll see that it
 Welcome to Nix version 2.3.9. Type :? for help.
 
 nix-repl> pkgs.deps.nodejs
-«derivation /nix/store/23mpmpjjnq7miclv6bc6ilgypy8wz69p-status-react-node-deps-1.8.0.drv»
+«derivation /nix/store/23mpmpjjnq7miclv6bc6ilgypy8wz69p-status-mobile-node-deps-1.8.0.drv»
 ```
 You can build the derivation:
 ```
 nix-repl> :b pkgs.deps.nodejs    
 
 this derivation produced the following outputs:
-  out -> /nix/store/dqb2cjyz1g6n7jic07058y26lnmgaaz9-status-react-node-deps-1.8.0
+  out -> /nix/store/dqb2cjyz1g6n7jic07058y26lnmgaaz9-status-mobile-node-deps-1.8.0
 ```
 And look inside:
 ```
- > cd /nix/store/dqb2cjyz1g6n7jic07058y26lnmgaaz9-status-react-node-deps-1.8.0
+ > cd /nix/store/dqb2cjyz1g6n7jic07058y26lnmgaaz9-status-mobile-node-deps-1.8.0
  > ls
 deps  node_modules
  > ls node_modules | grep react-native-image

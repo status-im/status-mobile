@@ -3,7 +3,7 @@
 # Fetches pull request refs and prints commits
 # for the given range grouped by pull request
 
-REPOSITORY="status-im/status-react"
+REPOSITORY="status-im/status-mobile"
 REPOSITORY_URL="https://github.com/$REPOSITORY.git"
 PULL_REQUEST_REMOTE="pullRequestRemote"
 PULL_REQUEST_URL="https://api.github.com/repos/$REPOSITORY/pulls/"

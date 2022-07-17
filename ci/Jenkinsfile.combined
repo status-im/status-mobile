@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.4.3'
+library 'status-jenkins-lib@v1.5.0'
 
 pipeline {
   agent { label 'linux' }
@@ -41,13 +41,13 @@ pipeline {
     stage('Build') {
       parallel {
         stage('iOS') { steps { script {
-          ios = jenkins.Build('status-react/platforms/ios')
+          ios = jenkins.Build('status-mobile/platforms/ios')
         } } }
         stage('Android') { steps { script {
-          apk = jenkins.Build('status-react/platforms/android')
+          apk = jenkins.Build('status-mobile/platforms/android')
         } } }
         stage('Android e2e') { steps { script {
-          apke2e = jenkins.Build('status-react/platforms/android-e2e')
+          apke2e = jenkins.Build('status-mobile/platforms/android-e2e')
         } } }
       }
     }
@@ -91,7 +91,7 @@ pipeline {
             build(job: 'website/status.im', wait: false);
             break;
           case 'release':
-            github.publishReleaseFiles(repo: 'status-react');
+            github.publishReleaseFiles(repo: 'status-mobile');
             break;
         }
       } }
@@ -101,7 +101,7 @@ pipeline {
       steps { script {
         e2eApk = utils.getEnv(apke2e, 'SAUCE_URL')
         build(
-          job: 'status-react/e2e/status-app-nightly',
+          job: 'status-mobile/e2e/status-app-nightly',
           parameters: [string(name: 'APK_NAME', value: e2eApk)],
           wait: false
         )
@@ -126,7 +126,7 @@ def List genChoices(String previousChoice, List defaultChoices) {
  * - A user explicitly specified a value
  * Since release builds create and re-create GitHub drafts every time. */
 def Boolean getPublishDefault(Boolean previousValue) {
-  if (env.JOB_NAME.startsWith('status-react/release')) { return true }
+  if (env.JOB_NAME.startsWith('status-mobile/release')) { return true }
   if (previousValue != null) { return previousValue }
   return false
 }

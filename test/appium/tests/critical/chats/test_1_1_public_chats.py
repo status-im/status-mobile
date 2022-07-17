@@ -404,7 +404,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         if self.chat_2.user_name_text.text != self.default_username_1:
             self.errors.append("Default username '%s' is not shown in one-to-one chat" % self.default_username_1)
 
-        # TODO: disabled until https://github.com/status-im/status-react/issues/12936 fix
+        # TODO: disabled until https://github.com/status-im/status-mobile/issues/12936 fix
         # profile_1.just_fyi("Check timestamps for sender and receiver")
         # for chat in device_1_chat, device_2_chat:
         #     chat.verify_message_is_under_today_text(timestamp_message, self.errors)

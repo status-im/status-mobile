@@ -95,7 +95,7 @@ We also have an ongoing document with them.
 
 #### iOS Test Flight Release
 **Upload to AppStore Connect**
-Use [this Jenkins job](https://jenkins.status.im/job/status-react/job/upload_release_ios/)
+Use [this Jenkins job](https://jenkins.status.im/job/status-mobile/job/upload_release_ios/)
 
 **“What to test” field**
 When AppStore Connect asks you to fill in the field called “what to test”, just copy the release notes there.
@@ -114,7 +114,7 @@ If reviewed successfully, we can share it to our users by adding “testflight-b
 The uploaded release is **immediately available**! 
 Do it only if the iOS build is approved by Apple!
 
-Use [this Jenkins job](https://jenkins.status.im/job/status-react/job/upload_release_android/)
+Use [this Jenkins job](https://jenkins.status.im/job/status-mobile/job/upload_release_android/)
 
 Don’t forget to update the screenshots if necessary!
 

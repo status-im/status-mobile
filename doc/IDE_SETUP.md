@@ -1,6 +1,6 @@
 # Setup your Editor/IDE
 
-You can use any Clojure enabled editor. Here are instructions for developing the status-react app using:
+You can use any Clojure enabled editor. Here are instructions for developing the status-mobile app using:
 
 * IntelliJ IDEA and Cursive
 * VS Code and Calva
@@ -11,11 +11,11 @@ You can use any Clojure enabled editor. Here are instructions for developing the
 
 - [Using Cursive](#using-cursive)
   - [Install Cursive](#install-cursive)
-  - [Getting Cursive to understand `status-react`](#getting-cursive-to-understand-status-react)
+  - [Getting Cursive to understand `status-mobile`](#getting-cursive-to-understand-status-mobile)
   - [I get a lot of `cannot be resolved`](#i-get-a-lot-of-cannot-be-resolved)
   - [REPL!](#repl)
     - [Connecting to REPL to IntelliJ](#connecting-to-repl-to-intellij)
-    - [Connecting REPL and IntelliJ to `status-react`](#connecting-repl-and-intellij-to-status-react)
+    - [Connecting REPL and IntelliJ to `status-mobile`](#connecting-repl-and-intellij-to-status-mobile)
 - [Using Calva](#using-calva)
   - [Start and connect the REPL](#start-and-connect-the-repl)
   - [Use the REPL](#use-the-repl)
@@ -26,9 +26,9 @@ You can use any Clojure enabled editor. Here are instructions for developing the
 
 See https://cursive-ide.com/userguide/index.html
 
-### Getting Cursive to understand `status-react`
+### Getting Cursive to understand `status-mobile`
 
-- Add this file to the root of the `status-react` project dir
+- Add this file to the root of the `status-mobile` project dir
   - https://gist.github.com/Samyoul/f71a0593ba7a12d24dd0d5ef986ebbec
 - Right click and "add as leiningen project"
 
@@ -73,8 +73,8 @@ Which will load the following menu
 
 Enter the below options:
 
-- Name = status-react
-- Display Name = status-react
+- Name = status-mobile
+- Display Name = status-mobile
 - Connection type = nREPL
 - Connection details
   - Host = 127.0.0.1
@@ -114,7 +114,7 @@ See below:
 
 <img src="images/IDE_SETUP/9_REPL_7.png" width=75% />
 
-#### Connecting REPL and IntelliJ to `status-react`
+#### Connecting REPL and IntelliJ to `status-mobile`
 
 **The important next step is telling REPL the context in which to interact with the code.**
 
@@ -167,7 +167,7 @@ For VS Code users.
 
 ### Start and connect the REPL
 
-1. Open the `status-react` folder.
+1. Open the `status-mobile` folder.
 1. Start [Status development](STARTING_GUIDE.md#development) (Starting the `run-clojure` and `run-metro` jobs in split view in the VS Code integrated terminal works great.)
 1. Run the VS Code command: **Calva: Connect to a running REPL Server in the project**
    1. Select the project type `shadow-cljs`

@@ -102,7 +102,7 @@
                             :accessibility-label "create-backup-keycard"
                             :on-press #(re-frame/dispatch [:keycard-settings.ui/backup-card-pressed :backup-card])}]
             ;; TODO(rasom): uncomment this when unpairing will be enabled
-            ;; https://github.com/status-im/status-react/issues/9227
+            ;; https://github.com/status-im/status-mobile/issues/9227
             #_[quo/list-item {:icon     :main-icons/close
                               :size     :small
                               :title    (i18n/label :t/unpair-card)

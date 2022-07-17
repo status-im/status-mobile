@@ -33,7 +33,7 @@ export BUILD_TAG := $(shell git rev-parse --short HEAD)
 endif
 
 # We don't want to use /run/user/$UID because it runs out of space too easilly.
-export TMPDIR = /tmp/tmp-status-react-$(BUILD_TAG)
+export TMPDIR = /tmp/tmp-status-mobile-$(BUILD_TAG)
 # This has to be specified for both the Node.JS server process and the Qt process.
 export REACT_SERVER_PORT ?= 5001
 # The path can be anything, but home is usually safest.
@@ -42,7 +42,7 @@ export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 # Our custom config is located in nix/nix.conf
 export NIX_CONF_DIR = $(PWD)/nix
 # Location of symlinks to derivations that should not be garbage collected
-export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-react
+export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-mobile
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
 export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE
 
@@ -84,7 +84,7 @@ nix-gc: nix-gc-protected ##@nix Garbage collect all packages older than 20 days 
 	nix-store --gc
 
 nix-clean: export TARGET := default
-nix-clean: ##@nix Remove all status-react build artifacts from /nix/store
+nix-clean: ##@nix Remove all status-mobile build artifacts from /nix/store
 	nix/scripts/clean.sh
 
 nix-purge: SHELL := /bin/sh
@@ -144,7 +144,7 @@ purge: _fix-node-perms _tmpdir-rm ##@prepare Remove all output folders
 
 watchman-clean: export TARGET := watchman
 watchman-clean: ##@prepare Delete repo directory from watchman
-	watchman watch-del $${STATUS_REACT_HOME}
+	watchman watch-del $${STATUS_MOBILE_HOME}
 
 pod-install: export TARGET := ios
 pod-install: ##@prepare Run 'pod install' to install podfiles and update Podfile.lock
@@ -341,7 +341,7 @@ android-devices: ##@other Invoke adb devices
 	adb devices
 
 android-logcat: export TARGET := android-env
-android-logcat: ##@other Read status-react logs from Android phone using adb
+android-logcat: ##@other Read status-mobile logs from Android phone using adb
 	adb logcat | grep -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs -e 'F DEBUG   :' -e 'Go      :' -e 'GoLog   :' -e 'libc    :'
 
 android-install: export TARGET := android-env

@@ -73,8 +73,8 @@ nix-build \
   --no-out-link \
   --show-trace \
   --attr targets.mobile.android.release \
-  --argstr secrets-file '/tmp/tmp-status-react-559a3a441/tmp.xAnrPuNtAP' \
-  --option extra-sandbox-paths '/home/joe/.gradle/status-im.keystore /tmp/tmp-status-react-559a3a441/tmp.xAnrPuNtAP' \
+  --argstr secrets-file '/tmp/tmp-status-mobile-559a3a441/tmp.xAnrPuNtAP' \
+  --option extra-sandbox-paths '/home/joe/.gradle/status-im.keystore /tmp/tmp-status-mobile-559a3a441/tmp.xAnrPuNtAP' \
   --arg config '{ \
     status-im.build-type="nightly";
     status-im.build-number="2020022418";
@@ -94,6 +94,6 @@ Would fail.
 
 The `make nix-gc` target calls `nix-store --gc` and normally would remove almost everything, but to prevent that we place symlinks to protected derivations in `/nix/var/nix/gcroots` subfolder. Specifically:
 ```sh
-_NIX_GCROOTS="${_NIX_GCROOTS:-/nix/var/nix/gcroots/per-user/${USER}/status-react}"
+_NIX_GCROOTS="${_NIX_GCROOTS:-/nix/var/nix/gcroots/per-user/${USER}/status-mobile}"
 ```
 Whenever `nix/scripts/build.sh` or `nix/scripts/shell.sh` are called they update symlinks named after given targets in that folder. This in combination with `keep-outputs = true` set in `nix/nix.conf` prevents garbage collection from removing too much.

@@ -20,11 +20,11 @@ chance to talk to strangers and it is open by default.
 Whether group chats are in scope or not has been a recurring discussing and a
 lot of effort has been wasted related to this.
 
-There are currently a lot of outstanding regressions related to group chat: https://github.com/status-im/status-react/labels/group-chat Additionally, since group chats are private the encryption and security of those are generally harder than 1-1 and public chat.
+There are currently a lot of outstanding regressions related to group chat: https://github.com/status-im/status-mobile/labels/group-chat Additionally, since group chats are private the encryption and security of those are generally harder than 1-1 and public chat.
 
 ## Decision
 
-Disable group chat for beta and don't work on bugs related to it until after. See https://github.com/status-im/status-react/issues/3995
+Disable group chat for beta and don't work on bugs related to it until after. See https://github.com/status-im/status-mobile/issues/3995
 
 This ensures we can release beta without blockers, and then we can take some
 time to fix group chats properly.

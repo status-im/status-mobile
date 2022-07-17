@@ -25,7 +25,7 @@ QA process was focused on account creation and login with keycard, and this bug 
 
 # Missing labels for en translation
 
-https://github.com/status-im/status-react/issues/9003
+https://github.com/status-im/status-mobile/issues/9003
 
 ## Cause
 

@@ -169,7 +169,7 @@ def pytest_configure(config):
                 testrail_report.add_run(run_name)
             if pr_number:
                 from github import Github
-                repo = Github(github_token).get_user('status-im').get_repo('status-react')
+                repo = Github(github_token).get_user('status-im').get_repo('status-mobile')
                 pull = repo.get_pull(int(pr_number))
                 pull.get_commits()[0].create_status(state='pending', context='Mobile e2e tests',
                                                     description='e2e tests are running')
@@ -200,7 +200,7 @@ def pytest_unconfigure(config):
             testrail_report.add_results()
         if config.getoption('pr_number'):
             from github import Github
-            repo = Github(github_token).get_user('status-im').get_repo('status-react')
+            repo = Github(github_token).get_user('status-im').get_repo('status-mobile')
             pull = repo.get_pull(int(config.getoption('pr_number')))
             comment = pull.create_issue_comment(github_report.build_html_report(testrail_report.run_id))
             if not testrail_report.is_run_successful():

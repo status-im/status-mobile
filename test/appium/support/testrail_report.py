@@ -308,4 +308,4 @@ class TestrailReport(BaseTestReport):
     @staticmethod
     def make_error_with_gh_issue_link(error, issue_id):
         return error.replace(issue_id,
-                             '[%s](https://github.com/status-im/status-react/issues/%s)' % (issue_id, issue_id[1:]))
+                             '[%s](https://github.com/status-im/status-mobile/issues/%s)' % (issue_id, issue_id[1:]))

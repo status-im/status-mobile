@@ -40,13 +40,13 @@ let
 
   baseName = "${buildType}-android";
 in stdenv.mkDerivation rec {
-  name = "status-react-build-${baseName}";
+  name = "status-mobile-build-${baseName}";
 
   src = let path = ./../../..;
   # We use builtins.path so that we can name the resulting derivation
   in builtins.path {
     inherit path;
-    name = "status-react-source-${baseName}";
+    name = "status-mobile-source-${baseName}";
     # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
     filter = lib.mkFilter {
       root = path;

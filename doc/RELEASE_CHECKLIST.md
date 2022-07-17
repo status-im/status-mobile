@@ -13,9 +13,9 @@
 #### Before publishing
 - [ ] Translations for comms available
 - [ ] Promotional content ready
-- [ ] Update Draft with release on https://github.com/status-im/status-react/releases
+- [ ] Update Draft with release on https://github.com/status-im/status-mobile/releases
 - [ ] Add release to DO store and [update site](https://notes.status.im/s/status-release-upload#) (Jakub - requires credentials to upload) 
 
 #### At time of publishing
-- [ ] validate draft release on github release page https://github.com/status-im/status-react/releases
-- [ ] update https://github.com/status-im/status-react/blob/develop/RELEASES.md with release notes 
+- [ ] validate draft release on github release page https://github.com/status-im/status-mobile/releases
+- [ ] update https://github.com/status-im/status-mobile/blob/develop/RELEASES.md with release notes 

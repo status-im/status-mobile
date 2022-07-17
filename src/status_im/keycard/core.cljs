@@ -470,7 +470,7 @@
               (when (= flow :import)
                 (load-recovery-pin-screen))
               ;; TODO: If card is already initialized need to confirm pin only then go to mnenmonic
-              ;; https://github.com/status-im/status-react/issues/9451
+              ;; https://github.com/status-im/status-mobile/issues/9451
               (when (= flow :create)
                 (mnemonic/set-mnemonic)))))
 

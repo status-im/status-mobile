@@ -13,7 +13,7 @@ Proposed
 
 We have some data that we don't want to appear in the logs (user passwords are
 a good example). Currently, they are passed around as strings, that could be
-printed out by mistake in a log entry (see https://github.com/status-im/status-react/issues/4053)
+printed out by mistake in a log entry (see https://github.com/status-im/status-mobile/issues/4053)
 
 ## Decision
 

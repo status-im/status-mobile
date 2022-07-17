@@ -8,7 +8,7 @@ let
 in mkShell {
   buildInputs = [ cocoapods ];
   shellHook = ''
-    pushd "$STATUS_REACT_HOME" > /dev/null
+    pushd "$STATUS_MOBILE_HOME" > /dev/null
     {
       echo "Checking for modifications in ios/Pods..."
       if diff -q ${podfileLock} ${manifestLock}; then

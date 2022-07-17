@@ -125,7 +125,7 @@ class TestPerformance(SingleDeviceTestCase):
                        'então, mais tarde tornou-se a décima província do Canadá, em 1949.[14] Austrália ratientão, mais tarde ' \
                        'tornou-se a décima província do Canadá, em 1949.[14] Austrália rati então, mais tarde tornou-se a décima' \
                        ' província do Canadá, '
-        gh_link_message = 'https://github.com/status-im/status-react/issues'
+        gh_link_message = 'https://github.com/status-im/status-mobile/issues'
         gif = 'https://media.giphy.com/media/7GYHmjk6vlqY8/giphy.gif'
         long_arabic_text = 'لك التفاصيل لتكتشف حقيقة وأساس تلك السعادة البشرية، فلا أحد يرفض أو يكره أو يتجنب ا' \
                            'لشعور بالسعادة، ولكن بفضل هؤلاء الأشخاص الذين لا يدركون بأن السعادة لا بد أن نستشعرها بصورة أكثر' \

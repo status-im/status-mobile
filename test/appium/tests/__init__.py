@@ -44,7 +44,7 @@ background_service_message = 'Background service for notifications'
 
 bootnode_address = "enode://a8a97f126f5e3a340cb4db28a1187c325290ec08b2c9a6b1f19845ac86c46f9fac2ba13328822590" \
                    "fd3de3acb09cc38b5a05272e583a2365ad1fa67f66c55b34@167.99.210.203:30404"
-# referred to https://github.com/status-im/status-react/blob/develop/resources/config/fleets.json
+# referred to https://github.com/status-im/status-mobile/blob/develop/resources/config/fleets.json
 mailserver_address = 'enode://b74859176c9751d314aeeffc26ec9f866a412752e7ddec91b19018a18e7cca8d637cfe2cedcb972f8eb64d81' \
                      '6fbd5b4e89c7e8c7fd7df8a1329fa43db80b0bfe@47.52.90.156:443'
 staging_fleet = 'eth.staging'

@@ -8,7 +8,7 @@
 let
   inherit (pkgs) mkShell;
 in mkShell {
-  name = "status-react-shell"; # for identifying all shells
+  name = "status-mobile-shell"; # for identifying all shells
 
   buildInputs = with pkgs; lib.unique ([
     # core utilities that should always be present in a shell
@@ -33,7 +33,7 @@ in mkShell {
 
   # just a nicety for easy access to node scripts
   shellHook = ''
-    export STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
-    export PATH="$STATUS_REACT_HOME/node_modules/.bin:$PATH"
+    export STATUS_MOBILE_HOME=$(git rev-parse --show-toplevel)
+    export PATH="$STATUS_MOBILE_HOME/node_modules/.bin:$PATH"
   '';
 }

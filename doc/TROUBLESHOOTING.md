@@ -64,9 +64,9 @@ info Visit https://yarnpkg.com/en/docs/cli/install for documentation about this 
 `yarn.lock` is not updated to be in sync with `package.json`.
 
 ## Solution
-Update yarn.lock file. In order to do this, perform the following steps on a clean `status-react` repo:
+Update yarn.lock file. In order to do this, perform the following steps on a clean `status-mobile` repo:
 ```
-cd status-react
+cd status-mobile
 yarn install
 ```
 and don't forget to commit updated `yarn.lock` together with `package.json`.
@@ -87,7 +87,7 @@ adb server version (41) doesn't match this client (40); killing...
 This might cause all kinds of difficult-to-debug errors, e.g.:
   -  not being able to find the device through `adb devices`
   -  `make run-android` throwing `com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: device 'device-id' not found.`
-  -  `make run-android` throwing `- Error: Command failed: ./gradlew app:installDebug -PreactNativeDevServerPort=8081 Unable to install /status-react/android/app/build/outputs/apk/debug/app-debug.apk com.android.ddmlib.InstallException: EOF`
+  -  `make run-android` throwing `- Error: Command failed: ./gradlew app:installDebug -PreactNativeDevServerPort=8081 Unable to install /status-mobile/android/app/build/outputs/apk/debug/app-debug.apk com.android.ddmlib.InstallException: EOF`
   - dropped CLJS repl connections (that have been enabled previously with the help of `make android-ports`)
 
 ## Cause

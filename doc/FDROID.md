@@ -128,7 +128,7 @@ You should also run `lint` and `rewritemeta` for the App ID to verify and fix th
 
 # Details
 
-The original research was done in [#8512](https://github.com/status-im/status-react/issues/8512).
+The original research was done in [#8512](https://github.com/status-im/status-mobile/issues/8512).
 
 Normally F-Droid server wants to run Gradle itself, but we do not specify the `gradle` key in order to run `make release-fdroid` ourselves in `build` step. We also add `android/build.gradle` to `scanignore` to avoid F-Droid trying to use Gradle directly.
 

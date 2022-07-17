@@ -94,7 +94,7 @@
   "binary": {
     "module_name": "status_nodejs_addon",
     "module_path": "./lib/binding/",
-    "host": "https://github.com/status-im/status-react/releases/download/",
+    "host": "https://github.com/status-im/status-mobile/releases/download/",
     "remote_path": "{version}"
   }
 }

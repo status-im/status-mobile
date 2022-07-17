@@ -241,7 +241,7 @@
  (fn [url]
    (.openURL ^js react/linking url)))
 
-(def gh-issue-url "https://github.com/status-im/status-react/issues/new?labels=bug&title=%s&body=%s")
+(def gh-issue-url "https://github.com/status-im/status-mobile/issues/new?labels=bug&title=%s&body=%s")
 
 (fx/defn submit-issue
   [{:keys [db]}]

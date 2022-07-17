@@ -54,7 +54,7 @@ let
     deps));
 
 in makeOverridable stdenv.mkDerivation {
-  name = "status-react-clojure-deps";
+  name = "status-mobile-clojure-deps";
   phases = [ "buildPhase" ];
   buildPhase = "${script}/bin/create-local-maven-repo";
 }

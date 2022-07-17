@@ -1,4 +1,4 @@
-Status react protocol tests
+Status Mobile protocol tests
 =====================
 
 ## Run the tests

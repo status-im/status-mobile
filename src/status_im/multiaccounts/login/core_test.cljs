@@ -54,7 +54,7 @@
                                                :bioauth-code    nil}))
                                             false)]
       (test/is (= true (get-in db [:multiaccounts/login :save-password?])))
-      ;; case 2 from https://github.com/status-im/status-react/issues/9573
+      ;; case 2 from https://github.com/status-im/status-mobile/issues/9573
       (test/is (= keychain/auth-method-biometric-prepare (:auth-method db)))
       (test/testing "disable biometric"
         (let [{:keys [db]} (biometric/disable {:db db})]

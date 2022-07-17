@@ -23,9 +23,9 @@ let
     '';
 
     shellHook = ''
-      [ -z "$STATUS_REACT_HOME" ] && echo "STATUS_REACT_HOME is empty!" && exit 1
+      [ -z "$STATUS_MOBILE_HOME" ] && echo "STATUS_MOBILE_HOME is empty!" && exit 1
 
-      export FASTLANE_PLUGINFILE_PATH=$STATUS_REACT_HOME/fastlane/Pluginfile
+      export FASTLANE_PLUGINFILE_PATH=$STATUS_MOBILE_HOME/fastlane/Pluginfile
     '';
 
     meta = with lib; {

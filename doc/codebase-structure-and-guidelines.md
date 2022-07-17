@@ -75,7 +75,7 @@ These guidelines make db.cljs namespaces the place to go when making changes to 
 - events must always be declared with `fx/defn` macro
 
 ## Testing flow
-- All PRs automatically go to "REVIEW" column on [Pipeline for QA](https://github.com/status-im/status-react/projects/7) project on Github. This is our main board for QA / devs interaction
+- All PRs automatically go to "REVIEW" column on [Pipeline for QA](https://github.com/status-im/status-mobile/projects/7) project on Github. This is our main board for QA / devs interaction
 - After the PR gets at least 1 approval, it should be moved to "E2E Tests" column. Some PRs may need approvals from more than one person.
 - Critical path tests are automatically run for all PRs in "E2E Tests" column.
 - If E2E tests pass:
@@ -94,7 +94,7 @@ Calls to `log/debug` will not be printed to the console by default. It can be en
 ![Enable Debug Logs](./log-settings.png)
 
 ## Translations
-The app relies on system locale to select a language from the [list of supported languages](https://github.com/status-im/status-react/blob/bda73867471cf2bb8a68b1cc27c9f94b92d9a58b/src/status_im/i18n_resources.cljs#L9). It falls back to English in cash the system locale is not supported.
+The app relies on system locale to select a language from the [list of supported languages](https://github.com/status-im/status-mobile/blob/bda73867471cf2bb8a68b1cc27c9f94b92d9a58b/src/status_im/i18n_resources.cljs#L9). It falls back to English in cash the system locale is not supported.
 
 We use Lokalise App to manage [translations](https://translate.status.im/). In case you need to add/remove a key to translations, you only need to change `en.json`. Missing keys fallback to `en.json`. The actual translations will be added by Lokalise.
 
@@ -113,7 +113,7 @@ $ make run-re-frisk
 A server will be started at http://localhost:4567. It might show "not connected" at first. Don't worry and just start using the app. The events and state will populate.
 
 ## Merging approved PRs
-We don't Github's UI to merge. Instead `./scripts/merge-pr.sh` is used to sign and merge PR to `develop`. You first need to enable [GPG signing on you commits](https://github.com/status-im/status-react/blob/develop/STARTING_GUIDE.md#configure-gpg-keys-for-signing-commits).
+We don't Github's UI to merge. Instead `./scripts/merge-pr.sh` is used to sign and merge PR to `develop`. You first need to enable [GPG signing on you commits](https://github.com/status-im/status-mobile/blob/develop/STARTING_GUIDE.md#configure-gpg-keys-for-signing-commits).
 
 Once your commits are verfied and PR approved, you can run the script like so:
 

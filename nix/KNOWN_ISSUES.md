@@ -38,7 +38,7 @@ stalled-download-timeout = 9001
 
 ## NDK Bundle Download Failures
 
-There is a known issue([#11111](https://github.com/status-im/status-react/issues/11111)) where the fetching of Android NDK Bundle from our own cache host fails in various different ways:
+There is a known issue([#11111](https://github.com/status-im/status-mobile/issues/11111)) where the fetching of Android NDK Bundle from our own cache host fails in various different ways:
 ```
 unable to download 'https://nix-cache.status.im/nar/64g5wharwjj040rg1v8jnc5qhv1hkgds.nar':
   HTTP error 200 (curl error: Stream error in the HTTP/2 framing layer)

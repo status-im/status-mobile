@@ -64,7 +64,7 @@ It's recommented that you [add your public SSH key to your GitHub account](https
 
 ## Configure GPG Keys for signing commits
 
-In order to increase security we require all commits in `status-react` repo to be signed with a GPG key.
+In order to increase security we require all commits in `status-mobile` repo to be signed with a GPG key.
 
 Steps:
 1. [Generate a new GPG key](https://help.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key)

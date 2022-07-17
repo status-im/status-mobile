@@ -22,9 +22,9 @@ chats = {
             'gph.is':       {'txt':'4. short vertical gif https://gph.is/2jG1Xjj'},
             'giphy.com':    {'txt':'5.  long landscape gif https://giphy.com/gifs/thegoodplace-season-1-episode-11-3oxHQoD2rep6XGbDDa'},
             'media.giphy':  {'txt':'6. media gif https://media.giphy.com/media/iFxXouCf76ZencqIRP/giphy.gif'},
-            'github':       {'txt': '7. github. com https://github.com/status-im/status-react/ ',
-                             #'title': 'status-im/status-react',
-                             'title':'GitHub - status-im/status-react: a free (libre) open source, mobile OS for Ethereum',
+            'github':       {'txt': '7. github. com https://github.com/status-im/status-mobile/ ',
+                             #'title': 'status-im/status-mobile',
+                             'title':'GitHub - status-im/status-mobile: a free (libre) open source, mobile OS for Ethereum',
                              'subtitle': 'GitHub'}
         },
     },

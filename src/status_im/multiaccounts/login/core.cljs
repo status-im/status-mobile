@@ -741,7 +741,7 @@
   {:db (assoc db :tos/accepted? new-terms-of-service-accepted)})
 
 (fx/defn get-opted-in-to-new-terms-of-service
-  "New TOS sprint https://github.com/status-im/status-react/pull/12240"
+  "New TOS sprint https://github.com/status-im/status-mobile/pull/12240"
   {:events [:get-opted-in-to-new-terms-of-service]}
   [{:keys [db]}]
   {::async-storage/get {:keys [:new-terms-of-service-accepted]

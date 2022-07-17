@@ -23,7 +23,7 @@ confirm() {
 load_config() {
   [[ -f merge-pr.conf ]] && . merge-pr.conf
   : ${OWNER:=status-im}
-  : ${REPO:=status-react}
+  : ${REPO:=status-mobile}
   : ${REMOTE:=origin}
   : ${BRANCH:=develop}
 }
