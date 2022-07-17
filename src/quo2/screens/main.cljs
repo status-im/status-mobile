@@ -14,6 +14,7 @@
             [quo2.screens.token-tag :as token-tag]
             [quo2.screens.counter :as counter]
             [quo2.screens.icon-avatar :as icon-avatar]
+            [quo2.screens.wallet-user-avatar :as wallet-user-avatar]
             [quo2.screens.segmented :as segmented]
             [quo2.screens.info-message :as info-message]
             [quo2.screens.information-box :as information-box]
@@ -23,6 +24,9 @@
 (def screens [{:name      :quo2-texts
                :insets    {:top false}
                :component text/preview-text}
+              {:name      :quo2-wallet-user-avatar
+               :insets    {:top false}
+               :component wallet-user-avatar/preview-wallet-user-avatar}
               {:name      :quo2-button
                :insets    {:top false}
                :component button/preview-button}
