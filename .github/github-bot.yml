@@ -9,8 +9,8 @@ project-board:
   test-column-name: 'E2E Tests'
 
 automated-tests:
-  repo-full-name: 'status-im/status-react'
-  job-full-name: 'status-react/e2e/status-app-prs'
+  repo-full-name: 'status-im/status-mobile'
+  job-full-name: 'status-mobile/e2e/status-app-prs'
   kickoff-column-name: 'E2E Tests'
 
 github-team:
