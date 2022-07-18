@@ -70,6 +70,7 @@
       "mailserver.available" (mailserver/handle-mailserver-available cofx (.-id event-js))
       "mailserver.not.working" (mailserver/handle-mailserver-not-working cofx)
       "discovery.summary"  (summary cofx (js->clj event-js :keywordize-keys true))
+      "mediaserver.started"  {:db (assoc db :mediaserver/port (.-port event-js))}
       "wakuv2.peerstats"  (wakuv2-peer-stats cofx (js->clj event-js :keywordize-keys true))
       "messages.new" (transport.message/sanitize-messages-and-process-response cofx event-js true)
       "wallet" (ethereum.subscriptions/new-wallet-event cofx (js->clj event-js :keywordize-keys true))

@@ -179,7 +179,7 @@
 (defn my-profile []
   (fn []
     (let [{:keys [public-key ens-verified preferred-name]
-           :as   account} @(re-frame/subscribe [:multiaccount])
+           :as   account} @(re-frame/subscribe [:profile/multiaccount])
           on-share        #(re-frame/dispatch [:show-popover
                                                {:view     :share-chat-key
                                                 :address  public-key
