@@ -314,10 +314,13 @@
 (def beige-opa-50 (alpha beige 0.5))
 (def beige-opa-60 (alpha beige 0.6))
 
+<<<<<<< HEAD
 
 
 >>>>>>> 55d7310ac (wallet user avatar component)
 
+=======
+>>>>>>> 1efbb5e7a (linting)
 ;;;;Switcher
 (def switcher-background "#040B14")
 
