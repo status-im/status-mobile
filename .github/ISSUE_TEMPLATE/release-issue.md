@@ -10,7 +10,7 @@ Issue to manage mobile release <version>
 
 ### Scope
 [comment]: # (Add milestone from github)
-https://github.com/status-im/status-react/milestone/
+https://github.com/status-im/status-mobile/milestone/
 
 - release notes: 
 - release branch: 
@@ -28,8 +28,8 @@ Upgrade (e2e):
 #### 1) Kick-off
 - [ ] 1. Translation PRs is merged before cutting branch (Jinho)
 - [ ] 2. Prepare scope of visible changes based on commits history, started from previous release branch cut ([guide](https://notes.status.im/how-to-prepare-release-notes))
-- [ ] 3. Update [RELEASES.md](https://github.com/status-im/status-react/blob/develop/RELEASES.md) with release notes (make PR based on previous step)
-- [ ] 4. Create release branch using this [guide](https://github.com/status-im/status-react/blob/develop/doc/RELEASE_GUIDE.md), bump VERSION (merge created PR ([example](https://github.com/status-im/status-react/pull/12504) ) to develop) and get successful release builds (so, testing can be started)
+- [ ] 3. Update [RELEASES.md](https://github.com/status-im/status-mobile/blob/develop/RELEASES.md) with release notes (make PR based on previous step)
+- [ ] 4. Create release branch using this [guide](https://github.com/status-im/status-mobile/blob/develop/doc/RELEASE_GUIDE.md), bump VERSION (merge created PR ([example](https://github.com/status-im/status-mobile/pull/12504) ) to develop) and get successful release builds (so, testing can be started)
 - [ ] 5. Based on release scope, ask for comms (Jonny) 
 - [ ] 6. Make sure that assets (screenshots, video) in stores are up-to-date, more info [here](https://notes.status.im/how-to-update-assets)
 
@@ -53,8 +53,8 @@ Upgrade (e2e):
 
 #### 3) Submission
 
-- [ ] 1. Prepare PR for F-droid build ([instruction]( https://github.com/status-im/status-react/blob/develop/doc/FDROID.md))
-- [ ] 2. Release notes written and added (500 character limit for updates (Android) and PR for [RELEASES.md](https://github.com/status-im/status-react/blob/develop/RELEASES.md) is ready to be merged (from 1.3 step)
+- [ ] 1. Prepare PR for F-droid build ([instruction]( https://github.com/status-im/status-mobile/blob/develop/doc/FDROID.md))
+- [ ] 2. Release notes written and added (500 character limit for updates (Android) and PR for [RELEASES.md](https://github.com/status-im/status-mobile/blob/develop/RELEASES.md) is ready to be merged (from 1.3 step)
 - [ ] 3. Submit beta version for Android (Open Testing in Play Store)
 - [ ] 4. Submit iOS build to Apple review ([instruction](https://drive.google.com/file/d/10Cl7PBB7TFPkZiVbfzdFGpfMRP9bxXuq/view?usp=sharing), be careful - low quality of audio)
 - [ ] 5. Play store content reviewed and updated
@@ -72,6 +72,6 @@ Upgrade (e2e):
 - [ ] 1. Notify marketing to push comms and blog post (Jonny + get review on blog from QA team)
 - [ ] 2. Publish release to app store and playstore
 - [ ] 3. Final push to update prod site https://status.im/,  [instructions](https://github.com/status-im/infra-docs/blob/master/articles/status_release_upload.md) (Jakub - requires credentials to upload) 
-- [ ] 4. Add the link to the post about the release and publish the release: https://github.com/status-im/status-react/releases (Jakub)
-- [ ] 5. Merge PR for updating [RELEASES.md](https://github.com/status-im/status-react/blob/develop/RELEASES.md) (from 1.3 step)
+- [ ] 4. Add the link to the post about the release and publish the release: https://github.com/status-im/status-mobile/releases (Jakub)
+- [ ] 5. Merge PR for updating [RELEASES.md](https://github.com/status-im/status-mobile/blob/develop/RELEASES.md) (from 1.3 step)
 
