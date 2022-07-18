@@ -28,6 +28,11 @@
                      :ghost     {:icon-color       colors/neutral-50
                                  :label            {:style {:color colors/black}}
                                  :background-color {:pr:pressedess colors/neutral-10}}
+                     :success   {:icon-color       colors/white
+                                 :label            {:style {:color colors/white}}
+                                 :background-color {:default colors/success-50
+                                                    :pressed colors/success-70
+                                                    :disabled colors/success-50}}
                      :danger    {:icon-color       colors/white
                                  :label            {:style {:color colors/white}}
                                  :background-color {:default  colors/danger-50
@@ -55,6 +60,11 @@
                      :ghost     {:icon-color       colors/neutral-40
                                  :label            {:style {:color colors/white}}
                                  :background-color {:pressed colors/neutral-80}}
+                     :success   {:icon-color       colors/white
+                                 :label            {:style {:color colors/white}}
+                                 :background-color {:default colors/success-60
+                                                    :pressed colors/success-40
+                                                    :disabled colors/success-60}}
                      :danger    {:icon-color       colors/white
                                  :label            {:style {:color colors/white}}
                                  :background-color {:default  colors/danger-50
@@ -105,12 +115,15 @@
   [_ _]
   (let [pressed (reagent/atom false)]
     (fn [{:keys [on-press disabled type size before after above width
+                 override-theme
                  on-long-press accessibility-label icon style]
           :or   {type :primary
                  size 40}}
          children]
       (let [{:keys [icon-color background-color label border-color]}
-            (get-in themes [(theme/get-theme) type])
+            (get-in themes [(or
+                             override-theme
+                             (theme/get-theme)) type])
             state (cond disabled :disabled @pressed :pressed :else :default)
             icon-size (when (= 24 size) 12)]
         [rn/touchable-without-feedback (merge {:disabled            disabled

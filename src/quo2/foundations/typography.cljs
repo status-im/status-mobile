@@ -1,24 +1,25 @@
 (ns quo2.foundations.typography)
 
+;; Formulat for letter spacing from figma %: 16/{figma-percentage)*100
 (def heading-1 {:font-size   27
-                :line-height 32.4
-                :letter-spacing -0.5})
+                :line-height 32
+                :letter-spacing -0.762})
 
 (def heading-2 {:font-size   19
                 :line-height 25.65
-                :letter-spacing -0.4})
+                :letter-spacing -0.1})
 
 (def paragraph-1 {:font-size   15
                   :line-height 21.75
-                  :letter-spacing -0.1})
+                  :letter-spacing -0.177})
 
 (def paragraph-2 {:font-size   13
                   :line-height 18.2
-                  :letter-spacing 0})
+                  :letter-spacing -0.533})
 
 (def label {:font-size   11
             :line-height 15.62
-            :letter-spacing -0.055
+            :letter-spacing 0.32
             :text-transform :uppercase})
 
 (def font-regular {:font-family "Inter-Regular"}) ; 400
