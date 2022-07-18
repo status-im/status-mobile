@@ -3,6 +3,7 @@
             [quo.theme :as theme]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
+            [quo2.screens.channel-avatar :as channel-avatar]
             [quo2.screens.button :as button]
             [quo2.screens.text :as text]
             [quo2.screens.tabs :as tabs]
@@ -17,6 +18,9 @@
               {:name      :quo2-button
                :insets    {:top false}
                :component button/preview-button}
+              {:name      :quo2-channel-avatar
+               :insets    {:top false}
+               :component channel-avatar/preview-channel-avatar}
               {:name      :quo2-status-tags
                :insets    {:top false}
                :component status-tags/preview-status-tags}
