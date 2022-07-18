@@ -2,8 +2,8 @@
   (:require [quo.react-native :as rn]
             [quo.previews.preview :as preview]
             [reagent.core :as reagent]
-            [quo2.components.reactions.react :as quo2]
-            [quo2.foundations.colors :as colors]))
+            [quo2.foundations.colors :as colors]
+            [quo2.components.reactions.reaction :as quo2.reaction]))
 
 (def descriptor [{:label "Count"
                   :key   :clicks
@@ -33,8 +33,8 @@
        [preview/customizer state descriptor]
        [rn/view {:padding-vertical 60
                  :align-items      :center}
-        [quo2/render-react @state]
-        [quo2/open-reactions-menu @state]]])))
+        [quo2.reaction/reaction @state]
+        [quo2.reaction/open-reactions-menu @state]]])))
 
 (defn preview-react []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)

@@ -629,15 +629,13 @@
   [message-content-wrapper message
    [unknown-content-type message]])
 
-(defn chat-message [{:keys [display-photo? pinned pinned-by] :as message} space-keeper]
+(defn chat-message [{:keys [display-photo? pinned pinned-by] :as message}]
   [:<>
    [reactions/with-reaction-picker
     {:message         message
      :reactions       @(re-frame/subscribe [:chats/message-reactions (:message-id message) (:chat-id message)])
-     :picker-on-open  (fn []
-                        (space-keeper true))
-     :picker-on-close (fn []
-                        (space-keeper false))
+     :picker-on-open  (fn [])
+     :picker-on-close (fn [])
      :send-emoji      (fn [{:keys [emoji-id]}]
                         (re-frame/dispatch [::models.reactions/send-emoji-reaction
                                             {:message-id (:message-id message)

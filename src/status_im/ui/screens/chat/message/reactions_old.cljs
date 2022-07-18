@@ -1,6 +1,6 @@
-(ns status-im.ui.screens.chat.message.reactions
+(ns status-im.ui.screens.chat.message.reactions-old
   (:require [status-im.ui.screens.chat.message.reactions-picker :as reaction-picker]
-            [status-im.ui.screens.chat.message.reactions-row :as reaction-row]
+            [status-im.ui.screens.chat.message.reactions-row-old :as reaction-row]
             [reagent.core :as reagent]
             [quo.react-native :as rn]
             [quo.react :as react]
@@ -69,7 +69,7 @@
                                                       (and outgoing (= outgoing-status :sent)))
                                               (reset! actions act)
                                               (get-picker-position ref on-open)))}]
-          [reaction-row/message-reactions message reactions timeline #(on-emoji-press %) on-open]]
+          [reaction-row/message-reactions message reactions timeline]]
          (when @visible
            [rn/modal {:on-request-close on-close
                       :on-show          (fn []

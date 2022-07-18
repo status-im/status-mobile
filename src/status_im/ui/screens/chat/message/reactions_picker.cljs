@@ -33,7 +33,7 @@
   [rn/view {:style (styles/container-style {:outgoing outgoing :timeline timeline})}
    [rn/view {:style (styles/reactions-picker-row)}
     (doall
-     (for [[id resource] constants/reactions
+     (for [[id resource] constants/reactions-old
            :let          [active (own-reactions id)]]
        ^{:key id}
        [rn/touchable-opacity {:accessibility-label (str "pick-emoji-" id)

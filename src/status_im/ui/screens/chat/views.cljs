@@ -320,7 +320,7 @@
 (defn render-fn [{:keys [outgoing type] :as message}
                  idx
                  _
-                 {:keys [group-chat public? community? current-public-key space-keeper
+                 {:keys [group-chat public? community? current-public-key
                          chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
   [react/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
@@ -337,8 +337,7 @@
                :current-public-key current-public-key
                :show-input? show-input?
                :message-pin-enabled message-pin-enabled
-               :edit-enabled edit-enabled)
-        space-keeper]))])
+               :edit-enabled edit-enabled)]))])
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 (def list-ref #(reset! messages-list-ref %))
@@ -428,7 +427,6 @@
                              bottom-space
                              pan-responder
                              mutual-contact-requests-enabled?
-                             space-keeper
                              show-input?]}]
   (let [{:keys [group-chat chat-type chat-id public? community-id admins]} chat
 
@@ -456,7 +454,6 @@
                                                        :public?         public?
                                                        :community-id    community-id
                                                        :admins          admins
-                                                       :space-keeper    space-keeper
                                                        :show-input?     show-input?
                                                        :edit-enabled    true
                                                        :in-pinned-view? false})

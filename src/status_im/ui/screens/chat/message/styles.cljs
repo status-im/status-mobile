@@ -74,7 +74,12 @@
                   colors/white
                   (:text-01 @colors/theme))})
 
-(defn reactions-row [{:keys [outgoing display-photo?]} timeline]
+(def screen-width
+  (-> "window"
+      react/get-dimensions
+      :width))
+
+(defn reactions-row-old [{:keys [outgoing display-photo?]} timeline]
   (merge {:flex-direction :row
           :padding-right  8}
          (if (and outgoing (not timeline))
@@ -83,6 +88,15 @@
          (if (or display-photo? timeline)
            {:padding-left (+ 30 photos/default-size (when timeline 8))}
            {:padding-left 30})))
+
+(defn reactions-row [timeline margin-top]
+  {:flex-direction  :row
+   :padding-right   8
+   :justify-content :flex-start
+   :margin-top      margin-top
+   :flex-wrap       :wrap
+   :max-width       (- screen-width (+ 30 photos/default-size (when timeline 8)))
+   :margin-left     (+ 30 photos/default-size (when timeline 8))})
 
 (defn reaction-button [active]
   (merge {:width             40
@@ -123,11 +137,6 @@
    :border-color               colors/gray-lighter
    :background-color           colors/white
    :margin-vertical            4})
-
-(def screen-width
-  (-> "window"
-      react/get-dimensions
-      :width))
 
 (defn scale-dimensions
   "Scale a given height and width to be maximum percentage allowed of the screen width"

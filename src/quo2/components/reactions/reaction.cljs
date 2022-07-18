@@ -1,4 +1,4 @@
-(ns quo2.components.reactions.react
+(ns quo2.components.reactions.reaction
   (:require [quo2.components.markdown.text :as quo2-text]
             [quo.react-native :as rn]
             [quo.theme :as theme]
@@ -9,26 +9,29 @@
   {:flex-direction :row
    :justify-content :center
    :align-items :center
-   :padding-vertical 3
    :padding-horizontal 8
-   :border-radius 8})
+   :border-radius 8
+   :height 24})
 
 (defn open-reactions-menu
   [{:keys [on-press]}]
   (let [dark? (theme/dark?)]
     [rn/touchable-opacity {:on-press on-press
                            :style (merge reaction-styling
-                                         {:margin-top 25
+                                         {:padding-horizontal 9
                                           :border-width 1
+                                          :margin-top 5
                                           :border-color (if dark?
-                                                          colors/white-opa-5
-                                                          colors/neutral-80)})}
+                                                          colors/neutral-70
+                                                          colors/neutral-30)})}
      [icons/icon :main-icons/add-reaction20
-      {:color (if dark?
+      {:width 20
+       :height 20
+       :color (if dark?
                 colors/white
                 colors/black)}]]))
 
-(defn render-react
+(defn reaction
   "Add your emoji as a param here"
   [{:keys [emoji clicks neutral? on-press]}]
   (let [dark? (theme/dark?)

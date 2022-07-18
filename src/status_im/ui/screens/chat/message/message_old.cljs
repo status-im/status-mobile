@@ -15,7 +15,7 @@
             [status-im.ui.screens.chat.styles.message.message-old :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.security :as security]
-            [status-im.ui.screens.chat.message.reactions :as reactions]
+            [status-im.ui.screens.chat.message.reactions-old :as reactions]
             [status-im.ui.screens.chat.image.preview.views :as preview]
             [quo.core :as quo]
             [status-im.utils.config :as config]

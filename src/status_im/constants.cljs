@@ -42,6 +42,13 @@
 
 (def request-to-join-pending-state 1)
 
+(def reactions-old {emoji-reaction-love        (:love resources/reactions-old)
+                    emoji-reaction-thumbs-up   (:thumbs-up resources/reactions-old)
+                    emoji-reaction-thumbs-down (:thumbs-down resources/reactions-old)
+                    emoji-reaction-laugh       (:laugh resources/reactions-old)
+                    emoji-reaction-sad         (:sad resources/reactions-old)
+                    emoji-reaction-angry       (:angry resources/reactions-old)})
+
 (def reactions {emoji-reaction-love        (:love resources/reactions)
                 emoji-reaction-thumbs-up   (:thumbs-up resources/reactions)
                 emoji-reaction-thumbs-down (:thumbs-down resources/reactions)
