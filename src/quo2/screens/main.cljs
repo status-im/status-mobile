@@ -13,6 +13,7 @@
             [quo2.screens.activity-logs :as activity-logs]
             [quo2.screens.token-tag :as token-tag]
             [quo2.screens.counter :as counter]
+            [quo2.screens.icon-avatar :as icon-avatar]
             [quo2.screens.segmented :as segmented]
             [quo2.screens.info-message :as info-message]
             [quo2.screens.information-box :as information-box]
@@ -25,9 +26,15 @@
               {:name      :quo2-button
                :insets    {:top false}
                :component button/preview-button}
+<<<<<<< HEAD
               {:name      :quo2-token-overview
                :insets    {:top false}
                :component token-overview/preview-token-overview}
+=======
+               {:name      :quo2-icon-avatar
+               :insets    {:top false}
+               :component icon-avatar/preview-icon-avatar}
+>>>>>>> 796182c2f (icon-avatar component)
               {:name      :quo2-status-tags
                :insets    {:top false}
                :component status-tags/preview-status-tags}
