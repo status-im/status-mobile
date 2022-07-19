@@ -413,7 +413,7 @@
                 :number-of-lines 1}
        (cond (= share-from-ens true) static-ens-name :else profile-link)]]
      [rn/touchable-highlight {:style address-share-button-container}
-      [react/image {:source (resources/get-image :share-icon)}]]]]
+      [icons/icon :main-icons/share-icon20 {:color colors/white :width 20 :height 20}]]]]
 
    (cond (= share-from-ens false) [rn/view {:style emoji-hash-container}
                                    [rn/view {:style profile-address-container}
@@ -421,7 +421,7 @@
                                      [rn/text {:style emoji-hash-label} (i18n/label :t/emoji-hash)]
                                      [rn/text {:style (emoji-hash-content (* window-width 0.72))} static-emoji-hash]]
                                     [rn/touchable-highlight {:style emoji-share-button-container}
-                                     [react/image {:source (resources/get-image :copy-icon)}]]]])
+                                     [icons/icon :main-icons/copy-icon20 {:color colors/white :width 20 :height 20}]]]])
 
    [rn/view {:style footer-container}
     [rn/touchable-highlight {:style close-button-container}
@@ -435,7 +435,7 @@
     [copyable-text/copyable-text-view {:copied-text address-text :container-style {:background-color :transparent :width :100%}}
      [rn/text {:style (profile-address-content (* window-width 0.7)) :ellipsize-mode :middle :number-of-lines 1} address-text]]]
    [rn/touchable-highlight {:style address-share-button-container}
-    [react/image {:source (resources/get-image :share-icon)}]]])
+    [icons/icon :main-icons/share-icon20 {:color colors/white :width 20 :height 20}]]])
 
 (defn multichain-wallet-address-view [address-text multi-chain-info multichain-wallet-address-with-network-chain window-width]
   [:<>
@@ -443,7 +443,7 @@
     (for [single-chain multi-chain-info] ^{:key single-chain}
          [react/image {:source (get single-chain :network-icon-image) :style (wallet-icon-style (= single-chain (first multi-chain-info)))}])
     [rn/touchable-highlight {:style network-share-icon-style}
-     [react/image {:source (resources/get-image :customize-icon)}]]]
+     [icons/icon :main-icons/customize-icon20 {:color colors/white :width 20 :height 20}]]]
 
    [rn/view {:style divider-line-container}]
 
@@ -461,7 +461,7 @@
       [rn/text {:style (multichain-address-content (* window-width 0.6)) :ellipsize-mode :middle :number-of-lines 1} address-text]]]
 
     [rn/touchable-highlight {:style multichain-address-share-button-container}
-     [react/image {:source (resources/get-image :share-icon)}]]]])
+     [icons/icon :main-icons/share-icon20 {:color colors/white :width 20 :height 20}]]]])
 
 (defn account-details [qr-url account-index legacy-wallet-address multichain-wallet-address multi-chain-info multichain-wallet-address-with-network-chain window-width]
   (let [selected-sub-account-index (reagent/atom 1)]
