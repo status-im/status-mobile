@@ -5,15 +5,45 @@
             [quo.design-system.colors :as colors]
             [quo2.components.icon-avatar :as quo2]))
 
-(def descriptor [{:label   "Size"
+(def descriptor [{:label   "Dark"
+                  :key     :dark?
+                  :type    :boolean}
+                 {:label   "Size"
                   :key     :size
                   :type    :select
-                  :options [{:key   :big
-                             :value "Big"}
+                  :options [{:key   :small
+                             :value "Small"}
                             {:key   :medium
                              :value "Medium"}
-                            {:key   :small
-                             :value "Small"}]}])
+                            {:key   :big
+                             :value "Big"}]}
+                 {:label   "Color"
+                  :key     :color
+                  :type    :select
+                  :options [{:key   :primary
+                             :value "Primary"}
+                            {:key   :purple
+                             :value "Purple"}
+                            {:key   :indigo
+                             :value "Indigo"}
+                            {:key   :turquoise
+                             :value "Turquoise"}
+                            {:key   :blue
+                             :value "Blue"}
+                            {:key   :green
+                             :value "Green"}
+                            {:key   :yellow
+                             :value "yellow"}
+                            {:key   :orange
+                             :value "Orange"}
+                            {:key   :red
+                             :value "Red"}
+                            {:key   :pink
+                             :value "Pink"}
+                            {:key   :brown
+                             :value "Brown"}
+                            {:key   :beige
+                             :value "Beige"}]}])
 
 (defn cool-preview []
   (let [state (reagent/atom {:size :small})]

@@ -183,6 +183,7 @@
 (def info-50-opa-30 (alpha info-50 0.3))
 (def info-50-opa-40 (alpha info-50 0.4))
 
+<<<<<<< HEAD
 ;; Customization
 (def purple-50 "#8661C1")
 (def purple-60 "#5E478C")
