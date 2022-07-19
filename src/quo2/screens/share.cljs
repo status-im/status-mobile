@@ -1,11 +1,8 @@
 (ns quo2.screens.share
-  (:require-macros [status-im.utils.views :as views])
   (:require [quo.react-native :as rn]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [quo2.components.tabs :as tabs]
             [reagent.core :as reagent]
-            [status-im.ui.components.react :as react]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.icons.icons :as icons]
@@ -37,7 +34,7 @@
                             :multi-chain-info (list
                                                {:network-type "eth"
                                                 :name "Ethereum"
-                                                :network-text-color quo.design-system.colors/blue
+                                                :network-text-color "rgba(76, 180, 239, 1)"
                                                 :network-icon-image (resources/get-image :ethereum)}
                                                {:network-type "arb"
                                                 :name "Arbitrum"
@@ -45,7 +42,7 @@
                                                 :network-icon-image (resources/get-image :arbitrum)}
                                                {:network-type "her"
                                                 :name "Hermez"
-                                                :network-text-color quo.design-system.colors/orange
+                                                :network-text-color "rgba(251, 143, 97, 1)"
                                                 :network-icon-image (resources/get-image :hermez)}
                                                {:network-type "opt"
                                                 :name "Optimism"
@@ -68,7 +65,7 @@
                             :multi-chain-info (list
                                                {:network-type "eth"
                                                 :name "Ethereum"
-                                                :network-text-color quo.design-system.colors/blue
+                                                :network-text-color "rgba(76, 180, 239, 1)"
                                                 :network-icon-image (resources/get-image :ethereum)}
                                                {:network-type "arb"
                                                 :name "Arbitrum"
@@ -76,7 +73,7 @@
                                                 :network-icon-image (resources/get-image :arbitrum)}
                                                {:network-type "her"
                                                 :name "Hermez"
-                                                :network-text-color quo.design-system.colors/orange
+                                                :network-text-color "rgba(251, 143, 97, 1)"
                                                 :network-icon-image (resources/get-image :hermez)}
                                                {:network-type "opt"
                                                 :name "Optimism"
@@ -99,7 +96,7 @@
                             :multi-chain-info (list
                                                {:network-type "eth"
                                                 :name "Ethereum"
-                                                :network-text-color quo.design-system.colors/blue
+                                                :network-text-color "rgba(76, 180, 239, 1)"
                                                 :network-icon-image (resources/get-image :ethereum)}
                                                {:network-type "arb"
                                                 :name "Arbitrum"
@@ -107,7 +104,7 @@
                                                 :network-icon-image (resources/get-image :arbitrum)}
                                                {:network-type "her"
                                                 :name "Hermez"
-                                                :network-text-color quo.design-system.colors/orange
+                                                :network-text-color "rgba(251, 143, 97, 1)"
                                                 :network-icon-image (resources/get-image :hermez)}
                                                {:network-type "opt"
                                                 :name "Optimism"
@@ -463,7 +460,7 @@
     [rn/touchable-highlight {:style multichain-address-share-button-container}
      [icons/icon :main-icons/share-icon20 {:color colors/white :width 20 :height 20}]]]])
 
-(defn account-details [qr-url account-index legacy-wallet-address multichain-wallet-address multi-chain-info multichain-wallet-address-with-network-chain window-width]
+(defn account-details [qr-url legacy-wallet-address multichain-wallet-address multi-chain-info multichain-wallet-address-with-network-chain window-width]
   (let [selected-sub-account-index (reagent/atom 1)]
     (fn []
       [:<>
@@ -521,7 +518,6 @@
 
                   [account-details
                    (get account-info :qr-code-url)
-                   @selected-account-index
                    (get account-info :legacy-wallet-address)
                    (get account-info :multichain-wallet-address)
                    (get account-info :multi-chain-info)
