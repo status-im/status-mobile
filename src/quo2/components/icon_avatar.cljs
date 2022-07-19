@@ -53,11 +53,11 @@
                              :background-color colors/beige-opa-20}}})
 
 (def sizes
-{:big 48
- :medium 32
- :small 20})
+  {:big 48
+   :medium 32
+   :small 20})
 
-(defn icon-avatar 
+(defn icon-avatar
   [{:keys [size color dark?]}]
   (let [component-size (size sizes)
         is-theme-dark? (if dark? :dark :light)

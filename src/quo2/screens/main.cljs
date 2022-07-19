@@ -27,11 +27,15 @@
                :insets    {:top false}
                :component button/preview-button}
 <<<<<<< HEAD
+<<<<<<< HEAD
               {:name      :quo2-token-overview
                :insets    {:top false}
                :component token-overview/preview-token-overview}
 =======
                {:name      :quo2-icon-avatar
+=======
+              {:name      :quo2-icon-avatar
+>>>>>>> adefff9b0 (Linting)
                :insets    {:top false}
                :component icon-avatar/preview-icon-avatar}
 >>>>>>> 796182c2f (icon-avatar component)
