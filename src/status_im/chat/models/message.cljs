@@ -1,6 +1,5 @@
 (ns status-im.chat.models.message
   (:require [status-im.chat.models :as chat-model]
-            [re-frame.core :as re-frame]
             [status-im.chat.models.message-list :as message-list]
             [status-im.constants :as constants]
             [status-im.data-store.messages :as data-store.messages]
@@ -201,19 +200,13 @@
 (fx/defn handle-removed-messages
   {:events [::handle-removed-messages]}
   [{:keys [db] :as cofx} removed-messages]
-  (let [mark-as-seen-fx (mapv (fn [removed-message]
-                                (let [chat-id (:chatId removed-message)
-                                      message-id (:messageId removed-message)]
-                                  (data-store.messages/mark-messages-seen chat-id
-                                                                          [message-id]
-                                                                          #(re-frame/dispatch [:chat/decrease-unviewed-count chat-id %3])))) removed-messages)
-        remove-messages-fx (fn [{:keys [db]}]
+  (let [remove-messages-fx (fn [{:keys [db]}]
                              {:db (reduce (fn [acc current]
                                             (update-in acc [:messages (:chatId current)] dissoc (:messageId current)))
                                           db removed-messages)
                               :dispatch-n [[:get-activity-center-notifications]
                                            [:get-activity-center-notifications-count]]})]
-    (apply fx/merge cofx (conj mark-as-seen-fx remove-messages-fx))))
+    (fx/merge cofx remove-messages-fx)))
 
 (comment
   (handle-removed-messages
