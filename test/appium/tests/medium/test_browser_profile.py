@@ -200,7 +200,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.chats_menu_invite_friends_button.click()
         self.home.share_via_messenger()
         self.home.element_by_text_part("Hey join me on Status: https://join.status.im/u/0x")
-        self.home.click_system_back_button()
+        self.home.click_system_back_button_until_element_is_shown()
 
         self.errors.verify_no_errors()
 
