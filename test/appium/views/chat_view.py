@@ -592,7 +592,7 @@ class ChatView(BaseView):
         self.quote_username_in_message_input = EditBox(self.driver,
                                                        xpath="//android.view.ViewGroup[@content-desc='cancel-message-reply']/..//android.widget.TextView[1]")
         self.cancel_reply_button = Button(self.driver, accessibility_id="cancel-message-reply")
-        self.chat_item = Button(self.driver, accessibility_id="chat-item")
+        self.chat_item = Button(self.driver, xpath="(//*[@content-desc='chat-item'])[1]")
         self.chat_name_editbox = EditBox(self.driver, accessibility_id="chat-name-input")
         self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)
@@ -883,7 +883,7 @@ class ChatView(BaseView):
         self.driver.info("Moving to messages by time marker: '%s'" % marker)
         Button(self.driver, xpath="//*[@text='%s'']" % marker).scroll_to_element(depth=50, direction='up')
 
-    def install_sticker_pack_by_name(self, pack_name='Status Cat'):
+    def install_sticker_pack_by_name(self, pack_name='HCPP20'):
         self.driver.info("## Installing '%s' stickerpack" % pack_name, device=False)
         self.chat_message_input.click()
         self.show_stickers_button.click()

@@ -57,8 +57,11 @@ mailserver_hk = 'mail-01.ac-cn-hongkong-c'
 mailserver_gc = 'mail-01.gc-us-central1-a'
 
 test_dapp_web_url = "status-im.github.io/dapp"
-test_dapp_url = 'simpledapp.eth'
-test_dapp_name = 'simpledapp.eth'
+# TODO: temp due to goerli transition
+# test_dapp_url = 'simpledapp.eth'
+# test_dapp_name = 'simpledapp.eth'
+test_dapp_url = 'https://bafybeidzlqpkbtvpjtxnzgew6ffxhozq5f4ojbk64iq3tjl7lkjue2biby.ipfs.infura-ipfs.io/'
+test_dapp_name = 'bafybeidzlqpkbtvpjtxnzgew6ffxhozq5f4ojbk64iq3tjl7lkjue2biby.ipfs.infura-ipfs.io'
 
 emojis = {'thumbs-up': 2, 'thumbs-down': 3, 'love': 1, 'laugh': 4, 'angry': 6, 'sad': 5}
 

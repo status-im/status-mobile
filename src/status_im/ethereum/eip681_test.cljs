@@ -85,6 +85,10 @@
    :testnet {"0xc55cf4b03948d7ebc8b9e8bad92643703811d162" {:address  "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"
                                                            :name     "Status Test Token"
                                                            :symbol   :STT
+                                                           :decimals  18}}
+   :goerli  {"0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a" {:address  "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
+                                                           :name     "Status Test Token"
+                                                           :symbol   :STT
                                                            :decimals  18}}})
 
 (deftest generate-erc20-uri

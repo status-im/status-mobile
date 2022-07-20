@@ -1,9 +1,11 @@
+import time
+
 import pytest
 
 from tests import marks, common_password, used_fleet
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from views.sign_in_view import SignInView
-from tests.users import basic_user, ens_user, ens_user_ropsten, transaction_senders, chat_users
+from tests.users import basic_user, ens_user, ens_user_message_sender, transaction_senders, chat_users
 
 
 @pytest.mark.xdist_group(name="one_1")
@@ -14,7 +16,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(1)
         self.sign_in = SignInView(self.drivers[0])
         self.home = self.sign_in.create_user()
-        self.wiki_texts = ['Español', '日本語', 'Français', '中文', 'Português']
+        self.wiki_texts = ['Español', '日本語', '中文', 'Português']
 
     @marks.testrail_id(702149)
     def test_browser_can_access_images_by_link(self):
@@ -78,30 +80,26 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
         # Switching back to ropsten
         web_page.profile_button.click()
-        profile.switch_network('Ropsten with upstream RPC')
+        profile.switch_network('Goerli with upstream RPC')
 
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702179)
     def test_browser_refresh_page(self):
-
         dapp = self.home.dapp_tab_button.click()
-        url = 'app.uniswap.org'
-
-        dapp.just_fyi("Check refresh button")
+        url = 'status.im'
         web_page = dapp.open_url(url)
-        dapp.allow_button.click_if_shown()
-        element_on_start_page = dapp.element_by_text('Select a token')
-        dapp.allow_button.click_if_shown()
-        element_on_start_page.scroll_and_click()
 
-        # when bottom sheet is opened, elements by text couldn't be found
-        element_on_start_page.wait_for_invisibility_of_element(20)
+        self.home.just_fyi("Open collapsed menu and check required element is shown")
+        web_page.open_right_collapsed_menu()
+        element_on_start_page = dapp.element_by_text('Get Involved')
+        element_on_start_page.wait_for_visibility_of_element(20)
+
+        self.home.just_fyi("Tap on Refresh and check that popup is closed")
         web_page.browser_refresh_page_button.click()
-
-        if not element_on_start_page.is_element_displayed(30):
+        time.sleep(2)
+        if element_on_start_page.is_element_displayed(10):
             self.errors.append("Page failed to be refreshed")
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702151)
@@ -187,21 +185,23 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702159)
     def test_profile_invite_friends(self):
+        chat_key = self.home.get_public_key_and_username()
         self.home.home_button.double_click()
 
         self.home.just_fyi("Check it via 'Invite friends' on home view")
         self.home.invite_friends_button.click()
         self.home.share_via_messenger()
-        self.home.element_by_text_part("Hey join me on Status: https://join.status.im/u/0x")
-        self.home.click_system_back_button()
+        if not self.home.element_by_text_part('Hey join me on Status: https://join.status.im/u/%s' % chat_key).is_element_displayed(20):
+            self.errors.append("No expected message in input field when sharing via 'Invite friend'")
+        self.home.click_system_back_button_until_element_is_shown()
 
         self.home.just_fyi("Check it via bottom sheet menu")
         self.home.plus_button.click()
         self.home.chats_menu_invite_friends_button.click()
         self.home.share_via_messenger()
-        self.home.element_by_text_part("Hey join me on Status: https://join.status.im/u/0x")
-        self.home.click_system_back_button()
-
+        if not self.home.element_by_text_part('Hey join me on Status: https://join.status.im/u/%s' % chat_key).is_element_displayed(20):
+            self.errors.append("No expected message in input field when sharing via 'bottom sheet'")
+        self.home.click_system_back_button_until_element_is_shown()
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702160)
@@ -215,8 +215,8 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
         users = {
             'scanning_ens_with_stateofus_domain_deep_link': {
-                'contact_code': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_ropsten['ens'],
-                'username': ens_user_ropsten['username']
+                'contact_code': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_message_sender['ens'],
+                'username': ens_user_message_sender['username']
             },
             'scanning_public_key': {
                 'contact_code': transaction_senders['A']['public_key'],
@@ -289,8 +289,8 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         if not profile.element_by_text_part('custom_ropsten').is_element_displayed():
             self.driver.fail("Network custom_ropsten was not added!")
         profile.get_back_to_home_view()
-        # Switching back to Ropsten for the next cases
-        profile.switch_network('Ropsten with upstream RPC')
+        # Switching back to Goerli for the next cases
+        profile.switch_network('Goerli with upstream RPC')
 
         self.errors.verify_no_errors()
 
@@ -374,13 +374,11 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
         profile = self.home.profile_button.click()
         profile.advanced_button.click()
-        default_log_level = 'INFO'
+        default_log_level = 'DEBUG'
         if not profile.element_by_text(default_log_level).is_element_displayed():
             self.errors.append('%s is not selected by default' % default_log_level)
-        if self.home.find_values_in_geth('lvl=trce', 'lvl=dbug'):
+        if self.home.find_values_in_geth('lvl=trce'):
             self.errors.append('"%s" is set, but found another entries!' % default_log_level)
-        if not self.home.find_values_in_geth('lvl=info'):
-            self.errors.append('"%s" is set, but no entries are found!' % default_log_level)
 
         self.home.just_fyi('Set another loglevel and check that changes are applied')
         profile.log_level_setting_button.click()

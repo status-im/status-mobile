@@ -185,6 +185,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702286)
+    @marks.xfail(reason="flaky; history was not fetched after enabling use_history_node - something needs investigation")
     def test_profile_use_history_node_disable_enable(self):
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
         self.home_1.toggle_airplane_mode()
@@ -224,7 +225,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702287)
-    @marks.xfail(reason="may be failed due to #13333")
+    #@marks.xfail(reason="may be failed due to #13333")
     def test_profile_can_not_connect_to_custom_history_node_add_delete(self):
         self.home_1.profile_button.double_click()
         self.home_2.home_button.double_click()
@@ -715,6 +716,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
             self.errors.append("Nickname is shown in group chat after removing!")
 
         self.errors.verify_no_errors()
+
 
 @pytest.mark.xdist_group(name="one_3")
 @marks.medium

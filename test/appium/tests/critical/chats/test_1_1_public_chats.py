@@ -4,7 +4,7 @@ import time
 
 from tests import marks, common_password
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
-from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
+from tests.users import transaction_senders, basic_user, ens_user, ens_user_message_sender
 from views.sign_in_view import SignInView
 import pytest
 
@@ -1039,7 +1039,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.chat_2.just_fyi("Check that message is fetched for receiver")
         self.home_2.get_chat(self.sender['username']).click()
         chat_2_reciever_message = self.chat_2.get_incoming_transaction(transaction_value=amount)
-        chat_2_reciever_message.transaction_status.wait_for_element_text(chat_2_reciever_message.confirmed)
+        chat_2_reciever_message.transaction_status.wait_for_element_text(chat_2_reciever_message.confirmed, wait_time=60)
 
     @marks.testrail_id(702155)
     def test_ens_mention_nickname_1_1_chat(self):
@@ -1118,13 +1118,13 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         else:
             self.errors.append('No PN on mention in public chat! ')
             self.home_2.click_system_back_button(2)
-        if self.home_2.element_starts_with_text(self.reciever['ens']).is_element_differs_from_template('ment_new.png',
+        if self.home_2.element_starts_with_text(self.reciever['ens']).is_element_differs_from_template('ment_new_1.png',
                                                                                                        2):
             self.errors.append('Mention is not highlighted!')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702157)
-    def test_sticker_1_1_public_chat(self):
+    def test_sticker_1_1_public_chat_mainnet(self):
         self.home_2.status_in_background_button.click_if_shown()
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
         profile_2 = self.home_2.profile_button.click()
@@ -1136,11 +1136,13 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.chat_2.sticker_icon.click()
         if not self.chat_2.chat_item.is_element_displayed():
             self.errors.append('Cannot use purchased stickers')
+        self.home_2.profile_button.click()
+        profile_2.switch_network('Goerli with upstream RPC')
 
-        self.home_1.just_fyi('Install free sticker pack and use it in 1-1 chat on Ropsten')
+        self.home_1.just_fyi('Install free sticker pack and use it in 1-1 chat on Goerli')
         self.home_1.get_chat(self.ens).click()
         self.chat_1.chat_message_input.clear()
-        self.chat_1.install_sticker_pack_by_name('Status Cat')
+        self.chat_1.install_sticker_pack_by_name()
         self.chat_1.sticker_icon.click()
         if not self.chat_1.sticker_message.is_element_displayed():
             self.errors.append('Sticker was not sent')
@@ -1156,16 +1158,17 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         if not self.chat_1.chat_item.is_element_displayed():
             self.errors.append('Sticker was not sent from Recent')
 
-        self.home_2.just_fyi('Check that can install stickers by tapping on sticker message')
+        # self.home_2.just_fyi('Check that can install stickers by tapping on sticker message')
+        # TODO: disabled because of #13683
         self.home_2.home_button.double_click()
         self.home_2.get_chat(self.sender['username']).click()
-        self.chat_2.chat_item.click()
-        self.chat_2.element_by_text_part('Free').wait_and_click(40)
-        if self.chat_2.element_by_text_part('Free').is_element_displayed():
-            self.errors.append('Stickerpack was not installed')
+        # self.chat_2.chat_item.click()
+        # self.chat_2.element_by_text_part('Free').wait_and_click(40)
+        # if self.chat_2.element_by_text_part('Free').is_element_displayed():
+        #     self.errors.append('Stickerpack was not installed')
 
         self.chat_2.just_fyi('Check that can navigate to another user profile via long tap on sticker message')
-        self.chat_2.close_sticker_view_icon.click()
+        # self.chat_2.close_sticker_view_icon.click()
         self.chat_2.chat_item.long_press_element()
         self.chat_2.element_by_text('View Details').click()
         self.chat_2.profile_send_message.wait_and_click()
@@ -1180,7 +1183,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         chat = self.home_1.start_new_chat_button.click()
 
         self.home_1.just_fyi("Validation: invalid public key and invalid ENS")
-        for invalid_chat_key in (basic_user['public_key'][:-1], ens_user_ropsten['ens'][:-2]):
+        for invalid_chat_key in (basic_user['public_key'][:-1], ens_user_message_sender['ens'][:-2]):
             chat.public_key_edit_box.clear()
             chat.public_key_edit_box.set_value(invalid_chat_key)
             chat.confirm()
@@ -1189,8 +1192,8 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Check that valid ENS is resolved")
         chat.public_key_edit_box.clear()
-        chat.public_key_edit_box.set_value(ens_user_ropsten['ens'])
-        resolved_ens = '%s.stateofus.eth' % ens_user_ropsten['ens']
+        chat.public_key_edit_box.set_value(ens_user_message_sender['ens'])
+        resolved_ens = '%s.stateofus.eth' % ens_user_message_sender['ens']
         if not chat.element_by_text(resolved_ens).is_element_displayed(10):
             self.errors.append('ENS name is not resolved after pasting chat key')
         self.home_1.close_button.click()

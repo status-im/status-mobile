@@ -1,4 +1,4 @@
-from tests.users import ens_user_ropsten
+from tests.users import ens_user_message_sender
 main = {
     'name' : 'main chat',
     'messages': {
@@ -34,7 +34,7 @@ make_admin =  {
 timeline = {
     'link': 'https://join.status.im/u/0x045efbcc044e5ae21ac3cf111ea6df6186e0cc50a2cd747f52a56d19ce516e683c66cb47f4b0a21110859aea9592dfba1e0bf4af11ff3eab995f844b3673643bf1',
     'text': 'Hey there!',
-    'resolved_username': ens_user_ropsten['username']
+    'resolved_username': ens_user_message_sender['username']
 
 }
 profile = {

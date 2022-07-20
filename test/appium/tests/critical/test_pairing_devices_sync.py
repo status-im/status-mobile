@@ -1,7 +1,7 @@
 import pytest
 from tests import marks
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
-from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
+from tests.users import transaction_senders, basic_user, ens_user, ens_user_message_sender
 from views.sign_in_view import SignInView
 
 
@@ -203,7 +203,7 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
     def test_pairing_sync_contacts_add_remove_set_nickname_ens(self):
         [device.home_button.double_click() for device in (self.profile_1, self.profile_2)]
         new_contact, new_nickname = transaction_senders['F'], "completely_new_nick"
-        self.home_1.add_contact(ens_user_ropsten['ens'])
+        self.home_1.add_contact(ens_user_message_sender['ens'])
         self.home_1.home_button.click()
         self.home_1.add_contact(new_contact['public_key'])
 
@@ -211,7 +211,7 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.profile_2.profile_button.double_click()
         self.profile_2.contacts_button.scroll_to_element(direction='up')
         self.profile_2.contacts_button.click()
-        for contact in (new_contact['username'], '@%s' % ens_user_ropsten['ens']):
+        for contact in (new_contact['username'], '@%s' % ens_user_message_sender['ens']):
             if not self.profile_2.element_by_text(contact).is_element_displayed():
                 self.errors.append("'%s' new contact is not synced!" % contact)
 

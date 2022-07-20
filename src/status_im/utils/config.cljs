@@ -23,6 +23,7 @@
 
 (def mainnet-rpc-url (str "https://mainnet.infura.io/v3/" INFURA_TOKEN))
 (def testnet-rpc-url (str "https://ropsten.infura.io/v3/" INFURA_TOKEN))
+(def goerli-rpc-url  (str "https://goerli.infura.io/v3/" INFURA_TOKEN))
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
@@ -57,7 +58,7 @@
   (string/upper-case (get-config :LOG_LEVEL "")))
 (def fleet (get-config :FLEET "eth.staging"))
 (def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))
-(def default-network (get-config :DEFAULT_NETWORK "testnet_rpc"))
+(def default-network (get-config :DEFAULT_NETWORK "goerli_rpc"))
 (def pow-target (js/parseFloat (get-config :POW_TARGET "0.0001")))
 (def pow-time (js/parseInt (get-config :POW_TIME "1")))
 (def max-installations 2)
@@ -67,12 +68,12 @@
 (def verify-transaction-chain-id (js/parseInt (get-config :VERIFY_TRANSACTION_CHAIN_ID "1")))
 (def verify-transaction-url (if (= :mainnet (ethereum/chain-id->chain-keyword verify-transaction-chain-id))
                               mainnet-rpc-url
-                              testnet-rpc-url))
+                              goerli-rpc-url))
 
 (def verify-ens-chain-id (js/parseInt (get-config :VERIFY_ENS_CHAIN_ID "1")))
 (def verify-ens-url (if (= :mainnet (ethereum/chain-id->chain-keyword verify-ens-chain-id))
                       mainnet-rpc-url
-                      testnet-rpc-url))
+                      goerli-rpc-url))
 (def verify-ens-contract-address (get-config :VERIFY_ENS_CONTRACT_ADDRESS ((ethereum/chain-id->chain-keyword verify-ens-chain-id) ens/ens-registries)))
 
 (def default-multiaccount
@@ -137,7 +138,7 @@
     :config              {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
                           :DataDir        "/ethereum/goerli_rpc"
                           :UpstreamConfig {:Enabled true
-                                           :URL     (str "https://goerli.infura.io/v3/" INFURA_TOKEN)}}}
+                                           :URL     goerli-rpc-url}}}
    {:id                  "bsc_testnet_rpc",
     :chain-explorer-link "https://testnet.bscscan.com/address/",
     :name                "BSC testnet",

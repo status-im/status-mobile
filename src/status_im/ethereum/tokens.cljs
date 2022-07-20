@@ -28,6 +28,10 @@
                   :symbol         :ETH
                   :symbol-display :ETHri
                   :decimals       18}
+    :goerli      {:name           "Goerli Ether"
+                  :symbol         :ETH
+                  :symbol-display :ETHgo
+                  :decimals       18}
     :xdai        {:name            "xDAI"
                   :symbol          :ETH
                   :symbol-display  :xDAI

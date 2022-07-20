@@ -191,7 +191,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         sign_in.just_fyi('Check that balance is preserved')
         accounts = dapp_data.wallets
         wallet = profile.wallet_button.click()
-        for asset in ('ETH', 'ADI', 'STT'):
+        for asset in ('ETH', 'YEENUS', 'STT'):
             wallet.wait_balance_is_changed(asset=asset)
 
         sign_in.just_fyi('Check accounts inside multiaccount')
@@ -215,13 +215,13 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home = sign_in.recover_access(passphrase=user['passphrase'], keycard=True)
         wallet = home.wallet_button.click()
-        wallet.wait_balance_is_changed(asset='ADI', scan_tokens=True)
+        wallet.wait_balance_is_changed(asset='YEENUS', scan_tokens=True)
         home.upgrade_app()
 
         home.just_fyi('Check that can login with restored from mnemonic keycard account')
         sign_in.sign_in(keycard=True)
         home.wallet_button.click()
-        for asset in ['ETH', 'ADI', 'STT']:
+        for asset in ['ETH', 'YEENUS', 'STT']:
             if wallet.get_asset_amount_by_name(asset) == 0:
                 self.errors.append('Asset %s was not restored' % asset)
 

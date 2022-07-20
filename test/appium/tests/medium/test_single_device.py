@@ -3,7 +3,7 @@ import random
 from tests import marks, mailserver_ams, mailserver_gc, mailserver_hk, used_fleet, common_password,\
     pair_code, unique_password
 from tests.users import user_mainnet, chat_users, recovery_users, transaction_senders, basic_user,\
-    wallet_users, ens_user_ropsten, ens_user
+    wallet_users, ens_user_message_sender, ens_user
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 import support.api.web3_api as w3
@@ -44,7 +44,7 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in.toggle_mobile_data()
         sign_in.element_by_text_part('Stop syncing').wait_and_click(60)
         sign_in.wallet_button.click()
-        if not wallet_view.element_by_text_part('LXS').is_element_displayed():
+        if not wallet_view.element_by_text_part('XEENUS').is_element_displayed():
             self.errors.append('Token balance is not fetched while on cellular network!')
 
         wallet_view.just_fyi('Add watch-only account when on cellular network')
@@ -60,7 +60,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
         wallet_view.just_fyi('Check that balance is changed after go back to WI-FI')
         sign_in.toggle_mobile_data()
-        for asset in ('ADI', 'STT'):
+        for asset in ('YEENUS', 'STT'):
             wallet_view.asset_by_name(asset).scroll_to_element()
             wallet_view.wait_balance_is_changed(asset, wait_time=60)
 
@@ -487,7 +487,7 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
 
         errors = {'send_transaction_screen': {
-            'too_precise': 'Amount is too precise. Max number of decimals is 7.',
+            'too_precise': 'Amount is too precise. Max number of decimals is 8.',
             'insufficient_funds': 'Insufficient funds'
         },
             'sending_screen': {
@@ -499,14 +499,14 @@ class TestChatManagement(SingleDeviceTestCase):
 
         sign_in.recover_access(sender['passphrase'])
         wallet = sign_in.wallet_button.click()
-        wallet.wait_balance_is_changed('ADI')
+        wallet.wait_balance_is_changed('YEENUS')
         wallet.accounts_status_account.click()
 
         screen = 'send transaction screen from wallet'
         sign_in.just_fyi('Checking %s on %s' % (errors['send_transaction_screen']['too_precise'], screen))
-        initial_amount_adi = wallet.get_asset_amount_by_name('ADI')
+        initial_amount_adi = wallet.get_asset_amount_by_name('YEENUS')
         send_transaction = wallet.send_transaction_button.click()
-        adi_button = send_transaction.asset_by_name('ADI')
+        adi_button = send_transaction.asset_by_name('YEENUS')
         send_transaction.select_asset_button.click_until_presence_of_element(
             send_transaction.eth_asset_in_select_asset_bottom_sheet_button)
         adi_button.click()
@@ -533,7 +533,7 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet.get_account_by_name(account_name).click()
         wallet.send_transaction_button.click()
         send_transaction.amount_edit_box.set_value('0')
-        send_transaction.set_recipient_address(ens_user_ropsten['ens'])
+        send_transaction.set_recipient_address(ens_user_message_sender['ens'])
         send_transaction.next_button.click()
         wallet.ok_got_it_button.wait_and_click(30)
         if not send_transaction.validation_error_element.is_element_displayed(10):
@@ -569,8 +569,8 @@ class TestChatManagement(SingleDeviceTestCase):
 
         send_transaction = wallet.send_transaction_button.click()
         amount = '0.000%s' % str(random.randint(100000, 999999)) + '1'
-        send_transaction.amount_edit_box.set_value(amount)
-        send_transaction.set_recipient_address(ens_user_ropsten['ens'])
+        self.value = send_transaction.amount_edit_box.set_value(amount)
+        send_transaction.set_recipient_address(ens_user_message_sender['ens'])
         send_transaction.next_button.click()
         wallet.ok_got_it_button.wait_and_click(30)
         send_transaction.network_fee_button.click()
@@ -630,8 +630,9 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet.just_fyi('Verify custom fee data on tx screen')
         wallet.swipe_up()
         for key in expected_params:
-            if not wallet.element_by_text_part(expected_params[key]).is_element_displayed():
-                self.errors.append("Custom tx param %s is not shown on tx history screen" % key)
+            if key != 'fee_cap':
+                if not wallet.element_by_text_part(expected_params[key]).is_element_displayed():
+                    self.errors.append("Custom tx param %s is not shown on tx history screen" % key)
 
         wallet.just_fyi("Check below fee popup on mainnet")
         profile = wallet.profile_button.click()
@@ -641,7 +642,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
         send_transaction = wallet.send_transaction_button.click_until_presence_of_element(send_transaction.amount_edit_box)
         send_transaction.amount_edit_box.set_value(0)
-        send_transaction.set_recipient_address(ens_user_ropsten['ens'])
+        send_transaction.set_recipient_address(ens_user_message_sender['ens'])
         send_transaction.next_button.click()
         wallet.element_by_translation_id("network-fee").click()
         if not wallet.element_by_translation_id("tx-fail-description2").is_element_displayed():
@@ -740,7 +741,7 @@ class TestChatManagement(SingleDeviceTestCase):
         send_tx.next_button.click()
         send_tx.set_up_wallet_when_sending_tx()
         send_tx.advanced_button.click()
-        send_tx.nonce_input.set_value('4')
+        send_tx.nonce_input.set_value('0')
         send_tx.nonce_save_button.click()
         error_text = send_tx.sign_transaction(error=True)
         if error_text != 'nonce too low':
@@ -770,13 +771,13 @@ class TestChatManagement(SingleDeviceTestCase):
     @marks.testrail_id(6219)
     def test_profile_set_primary_ens_custom_domain(self):
         home = SignInView(self.driver).recover_access(ens_user['passphrase'])
-        ens_second, ens_main = ens_user['ens_another'], ens_user['ens']
+        ens_second, ens_main = ens_user['ens_upgrade'], ens_user['ens']
 
         home.just_fyi('add 2 ENS names in Profile')
         profile = home.profile_button.click()
         dapp = profile.connect_existing_ens(ens_main)
+
         profile.element_by_translation_id("ens-add-username").wait_and_click()
-        profile.element_by_translation_id("ens-want-custom-domain").wait_and_click()
         dapp.ens_name_input.set_value(ens_second)
         dapp.check_ens_name.click_until_presence_of_element(dapp.element_by_translation_id("ens-got-it"))
         dapp.element_by_translation_id("ens-got-it").wait_and_click()
@@ -1055,12 +1056,15 @@ class TestChatManagement(SingleDeviceTestCase):
         self.wallet = self.home.wallet_button.click()
         self.address = self.wallet.get_wallet_address()
         self.chat_key = self.home.get_public_key_and_username()
+
+        self.wallet.just_fyi("Get required donate")
         w3.donate_testnet_eth(self.address, amount=0.1, inscrease_default_gas_price=10)
         self.home.wallet_button.click()
         self.wallet.wait_balance_is_changed()
         w3.donate_testnet_token('STT', address=self.address, amount=10, inscrease_default_gas_price=10)
         self.wallet.wait_balance_is_changed('STT', scan_tokens=True)
 
+        self.wallet.just_fyi("Purchase ENS")
         self.profile = self.home.profile_button.click()
         self.profile.ens_usernames_button.wait_and_click()
         self.dapp = self.home.get_dapp_view()
@@ -1077,24 +1081,40 @@ class TestChatManagement(SingleDeviceTestCase):
             self.error.append("ENS name %s is not purchasing" % self.ens_name)
         self.dapp.ens_got_it.click()
         if self.dapp.registration_in_progress.is_element_displayed(10):
-            self.dapp.registration_in_progress.wait_for_invisibility_of_element(300)
+            self.dapp.registration_in_progress.wait_for_invisibility_of_element(400)
         self.dapp.element_by_text(self.ens_name).click()
         for text in ("10 SNT, deposit unlocked", self.chat_key, self.address.lower()):
             if not self.dapp.element_by_text(text).is_element_displayed(10):
                 self.errors.append("%s is not displayed after ENS purchasing" % text)
 
-        if not w3.get_address_from_ens(self.ens_name) == self.address:
-            self.errors.append("ENS name %s is not resolved to correct address %s" % (self.ens_name, self.address))
-
         self.wallet.just_fyi("Send leftovers")
-        self.wallet.wallet_button.click()
-        send_transaction = self.wallet.send_transaction_from_main_screen.click()
+        self.wallet.wallet_button.double_click()
+        address = self.wallet.get_wallet_address()
+        send_transaction = self.wallet.send_transaction_button.click()
         send_transaction.set_max_button.click()
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
         send_transaction.set_recipient_address(w3.ACCOUNT_ADDRESS)
         send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction()
+
+        self.wallet.just_fyi("Verify purchased ENS")
+        self.home.home_button.click()
+        self.home.plus_button.click_until_presence_of_element(self.home.start_new_chat_button)
+        chat = self.home.start_new_chat_button.click()
+        chat.public_key_edit_box.click()
+        chat.public_key_edit_box.send_keys(self.ens_name)
+        if not self.home.element_by_translation_id("can-not-add-yourself").is_element_displayed(20):
+            self.errors.append(
+                "Public key in not resolved correctly from %s ENS name on stateofus!" % self.ens_name)
+        self.home.get_back_to_home_view()
+        self.wallet.wallet_button.double_click()
+        self.wallet.send_transaction_from_main_screen.click_until_presence_of_element(send_transaction.chose_recipient_button)
+        send_transaction.chose_recipient_button.scroll_and_click()
+        send_transaction.set_recipient_address(self.ens_name)
+        if not send_transaction.element_by_text_part(send_transaction.get_formatted_recipient_address(address)).is_element_displayed(5):
+            self.errors.append("Wallet address in not resolved correctly from %s ENS name on stateofus!" % self.ens_name)
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6300)

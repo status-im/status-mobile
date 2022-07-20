@@ -150,6 +150,7 @@
   [chain-id]
   (case chain-id
     3 50
+    5 10
     1 10))
 
 (fx/defn register-name

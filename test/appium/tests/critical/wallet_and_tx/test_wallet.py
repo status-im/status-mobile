@@ -21,9 +21,9 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.switch_to_mobile(before_login=True)
         self.home = self.sign_in.recover_access(self.user['passphrase'])
         self.wallet = self.home.wallet_button.click()
-        [self.wallet.wait_balance_is_changed(asset) for asset in ('ETH', 'MDS', 'STT')]
+        [self.wallet.wait_balance_is_changed(asset) for asset in ('ETH', 'YEENUS', 'STT')]
         self.initial_balances = {'ETH': self.wallet.get_asset_amount_by_name('ETH'),
-                                 'ADI': 0,
+                                 'YEENUS': self.wallet.get_asset_amount_by_name('YEENUS'),
                                  'STT': self.wallet.get_asset_amount_by_name('STT')}
 
     @marks.testrail_id(700756)
@@ -117,7 +117,7 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(700758)
     def test_wallet_manage_assets(self):
-        asset = "HND"
+        asset = "ZEENUS"
         self.sign_in.just_fyi("Getting back to main wallet view")
         self.wallet.get_back_to_home_view()
 
@@ -128,11 +128,9 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append('%s asset is not shown in wallet' % asset)
 
         self.sign_in.just_fyi("Check that 0 asset is not disappearing after relogin")
-        profile = self.wallet.profile_button.click()
-        profile.relogin()
+        self.wallet.reopen_app()
         self.sign_in.wallet_button.click()
-        if not self.wallet.asset_by_name(asset).is_element_displayed():
-            self.errors.append('%s asset is not shown in wallet after relogin' % asset)
+        self.wallet.asset_by_name(asset).scroll_to_element()
 
         self.sign_in.just_fyi("Deselecting asset")
         self.wallet.multiaccount_more_options.click()
