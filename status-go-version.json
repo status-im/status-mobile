@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.103.3",
-    "commit-sha1": "3cd92fda7875ae22244d40a589ea921bc61bdaef",
-    "src-sha256": "1m4954qhd1vqap74scn03hbp2wfxwsjq8n24japqp4scjcq6gngw"
+    "version": "13635-currently-blocked-users-are-not-syncing-",
+    "commit-sha1": "9358d4d4688db9751f5dcc325e6a91ff0ced7130",
+    "src-sha256": "02s6xf81hzn2s39pw52m5x5q8i1356ji7wm0i28ddsbb9ymrcpdv"
 }
