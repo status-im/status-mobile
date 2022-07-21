@@ -24,10 +24,15 @@
   [memo-photo-rend photo-path size accessibility-label (colors/dark?)])
 
 ;; We optionally pass identicon for perfomance reason, so it does not have to be calculated for each message
-(defn member-photo [pub-key identicon]
-  (let [path @(re-frame/subscribe [:chats/photo-path pub-key identicon])]
-    [photo path {:size                style/default-size
-                 :accessibility-label :member-photo}]))
+(defn member-photo
+  ([pub-key]
+   (member-photo pub-key nil))
+  ([pub-key identicon]
+   (member-photo pub-key identicon style/default-size))
+  ([pub-key identicon size]
+   (let [path @(re-frame/subscribe [:chats/photo-path pub-key identicon])]
+     [photo path {:size                size
+                  :accessibility-label :member-photo}])))
 
 (defn account-photo [account]
   (let [path (multiaccounts/displayed-photo account)]

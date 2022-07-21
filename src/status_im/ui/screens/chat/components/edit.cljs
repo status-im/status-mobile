@@ -16,7 +16,7 @@
   [rn/view {:style {:flex-direction :row}}
    [rn/view {}
     [icons/icon :tiny-icons/tiny-edit {:container-style {:margin-top 5}}]]
-   [rn/view {:style (styles/reply-content)}
+   [rn/view {:style (styles/reply-content-old)}
     [quo/text {:weight          :medium
                :number-of-lines 1}
      (i18n/label :t/editing-message)]]
