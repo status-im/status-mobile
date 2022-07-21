@@ -245,17 +245,19 @@ class TestrailReport(BaseTestReport):
                 description_title += "Not executed tests: %d\n" % len(not_executed_tests)
             description_title += "\n"
             ids_failed_test = []
-            description, case_info = '', ''
+            single_devices_block, group_blocks, case_info = str(), dict(), str()
             if failed_tests:
-                for i, test in enumerate(failed_tests):
+                for test in failed_tests:
+                    if test.group_name:
+                        group_blocks[test.group_name] = "-------\n## Class: %s:\n" % test.group_name
+                for test in failed_tests:
                     last_testrun = test.testruns[-1]
                     test_rail_link = self.get_test_result_link(self.run_id, test.testrail_case_id)
                     ids_failed_test.append(test.testrail_case_id)
                     case_title = '\n'
                     case_title += '-------\n'
-                    case_title += "## %s) ID %s: [%s](%s) \n" % (
-                        i + 1, test.testrail_case_id, test.name, test_rail_link)
-                    full_error = last_testrun.error[:255]
+                    case_title += "## ID %s: [%s](%s) \n" % (test.testrail_case_id, test.name, test_rail_link)
+                    full_error = last_testrun.error[-255:]
                     (code_error, no_code_error_str, issue_id) = self.separate_xfail_error(full_error)
                     if issue_id:
                         test_rail_xfail = self.make_error_with_gh_issue_link(no_code_error_str, issue_id)
@@ -272,14 +274,13 @@ class TestrailReport(BaseTestReport):
                                     % (f, job_url, self.get_sauce_final_screenshot_url(job_id))
 
                     if test.group_name:
-                        class_name = "Class: %s\n" % test.group_name
-                        description += case_title + class_name + error + case_info
+                        group_blocks[test.group_name] += case_title + error + case_info
                     else:
-                        description += case_title + error + case_info
-            description_title += '## Failed tests: %s \n' % ','.join(map(str, ids_failed_test))
+                        single_devices_block += case_title + error + case_info
+                description_title += '## Failed tests: %s \n' % ','.join(map(str, ids_failed_test))
             if not_executed_tests:
                 description_title += "## Not executed tests: %s\n" % ','.join([str(i) for i in not_executed_tests])
-            final_description = description_title + description
+            final_description = description_title + single_devices_block + ''.join([i for i in group_blocks.values()])
 
         request_body = {'description': final_description}
         return self.post('update_run/%s' % self.run_id, request_body)
