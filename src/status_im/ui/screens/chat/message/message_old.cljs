@@ -561,20 +561,20 @@
     :as   message}
    {:keys [on-long-press modal]
     :as   reaction-picker}]
-  (let [pack (get-in content [:sticker :pack])]
+  (let [hash (get-in content [:sticker :hash])]
     [message-content-wrapper message
      [react/touchable-highlight (when-not modal
                                   {:disabled            in-popover?
                                    :accessibility-label :sticker-message
                                    :on-press            (fn [_]
-                                                          (when pack
-                                                            (re-frame/dispatch [:stickers/open-sticker-pack (str pack)]))
+                                                          (when hash
+                                                            (re-frame/dispatch [:stickers/open-sticker-pack-from-sticker-hash (str hash)]))
                                                           (react/dismiss-keyboard!))
                                    :delay-long-press 100
                                    :on-long-press       (fn []
                                                           (on-long-press
                                                            (when-not outgoing
-                                                             [{:on-press #(when pack
+                                                             [{:on-press #(when hash
                                                                             (re-frame/dispatch [:chat.ui/show-profile from]))
                                                                :label    (i18n/label :t/view-details)}])))})
       [fast-image/fast-image {:style  {:margin 10 :width 140 :height 140}

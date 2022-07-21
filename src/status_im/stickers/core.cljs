@@ -114,10 +114,20 @@
   {:db (assoc db :stickers/recent-stickers packs)})
 
 (fx/defn open-sticker-pack
-  {:events [:stickers/open-sticker-pack]}
-  [{{:networks/keys [current-network]} :db :as cofx} id]
-  (when (and id (or config/stickers-test-enabled? (string/starts-with? current-network "mainnet")))
-    (navigation/open-modal cofx :stickers-pack {:id id})))
+  {:events [:stickers/open-sticker-pack-from-sticker-hash]}
+  [{:keys [db] :as cofx} hash]
+  (let [current-network (get db :networks/current-network)
+        sticker-packs   (get db :stickers/packs)
+        sticker-pack     (second
+                          (first
+                           (filter
+                            #(some
+                              (fn [sticker]
+                                (= (:hash sticker) hash))
+                              (:stickers (second %)))
+                            sticker-packs)))]
+    (when (and sticker-pack (or config/stickers-test-enabled? (string/starts-with? current-network "mainnet")))
+      (navigation/open-modal cofx :stickers-pack (:pack sticker-pack)))))
 
 (fx/defn select-pack
   {:events [:stickers/select-pack]}

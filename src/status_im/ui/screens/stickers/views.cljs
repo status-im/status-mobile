@@ -75,7 +75,7 @@
 (defview pack-main []
   (letsubs [{:keys [name author thumbnail stickers]
              :as   pack}
-            [:stickers/get-current-pack]]
+            [:get-screen-params]]
     [react/keyboard-avoiding-view {:flex 1}
      (if pack
        [react/view {:flex 1}

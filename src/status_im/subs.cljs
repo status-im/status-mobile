@@ -1556,13 +1556,6 @@
               (assoc :owned (= status constants/sticker-pack-status-owned))))
         (vals packs))))
 
-(re-frame/reg-sub
- :stickers/get-current-pack
- :<- [:get-screen-params]
- :<- [:stickers/all-packs]
- (fn [[{:keys [id]} packs]]
-   (first (filter #(= (:id %) id) packs))))
-
 ;;HOME ==============================================================================================================
 
 (def memo-home-items (atom nil))
