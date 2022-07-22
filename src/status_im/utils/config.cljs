@@ -108,7 +108,7 @@
     :config              {:NetworkId      (ethereum/chain-keyword->chain-id :xdai)
                           :DataDir        "/ethereum/xdai_rpc"
                           :UpstreamConfig {:Enabled true
-                                           :URL     "https://dai.poa.network"}}}
+                                           :URL     "https://gnosischain-rpc.gateway.pokt.network"}}}
    {:id                  "bsc_rpc",
     :chain-explorer-link "https://bscscan.com/address/",
     :name                "BSC Network",
