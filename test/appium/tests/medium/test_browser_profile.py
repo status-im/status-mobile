@@ -295,7 +295,6 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702164)
-    @marks.xfail(reason="failing due to issue #13635. Skipping until fix", run=False)
     def test_profile_backup_of_contacts(self):
         self.home.get_back_to_home_view()
         self.home.just_fyi('Add user to contacts')
@@ -309,7 +308,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.back_button.click()
 
         self.home.just_fyi('Add ENS-user to contacts')
-        user_ens = 'pavlotest.eth'
+        user_ens = 'ensmessenger'
         self.home.add_contact(user_ens)
         self.home.back_button.click()
 
