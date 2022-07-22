@@ -668,15 +668,26 @@ class TestChatManagement(SingleDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702360)
-    @marks.xfail(reason="flaky; on e2e builds when switching on rinkeby sometimes no collectibles")
-    def test_collectibles_rinkeby_set_as_profile_image(self):
-        user = wallet_users['E']
+    def test_collectibles_mainnet_set_as_profile_image(self):
+        wallet_users['D'] = dict()
+        wallet_users['D'][
+            'passphrase'] = "art base select follow harsh capable upper monkey report gun actor rib"
+        wallet_users['D']['username'] = "Upbeat Diligent Jaguar"
+        wallet_users['D']['address'] = "0xb51fe9F539E611Be5871b40baeBE5c4fe3E33020"
+        wallet_users['D'][
+            'public_key'] = "0x04c50fe17e2832e0927ea3248afd9056f88af8bac6233bd2b81d123fa" \
+                            "5882d729b1341e40ebe60331f8a42386fb2ebd4fa11f592ad8d4cf3b824d8e51a03216185"
+        wallet_users['D']['collectibles'] = {
+            'CryptoKitties': '1',
+            'Status Sticker Pack V2': '1'
+        }
+        user = wallet_users['D']
         sign_in = SignInView(self.driver)
         home = sign_in.recover_access(user['passphrase'])
 
-        home.just_fyi('Check that collectibles amount is shown on Rinkeby')
+        home.just_fyi('Check that collectibles amount is shown on Mainnet')
         profile = home.profile_button.click()
-        profile.switch_network('Rinkeby with upstream RPC')
+        profile.switch_network('Mainnet with upstream RPC')
         wallet = profile.wallet_button.click()
         wallet.accounts_status_account.click()
         wallet.collectibles_button.click()
@@ -685,11 +696,11 @@ class TestChatManagement(SingleDeviceTestCase):
             wallet.get_collectibles_amount(asset).scroll_to_element()
             if wallet.get_collectibles_amount(asset).text != user['collectibles'][asset]:
                 self.errors.append(
-                    '%s %s is not shown in Collectibles for Rinkeby!' % (user['collectibles'][asset], asset))
+                    '%s %s is not shown in Collectibles for Mainnet!' % (user['collectibles'][asset], asset))
 
         wallet.just_fyi('Check that you can open collectible to view')
-        nft, nft_name = 'Coins & Steel Exclusive Item Skin V2', "Warlock's Arm"
-        wallet.get_collectibles_amount(nft).click()
+        nft, nft_name = 'CryptoKitties', 'Miss Purrfect'
+        wallet.get_collectibles_amount().click()
         if not wallet.nft_asset_button.is_element_displayed(60):
             self.driver.fail("No card is not shown for %s after opening it from collectibles!" % nft)
         wallet.nft_asset_button.click()
@@ -713,7 +724,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
         wallet.just_fyi("Check that custom image from collectible is set as profile photo")
         wallet.profile_button.double_click()
-        if not profile.profile_picture.is_element_image_similar_to_template('collectible_pic.png'):
+        if not profile.profile_picture.is_element_image_similar_to_template('collectible_pic_2.png'):
             self.errors.append("Collectible image is not set as profile image")
         self.errors.verify_no_errors()
 
