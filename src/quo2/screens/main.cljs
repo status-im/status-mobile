@@ -4,6 +4,7 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [quo2.screens.button :as button]
+            [quo2.components.qr-scan-animation :as qr-sample]
             [quo2.screens.text :as text]
             [quo2.screens.tabs :as tabs]
             [quo2.screens.status-tags :as status-tags]
@@ -20,6 +21,9 @@
               {:name      :quo2-status-tags
                :insets    {:top false}
                :component status-tags/preview-status-tags}
+              {:name      :quo2-qr-scan
+               :insets    {:top false}
+               :component qr-sample/preview}
               {:name      :quo2-tabs
                :insets    {:top false}
                :component tabs/preview-tabs}
