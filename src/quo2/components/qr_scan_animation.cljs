@@ -4,21 +4,15 @@
             [quo.react-native :as rn]
             [quo2.reanimated :as reanimated]))
 
-(defn corner [border1 border2 corner]
+(defn corner [border1 border2]
   [reanimated/view (assoc {:border-color colors/white-persist
                            :width 60
                            :height 60}
                           border1 2
-                          border2 2
-                          corner 10)])
+                          border2 2)])
 
 (def viewfinder-port
   {:position        :absolute
-   :left            0
-   :top             0
-   :bottom          0
-   :z-index         100
-   :right           0
    :align-items     :center
    :justify-content :center
    :flex            1})
@@ -27,6 +21,7 @@
   [:f>
    (fn []
      [rn/view {:style viewfinder-port}
+
       [rn/view {:style {:border-width 400
                         :border-color "rgba(0,0,0,0.7)"}}
        [reanimated/view {:style (reanimated/apply-animations-to-style
@@ -36,11 +31,11 @@
                                   :height size
                                   :justify-content :space-between})}
         [rn/view {:flex-direction :row :justify-content :space-between}
-         [corner :border-top-width :border-left-width :border-top-left-radius]
-         [corner :border-top-width :border-right-width :border-top-right-radius]]
+         [corner :border-top-width :border-left-width]
+         [corner :border-top-width :border-right-width]]
         [rn/view {:flex-direction :row :justify-content :space-between}
-         [corner :border-bottom-width :border-left-width :border-bottom-left-radius]
-         [corner :border-bottom-width :border-right-width :border-bottom-right-radius]]]]])])
+         [corner :border-bottom-width :border-left-width]
+         [corner :border-bottom-width :border-right-width]]]]])])
 
 (defn preview
   []
@@ -51,8 +46,8 @@
                               (reanimated/animate-shared-value-with-delay initial-dimensions 350 200 :easing2 300) []))]
        [:<>
         [rn/image-background {:style {:width "100%"
-                                      :background-color "red"
-                                      :height "100%"}}
+                                      :height "100%"
+                                      :background-color "red"}}
          [rn/view {:style {:justify-content :center
                            :align-items :center
                            :height "100%"}}
