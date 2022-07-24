@@ -28,7 +28,7 @@
    (fn []
      [rn/view {:style viewfinder-port}
       [rn/view {:style {:border-width 400
-                        :border-color "rgba(0,0,0,0.9)"}}
+                        :border-color "rgba(0,0,0,0.7)"}}
        [reanimated/view {:style (reanimated/apply-animations-to-style
                                  {:width size
                                   :height size}
