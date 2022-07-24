@@ -20,3 +20,5 @@ include ':react-native-status-keycard'
 project(':react-native-status-keycard').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-status-keycard/android')
 include ':react-native-blur'
 project(':react-native-blur').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/blur/android')
+include ':react-native-lottie-splash-screen'
+project(':react-native-lottie-splash-screen').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-lottie-splash-screen/android')

@@ -28,6 +28,8 @@ import im.status.ethereum.StatusOkHttpClientFactory;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
+
 public class MainApplication extends NavigationApplication {
 
     private final ReactNativeHost mReactNativeHost = new NavigationReactNativeHost(this) {
@@ -46,6 +48,7 @@ public class MainApplication extends NavigationApplication {
             packages.add(new RNStatusKeycardPackage());
             packages.add(new PushNotificationPackage());
             packages.add(new BlurViewPackage());
+            packages.add(new SplashScreenReactPackage());
             return packages;
         }
 
