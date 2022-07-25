@@ -22,9 +22,9 @@
 (defn qr-code-view
   "Qr Code view including the frame.
   Note: `size` includes frame with `styles/qr-code-padding.`"
-  [size value]
+  [size value &border-radius &border-color]
   (when (and size value)
-    [react/view {:style               (styles/qr-code-container size)
+    [react/view {:style               (styles/qr-code-container size &border-radius &border-color)
                  :accessibility-label :qr-code-image}
      [qr-code {:value value
                :size  (- size (* styles/qr-code-padding 2))}]]))

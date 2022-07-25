@@ -3,14 +3,14 @@
 
 (def qr-code-padding 16)
 
-(defn qr-code-container [width]
+(defn qr-code-container [width &border-radius &border-color]
   {:align-self       :center
    :width            width
    :height           width
    :padding-horizontal 16
    :background-color colors/white-persist
-   :border-color     colors/black-transparent
+   :border-color     (if &border-color &border-color colors/black-transparent)
    :align-items      :center
    :justify-content  :center
    :border-width     1
-   :border-radius    8})
+   :border-radius    (if &border-radius &border-radius 8)})

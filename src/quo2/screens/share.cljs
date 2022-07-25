@@ -141,10 +141,10 @@
    :padding-top 40
    :height :100%})
 
-(defn qr-code-container [window-width]
+(defn qr-code-container [window-width & wallet-tab]
   {:padding-vertical 20
    :border-radius qr-container-radius
-   :margin-top 20
+   :margin-top (if wallet-tab 8 20)
    :margin-bottom 4
    :margin-horizontal (* window-width 0.053)
    :width :89.3%
@@ -180,9 +180,8 @@
    :border-radius tab-container-radius
    :align-items :center
    :justify-content :center
-   :background-color (if (= selected true)
-                       colors/white-opa-20
-                       colors/white-opa-5)})
+   :background-color (when (= selected true)
+                       colors/white-opa-20)})
 
 (def tab-item-text
   {:color colors/white
@@ -206,7 +205,7 @@
    :font-size 14})
 
 (def select-account-label
-  {:color colors/neutral-40
+  {:color colors/white-opa-40
    :align-self :flex-start
    :padding-horizontal :5.3%
    :margin-bottom 5
@@ -303,7 +302,7 @@
 
 (def account-label-content
   {:color colors/white
-   :padding-left 15
+   :padding-left 4
    :font-size 16
    :font-weight :500
    :line-height 23
@@ -323,9 +322,9 @@
   {:border-radius tab-container-radius
    :align-items :center
    :justify-content :flex-start
-   :padding-horizontal 10
+   :padding-horizontal 8
+   :padding-vertical 3
    :margin-horizontal 5
-   :height 26
    :margin-bottom 20
    :background-color (if (= selected true)
                        colors/white-opa-20
@@ -404,23 +403,21 @@
 
 (def copyable-text-container-style
   {:background-color :transparent
-    :width :100%
-    })
+   :width :100%})
 
 (defn profile-tab [window-width]
   [:<>
    [rn/view {:style (qr-code-container window-width)}
-    [qr-code-viewer/qr-code-view (* window-width 0.808) static-qr-code-url]
+    [qr-code-viewer/qr-code-view (* window-width 0.808) static-qr-code-url 12 colors/white]
     [rn/view {:style profile-address-container}
      [rn/view {:style profile-address-column}
       [rn/text {:style profile-address-label} (i18n/label :t/link-to-profile)]
-        [copyable-text/copyable-text-view {
-                                            :copied-text (cond (= share-from-ens true) static-ens-name :else profile-link)
-                                            :container-style copyable-text-container-style}
-          [rn/text {:style (profile-address-content (* window-width 0.7))
-                :ellipsize-mode :middle
-                :number-of-lines 1}
-       (cond (= share-from-ens true) static-ens-name :else profile-link)]]]
+      [copyable-text/copyable-text-view {:copied-text (cond (= share-from-ens true) static-ens-name :else profile-link)
+                                         :container-style copyable-text-container-style}
+       [rn/text {:style (profile-address-content (* window-width 0.7))
+                 :ellipsize-mode :middle
+                 :number-of-lines 1}
+        (cond (= share-from-ens true) static-ens-name :else profile-link)]]]
      [rn/touchable-highlight {:style address-share-button-container}
       [icons/icon :main-icons/share-icon20 {:color colors/white :width 20 :height 20}]]]]
 
@@ -430,8 +427,8 @@
                                      [rn/text {:style emoji-hash-label} (i18n/label :t/emoji-hash)]
                                      [copyable-text/copyable-text-view {:copied-text static-emoji-hash :container-style copyable-text-container-style}
                                       [rn/view {:style (emoji-hash-row-container (* window-width 0.87))}
-                                        [rn/text {:style (emoji-hash-content (* window-width 0.72))} static-emoji-hash]
-                                        [rn/view {:style emoji-share-button-container}
+                                       [rn/text {:style (emoji-hash-content (* window-width 0.72))} static-emoji-hash]
+                                       [rn/view {:style emoji-share-button-container}
                                         [icons/icon :main-icons/copy-icon20 {:color colors/white :width 20 :height 20}]]]]]]])
 
    [rn/view {:style footer-container}
@@ -478,7 +475,7 @@
   (let [selected-sub-account-index (reagent/atom 1)]
     (fn []
       [:<>
-       [rn/view {:style (qr-code-container window-width)}
+       [rn/view {:style (qr-code-container window-width true)}
 
         [rn/view {:style account-subtype-row}
 
@@ -492,11 +489,11 @@
 
          [rn/touchable-highlight {:style information-icon-container}
           [icons/icon :main-icons/info-tooltip
-           {:color colors/white-opa-40
+           {:color "rgba(255, 255, 255, 0.4)"
             :width 22
             :height 22}]]]
 
-        [qr-code-viewer/qr-code-view (* window-width 0.808) qr-url]
+        [qr-code-viewer/qr-code-view (* window-width 0.808) qr-url 12 colors/white]
         (cond (= @selected-sub-account-index 1)
               [legacy-wallet-address-view
                legacy-wallet-address
