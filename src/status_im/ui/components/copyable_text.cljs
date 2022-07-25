@@ -84,7 +84,8 @@
         width        (reagent/atom 0)
         height       (reagent/atom 0)
         anim-y       (animation/create-value 0)
-        anim-opacity (animation/create-value 0)]
+        anim-opacity (animation/create-value 0)
+        background-color (when-not (get container-style :background-color) colors/white)]
     (reagent/create-class
      {:reagent-render
       (fn [{:keys [copied-text]} _]
@@ -120,5 +121,5 @@
              :underlay-color "rgba(255, 255, 255, 0.2)"
              :on-press       copy-fn
              :on-long-press  copy-fn}
-            [react/view {:background-color (if container-style container-style colors/white)}
+            [react/view {:background-color background-color}
              content]]]))})))

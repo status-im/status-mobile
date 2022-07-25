@@ -162,6 +162,9 @@
    :justify-content :center
    :align-items :center})
 
+(defn emoji-hash-row-container [section-width]
+  {:width section-width})
+
 (def tabs-container
   {:flex-direction :row
    :width :89.3%
@@ -398,6 +401,11 @@
 (def account-avatar-content
   {:align-self :center})
 
+(def copyable-text-container-style
+  {:background-color :transparent
+    :width :100%
+    })
+
 (defn profile-tab [window-width]
   [:<>
    [rn/view {:style (qr-code-container window-width)}
@@ -405,10 +413,13 @@
     [rn/view {:style profile-address-container}
      [rn/view {:style profile-address-column}
       [rn/text {:style profile-address-label} (i18n/label :t/link-to-profile)]
-      [rn/text {:style (profile-address-content (* window-width 0.7))
+        [copyable-text/copyable-text-view {
+                                            :copied-text (cond (= share-from-ens true) static-ens-name :else profile-link)
+                                            :container-style copyable-text-container-style}
+          [rn/text {:style (profile-address-content (* window-width 0.7))
                 :ellipsize-mode :middle
                 :number-of-lines 1}
-       (cond (= share-from-ens true) static-ens-name :else profile-link)]]
+       (cond (= share-from-ens true) static-ens-name :else profile-link)]]]
      [rn/touchable-highlight {:style address-share-button-container}
       [icons/icon :main-icons/share-icon20 {:color colors/white :width 20 :height 20}]]]]
 
@@ -416,9 +427,11 @@
                                    [rn/view {:style profile-address-container}
                                     [rn/view {:style profile-address-column}
                                      [rn/text {:style emoji-hash-label} (i18n/label :t/emoji-hash)]
-                                     [rn/text {:style (emoji-hash-content (* window-width 0.72))} static-emoji-hash]]
-                                    [rn/touchable-highlight {:style emoji-share-button-container}
-                                     [icons/icon :main-icons/copy-icon20 {:color colors/white :width 20 :height 20}]]]])
+                                     [copyable-text/copyable-text-view {:copied-text static-emoji-hash :container-style copyable-text-container-style}
+                                      [rn/view {:style (emoji-hash-row-container (* window-width 0.87))}
+                                        [rn/text {:style (emoji-hash-content (* window-width 0.72))} static-emoji-hash]
+                                        [rn/view {:style emoji-share-button-container}
+                                        [icons/icon :main-icons/copy-icon20 {:color colors/white :width 20 :height 20}]]]]]]])
 
    [rn/view {:style footer-container}
     [rn/touchable-highlight {:style close-button-container}
@@ -429,7 +442,7 @@
   [rn/view {:style profile-address-container}
    [rn/view {:style profile-address-column}
     [rn/text {:style profile-address-label} (i18n/label :t/wallet-address)]
-    [copyable-text/copyable-text-view {:copied-text address-text :container-style {:background-color :transparent :width :100%}}
+    [copyable-text/copyable-text-view {:copied-text address-text :container-style copyable-text-container-style}
      [rn/text {:style (profile-address-content (* window-width 0.7)) :ellipsize-mode :middle :number-of-lines 1} address-text]]]
    [rn/touchable-highlight {:style address-share-button-container}
     [icons/icon :main-icons/share-icon20 {:color colors/white :width 20 :height 20}]]])
@@ -454,7 +467,7 @@
         [rn/text {:style (network-text-style (get wallet-item :network-text-color))} (get wallet-item :network-type)]
         (when-not (= wallet-item (last multi-chain-info)) [rn/text {:style seperator-text} ":"])])]
 
-     [copyable-text/copyable-text-view {:copied-text multichain-wallet-address-with-network-chain :container-style {:background-color :transparent}}
+     [copyable-text/copyable-text-view {:copied-text multichain-wallet-address-with-network-chain :container-style copyable-text-container-style}
       [rn/text {:style (multichain-address-content (* window-width 0.6)) :ellipsize-mode :middle :number-of-lines 1} address-text]]]
 
     [rn/touchable-highlight {:style multichain-address-share-button-container}
