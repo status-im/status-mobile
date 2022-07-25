@@ -4396,6 +4396,20 @@
   },
 
   {
+    "path": "com/airbnb/android/lottie/3.4.4/lottie-3.4.4",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "aar",
+    "pom": {
+      "sha1": "cc31f1b29d1432093566c8ab31d830c20339aaa0",
+      "sha256": "1w3vnlg8r7f1asn7f5ajws8l2kmr9kv0aad0xwci4k2gfqhqdprv"
+    },
+    "jar": {
+      "sha1": "213d6753c5580a5ef8c935da845779e1cd350e60",
+      "sha256": "0lz8g59fi47a86lr7n642y9nh3zidpxgh1c40nqvgjzsjbz3ili3"
+    }
+  },
+
+  {
     "path": "com/android/databinding/baseLibrary/1.0-rc5/baseLibrary-1.0-rc5",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
@@ -6754,6 +6768,16 @@
   },
 
   {
+    "path": "com/squareup/okio/okio-parent/1.17.4/okio-parent-1.17.4",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "pom",
+    "pom": {
+      "sha1": "18eae90824681bf12cb8359b0a1ecef9149de1e3",
+      "sha256": "04g6gdc2549iq98pc7fmfh0qypqxpr7pzjx0sfy8pkrspkdkj3mb"
+    }
+  },
+
+  {
     "path": "com/squareup/okio/okio/1.15.0/okio-1.15.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
@@ -6764,6 +6788,20 @@
     "jar": {
       "sha1": "bc28b5a964c8f5721eb58ee3f3c47a9bcbf4f4d8",
       "sha256": "1llb25k2n887b3fz4xxmpip10kv7nwil081bc0037178lwcs6gv9"
+    }
+  },
+
+  {
+    "path": "com/squareup/okio/okio/1.17.4/okio-1.17.4",
+    "host": "https://repo.maven.apache.org/maven2",
+    "type": "jar",
+    "pom": {
+      "sha1": "cda5234d77b44144201f4c77ab46f79422884d81",
+      "sha256": "1ilmakclwpp0l3v9ghvvg7af0n5shaxb3y560mv7nmbv317g9b90"
+    },
+    "jar": {
+      "sha1": "50077892fbc179bc69c0ac488442fd3a864e897f",
+      "sha256": "0nz8xvcnab3pfwx1li968r1nfp1py3jizsc2djg0kz2qhicar3yp"
     }
   },
 
