@@ -3,7 +3,6 @@
             [re-frame.core :as re-frame.core]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.chat-icon.styles-redesign :as styles-redesign]
             [status-im.ui.components.chat-icon.styles :as styles]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
@@ -97,15 +96,15 @@
 (defn chat-icon-view-chat-list-redesign
   [chat-id group-chat name color size]
   [chat-icon-view chat-id group-chat name
-   {:container              (if (= size 48)
-                              styles/community-icon-container-chat-list
-                              styles/token-icon-container-chat-list)
+   {:container              (if (= size 20)
+                              (styles/token-icon-container-chat-list size)
+                              (styles/community-icon-container-chat-list size))
     :size                   size
-    :chat-icon              (if (= size 48)
-                              styles-redesign/community-icon-chat-list
-                              styles-redesign/community-status-chat-list-icon)
-    :default-chat-icon      (styles-redesign/default-list-chat-icon color size)
-    :default-chat-icon-text (styles-redesign/default-chat-icon-text size)}])
+    :chat-icon              (if (= size 20)
+                              (styles/community-icon-chat-list-redesign size)
+                              (styles/community-icon-chat-list size))
+    :default-chat-icon      (styles/default-list-chat-icon-redesign color size)
+    :default-chat-icon-text (styles/default-chat-icon-text size)}])
 
 (defn chat-icon-view-chat-sheet
   [chat-id group-chat name color]

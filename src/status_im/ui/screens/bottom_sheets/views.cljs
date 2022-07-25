@@ -5,9 +5,8 @@
             [status-im.ui.screens.keycard.views :as keycard]
             [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
             [status-im.ui.screens.about-app.views :as about-app]
-            [status-im.ui.screens.communities.sort-communities-redesign :as sort-communities-redesign]
+            [status-im.ui.screens.communities.sort-communities :as sort]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
-            [quo2.components.bottom-sheet.view :as quo2.bottom-sheet]
             [quo.core :as quo]))
 
 (defn bottom-sheet []
@@ -42,23 +41,7 @@
           (merge key-storage/migrate-account-password)
 
           (= view :sort-communities)
-          (merge sort-communities-redesign/sort-communities))]
+          (merge sort/sort-communities))]
     [quo/bottom-sheet opts
-     (when content
-       [content (when options options)])]))
-
-(defn bottom-sheet-redesign []
-  (let [{:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet-redesign])
-        {:keys [content]
-         :as   opts}
-        (cond-> {:visible?  show?
-                 :on-cancel #(re-frame/dispatch [:bottom-sheet-redesign/hide])}
-
-          (map? view)
-          (merge view)
-
-          (= view :sort-communities)
-          (merge sort-communities-redesign/sort-communities))]
-    [quo2.bottom-sheet/bottom-sheet opts
      (when content
        [content (when options options)])]))

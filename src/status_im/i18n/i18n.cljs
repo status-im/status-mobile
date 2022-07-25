@@ -65,10 +65,3 @@
   (.-locale i18n))
 
 (def format-currency goog.i18n/format-currency)
-
-(defn format-members [count]
-  (if (> count 1000000)
-    (str (money/with-precision (/ count 1000000) 1) "M")
-    (if (and (> count 999) (< count 1000000))
-      (str (money/with-precision (/ count 1000) 1) "K")
-      count)))

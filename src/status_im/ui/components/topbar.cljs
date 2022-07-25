@@ -40,4 +40,4 @@
                           (when (seq right-accessories)
                             {:right-accessories right-accessories})
                           (when new-ui?
-                            {:background (quo2.colors/theme-colors quo2.colors/white quo2.colors/divider-dark)}))])]))
+                            {:background (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}))])]))

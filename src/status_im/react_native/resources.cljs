@@ -48,8 +48,11 @@
    :hand-wave          (js/require "../resources/images/ui/hand-wave.png")
    :graph              (js/require "../resources/images/ui/graph.png")
    :switcher           (js/require "../resources/images/ui/switcher.png")
-   :discover           (js/require "../resources/images/ui/discover.png")})
-:community-cover-image          (js/require "../resources/images/ui/community-cover-image.png")
+   :discover           (js/require "../resources/images/ui/discover.png")
+   :community-cover    (js/require "../resources/images/ui/community-cover.png")
+   :lifestyle          (js/require "../resources/images/ui/lifestyle.png")
+   :music              (js/require "../resources/images/ui/music.png")
+   :podcasts           (js/require "../resources/images/ui/podcasts.png")})
 
 (defn get-theme-image [k]
   (get ui (when (colors/dark?) (keyword (str (name k) "-dark"))) (get ui k)))

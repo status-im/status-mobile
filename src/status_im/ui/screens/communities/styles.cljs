@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.communities.styles
   (:require
-   [quo2.foundations.colors :as quo2.colors]))
+   [quo2.foundations.colors :as colors]))
 
 (def category-item
   {:flex           1
@@ -9,16 +9,17 @@
    :height         52
    :padding-left   18})
 
-(defn community-card [window-width bg-color]
+(defn community-card [window-width radius]
   {:width            window-width
-   :background-color bg-color
-   :shadow-offset    {:width 0 :height 2}
-   :shadow-radius    20
+   :shadow-offset    {:width 0
+                      :height 2}
+   :shadow-radius    radius
    :shadow-opacity   1
    :shadow-color     "rgba(9, 16, 28, 0.04)"
-   :border-radius    20
+   :border-radius    radius
    :justify-content  :space-between
-   :elevation        2})
+   :elevation        2
+   :background-color colors/white})
 
 (defn stats-count-container []
   {:flex-direction :row
@@ -43,21 +44,7 @@
    :left      12
    :right     12})
 
-(defn permission-tag-container [color view]
-  (merge {:flex-direction   :row
-          :border-radius    200
-          :width            48
-          :align-items      :center
-          :justify-content  :flex-end
-          :background-color color
-          :padding          2}
-         (if (= view :card-view)
-           {:position         :absolute
-            :top              8
-            :right            8}
-           {:margin-right     12})))
-
-(defn card-view-content-container [bg-color]
+(defn card-view-content-container []
   {:flex               1
    :position           :absolute
    :top                40
@@ -66,26 +53,31 @@
    :bottom             0
    :border-radius      16
    :padding-horizontal 12
-   :background-color   bg-color})
+   :background-color (colors/theme-colors
+                      colors/white
+                      colors/neutral-90)})
 
-(defn card-view-chat-icon [bg-color]
+(defn card-view-chat-icon []
   {:border-radius    48
    :position         :absolute
    :top              -24
    :left             12
    :padding          2
-   :background-color bg-color})
+   :background-color (colors/theme-colors
+                      colors/white
+                      colors/neutral-90)})
 
-(defn list-view-content-container [bg-color]
+(defn list-view-content-container []
   {:flex-direction    :row
    :border-radius     16
    :align-items       :center
-   :background-color  bg-color})
+   :background-color (colors/theme-colors
+                      colors/white
+                      colors/neutral-90)})
 
-(defn list-view-chat-icon [bg-color]
+(defn list-view-chat-icon []
   {:border-radius    32
-   :padding          12
-   :background-color bg-color})
+   :padding          12})
 
 (defn community-title-description-container []
   {:position  :absolute
@@ -93,8 +85,13 @@
    :left      12
    :right     12})
 
-(defn community-cover-image-container []
+(defn community-cover-container []
   {:height                  64
    :border-top-right-radius 20
    :border-top-left-radius  20
-   :background-color        quo2.colors/primary-50-opa-20})
+   :background-color        colors/primary-50-opa-20})
+
+(defn permission-tag-styles []
+  {:position         :absolute
+   :top              8
+   :right            8})
