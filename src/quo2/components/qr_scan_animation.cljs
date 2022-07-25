@@ -58,14 +58,11 @@
            _ (react/effect! (fn []
                               (reanimated/animate-shared-value-with-delay size
                                                                           (* width 0.8)
-                                                                          400
+                                                                          800
                                                                           :easing2 200)
                               []))]
-       [:<>
-        [rn/image-background {:source (js/require "../resources/images/ui/test.jpeg")
-                              :style {:width "100%"
-                                      :height "100%"}}
+       [:<> 
          [rn/view {:style {:justify-content :center
                            :align-items :center
                            :height "100%"}}
-          [viewfinder size]]]]))])
+          [viewfinder size]]]))])
