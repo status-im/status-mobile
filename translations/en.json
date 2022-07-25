@@ -1765,9 +1765,5 @@
     "link-to-profile": "Link to Profile",
     "emoji-hash": "Emoji Hash",
     "legacy": "Legacy",
-    "multichain": "Multichain",
-    "pending": "Pending",
-    "negative": "Negative",
-    "positive": "Positive",
-    "public": "Public"
+    "multichain": "Multichain"
 }
