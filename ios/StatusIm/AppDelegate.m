@@ -14,10 +14,8 @@
 #import "ReactNativeConfig.h"
 #import "React/RCTLog.h"
 #import "RCTBundleURLProvider.h"
-#import "RCTLinkingManager.h"
-
 #import "RNSplashScreen.h"
-#import "StatusIm-Swift.h"
+#import "RCTLinkingManager.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -65,7 +63,6 @@ static void InitializeFlipper(UIApplication *application) {
     UIView *_blankView;
 }
 
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   #if DEBUG
@@ -92,31 +89,15 @@ static void InitializeFlipper(UIApplication *application) {
   NSDictionary *appDefaults = [NSDictionary
       dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:@"BLANK_PREVIEW"];
   [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
+
   [ReactNativeNavigation bootstrapWithDelegate:self launchOptions:launchOptions];
+
+  [RNSplashScreen show];
 
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
 
   SDWebImageDownloaderConfig.defaultDownloaderConfig.operationClass = [StatusDownloaderOperation class];
-
-  // get rootViewController from window
-  UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-
-  Dynamic *t = [Dynamic new];
-  UIView *animationUIView = (UIView *)[t createAnimationViewWithRootView:rootViewController.view lottieName:@"launching-animation"];
-  animationUIView.backgroundColor = [UIColor systemBackgroundColor];
-
-  // casting UIView type to AnimationView type
-  AnimationView *animationView = (AnimationView *) animationUIView;
-
-  // register LottieSplashScreen to RNSplashScreen
-  [RNSplashScreen showLottieSplash:animationUIView inRootView:rootViewController.view];
-
-  // play
-  [t playWithAnimationView:animationView];
-
-  // If you want the animation layout to be forced to remove when hide is called, use this code
-  [RNSplashScreen setAnimationFinished:true];
 
   return YES;
 }

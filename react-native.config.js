@@ -27,5 +27,15 @@ module.exports = {
                 android: null,
             },
         },
+        'react-native-splash-screen': {
+            platforms: {
+                android: null,
+            }
+        },
+        'react-native-lottie-splash-screen': {
+            platforms: {
+                ios: null,
+            }
+        }
     },
 };
