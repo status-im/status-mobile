@@ -111,9 +111,9 @@
         [rn/text {:style {:color colors/white-opa-70
                           :font-size font-size}}
          (upper-case (if-not (or (blank? first-initial-letter)
-                                 (blank? initials))  
-                      (if small?
-                       first-initial-letter
-                       initials)
+                                 (blank? initials))
+                       (if small?
+                         first-initial-letter
+                         initials)
                        ""))]])
      [dot-indicator size status-indicator? online? ring? (dark?)]]))
