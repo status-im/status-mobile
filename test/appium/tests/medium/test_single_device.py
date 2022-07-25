@@ -753,12 +753,11 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet = home.wallet_button.click()
         wallet.scan_tokens()
         [wallet.wait_balance_is_equal_expected_amount(asset, value) for asset, value in user['mainnet'].items()]
-        # TODO: blocked due to 695890
-        # home.just_fyi("Check balance on xDai and default network fee")
-        # profile = home.profile_button.click()
-        # profile.switch_network('xDai Chain')
-        # home.wallet_button.click()
-        # wallet.element_by_text(user['xdai']).wait_for_element(30)
+        home.just_fyi("Check balance on xDai and default network fee")
+        profile = home.profile_button.click()
+        profile.switch_network('xDai Chain')
+        home.wallet_button.click()
+        wallet.element_by_text(user['xdai']).wait_for_element(30)
 
         home.just_fyi("Check balance on BSC and default network fee")
         profile = home.profile_button.click()
