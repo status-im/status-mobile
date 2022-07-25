@@ -10,8 +10,8 @@
             [quo2.foundations.colors :as colors]
             [status-im.ui.components.copyable-text :as copyable-text]))
 
-(def selected-tab-index (reagent/atom 1))
-(def selected-account-index (reagent/atom 0))
+(def selected-tab-index (reagent/atom 2))
+(def selected-account-index (reagent/atom 1))
 
 (def tab-item-height 15)
 (def tab-container-height 30)
@@ -274,6 +274,7 @@
 
 (def profile-address-container
   {:flex-direction :row
+   :margin-top 6
    :width :98%})
 
 (def select-account-section
@@ -343,10 +344,12 @@
 
 (defn wallet-icon-style [first-icon?]
   {:margin-vertical 0
-   :border-width 1
-   :border-radius 40
+   :border-width 2
+   :border-left-color :transparent
+   :border-radius 32
    :width 32
    :height 32
+   :z-index (if first-icon? 5 99) ;;pathetic attempt to make it look like the icons are cutting into each other
    :margin-left (if first-icon? 0 -10)})
 
 (def network-share-icon-style
@@ -358,7 +361,7 @@
    :right 0})
 
 (def divider-line-container
-  {:border-width 1
+  {:border-width 0.5
    :border-color colors/white-opa-20
    :border-style "dashed"
    :width :88%
@@ -405,6 +408,9 @@
   {:background-color :transparent
    :width :100%})
 
+;(def legacy-wallet-address-view-container
+;  {:margin-top 10})
+
 (defn profile-tab [window-width]
   [:<>
    [rn/view {:style (qr-code-container window-width)}
@@ -432,7 +438,7 @@
                                         [icons/icon :main-icons/copy-icon20 {:color colors/white :width 20 :height 20}]]]]]]])
 
    [rn/view {:style footer-container}
-    [rn/touchable-highlight {:style close-button-container}
+    [rn/touchable-highlight {:style close-button-container :on-press #(re-frame/dispatch [:navigate-back])}
      [icons/icon :main-icons/close
       {:color colors/white :width 24 :height 24}]]]])
 
@@ -472,7 +478,7 @@
      [icons/icon :main-icons/share-icon20 {:color colors/white :width 20 :height 20}]]]])
 
 (defn account-details [qr-url legacy-wallet-address multichain-wallet-address multi-chain-info multichain-wallet-address-with-network-chain window-width]
-  (let [selected-sub-account-index (reagent/atom 1)]
+  (let [selected-sub-account-index (reagent/atom 2)]
     (fn []
       [:<>
        [rn/view {:style (qr-code-container window-width true)}
@@ -536,7 +542,7 @@
                    window-width]]))]]
 
    [rn/view {:style wallet-footer-container}
-    [rn/touchable-highlight {:style close-button-container}
+    [rn/touchable-highlight {:style close-button-container :on-press #(re-frame/dispatch [:navigate-back])}
      [icons/icon :main-icons/close
       {:color colors/white :width 24 :height 24}]]]])
 
