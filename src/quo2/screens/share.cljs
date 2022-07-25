@@ -138,6 +138,7 @@
 
 (def main-container
   {:background-color colors/neutral-80-opa-80
+   :padding-top 40
    :height :100%})
 
 (defn qr-code-container [window-width]

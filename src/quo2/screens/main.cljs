@@ -32,7 +32,9 @@
                :insets    {:top false}
                :component counter/preview-counter}
               {:name     :share-redesign
-               :insets   {:top false}
+               :insets    {:top false}
+               :options   {:topBar {:visible false}
+                           :bottomBar {:visible false}}
                :component share/share-view}])
 
 (defn theme-switcher []
