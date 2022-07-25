@@ -4,7 +4,7 @@ set -Eeu
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 # Gradle needs to be run in 'android' subfolder
-cd $GIT_ROOT/android
+cd "${GIT_ROOT}/android"
 
 AWK_SCRIPT="${GIT_ROOT}/nix/deps/gradle/gradle_parser.awk"
 

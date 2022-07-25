@@ -67,7 +67,7 @@ fi
 echo -e "${GRN}Configuring ${pureDesc}Nix shell for target '${TARGET}'...${RST}" 1>&2
 
 # Save derivation from being garbage collected
-${GIT_ROOT}/nix/scripts/gcroots.sh "shells.${TARGET}"
+"${GIT_ROOT}/nix/scripts/gcroots.sh" "shells.${TARGET}"
 
 # ENTER_NIX_SHELL is the fake command used when `make shell` is run.
 # It is just a special string, not a variable, and a marker to not use `--run`.

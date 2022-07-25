@@ -25,7 +25,7 @@ main() {
 
     # Setup Nix if not available
     if [[ ! -d /nix ]]; then
-        ${GIT_ROOT}/nix/scripts/setup.sh
+        "${GIT_ROOT}/nix/scripts/setup.sh"
     fi
 
     # Load Nix profile

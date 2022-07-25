@@ -21,9 +21,9 @@ echo "${1}" | go-maven-resolver >> nix/deps/gradle/deps.urls
 sort -uo nix/deps/gradle/deps.urls nix/deps/gradle/deps.urls
 
 # Re-generate dependencies JSON.
-${GIT_ROOT}/nix/deps/gradle/generate.sh gen_deps_json
+"${GIT_ROOT}/nix/deps/gradle/generate.sh" gen_deps_json
 
 # Re-generate dependencies list.
-${GIT_ROOT}/nix/deps/gradle/generate.sh gen_deps_list
+"${GIT_ROOT}/nix/deps/gradle/generate.sh" gen_deps_list
 
 echo -e "${GRN}Successfully added:${RST} ${BLD}${1}${RST}" >&2
