@@ -48,7 +48,6 @@ public class MainApplication extends NavigationApplication {
             packages.add(new RNStatusKeycardPackage());
             packages.add(new PushNotificationPackage());
             packages.add(new BlurViewPackage());
-            packages.add(new SplashScreenReactPackage());
             return packages;
         }
 
