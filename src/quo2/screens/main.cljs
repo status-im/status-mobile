@@ -5,7 +5,7 @@
             [re-frame.core :as re-frame]
             [quo2.screens.button :as button]
             [quo2.screens.text :as text]
-            [quo2.components.user-avatar :as user-avatar]
+            [quo2.screens.user-avatar :as user-avatar]
             [quo2.screens.tabs :as tabs]
             [quo2.screens.new-tab :as new-tab]
             [quo2.screens.status-tags :as status-tags]
