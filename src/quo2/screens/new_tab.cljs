@@ -37,7 +37,7 @@
        [preview/customizer state descriptor]
        [rn/view {:padding-vertical 60
                  :align-items      :center}
-        [quo2/new-tab @state ]]])))
+        [quo2/new-tab @state]]])))
 
 (defn preview-new-tabs []
   [rn/view {:background-color (:ui-background @colors/theme)
