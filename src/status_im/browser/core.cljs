@@ -105,14 +105,7 @@
   [{:keys [db]}
    {:keys [url] :as bookmark}]
   {:db            (assoc-in db [:bookmarks/bookmarks url] bookmark)
-   ::json-rpc/call [{:method "browsers_storeBookmark"
-                     :params [bookmark]
-                     :on-success #(re-frame/dispatch [:browser/sync-bookmark %1])}]})
-
-(fx/defn sync-bookmark
-  {:events [:browser/sync-bookmark]}
-  [_ bookmark]
-  {::json-rpc/call [{:method "wakuext_syncBookmark"
+   ::json-rpc/call [{:method "wakuext_addBookmark"
                      :params [bookmark]
                      :on-success #()}]})
 
@@ -123,9 +116,9 @@
   (let [old-bookmark (get-in db [:bookmarks/bookmarks url])
         new-bookmark (merge old-bookmark bookmark)]
     (fx/merge cofx {:db            (assoc-in db [:bookmarks/bookmarks url] new-bookmark)
-                    ::json-rpc/call [{:method "browsers_updateBookmark"
+                    ::json-rpc/call [{:method "wakuext_updateBookmark"
                                       :params [url bookmark]
-                                      :on-success #(re-frame/dispatch [:browser/sync-bookmark new-bookmark])}]})))
+                                      :on-success #()}]})))
 
 (fx/defn delete-bookmark
   {:events [:browser/delete-bookmark]}
@@ -134,9 +127,9 @@
   (let [old-bookmark (get-in db [:bookmarks/bookmarks url])
         removed-bookmark (merge old-bookmark {:removed true})]
     (fx/merge cofx {:db            (update db :bookmarks/bookmarks dissoc url)
-                    ::json-rpc/call [{:method "browsers_removeBookmark"
+                    ::json-rpc/call [{:method "wakuext_removeBookmark"
                                       :params [url]
-                                      :on-success #(re-frame/dispatch [:browser/sync-bookmark removed-bookmark])}]})))
+                                      :on-success #()}]})))
 
 (defn can-go-back? [{:keys [history-index]}]
   (pos? history-index))
