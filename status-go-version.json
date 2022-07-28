@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.103.4",
-    "commit-sha1": "4aa341395ccd854191e09b854142e65a21ead77c",
-    "src-sha256": "0w27yxpcqh5lwgqwp7zgm40c37m2lglmvzxckjaccxz174xfqh3f"
+    "version": "feat/color-in-groupchat",
+    "commit-sha1": "b0eb7b38108483a916d1cfa44067883108851d1c",
+    "src-sha256": "1wjfbxvkq3385zq07cprcl4qkwhs9wzi687ncam111ln6q450j7f"
 }
