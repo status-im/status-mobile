@@ -4,6 +4,7 @@ You can use any Clojure enabled editor. Here are instructions for developing the
 
 * IntelliJ IDEA and Cursive
 * VS Code and Calva
+* Emacs/Cider
 
 (Please add instructions for your favorite editor.)
 
@@ -185,3 +186,17 @@ Open any `.cljs` file in the project and evaluate forms in it. See https://calva
 🎉 Tada! You are ready to use the REPL to improve Status.im! 🎉
 
 Please consider bookmarking [calva.io](https://calva.io/) for quick access to the Calva documentation. 
+
+## Using Emacs/Cider
+
+1. Install Emacs/Cider/etc. (there is a lot of variability in how to manage things in emacs, so please google for help with this)
+2. Add a local ~/.shadow-cljs/config.edn file like below (corresponding to the version numbers of the packages you are using):
+
+```clojure
+{:dependencies
+ [[nrepl/nrepl "0.9.0"]
+  [cider/cider-nrepl "0.28.4"]
+  [cider/piggieback "0.5.2"]]}
+```
+
+
