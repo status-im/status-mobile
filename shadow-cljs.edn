@@ -7,7 +7,7 @@
                 [binaryage/oops "0.7.0"]
                 [com.andrewmcveigh/cljs-time "0.5.2"]
                 [status-im/timbre "4.10.0-2-status"]
-                [com.taoensso/encore "2.105.0"]
+                [com.taoensso/encore "3.24.0"]
                 [hickory "0.7.1"]
                 [cljs-bean "1.3.0"]
                 [com.cognitect/transit-cljs "0.8.248"]
