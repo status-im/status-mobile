@@ -404,14 +404,8 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         if self.chat_2.user_name_text.text != self.default_username_1:
             self.errors.append("Default username '%s' is not shown in one-to-one chat" % self.default_username_1)
 
-        # TODO: disabled until https://github.com/status-im/status-mobile/issues/12936 fix
-        # profile_1.just_fyi("Check timestamps for sender and receiver")
-        # for chat in device_1_chat, device_2_chat:
-        #     chat.verify_message_is_under_today_text(timestamp_message, self.errors)
-        #     timestamp = chat.chat_element_by_text(timestamp_message).timestamp_message.text
-        #     if timestamp not in sent_time_variants:
-        #         self.errors.append(
-        #             "Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time_variants.join(","), timestamp))
+        self.chat_1.just_fyi("Check that messages are shown for sender and receiver under today")
+        [chat.verify_message_is_under_today_text(timestamp_message, self.errors) for chat in (self.chat_1, self.chat_2)]
 
         self.chat_2.just_fyi("Add user to contact and verify his default username")
         self.chat_2.add_to_contacts.click()
@@ -1159,7 +1153,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             self.errors.append('Sticker was not sent from Recent')
 
         # self.home_2.just_fyi('Check that can install stickers by tapping on sticker message')
-        # TODO: disabled because of #13683
+        # TODO: disabled because of #13683 (rechecked 27.07.22, valid)
         self.home_2.home_button.double_click()
         self.home_2.get_chat(self.sender['username']).click()
         # self.chat_2.chat_item.click()

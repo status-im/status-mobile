@@ -24,8 +24,6 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.home.home_button.click()
 
     @marks.testrail_id(702317)
-    @marks.skip
-    # TODO: skipped until fix #13606 and full transition to Goerli
     def test_keycard_testdapp_sign_typed_message(self):
         test_dapp = self.home.open_status_test_dapp()
         test_dapp.wait_for_d_aap_to_load()
@@ -34,7 +32,7 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         send_transaction.sign_with_keycard_button.click()
         keycard = send_transaction.sign_with_keycard_button.click()
         keycard.enter_default_pin()
-        if not keycard.element_by_text_part('0x925141b').is_element_displayed():
+        if not keycard.element_by_text_part('0xc053c4').is_element_displayed():
             self.errors.append('Typed message was not signed')
         self.errors.verify_no_errors()
 
@@ -235,8 +233,6 @@ class TestWalletTestDappMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702325)
-    @marks.skip
-    # TODO: skipped until fix #13606 and full transition to Goerli
     def test_testdapp_sign_typed_message(self):
         self.home.just_fyi("Checking sign typed message")
         test_dapp = self.home.open_status_test_dapp(allow_all=True)
@@ -244,7 +240,7 @@ class TestWalletTestDappMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase
         send_transaction = test_dapp.sign_typed_message_button.click()
         send_transaction.enter_password_input.send_keys(common_password)
         send_transaction.sign_button.click_until_absense_of_element(send_transaction.sign_button)
-        if not test_dapp.element_by_text_part('0x1673d96e836').is_element_displayed(30):
+        if not test_dapp.element_by_text_part('0x0876752fe').is_element_displayed(30):
             self.errors.append("Hash of signed typed message is not shown!")
         self.errors.verify_no_errors()
 

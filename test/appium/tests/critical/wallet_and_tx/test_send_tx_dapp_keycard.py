@@ -59,12 +59,11 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
         status_test_dapp = self.home.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
 
-        # TODO: temp due to goerli transition
-        # self.wallet.just_fyi("Checking request STT")
-        # status_test_dapp.assets_button.click()
-        # status_test_dapp.request_stt_button.wait_for_element(60)
-        # send_transaction = status_test_dapp.request_stt_button.click()
-        # send_transaction.sign_transaction()
+        self.wallet.just_fyi("Checking request STT")
+        status_test_dapp.assets_button.click()
+        status_test_dapp.request_stt_button.wait_for_element(60)
+        send_transaction = status_test_dapp.request_stt_button.click()
+        send_transaction.sign_transaction()
 
         self.wallet.just_fyi("Checking signing message")
         status_test_dapp.transactions_button.click()
@@ -156,7 +155,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Tx is not sent!")
         send_tx.ok_button.click()
 
-        # TODO: disabled due to 10838 (rechecked 23.11.21, valid)
+        # TODO: disabled due to 10838 (rechecked 27.07.22, valid)
         # transactions_view = wallet.transaction_history_button.click()
         # transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
         self.errors.verify_no_errors()
@@ -323,11 +322,10 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
         status_test_dapp = self.home.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
 
-        # TODO: temp due to goerli transition
-        # self.wallet.just_fyi("Requesting STT in dapp")
-        # status_test_dapp.assets_button.click()
-        # send_tx = status_test_dapp.request_stt_button.click()
-        # send_tx.sign_transaction(keycard=True)
+        self.wallet.just_fyi("Requesting STT in dapp")
+        status_test_dapp.assets_button.click()
+        send_tx = status_test_dapp.request_stt_button.click()
+        send_tx.sign_transaction(keycard=True)
 
         send_tx = self.home.get_send_transaction_view()
         self.wallet.just_fyi("Checking signing message")
@@ -361,10 +359,9 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.sign_in.driver.fail('Second send transaction screen did not appear!')
         send_tx.sign_transaction(keycard=True)
 
-        # TODO: temp due to goerli transition
-        # self.wallet.just_fyi('Verify that wallet balance is updated after receiving money from faucet')
-        # self.home.wallet_button.click()
-        # self.wallet.wait_balance_is_changed('STT', initial_balance=self.initial_balances['STT'])
+        self.wallet.just_fyi('Verify that wallet balance is updated after receiving money from faucet')
+        self.home.wallet_button.click()
+        self.wallet.wait_balance_is_changed('STT', initial_balance=self.initial_balances['STT'])
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700770)

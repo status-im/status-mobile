@@ -5,7 +5,7 @@ from tests.users import transaction_senders, basic_user, ens_user, ens_user_mess
 from views.sign_in_view import SignInView
 
 
-# TODO: suspended according to #13257
+# TODO: suspended according to #13257 (rechecked 27.07.22, valid)
 @pytest.mark.xdist_group(name="pairing_2")
 @marks.critical
 @marks.skip
@@ -44,18 +44,15 @@ class TestPairingMultipleDevicesMerged(MultipleSharedDeviceTestCase):
                         self.errors.append('Expected preview for %s is "%s", in fact "%s" after initial sync' %
                                            (chat, expected_chat_preview, actual_chat_preview))
 
-        # TODO: blocked due to 13176
-        # self.profile_2.just_fyi("Check unread indicator")
-        # if self.home_2.home_button.counter.text != '2':
-        #     self.errors.append('New messages counter is not shown on Home button')
-        # for chat in chats.keys():
-        #     if 'unread' in chats.keys():
-        #         if self.home_2.get_chat(chat).new_messages_counter.text != chats[chat]['unread']:
-        #             self.errors.append('No unread for %s after initial sync' % chat)
+        self.profile_2.just_fyi("Check unread indicator")
+        if self.home_2.home_button.counter.text != '2':
+            self.errors.append('New messages counter is not shown on Home button')
+        for chat in chats.keys():
+            if 'unread' in chats.keys():
+                if self.home_2.get_chat(chat).new_messages_counter.text != chats[chat]['unread']:
+                    self.errors.append('No unread for %s after initial sync' % chat)
         self.errors.verify_no_errors()
 
-    @marks.skip
-    # TODO: blocked due to 13176
     def test_pairing_initial_sync_activity_centre(self):
         from views.dbs.main_pairing.data import activity_centre
         if self.home_2.notifications_unread_badge.is_element_displayed():

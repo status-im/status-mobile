@@ -650,7 +650,7 @@ class TestChatManagement(SingleDeviceTestCase):
         if send_transaction.network_fee_button.is_element_displayed():
             self.errors.append("Still can set tx fee when balance is not enough")
 
-        ##  TODO: should be moved to another test after 8f52b9b63ccd9a52b7fe37ab4f89a2e7b6721fcd
+        #  TODO: should be moved to another test after 8f52b9b63ccd9a52b7fe37ab4f89a2e7b6721fcd
         # send_transaction = wallet.get_send_transaction_view()
         # send_transaction.gas_limit_input.clear()
         # send_transaction.gas_limit_input.set_value(default_limit)
@@ -1129,7 +1129,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(6300)
     @marks.skip
-    # TODO: waiting mode (rechecked 23.11.21, valid)
+    # TODO: waiting mode (rechecked 27.07.22, valid)
     def test_webview_security(self):
         home_view = SignInView(self.driver).create_user()
         daap_view = home_view.dapp_tab_button.click()

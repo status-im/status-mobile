@@ -148,7 +148,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.profile_1.bootnodes_button.click()
         self.profile_1.add_bootnode_button.click()
         self.profile_1.specify_name_input.set_value('test')
-        # TODO: blocked as validation is missing for bootnodes (rechecked 23.11.21, valid)
+        # TODO: blocked as validation is missing for bootnodes (rechecked 27.07.22, valid)
         # profile_1.bootnode_address_input.set_value('invalid_bootnode_address')
         # if not profile_1.element_by_text_part('Invalid format').is_element_displayed():
         #      self.errors.append('Validation message about invalid format of bootnode is not shown')
