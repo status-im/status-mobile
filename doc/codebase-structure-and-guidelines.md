@@ -1,5 +1,4 @@
-# Codebase Strucuture and Guidelines
-
+# Codebase Structure and Guidelines
 
 ## Starting the app
 
@@ -113,9 +112,10 @@ $ make run-re-frisk
 A server will be started at http://localhost:4567. It might show "not connected" at first. Don't worry and just start using the app. The events and state will populate.
 
 ## Merging approved PRs
+
 We don't Github's UI to merge. Instead `./scripts/merge-pr.sh` is used to sign and merge PR to `develop`. You first need to enable [GPG signing on you commits](https://github.com/status-im/status-mobile/blob/develop/STARTING_GUIDE.md#configure-gpg-keys-for-signing-commits).
 
-Once your commits are verfied and PR approved, you can run the script like so:
+Once your commits are verified and PR approved, you can run the script like so:
 
 ```bash
 $ git checkout develop
