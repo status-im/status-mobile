@@ -125,14 +125,16 @@ public class MainActivity extends NavigationActivity
         switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
             case Configuration.UI_MODE_NIGHT_YES:
                 setTheme(R.style.DarkTheme);
+                SplashScreen.show(this, R.style.DarkTheme, R.id.lottie);
                 break;
             case Configuration.UI_MODE_NIGHT_NO:
                 setTheme(R.style.LightTheme);
+                SplashScreen.show(this, R.style.LightTheme, R.id.lottie);
                 break;
             default:
                 setTheme(R.style.LightTheme);
+                SplashScreen.show(this, R.style.LightTheme, R.id.lottie);
         }
-        SplashScreen.show(this, R.id.lottie);
         SplashScreen.setAnimationFinished(true);
         // Make sure we get an Alert for every uncaught exceptions
         registerUncaughtExceptionHandler(MainActivity.this);
