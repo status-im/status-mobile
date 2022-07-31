@@ -35,7 +35,7 @@
 
 (defn get-options [show-topbar? options]
   (merge options
-         (nav-roots/status-bar-options)
+         (roots/status-bar-options)
          (when platform/android?
            {:navigationBar {:backgroundColor (colors/theme-colors colors/white colors/neutral-90)}})
          (if show-topbar?

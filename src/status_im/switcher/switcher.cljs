@@ -3,6 +3,7 @@
             [quo2.reanimated :as reanimated]
             [quo2.foundations.colors :as colors]
             [status-im.switcher.styles :as styles]
+            [status-im.ui.components.react :as react]
             [status-im.switcher.constants :as constants]
             [status-im.switcher.animation :as animation]
             [status-im.ui.components.icons.icons :as icons]
@@ -50,6 +51,7 @@
                                                :transform [{:scale (:switcher-container-scale shared-values)}]}
                                               switcher-container-original-style)]
        [reanimated/view {:style switcher-screen-animated-style}
+        [react/blur-view (styles/switcher-blur-background)]
         [reanimated/view {:style switcher-container-animated-style}
          [switcher-container/tabs toggle-switcher-screen-fn]]]))])
 
