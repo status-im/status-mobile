@@ -259,7 +259,7 @@
     [react/touchable-opacity (merge {:style {:height 64 :background-color background-color}} opts)
      [:<>
       [chat-item-icon muted (and group-chat (not public?)) (and group-chat public?)]
-      [chat-icon.screen/emoji-chat-icon-view-old chat-id group-chat chat-name emoji
+      [chat-icon.screen/emoji-chat-icon-view chat-id group-chat chat-name emoji
        {:container              (assoc chat-icon.styles/container-chat-list
                                        :top 12 :left 16 :position :absolute)
         :size                   40
