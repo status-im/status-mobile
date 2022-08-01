@@ -10212,12 +10212,12 @@
   },
 
   {
-    "path": "org/junit/junit-bom/5.9.0-RC1/junit-bom-5.9.0-RC1",
+    "path": "org/junit/junit-bom/5.9.0/junit-bom-5.9.0",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "9f1db8b600bdd70516762c3106bab90ac849ccef",
-      "sha256": "1iivcgfli7m371p9wrjys0n8nmpdhgsnrv2sq0046mmh8f7jvyb3"
+      "sha1": "287a17c5dcfa8c0e07abd27b43d41d521e32fcae",
+      "sha256": "15ajszz9swya920lj7ivj8k2yfcj0ilxlp7c3qcl9pkcczqqfgnq"
     }
   },
 

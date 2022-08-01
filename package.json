@@ -67,7 +67,6 @@
     "react-native-safe-area-context": "^2.0.0",
     "react-native-shake": "^3.3.1",
     "react-native-share": "^7.0.1",
-    "react-native-splash-screen": "3.3.0",
     "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.5.37",
     "react-native-svg": "^9.8.4",
     "react-native-touch-id": "^4.4.1",
