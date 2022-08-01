@@ -14,13 +14,13 @@
                             border1 3
                             border2 3)
                             (case outside-border
-                              :top-left {:top -4
+                              :top-left {:top -3
                                          :left -2}
-                              :top-right {:top -4
+                              :top-right {:top -3
                                           :right -2}
-                              :bottom-left {:bottom -4
+                              :bottom-left {:bottom -3
                                             :left -2}
-                              :bottom-right {:bottom -4
+                              :bottom-right {:bottom -3
                                              :right -2}))]))
 
 (def viewfinder-port
@@ -53,13 +53,16 @@
   []
   [:f>
    (fn []
-     (let [{:keys [width]} (dimensions/window)
-           size (reanimated/use-shared-value (* width 0.4))]
+     (let [{:keys [width]} (dimensions/window) 
+           {:keys [min-scale max-scale]} {:min-scale (* width 0.4)
+                                          :max-scale (* width 0.8)}
+           size (reanimated/use-shared-value min-scale)
+           difference (- max-scale min-scale)]
        [:<> 
        (react/effect! (fn []
                         (reanimated/animate-shared-value-with-delay size
-                                                                    (* width 0.8)
-                                                                    800
+                                                                    max-scale
+                                                                    difference
                                                                     :easing2 200)
                         []))
          [rn/view {:style {:justify-content :center
