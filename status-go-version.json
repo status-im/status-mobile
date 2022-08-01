@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.103.4",
-    "commit-sha1": "4aa341395ccd854191e09b854142e65a21ead77c",
-    "src-sha256": "0w27yxpcqh5lwgqwp7zgm40c37m2lglmvzxckjaccxz174xfqh3f"
+    "version": "feat/add-arbitrum-tokens",
+    "commit-sha1": "b549b0bfd999dc8a5708202b7454f473d4839c41",
+    "src-sha256": "08jcqrs4q4ig3d3c8pqnwf12wrlnsr4lamx31rcszcxpfjhwkmpa"
 }
