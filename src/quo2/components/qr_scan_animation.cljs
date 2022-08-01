@@ -54,14 +54,14 @@
   [:f>
    (fn []
      (let [{:keys [width]} (dimensions/window)
-           size (reanimated/use-shared-value (* width 0.4))
-           _ (react/effect! (fn []
-                              (reanimated/animate-shared-value-with-delay size
-                                                                          (* width 0.8)
-                                                                          800
-                                                                          :easing2 200)
-                              []))]
+           size (reanimated/use-shared-value (* width 0.4))]
        [:<> 
+       (react/effect! (fn []
+                        (reanimated/animate-shared-value-with-delay size
+                                                                    (* width 0.8)
+                                                                    800
+                                                                    :easing2 200)
+                        []))
          [rn/view {:style {:justify-content :center
                            :align-items :center
                            :height "100%"}}
