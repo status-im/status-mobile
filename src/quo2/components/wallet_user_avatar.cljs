@@ -78,9 +78,9 @@
         l-name-initial (-> l-name
                            clojure-string/upper-case
                            (subs 0 1))
-        is-theme-dark? (if dark? :dark :light)
-        circle-color (get-in themes [is-theme-dark? color :background-color])
-        text-color (get-in themes [is-theme-dark? color :text-color])]
+        theme (if dark? :dark :light)
+        circle-color (get-in themes [theme color :background-color])
+        text-color (get-in themes [theme color :text-color])]
     [rn/view {:style {:width circle-size
                       :height circle-size
                       :border-radius circle-size
