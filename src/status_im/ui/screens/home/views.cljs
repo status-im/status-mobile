@@ -310,11 +310,11 @@
        :chat-icon              chat-icon.styles/chat-icon-chat-list}]]))
 
 (defn home []
-  [react/keyboard-avoiding-view {:style {:flex 1 :background-color (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/switcher-background)}
+  [react/keyboard-avoiding-view {:style {:flex 1 :background-color (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}
                                  :ignore-offset true}
    [topbar/topbar {:navigation      :none
                    :use-insets true
-                   :background (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/switcher-background)
+                   :background (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)
                    :left-component [react/view {:flex-direction :row :margin-left 16}
                                     [profile-button]]
                    :right-component [react/view {:flex-direction :row :margin-right 16}

@@ -47,7 +47,9 @@
   (if platform/android? 55 80))
 
 (defn dimensions []
-  (<sub [:dimensions/window]))
+  (let [{:keys [width height]} (<sub [:dimensions/window])]
+    {:width  width
+     :height (+ height switcher-height-offset)}))
 
 (def stacks-ids [:communities-stack :chats-stack :wallet-stack :browser-stack])
 
