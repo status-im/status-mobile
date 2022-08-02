@@ -75,7 +75,7 @@
      :wallet/keys   [all-tokens] :as db} :db}
    {:keys [chain-id] :as data}
    uri]
-  (let [{:keys [address] :as details}
+  (let [{:keys [address gasPrice] :as details}
         (eip681/extract-request-details data all-tokens)]
     (if address
       (if (:wallet/recipient db)
@@ -84,11 +84,10 @@
         (if (:wallet/prepare-transaction db)
           {:db (update db :wallet/prepare-transaction assoc
                        :to address :to-name (find-address-name db address))}
-          (let [current-chain-id                     (get-in networks [current-network :config :NetworkId])
-                new-db-with-transaction-from-details (fill-prepare-transaction-details db details all-tokens)]
-            (merge {:db       new-db-with-transaction-from-details
+          (let [current-chain-id (get-in networks [current-network :config :NetworkId])]
+            (merge {:db       (fill-prepare-transaction-details db details all-tokens)
                     :dispatch [:open-modal :prepare-send-transaction]}
-                   (when-not (get-in new-db-with-transaction-from-details [:wallet/prepare-transaction :gasPrice])
+                   (when-not gasPrice
                      {:signing/update-gas-price
                       {:success-callback
                        #(re-frame/dispatch
