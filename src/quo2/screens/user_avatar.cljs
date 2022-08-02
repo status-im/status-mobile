@@ -23,11 +23,7 @@
                  {:label "Identicon Ring"
                   :key   :ring?
                   :type  :boolean}
-<<<<<<< HEAD
                  {:label "Full name separated by space"
-=======
-                 {:label "Full name seperated by space"
->>>>>>> e2adcb504 (User avatar component preview)
                   :key   :full-name
                   :type  :text}
                  {:label "Profile Picture URL"
