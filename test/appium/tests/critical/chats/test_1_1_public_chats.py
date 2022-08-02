@@ -404,9 +404,6 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         if self.chat_2.user_name_text.text != self.default_username_1:
             self.errors.append("Default username '%s' is not shown in one-to-one chat" % self.default_username_1)
 
-        self.chat_1.just_fyi("Check that messages are shown for sender and receiver under today")
-        [chat.verify_message_is_under_today_text(timestamp_message, self.errors) for chat in (self.chat_1, self.chat_2)]
-
         self.chat_2.just_fyi("Add user to contact and verify his default username")
         self.chat_2.add_to_contacts.click()
         self.chat_2.chat_options.click()
