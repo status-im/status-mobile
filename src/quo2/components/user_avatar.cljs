@@ -1,9 +1,8 @@
 (ns quo2.components.user-avatar
-  (:require [clojure.string :refer [split]]
-            [quo.react-native :as rn]
+  (:require [quo.react-native :as rn]
             [quo2.foundations.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
-            [clojure.string :refer [upper-case blank?]]
+            [clojure.string :refer [upper-case split blank?]]
             [status-im.ui.components.react :as react]))
 
 (def sizes {:big {:outer 80
@@ -48,7 +47,7 @@
                         :height dimensions
                         :border-width border-width
                         :border-radius dimensions
-                        :border-color "white"
+                        :border-color colors/white
                         :position :absolute
                         :bottom bottom
                         :right right}}])))

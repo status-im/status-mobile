@@ -23,7 +23,7 @@
                  {:label "Identicon Ring"
                   :key   :ring?
                   :type  :boolean}
-                 {:label "Full name seperated by space"
+                 {:label "Full name separated by space"
                   :key   :full-name
                   :type  :text}
                  {:label "Profile Picture URL"
