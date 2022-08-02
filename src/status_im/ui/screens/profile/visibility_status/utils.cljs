@@ -59,44 +59,25 @@
     :title    (i18n/label :t/status-inactive)
     :subtitle (i18n/label :t/status-inactive-subtitle)}})
 
-;; Currently, Another user is broadcasting their status updates at the rate of 5 minutes.
-;; So for status-type automatic, we need to show
-;; that user online a little longer than that time. (broadcast receiving delay)
-(defn calculate-real-status-type-and-time-left
+(defn calculate-real-status-type
   [{:keys [status-type clock]}]
-  (let [status-lifespan    (if (= status-type
-                                  constants/visibility-status-automatic)
-                             (datetime/minutes 5.05)
+  (let [status-lifespan    (if (= status-type constants/visibility-status-automatic)
+                             (datetime/minutes 5)
                              (datetime/weeks 2))
         status-expire-time (+ (datetime/to-ms clock) status-lifespan)
-        time-left          (-  status-expire-time (datetime/timestamp))
-        status-type        (if (or (nil? status-type)
-                                   (and
-                                    (not= status-type
-                                          constants/visibility-status-inactive)
-                                    (neg? time-left)))
-                             constants/visibility-status-inactive
-                             status-type)]
-    {:real-status-type status-type
-     :time-left        time-left}))
+        time-left          (- status-expire-time (datetime/timestamp))]
+    (if (or (nil? status-type)
+            (and
+             (not= status-type constants/visibility-status-inactive)
+             (neg? time-left)))
+      constants/visibility-status-inactive
+      status-type)))
 
-(defn dot-color
-  [{:keys [status-type] :as visibility-status-update} my-icon?]
-  (if my-icon?
-    (if (= status-type constants/visibility-status-inactive)
-      colors/color-inactive quo2.colors/color-online)
-    (let [{:keys [real-status-type]}
-          (calculate-real-status-type-and-time-left visibility-status-update)]
-      (:color (get visibility-status-type-data real-status-type)))))
+(defn dot-color [{:keys [status-type] :or {status-type constants/visibility-status-inactive}}]
+  (:color (get visibility-status-type-data status-type)))
 
-(defn dot-color-old
-  [{:keys [status-type] :as visibility-status-update} my-icon?]
-  (if my-icon?
-    (if (= status-type constants/visibility-status-inactive)
-      colors/color-inactive colors/color-online)
-    (let [{:keys [real-status-type]}
-          (calculate-real-status-type-and-time-left visibility-status-update)]
-      (:color (get visibility-status-type-data-old real-status-type)))))
+(defn dot-color-old [{:keys [status-type] :or {status-type constants/visibility-status-inactive}}]
+  (:color (get visibility-status-type-data-old status-type)))
 
 (defn my-icon? [public-key]
   (or (string/blank? public-key)
@@ -112,7 +93,7 @@
         visibility-status-update (visibility-status-update public-key my-icon?)
         size                     (/ container-size 2.4)
         margin                   -2
-        dot-color                (dot-color visibility-status-update my-icon?)
+        dot-color                (dot-color visibility-status-update)
         accessibility-label      (if (= dot-color quo2.colors/color-online)
                                    :online-profile-photo-dot
                                    :offline-profile-photo-dot)]
@@ -127,7 +108,7 @@
         visibility-status-update (visibility-status-update public-key my-icon?)
         size                     (/ container-size 4)
         margin                   (if identicon? (/ size 6) (/ size 7))
-        dot-color                (dot-color-old visibility-status-update my-icon?)
+        dot-color                (dot-color-old visibility-status-update)
         accessibility-label      (if (= dot-color colors/color-online)
                                    :online-profile-photo-dot
                                    :offline-profile-photo-dot)]
@@ -140,5 +121,5 @@
 (defn visibility-status-order [public-key]
   (let [my-icon?                 (my-icon? public-key)
         visibility-status-update (visibility-status-update public-key my-icon?)
-        dot-color                (dot-color visibility-status-update my-icon?)]
+        dot-color                (dot-color visibility-status-update)]
     (if (= dot-color colors/color-online) 0 1)))

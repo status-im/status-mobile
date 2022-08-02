@@ -13,31 +13,22 @@
               constants/visibility-status-inactive
               constants/visibility-status-automatic)))
 
-(defn process-visibility-status-update
-  [acc {:keys [public-key clock] :as visibility-status-update}]
-  (let [{:keys [real-status-type time-left]}
-        (utils/calculate-real-status-type-and-time-left visibility-status-update)]
-    (cond-> (assoc-in acc
-                      [:visibility-status-updates public-key]
-                      visibility-status-update)
-      (= real-status-type constants/visibility-status-automatic)
-      (update :dispatch-later
-              #(conj % {:ms       time-left
-                        :dispatch [:visibility-status-updates/timeout-user-online-status
-                                   public-key clock]})))))
+(defn process-visibility-status-update [acc visibility-status-update]
+  (let [real-status-type (utils/calculate-real-status-type visibility-status-update)]
+    (assoc-in
+     acc [:visibility-status-updates (:public-key visibility-status-update)]
+     (assoc visibility-status-update :status-type real-status-type))))
 
 (fx/defn load-visibility-status-updates
   {:events [:visibility-status-updates/visibility-status-updates-loaded]}
   [{:keys [db]} visibility-status-updates-loaded]
-  (let [{:keys [visibility-status-updates dispatch-later]}
+  (let [{:keys [visibility-status-updates]}
         (reduce (fn [acc visibility-status-update-loaded]
-                  (let [{:keys [public-key] :as visibility-status-update}
-                        (visibility-status-updates-store/<-rpc
-                         visibility-status-update-loaded)]
+                  (let [visibility-status-update (visibility-status-updates-store/<-rpc
+                                                  visibility-status-update-loaded)]
                     (process-visibility-status-update acc visibility-status-update)))
                 {} visibility-status-updates-loaded)]
-    (merge {:db (assoc db :visibility-status-updates visibility-status-updates)}
-           (when dispatch-later {:utils/dispatch-later dispatch-later}))))
+    {:db (assoc db :visibility-status-updates visibility-status-updates)}))
 
 (defn handle-my-visibility-status-updates
   [acc my-current-status clock visibility-status-update]
@@ -72,9 +63,7 @@
                                        db [:multiaccount :public-key])
         my-current-status             (get-in
                                        db [:multiaccount :current-user-visibility-status])
-        {:keys [visibility-status-updates
-                current-user-visibility-status
-                dispatch dispatch-later]}
+        {:keys [visibility-status-updates current-user-visibility-status dispatch]}
         (reduce (fn [acc visibility-status-update-received]
                   (let [{:keys [public-key clock] :as visibility-status-update}
                         (visibility-status-updates-store/<-rpc
@@ -92,8 +81,7 @@
                                merge visibility-status-updates)
                     (update-in [:multiaccount :current-user-visibility-status]
                                merge current-user-visibility-status))}
-           (when dispatch {:dispatch dispatch})
-           (when dispatch-later {:utils/dispatch-later dispatch-later}))))
+           (when dispatch {:dispatch dispatch}))))
 
 (fx/defn update-visibility-status
   {:events [:visibility-status-updates/update-visibility-status]}
@@ -130,14 +118,6 @@
               {:dispatch-later events-to-dispatch-later}
               ;; Enable broadcasting for current broadcast
               (send-visibility-status-updates? true))))
-
-(fx/defn timeout-user-online-status
-  {:events [:visibility-status-updates/timeout-user-online-status]}
-  [{:keys [db]} public-key clock]
-  (let [current-clock (get-in db [:visibility-status-updates public-key :clock] 0)]
-    (when (= current-clock clock)
-      {:db (update-in db [:visibility-status-updates public-key]
-                      merge {:status-type constants/visibility-status-inactive})})))
 
 (fx/defn delayed-visibility-status-update
   {:events [:visibility-status-updates/delayed-visibility-status-update]}
