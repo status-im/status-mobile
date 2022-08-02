@@ -93,6 +93,7 @@ commons-logging:commons-logging:1.2
 com.adobe.xmp:xmpcore:5.1.2
 com.afollestad.material-dialogs:commons:0.9.6.0
 com.afollestad.material-dialogs:core:0.9.6.0
+com.airbnb.android:lottie:3.4.4
 com.android.databinding:baseLibrary:1.0-rc5
 com.android.databinding:baseLibrary:3.0.0
 com.android.databinding:baseLibrary:3.0.1
@@ -395,6 +396,7 @@ com.squareup.okhttp3:okhttp-tls:3.12.12
 com.squareup.okhttp3:okhttp-urlconnection:3.12.12
 com.squareup.okhttp3:okhttp:3.12.12
 com.squareup.okio:okio:1.15.0
+com.squareup.okio:okio:1.17.4
 com.squareup:javapoet:1.8.0
 com.squareup:javawriter:2.5.0
 com.sun.activation:javax.activation:1.2.0
