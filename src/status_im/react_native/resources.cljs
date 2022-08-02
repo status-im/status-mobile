@@ -49,6 +49,7 @@
    :graph              (js/require "../resources/images/ui/graph.png")
    :switcher           (js/require "../resources/images/ui/switcher.png")
    :music              (js/require "../resources/images/ui/music.png")
+   :test-bg-image      (js/require "../resources/images/ui/test-bg-image.png")
    :lifestyle          (js/require "../resources/images/ui/lifestyle.png")
    :podcasts           (js/require "../resources/images/ui/podcasts.png")})
 
