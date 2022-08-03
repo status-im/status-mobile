@@ -1,9 +1,9 @@
 (ns status-im.integration-test
-  (:require [day8.re-frame.test :as rf-test]
-            status-im.events
+  (:require [cljs.test :refer [deftest is run-tests]]
+            [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
+            status-im.events
             [status-im.transport.core :as transport]
-            [cljs.test :refer [deftest is]]
             [status-im.utils.test :as utils.test]))
 
 (def password "testabc")
@@ -56,3 +56,6 @@
      (rf-test/wait-for ; wait for login
       [::transport/messenger-started]
       (assert-messenger-started))))))
+
+(comment
+  (run-tests))

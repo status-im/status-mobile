@@ -70,17 +70,20 @@
           ;; produced by the target :mocks below and redefines node require
           ;; function to use the mocks instead of the rn libraries
           :test
-          {:output-to     "target/test/test.js"
-           :output-dir    "target/test"
-           :optimizations :simple
-           :target        :node-test
-           :closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
+          {:output-to        "target/test/test.js"
+           :output-dir       "target/test"
+           :optimizations    :simple
+           :target           :node-test
+           :main             status-im.test-runner/main
+           ;; set :ui-driven to true to let shadow-cljs inject node-repl
+           :ui-driven        true
+           :closure-defines  {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
            :compiler-options {;; needed because we override require and it
                               ;; messes with source-map which reports callstack
                               ;; exceeded exceptions instead of real issues
-                              :source-map false
+                              :source-map    false
                               ;; needed because we use deref in tests
-                              :static-fns false
+                              :static-fns    false
                               :optimizations :simple}}
 
           ;; mock.js-dependencies is mocking the react-native libraries
