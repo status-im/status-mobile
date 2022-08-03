@@ -15,15 +15,15 @@
    :padding-right          12})
 
 (defn visibility-status-dot
-  [{:keys [dot-color size new-ui?]}]
+  [{:keys [color size new-ui?]}]
   (if new-ui?
-    {:background-color dot-color
+    {:background-color color
      :width            size
      :height           size
      :border-radius    (/ size 2)
      :border-width     3.5
      :border-color     (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)}
-    {:background-color dot-color
+    {:background-color color
      :width            size
      :height           size
      :border-radius    (/ size 2)

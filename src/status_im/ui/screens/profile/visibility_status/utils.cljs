@@ -121,9 +121,9 @@
         margin                   (icon-dot-margin size identicon?)
         dot-color                (icon-dot-color visibility-status-update)
         new-ui?                  @config/new-ui-enabled?]
-    (merge (styles/visibility-status-dot {:dot-color dot-color
-                                          :size      size
-                                          :new-ui?   new-ui?})
+    (merge (styles/visibility-status-dot {:color   dot-color
+                                          :size    size
+                                          :new-ui? new-ui?})
            {:bottom              margin
             :right               margin
             :position            :absolute
