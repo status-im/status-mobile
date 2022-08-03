@@ -110,7 +110,10 @@
        [container inner-dimensions outer-dimensions
         [rn/text {:style {:color colors/white-opa-70
                           :font-size font-size}}
-         (upper-case (if small?
+         (upper-case (if-not (or (blank? first-initial-letter)
+                                 (blank? initials))  
+                      (if small?
                        first-initial-letter
-                       initials))]])
+                       initials)
+                       ""))]])
      [dot-indicator size status-indicator? online? ring? (dark?)]]))
