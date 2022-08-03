@@ -5,14 +5,14 @@
             [quo2.reanimated :as reanimated]
             [status-im.utils.dimensions :as dimensions]))
 
-(defn corner [border1 border2 outside-border] 
+(defn corner [border1 border2 outside-border]
   (let [{:keys [width height]} (dimensions/window)]
     [reanimated/view (merge (assoc {:border-color colors/white-persist
-                             :width (* 0.1 width)
-                             :height (* 0.05 height)
-                             :position :absolute}
-                            border1 3
-                            border2 3)
+                                    :width (* 0.1 width)
+                                    :height (* 0.05 height)
+                                    :position :absolute}
+                                   border1 3
+                                   border2 3)
                             (case outside-border
                               :top-left {:top -3
                                          :left -2}
@@ -53,19 +53,19 @@
   []
   [:f>
    (fn []
-     (let [{:keys [width]} (dimensions/window) 
+     (let [{:keys [width]} (dimensions/window)
            {:keys [min-scale max-scale]} {:min-scale (* width 0.4)
                                           :max-scale (* width 0.8)}
            size (reanimated/use-shared-value min-scale)
            difference (- max-scale min-scale)]
-       [:<> 
-       (react/effect! (fn []
-                        (reanimated/animate-shared-value-with-delay size
-                                                                    max-scale
-                                                                    difference
-                                                                    :easing2 200)
-                        []))
-         [rn/view {:style {:justify-content :center
-                           :align-items :center
-                           :height "100%"}}
-          [viewfinder size]]]))])
+       [:<>
+        (react/effect! (fn []
+                         (reanimated/animate-shared-value-with-delay size
+                                                                     max-scale
+                                                                     difference
+                                                                     :easing2 200)
+                         []))
+        [rn/view {:style {:justify-content :center
+                          :align-items :center
+                          :height "100%"}}
+         [viewfinder size]]]))])
