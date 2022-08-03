@@ -57,4 +57,6 @@
                               (str test-dir "/keystore/" key-uid))))
 
             :identicon (fn [pk]
-                         (.identicon native-status pk))}))
+                         (.identicon native-status pk))
+
+            :startLocalNotifications identity}))
