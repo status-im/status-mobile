@@ -3,6 +3,7 @@
             [quo2.foundations.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [clojure.string :refer [upper-case split blank?]]
+            [quo.theme :refer [dark?]]
             [status-im.ui.components.react :as react]))
 
 (def sizes {:big {:outer 80
@@ -22,7 +23,7 @@
                     :font-size 13}})
 
 (defn dot-indicator
-  [size status-indicator? online? ring?]
+  [size status-indicator? online? ring? dark?]
   (when status-indicator?
     (let [dimensions (get-in sizes [size :status-indicator])
           border-width (get-in sizes [size :status-indicator-border])
@@ -47,7 +48,9 @@
                         :height dimensions
                         :border-width border-width
                         :border-radius dimensions
-                        :border-color colors/white
+                        :border-color (if dark?
+                                        colors/black
+                                        colors/white)
                         :position :absolute
                         :bottom bottom
                         :right right}}])))
@@ -110,4 +113,4 @@
          (upper-case (if small?
                        first-initial-letter
                        initials))]])
-     [dot-indicator size status-indicator? online? ring?]]))
+     [dot-indicator size status-indicator? online? ring? (dark?)]]))
