@@ -37,7 +37,7 @@ in {
       export STATUS_NIX_MAVEN_REPO="${deps.gradle}"
 
       # required by some makefile targets
-      export STATUS_GO_ANDROID_LIBDIR=${status-go {}}
+      export STATUS_GO_ANDROID_LIBDIR=${status-go}
 
       # check if node modules changed and if so install them
       $STATUS_MOBILE_HOME/nix/scripts/node_modules.sh ${deps.nodejs-patched}

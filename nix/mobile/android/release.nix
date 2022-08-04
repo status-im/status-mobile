@@ -77,7 +77,7 @@ in stdenv.mkDerivation rec {
   ANDROID_NDK_ROOT = "${androidPkgs.ndk}";
 
   # Used by the Android Gradle build script in android/build.gradle
-  STATUS_GO_ANDROID_LIBDIR = status-go { inherit secretsFile; };
+  STATUS_GO_ANDROID_LIBDIR = status-go;
 
   phases = [
     "unpackPhase" "secretsPhase" "buildPhase" "checkPhase" "installPhase"
