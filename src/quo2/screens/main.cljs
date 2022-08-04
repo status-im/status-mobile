@@ -9,6 +9,7 @@
             [quo2.screens.status-tags :as status-tags]
             [quo2.screens.counter :as counter]
             [quo2.screens.segmented :as segmented]
+            [quo2.screens.qr-screen :as qr-screen]
             [quo.components.safe-area :as safe-area]
             [quo.core :as quo]))
 
@@ -29,7 +30,10 @@
                :component segmented/preview-segmented}
               {:name      :quo2-counter
                :insets    {:top false}
-               :component counter/preview-counter}])
+               :component counter/preview-counter}
+              {:name      :quo2-qr
+               :insets    {:top false}
+               :component qr-screen/preview-qr}])
 
 (defn theme-switcher []
   [rn/view {:style {:flex-direction   :row
