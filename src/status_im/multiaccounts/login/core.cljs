@@ -264,7 +264,7 @@
    [{:method "net_version"
      :on-success
      (fn [fetched-network-id]
-       (when (not= network-id fetched-network-id)
+       (when (not= network-id (str (int fetched-network-id)))
          ;;TODO: this shouldn't happen but in case it does
          ;;we probably want a better error message
          (utils/show-popup
