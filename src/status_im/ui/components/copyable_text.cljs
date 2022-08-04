@@ -81,6 +81,7 @@
 (defn copyable-text-view
   [{:keys [label container-style]} content]
   (let [cue-atom     (reagent/atom false)
+        background-color (or (get container-style :background-color) colors/white)
         width        (reagent/atom 0)
         height       (reagent/atom 0)
         anim-y       (animation/create-value 0)
@@ -120,5 +121,5 @@
              :underlay-color colors/black
              :on-press       copy-fn
              :on-long-press  copy-fn}
-            [react/view {:background-color colors/white}
+            [react/view {:background-color background-color}
              content]]]))})))
