@@ -89,6 +89,7 @@
   (vec (conj children props animated-scroll-view-class)))
 
 (def dimensions (.-Dimensions react-native))
+(def image-background (reagent/adapt-react-class (.-ImageBackground react-native)))
 (def keyboard (.-Keyboard react-native))
 (def dismiss-keyboard! #(.dismiss ^js Keyboard))
 (def linking (.-Linking react-native))

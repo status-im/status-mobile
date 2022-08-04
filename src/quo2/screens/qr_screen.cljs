@@ -71,10 +71,11 @@
    :font-size 16
    :max-width max-width})
 
+(def background-image-uri "https://s3-alpha-sig.figma.com/img/a5c1/ea82/e65b250acaba18948fba0da49d1b1128?Expires=1660521600&Signature=Bk0xDZu8A4-GQIlzq7xUNvFZyWLPc3Aat8gR7fWwTiyNc32Ib6U~UPmevNHKhV~AzlA9y-i7iK3WGevIUcLl53nXYJtSNWsLmA3Eb01V~VEjMzztCpw6ZMWqHJxWIu10dfayTL-~VDXJI~EvhF45bHJYzw3wXoapOWogUQ4aFEfHqcBww1q5SiCKOqXz4FIiuxgzYxpz5meQt-DCCBWviDK-P5A0qSYgivwWJZFjndVrJWvcQecxfUEH-WVPT8TeICemDYRTc4C5IJAYln4scZwQUeSyDOFIql28hoGmHqAMUNXX4FW8N21dkRiXL9qgl0qNmDyHpJ1vNrGFUSXNhQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA""https://s3-alpha-sig.figma.com/img/a5c1/ea82/e65b250acaba18948fba0da49d1b1128?Expires=1660521600&Signature=Bk0xDZu8A4-GQIlzq7xUNvFZyWLPc3Aat8gR7fWwTiyNc32Ib6U~UPmevNHKhV~AzlA9y-i7iK3WGevIUcLl53nXYJtSNWsLmA3Eb01V~VEjMzztCpw6ZMWqHJxWIu10dfayTL-~VDXJI~EvhF45bHJYzw3wXoapOWogUQ4aFEfHqcBww1q5SiCKOqXz4FIiuxgzYxpz5meQt-DCCBWviDK-P5A0qSYgivwWJZFjndVrJWvcQecxfUEH-WVPT8TeICemDYRTc4C5IJAYln4scZwQUeSyDOFIql28hoGmHqAMUNXX4FW8N21dkRiXL9qgl0qNmDyHpJ1vNrGFUSXNhQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA")
 
 (defn preview-qr []
   (let [window-width @(re-frame/subscribe [:dimensions/window-width])]
-    [rn/view {:style {:background-color colors/neutral-80-opa-80}}
+    [rn/view {:style {:background-color colors/neutral-80-opa-80 }}
       [rn/view {:style (qr-code-container window-width)}
        [qr-code-viewer/qr-code-view (* window-width 0.808) static-qr-code-url 12 colors/white]
        [rn/view {:style profile-address-container}
