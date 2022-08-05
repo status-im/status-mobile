@@ -5,9 +5,11 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.icons.icons :as icons]
+            [quo2.components.qr :as quo2]
             [re-frame.core :as re-frame]
             [quo2.foundations.colors :as colors]
             [status-im.ui.components.copyable-text :as copyable-text]))
+
 ;This is the space where we show various selector options to use the QR code component
 ;I believe following are the options
 ;
@@ -18,82 +20,36 @@
 ;2) wallet legacy
 ;3) wallet multichain
 
-(def qr-container-radius 16)
-(def static-qr-code-url "https://status.im")
-(def profile-link "status.app/u/zQ34e2ahd1835eqacc17f6asas12adjie8")
+;(defn cool-preview []
+;  (let [state  (reagent/atom {:link-to-qr static-qr-code-url})
+;        link-to-qr  (reagent/cursor state [:link-to-qr])
+;        qr-view-type (reagent/cursor state [:qr-view-type])]
+;    (fn []
+;      [rn/view {:margin-bottom 50
+;                :padding       16}
+;       [rn/view {:flex 1}
+;        [preview/customizer state descriptor]]
+;       [rn/view {:padding-vertical 60
+;                 :flex-direction   :row
+;                 :justify-content  :center}
+;        [quo2/button (merge (dissoc @state
+;                                    :theme :before :after)
+;                            {:on-press #(println "Hello world!")}
+;                            (when @above
+;                                  {:above :main-icons2/placeholder})
+;                            (when @before
+;                                  {:before :main-icons2/placeholder})
+;                            (when @after
+;                                  {:after :main-icons2/placeholder}))
+;         (if @icon :main-icons2/placeholder @label)]]])))
 
-(defn qr-code-container [window-width & wallet-tab]
-  {:padding-vertical 20
-   :border-radius qr-container-radius
-   :margin-top (if wallet-tab 8 20)
-   :margin-bottom 4
-   :margin-horizontal (* window-width 0.053)
-   :width :89.3%
-   :background-color colors/white-opa-5
-   :flex-direction :column
-   :justify-content :center
-   :align-items :center})
-
-(def address-share-button-container
-  {:padding 8
-   :position :absolute
-   :background-color colors/white-opa-5
-   :border-radius 10
-   :right 14
-   :top 10})
-
-(def profile-address-container
-  {:flex-direction :row
-   :margin-top 6
-   :width :98%})
-
-(def profile-address-column
-  {:align-self :flex-start})
-
-(def profile-address-label
-  {:color colors/white-opa-40
-   :align-self :flex-start
-   :padding-horizontal 20
-   :padding-top 10
-   :font-weight :500
-   :font-size 13})
-
-(def copyable-text-container-style
-  {:background-color :transparent
-   :width :100%})
-
-(defn profile-address-content [max-width]
-  {:color colors/white
-   :align-self :flex-start
-   :padding-horizontal 20
-   :padding-top 2
-   :font-weight :500
-   :font-size 16
-   :max-width max-width})
-
-(def background-image-uri "https://s3-alpha-sig.figma.com/img/a5c1/ea82/e65b250acaba18948fba0da49d1b1128?Expires=1660521600&Signature=Bk0xDZu8A4-GQIlzq7xUNvFZyWLPc3Aat8gR7fWwTiyNc32Ib6U~UPmevNHKhV~AzlA9y-i7iK3WGevIUcLl53nXYJtSNWsLmA3Eb01V~VEjMzztCpw6ZMWqHJxWIu10dfayTL-~VDXJI~EvhF45bHJYzw3wXoapOWogUQ4aFEfHqcBww1q5SiCKOqXz4FIiuxgzYxpz5meQt-DCCBWviDK-P5A0qSYgivwWJZFjndVrJWvcQecxfUEH-WVPT8TeICemDYRTc4C5IJAYln4scZwQUeSyDOFIql28hoGmHqAMUNXX4FW8N21dkRiXL9qgl0qNmDyHpJ1vNrGFUSXNhQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA""https://s3-alpha-sig.figma.com/img/a5c1/ea82/e65b250acaba18948fba0da49d1b1128?Expires=1660521600&Signature=Bk0xDZu8A4-GQIlzq7xUNvFZyWLPc3Aat8gR7fWwTiyNc32Ib6U~UPmevNHKhV~AzlA9y-i7iK3WGevIUcLl53nXYJtSNWsLmA3Eb01V~VEjMzztCpw6ZMWqHJxWIu10dfayTL-~VDXJI~EvhF45bHJYzw3wXoapOWogUQ4aFEfHqcBww1q5SiCKOqXz4FIiuxgzYxpz5meQt-DCCBWviDK-P5A0qSYgivwWJZFjndVrJWvcQecxfUEH-WVPT8TeICemDYRTc4C5IJAYln4scZwQUeSyDOFIql28hoGmHqAMUNXX4FW8N21dkRiXL9qgl0qNmDyHpJ1vNrGFUSXNhQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA")
 
 (defn preview-qr []
-  (let [window-width @(re-frame/subscribe [:dimensions/window-width])]
-    [rn/view {:style {:background-color colors/neutral-80-opa-80 }}
-      [rn/view {:style (qr-code-container window-width)}
-       [qr-code-viewer/qr-code-view (* window-width 0.808) static-qr-code-url 12 colors/white]
-       [rn/view {:style profile-address-container}
-        [rn/view {:style profile-address-column}
-         [rn/text {:style profile-address-label} (i18n/label :t/link-to-profile)]
-         [copyable-text/copyable-text-view {:copied-text profile-link
-                                            :container-style copyable-text-container-style}
-          [rn/text {:style (profile-address-content (* window-width 0.7))
-                    :ellipsize-mode :middle
-                    :number-of-lines 1}
-           profile-link]
-          ]
-         ]
-        [rn/touchable-highlight {:style address-share-button-container}
-         [icons/icon :main-icons/share-icon20 {:color colors/white :width 20 :height 20}]
-        ]
-       ]
-      ]
-    ]
-  )
+  [quo2/qr "profile"]
+;  [rn/view {:background-color (:ui-background @colors/theme)
+;            :flex             1}
+;   [rn/flat-list {:flex                      1
+;                  :keyboardShouldPersistTaps :always
+;                  :header                    [cool-preview]
+;                  :key-fn                    str}]]
 )

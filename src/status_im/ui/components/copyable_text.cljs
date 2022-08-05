@@ -85,7 +85,8 @@
         height       (reagent/atom 0)
         anim-y       (animation/create-value 0)
         anim-opacity (animation/create-value 0)
-        background-color (when-not (get container-style :background-color) colors/white)]
+        background-color (or (get container-style :background-color) colors/white)
+        ]
     (reagent/create-class
      {:reagent-render
       (fn [{:keys [copied-text]} _]
