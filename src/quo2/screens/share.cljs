@@ -437,10 +437,14 @@
                                        [rn/view {:style emoji-share-button-container}
                                         [icons/icon :main-icons/copy-icon20 {:color colors/white :width 20 :height 20}]]]]]]])
 
-   [rn/view {:style footer-container}
-    [rn/touchable-highlight {:style close-button-container :on-press #(re-frame/dispatch [:navigate-back])}
-     [icons/icon :main-icons/close
-      {:color colors/white :width 24 :height 24}]]]])
+;   commenting out the footer view for now
+;   it will come from the switcher shell i.e its parent component
+;   [rn/view {:style footer-container}
+;    [rn/touchable-highlight {:style close-button-container :on-press #(re-frame/dispatch [:navigate-back])}
+;     [icons/icon :main-icons/close
+;      {:color colors/white :width 24 :height 24}]]]
+
+   ])
 
 (defn legacy-wallet-address-view [address-text window-width]
   [rn/view {:style profile-address-container}
@@ -541,19 +545,27 @@
                    (get account-info :multichain-wallet-address-with-network-chain)
                    window-width]]))]]
 
-   [rn/view {:style wallet-footer-container}
-    [rn/touchable-highlight {:style close-button-container :on-press #(re-frame/dispatch [:navigate-back])}
-     [icons/icon :main-icons/close
-      {:color colors/white :width 24 :height 24}]]]])
+;   commenting out the footer view for now
+;   it will come from the switcher shell i.e its parent component
+;   [rn/view {:style wallet-footer-container}
+;    [rn/touchable-highlight {:style close-button-container :on-press #(re-frame/dispatch [:navigate-back])}
+;     [icons/icon :main-icons/close
+;      {:color colors/white :width 24 :height 24}]]]
+
+   ])
 
 (defn share-view []
   (let [window-width @(re-frame/subscribe [:dimensions/window-width])]
     [rn/view {:style main-container}
-     [rn/view {:style navigation-top-row}
-      [rn/text {:style (navigation-text-item)} (i18n/label :t/switcher-nav-switch)]
-      [rn/text {:style (navigation-text-item)} (i18n/label :t/switcher-nav-scan)]
-      [rn/text {:style (navigation-text-item true)} (i18n/label :t/switcher-nav-share)]
-      [rn/text {:style (navigation-text-item)} (i18n/label :t/switcher-nav-activity)]]
+
+;     commenting out the header view for now
+;     it will come from the switcher shell i.e its parent component
+;     [rn/view {:style navigation-top-row}
+;      [rn/text {:style (navigation-text-item)} (i18n/label :t/switcher-nav-switch)]
+;      [rn/text {:style (navigation-text-item)} (i18n/label :t/switcher-nav-scan)]
+;      [rn/text {:style (navigation-text-item true)} (i18n/label :t/switcher-nav-share)]
+;      [rn/text {:style (navigation-text-item)} (i18n/label :t/switcher-nav-activity)]]
+
      [rn/scroll-view
       [rn/view {:style tabs-container}
        [rn/touchable-highlight
