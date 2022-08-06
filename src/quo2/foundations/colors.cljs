@@ -184,6 +184,7 @@
 (def info-50-opa-40 (alpha info-50 0.4))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ;; Customization
 (def purple-50 "#8661C1")
 (def purple-20 (alpha "#8661C1" 0.2))
@@ -248,6 +249,8 @@
 =======
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 7e9e6581c (Conflicts resolve)
 ;;;;Purple
 (def purple "#8661C1")
 (def purple-opa-20 (alpha purple 0.2))
@@ -315,12 +318,18 @@
 (def beige-opa-60 (alpha beige 0.6))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 >>>>>>> 55d7310ac (wallet user avatar component)
 
 =======
 >>>>>>> 1efbb5e7a (linting)
+=======
+
+
+
+>>>>>>> 7e9e6581c (Conflicts resolve)
 ;;;;Switcher
 (def switcher-background "#040B14")
 
@@ -332,9 +341,12 @@
 (def switcher-background-opa-95 (alpha switcher-background 0.95))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 476097682 (wallet user avatar component)
 >>>>>>> 55d7310ac (wallet user avatar component)
+=======
+>>>>>>> 7e9e6581c (Conflicts resolve)
 ;;General
 
 ;; background
