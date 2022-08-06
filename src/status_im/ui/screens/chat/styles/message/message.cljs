@@ -209,12 +209,9 @@
    :text-align-vertical :center})
 
 (defn quoted-message-container []
-  {:margin-bottom              6
-   :padding-bottom             6
-   :border-bottom-color        colors/black-transparent
-   :border-bottom-width        2
-   :border-bottom-left-radius  2
-   :border-bottom-right-radius 2})
+  {:margin-bottom      6
+   :margin-top         5
+   :padding-horizontal 15})
 
 (def quoted-message-author-container
   {:flex-direction  :row

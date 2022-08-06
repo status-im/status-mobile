@@ -10,7 +10,8 @@
             [status-im.i18n.i18n :as i18n]
             [clojure.string :as string]
             [taoensso.timbre :as log]
-            [status-im.multiaccounts.create.core :as multiaccounts.create]))
+            [status-im.multiaccounts.create.core :as multiaccounts.create]
+            [status-im.node.core :as node]))
 
 (def kk1-password "000000")
 (def default-pin "111111")
@@ -432,7 +433,7 @@
    (types/clj->json accounts-data)))
 
 (defn login [{:keys [key-uid multiaccount-data password]}]
-  (status/login-with-config key-uid multiaccount-data password nil))
+  (status/login-with-config key-uid multiaccount-data password node/login-node-config))
 
 (defn send-transaction-with-signature
   [{:keys [transaction on-completed]}]

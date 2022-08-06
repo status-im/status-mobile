@@ -87,6 +87,7 @@
    :wallet/visible-tokens                {:testnet #{:STT
                                                      :HND}
                                           :mainnet #{:SNT}
+                                          :goerli  #{:STT}
                                           :rinkeby #{:MOKSHA
                                                      :KDO}
                                           :xdai    #{}}

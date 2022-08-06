@@ -75,7 +75,7 @@ nix_purge_user_profile() {
         ~/.nix-* \
         ~/.cache/nix \
         ~/.config/nixpkgs \
-        ${GIT_ROOT}/.nix-gcroots
+        "${GIT_ROOT}/.nix-gcroots"
 }
 
 nix_purge_root() {

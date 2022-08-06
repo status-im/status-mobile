@@ -43,7 +43,9 @@
            :dev {:devtools {:after-load status-im.reloader/reload
                             :build-notify status-im.reloader/build-notify
                             :preloads [re-frisk-remote.preload]}
-                 :closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
+                 :closure-defines
+                 {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
+                  status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
                  :compiler-options {:output-feature-set :es5
                                     :closure-defines
                                     {re-frame.trace/trace-enabled? true}
@@ -55,7 +57,10 @@
                  :local-ip #shadow/env "SHADOW_HOST"}
            :chunks {:fleets status-im.fleet.default-fleet/default-fleets
                     :chats status-im.chat.default-chats/default-chats}
-           :release {:closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
+           :release
+           {:closure-defines
+            {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
+             status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
                      :compiler-options {:output-feature-set :es6
                                         ;;disable for android build as there
                                         ;;is an intermittent warning with deftype
@@ -70,17 +75,22 @@
           ;; produced by the target :mocks below and redefines node require
           ;; function to use the mocks instead of the rn libraries
           :test
-          {:output-to     "target/test/test.js"
-           :output-dir    "target/test"
-           :optimizations :simple
-           :target        :node-test
-           :closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
+          {:output-to        "target/test/test.js"
+           :output-dir       "target/test"
+           :optimizations    :simple
+           :target           :node-test
+           :main             status-im.test-runner/main
+           ;; set :ui-driven to true to let shadow-cljs inject node-repl
+           :ui-driven        true
+           :closure-defines
+           {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
+            status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
            :compiler-options {;; needed because we override require and it
                               ;; messes with source-map which reports callstack
                               ;; exceeded exceptions instead of real issues
-                              :source-map false
+                              :source-map    false
                               ;; needed because we use deref in tests
-                              :static-fns false
+                              :static-fns    false
                               :optimizations :simple}}
 
           ;; mock.js-dependencies is mocking the react-native libraries

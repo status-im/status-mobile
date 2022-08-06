@@ -16,7 +16,8 @@ import support.api.web3_api as w3
 class NetworkApi(object):
 
     def __init__(self):
-        self.network_url = 'http://api-ropsten.etherscan.io/api?'
+        # self.network_url = 'http://api-ropsten.etherscan.io/api?'
+        self.network_url = 'http://api-goerli.etherscan.io/api?'
         self.faucet_url = 'https://faucet-ropsten.status.im/donate'
         self.faucet_backup_address = w3.account_address
         self.headers = {
@@ -114,7 +115,7 @@ class NetworkApi(object):
                     self.log("Failed iterate transactions(Etherscan unexpected error): " + str(e))
                     continue
 
-    def wait_for_confirmation_of_transaction(self, address, amount, confirmations=3, token=False):
+    def wait_for_confirmation_of_transaction(self, address, amount, confirmations=6, token=False):
         start_time = time.time()
         if token:
             token_info = "token transaction"

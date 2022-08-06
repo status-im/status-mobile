@@ -5,7 +5,7 @@ import pytest
 
 from tests import common_password, marks, test_dapp_name
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
-from tests.users import transaction_senders, basic_user, ens_user_ropsten
+from tests.users import transaction_senders, basic_user, ens_user_message_sender
 from views.sign_in_view import SignInView
 
 
@@ -32,7 +32,7 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         send_transaction.sign_with_keycard_button.click()
         keycard = send_transaction.sign_with_keycard_button.click()
         keycard.enter_default_pin()
-        if not keycard.element_by_text_part('0x925141b').is_element_displayed():
+        if not keycard.element_by_text_part('0xc053c4').is_element_displayed():
             self.errors.append('Typed message was not signed')
         self.errors.verify_no_errors()
 
@@ -53,7 +53,7 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702319)
     def test_keycard_send_tx_eth_to_ens(self):
         self.home.home_button.double_click()
-        chat = self.home.add_contact(ens_user_ropsten['ens'])
+        chat = self.home.add_contact(ens_user_message_sender['ens'])
         chat.commands_button.click()
         amount = chat.get_unique_amount()
 
@@ -67,7 +67,7 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         send_transaction.sign_transaction(keycard=True)
         chat_sender_message = chat.get_outgoing_transaction()
         self.network_api.wait_for_confirmation_of_transaction(self.user['address'], amount)
-        chat_sender_message.transaction_status.wait_for_element_text(chat_sender_message.confirmed)
+        chat_sender_message.transaction_status.wait_for_element_text(chat_sender_message.confirmed, 60)
 
     @marks.testrail_id(702320)
     def test_keycard_profile_pin_puk_edit(self):
@@ -240,7 +240,7 @@ class TestWalletTestDappMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase
         send_transaction = test_dapp.sign_typed_message_button.click()
         send_transaction.enter_password_input.send_keys(common_password)
         send_transaction.sign_button.click_until_absense_of_element(send_transaction.sign_button)
-        if not test_dapp.element_by_text_part('0x1673d96e836').is_element_displayed(30):
+        if not test_dapp.element_by_text_part('0x0876752fe').is_element_displayed(30):
             self.errors.append("Hash of signed typed message is not shown!")
         self.errors.verify_no_errors()
 
@@ -291,8 +291,8 @@ class TestWalletTestDappMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase
     def test_wallet_asset_search(self):
         self.home.wallet_button.double_click()
         search_list_assets = {
-            'd': ['Adi Test Token', 'Handy Test Token', 'Modest Test Token'],
-            'MD': ['MDS']
+            'ee': ['XEENUS', 'YEENUS', 'ZEENUS'],
+            'ST': ['STT']
         }
         self.home.just_fyi('Searching for asset by name and symbol')
         self.wallet.multiaccount_more_options.click()
@@ -349,8 +349,9 @@ class TestWalletTestDappMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase
 
         self.home.just_fyi('check correct account is shown for transaction if sending from DApp')
         profile.dapp_tab_button.click(desired_element_text='Accounts')
-        status_test_dapp.assets_button.click()
-        send_transaction = status_test_dapp.request_stt_button.click()
+        status_test_dapp.transactions_button.click_until_presence_of_element(
+            status_test_dapp.send_one_tx_in_batch_button)
+        send_transaction = status_test_dapp.send_one_tx_in_batch_button.click()
         send_transaction.ok_got_it_button.click_if_shown()
         address = send_transaction.get_formatted_recipient_address(self.sub_acc_address)
         if not send_transaction.element_by_text(address).is_element_displayed():

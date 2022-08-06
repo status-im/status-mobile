@@ -57,8 +57,8 @@ mailserver_hk = 'mail-01.ac-cn-hongkong-c'
 mailserver_gc = 'mail-01.gc-us-central1-a'
 
 test_dapp_web_url = "status-im.github.io/dapp"
-test_dapp_url = 'simpledapp.eth'
-test_dapp_name = 'simpledapp.eth'
+test_dapp_url = 'https://simpledapp.status.im/'
+test_dapp_name = 'simpledapp.status.im'
 
 emojis = {'thumbs-up': 2, 'thumbs-down': 3, 'love': 1, 'laugh': 4, 'angry': 6, 'sad': 5}
 

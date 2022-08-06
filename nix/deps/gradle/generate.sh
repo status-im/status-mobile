@@ -68,7 +68,7 @@ function gen_deps_json() {
 echo "Regenerating Nix files..."
 
 # Gradle needs to be run in 'android' subfolder
-cd $GIT_ROOT/android
+cd "${GIT_ROOT}/android"
 
 # Stop gradle daemons to avoid locking
 ./gradlew --stop >/dev/null

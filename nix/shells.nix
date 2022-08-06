@@ -16,7 +16,7 @@ let
   node-sh = mkShell {
     shellHook = ''
       export STATUS_MOBILE_HOME=$(git rev-parse --show-toplevel)
-      $STATUS_MOBILE_HOME/nix/scripts/node_modules.sh ${pkgs.deps.nodejs-patched}
+      "$STATUS_MOBILE_HOME/nix/scripts/node_modules.sh" ${pkgs.deps.nodejs-patched}
     '';
   };
 

@@ -55,7 +55,7 @@ nixOpts=(
 )
 
 # Save derivation from being garbage collected
-${GIT_ROOT}/nix/scripts/gcroots.sh "${TARGET}" "${@}"
+"${GIT_ROOT}/nix/scripts/gcroots.sh" "${TARGET}" "${@}"
 
 # Run the actual build
 echo -e "${GRN}Running:${RST} ${BLD}nix-build "${nixOpts[@]}" ${@}${RST}"

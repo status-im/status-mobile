@@ -139,10 +139,10 @@
                                 {"mainnet_rpc" true}}}}))))
   (testing "is on a different network"
     (testing "it returns false when not enabled"
-      (is (not (model/custom-bootnodes-in-use? {:db {:networks/current-network "testnet_rpc"}}))))
+      (is (not (model/custom-bootnodes-in-use? {:db {:networks/current-network "goerli_rpc"}}))))
     (testing "it returns true when enabled"
       (is (not (model/custom-bootnodes-in-use?
-                {:db {:networks/current-network "testnet_rpc"
+                {:db {:networks/current-network "goerli_rpc"
                       :multiaccount {:custom-bootnodes-enabled?
                                      {"mainnnet_rpc" true}}}}))))))
 

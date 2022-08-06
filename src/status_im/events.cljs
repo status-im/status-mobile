@@ -144,9 +144,8 @@
                          (conj {:ms 900 :dispatch
                                 [:navigate-to :create-community-channel
                                  (get-in db [:navigation/screen-params :create-community-channel])]}))]
-
-    (navigation.core/dismiss-all-modals)
-    (when (or (nil? cur-theme) (zero? cur-theme))
+    (when (and (some? root-id) (or (nil? cur-theme) (zero? cur-theme)))
+      (navigation.core/dismiss-all-modals)
       (fx/merge cofx
                 (merge
                  {::multiaccounts/switch-theme (if (= :dark theme) 2 1)}

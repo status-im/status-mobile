@@ -1,11 +1,11 @@
 import pytest
 from tests import marks
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
-from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
+from tests.users import transaction_senders, basic_user, ens_user, ens_user_message_sender
 from views.sign_in_view import SignInView
 
 
-# TODO: suspended according to #13257
+# TODO: suspended according to #13257 (rechecked 27.07.22, valid)
 @pytest.mark.xdist_group(name="pairing_2")
 @marks.critical
 @marks.skip
@@ -44,18 +44,15 @@ class TestPairingMultipleDevicesMerged(MultipleSharedDeviceTestCase):
                         self.errors.append('Expected preview for %s is "%s", in fact "%s" after initial sync' %
                                            (chat, expected_chat_preview, actual_chat_preview))
 
-        # TODO: blocked due to 13176
-        # self.profile_2.just_fyi("Check unread indicator")
-        # if self.home_2.home_button.counter.text != '2':
-        #     self.errors.append('New messages counter is not shown on Home button')
-        # for chat in chats.keys():
-        #     if 'unread' in chats.keys():
-        #         if self.home_2.get_chat(chat).new_messages_counter.text != chats[chat]['unread']:
-        #             self.errors.append('No unread for %s after initial sync' % chat)
+        self.profile_2.just_fyi("Check unread indicator")
+        if self.home_2.home_button.counter.text != '2':
+            self.errors.append('New messages counter is not shown on Home button')
+        for chat in chats.keys():
+            if 'unread' in chats.keys():
+                if self.home_2.get_chat(chat).new_messages_counter.text != chats[chat]['unread']:
+                    self.errors.append('No unread for %s after initial sync' % chat)
         self.errors.verify_no_errors()
 
-    @marks.skip
-    # TODO: blocked due to 13176
     def test_pairing_initial_sync_activity_centre(self):
         from views.dbs.main_pairing.data import activity_centre
         if self.home_2.notifications_unread_badge.is_element_displayed():
@@ -99,11 +96,14 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.name_1, self.name_2 = 'device_%s' % self.drivers[0].number, 'device_%s' % self.drivers[1].number
         self.message_before_sync, self.message_after_sync = 'sent before sync', 'sent after sync'
+        self.message_in_public = 'message in public chat'
         self.contact_before_sync = basic_user
         self.public_chat_before_sync, self.public_chat_after_sync = self.home_1.get_random_chat_name(), 'after-pairing'
+        self.bookmark_name = 'Status - Private, Secure Communication'
 
         self.home_1.just_fyi("(main device): get recovery phrase")
         self.profile_1 = self.home_1.profile_button.click()
+        self.device_2.put_app_to_background_and_back()
         self.profile_1.privacy_and_security_button.click()
         self.profile_1.backup_recovery_phrase_button.click()
         self.profile_1.ok_continue_button.click()
@@ -120,9 +120,10 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.home_1.add_contact(ens_user['ens'])
         self.chat_1.home_button.click()
 
-        self.home_1.just_fyi('Chats, contacts (main device): join public chat, block user, set nickname')
-        public_chat_1 = self.home_1.join_public_chat(self.public_chat_before_sync)
-        public_chat_1.home_button.click()
+        self.home_1.just_fyi('Chats, contacts (main device): join public chat, send message, block user, set nickname')
+        self.public_chat_1 = self.home_1.join_public_chat(self.public_chat_before_sync)
+        self.public_chat_1.send_message(self.message_in_public)
+        self.public_chat_1.home_button.click()
         self.home_1.add_contact(transaction_senders['A']['public_key'], add_in_contacts=False,
                                 nickname=self.no_contact_nickname)
         self.chat_1.open_user_profile_from_1_1_chat()
@@ -139,6 +140,16 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.chat_1.set_nickname(self.nickname)
         self.device_1.get_back_to_home_view()
 
+        self.device_1.just_fyi('Add profile picture')
+        self.home_1.profile_button.double_click()
+        self.profile_1.edit_profile_picture('sauce_logo.png')
+
+        self.home_1.just_fyi("Main device adds a website to bookmarks")
+        dapp = self.home_1.dapp_tab_button.click()
+        web_page = dapp.open_url('status.im')
+        web_page.add_to_bookmarks()
+        self.home_1.profile_button.double_click()
+
         self.device_2.just_fyi('Pair main and secondary devices')
         self.profile_2.discover_and_advertise_device(self.name_2)
         self.profile_1.discover_and_advertise_device(self.name_1)
@@ -148,7 +159,6 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         [device.profile_button.double_click() for device in (self.profile_1, self.profile_2)]
 
     @marks.testrail_id(702194)
-    @marks.xfail(reason="failing due to issue #13635. Skipping until fix", run=False)
     def test_pairing_sync_initial_contacts_blocked_users(self):
         self.profile_2.contacts_button.scroll_to_element(9, 'up')
         self.profile_2.contacts_button.click()
@@ -172,7 +182,6 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702196)
-    @marks.xfail(reason="failing due to issue #13635. Skipping until fix", run=False)
     def test_pairing_sync_contacts_block_unblock(self):
         [device.profile_button.double_click() for device in (self.profile_1, self.profile_2)]
         new_user_for_block = transaction_senders['C']
@@ -203,7 +212,7 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
     def test_pairing_sync_contacts_add_remove_set_nickname_ens(self):
         [device.home_button.double_click() for device in (self.profile_1, self.profile_2)]
         new_contact, new_nickname = transaction_senders['F'], "completely_new_nick"
-        self.home_1.add_contact(ens_user_ropsten['ens'])
+        self.home_1.add_contact(ens_user_message_sender['ens'])
         self.home_1.home_button.click()
         self.home_1.add_contact(new_contact['public_key'])
 
@@ -211,7 +220,7 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.profile_2.profile_button.double_click()
         self.profile_2.contacts_button.scroll_to_element(direction='up')
         self.profile_2.contacts_button.click()
-        for contact in (new_contact['username'], '@%s' % ens_user_ropsten['ens']):
+        for contact in (new_contact['username'], '@%s' % ens_user_message_sender['ens']):
             if not self.profile_2.element_by_text(contact).is_element_displayed():
                 self.errors.append("'%s' new contact is not synced!" % contact)
 
@@ -252,4 +261,38 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.home_1.delete_chat_long_press('#%s' % self.public_chat_after_sync)
         if not self.home_2.element_by_text('#%s' % self.public_chat_after_sync).is_element_disappeared(60):
             self.errors.append('Remove of "%s" public chat is not synced!' % self.public_chat_after_sync)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702392)
+    def test_pairing_sync_initial_profile_picture(self):
+        [device.home_button.double_click() for device in (self.profile_1, self.profile_2)]
+        self.home_2.profile_button.double_click()
+
+        self.home_2.just_fyi("Check that profile picture is synced")
+        if not self.profile_2.profile_picture.is_element_image_equals_template('sauce_logo_profile_picture.png'):
+            self.errors.append("Profile picture is not synced")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702393)
+    def test_pairing_sync_initial_bookmarks(self):
+        [device.home_button.double_click() for device in (self.profile_1, self.profile_2)]
+
+        self.home_2.just_fyi("Secondary device: check synced bookmark")
+        self.home_2.dapp_tab_button.click()
+        if not self.home_2.element_by_text(self.bookmark_name).is_element_displayed():
+            self.errors.append("Bookmark is not synced")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702394)
+    def test_pairing_sync_clear_history(self):
+        [device.home_button.double_click() for device in (self.profile_1, self.profile_2)]
+
+        self.home_1.just_fyi("Clear history in public chat on main device")
+        self.home_1.clear_chat_long_press('#%s' % self.public_chat_before_sync)
+
+        self.home_2.just_fyi("Check that history is cleared on secondary device")
+        public_2 = self.home_2.get_chat('#%s' % self.public_chat_before_sync).click()
+        if public_2.chat_element_by_text(self.message_in_public).is_element_displayed():
+            self.errors.append(
+                'Message in %s chat is still shown after clearing history' % self.message_in_public)
         self.errors.verify_no_errors()

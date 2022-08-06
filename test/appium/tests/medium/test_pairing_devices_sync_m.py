@@ -102,7 +102,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.profile_1.sync_all_button.wait_for_visibility_of_element(20)
         [device.profile_button.double_click() for device in (self.profile_1, self.profile_2)]
         [device.home_button.double_click() for device in (self.profile_1, self.device_3)]
-        #TODO Performing relogin as some of data does not appear after sync until relogin. Should be removed after fix of the issue #13647.
+        # TODO Relogin to workaround #13647, should be removed after fix of the issue(rechecked 27.07.22, valid)
         self.profile_2.relogin()
         self.device_3.put_app_to_background_and_back()
 

@@ -1,6 +1,7 @@
 (ns status-im.switcher.styles
   (:require [quo.theme :as theme]
             [quo2.foundations.colors :as colors]
+            [status-im.utils.platform :as platform]
             [status-im.switcher.constants :as constants]))
 
 (def themes
@@ -63,12 +64,19 @@
    {:backgroundColor (get-color :switcher-close-button-bg-color)}))
 
 (defn switcher-screen []
-  (dissoc
-   (merge-switcher-button-common-styles
-    {:background-color colors/switcher-background-opa-80
-     :z-index          1
-     :overflow         :hidden})
-   :justify-content))
+  (cond-> (merge-switcher-button-common-styles
+           {:background-color colors/neutral-80-opa-80
+            :z-index          1
+            :overflow         :hidden})
+    platform/android? (dissoc :background-color)
+    true              (dissoc :justify-content)))
+
+(defn switcher-blur-background []
+  (let [{:keys [width height]} (constants/dimensions)]
+    {:style         {:width  width
+                     :height (+ height constants/switcher-container-height-padding)}
+     :blur-amount   17
+     :overlay-color colors/neutral-80-opa-80}))
 
 (defn switcher-screen-container []
   (let [{:keys [width height]} (constants/dimensions)]

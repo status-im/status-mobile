@@ -9,6 +9,7 @@
             [quo2.screens.status-tags :as status-tags]
             [quo2.screens.counter :as counter]
             [quo2.screens.segmented :as segmented]
+            [quo.components.safe-area :as safe-area]
             [quo.core :as quo]))
 
 (def screens [{:name      :quo2-texts
@@ -54,17 +55,21 @@
     [quo/text "Set dark theme"]]])
 
 (defn main-screen []
-  [rn/scroll-view {:flex               1
-                   :padding-vertical   8
-                   :padding-horizontal 16
-                   :background-color   (:ui-background @colors/theme)}
-   [theme-switcher]
-   [rn/view
-    (for [{:keys [name]} screens]
-      ^{:key name}
-      [rn/touchable-opacity {:on-press #(re-frame/dispatch [:navigate-to name])}
-       [rn/view {:style {:padding-vertical 8}}
-        [quo/text (str "Preview " name)]]])]])
+  (fn []
+    [safe-area/consumer
+     (fn [insets]
+       [rn/scroll-view {:flex               1
+                        :padding-top        (:top insets)
+                        :padding-bottom     8
+                        :padding-horizontal 16
+                        :background-color   (:ui-background @colors/theme)}
+        [theme-switcher]
+        [rn/view
+         (for [{:keys [name]} screens]
+           ^{:key name}
+           [rn/touchable-opacity {:on-press #(re-frame/dispatch [:navigate-to name])}
+            [rn/view {:style {:padding-vertical 8}}
+             [quo/text (str "Preview " name)]]])]])]))
 
 (def main-screens [{:name      :quo2-preview
                     :insets    {:top false}

@@ -60,6 +60,14 @@
     (assoc :ListenAddr ":30304"
            :DataDir (str (:DataDir config) "_dev"))))
 
+(def login-node-config
+  {:WalletConfig (cond-> {:Enabled true}
+                   (not= config/opensea-api-key "")
+                   (assoc :OpenseaAPIKey config/opensea-api-key))})
+
+(defn- get-login-node-config [config]
+  (merge config login-node-config))
+
 (defn- pick-nodes
   "Picks `limit` different nodes randomly from the list of nodes
   if there is more than `limit` nodes in the list, otherwise return the list
@@ -99,6 +107,9 @@
       :always
       (get-base-node-config)
 
+      :always
+      (get-login-node-config)
+
       current-fleet
       (assoc :NoDiscovery   wakuv2-enabled
              :Rendezvous    (if wakuv2-enabled false (boolean (seq rendezvous-nodes)))
@@ -118,8 +129,7 @@
                              :RendezvousNodes    (if wakuv2-enabled [] rendezvous-nodes)})
 
       :always
-      (assoc :WalletConfig {:Enabled true}
-             :LocalNotificationsConfig {:Enabled true}
+      (assoc :LocalNotificationsConfig {:Enabled true}
              :BrowsersConfig {:Enabled true}
              :PermissionsConfig {:Enabled true}
              :MailserversConfig {:Enabled true}

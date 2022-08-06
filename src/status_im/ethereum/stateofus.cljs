@@ -30,7 +30,7 @@
   (merge
    {:mainnet "0xDB5ac1a559b02E12F29fC0eC0e37Be8E046DEF49"}
    (when config/test-stateofus?
-     {:testnet "0x11d9F481effd20D76cEE832559bd9Aca25405841"})))
+     {:goerli "0xD1f7416F91E7Eb93dD96A61F12FC092aD6B67B11"})))
 
 (def registrars-cache (atom {}))
 

@@ -6,13 +6,14 @@
             [quo.react-native :as rn]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [status-im.constants :as constants]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.handlers :refer [<sub]]
-            [status-im.constants :as constants]
             [status-im.ui.screens.profile.visibility-status.styles :as styles]
-            [status-im.ui.screens.profile.visibility-status.utils :as utils]))
+            [status-im.ui.screens.profile.visibility-status.utils :as utils]
+            [status-im.utils.config :as config]
+            [status-im.utils.handlers :refer [<sub]]
+            [status-im.utils.platform :as platform]))
 
 ;; === Code Related to visibility-status-button ===
 
@@ -25,21 +26,37 @@
   (re-frame/dispatch
    [:visibility-status-updates/delayed-visibility-status-update status-type]))
 
+;; In new ui, we are allowing switcher to overlap status-bar (draw over status bar)
+;; that's why the measure will return height including, the height of the status bar in android
+;; for calculating the correct position of the button on the profile screen, we have to decrease this height
 (defn calculate-button-height-and-dispatch-popover []
-  (.measure @button-ref
-            (fn  [_ _ _ _ _ py]
-              (dispatch-popover py))))
+  (.measure
+   @button-ref
+   (fn  [_ _ _ _ _ py]
+     (dispatch-popover
+      (if (and platform/android? @config/new-ui-enabled?)
+        (- py (:status-bar-height @rn/navigation-const))
+        py)))))
 
 (defn profile-visibility-status-dot [status-type color]
   (let [automatic?                      (= status-type
                                            constants/visibility-status-automatic)
-        [border-width margin-left size] (if automatic? [1 -10 12] [0 6 10])]
+        [border-width margin-left size] (if automatic? [1 -10 12] [0 6 10])
+        new-ui?                         @config/new-ui-enabled?]
     [:<>
      (when automatic?
-       [rn/view {:style (styles/visibility-status-profile-dot-old
-                         colors/color-inactive size border-width 6)}])
-     [rn/view {:style (styles/visibility-status-profile-dot-old
-                       color size border-width margin-left)}]]))
+       [rn/view {:style (styles/visibility-status-profile-dot
+                         {:color        colors/color-inactive
+                          :size         size
+                          :border-width border-width
+                          :margin-left  6
+                          :new-ui?      new-ui?})}])
+     [rn/view {:style (styles/visibility-status-profile-dot
+                       {:color        color
+                        :size         size
+                        :border-width border-width
+                        :margin-left  margin-left
+                        :new-ui?      new-ui?})}]]))
 
 (defn visibility-status-button [on-press props]
   (let [logged-in?            (<sub [:multiaccount/logged-in?])

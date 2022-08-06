@@ -81,19 +81,29 @@ class GithubHtmlReport(BaseTestReport):
                 tr_case_ids=','.join([str(test.testrail_case_id) for test in tests]))
 
         if not not_executed_tests:
+            groups = {i: list() for i in set([test.group_name for test in tests])}
+            for i in tests:
+                groups[i.group_name].append(i)
+
             html += "<br/>"
-            html += "<table style=\"width: 100%\">"
-            html += "<colgroup>"
-            html += "<col span=\"1\" style=\"width: 20%;\">"
-            html += "<col span=\"1\" style=\"width: 80%;\">"
-            html += "</colgroup>"
-            html += "<tbody>"
-            html += "<tr>"
-            html += "</tr>"
-            for i, test in enumerate(tests):
-                html += self.build_test_row_html(i, test, run_id)
-            html += "</tbody>"
-            html += "</table>"
+
+            for class_name, tests_list in groups.items():
+                if class_name:
+                    html += "<h4>Class %s:</h4>" % class_name
+                else:
+                    html += "<h4>Single device tests:</h4>"
+                html += "<table style=\"width: 100%\">"
+                html += "<colgroup>"
+                html += "<col span=\"1\" style=\"width: 20%;\">"
+                html += "<col span=\"1\" style=\"width: 80%;\">"
+                html += "</colgroup>"
+                html += "<tbody>"
+                html += "<tr>"
+                html += "</tr>"
+                for i, test in enumerate(tests_list):
+                    html += self.build_test_row_html(i, test, run_id)
+                html += "</tbody>"
+                html += "</table>"
         html += "</details>"
         return html
 

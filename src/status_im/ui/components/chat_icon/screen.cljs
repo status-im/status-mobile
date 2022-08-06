@@ -63,25 +63,6 @@
        [react/view {:style               dot-styles
                     :accessibility-label dot-accessibility-label}])]))
 
-(defn profile-photo-plus-dot-view-old
-  [{:keys [public-key photo-container photo-path community?]}]
-  (let [photo-path             (if (nil? photo-path)
-                                 @(re-frame.core/subscribe [:chats/photo-path public-key])
-                                 photo-path)
-        photo-container        (if (nil? photo-container)
-                                 styles/container-chat-list photo-container)
-        size                    (:width photo-container)
-        identicon?              (when photo-path (profile.db/base64-png? photo-path))
-        dot-styles              (visibility-status-utils/icon-visibility-status-dot-old
-                                 public-key size identicon?)
-        dot-accessibility-label (:accessibility-label dot-styles)]
-    [react/view {:style               photo-container
-                 :accessibility-label :profile-photo}
-     [photos/photo photo-path {:size size}]
-     (when-not community?
-       [react/view {:style               dot-styles
-                    :accessibility-label dot-accessibility-label}])]))
-
 (defn emoji-chat-icon-view
   [chat-id group-chat name emoji styles]
   [react/view (:container styles)
@@ -91,16 +72,6 @@
        [emoji-chat-icon emoji styles])
      [profile-photo-plus-dot-view {:public-key      chat-id
                                    :photo-container (:default-chat-icon styles)}])])
-
-(defn emoji-chat-icon-view-old
-  [chat-id group-chat name emoji styles]
-  [react/view (:container styles)
-   (if group-chat
-     (if (string/blank? emoji)
-       [default-chat-icon name styles]
-       [emoji-chat-icon emoji styles])
-     [profile-photo-plus-dot-view-old {:public-key      chat-id
-                                       :photo-container (:default-chat-icon styles)}])])
 
 (defn chat-icon-view-toolbar
   [chat-id group-chat name color emoji]
@@ -169,7 +140,7 @@
   (if group-chat
     [default-chat-icon icon-text styles]
     (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
-      (if-not (string/blank? photo-path)
+      (when-not (string/blank? photo-path)
         [photos/photo photo-path styles]))))
 
 (defn emoji-chat-intro-icon-view [icon-text chat-id group-chat emoji styles]
@@ -178,7 +149,7 @@
       [default-chat-icon icon-text styles]
       [emoji-chat-icon emoji styles])
     (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
-      (if-not (string/blank? photo-path)
+      (when-not (string/blank? photo-path)
         [photos/photo photo-path styles]))))
 
 (defn profile-icon-view
@@ -192,10 +163,10 @@
                                                  (styles/emoji-chat-icon-text size))} override-styles)]
     [react/view (:container styles)
      (if (and photo-path (seq photo-path))
-       [profile-photo-plus-dot-view-old {:photo-path      photo-path
-                                         :public-key      public-key
-                                         :photo-container (:container styles)
-                                         :community?      community?}]
+       [profile-photo-plus-dot-view {:photo-path      photo-path
+                                     :public-key      public-key
+                                     :photo-container (:container styles)
+                                     :community?      community?}]
        (if (string/blank? emoji)
          [default-chat-icon name styles]
          [emoji-chat-icon emoji styles]))

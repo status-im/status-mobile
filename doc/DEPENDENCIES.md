@@ -131,9 +131,9 @@ TODO: update once bug is fixed for Android that causes crash when app is back fr
 ## "react-native-shake": "^3.3.1"
 
 used to send email to support when phone is shaked
-## "react-native-splash-screen": "^3.2.0"
+## "react-native-lottie-splash-screen": "^1.0.1"
 
-used to make splash screen during initial loading
+used to make splash screen with lottie animation during initial loading for android, also used as replacement of "react-native-splash-screen" for iOS
 
 ## "react-native-status-keycard": "^2.5.7"
 

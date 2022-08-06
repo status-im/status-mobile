@@ -9,14 +9,19 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.screens.chat.components.style :as styles]
             [re-frame.core :as re-frame]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [quo2.foundations.colors :as quo2.colors :refer [theme-colors]]
+            [quo2.components.button :as quo2.button]
+            [quo2.components.text :as quo2.text]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.constants :as constants]))
 
 (def ^:private reply-symbol "↪ ")
 
 (defn input-focus [text-input-ref]
   (some-> ^js (quo.react/current-ref text-input-ref) .focus))
 
-(defn format-author [contact-name]
+(defn format-author-old [contact-name]
   (let [author (if (or (= (aget contact-name 0) "@")
                        ;; in case of replies
                        (= (aget contact-name 1) "@"))
@@ -25,10 +30,24 @@
                  contact-name)]
     (i18n/label :replying-to {:author author})))
 
-(defn format-reply-author [from username current-public-key]
+(defn format-author [contact-name]
+  (let [author (if (or (= (aget contact-name 0) "@")
+                       ;; in case of replies
+                       (= (aget contact-name 1) "@"))
+                 (or (stateofus/username contact-name)
+                     (subs contact-name 0 81))
+                 contact-name)]
+    author))
+
+(defn format-reply-author-old [from username current-public-key]
   (or (and (= from current-public-key)
            (str reply-symbol (i18n/label :t/You)))
-      (str reply-symbol (format-author username))))
+      (str reply-symbol (format-author-old username))))
+
+(defn format-reply-author [from username current-public-key]
+  (or (and (= from current-public-key)
+           (i18n/label :t/You))
+      (format-author username)))
 
 (defn get-quoted-text-with-mentions [parsed-text]
   (string/join
@@ -47,20 +66,61 @@
              literal))
          parsed-text)))
 
-(defn reply-message [{:keys [from]}]
+(defn reply-message-old [{:keys [from]}]
   (let [contact-name       @(re-frame/subscribe [:contacts/contact-name-by-identity from])
         current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
     [rn/view {:style {:flex-direction :row}}
-     [rn/view {:style (styles/reply-content)}
+     [rn/view {:style (styles/reply-content-old)}
       [quo/text {:weight          :medium
                  :number-of-lines 1
                  :style           {:line-height 18}}
-       (format-reply-author from contact-name current-public-key)]]
+       (format-reply-author-old from contact-name current-public-key)]]
      [rn/view
       [pressable/pressable {:on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
                             :accessibility-label :cancel-message-reply}
        [icons/icon :main-icons/close-circle {:container-style (styles/close-button)
                                              :color (:icon-02 @quo.colors/theme)}]]]]))
+
+(defn reply-message [{:keys [from identicon content-type contentType parsed-text content]} in-chat-input?]
+  (let [contact-name       @(re-frame/subscribe [:contacts/contact-name-by-identity from])
+        current-public-key @(re-frame/subscribe [:multiaccount/public-key])
+        content-type       (or content-type contentType)]
+    [rn/view {:style {:flex-direction :row :height 24}}
+     [rn/view {:style (styles/reply-content)}
+      [icons/icon :main-icons/connector {:color (theme-colors quo2.colors/neutral-40 quo2.colors/neutral-60)
+                                         :container-style {:position :absolute :left 10 :bottom -4 :width 16 :height 16}}]
+      [rn/view {:style {:position :absolute :left 34 :right 54 :top 3 :flex-direction :row :align-items :center}}
+       [photos/member-photo from identicon 16]
+       [quo2.text/text {:weight          :semi-bold
+                        :size            :paragraph-2
+                        :number-of-lines 1
+                        :style           {:margin-left 4}}
+        (format-reply-author from contact-name current-public-key)]
+       [quo2.text/text {:number-of-lines 1
+                        :size            :label
+                        :weight          :regular
+                        :style           (merge {:ellipsize-mode :tail
+                                                 :text-transform :none
+                                                 :margin-left 4
+                                                 :margin-top 2}
+                                                (when (or (= constants/content-type-image content-type)
+                                                          (= constants/content-type-sticker content-type)
+                                                          (= constants/content-type-audio content-type))
+                                                  {:color (theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}))}
+        (case (or content-type contentType)
+          constants/content-type-image "Image"
+          constants/content-type-sticker "Sticker"
+          constants/content-type-audio "Audio"
+          (get-quoted-text-with-mentions (or parsed-text (:parsed-text content))))]]]
+     (when in-chat-input?
+       [quo2.button/button {:width               24
+                            :size 24
+                            :type                :outline
+                            :accessibility-label :reply-cancel-button
+                            :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])}
+        [icons/icon :main-icons/close {:width 16
+                                       :height 16
+                                       :color (theme-colors quo2.colors/black quo2.colors/neutral-40)}]])]))
 
 (defn send-image [images]
   [rn/view {:style (styles/reply-container-image)}
@@ -86,12 +146,27 @@
     (when reply
       (js/setTimeout #(input-focus text-input-ref) 250))))
 
+(defn reply-message-wrapper-old [reply]
+  [rn/view {:style {:padding-horizontal 15
+                    :border-top-width 1
+                    :border-top-color (:ui-01 @quo.colors/theme)
+                    :padding-vertical 8}}
+   [reply-message-old reply]])
+
 (defn reply-message-wrapper [reply]
   [rn/view {:style {:padding-horizontal 15
                     :border-top-width 1
                     :border-top-color (:ui-01 @quo.colors/theme)
                     :padding-vertical 8}}
-   [reply-message reply]])
+   [reply-message reply true]])
+
+(defn reply-message-auto-focus-wrapper-old [text-input-ref]
+  (let [had-reply (atom nil)]
+    (fn []
+      (let [reply @(re-frame/subscribe [:chats/reply-message])]
+        (focus-input-on-reply reply had-reply text-input-ref)
+        (when reply
+          [reply-message-wrapper-old reply])))))
 
 (defn reply-message-auto-focus-wrapper [text-input-ref]
   (let [had-reply (atom nil)]

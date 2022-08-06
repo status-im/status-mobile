@@ -5,7 +5,7 @@ from support.utilities import get_merged_txs_list
 
 from tests import marks, common_password, pin, puk, pair_code
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
-from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten, ens_user
+from tests.users import transaction_senders, basic_user, wallet_users, ens_user_message_sender, ens_user
 from views.sign_in_view import SignInView
 
 
@@ -22,13 +22,14 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in = SignInView(self.drivers[0])
         self.home = self.sign_in.recover_access(self.user['passphrase'])
         self.wallet = self.home.wallet_button.click()
-        self.assets = ('ETH', 'ADI', 'STT')
+        self.assets = ('ETH', 'YEENUS', 'STT')
+        self.token_8_dec = 'YEENUS'
         [self.wallet.wait_balance_is_changed(asset) for asset in self.assets]
         self.initial_balances = dict()
         for asset in self.assets:
             self.initial_balances[asset] = self.wallet.get_asset_amount_by_name(asset)
         self.wallet.send_transaction(amount=self.amount_eth, recipient=self.recipient_address)
-        self.wallet.send_transaction(amount=self.amount_adi, recipient=self.recipient_address, asset_name='ADI')
+        self.wallet.send_transaction(amount=self.amount_adi, recipient=self.recipient_address, asset_name=self.token_8_dec)
 
     @marks.testrail_id(700763)
     def test_send_tx_eth_check_logcat(self):
@@ -44,8 +45,8 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
             self.wallet.driver.fail(values_in_logcat)
 
     @marks.testrail_id(700764)
-    def test_send_tx_token_7_decimals(self):
-        asset = 'ADI'
+    def test_send_tx_token_8_decimals(self):
+        asset = self.token_8_dec
         self.wallet.just_fyi("Checking tx with 7 decimals")
         transaction_adi = self.wallet.find_transaction_in_history(amount=self.amount_adi, asset=asset, return_hash=True)
         self.wallet.wallet_button.double_click()
@@ -102,7 +103,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(700765)
     def test_send_tx_custom_token_18_decimals_invalid_password(self):
-        contract_address, name, symbol, decimals = '0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA', 'Weenus 💪', 'WEENUS', '18'
+        contract_address, name, symbol, decimals = '0xaFF4481D10270F50f203E0763e2597776068CBc5', 'Weenus 💪', 'WEENUS', '18'
         self.home.wallet_button.double_click()
 
         self.wallet.just_fyi("Check that can add custom token")
@@ -154,7 +155,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Tx is not sent!")
         send_tx.ok_button.click()
 
-        # TODO: disabled due to 10838 (rechecked 23.11.21, valid)
+        # TODO: disabled due to 10838 (rechecked 27.07.22, valid)
         # transactions_view = wallet.transaction_history_button.click()
         # transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
         self.errors.verify_no_errors()
@@ -165,8 +166,8 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
         account_name = 'my_acc_name'
         account_address = '0x8c2E3Cd844848E79cFd4671cE45C12F210b630d7'
         recent_add_to_fav_name = 'my_Recent_STT'
-        recent_add_to_fav_address = '0x58d8c3d70ce4fa4b9fb10a665c8712238746f2ff'
-        ens_status, ens_other = ens_user_ropsten, ens_user
+        recent_add_to_fav_address = '0xcf2272205cc0cf96cfbb9dd740bd681d1e86901e'
+        ens_status, ens_other = ens_user_message_sender, ens_user
 
         basic_add_to_fav_name = 'my_basic_address'
         self.drivers[0].reset()
@@ -195,7 +196,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
 
         send_tr.just_fyi('Set one of my accounts')
         send_tr.chose_recipient_button.click_if_shown()
-        send_tr.element_by_translation_id("my-accounts").click()
+        send_tr.element_by_translation_id("my-accounts").scroll_and_click()
         send_tr.element_by_text(account_name).click()
         if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(account_address):
             self.errors.append('Added account is not resolved as recipient')
@@ -203,11 +204,11 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
         send_tr.just_fyi('Set contract address from recent and check smart contract error')
         send_tr.chose_recipient_button.click()
         send_tr.element_by_translation_id("recent").click()
-        send_tr.element_by_text('↓ 1000 MDS').click()
+        send_tr.element_by_text('↑ 0.02 ETHgo').scroll_and_click()
         if not send_tr.element_by_translation_id("warning-sending-to-contract-descr").is_element_displayed():
             self.driver.fail('No warning is shown at attempt to set as recipient smart contract')
         send_tr.ok_button.click()
-        send_tr.element_by_text('↑ 0.001 ETHro').scroll_and_click()
+        send_tr.element_by_text('↓ 2 STT').scroll_and_click()
         send_tr.add_to_favorites(recent_add_to_fav_name)
         wallet.element_by_translation_id("recent").click()
 
@@ -241,7 +242,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append('ENS from contact is not resolved as recipient')
 
         send_tr.just_fyi('Set different ENS options')
-        send_tr.set_recipient_address(ens_other['ens_another'])
+        send_tr.set_recipient_address(ens_other['ens'])
         if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(ens_other['address']):
             self.errors.append('ENS address on another domain is not resolved as recipient')
         send_tr.set_recipient_address('%s.stateofus.eth' % ens_status['ens'])
@@ -277,7 +278,7 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home = self.sign_in.recover_access(passphrase=self.user['passphrase'], keycard=True)
         self.wallet = self.home.wallet_button.click()
-        self.assets = ('ETH', 'ADI', 'STT')
+        self.assets = ('ETH', 'YEENUS', 'STT')
         [self.wallet.wait_balance_is_changed(asset) for asset in self.assets]
         self.initial_balances = dict()
         for asset in self.assets:
@@ -326,6 +327,7 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
         send_tx = status_test_dapp.request_stt_button.click()
         send_tx.sign_transaction(keycard=True)
 
+        send_tx = self.home.get_send_transaction_view()
         self.wallet.just_fyi("Checking signing message")
         status_test_dapp.transactions_button.click()
         status_test_dapp.sign_message_button.click()
@@ -385,14 +387,14 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.just_fyi("Check balance will be restored after going back online")
         self.sign_in.toggle_airplane_mode()
         wallet = self.home.wallet_button.click()
-        [wallet.wait_balance_is_changed(asset) for asset in ("ETH", "LXS")]
+        [wallet.wait_balance_is_changed(asset) for asset in ("ETH", "STT")]
 
         self.wallet.just_fyi("Checking whole tx history after backing from offline")
         self.wallet.accounts_status_account.click()
         address = user['address']
-        ropsten_txs = self.network_api.get_transactions(address)
-        ropsten_tokens = self.network_api.get_token_transactions(address)
-        expected_txs_list = get_merged_txs_list(ropsten_txs, ropsten_tokens)
+        eth_txs = self.network_api.get_transactions(address)
+        token_txs = self.network_api.get_token_transactions(address)
+        expected_txs_list = get_merged_txs_list(eth_txs, token_txs)
         transactions = self.wallet.transaction_history_button.click()
         if self.wallet.element_by_translation_id("transactions-history-empty").is_element_displayed():
             self.wallet.pull_to_refresh()

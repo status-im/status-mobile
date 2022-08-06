@@ -4,7 +4,7 @@ from selenium.common.exceptions import NoSuchElementException
 from tests import marks, test_dapp_url
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from tests.users import dummy_user, transaction_senders, basic_user, \
-    ens_user_ropsten, ens_user
+    ens_user_message_sender, ens_user
 from views.sign_in_view import SignInView
 
 
@@ -22,11 +22,11 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.nickname = 'dummy_user'
         self.search_list_1 = {
             basic_user['username']: basic_user['username'],
-            ens_user_ropsten['username']: ens_user_ropsten['ens'],
+            ens_user_message_sender['username']: ens_user_message_sender['ens'],
             self.public_chat_name: self.public_chat_name,
             self.nickname: self.nickname,
             dummy_user['username']: self.nickname,
-            ens_user_ropsten['ens']: ens_user_ropsten['ens']
+            ens_user_message_sender['ens']: ens_user_message_sender['ens']
         }
         self.public_chat = self.home.join_public_chat(self.public_chat_name)
         self.public_chat.get_back_to_home_view()
@@ -56,7 +56,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702245)
     def test_deep_link_open_user_profile(self):
-        for user_ident in ens_user['ens'], ens_user['ens_another'], ens_user['public_key']:
+        for user_ident in ens_user['ens'], ens_user['ens_upgrade'], ens_user['public_key']:
             self.drivers[0].close_app()
             deep_link = 'status-im://u/%s' % user_ident
             self.sign_in.open_weblink_and_login(deep_link)
@@ -148,8 +148,8 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.public_chat.set_nickname(self.nickname)
         self.public_chat.home_button.click()
 
-        ens_name_status, ens_name_another_domain, public_chat_name = ens_user_ropsten['ens'], \
-                                                                     ens_user['ens_another'], 'some-pub-chat'
+        ens_name_status, ens_name_another_domain, public_chat_name = ens_user_message_sender['ens'], \
+                                                                     ens_user['ens'], 'some-pub-chat'
         search_list_2 = {
             ens_name_status: {
                 'home': {

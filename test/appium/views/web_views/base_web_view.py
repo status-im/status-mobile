@@ -2,6 +2,7 @@ import time
 
 from views.base_element import EditBox, Button, BaseElement
 from views.base_view import BaseView
+from appium.webdriver.common.touch_action import TouchAction
 
 
 class BaseWebView(BaseView):
@@ -86,3 +87,8 @@ class BaseWebView(BaseView):
             bookmark_name = self.bookmark_name_input.text
             self.save_bookmark_button.click()
         return bookmark_name
+
+    def open_right_collapsed_menu(self):
+        # written for status.im
+        size = self.driver.get_window_size()
+        TouchAction(self.driver).tap(None,  size["width"] * 0.92, size["height"] * 0.2, 1).perform()

@@ -1,8 +1,8 @@
 import pytest
 
-from tests import marks
+from tests import marks, test_dapp_url
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
-from tests.users import transaction_senders, basic_user, ens_user_ropsten, ens_user
+from tests.users import transaction_senders, basic_user, ens_user_message_sender, ens_user
 from views.chat_view import ChatView
 from views.profile_view import ProfileView
 from views.send_transaction_view import SendTransactionView
@@ -139,7 +139,7 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
 
         camera_dapp.just_fyi("Relogin and check camera access still needs to be allowed")
         self.home.profile_button.click()
-        profile.relogin()
+        profile.reopen_app()
         self.home.dapp_tab_button.click()
         camera_dapp.open_tabs_button.click()
         dapp.element_by_text_part("https").click()
@@ -155,16 +155,16 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
 
         url_data = {
             'ens_with_stateofus_domain_deep_link': {
-                'url': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_ropsten['ens'],
-                'username': '@%s' % ens_user_ropsten['ens']
+                'url': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_message_sender['ens'],
+                'username': '@%s' % ens_user_message_sender['ens']
             },
             'ens_without_stateofus_domain_deep_link': {
-                'url': 'https://join.status.im/u/%s' % ens_user_ropsten['ens'],
-                'username': '@%s' % ens_user_ropsten['ens']
+                'url': 'https://join.status.im/u/%s' % ens_user_message_sender['ens'],
+                'username': '@%s' % ens_user_message_sender['ens']
             },
             'ens_another_domain_deep_link': {
-                'url': 'status-im://u/%s' % ens_user['ens_another'],
-                'username': '@%s' % ens_user['ens_another']
+                'url': 'status-im://u/%s' % ens_user['ens'],
+                'username': '@%s' % ens_user['ens']
             },
             'own_profile_key_deep_link': {
                 'url': 'https://join.status.im/u/%s' % self.public_key,
@@ -225,8 +225,8 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
 
         url_data = {
             'ens_without_stateofus_domain_deep_link': {
-                'url': 'https://join.status.im/u/%s' % ens_user_ropsten['ens'],
-                'username': '@%s' % ens_user_ropsten['ens']
+                'url': 'https://join.status.im/u/%s' % ens_user_message_sender['ens'],
+                'username': '@%s' % ens_user_message_sender['ens']
             },
 
             'other_user_profile_key_deep_link': {
@@ -245,19 +245,19 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
                 'username': transaction_senders['A']['username']
             },
             'wallet_validation_wrong_address_transaction': {
-                'url': 'ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e@3/transfer?address=blablabla&uint256=1e10',
+                'url': 'ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e@5/transfer?address=blablabla&uint256=1e10',
                 'error': 'Invalid address',
             },
             'wallet_eip_ens_for_receiver': {
-                'url': 'ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=nastya.stateofus.eth&uint256=1e-1',
+                'url': 'ethereum:0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a@5/transfer?address=%s.stateofus.eth&uint256=1e-1' % ens_user_message_sender['ens'],
                 'data': {
                     'asset': 'STT',
                     'amount': '0.1',
-                    'address': '0x58d8…F2ff',
+                    'address': '0x75fF…4184',
                 },
             },
             'wallet_eip_payment_link': {
-                'url': 'ethereum:pay-0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=0x3d597789ea16054a084ac84ce87f50df9198f415&uint256=1e1',
+                'url': 'ethereum:pay-0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a@5/transfer?address=0x3d597789ea16054a084ac84ce87f50df9198f415&uint256=1e1',
                 'data': {
                     'amount': '10',
                     'asset': 'STT',
@@ -265,10 +265,10 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
                 },
             },
             'dapp_deep_link': {
-                'url': 'https://join.status.im/b/simpledapp.eth',
+                'url': 'https://join.status.im/b/%s' % test_dapp_url,
             },
             'dapp_deep_link_https': {
-                'url': 'https://join.status.im/b/https://simpledapp.eth',
+                'url': 'https://join.status.im/b/%s' % test_dapp_url,
             },
             'public_chat_deep_link': {
                 'url': 'https://join.status.im/baga-ma-2020',
@@ -309,8 +309,7 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
                 wallet.home_button.click()
             if 'dapp' in key:
                 self.home.open_in_status_button.click()
-                if not (chat.allow_button.is_element_displayed() or chat.element_by_text(
-                        "Can't find web3 library").is_element_displayed()):
+                if not chat.allow_button.is_element_displayed():
                     self.errors.append('No allow button is shown in case of navigating to Status dapp!')
                 chat.dapp_tab_button.click()
                 chat.home_button.click()
@@ -343,11 +342,11 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
 
         url_data = {
             'ens_for_receiver': {
-                'url': 'ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=nastya.stateofus.eth&uint256=1e-1',
+                'url': 'ethereum:0x3D6AFAA395C31FCd391fE3D562E75fe9E8ec7E6a@5/transfer?address=%s.stateofus.eth&uint256=1e-1' % ens_user_message_sender['ens'],
                 'data': {
                     'asset': 'STT',
                     'amount': '0.1',
-                    'address': '0x58d8…F2ff',
+                    'address': '0x75fF…4184',
                 },
             },
             # 'gas_settings': {
@@ -361,7 +360,7 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
             #     },
             # },
             'payment_link': {
-                'url': 'ethereum:pay-0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=0x3d597789ea16054a084ac84ce87f50df9198f415&uint256=1e1',
+                'url': 'ethereum:pay-0x3D6AFAA395C31FCd391fE3D562E75fe9E8ec7E6a@5/transfer?address=0x3d597789ea16054a084ac84ce87f50df9198f415&uint256=1e1',
                 'data': {
                     'amount': '10',
                     'asset': 'STT',
@@ -369,7 +368,7 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
                 },
             },
             'validation_amount_too_presize': {
-                'url': 'ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA&uint256=1e-19',
+                'url': 'ethereum:0x3D6AFAA395C31FCd391fE3D562E75fe9E8ec7E6a@5/transfer?address=0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA&uint256=1e-19',
                 'data': {
                     'amount': '1e-19',
                     'asset': 'STT',
@@ -379,10 +378,10 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
                 'send_transaction_validation_error': 'Amount is too precise',
             },
             'validation_amount_too_big': {
-                'url': 'ethereum:0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA@3?value=1e25',
+                'url': 'ethereum:0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA@5?value=1e25',
                 'data': {
                     'amount': '10000000',
-                    'asset': 'ETHro',
+                    'asset': 'ETHgo',
                     'address': '0x1018…82FA',
 
                 },
@@ -393,12 +392,12 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
                 'error': 'Network does not match',
                 'data': {
                     'amount': '0.1',
-                    'asset': 'ETHro',
+                    'asset': 'ETHgo',
                     'address': '0x1018…82FA',
                 },
             },
             'validation_wrong_address': {
-                'url': 'ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e@3/transfer?address=blablabla&uint256=1e10',
+                'url': 'ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e@5/transfer?address=blablabla&uint256=1e10',
                 'error': 'Invalid address',
             },
         }

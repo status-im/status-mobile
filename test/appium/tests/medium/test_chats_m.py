@@ -148,7 +148,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.profile_1.bootnodes_button.click()
         self.profile_1.add_bootnode_button.click()
         self.profile_1.specify_name_input.set_value('test')
-        # TODO: blocked as validation is missing for bootnodes (rechecked 23.11.21, valid)
+        # TODO: blocked as validation is missing for bootnodes (rechecked 27.07.22, valid)
         # profile_1.bootnode_address_input.set_value('invalid_bootnode_address')
         # if not profile_1.element_by_text_part('Invalid format').is_element_displayed():
         #      self.errors.append('Validation message about invalid format of bootnode is not shown')
@@ -185,6 +185,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702286)
+    @marks.xfail(reason="flaky; history was not fetched after enabling use_history_node - something needs investigation")
     def test_profile_use_history_node_disable_enable(self):
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
         self.home_1.toggle_airplane_mode()
@@ -224,7 +225,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702287)
-    @marks.xfail(reason="may be failed due to #13333")
+    #@marks.xfail(reason="may be failed due to #13333")
     def test_profile_can_not_connect_to_custom_history_node_add_delete(self):
         self.home_1.profile_button.double_click()
         self.home_2.home_button.double_click()
@@ -715,6 +716,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
             self.errors.append("Nickname is shown in group chat after removing!")
 
         self.errors.verify_no_errors()
+
 
 @pytest.mark.xdist_group(name="one_3")
 @marks.medium

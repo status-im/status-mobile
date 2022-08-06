@@ -10,7 +10,7 @@ function property() {
 }
 
 function gradle_property() {
-    property ${GIT_ROOT}/android/gradle.properties ${1}
+    property "${GIT_ROOT}/android/gradle.properties" ${1}
 }
 
 function env_var_or_gradle_prop() {

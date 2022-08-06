@@ -233,7 +233,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in = SignInView(self.drivers[0])
         self.passphrase = fill_string_with_char(self.user['passphrase'].upper(), ' ', 3, True, True)
         self.password = basic_user['special_chars_password']
-
+        self.assets = ['ETH', 'YEENUS', 'STT']
         self.home = self.sign_in.recover_access(passphrase=self.passphrase, password=self.password)
 
     @marks.testrail_id(700748)
@@ -392,8 +392,8 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Was not redirected to Key management screen when Manage keys from logged in state!")
 
         self.home.just_fyi("Checking keycard banner and starting migrate multiaccount to keycard: no db saved")
-        self.sign_in.close_button.click()
-        self.sign_in.navigate_up_button.click()
+        self.sign_in.close_button.click_if_shown()
+        self.sign_in.navigate_up_button.click_if_shown()
         self.sign_in.multi_account_on_login_button.wait_for_visibility_of_element(30)
         self.sign_in.get_multiaccount_by_position(1).click()
         if not self.sign_in.get_keycard_banner.is_element_displayed():
@@ -443,7 +443,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.sign_in.just_fyi('Check that after migrating account with assets is restored')
         wallet = self.sign_in.wallet_button.click()
-        for asset in ['ETH', 'ADI', 'STT']:
+        for asset in self.assets:
             if wallet.get_asset_amount_by_name(asset) == 0:
                 self.errors.append('Asset %s was not restored' % asset)
 

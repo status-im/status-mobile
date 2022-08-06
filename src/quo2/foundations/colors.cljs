@@ -183,16 +183,6 @@
 (def info-50-opa-30 (alpha info-50 0.3))
 (def info-50-opa-40 (alpha info-50 0.4))
 
-;;;;Switcher
-(def switcher-background "#040B14")
-
-;;switcher-screen with transparency
-(def switcher-background-opa-60 (alpha switcher-background 0.6))
-(def switcher-background-opa-70 (alpha switcher-background 0.7))
-(def switcher-background-opa-80 (alpha switcher-background 0.8))
-(def switcher-background-opa-90 (alpha switcher-background 0.9))
-(def switcher-background-opa-95 (alpha switcher-background 0.95))
-
 ;;General
 
 ;; background
