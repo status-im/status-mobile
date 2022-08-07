@@ -3,7 +3,7 @@
 
 (def haptic-methods
   {:selection            "selection"
-   :impacet-light        "impactLight"
+   :impact-light         "impactLight"
    :impact-medium        "impactMedium"
    :impact-heavy         "impactHeavy"
    :notification-success "notificationSuccess"
