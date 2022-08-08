@@ -1758,5 +1758,7 @@
     "negative": "Negative",
     "positive": "Positive",
     "public": "Public",
-    "link-to-profile": "Link to Profile"
+    "link-to-profile": "Link to Profile",
+    "legacy": "Legacy",
+    "multichain": "Multichain"
 }
