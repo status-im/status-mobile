@@ -350,11 +350,12 @@
                       :active              active-panel
                       :set-active          set-active-panel}])])
 
-(defn chat-toolbar []
-  (let [actions-ref (quo.react/create-ref)
-        send-ref (quo.react/create-ref)
-        sticker-ref (quo.react/create-ref)
-        toolbar-options (re-frame/subscribe [:chats/chat-toolbar])]
+(defn chat-toolbar [{:keys [chat-id]}]
+  (let [actions-ref     (quo.react/create-ref)
+        send-ref        (quo.react/create-ref)
+        sticker-ref     (quo.react/create-ref)
+        toolbar-options (re-frame/subscribe [:chats/chat-toolbar])
+        show-send       (seq (get @input-texts chat-id))]
     (fn [{:keys [active-panel set-active-panel text-input-ref chat-id]}]
       (let [;we want to control components on native level, so instead of RN state we set native props via reference
             ;we don't react on input text in this view, @input-texts below is a regular atom
@@ -363,7 +364,7 @@
                   :sticker-ref    sticker-ref
                   :text-input-ref text-input-ref}
             {:keys [send stickers image extensions audio sending-image]} @toolbar-options
-            show-send (or sending-image (seq (get @input-texts chat-id)))
+            show-send       (or show-send sending-image)
             contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
         [rn/view {:style     (styles/toolbar)
                   :on-layout on-chat-toolbar-layout}

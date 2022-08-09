@@ -45,15 +45,15 @@
                                             my-public-key
                                             can-manage-users?
                                             can-kick-users?]}]
-  (let [member (<sub [:contacts/contact-by-identity public-key])
+  (let [member                   (<sub [:contacts/contact-by-identity public-key])
         [first-name second-name] (<sub [:contacts/contact-two-names-by-identity public-key])]
     [quo/list-item
      {:title               first-name
       :subtitle            second-name
       :accessibility-label :member-item
-      :icon                 [chat-icon/profile-photo-plus-dot-view-old
-                             {:public-key public-key
-                              :photo-path (multiaccounts/displayed-photo member)}]
+      :icon                [chat-icon/profile-photo-plus-dot-view
+                            {:public-key public-key
+                             :photo-path (multiaccounts/displayed-photo member)}]
       :accessory           (when (not= public-key my-public-key)
                              [quo/button {:on-press
                                           #(>evt [:bottom-sheet/show-sheet

@@ -1,10 +1,12 @@
 (ns status-im.switcher.constants
-  (:require [status-im.utils.handlers :refer [<sub]]
+  (:require [quo.react-native :as rn]
+            [status-im.utils.handlers :refer [<sub]]
             [status-im.utils.platform :as platform]))
 
-;; For translucent status bar, dimensions/window also includes status bar's height,
+;; For translucent status bar(android), dimensions/window also includes status bar's height,
 ;; this offset is used for correctly calculating switcher position
-(def switcher-height-offset 24)
+(def switcher-height-offset
+  (if platform/android? (:status-bar-height @rn/navigation-const) 0))
 
 ;; extra height of switcher container for show/peek hidden cards while opening animation
 (def switcher-container-height-padding 100)

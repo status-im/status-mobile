@@ -40,7 +40,8 @@
             [status-im.utils.platform :as platform]
             [status-im.ethereum.tokens :as tokens]
             [clojure.string :as string]
-            [status-im.utils.wallet-connect :as wallet-connect]))
+            [status-im.utils.wallet-connect :as wallet-connect]
+            [status-im.node.core :as node]))
 
 (re-frame/reg-fx
  ::initialize-communities-enabled
@@ -63,7 +64,7 @@
 (re-frame/reg-fx
  ::login
  (fn [[key-uid account-data hashed-password]]
-   (status/login-with-config key-uid account-data hashed-password nil)))
+   (status/login-with-config key-uid account-data hashed-password node/login-node-config)))
 
 (re-frame/reg-fx
  ::export-db
@@ -264,7 +265,7 @@
    [{:method "net_version"
      :on-success
      (fn [fetched-network-id]
-       (when (not= network-id fetched-network-id)
+       (when (not= network-id (str (int fetched-network-id)))
          ;;TODO: this shouldn't happen but in case it does
          ;;we probably want a better error message
          (utils/show-popup

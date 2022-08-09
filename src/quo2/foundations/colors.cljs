@@ -183,6 +183,67 @@
 (def info-50-opa-30 (alpha info-50 0.3))
 (def info-50-opa-40 (alpha info-50 0.4))
 
+;; Customization
+(def purple-50 "#8661C1")
+(def purple-60 "#5E478C")
+(def indigo-50 "#496289")
+(def indigo-60 "#3D5273")
+(def turquoise-50 "#448EA2")
+(def turquoise-60 "#397788")
+(def blue-50 "#4CB4EF")
+(def blue-60 "#4097C9")
+(def green-50 "#5BCC95")
+(def green-60 "#4CAB7D")
+(def yellow-50 "#FFCB53")
+(def yellow-60 "#D6AA46")
+(def orange-50 "#FB8F61")
+(def orange-60 "#D37851")
+(def red-50 "#F46666")
+(def red-60 "#CD565")
+(def pink-50 "#FC7BAB")
+(def pink-60 "#D46790")
+(def brown-50 "#99604D")
+(def brown-60 "#805141")
+(def beige-50 "#CAAE93")
+(def beige-60 "#AA927C")
+
+(def customization
+  {:dark {:purple purple-60
+          :indigo indigo-60
+          :turquoise turquoise-60
+          :blue blue-60
+          :green green-60
+          :yellow yellow-60
+          :orange orange-60
+          :red red-60
+          :pink pink-60
+          :brown brown-60
+          :beige beige-60}
+   :light {:purple purple-50
+           :indigo indigo-50
+           :turquoise turquoise-50
+           :blue blue-50
+           :green green-50
+           :yellow yellow-50
+           :orange orange-50
+           :red red-50
+           :pink pink-50
+           :brown brown-50
+           :beige beige-50}})
+
+(defn custom-color [color theme]
+  (get-in customization [theme color]))
+
+;;;;Switcher
+(def switcher-background "#040B14")
+
+;;switcher-screen with transparency
+(def switcher-background-opa-60 (alpha switcher-background 0.6))
+(def switcher-background-opa-70 (alpha switcher-background 0.7))
+(def switcher-background-opa-80 (alpha switcher-background 0.8))
+(def switcher-background-opa-90 (alpha switcher-background 0.9))
+(def switcher-background-opa-95 (alpha switcher-background 0.95))
+
 ;;General
 
 ;; background

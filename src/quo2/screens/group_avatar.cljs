@@ -1,32 +1,34 @@
-(ns quo2.screens.status-tags
+(ns quo2.screens.group-avatar
   (:require [reagent.core :as reagent]
             [quo.react-native :as rn]
             [quo.previews.preview :as preview]
             [quo2.foundations.colors :as colors]
-            [quo2.components.status-tags :as quo2]))
+            [quo2.components.group-avatar :as quo2]))
 
-(def status-tags-options
-  {:label "Status"
-   :key :status
-   :type :select
-   :options [{:value "Positive"
-              :key :positive}
-             {:value "Negative"
-              :key :negative}
-             {:value "Pending"
-              :key :pending}]})
-
-(def descriptor [status-tags-options
-                 {:label "Size"
+(def descriptor [{:label "Size"
                   :key :size
                   :type :select
-                  :options [{:value "Small"
-                             :key :small}
-                            {:value "Large"
-                             :key :large}]}])
+                  :options [{:key :small
+                             :value "Small"}
+                            {:key :medium
+                             :value "Medium"}
+                            {:key :large
+                             :value "Large"}]}
+                 {:label "Color"
+                  :key   :color
+                  :type  :select
+                  :options
+                  (map
+                   (fn [c]
+                     {:key c
+                      :value c})
+                   (-> colors/customization
+                       :light
+                       keys))}])
 
 (defn cool-preview []
-  (let [state (reagent/atom {:status :positive
+  (let [state (reagent/atom {:theme :light
+                             :color :purple
                              :size :small})]
     (fn []
       [rn/view {:margin-bottom 50
@@ -36,9 +38,9 @@
        [rn/view {:padding-vertical 60
                  :flex-direction   :row
                  :justify-content  :center}
-        [quo2/status-tag @state]]])))
+        [quo2/group-avatar @state]]])))
 
-(defn preview-status-tags []
+(defn preview-group-avatar []
   [rn/view {:background-color (colors/theme-colors colors/white
                                                    colors/neutral-90)
             :flex             1}
