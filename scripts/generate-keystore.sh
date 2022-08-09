@@ -50,4 +50,4 @@ exec keytool -genkey -v \
     -alias "${KEYSTORE_ALIAS}" \
     -storepass "${KEYSTORE_PASSWORD}" \
     -keypass "${KEYSTORE_KEY_PASSWORD}" \
-    > /dev/stderr
+    >&2
