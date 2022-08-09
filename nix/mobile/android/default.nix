@@ -5,14 +5,7 @@ let
   # Import a jsbundle compiled out of clojure codebase
   jsbundle = callPackage ./jsbundle { };
 
-  # Import a patched version of watchman (important for sandboxed builds on macOS)
-  watchmanFactory = callPackage ./watchman.nix { };
-
-  # TARGETS
-  release = callPackage ./release.nix {
-    inherit jsbundle status-go watchmanFactory;
-  };
-
+  release = callPackage ./release.nix { inherit jsbundle status-go; };
 in {
   # TARGETS
   inherit release jsbundle;

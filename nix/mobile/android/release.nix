@@ -1,4 +1,4 @@
-{ stdenv, pkgs, deps, lib, watchmanFactory
+{ stdenv, pkgs, deps, lib
 , androidPkgs, patchMavenSources, jsbundle, status-go }:
 
 {
@@ -6,12 +6,7 @@
   buildEnv ? "prod",
   # Path to the file containing secret environment variables
   secretsFile ? "",
-  # Path to the socket file exposed by an external watchman instance
-  # (workaround needed for building Android on macOS)
-  watchmanSockPath ? "",
 }:
-
-assert (lib.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 
 let
   inherit (lib) toLower optionalString stringLength getConfig makeLibraryPath elem;
@@ -26,8 +21,8 @@ let
   # Used to detect end-to-end builds
   androidAbiInclude = getConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
 
-  envFileName = 
-    if androidAbiInclude == "x86"                  then ".env.e2e" 
+  envFileName =
+    if androidAbiInclude == "x86"                  then ".env.e2e"
     else if (elem buildType ["release" "nightly"]) then ".env.${buildType}"
     else if (elem buildType ["pr" "manual"])       then ".env.jenkins"
     else ".env";
@@ -36,7 +31,6 @@ let
   gradleBuildType = if buildType == "pr" then "Pr" else "Release";
 
   apksPath = "./android/app/build/outputs/apk/${toLower gradleBuildType}";
-  patchedWatchman = watchmanFactory watchmanSockPath;
 
   baseName = "${buildType}-android";
 in stdenv.mkDerivation rec {
@@ -54,15 +48,17 @@ in stdenv.mkDerivation rec {
         "package.json" "yarn.lock" "metro.config.js" ".babelrc"
         "resources/.*" "translations/.*" "src/js/worklet_factory.js"
         "modules/react-native-status/android.*" "android/.*"
-        envFileName "VERSION" ".watchmanconfig"
-        "status-go-version.json" "react-native.config.js"
+        envFileName "VERSION" "status-go-version.json" "react-native.config.js"
       ];
     };
   };
 
   buildInputs = with pkgs; [ nodejs openjdk ];
   nativeBuildInputs = with pkgs; [ bash gradle unzip ]
-    ++ lib.optionals stdenv.isDarwin [ file gnumake patchedWatchman ];
+    ++ lib.optionals stdenv.isDarwin [ file gnumake ];
+
+  # Disable metro watching for file changes. (#13783)
+  CI = true;
 
   # Used by Clojure at compile time to include JS modules
   BUILD_ENV = buildEnv;
@@ -92,8 +88,8 @@ in stdenv.mkDerivation rec {
     # Ensure we have the right .env file
     cp -bf ./${envFileName} ./.env
 
-    # Export all vars from .env file 
-    export $(cut -d= -f1 .env)   
+    # Export all vars from .env file
+    export $(cut -d= -f1 .env)
 
     # Copy index.js and app/ input files
     cp -ra --no-preserve=ownership ${builtJsBundle}/* ./
@@ -121,7 +117,7 @@ in stdenv.mkDerivation rec {
   buildPhase = let
     adhocEnvVars = optionalString stdenv.isLinux
       "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${makeLibraryPath [ pkgs.zlib ]}";
-  in 
+  in
     assert ANDROID_ABI_SPLIT != null && ANDROID_ABI_SPLIT != "";
     assert stringLength ANDROID_ABI_INCLUDE > 0;
   ''

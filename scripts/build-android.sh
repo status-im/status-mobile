@@ -47,24 +47,17 @@ if [[ -n "${OPENSEA_API_KEY}" ]]; then append_env_export 'OPENSEA_API_KEY'; fi
 if [[ -s "${SECRETS_FILE_PATH}" ]]; then
   nixOpts+=("--argstr" "secretsFile" "${SECRETS_FILE_PATH}")
 fi
+nixOpts+=("--option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH}")
 
 # Used by Clojure at compile time to include JS modules
 nixOpts+=("--argstr" "buildEnv" "$(must_get_env BUILD_ENV)")
 
+# On Darwin we hit a sandbox serialization limit of 65535.
+# https://github.com/NixOS/nix/issues/4119
 if [[ "$(uname -s)" =~ Darwin ]]; then
-  # Start a watchman instance if not started already and store its socket path.
-  # In order to get access to the right versions of watchman and jq,
-  # we start an ad-hoc nix-shell that imports the packages from nix/nixpkgs-bootstrap.
-  WATCHMAN_SOCKFILE=$(watchman get-sockname --no-pretty | jq -r .sockname)
-  nixOpts+=(
-    "--argstr" "watchmanSockPath" "${WATCHMAN_SOCKFILE}"
-    "--option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH} ${WATCHMAN_SOCKFILE}"
-  )
+  nixOpts+=("--option" "build-use-sandbox" "false")
 else
-  nixOpts+=(
-    "--option" "build-use-sandbox" "true"
-    "--option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH}"
-  )
+  nixOpts+=("--option" "build-use-sandbox" "true")
 fi
 
 nixOpts+=("--arg" "config" "{${config}}")
