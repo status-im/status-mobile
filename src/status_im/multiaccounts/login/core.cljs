@@ -25,6 +25,7 @@
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
+            [status-im.wallet-connect-legacy.core :as wallet-connect-legacy]
             [status-im.wallet.prices :as prices]
             [taoensso.timbre :as log]
             [status-im.data-store.invitations :as data-store.invitations]
@@ -169,7 +170,8 @@
      (transactions/get-fetched-transfers))
    (when (ethereum/binance-chain? db)
      (wallet/request-current-block-update))
-   (prices/update-prices)))
+   (prices/update-prices)
+   (wallet-connect-legacy/get-connector-session-from-db)))
 
 (fx/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
@@ -330,6 +332,7 @@
                           favourites)))
        (.catch (fn [_]
                  (log/error "Failed to initialize wallet"))))))
+
 
 (fx/defn initialize-browser [_]
   {::json-rpc/call
@@ -753,3 +756,18 @@
   [{:keys [db]}]
   {::async-storage/set! {:new-terms-of-service-accepted true}
    :db                  (assoc db :tos/accepted? true)})
+
+;(fx/defn sync-app-db-with-wc-sessions
+;  {:events [:sync-wallet-connect-app-sessions]}
+;  [ {:keys [db]} session-data]
+;  (let [js-connector-object  (.parse js/JSON session-data)]
+;    {:db (assoc db :wallet-connect/session-connected js-connector-object)}))
+;
+;(fx/defn get-connector-session-from-db
+;  {:events [:get-connector-session-from-db]}
+;  [_]
+;  (log/debug "json rpc call initiated for wakuext_getWalletConnectSession")
+;  {::json-rpc/call [{:method     "wakuext_getWalletConnectSession"
+;                     :on-success #(re-frame/dispatch [:sync-wallet-connect-app-sessions %])
+;                     :on-error #(log/debug "wakuext_getWalletConnectSession error call back , data ===>" %)}]
+;   })
