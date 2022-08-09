@@ -41,7 +41,7 @@
 
 (defn message-timestamp-text []
   (merge message-timestamp
-         {:color       colors/gray
+         {:color      quo2.colors/neutral-50
           :text-align :center}))
 
 (defn message-status-text []
@@ -64,8 +64,7 @@
 (defn message-author-wrapper []
   {:flex-direction :column
    :flex-shrink 1
-   :align-items :flex-start
-   :margin-left 4})
+   :align-items :flex-start})
 
 (defn delivery-status []
   {:align-self    :flex-start
@@ -121,14 +120,14 @@
   {:margin-left 5})
 
 (def message-author-touchable
-  {:margin-left    0
+  {:margin-top     -2
    :flex-direction :row})
 
 (defn message-author-userpic []
   (merge
-   {:width      (+ 16 photos/default-size)} ;; 16 is for the padding
-   {:padding-left 8
-    :padding-right      8}))
+   {:width      (+ 14 photos/default-size)} ;; 16 is for the padding
+   {:padding-left 10
+    :padding-right 8}))
 
 (def delivery-text
   {:color       colors/gray

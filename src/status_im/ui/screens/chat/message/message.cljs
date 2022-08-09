@@ -306,7 +306,7 @@
        (when (or (and (seq response-to) (:quoted-message message)) last-in-group?)
          [react/touchable-highlight {:on-press #(do (when modal (close-modal))
                                                     (re-frame/dispatch [:chat.ui/show-profile from]))}
-          [photos/member-photo from identicon]])]
+          [photos/member-photo from identicon 32]])]
       [react/view {:style (style/message-author-wrapper)}
        (when (or (and (seq response-to) (:quoted-message message)) last-in-group?)
          [react/view {:style {:flex-direction :row :align-items :center}}
@@ -314,14 +314,8 @@
                                     :disabled in-popover?
                                     :on-press #(do (when modal (close-modal))
                                                    (re-frame/dispatch [:chat.ui/show-profile from]))}
-           [message-author-name from {:modal modal}]]
-          [react/text
-           {:style               (merge
-                                  {:padding-left 5
-                                   :margin-top 2}
-                                  (style/message-timestamp-text))
-            :accessibility-label :message-timestamp}
-           timestamp-str]])
+           [message-author-name from {:modal modal
+                                      :timestamp-str? timestamp-str}]]])
      ;;MESSAGE CONTENT
        content
        [link-preview/link-preview-wrapper (:links (:content message)) false false]]]

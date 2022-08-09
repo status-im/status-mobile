@@ -3,7 +3,11 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [quo.design-system.colors :as colors]
-            [status-im.multiaccounts.core :as multiaccounts]))
+            [status-im.multiaccounts.core :as multiaccounts]
+            [quo2.components.text :as quo2.text]
+            [status-im.utils.utils :as utils]
+            [quo2.foundations.colors :as quo2.colors :refer [theme-colors]]
+            [re-frame.core :as re-frame]))
 
 (def ^:private reply-symbol "↪ ")
 
@@ -33,29 +37,87 @@
 
 (defn format-author
   ([contact] (format-author contact nil))
-  ([{:keys [names] :as contact} {:keys [modal profile? you?]}]
+  ([{:keys [names public-key] :as contact} {:keys [modal timestamp-str? profile? you?]}]
    (let [{:keys [nickname ens-name]} names
-         [first-name second-name] (multiaccounts/contact-two-names contact false)]
+         [first-name second-name] (multiaccounts/contact-two-names contact false)
+         short-public-key (utils/get-shortened-address public-key)
+         window-width @(re-frame/subscribe [:dimensions/window-width])]
+     (println window-width "DSFDFSFSDFS")
      (if (or nickname ens-name)
-       [react/nested-text {:number-of-lines 2
-                           :style           {:color       (if modal colors/white-persist colors/black)
-                                             :font-size   (if profile? 15 13)
-                                             :line-height (if profile? 22 18)
-                                             :letter-spacing -0.2
-                                             :font-weight "600"}}
-        (subs first-name 0 81)
+       [react/view {:style {:number-of-lines 1
+                            :flex-direction :row
+                            :align-items :flex-end
+                            :flex 1}}
+        [quo2.text/text {:number-of-lines 1
+                         :style           {:color       (if modal colors/white-persist colors/black)
+                                           :font-size   (if profile? 15 13)
+                                           :line-height (if profile? 22 18)
+                                           :letter-spacing -0.2
+                                           :max-width "30%"
+                                           :font-weight "600"
+                                           :number-of-lines 1}}
+         (str first-name)]
         (when you?
-          [{:style {:color colors/black-light :font-weight "500" :font-size 13}}
-           (str " " (i18n/label :t/You))])
+          [quo2.text/text {:weight :regular
+                           :size :label
+                           :style {:color (theme-colors quo2.colors/neutral-60 quo2.colors/neutral-40)
+                                   :text-transform :none}}
+           (str " · " (i18n/label :t/You))])
         (when nickname
-          [{:style {:color colors/black-light :font-weight "500"}}
-           (str " " (subs second-name 0 81))])]
-       [react/text {:style {:color       (if modal colors/white-persist colors/black)
-                            :font-size   (if profile? 15 13)
-                            :line-height (if profile? 22 18)
-                            :font-weight "600"
-                            :letter-spacing -0.2}}
-        first-name]))))
+          [quo2.text/text {:weight :regular
+                           :size :label
+                           :number-of-lines 1
+                           :style {:text-transform :none
+                                   :max-width "30%"
+                                   :number-of-lines 1
+                                   :color (theme-colors quo2.colors/neutral-60 quo2.colors/neutral-40)}}
+           (str " · " second-name "  ")])
+        (when nickname
+          [quo2.text/text
+           {:size :label
+            :weight :regular
+            :monospace true
+            :number-of-lines 1
+            :style {:text-transform :none
+                    :margin-left 8
+                    :max-width "30%"
+                    :number-of-lines 1
+                    :color quo2.colors/neutral-50}}
+           short-public-key])
+        (when timestamp-str?
+          [quo2.text/text
+           {:size :label
+            :weight :regular
+            :number-of-lines 1
+            :style {:text-transform :none
+                    :color quo2.colors/neutral-50}
+            :accessibility-label :message-timestamp}
+           (str " · " timestamp-str?)])]
+       [react/text-class {:style {:flex-direction :row
+                                  :align-items :flex-end
+                                  :max-width 342}}
+        [quo2.text/text {:number-of-lines 1
+                         :size (if profile? :paragraph-1 :paragraph-2)
+                         :weight :semi-bold
+                         :style {:color (if modal colors/white-persist colors/black)}}
+         (str (subs first-name 0 24) (when (> (count first-name) 24) "..."))]
+        [quo2.text/text
+         {:size :label
+          :weight :regular
+          :monospace true
+          :style {:text-transform :none
+                  :margin-left 8
+                  :color quo2.colors/neutral-50}}
+         (str "  " short-public-key)]
+        (when timestamp-str?
+          [quo2.text/text
+           {:size :label
+            :weight :regular
+            :number-of-lines 1
+            :style {:text-transform :none
+                    :color quo2.colors/neutral-50}
+            :accessibility-label :message-timestamp}
+           (str " · " timestamp-str?)])]))))
 
 (defn format-reply-author [from username current-public-key style outgoing]
   (let [contact-name (str reply-symbol username)]
