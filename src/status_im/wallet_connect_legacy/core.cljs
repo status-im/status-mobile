@@ -13,9 +13,13 @@
 (re-frame/reg-fx
  :wc-1-subscribe-to-events
  (fn [^js connector]
-   (log/debug "I was called wc-1-subscribe-to-events " (.keys js/Object  (connector))
    (.on connector "session_request"  (fn [_ payload]
-                                      (re-frame/dispatch [:wallet-connect-legacy/proposal payload connector])))
+                                       (re-frame/dispatch [:wallet-connect-legacy/proposal payload connector])))
+   (.on connector "disconnect" (fn [err payload]
+                                 (log/info "DISCON" payload)
+                                 (if err
+                                   (log/error "wallet connect error" err)
+                                   (log/info "wallet connect disconnect" payload))))
    (.on connector "connect" (fn [_ payload]
                               (re-frame/dispatch [:wallet-connect-legacy/created payload])))
    (.on connector "call_request" (fn [_ payload]
@@ -41,8 +45,7 @@
 (re-frame/reg-fx
  :wc-1-kill-session
  (fn [^js connector]
-   (.killSession connector))
- )
+   (.killSession connector)))
 
 (re-frame/reg-fx
  :wc-1-approve-request
@@ -68,27 +71,20 @@
   (let [connector (get db :wallet-connect-legacy/proposal-connector)
         _ (js-delete connector "_transport") ;; we remove the nonsense key which causes cyclic dependencies
         only-session-strinigified (.stringify js/JSON session)
-        session (merge (types/js->clj session) {:wc-version constants/wallet-connect-version-1
-                                                :connector connector})
+        session (merge (types/js->clj session) {:wc-version constants/wallet-connect-version-1 :connector connector})
         params (first (:params session))
         metadata (:peerMeta params)
         account (first (:accounts params))
         sessions (get db :wallet-connect-legacy/sessions)
         updated-sessions (if sessions (conj sessions session) [session])
-        connector-stringified (.stringify js/JSON connector)
-        peer-id (get-in session [:params 0 :peerId])
-        scanned-uri (get db :wallet-connect-legacy/scanned-uri)
-        ]
-;    (log/debug "keys of connector at session-connected ====>"(.keys js/Object connector))
-;    (log/debug "[wallet connect 1.0] session created - " (.stringify js/JSON session))
-    (log/debug "[wallet connect 1.0] only-session-strinigified - " (.stringify js/JSON only-session-strinigified))
+        connector-stringified (.stringify js/JSON (.-session connector))
+        peer-id (get-in session [:params 0 :peerId])]
     {:show-wallet-connect-success-sheet nil
      :db (assoc db :wallet-connect/session-connected session :wallet-connect-legacy/sessions updated-sessions)
      ::json-rpc/call [{:method     "wakuext_addWalletConnectSession"
-                       :params     [peer-id scanned-uri only-session-strinigified]
+                       :params     [peer-id connector-stringified only-session-strinigified]
                        :on-success #(log/debug "wakuext_addWalletConnectSession success call back , data =>" %)
-                       :on-error   #(log/debug "wakuext_addWalletConnectSession error call back , data =>" %)}]
-     }))
+                       :on-error   #(log/debug "wakuext_addWalletConnectSession error call back , data =>" %)}]}))
 
 (fx/defn manage-app
   {:events [:wallet-connect-legacy/manage-app]}
@@ -149,21 +145,17 @@
   (let [sessions (get db :wallet-connect-legacy/sessions)
         connector (:connector session)
         peer-id (get-in sessions [:params 0 :peerId])]
-
     {:hide-wallet-connect-app-management-sheet nil
      :hide-wallet-connect-success-sheet nil
-;     :wc-1-kill-session connector ;; removin to debug
+     :wc-1-kill-session connector
      :db (-> db
              (assoc :wallet-connect-legacy/sessions (filter #(not= (:connector %) connector) sessions))
              (dissoc :wallet-connect/session-managed)
-             (dissoc :wallet-connect/session-connected)
-             )
+             (dissoc :wallet-connect/session-connected))
      ::json-rpc/call [{:method     "wakuext_destroyWalletConnectSession"
                        :params     [peer-id]
                        :on-success #(log/debug "wakuext_destroyWalletConnectSession success call back , data ===>" %)
-                       :on-error   #(log/debug "wakuext_destroyWalletConnectSession error call back , data ===>" %)}]
-
-     }))
+                       :on-error   #(log/debug "wakuext_destroyWalletConnectSession error call back , data ===>" %)}]}))
 
 (fx/defn pair-session
   {:events [:wallet-connect-legacy/pair]}
@@ -241,32 +233,21 @@
 
 (fx/defn sync-app-db-with-wc-sessions
   {:events [:sync-wallet-connect-app-sessions]}
-  [ {:keys [db]} session-data]
-;  (log/debug "Data received at sync-app-db-with-wc-sessions ======> " session-data)
-;  (log/debug "SizeOf received at sync-app-db-with-wc-sessions ======> " (count session-data))
-  (let [ connector-old (get session-data :connector-info) ;; uri
-;         js-connector-object (if (> (count connector-old) 0) (.parse js/JSON connector-old) "")
-         session (get session-data :session-info)
-;         session-object (if (> (count session) 0) (.parse js/JSON session) "")
-;         update-db? (and (> (count session) 0) (> (count connector-old) 0) )
-         connector (wallet-connect-legacy/create-connector connector-old)
-;         session-clj (assoc (types/js->clj session-object) :wc-version constants/wallet-connect-version-1 :connector connector) ;;This is how it is supposed to work
+  [{:keys [db]} session-data]
+  (let [connector-string (get session-data :connector-info)
+        js-connector-object (if (> (count connector-string) 0) (.parse js/JSON connector-string) "")
+        connector (wallet-connect-legacy/create-connector-from-session js-connector-object)
+        session-string (get session-data :session-info)
+        js-session-object (if (> (count session-string) 0) (.parse js/JSON session-string) "")
+        session-clj (merge (types/js->clj js-session-object) {:wc-version constants/wallet-connect-version-1 :connector connector}) ;;This is how it is supposed to work
         ]
-    (log/debug "session-data uri string ---->" connector-old)
-;    (log/debug "js-session-object string ---->" session)
-;    gotta figure out how not to run this when there is nil data
     {:wc-1-subscribe-to-events connector
-     :db (assoc db :wallet-connect-legacy/proposal-connector connector
-;                :wallet-connect/session-connected session-clj :wallet-connect-legacy/sessions [session-clj]
-                )}
-   )
-  )
+     :db (assoc db :wallet-connect/session-connected session-clj :wallet-connect-legacy/sessions [session-clj])}))
 
 (fx/defn get-connector-session-from-db
   {:events [:get-connector-session-from-db]}
   [_]
   (log/debug "json rpc call initiated for wakuext_getWalletConnectSession")
   {::json-rpc/call [{:method     "wakuext_getWalletConnectSession"
-                     :on-success #(re-frame/dispatch [:sync-wallet-connect-app-sessions % ])
-                     :on-error #(log/debug "wakuext_getWalletConnectSession error call back , data ===>" %)}]
-   })
+                     :on-success #(re-frame/dispatch [:sync-wallet-connect-app-sessions %])
+                     :on-error #(log/debug "wakuext_getWalletConnectSession error call back , data ===>" %)}]})

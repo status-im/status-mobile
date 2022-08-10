@@ -333,7 +333,6 @@
        (.catch (fn [_]
                  (log/error "Failed to initialize wallet"))))))
 
-
 (fx/defn initialize-browser [_]
   {::json-rpc/call
    [{:method     "browsers_getBrowsers"
