@@ -35,6 +35,7 @@
 (def ^:const timeline-chat-type 5)
 (def ^:const community-chat-type 6)
 
+(def ^:const contact-request-message-state-none 0)
 (def ^:const contact-request-message-state-pending 1)
 (def ^:const contact-request-message-state-accepted 2)
 (def ^:const contact-request-message-state-declined 3)

@@ -1928,19 +1928,25 @@
 (re-frame/reg-sub
  :activity.center/notifications-grouped-by-date
  :<- [:activity.center/notifications]
- (fn [{:keys [notifications]}]
+ :<- [:contacts/contacts]
+ (fn [[{:keys [notifications]} contacts]]
    (let [supported-notifications
-         (filter (fn [{:keys [type last-message]}]
+         (filter (fn [{:keys [type last-message message]}]
                    (or (and (= constants/activity-center-notification-type-one-to-one-chat type)
                             (not (nil? last-message)))
-                       (= constants/activity-center-notification-type-contact-request type)
+                       (and (= constants/activity-center-notification-type-contact-request type)
+                            (not= constants/contact-request-message-state-none
+                                  (-> contacts
+                                      (multiaccounts/contact-by-identity (:from message))
+                                      :contact-request-state)))
                        (= constants/activity-center-notification-type-contact-request-retracted type)
                        (= constants/activity-center-notification-type-private-group-chat type)
                        (= constants/activity-center-notification-type-reply type)
                        (= constants/activity-center-notification-type-mention type)))
                  notifications)]
      (group-notifications-by-date
-      (map #(assoc % :timestamp (or (:timestamp %) (:timestamp (or (:message %) (:last-message %)))))
+      (map #(assoc % :timestamp (or (:timestamp %) (:timestamp (or (:message %) (:last-message %))))
+                   :contact (multiaccounts/contact-by-identity contacts (get-in % [:message :from])))
            supported-notifications)))))
 
 ;;WALLET TRANSACTIONS ==================================================================================================

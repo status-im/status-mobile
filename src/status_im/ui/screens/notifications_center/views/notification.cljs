@@ -132,4 +132,5 @@
           constants/contact-request-message-state-declined
           [quo/text {:style {:color colors/red}} (i18n/label :t/declined)]
           constants/contact-request-message-state-pending
-          [contact-request-actions (:message-id message)])])]))
+          [contact-request-actions (:message-id message)]
+          nil)])]))
