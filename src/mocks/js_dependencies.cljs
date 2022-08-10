@@ -137,6 +137,7 @@
                                                    :setRoot identity
                                                    :dismissOverlay #(js/Promise.resolve)
                                                    :setLazyComponentRegistrator identity
+                                                   :pop identity
                                                    :push identity
                                                    :registerComponent identity
                                                    :events

@@ -5,9 +5,12 @@
             status-im.events
             [status-im.multiaccounts.logout.core :as logout]
             [status-im.transport.core :as transport]
+            ;; status-im.subs ;;so integration tests can run independently
             [status-im.utils.test :as utils.test]))
 
 (def password "testabc")
+
+(def community {:membership 1 :name "foo" :description "bar"})
 
 (utils.test/init!)
 
@@ -48,6 +51,9 @@
 (defn assert-multiaccount-loaded []
   (is (false? @(rf/subscribe [:multiaccounts/loading]))))
 
+(defn assert-community-created []
+  (is (= @(rf/subscribe [:communities/create]) community)))
+
 (defn logout! []
   (rf/dispatch [:logout]))
 
@@ -68,24 +74,29 @@
       (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an inconsistent state between tests
                         (assert-logout)))))))
 
-;; This test is only to make sure running multiple integration tests doesn't hang
-;; can be removed as soon as another test is added
-(deftest create-account-test-safety-check
+(deftest create-community-test
   (rf-test/run-test-async
    (initialize-app!) ; initialize app
    (rf-test/wait-for
-    [:status-im.init.core/initialize-multiaccounts] ; wait so we load accounts.db
-    (generate-and-derive-addresses!) ; generate 5 new keys
+    [:status-im.init.core/initialize-multiaccounts]
+    (generate-and-derive-addresses!) ; generate 5 new keys      
     (rf-test/wait-for
-     [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
+     [:multiaccount-generate-and-derive-addresses-success]
      (assert-multiaccount-loaded) ; assert keys are generated
      (create-multiaccount!) ; create a multiaccount
      (rf-test/wait-for ; wait for login
       [::transport/messenger-started]
       (assert-messenger-started)
-      (logout!)
-      (rf-test/wait-for [::logout/logout-method]
-                        (assert-logout)))))))
+      (rf/dispatch-sync [:status-im.communities.core/open-create-community])
+      (doseq [[k v] (dissoc community :membership)]
+        (rf/dispatch-sync [:status-im.communities.core/create-field k v]))
+      (rf/dispatch [:status-im.communities.core/create-confirmation-pressed])
+      (rf-test/wait-for
+       [:status-im.communities.core/community-created]
+       (assert-community-created)
+       (logout!)
+       (rf-test/wait-for [::logout/logout-method]
+                         (assert-logout))))))))
 
 (comment
   (run-tests))
