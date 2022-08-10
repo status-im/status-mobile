@@ -755,18 +755,3 @@
   [{:keys [db]}]
   {::async-storage/set! {:new-terms-of-service-accepted true}
    :db                  (assoc db :tos/accepted? true)})
-
-;(fx/defn sync-app-db-with-wc-sessions
-;  {:events [:sync-wallet-connect-app-sessions]}
-;  [ {:keys [db]} session-data]
-;  (let [js-connector-object  (.parse js/JSON session-data)]
-;    {:db (assoc db :wallet-connect/session-connected js-connector-object)}))
-;
-;(fx/defn get-connector-session-from-db
-;  {:events [:get-connector-session-from-db]}
-;  [_]
-;  (log/debug "json rpc call initiated for wakuext_getWalletConnectSession")
-;  {::json-rpc/call [{:method     "wakuext_getWalletConnectSession"
-;                     :on-success #(re-frame/dispatch [:sync-wallet-connect-app-sessions %])
-;                     :on-error #(log/debug "wakuext_getWalletConnectSession error call back , data ===>" %)}]
-;   })

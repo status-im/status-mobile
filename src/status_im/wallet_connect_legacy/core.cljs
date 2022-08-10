@@ -69,7 +69,6 @@
   {:events [:wallet-connect-legacy/created]}
   [{:keys [db]} session]
   (let [connector (get db :wallet-connect-legacy/proposal-connector)
-        _ (js-delete connector "_transport") ;; we remove the nonsense key which causes cyclic dependencies
         only-session-strinigified (.stringify js/JSON session)
         session (merge (types/js->clj session) {:wc-version constants/wallet-connect-version-1 :connector connector})
         params (first (:params session))
@@ -239,8 +238,7 @@
         connector (wallet-connect-legacy/create-connector-from-session js-connector-object)
         session-string (get session-data :session-info)
         js-session-object (if (> (count session-string) 0) (.parse js/JSON session-string) "")
-        session-clj (merge (types/js->clj js-session-object) {:wc-version constants/wallet-connect-version-1 :connector connector}) ;;This is how it is supposed to work
-        ]
+        session-clj (merge (types/js->clj js-session-object) {:wc-version constants/wallet-connect-version-1 :connector connector})]
     {:wc-1-subscribe-to-events connector
      :db (assoc db :wallet-connect/session-connected session-clj :wallet-connect-legacy/sessions [session-clj])}))
 
