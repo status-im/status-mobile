@@ -100,6 +100,8 @@
                                           :clearInterval js/clearInterval}}))
 
 (def keychain #js {:setGenericPassword (constantly (.resolve js/Promise true))
+                   :setInternetCredentials #(js/Promise.resolve)
+                   :resetInternetCredentials #(js/Promise.resolve)
                    "ACCESSIBLE" {}
                    "ACCESS_CONTROL" {}})
 
@@ -133,6 +135,7 @@
 (def react-native-navigation #js {:Navigation #js {:constants (fn [] #js {:then identity})
                                                    :setDefaultOptions identity
                                                    :setRoot identity
+                                                   :dismissOverlay #(js/Promise.resolve)
                                                    :setLazyComponentRegistrator identity
                                                    :push identity
                                                    :registerComponent identity
@@ -238,7 +241,7 @@
 
 (def react-native-permissions #js {:default #js {}})
 
-(def push-notification-ios #js {})
+(def push-notification-ios #js {:default #js {:abandonPermissions identity}})
 
 (def rn-emoji-keyboard
   #js {:EmojiKeyboard #js {}})

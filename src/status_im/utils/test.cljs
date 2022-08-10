@@ -41,6 +41,8 @@
                                     config
                                     accounts-data))
 
+            :logout (fn []
+                      (.logout native-status))
             :generateAliasAndIdenticonAsync (fn [seed callback]
                                               (let [generated-identicon (.identicon native-status seed)
                                                     generated-alias (.generateAlias native-status seed)]
