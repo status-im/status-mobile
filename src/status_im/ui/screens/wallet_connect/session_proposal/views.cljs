@@ -81,7 +81,8 @@
           {:keys [peerMeta]} (first params)
           {:keys [accounts]} (if (= wc-version constants/wallet-connect-version-1) (first params) state)
           {:keys [name icons]} (if (= wc-version constants/wallet-connect-version-1) peerMeta metadata)
-          icon-uri (when (and icons (pos? (count icons))) (first icons))
+          filtered-icons (status-im.utils.utils/exclude-svg-resources icons)
+          icon-uri (when (and filtered-icons (pos? (count filtered-icons))) (first filtered-icons))
           address (if (= wc-version constants/wallet-connect-version-1) (first accounts) (last (string/split (first accounts) #":")))
           account (first (filter #(= (:address %) address) visible-accounts))
           selected-account-atom (reagent/atom account)]
@@ -137,7 +138,8 @@
           {:keys [peerMeta]} (first params)
           {:keys [accounts]} (if (= wc-version constants/wallet-connect-version-1) (first params) state)
           {:keys [name icons url]} (if (= wc-version constants/wallet-connect-version-1) peerMeta metadata)
-          icon-uri (when (and icons (pos? (count icons))) (first icons))
+          filtered-icons (status-im.utils.utils/exclude-svg-resources icons)
+          icon-uri (when (and filtered-icons (pos? (count filtered-icons))) (first filtered-icons))
           address (if (= wc-version constants/wallet-connect-version-1) (first accounts) (last (string/split (first accounts) #":")))
           account (first (filter #(= (:address %) address) visible-accounts))
           selected-account-atom (reagent/atom account)]
@@ -167,7 +169,8 @@
 (defview session-proposal-sheet [{:keys [name icons wc-version]}]
   (letsubs [visible-accounts [:visible-accounts-without-watch-only]
             dapps-account [:dapps-account]]
-    (let [icon-uri (when (and icons (> (count icons) 0)) (first icons))
+    (let [filtered-icons (status-im.utils.utils/exclude-svg-resources icons)
+                icon-uri (when (and filtered-icons (> (count filtered-icons) 0)) (first filtered-icons))
           selected-account-atom (reagent/atom dapps-account)]
       [react/view (styles/proposal-sheet-container)
        [react/view (styles/proposal-sheet-header)
