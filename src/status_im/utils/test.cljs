@@ -66,35 +66,10 @@
                                          native-status
                                          json)))
             :multiAccountDeriveAddresses (fn [json callback]
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 0f2334617 (Fix indentation)
-=======
->>>>>>> 0f2334617 (Fix indentation)
                                            (callback
                                             (.multiAccountDeriveAddresses
                                              native-status
                                              json)))
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 94f73d267 ([#13791] Extend integration tests to create a new wallet account)
-                                       (callback
-                                        (.multiAccountDeriveAddresses
-                                         native-status
-                                         json)))
-<<<<<<< HEAD
->>>>>>> 94f73d267 ([#13791] Extend integration tests to create a new wallet account)
-=======
->>>>>>> 0f2334617 (Fix indentation)
-=======
->>>>>>> 94f73d267 ([#13791] Extend integration tests to create a new wallet account)
-=======
->>>>>>> 0f2334617 (Fix indentation)
             :initKeystore (fn [key-uid callback]
                             (callback
                              (.initKeystore
