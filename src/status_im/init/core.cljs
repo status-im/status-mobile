@@ -57,7 +57,8 @@
                              (assoc :multiaccounts/logout? logout?)
                              (assoc :multiaccounts/loading false))
                :dispatch-n [[::initialize-view]
-                            [:get-opted-in-to-new-terms-of-service]]})))
+                            [:get-opted-in-to-new-terms-of-service]
+                            [:load-information-box-states]]})))
 
 (fx/defn start-app
   {:events [:init/app-started]}
