@@ -170,7 +170,7 @@
   (letsubs [visible-accounts [:visible-accounts-without-watch-only]
             dapps-account [:dapps-account]]
     (let [filtered-icons (status-im.utils.utils/exclude-svg-resources icons)
-                icon-uri (when (and filtered-icons (> (count filtered-icons) 0)) (first filtered-icons))
+          icon-uri (when (and filtered-icons (> (count filtered-icons) 0)) (first filtered-icons))
           selected-account-atom (reagent/atom dapps-account)]
       [react/view (styles/proposal-sheet-container)
        [react/view (styles/proposal-sheet-header)

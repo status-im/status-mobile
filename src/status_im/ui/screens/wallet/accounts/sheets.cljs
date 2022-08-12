@@ -39,6 +39,14 @@
 
        [quo/list-item
         {:theme               :accent
+         :title               "Show all connections"
+         :icon                :main-icons/two-arrows
+         :accessibility-label :show-all-connections
+         :on-press            #(hide-sheet-and-dispatch
+                                [:navigate-to :show-all-connections])}]
+
+       [quo/list-item
+        {:theme               :accent
          :title               (i18n/label :t/scan-tokens)
          :icon                :main-icons/refresh
          :accessibility-label :wallet-scan-token

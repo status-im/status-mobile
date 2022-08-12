@@ -133,9 +133,7 @@
     (string/replace s m r)))
 
 (defn is-svg? [some-string]
-  (not (string/includes? some-string ".svg"))
-  )
+  (not (string/includes? some-string ".svg")))
 
 (defn exclude-svg-resources [lst]
-    (filter is-svg? lst)
-  )
+  (filter is-svg? lst))

@@ -7,6 +7,7 @@
             [status-im.utils.wallet-connect-legacy :as wallet-connect-legacy]
             [status-im.browser.core :as browser]
             [taoensso.timbre :as log]
+            [quo.react-native :as rn]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.types :as types]))
 
@@ -15,7 +16,7 @@
  (fn [^js connector]
    (.on connector "session_request"  (fn [_ payload]
                                        (re-frame/dispatch [:wallet-connect-legacy/proposal payload connector])))
-   (.on connector "disconnect" (fn [err payload]
+   (.on connector "disconnect" (fn [err payload] ;; todo handle diconnect from web
                                  (log/info "DISCON" payload)
                                  (if err
                                    (log/error "wallet connect error" err)
@@ -45,7 +46,8 @@
 (re-frame/reg-fx
  :wc-1-kill-session
  (fn [^js connector]
-   (.killSession connector)))
+   (if (nil? connector) (log/error "trying to wc-1-kill-session when connector is nil, connector --->" connector)
+       (.killSession connector))))
 
 (re-frame/reg-fx
  :wc-1-approve-request
@@ -143,7 +145,7 @@
   [{:keys [db]} session]
   (let [sessions (get db :wallet-connect-legacy/sessions)
         connector (:connector session)
-        peer-id (get-in sessions [:params 0 :peerId])]
+        peer-id (get-in session [:params 0 :peerId])]
     {:hide-wallet-connect-app-management-sheet nil
      :hide-wallet-connect-success-sheet nil
      :wc-1-kill-session connector
@@ -238,14 +240,20 @@
         connector (wallet-connect-legacy/create-connector-from-session js-connector-object)
         session-string (get session-data :session-info)
         js-session-object (if (> (count session-string) 0) (.parse js/JSON session-string) "")
-        session-clj (merge (types/js->clj js-session-object) {:wc-version constants/wallet-connect-version-1 :connector connector})]
+        session-clj (merge (types/js->clj js-session-object) {:wc-version constants/wallet-connect-version-1 :connector connector})
+        sessions (get db :wallet-connect-legacy/sessions)
+        updated-sessions (if sessions (conj sessions session-clj) [session-clj])]
     {:wc-1-subscribe-to-events connector
-     :db (assoc db :wallet-connect/session-connected session-clj :wallet-connect-legacy/sessions [session-clj])}))
+     :db (assoc db :wallet-connect/session-connected session-clj :wallet-connect-legacy/sessions updated-sessions)}))
+
+(defn deal-with-session-objects [session-data-lst]
+  (dotimes [i (count session-data-lst)]
+    (let [session-data (nth session-data-lst i)]
+      (re-frame/dispatch [:sync-wallet-connect-app-sessions session-data]))))
 
 (fx/defn get-connector-session-from-db
   {:events [:get-connector-session-from-db]}
   [_]
-  (log/debug "json rpc call initiated for wakuext_getWalletConnectSession")
   {::json-rpc/call [{:method     "wakuext_getWalletConnectSession"
-                     :on-success #(re-frame/dispatch [:sync-wallet-connect-app-sessions %])
+                     :on-success #(deal-with-session-objects %)
                      :on-error #(log/debug "wakuext_getWalletConnectSession error call back , data ===>" %)}]})
