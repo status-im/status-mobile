@@ -138,6 +138,11 @@
                                                    :dismissOverlay #(js/Promise.resolve)
                                                    :setLazyComponentRegistrator identity
                                                    :push identity
+                                                   :mergeOptions identity
+                                                   :popToRoot identity
+                                                   :showOverlay identity
+                                                   :showModal identity
+                                                   :dismissModal identity
                                                    :registerComponent identity
                                                    :events
                                                    (fn []

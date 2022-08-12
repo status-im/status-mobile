@@ -87,5 +87,27 @@
       (rf-test/wait-for [::logout/logout-method]
                         (assert-logout)))))))
 
+(def chat-id "0x0402905bed83f0bbf993cee8239012ccb1a8bc86907ead834c1e38476a0eda71414eed0e25f525f270592a2eebb01c9119a4ed6429ba114e51f5cb0a28dae1adfd")
+
+(deftest one-to-one-chat-test
+  (rf-test/run-test-async
+   (initialize-app!)
+   (rf-test/wait-for
+    [:status-im.init.core/initialize-multiaccounts]
+    (generate-and-derive-addresses!)
+    (rf-test/wait-for
+     [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
+     (assert-multiaccount-loaded)
+     (create-multiaccount!)
+     (rf-test/wait-for
+      [:status-im.transport.core/messenger-started]
+      (assert-messenger-started)
+      (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
+      (rf-test/wait-for
+       [:status-im.chat.models/one-to-one-chat-created]
+       (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
+       (is (= chat-id
+              @(rf/subscribe [:chats/current-chat-id])))))))))
+
 (comment
   (run-tests))
