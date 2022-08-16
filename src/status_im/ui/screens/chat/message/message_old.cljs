@@ -86,10 +86,10 @@
          :accessibility-label :message-timestamp}
         timestamp-str]])))
 
-(defview quoted-message
+(defn quoted-message
   [_ {:keys [from parsed-text image audio sticker id] :as message} outgoing current-public-key public? pinned chat-id]
   (let [contact-name [:contacts/contact-name-by-identity from]
-            replied-message (get @(re-frame/subscribe [:chats/chat-messages chat-id]) id)] ;; message replied to
+        replied-message (get @(re-frame/subscribe [:chats/chat-messages chat-id]) id)] ;; message replied to
     [react/view {:style (style/quoted-message-container (and outgoing (not pinned)))}
      [react/view {:style style/quoted-message-author-container}
       [chat.utils/format-reply-author
