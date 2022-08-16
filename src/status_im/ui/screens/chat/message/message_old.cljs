@@ -114,7 +114,7 @@
        sticker
        (if replied-message
          [fast-image/fast-image {:style  {:margin 4 :width 56 :height 56}
-                                 ;; Get the sticker url of the message replied to
+                                 ;; Get sticker url of the message replied to
                                  :source {:uri (((replied-message :content) :sticker) :url)}}]
          ;; Let the user know if the message was deleted
          [react/text {:style (style/quoted-message-text (and outgoing (not pinned)))}
