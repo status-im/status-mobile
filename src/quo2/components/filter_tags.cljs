@@ -5,22 +5,24 @@
 
 (defn tags [{:keys [default-active on-change]}]
   (let [active-tab-id (reagent/atom default-active)]
-    (fn [{:keys [data size type label disabled] :or {size 32}}]
+    (fn [{:keys [data size type labelled disabled blurred] :or {size 32}}]
       (let [active-id @active-tab-id]
         [rn/view {:flex-direction :row}
-         (for [{:keys [tag-label id emoji icon]} data]
+         (for [{:keys [tag-label id resource]} data]
            ^{:key id}
            [rn/view {:margin-right (if (= size 32) 12 8)}
             [tag/filter-tag
              (merge {:id            id
                      :size          size
-                     :label         (if (or (= type :text) label) tag-label nil)
+                     :type          type
+                     :label         (if labelled tag-label (when (= type :label) tag-label))
                      :active        (= id active-id)
                      :disabled      disabled
+                     :blurred       blurred
+                     :labelled      (if (= type :label) true labelled)
+                     :resource      (if (= type :icon)
+                                      :main-icons2/placeholder
+                                      resource)
                      :on-press      #(do (reset! active-tab-id %)
-                                         (when on-change (on-change %)))}
-                    (when-not (and (= type :text) tag-label)
-                      (if (= type :icon)
-                        {:icon         icon}
-                        {:emoji         emoji})))
+                                         (when on-change (on-change %)))})
              tag-label]])]))))

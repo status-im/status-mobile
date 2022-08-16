@@ -15,22 +15,18 @@
                              :value "32"}
                             {:key   24
                              :value "24"}]}
-                 {:label   "Label:"
-                  :key     :label
-                  :type    :select
-                  :options [{:key   true
-                             :value "with tag"}
-                            {:key   false
-                             :value "no tag"}]}
                  {:label   "Type:"
                   :key     :type
                   :type    :select
                   :options [{:key   :emoji
-                             :value "emoji"}
+                             :value "Emoji"}
                             {:key   :icon
-                             :value "icons"}
-                            {:key   :text
-                             :value "text"}]}
+                             :value "Icons"}
+                            {:key   :label
+                             :value "Label"}]}
+                 {:label "Labelled:"
+                  :key   :labelled
+                  :type  :boolean}
                  {:label "Disabled:"
                   :key   :disabled
                   :type  :boolean}
@@ -40,7 +36,7 @@
 
 (defn cool-preview []
   (let [state  (reagent/atom {:size       32
-                              :label      true
+                              :labelled   true
                               :type       :emoji})]
     (fn []
       [rn/view {:margin-bottom 50
@@ -66,12 +62,9 @@
                   :justify-content    :center}
          [quo2.tags/tags (merge @state
                                 {:default-active 1
-                                 :data           [{:id 1 :tag-label "Music" :emoji (resources/get-image :music)
-                                                   :icon :main-icons2/placeholder}
-                                                  {:id 2 :tag-label "Lifestyle" :emoji (resources/get-image :lifestyle)
-                                                   :icon :main-icons2/placeholder}
-                                                  {:id 3 :tag-label "Podcasts" :emoji (resources/get-image :podcasts)
-                                                   :icon :main-icons2/placeholder}]})]]]])))
+                                 :data           [{:id 1 :tag-label "Music" :resource (resources/get-image :music)}
+                                                  {:id 2 :tag-label "Lifestyle" :resource (resources/get-image :lifestyle)}
+                                                  {:id 3 :tag-label "Podcasts" :resource (resources/get-image :podcasts)}]})]]]])))
 (defn preview-tags []
   [rn/view {:flex             1
             :background-color (colors/theme-colors

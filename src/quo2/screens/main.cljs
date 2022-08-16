@@ -54,7 +54,6 @@
               {:name      :quo2-filter-tags
                :insets    {:top false}
                :component tags/preview-tags}])
-              
 
 (defn theme-switcher []
   [rn/view {:style {:flex-direction   :row
