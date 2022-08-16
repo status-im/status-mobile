@@ -1,0 +1,16 @@
+daysUntilStale: 90
+daysUntilClose: 7
+exemptLabels:
+  - 'wall of shame'
+  - security
+staleLabel: stale
+markComment: >
+  This issue has been automatically marked as stale because it has not had
+  recent activity. It will be closed if no further activity occurs. Thank you
+  for your contributions.
+closeComment: >
+  This issue has been automatically closed. Please re-open if this issue
+  is important to you.
+
+pulls:
+  daysUntilStale: 14

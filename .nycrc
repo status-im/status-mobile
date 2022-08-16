@@ -1,0 +1,17 @@
+{
+  "include": [
+    "target/test/status_im/**"
+  ],
+  "exclude": [
+    "target/test/status_im/test/**",
+    "target/test/status_im/ui/**"
+  ],
+  "report-dir": "./coverage-report",
+  "all": true,
+  "source-map": true,
+  "produce-source-map": true,
+  "instrument": true,
+  "exclude-after-remap": false,
+  "extension": [".js"],
+  "reporter": ["lcovonly"]
+}

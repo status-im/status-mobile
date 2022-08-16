@@ -1,0 +1,116 @@
+library 'status-jenkins-lib@v1.5.0'
+
+pipeline {
+
+  agent { label 'linux' }
+
+  parameters {
+    string(
+      name: 'BRANCH_NAME',
+      description: 'Name of the branch to checkout and build.',
+      defaultValue: 'develop',
+    )
+/* Commented to use TEST_MARKERS values from job params
+    string(
+      name: 'TEST_MARKERS',
+      description: 'Marker expression for matching tests to run.',
+      defaultValue: 'critical',
+    ) */
+    string(
+      name: 'APK_NAME',
+      description: 'Filename of APK uploaded to SauceLabs, path, or URL.',
+    )
+    string(
+      name: 'PR_ID',
+      description: 'ID of the Pull Request triggering this build.',
+    )
+    string(
+      name: 'KEYWORD_EXPRESSION',
+      description: 'This will run tests which contain names that match the given string expression  (Optional)',
+      defaultValue: '',
+    )
+    string(
+      name: 'TR_CASE_IDS',
+      description: 'IDs of the TestRail case, separated by a comma (Optional)',
+      defaultValue: '',
+    )
+  }
+
+  options {
+    disableConcurrentBuilds()
+  }
+
+  stages {
+    stage('Checks') {
+      steps { script {
+        if (params.APK_NAME == null) { error("APK_NAME parameter not set!") }
+        if (params.PR_ID == null) { error("PR_ID parameter not set!") }
+      } }
+    }
+    stage('Setup') {
+      steps { script {
+        dir('test/appium') {
+          sh 'pip3 install --user -r requirements.txt'
+        }
+      } }
+    }
+    stage('Test') {
+      steps { script {
+        currentBuild.displayName = "PR-${params.PR_ID}"
+        /* for managing optional arguments */
+        def extraPytestOpts = ''
+        if (params.TR_CASE_IDS != '') {
+          extraPytestOpts = "--run_testrail_ids='${params.TR_CASE_IDS}'"
+        } else {
+          extraPytestOpts = "-m \"${params.TEST_MARKERS}\""
+        }
+
+        withCredentials([
+          usernamePassword(
+            credentialsId: 'status-im-auto',
+            usernameVariable: 'GIT_HUB_USER', /* ignored */
+            passwordVariable: 'GIT_HUB_TOKEN'
+          ),
+          usernamePassword(
+            credentialsId:  'test-rail-api',
+            usernameVariable: 'TESTRAIL_USER',
+            passwordVariable: 'TESTRAIL_PASS'
+          ),
+          usernamePassword(
+            credentialsId:  'sauce-labs-api',
+            usernameVariable: 'SAUCE_USERNAME',
+            passwordVariable: 'SAUCE_ACCESS_KEY'
+          ),
+          string(
+            credentialsId: 'etherscan-api-key',
+            variable: 'ETHERSCAN_API_KEY'
+          ),
+          string(
+            credentialsId: 'infura-e2e-token',
+            variable: 'WEB3_INFURA_PROJECT_ID'
+          ),
+          file(
+            credentialsId: "mobile-tests-eth-accounts",
+            variable: 'TEST_ETH_ACCOUNTS_FILE'
+          ),
+        ]) {
+          dir('test/appium/tests') {
+            /* Provide Eth test account secrets. */
+            sh 'cp -f $TEST_ETH_ACCOUNTS_FILE users.py'
+            sh """
+              python3 -m pytest \
+                --numprocesses 9 \
+                --rerun_count=2 \
+                --testrail_report=True \
+                -k \"${params.KEYWORD_EXPRESSION}\" \
+                --apk=${params.APK_NAME} \
+                --build=PR-${params.PR_ID}-${utils.timestamp()} \
+                --pr_number=${params.PR_ID} \
+                ${extraPytestOpts}
+            """
+          }
+        }
+      } }
+    }
+  }
+}
