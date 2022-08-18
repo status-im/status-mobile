@@ -148,9 +148,13 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         dapp = self.home_1.dapp_tab_button.click()
         web_page = dapp.open_url('status.im')
         web_page.add_to_bookmarks()
-        self.home_1.profile_button.double_click()
+
+        self.home_1.just_fyi("Close the ENS banner")
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        [home.ens_banner_close_button.click() for home in (self.home_1, self.home_2)]
 
         self.device_2.just_fyi('Pair main and secondary devices')
+        [device.profile_button.double_click() for device in (self.profile_1, self.profile_2)]
         self.profile_2.discover_and_advertise_device(self.name_2)
         self.profile_1.discover_and_advertise_device(self.name_1)
         self.profile_1.get_toggle_device_by_name(self.name_2).wait_and_click()
