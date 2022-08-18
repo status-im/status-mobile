@@ -201,6 +201,7 @@ class HomeView(BaseView):
         self.my_profile_on_start_new_chat_button = Button(self.driver,
                                                           xpath="//*[@content-desc='current-account-photo']")
         self.communities_button = ChatButton(self.driver, accessibility_id="communities-button")
+        self.ens_banner_close_button = Button(self.driver, accessibility_id=":ens-banner-close-button")
 
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")

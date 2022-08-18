@@ -74,7 +74,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.just_fyi('Opening url containing ipns name')
         dapp = self.home.dapp_tab_button.click()
         web_page = dapp.open_url(ipns_url)
-        element_on_start_page = dapp.element_by_text('Select a token')
+        element_on_start_page = dapp.element_by_text('Select token')
         if not element_on_start_page.is_element_displayed(60):
             self.home.driver.fail('No start element is shown for dapp, so IPNS name is not resolved')
 
