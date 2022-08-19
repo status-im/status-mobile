@@ -659,10 +659,10 @@
                [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
                  :id       :reply
                  :label    (i18n/label :t/message-reply)}]
-               (when (and outgoing config/delete-message-enabled?))
-               [{:on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
-                 :label    (i18n/label :t/delete)
-                 :id       :delete}]
+               (when (and outgoing config/delete-message-enabled?)
+                 [{:on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
+                   :label    (i18n/label :t/delete)
+                   :id       :delete}])
                [])))
            :on-press (fn []
                        (reset! show-timestamp? true))})
