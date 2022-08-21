@@ -56,7 +56,7 @@
         [rn/touchable-opacity {:style {:width 32
                                        :height 32
                                        :background-color (if @flashlight-on?
-                                                          colors/white
+                                                           colors/white
                                                            colors/white-opa-60)
                                        :border-radius 10
                                        :position :absolute
