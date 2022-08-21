@@ -210,7 +210,7 @@ PODS:
     - React
   - react-native-blob-util (0.13.18):
     - React-Core
-  - react-native-blur (0.8.0):
+  - react-native-blur (3.6.1):
     - React
   - react-native-camera-kit (8.0.4):
     - React
@@ -228,7 +228,7 @@ PODS:
     - React-Core
   - react-native-netinfo (4.7.0):
     - React
-  - react-native-randombytes (0.8.0):
+  - react-native-randombytes (3.6.1):
     - React-Core
   - react-native-safe-area-context (2.0.0):
     - React
