@@ -26,7 +26,7 @@
   [size status-indicator? online? ring? dark?]
   (when status-indicator?
     (let [dimensions (get-in sizes [size :status-indicator])
-          border-width (get-in sizes [size :status-indicator-border]) 
+          border-width (get-in sizes [size :status-indicator-border])
           right (case size
                   :big 4
                   :medium 2
