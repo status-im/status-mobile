@@ -248,10 +248,13 @@
 (def switcher-background-opa-95 (alpha switcher-background 0.95))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 (def turquoise-50 "#448EA2")
 
 >>>>>>> b444cbe4c (User avatar)
+=======
+>>>>>>> e4d4e0387 (Use colors after solving conflicts)
 ;;General
 
 ;; background
