@@ -101,9 +101,9 @@
                       :height outer-dimensions
                       :border-radius outer-dimensions}}
      (when ring?
-       [icons/icon :main-icons/identicon-ring {:width outer-dimensions
-                                               :height outer-dimensions
-                                               :color "nil"}])
+       [icons/icon :main-icons/identicon-ring32 {:width outer-dimensions
+                                                 :height outer-dimensions
+                                                 :color "nil"}])
      (if using-profile-picture?
        [react/image {:style  (container-styling inner-dimensions outer-dimensions)
                      :source {:uri profile-picture}}]
