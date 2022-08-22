@@ -1,5 +1,6 @@
 (ns quo2.components.wallet-user-avatar
   (:require [quo.react-native :as rn]
+            [quo.design-system.colors :as colors]
             [quo2.foundations.colors :as colors]
             [clojure.string :as clojure-string]))
 
@@ -57,20 +58,20 @@
                    :large 48
                    :x-large 80})
 
-(def font-sizes {:x-large 27
-                 :large 15
+(def font-sizes {:small 11
                  :medium 13
-                 :small 11})
+                 :large 15
+                 :x-large 27})
 
 (defn wallet-user-avatar
   "params, first name, last name, color, size
    and if it's dark or not!"
-  [{:keys [f-name l-name color dark? size] :or {f-name "John"
+  [{:keys [f-name l-name color size] :or {f-name "John"
                                                 l-name "Doe"
                                                 color :red
-                                                dark? false
                                                 size :x-large}}]
   (let [circle-size (size circle-sizes)
+        dark? (colors/dark?)
         small? (= size :small)
         f-name-initial (-> f-name
                            clojure-string/upper-case

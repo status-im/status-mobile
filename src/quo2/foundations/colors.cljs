@@ -319,6 +319,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 >>>>>>> 55d7310ac (wallet user avatar component)
@@ -349,6 +350,8 @@
 >>>>>>> 55d7310ac (wallet user avatar component)
 =======
 >>>>>>> 7e9e6581c (Conflicts resolve)
+=======
+>>>>>>> a6b327b15 (comments)
 ;;General
 
 ;; background
