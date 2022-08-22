@@ -6,52 +6,52 @@
 
 (def themes {:light {:primary   {:text-color       colors/primary-50
                                  :background-color colors/primary-20}
-                     :purple {:text-color       colors/purple-opa-50
-                              :background-color colors/purple-opa-20}
-                     :indigo {:text-color       colors/indigo-opa-50
-                              :background-color colors/indigo-opa-20}
-                     :turquoise {:text-color       colors/turquoise-opa-50
-                                 :background-color colors/turquoise-opa-20}
-                     :blue {:text-color       colors/blue-opa-50
-                            :background-color colors/blue-opa-20}
-                     :green {:text-color       colors/green-opa-50
-                             :background-color colors/green-opa-20}
-                     :yellow {:text-color       colors/yellow-opa-50
-                              :background-color colors/yellow-opa-20}
-                     :orange {:text-color       colors/orange-opa-50
-                              :background-color colors/orange-opa-20}
-                     :red {:text-color       colors/red-opa-50
-                           :background-color colors/red-opa-20}
-                     :pink {:text-color       colors/pink-opa-50
-                            :background-color colors/pink-opa-20}
-                     :brown {:text-color       colors/brown-opa-50
-                             :background-color colors/brown-opa-20}
-                     :beige {:text-color       colors/beige-opa-50
-                             :background-color colors/beige-opa-20}}
+                     :purple {:text-color       colors/purple-50
+                              :background-color colors/purple-20}
+                     :indigo {:text-color       colors/indigo-50
+                              :background-color colors/indigo-20}
+                     :turquoise {:text-color       colors/turquoise-50
+                                 :background-color colors/turquoise-20}
+                     :blue {:text-color       colors/blue-50
+                            :background-color colors/blue-20}
+                     :green {:text-color       colors/green-50
+                             :background-color colors/green-20}
+                     :yellow {:text-color       colors/yellow-50
+                              :background-color colors/yellow-20}
+                     :orange {:text-color       colors/orange-50
+                              :background-color colors/orange-20}
+                     :red {:text-color       colors/red-50
+                           :background-color colors/red-20}
+                     :pink {:text-color       colors/pink-50
+                            :background-color colors/pink-20}
+                     :brown {:text-color       colors/brown-50
+                             :background-color colors/brown-20}
+                     :beige {:text-color       colors/beige-50
+                             :background-color colors/beige-20}}
              :dark  {:primary   {:text-color       colors/primary-60
                                  :background-color colors/primary-20}
-                     :purple {:text-color       colors/purple-opa-60
-                              :background-color colors/purple-opa-20}
-                     :indigo {:text-color       colors/indigo-opa-60
-                              :background-color colors/indigo-opa-20}
-                     :turquoise {:text-color       colors/turquoise-opa-60
-                                 :background-color colors/turquoise-opa-20}
-                     :blue {:text-color       colors/blue-opa-60
-                            :background-color colors/blue-opa-20}
-                     :green {:text-color       colors/green-opa-60
-                             :background-color colors/green-opa-20}
-                     :yellow {:text-color       colors/yellow-opa-60
-                              :background-color colors/yellow-opa-20}
-                     :orange {:text-color       colors/orange-opa-60
-                              :background-color colors/orange-opa-20}
-                     :red {:text-color       colors/red-opa-60
-                           :background-color colors/red-opa-20}
-                     :pink {:text-color       colors/pink-opa-60
-                            :background-color colors/pink-opa-20}
-                     :brown {:text-color       colors/brown-opa-60
-                             :background-color colors/brown-opa-20}
-                     :beige {:text-color       colors/beige-opa-60
-                             :background-color colors/beige-opa-20}}})
+                     :purple {:text-color       colors/purple-60
+                              :background-color colors/purple-20}
+                     :indigo {:text-color       colors/indigo-60
+                              :background-color colors/indigo-20}
+                     :turquoise {:text-color       colors/turquoise-60
+                                 :background-color colors/turquoise-20}
+                     :blue {:text-color       colors/blue-60
+                            :background-color colors/blue-20}
+                     :green {:text-color       colors/green-60
+                             :background-color colors/green-20}
+                     :yellow {:text-color       colors/yellow-60
+                              :background-color colors/yellow-20}
+                     :orange {:text-color       colors/orange-60
+                              :background-color colors/orange-20}
+                     :red {:text-color       colors/red-60
+                           :background-color colors/red-20}
+                     :pink {:text-color       colors/pink-60
+                            :background-color colors/pink-20}
+                     :brown {:text-color       colors/brown-60
+                             :background-color colors/brown-20}
+                     :beige {:text-color       colors/beige-60
+                             :background-color colors/beige-20}}})
 
 (def circle-sizes {:small 20
                    :medium 32
