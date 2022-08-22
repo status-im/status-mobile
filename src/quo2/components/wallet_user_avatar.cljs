@@ -1,6 +1,5 @@
 (ns quo2.components.wallet-user-avatar
   (:require [quo.react-native :as rn]
-            [quo.design-system.colors :as colors]
             [quo2.foundations.colors :as colors]
             [clojure.string :as clojure-string]))
 
