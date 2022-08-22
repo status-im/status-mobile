@@ -3,15 +3,7 @@
 
 (def native-status (js/require "../../modules/react-native-status/nodejs/bindings"))
 
-(def fs (js/require "fs"))
-(def path (js/require "path"))
-(def os (js/require "os"))
-
-(def tmpdir (.tmpdir os))
-
-(def test-dir-prefix (.join path tmpdir "status-mobile-tests"))
-
-(def test-dir (.mkdtempSync fs test-dir-prefix))
+(def test-dir "/tmp")
 
 (defn signal-received-callback [a]
   (re-frame/dispatch [:signals/signal-received a]))
@@ -66,23 +58,10 @@
                                          native-status
                                          json)))
             :multiAccountDeriveAddresses (fn [json callback]
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 0f2334617 (Fix indentation)
                                            (callback
                                             (.multiAccountDeriveAddresses
                                              native-status
                                              json)))
-<<<<<<< HEAD
-=======
-                                       (callback
-                                        (.multiAccountDeriveAddresses
-                                         native-status
-                                         json)))
->>>>>>> 94f73d267 ([#13791] Extend integration tests to create a new wallet account)
-=======
->>>>>>> 0f2334617 (Fix indentation)
             :initKeystore (fn [key-uid callback]
                             (callback
                              (.initKeystore

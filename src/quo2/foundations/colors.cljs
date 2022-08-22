@@ -183,7 +183,6 @@
 (def info-50-opa-30 (alpha info-50 0.3))
 (def info-50-opa-40 (alpha info-50 0.4))
 
-<<<<<<< HEAD
 ;; Customization
 (def purple-50 "#8661C1")
 (def purple-60 "#5E478C")
@@ -235,8 +234,6 @@
 (defn custom-color [color theme]
   (get-in customization [theme color]))
 
-=======
->>>>>>> b444cbe4c (User avatar)
 ;;;;Switcher
 (def switcher-background "#040B14")
 
@@ -247,14 +244,6 @@
 (def switcher-background-opa-90 (alpha switcher-background 0.9))
 (def switcher-background-opa-95 (alpha switcher-background 0.95))
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-(def turquoise-50 "#448EA2")
-
->>>>>>> b444cbe4c (User avatar)
-=======
->>>>>>> e4d4e0387 (Use colors after solving conflicts)
 ;;General
 
 ;; background
