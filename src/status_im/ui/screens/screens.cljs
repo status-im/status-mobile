@@ -896,7 +896,7 @@
             quo.preview/screens)
           (when config/quo-preview-enabled?
             quo.preview/main-screens)
-          (when config/quo-preview-enabled?
+          (when (or config/quo-preview-enabled? @config/new-ui-enabled?)
             quo2.preview/screens)
           (when @config/new-ui-enabled?
             navigation2.screens/screen-overwrites)
