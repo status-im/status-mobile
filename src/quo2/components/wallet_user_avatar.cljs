@@ -67,9 +67,9 @@
   "params, first name, last name, color, size
    and if it's dark or not!"
   [{:keys [f-name l-name color size] :or {f-name "John"
-                                                l-name "Doe"
-                                                color :red
-                                                size :x-large}}]
+                                          l-name "Doe"
+                                          color :red
+                                          size :x-large}}]
   (let [circle-size (size circle-sizes)
         dark? (colors/dark?)
         small? (= size :small)
