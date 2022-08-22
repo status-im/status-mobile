@@ -43,7 +43,7 @@
     (let [dimensions (get-in sizes [size :status-indicator])
           border-width (get-in sizes [size :status-indicator-border])
           right (case size
-                  :big 4
+                  :big 2
                   :medium 0
                   :small 0
                   0)
@@ -109,6 +109,8 @@
                                (first full-name)
                                "")
         small-sizes #{:small :xs :xxs :xxxs}
+        identicon-sizes #{:big :medium :small}
+        identicon? (contains? identicon-sizes size)
         small? (contains? small-sizes size)
         using-profile-picture? (-> profile-picture
                                    blank?
@@ -121,7 +123,7 @@
     [rn/view {:style {:width outer-dimensions
                       :height outer-dimensions
                       :border-radius outer-dimensions}}
-     (when ring?
+     (when (and ring? identicon?)
        [icons/icon :main-icons/identicon-ring32 {:width outer-dimensions
                                                  :height outer-dimensions
                                                  :no-color true}])
