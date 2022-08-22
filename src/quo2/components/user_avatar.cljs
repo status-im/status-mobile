@@ -8,19 +8,34 @@
 
 (def sizes {:big {:outer 80
                   :inner 72
-                  :status-indicator 16
-                  :status-indicator-border 2
+                  :status-indicator 20
+                  :status-indicator-border 4
                   :font-size 27}
             :medium {:outer 48
                      :inner 44
-                     :status-indicator 10
+                     :status-indicator 16
                      :status-indicator-border 2
                      :font-size 15}
             :small {:outer 32
                     :inner 28
-                    :status-indicator 10
+                    :status-indicator 12
                     :status-indicator-border 2
-                    :font-size 13}})
+                    :font-size 13}
+            :xs {:outer 24
+                 :inner 24
+                 :status-indicator 0
+                 :status-indicator-border 0
+                 :font-size 13}
+            :xxs {:outer 20
+                  :inner 20
+                  :status-indicator 0
+                  :status-indicator-border 0
+                  :font-size 11}
+            :xxxs {:outer 16
+                   :inner 16
+                   :status-indicator 0
+                   :status-indicator-border 0
+                   :font-size 11}})
 
 (defn dot-indicator
   [size status-indicator? online? ring? dark?]
@@ -29,18 +44,20 @@
           border-width (get-in sizes [size :status-indicator-border])
           right (case size
                   :big 4
-                  :medium 2
-                  :small 0)
+                  :medium 0
+                  :small 0
+                  0)
           bottom (case size
                    :big (if ring?
                           4
                           2)
                    :medium (if ring?
-                             4
-                             2)
+                             0
+                             -2)
                    :small (if ring?
-                            2
-                            0))]
+                            0
+                            -2)
+                   0)]
       [rn/view {:style {:background-color (if online?
                                             colors/success-50
                                             colors/neutral-40)
@@ -91,7 +108,8 @@
         first-initial-letter (if full-name
                                (first full-name)
                                "")
-        small? (= size :small)
+        small-sizes #{:small :xs :xxs :xxxs}
+        small? (contains? small-sizes size)
         using-profile-picture? (-> profile-picture
                                    blank?
                                    false?)
@@ -106,7 +124,7 @@
      (when ring?
        [icons/icon :main-icons/identicon-ring32 {:width outer-dimensions
                                                  :height outer-dimensions
-                                                 :color "nil"}])
+                                                 :no-color true}])
      (if using-profile-picture?
        [react/image {:style  (container-styling inner-dimensions outer-dimensions)
                      :source {:uri profile-picture}}]

@@ -13,7 +13,13 @@
                             {:key   :medium
                              :value "Medium"}
                             {:key   :small
-                             :value "Small"}]}
+                             :value "Small"}
+                            {:key   :xs
+                             :value "x Small"}
+                            {:key   :xxs
+                             :value "xx Small"}
+                            {:key   :xxxs
+                             :value "xxx Small"}]}
                  {:label "Online status"
                   :key   :online?
                   :type  :boolean}
