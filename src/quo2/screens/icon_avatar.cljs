@@ -5,10 +5,7 @@
             [quo.design-system.colors :as colors]
             [quo2.components.icon-avatar :as quo2]))
 
-(def descriptor [{:label   "Dark"
-                  :key     :dark?
-                  :type    :boolean}
-                 {:label   "Size"
+(def descriptor [{:label   "Size"
                   :key     :size
                   :type    :select
                   :options [{:key   :small
@@ -17,6 +14,15 @@
                              :value "Medium"}
                             {:key   :big
                              :value "Big"}]}
+                 {:label   "Icon"
+                  :key     :icon
+                  :type    :select
+                  :options [{:key   :main-icons/placeholder20
+                             :value "Placeholder"}
+                            {:key   :main-icons/walelt
+                             :value "Wallet"}
+                            {:key   :main-icons/play
+                             :value "Play"}]} 
                  {:label   "Color"
                   :key     :color
                   :type    :select
@@ -46,7 +52,9 @@
                              :value "Beige"}]}])
 
 (defn cool-preview []
-  (let [state (reagent/atom {:size :small})]
+  (let [state (reagent/atom {:size :small
+                             :icon :main-icons/placeholder20
+                             :color :primary})]
     (fn []
       [rn/view {:margin-bottom 50
                 :padding       16}

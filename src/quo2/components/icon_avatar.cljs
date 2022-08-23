@@ -1,5 +1,6 @@
 (ns quo2.components.icon-avatar
   (:require [quo.react-native :as rn]
+            [quo.theme :as theme]
             [quo2.foundations.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]))
 
@@ -58,11 +59,11 @@
    :small 20})
 
 (defn icon-avatar
-  [{:keys [size color dark?]}]
+  [{:keys [size icon color]}]
   (let [component-size (size sizes)
-        is-theme-dark? (if dark? :dark :light)
-        circle-color (get-in themes [is-theme-dark? color :background-color])
-        icon-color (get-in themes [is-theme-dark? color :icon-color])
+        theme (theme/get-theme) 
+        circle-color (get-in themes [theme color :background-color])
+        icon-color (get-in themes [theme color :icon-color])
         icon-size (case size
                     :big 20
                     :medium 16
@@ -73,6 +74,6 @@
                       :background-color circle-color
                       :justify-content :center
                       :align-items :center}}
-     [icons/icon :main-icons/placeholder20 {:container-style {:width  icon-size
-                                                              :height icon-size}
-                                            :color icon-color}]]))
+     [icons/icon icon {:container-style {:width  icon-size
+                                         :height icon-size}
+                       :color icon-color}]]))
