@@ -23,7 +23,6 @@ class BackButton(Button):
         return self.navigate()
 
 
-
 class AllowButton(Button):
     def __init__(self, driver):
         super().__init__(driver, translation_id="allow", uppercase=True)
@@ -539,16 +538,16 @@ class BaseView(object):
 
     def get_back_to_home_view(self, times_to_click_on_back_btn=3):
         counter = 0
-        while BackButton(self.driver).is_element_displayed(2) or self.close_button.is_element_displayed(2) or self.navigate_up_button.is_element_displayed(2):
+        while self.back_button.is_element_displayed(2) or self.close_button.is_element_displayed(2) or self.navigate_up_button.is_element_displayed(2):
             try:
                 if counter >= times_to_click_on_back_btn:
                     break
-                if BackButton(self.driver).is_element_displayed(2):
-                    self.back_button.click()
+                if self.back_button.is_element_displayed(2):
+                    self.back_button.click_until_presence_of_element(self.home_button)
                 elif self.close_button.is_element_displayed(2):
-                    self.close_button.click()
+                    self.close_button.click_until_presence_of_element(self.home_button)
                 else:
-                    self.navigate_up_button.click()
+                    self.navigate_up_button.click_until_presence_of_element(self.home_button)
                 counter += 1
             except (NoSuchElementException, TimeoutException):
                 continue
