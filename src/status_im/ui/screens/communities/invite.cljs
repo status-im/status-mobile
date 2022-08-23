@@ -66,10 +66,10 @@
                               :alignItems :center
                               :flex 1}}
             [rn/text {:size :large
-                     :weight :bold
-                     :style {:text-align :center
-                             :margin-top :auto}}
-            (i18n/label :t/add-contacts-to-invite)]])
+                      :weight :bold
+                      :style {:text-align :center
+                              :margin-top :auto}}
+             (i18n/label :t/add-contacts-to-invite)]])
          [rn/flat-list {:style                   {:flex 1}
                         :content-container-style {:padding-vertical 16}
                         ;:header                  [header user-pk]
