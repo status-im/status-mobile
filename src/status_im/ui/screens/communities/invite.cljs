@@ -67,7 +67,7 @@
                               :flex 1}}
             [rn/text {:size :large
                      :weight :bold
-                     :style {:text-align :center 
+                     :style {:text-align :center
                              :margin-top :auto}}
             (i18n/label :t/add-contacts-to-invite)]])
          [rn/flat-list {:style                   {:flex 1}
@@ -80,7 +80,7 @@
                         :data                    contacts}]
          [toolbar/toolbar
           {:show-border? true
-           :center 
+           :center
            [quo/button {:disabled (and (str/blank? @user-pk)
                                        (zero? (count selected)))
                         :type     :secondary
