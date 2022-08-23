@@ -51,6 +51,7 @@
             contacts                    (map (fn [{:keys [public-key] :as contact}]
                                                (assoc contact :active (contains? selected public-key)))
                                              contacts-data)
+            is-there-contacts?          (seq contacts)
             ;; no-membership communities can only be shared
             can-invite?                 (and can-manage-users?
                                              invite?
@@ -60,6 +61,15 @@
                                               :t/invite-people
                                               :t/community-share-title))
                          :modal? true}]
+         (when-not is-there-contacts?
+           [rn/view  {:style {:justifyContent :center
+                              :alignItems :center
+                              :flex 1}}
+            [rn/text {:size :large
+                     :weight :bold
+                     :style {:text-align :center 
+                             :margin-top :auto}}
+            (i18n/label :t/add-contacts-to-invite)]])
          [rn/flat-list {:style                   {:flex 1}
                         :content-container-style {:padding-vertical 16}
                         ;:header                  [header user-pk]
@@ -70,7 +80,7 @@
                         :data                    contacts}]
          [toolbar/toolbar
           {:show-border? true
-           :center
+           :center 
            [quo/button {:disabled (and (str/blank? @user-pk)
                                        (zero? (count selected)))
                         :type     :secondary

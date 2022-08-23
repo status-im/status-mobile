@@ -685,6 +685,7 @@
     "sign-request-failed": "Could not sign message",
     "invite-friends": "Invite friends",
     "invite-people": "Invite people",
+    "add-contacts-to-invite": "Add contacts to invite them to this community",
     "invite-reward": "Earn crypto for every friend you invite!",
     "invite-select-account": "Select an account to receive your referral bonus",
     "invited": "invited",
