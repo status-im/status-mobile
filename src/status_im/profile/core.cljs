@@ -40,12 +40,17 @@
    (let [link (universal-links/generate-link :user :external contact-code)]
      (list-selection/open-share {:message link}))))
 
+(fx/defn finish-success
+  {:events [:my-profile/finish-success]}
+  [{:keys [db] :as cofx}]
+  {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)})
+
 (fx/defn finish
   {:events [:my-profile/finish]}
-  [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)}
-            (multiaccounts.update/clean-seed-phrase)))
+  [cofx]
+  (multiaccounts.update/clean-seed-phrase
+   cofx
+   {:on-success #(re-frame/dispatch [:my-profile/finish-success])}))
 
 (fx/defn enter-two-random-words
   {:events [:my-profile/enter-two-random-words]}

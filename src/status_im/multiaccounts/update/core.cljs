@@ -37,10 +37,8 @@
 
 (fx/defn clean-seed-phrase
   "A helper function that removes seed phrase from storage."
-  [cofx]
-  (multiaccount-update cofx
-                       :mnemonic nil
-                       {}))
+  [cofx on-success]
+  (multiaccount-update cofx :mnemonic nil on-success))
 
 (defn augment-synchronized-recent-stickers
   "Add 'url' parameter to stickers that are synchronized from other devices.
