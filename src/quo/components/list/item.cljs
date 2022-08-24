@@ -8,11 +8,10 @@
             [quo.components.text :as text]
             [quo.components.controls.view :as controls]
             [quo.components.tooltip :as tooltip]
-            [quo2.foundations.colors :as quo2.colors]
-            [quo2.components.icon :as quo2.icons]
             ;; FIXME:
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.utils.config :as config]
+            [quo2.foundations.colors :as quo2.colors]
+            [quo2.components.icon :as quo.icons]
             [quo.components.animated.pressable :as animated]))
 
 (defn themes [theme]
@@ -43,15 +42,15 @@
                :passive-background (:ui-background @colors/theme)
                :text-color         (:text-02 @colors/theme)}
     :light    {:icon-color         quo2.colors/neutral-50
-               :icon-bg-color      quo2.colors/neutral-10
+               :icon-bg-color      quo2.colors/white
                :text-color         quo2.colors/black
                :active-background  quo2.colors/neutral-10
-               :passive-background quo2.colors/neutral-10}
+               :passive-background quo2.colors/white}
     :dark     {:icon-color         quo2.colors/neutral-40
-               :icon-bg-color      quo2.colors/neutral-80
+               :icon-bg-color      quo2.colors/neutral-90
                :text-color         quo2.colors/white
-               :active-background  quo2.colors/neutral-80
-               :passive-background quo2.colors/neutral-80}))
+               :active-background  quo2.colors/neutral-70
+               :passive-background quo2.colors/neutral-90}))
 
 (defn size->icon-size [size]
   (case size
@@ -87,17 +86,19 @@
          icon
 
          (keyword? icon)
-         [rn/view {:style {:width            icon-size
-                           :height           icon-size
-                           :align-items      :center
-                           :justify-content  :center
-                           :border-radius    (/ icon-size 2)
-                           :background-color icon-bg-color}}
-          (if new-ui?
-            [quo2.icons/icon icon {:color icon-color
-                                   :resize :center
-                                   :size   20}]
-            [icons/icon icon {:color  icon-color}])])])))
+         (if new-ui?
+           [quo.icons/icon icon {:container-style {:align-items     :center
+                                                   :justify-content :center}
+                                 :color       icon-color
+                                 :size        20
+                                 :resize-mode :center}]
+           [rn/view {:style {:width            icon-size
+                             :height           icon-size
+                             :align-items      :center
+                             :justify-content  :center
+                             :border-radius    (/ icon-size 2)
+                             :background-color icon-bg-color}}
+            [icons/icon icon {:color icon-color}]]))])))
 
 (defn title-column
   [{:keys [title text-color subtitle subtitle-max-lines subtitle-secondary
@@ -215,11 +216,9 @@
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label accessory-style
            haptic-feedback haptic-type error animated animated-accessory? title-text-weight container-style
-           active-background-enabled new-ui?]
+           active-background-enabled]
     :or   {subtitle-max-lines        1
-           theme                     (if @config/new-ui-enabled?
-                                       :light
-                                       :main)
+           theme                     :main
            haptic-feedback           true
            animated                  platform/ios?
            active-background-enabled true
@@ -272,7 +271,7 @@
                    :subtitle-max-lines        subtitle-max-lines
                    :subtitle-secondary        subtitle-secondary
                    :right-side-present?       (or accessory chevron)
-                   :new-ui?                   new-ui?}]
+                   :new-ui?                   :new-ui?}]
        [right-side {:chevron             chevron
                     :active              active
                     :disabled            disabled

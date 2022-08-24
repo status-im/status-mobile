@@ -9,17 +9,18 @@
    :height         52
    :padding-left   18})
 
-(defn community-card [window-width radius]
-  {:width            window-width
-   :shadow-offset    {:width 0
+(defn community-card [radius]
+  {:shadow-offset    {:width 0
                       :height 2}
-   :shadow-radius    radius
-   :shadow-opacity   1
-   :shadow-color     colors/shadow
-   :border-radius    radius
-   :justify-content  :space-between
-   :elevation        2
-   :background-color colors/white})
+   :shadow-radius     radius
+   :shadow-opacity    1
+   :shadow-color      colors/shadow
+   :border-radius     radius
+   :justify-content   :space-between
+   :elevation         2
+   :background-color  (colors/theme-colors
+                       colors/white
+                       colors/neutral-90)})
 
 (defn stats-count-container []
   {:flex-direction :row
@@ -86,7 +87,8 @@
    :right     12})
 
 (defn community-cover-container []
-  {:height                  64
+  {:flex-direction          :row
+   :height                  64
    :border-top-right-radius 20
    :border-top-left-radius  20
    :background-color        colors/primary-50-opa-20})

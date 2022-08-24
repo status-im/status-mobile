@@ -6,6 +6,7 @@
             [quo.design-system.colors :as quo.colors]
             [quo2.foundations.colors :as colors]
             [quo2.components.community-card-view :as community-view]
+            [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]))
 
 (def community-data
@@ -18,7 +19,10 @@
    :cover          (resources/get-image :community-cover)
    :community-icon (resources/get-image :status-logo)
    :color          (rand-nth quo.colors/chat-colors)
-   :tokens   [{:id  1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]})
+   :tokens         [{:id  1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]
+   :tags           [{:id 1 :tag-label (i18n/label :t/music) :resource (resources/get-image :music)}
+                    {:id 2 :tag-label (i18n/label :t/lifestyle) :resource (resources/get-image :lifestyle)}
+                    {:id 3 :tag-label (i18n/label :t/podcasts) :resource (resources/get-image :podcasts)}]})
 
 (def descriptor [{:label   "Community views"
                   :key     :view-style
@@ -31,16 +35,15 @@
 (defn cool-preview []
   (let [state (reagent/atom {:view-style :card-view})]
     (fn []
-      [rn/view {:margin-bottom 50
-                :padding       16}
-       [rn/view {:flex 1}
+      [rn/view {:margin-bottom 50}
+       [rn/view {:flex 1
+                 :padding       16}
         [preview/customizer state descriptor]]
        [rn/view {:padding-vertical 60
-                 :flex-direction   :row
                  :justify-content  :center}
         (if (= :card-view (:view-style @state))
-          [community-view/community-card-view community-data]
-          [community-view/communities-list-view community-data])]])))
+          [community-view/community-card-view-item community-data]
+          [community-view/communities-list-view-item community-data])]])))
 
 (defn preview-community-card []
   [rn/view {:background-color (colors/theme-colors colors/neutral-5

@@ -159,8 +159,8 @@
 
 (defn preview-permission-tag []
   [rn/view {:background-color (colors/theme-colors
-                               colors/neutral-5
-                               colors/neutral-95)
+                               colors/white
+                               colors/neutral-80)
             :flex              1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always

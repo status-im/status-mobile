@@ -17,7 +17,7 @@
 
 (defn base-tag
   "opts
-   {:type :icon/:emoji/:label/:token/:permission
+   {:type :icon/:emoji/:label/:permission
     :size 32/24}
     :labelled true"
   [_]

@@ -73,7 +73,7 @@
        (when-not last-group
          [react/view {:align-items   :center}
           [text/text {:weight        :medium
-                      :size          (case size 32 :paragraph-2 24 :label)
+                      :size          (case size 32       :paragraph-2 24 :label)
                       :style         {:color             (colors/theme-colors
                                                           colors/neutral-50
                                                           colors/neutral-40)
@@ -113,7 +113,7 @@
      [react/view  {:flex-direction   :row
                    :align-items      :center
                    :justify-content  :flex-end}
-      [react/view {:padding-left    8
+      [react/view {:padding-left    (case 32 8 24 6)
                    :padding-right   (case size 32 16 24 12)}
        [icons/icon (if locked :main-icons2/locked
                        :main-icons2/unlocked)

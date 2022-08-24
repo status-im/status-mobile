@@ -960,7 +960,6 @@
     "notifications-switch": "Show notifications",
     "notifications-non-contacts": "Notifications from non-contacts",
     "notifications-transactions": "Wallet transactions",
-    "local-notifications": "Local notifications",
     "send-push-notifications": "Send Push Notifications",
     "send-push-notifications-description": "When disabled, the person receiving your messages won't be notified of their arrival",
     "push-notifications-server-enabled": "Server enabled",
@@ -1756,9 +1755,9 @@
     "send-contact-request-message": "To start a chat you need to become contacts",
     "contact-request": "Contact request",
     "say-hi": "Say hi",
+    "opened" : "Opened",
     "accepted": "Accepted",
     "declined": "Declined",
-    "contact-request": "Contact request",
     "contact-request-header": "👋  Contact requests",
     "contact-request-declined": "Declined ⓧ",
     "contact-request-accepted": "Accepted ✓",
@@ -1769,5 +1768,14 @@
     "positive": "Positive",
     "public": "Public",
     "successful-connection": "Successful Connection",
-    "all-connections": "All Connections"
+    "all-connections": "All Connections",
+    "K": "K",
+    "M": "M",
+    "gated": "Gated",
+    "featured" : "Featured",
+    "music": "Music",
+    "lifestyle": "Lifestyle",
+    "podcasts": "Podcasts",
+    "NFT":"NFT"
+    
 }

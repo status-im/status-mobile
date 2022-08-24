@@ -28,9 +28,9 @@
   [window-height new-ui?]
   {:background-color       (if new-ui?
                              (quo2.colors/theme-colors
-                              quo2.colors/neutral-10
-                              quo2.colors/neutral-80)
-                             (:backdrop @colors/theme))
+                              quo2.colors/white
+                              quo2.colors/neutral-90)
+                             (:ui-background @colors/theme))
    :border-top-left-radius  border-radius
    :border-top-right-radius border-radius
    :height                  (* window-height 2)})

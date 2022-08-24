@@ -5,7 +5,6 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.filter-tags :as quo2.tags]
             [status-im.react-native.resources :as resources]
-            [status-im.utils.handlers :refer [<sub]]
             [reagent.core :as reagent]))
 
 (def descriptor [{:label   "Size:"
@@ -39,29 +38,38 @@
                               :labelled   true
                               :type       :emoji})]
     (fn []
-      [rn/view {:margin-bottom 50
-                :padding       16}
+      [rn/view {:margin-bottom    50
+                :padding          16
+                :padding-vertical 60}
        [rn/view {:flex 1}
         [preview/customizer state descriptor]]
-       [rn/view {:justify-content   :center
+       [rn/view {:flex              1
+                 :justify-content   :center
                  :top               60}
         (when (:blurred @state)
-          [rn/view {:position       :absolute
-                    :height         100}
-           [react/image {:source (resources/get-image :community-cover)
-                         :style  {:width              (* (<sub [:dimensions/window-width]) 0.90)
-                                  :height             100
-                                  :border-radius      16}}]
-           [react/blur-view {:blur-amount        40
-                             :border-radius      16
-                             :width              :100%
-                             :height             :100%
-                             :position           :absolute
-                             :overlay-color      (colors/theme-colors
-                                                  colors/white-opa-70
-                                                  colors/neutral-80-opa-80)}]])
-        [rn/view {:align-items        :center
-                  :justify-content    :center}
+          [rn/view {:flex    1}
+           [react/view {:flex-direction :row
+                        :height         100}
+            [react/image {:source (resources/get-image :community-cover)
+                          :style  {:flex               1
+                                   :height             100
+                                   :border-radius      16}}]]
+           [react/view {:flex-direction :row
+                        :height          100
+                        :position        :absolute
+                        :left            0
+                        :right           0}
+            [react/blur-view {:flex               1
+                              :style              {:border-radius      16
+                                                   :height             100}
+                              :blur-amount        40
+                              :overlay-color      (colors/theme-colors
+                                                   colors/white-opa-70
+                                                   colors/neutral-80-opa-80)}]]])
+        [rn/scroll-view {:justify-content    :center
+                         :align-items        :center
+                         :position           :absolute
+                         :padding-horizontal 10}
          [quo2.tags/tags (merge @state
                                 {:default-active 1
                                  :data           [{:id 1 :tag-label "Music" :resource (resources/get-image :music)}

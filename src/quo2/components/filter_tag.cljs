@@ -8,27 +8,21 @@
 
 (def themes {:light {:default  {:border-color             colors/neutral-20
                                 :blurred-border-color     colors/neutral-80-opa-5
-                                :icon-color               colors/neutral-50
                                 :text-color               {:style {:color colors/black}}}
                      :active   {:border-color             colors/neutral-30
                                 :blurred-border-color     colors/neutral-80-opa-10
-                                :icon-color               colors/neutral-50
                                 :text-color               {:style {:color colors/black}}}
                      :disabled {:border-color             colors/neutral-20
                                 :blurred-border-color     colors/neutral-80-opa-5
-                                :icon-color               colors/neutral-50
                                 :text-color               {:style {:color colors/black}}}}
              :dark  {:default  {:border-color             colors/neutral-70
                                 :blurred-border-color     colors/white-opa-10
-                                :icon-color               colors/neutral-40
                                 :text-color               {:style {:color colors/white}}}
                      :active   {:border-color             colors/neutral-60
                                 :blurred-border-color     colors/white-opa-20
-                                :icon-color               colors/neutral-40
                                 :text-color               {:style {:color colors/white}}}
                      :disabled {:border-color             colors/neutral-70
                                 :blurred-border-color     colors/white-opa-10
-                                :icon-color               colors/neutral-40
                                 :text-color               {:style {:color colors/white}}}}})
 
 (defn tag-resources [size type resource icon-color label text-color labelled]
@@ -67,9 +61,9 @@
 (defn filter-tag
   [_ _]
   (fn [{:keys [id on-press disabled size resource active accessibility-label
-               label type labelled blurred] :or   {size 32}}]
+               label type labelled blurred icon-color] :or   {size 32}}]
     (let [state (cond disabled :disabled active :active :else :default)
-          {:keys [icon-color border-color blurred-border-color text-color]}
+          {:keys [border-color blurred-border-color text-color]}
           (get-in themes [(theme/get-theme) state])]
       [base-tag/base-tag {:id                  id
                           :size                size

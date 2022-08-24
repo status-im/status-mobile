@@ -8,27 +8,17 @@
    [status-im.communities.core :as communities]
    [status-im.utils.handlers :refer [>evt <sub]]
    [status-im.ui.components.react :as react]
-   [status-im.react-native.resources :as resources]
    [status-im.utils.money :as money]
+   [status-im.i18n.i18n :as i18n]
    [status-im.ui.screens.communities.styles :as styles]
    [status-im.ui.screens.communities.community :as community]
    [status-im.ui.screens.communities.icon :as communities.icon]))
 
-(def communities-items-featured
-  {:data {:status         "gated"
-          :section        "featured"
-          :locked         true
-          :cover          (resources/get-image :community-cover)
-          :tokens         [{:id  1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]
-          :tags           [{:id 1 :tag-label "Music" :resource (resources/get-image :music)}
-                           {:id 2 :tag-label "Lifestyle" :resource (resources/get-image :lifestyle)}
-                           {:id 3 :tag-label "Podcasts" :resource (resources/get-image :podcasts)}]}})
-
 (defn format-members [count]
   (if (> count 1000000)
-    (str (money/with-precision (/ count 1000000) 1) "M")
+    (str (money/with-precision (/ count 1000000) 1) (i18n/label :t/M))
     (if (and (> count 999) (< count 1000000))
-      (str (money/with-precision (/ count 1000) 1) "K")
+      (str (money/with-precision (/ count 1000) 1) (i18n/label :t/K))
       count)))
 
 (defn community-stats [{:keys [icon count icon-color]}]
@@ -98,51 +88,77 @@
                    :tokens           tokens
                    :size             24}])
 
-(defn community-card-view-item [{:keys [name description locked tokens cover border-radius
-                                        status tags] :as community}]
-  [react/view {:flex    1}
-   [react/view (styles/community-cover-container)
-    [react/image {:source cover
-                  :style  {:width         :100%
-                           :margin-right  4
-                           :border-radius border-radius}}]]
-   [react/view (styles/card-view-content-container)
-    [react/view (styles/card-view-chat-icon)
-     [communities.icon/community-icon-redesign community 48]]
-    (when (= status "gated")
-      [react/view (styles/permission-tag-styles)
-       [permission-tag-container {:locked       locked
-                                  :status       status
-                                  :tokens       tokens}]])
-    [community-title {:title       name
-                      :description description}]
-    [community-stats-column :card-view]
-    [community-tags tags]]])
+(defn community-card-view-item [{:keys [id name description locked
+                                        status tokens cover tags featured] :as community}]
+  (let [width (* (<sub [:dimensions/window-width]) 0.90)]
+    [react/view {:style (merge (styles/community-card 20)
+                               {:margin-bottom      16}
+                               (if featured
+                                 {:margin-right      12
+                                  :width             width}
+                                 {:flex              1
+                                  :margin-horizontal 20}))}
+     [react/view {:style         {:height          230
+                                  :border-radius   20}
+                  :on-press      (fn []
+                                   (>evt [::communities/load-category-states id])
+                                   (>evt [:dismiss-keyboard])
+                                   (>evt [:navigate-to :community {:community-id id}]))
+                  :on-long-press #(>evt [:bottom-sheet/show-sheet
+                                         {:content (fn [] [community/community-actions community])}])}
+      [react/view {:flex    1}
+       [react/view (styles/community-cover-container)
+        [react/image {:source      cover
+                      :style  {:flex            1
+                               :border-radius   20}}]]
+       [react/view (styles/card-view-content-container)
+        [react/view (styles/card-view-chat-icon)
+         [communities.icon/community-icon-redesign community 48]]
+        (when (= status :gated)
+          [react/view (styles/permission-tag-styles)
+           [permission-tag-container {:locked       locked
+                                      :status       status
+                                      :tokens       tokens}]])
+        [community-title {:title       name
+                          :description description}]
+        [community-stats-column :card-view]
+        [community-tags tags]]]]]))
 
-(defn communities-list-view-item [{:keys [name status tokens locked border-radius
-                                          background-color] :as community}]
-  [react/view {:flex    1}
-   [react/view {:flex-direction     :row
-                :border-radius      border-radius
-                :padding-horizontal 12
-                :align-items        :center
-                :padding-vertical   8
-                :background-color   background-color}
-    [react/view
-     [communities.icon/community-icon-redesign community 32]]
-    [react/view {:flex              1
-                 :margin-horizontal 12}
-     [text/text {:weight              :semi-bold
-                 :size                :paragraph-1
-                 :accessibility-label :community-name-text
-                 :number-of-lines     1
-                 :ellipsize-mode      :tail}
-      name]
-     [community-stats-column :list-view]]
-    (when (= status "gated")
-      [permission-tag-container {:locked       locked
-                                 :status       status
-                                 :tokens       tokens}])]])
+(defn communities-list-view-item [{:keys [id name locked status tokens background-color] :as community}]
+  [react/view {:style (merge (styles/community-card 16)
+                             {:margin-bottom    12
+                              :margin-horizontal 20})}
+   [react/view {:style         {:height             56
+                                :border-radius      16}
+                :on-press      (fn []
+                                 (>evt [::communities/load-category-states id])
+                                 (>evt [:dismiss-keyboard])
+                                 (>evt [:navigate-to :community {:community-id id}]))
+                :on-long-press #(>evt [:bottom-sheet/show-sheet
+                                       {:content (fn []
+                                                   [community/community-actions community])}])}
+    [react/view {:flex    1}
+     [react/view {:flex-direction     :row
+                  :border-radius      16
+                  :padding-horizontal 12
+                  :align-items        :center
+                  :padding-vertical   8
+                  :background-color   background-color}
+      [react/view
+       [communities.icon/community-icon-redesign community 32]]
+      [react/view {:flex              1
+                   :margin-horizontal 12}
+       [text/text {:weight              :semi-bold
+                   :size                :paragraph-1
+                   :accessibility-label :community-name-text
+                   :number-of-lines     1
+                   :ellipsize-mode      :tail}
+        name]
+       [community-stats-column :list-view]]
+      (when (= status :gated)
+        [permission-tag-container {:locked       locked
+                                   :status       status
+                                   :tokens       tokens}])]]]])
 
 (defn communities-membership-list-item [{:keys [id name status tokens locked] :as community}]
   [react/view {:margin-bottom       12
@@ -166,66 +182,9 @@
       [react/view {:margin-left   12
                    :flex          1}
        [community-title {:title  name}]]
-      (when (= status "gated")
+      (when (= status :gated)
         [react/view {:justify-content   :center
                      :margin-right      12}
          [permission-tag-container {:locked       locked
                                     :status       status
                                     :tokens       tokens}]])]]]])
-
-(defn community-card-view [{:keys [id name description]  :as community}]
-  (let [{:keys [tags locked section status cover tokens]}
-        (get communities-items-featured :data)
-        window-width (* (<sub [:dimensions/window-width]) 0.90)]
-    [react/view {:style (merge (styles/community-card window-width 20)
-                               {:margin-bottom    16
-                                :background-color (colors/theme-colors
-                                                   colors/white
-                                                   colors/neutral-90)}
-                               (when (= section "featured")
-                                 {:margin-right  12
-                                  :width         window-width}))}
-     [react/touchable-opacity {:style         {:height          230
-                                               :border-radius   20}
-                               :on-press      (fn []
-                                                (>evt [::communities/load-category-states id])
-                                                (>evt [:dismiss-keyboard])
-                                                (>evt [:navigate-to :community {:community-id id}]))
-                               :on-long-press #(>evt [:bottom-sheet/show-sheet
-                                                      {:content (fn [] [community/community-actions community])}])}
-      [community-card-view-item {:name            name
-                                 :status          status
-                                 :tokens          tokens
-                                 :locked          locked
-                                 :border-radius   20
-                                 :description     description
-                                 :cover           cover
-                                 :tags            tags}]]]))
-
-(defn communities-list-view [{:keys [id name] :as community}]
-  (let [window-width (* (<sub [:dimensions/window-width]) 0.90)
-        {:keys [locked status tokens]}
-        (get communities-items-featured :data)]
-    [react/view {:style (merge (styles/community-card window-width 16)
-                               {:margin-bottom    12
-                                :background-color (colors/theme-colors
-                                                   colors/white
-                                                   colors/neutral-90)})}
-     [react/touchable-opacity {:style         {:height          56
-                                               :border-radius   16}
-                               :on-press      (fn []
-                                                (>evt [::communities/load-category-states id])
-                                                (>evt [:dismiss-keyboard])
-                                                (>evt [:navigate-to :community {:community-id id}]))
-                               :on-long-press #(>evt [:bottom-sheet/show-sheet
-                                                      {:content (fn []
-                                                                  [community/community-actions community])}])}
-      [communities-list-view-item {:name             name
-                                   :status           status
-                                   :border-radius    16
-                                   :background-color (colors/theme-colors
-                                                      colors/white
-                                                      colors/neutral-90)
-                                   :tokens            tokens
-                                   :locked            locked}]]]))
-

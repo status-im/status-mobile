@@ -12,8 +12,8 @@
   (re-frame/dispatch event))
 
 (defn sort-communities-view []
-  [react/view
-   [react/view {:margin-left      20
+  [:<>
+   [react/view {:margin-left    20
                 :padding-bottom 12}
     [text/text
      {:style {:accessibility-label :sort-communities-title

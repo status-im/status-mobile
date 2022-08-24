@@ -220,7 +220,7 @@
 (def beige-50 "#CAAE93")
 (def beige-60 (alpha "#CAAE93" 0.6))
 
-(def shadow  "#09101C")
+(def shadow  "rgba(9,16,28,0.04)")
 
 (def customization
   {:dark {:purple purple-60
