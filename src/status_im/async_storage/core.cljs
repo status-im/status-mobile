@@ -3,7 +3,7 @@
             [taoensso.timbre :as log]
             [goog.functions :as f]
             [status-im.async-storage.transit :refer [clj->transit transit->clj]]
-            ["@react-native-community/async-storage" :default async-storage]))
+            ["@react-native-async-storage/async-storage" :default async-storage]))
 
 (def ^:private debounce-ms 250)
 
