@@ -51,7 +51,6 @@
             contacts                    (map (fn [{:keys [public-key] :as contact}]
                                                (assoc contact :active (contains? selected public-key)))
                                              contacts-data)
-            is-there-contacts?          (seq contacts)
             ;; no-membership communities can only be shared
             can-invite?                 (and can-manage-users?
                                              invite?
@@ -61,7 +60,7 @@
                                               :t/invite-people
                                               :t/community-share-title))
                          :modal? true}]
-         (when-not is-there-contacts?
+         (when-not (seq contacts)
            [rn/view  {:style {:justifyContent :center
                               :alignItems :center
                               :flex 1}}
