@@ -1,6 +1,6 @@
 (ns status-im.utils.wallet-connect
   (:require ["@walletconnect/client" :refer [CLIENT_EVENTS] :default WalletConnectClient]
-            ["@react-native-community/async-storage" :default AsyncStorage]
+            ["@react-native-async-storage/async-storage" :default AsyncStorage]
             [clojure.string :as string]
             [status-im.utils.config :as config]))
 

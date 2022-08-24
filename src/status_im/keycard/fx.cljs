@@ -5,7 +5,7 @@
             [status-im.native-module.core :as status]
             ["react-native" :refer (BackHandler)]
             [taoensso.timbre :as log]
-            ["@react-native-community/async-storage" :default AsyncStorage]))
+            ["@react-native-async-storage/async-storage" :default AsyncStorage]))
 
 (re-frame/reg-fx
  :keycard/start-nfc
