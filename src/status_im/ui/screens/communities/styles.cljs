@@ -15,7 +15,7 @@
                       :height 2}
    :shadow-radius    radius
    :shadow-opacity   1
-   :shadow-color     "rgba(9, 16, 28, 0.04)"
+   :shadow-color     colors/shadow
    :border-radius    radius
    :justify-content  :space-between
    :elevation        2

@@ -148,14 +148,14 @@
   (let [tab @selected-tab
         sort-list-by @sort-list-by]
     [react/view {:padding-left 20}
-     (cond
+     (case tab
        (= tab :all)
        [popular-communities communities sort-list-by]
 
-       (= tab :open)
+       :open
        [popular-communities communities sort-list-by]
 
-       (= tab :gated)
+       :gated
        [popular-communities communities sort-list-by])]))
 
 (defn featured-communities-section [communities]
@@ -210,7 +210,7 @@
     [react/scroll-view {:horizontal                        true
                         :height                            48
                         :shows-horizontal-scroll-indicator false
-                        :scroll-event-throttle             64 
+                        :scroll-event-throttle             64
                         :padding-top                       4
                         :padding-bottom                    12
                         :padding-horizontal                20}

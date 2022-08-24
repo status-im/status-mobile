@@ -105,16 +105,15 @@
 (defn community-tabs-view [communities]
   (let [tab @selected-tab]
     [react/view
-     (cond
+     (case tab
        (= tab :all)
-       [react/view
-        [popular-communities communities]]
-       (= tab :open)
-       [react/view
-        [popular-communities communities]]
-       (= tab :gated)
-       [react/view
-        [popular-communities communities]])]))
+       [popular-communities communities]
+
+       :open
+       [popular-communities communities]
+
+       :gated
+       [popular-communities communities])]))
 
 (defn title-column []
   [react/view

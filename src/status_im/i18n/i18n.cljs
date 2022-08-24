@@ -3,7 +3,6 @@
    [clojure.string :as string]
    ["i18n-js" :as i18n]
    [status-im.i18n.i18n-resources :as i18n-resources]
-   [status-im.utils.money :as money]
    [status-im.goog.i18n :as goog.i18n]))
 
 (set! (.-locale i18n) (name i18n-resources/default-device-language))
