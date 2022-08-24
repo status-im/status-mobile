@@ -4,6 +4,7 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [quo2.screens.button :as button]
+            [quo2.screens.token-overview :as token-overview]
             [quo2.screens.text :as text]
             [quo2.screens.tabs :as tabs]
             [quo2.screens.status-tags :as status-tags]
@@ -23,6 +24,9 @@
               {:name      :quo2-button
                :insets    {:top false}
                :component button/preview-button}
+              {:name      :quo2-token-overview
+               :insets    {:top false}
+               :component token-overview/preview-token-overview}
               {:name      :quo2-status-tags
                :insets    {:top false}
                :component status-tags/preview-status-tags}

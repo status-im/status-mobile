@@ -249,14 +249,14 @@ class TestrailReport(BaseTestReport):
             if failed_tests:
                 for test in failed_tests:
                     if test.group_name:
-                        group_blocks[test.group_name] = "-------\n## Class: %s:\n" % test.group_name
+                        group_blocks[test.group_name] = "\n-------\n## Class: %s:\n" % test.group_name
                 for test in failed_tests:
                     last_testrun = test.testruns[-1]
                     test_rail_link = self.get_test_result_link(self.run_id, test.testrail_case_id)
                     ids_failed_test.append(test.testrail_case_id)
                     case_title = '\n'
                     case_title += '-------\n'
-                    case_title += "## ID %s: [%s](%s) \n" % (test.testrail_case_id, test.name, test_rail_link)
+                    case_title += "### ID %s: [%s](%s) \n" % (test.testrail_case_id, test.name, test_rail_link)
                     full_error = last_testrun.error[-255:]
                     (code_error, no_code_error_str, issue_id) = self.separate_xfail_error(full_error)
                     if issue_id:
