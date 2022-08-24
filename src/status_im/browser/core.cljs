@@ -96,7 +96,7 @@
     {:db            (update-in db
                                [:browser/browsers browser-id]
                                merge updated-browser)
-     ::json-rpc/call [{:method "bwakuext_addBrowser"
+     ::json-rpc/call [{:method "wakuext_addBrowser"
                        :params [(select-keys updated-browser [:browser-id :timestamp :name :dapp? :history :history-index])]
                        :on-success #()}]}))
 
