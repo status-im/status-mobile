@@ -31,11 +31,13 @@
 
 (defn group-avatar-tag [_ _]
   (fn [label opts]
-    [base-tag {:style {:padding-left 3}}
+    [base-tag (-> opts
+                  (select-keys [:override-theme :style])
+                  (assoc-in [:style :padding-left] 3))
      [group-avatar/group-avatar opts]
      [text/text {:weight :medium
-                 :size :paragraph-2}
-
+                 :size   :paragraph-2
+                 :style  (:text-style opts)}
       (str " " label)]]))
 
 (defn public-key-tag [_ _]

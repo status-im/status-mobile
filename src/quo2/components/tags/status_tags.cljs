@@ -12,7 +12,7 @@
 
 (def small-container-style
   (merge default-container-style
-         {:padding-horizontal 7
+         {:padding-horizontal 8
           :padding-vertical 3}))
 
 (def large-container-style
