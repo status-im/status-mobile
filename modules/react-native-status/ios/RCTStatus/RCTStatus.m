@@ -820,6 +820,28 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(identicon:(NSString *)publicKey) {
   return StatusgoIdenticon(publicKey);
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(encodeTransfer:(NSString *)to
+                                       value:(NSString *)value) {
+  return StatusgoEncodeTransfer(to,value);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(encodeFunctionCall:(NSString *)method
+                                       paramsJSON:(NSString *)paramsJSON) {
+  return StatusgoEncodeFunctionCall(method,paramsJSON);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(decodeParameters:(NSString *)decodeParamJSON) {
+  return StatusgoDecodeParameters(decodeParamJSON);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(hexToNumber:(NSString *)hex) {
+  return StatusgoHexToNumber(hex);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(numberToHex:(NSString *)numString) {
+  return StatusgoNumberToHex(numString);
+}
+
 RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG

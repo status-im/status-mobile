@@ -1,10 +1,8 @@
 (ns status-im.ethereum.decode
-  (:require [status-im.ethereum.abi-spec :as abi-spec]))
+  (:require [status-im.utils.money :as money]))
 
 (defn uint
   [hex]
-  (first (abi-spec/decode hex ["uint"])))
-
-(defn string
-  [hex]
-  (first (abi-spec/decode hex ["string"])))
+  (let [n (money/bignumber hex)]
+    (when n
+      (.toString n 10))))
