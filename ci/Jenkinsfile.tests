@@ -1,0 +1,77 @@
+library 'status-jenkins-lib@v1.5.0'
+
+/* Options section can't access functions in objects. */
+def isPRBuild = utils.isPRBuild()
+
+pipeline {
+  agent { label 'linux && x86_64 && nix-2.8' }
+
+  options {
+    timestamps()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 10, unit: 'MINUTES')
+    /* Limit builds retained */
+    buildDiscarder(logRotator(
+      numToKeepStr: '10',
+      daysToKeepStr: '20',
+      artifactNumToKeepStr: '10',
+    ))
+    /* Abort old PR builds. */
+    disableConcurrentBuilds(
+      abortPrevious: isPRBuild
+    )
+  }
+
+  parameters {
+    string(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / e2e / nightly / release',
+      defaultValue: 'pr',
+    )
+  }
+
+  environment {
+    LANG     = "en_US.UTF-8"
+    LC_ALL   = "en_US.UTF-8"
+    LANGUAGE = "en_US.UTF-8"
+    TARGET   = 'tests'
+    BUILD_ENV = 'prod'
+    NIX_CONF_DIR = "${env.WORKSPACE}/nix"
+    LOG_FILE = utils.pkgFilename(ext: 'log', arch: 'tests')
+  }
+
+  stages {
+    stage('Prep') {
+      steps {
+        script {
+          btype = utils.getBuildType()
+          print "Running ${btype} build!"
+          /* Cleanup and Prep */
+          commonPrep(btype)
+        }
+      }
+    }
+    stage('Checks') {
+      parallel {
+        stage('Lint') {
+          steps { sh "make lint > ${LOG_FILE}" }
+        }
+        stage('Tests') {
+          steps { sh "make test >> ${LOG_FILE}" }
+        }
+      }
+    }
+    stage('Upload') {
+      steps {
+        script {
+          env.PKG_URL = s3.uploadArtifact(LOG_FILE)
+        }
+      }
+    }
+  }
+  post {
+    success { script { github.notifyPR(true) } }
+    failure { script { github.notifyPR(false) } }
+    always  { sh 'make purge' }
+  }
+}
