@@ -19,7 +19,6 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (def native-modules (.-NativeModules react-native))
-(def device-event-emitter (.-DeviceEventEmitter react-native))
 
 ;; React Components
 

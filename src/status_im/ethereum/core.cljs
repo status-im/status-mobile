@@ -1,21 +1,23 @@
 (ns status-im.ethereum.core
-  (:require ["web3-utils" :as utils]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
+            [status-im.native-module.core :as status]
             [status-im.ethereum.eip55 :as eip55]))
 
 (defn sha3 [s]
   (when s
-    (.sha3 utils (str s))))
+    (status/sha3 (str s))))
 
 (defn utf8-to-hex [s]
-  (try
-    (.utf8ToHex utils (str s))
-    (catch :default _ nil)))
+  (let [hex (status/utf8-to-hex (str s))]
+    (if (empty? hex)
+      nil
+      hex)))
 
 (defn hex-to-utf8 [s]
-  (try
-    (.hexToUtf8 utils s)
-    (catch :default _ nil)))
+  (let [utf8 (status/hex-to-utf8 s)]
+    (if (empty? utf8)
+      nil
+      utf8)))
 
 (def BSC-mainnet-chain-id 56)
 (def BSC-testnet-chain-id 97)
@@ -100,7 +102,7 @@
 
 (defn address? [s]
   (when s
-    (.isAddress utils s)))
+    (status/address? s)))
 
 (defn network->chain-id [network]
   (get-in network [:config :NetworkId]))

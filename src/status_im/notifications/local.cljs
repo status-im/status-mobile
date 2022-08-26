@@ -11,10 +11,10 @@
             [status-im.i18n.i18n :as i18n]
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.react :as react]
             [cljs-bean.core :as bean]
             [clojure.string :as clojure.string]
-            [status-im.chat.models :as chat.models]))
+            [status-im.chat.models :as chat.models]
+            [status-im.utils.react-native :as react-native-utils]))
 
 (def default-erc20-token
   {:symbol   :ERC20
@@ -52,7 +52,7 @@
                        notification-event-ios
                        (fn [notification]
                          (handle-notification-press {:userInfo (bean/bean (.getData ^js notification))})))
-    (.addListener ^js react/device-event-emitter
+    (.addListener ^js react-native-utils/device-event-emitter
                   notification-event-android
                   (fn [^js data]
                     (when (and data (.-dataJSON data))

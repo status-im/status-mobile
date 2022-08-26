@@ -98,6 +98,18 @@
             :numberToHex (fn [num-str]
                            (.numberToHex native-status num-str))
 
+            :checkAddressChecksum (fn [address]
+                                    (.checkAddressChecksum native-status address))
+
+            :sha3 (fn [str]
+                    (.sha3 native-status str))
+
+            :toChecksumAddress (fn [address]
+                                 (.toChecksumAddress native-status address))
+
+            :isAddress (fn [address]
+                         (.isAddress native-status address))
+
             :validateMnemonic (fn [json callback]
                                 (callback
                                  (.validateMnemonic
