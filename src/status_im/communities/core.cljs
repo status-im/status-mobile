@@ -236,6 +236,7 @@
                   :image (string/replace-first (str image) #"file://" "")
                   :imageAx 0
                   :imageAy 0
+                  :encrypted true
                   :imageBx crop-size
                   :imageBy crop-size}]
 
