@@ -1,4 +1,4 @@
-(ns quo2.components.avatar.avatar-themes 
+(ns quo2.components.avatar.avatar-themes
   (:require [quo2.foundations.colors :as colors]))
 
 (def themes {:light {:primary   {:icon-color       colors/primary-50

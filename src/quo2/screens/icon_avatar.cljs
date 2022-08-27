@@ -22,7 +22,7 @@
                             {:key   :main-icons/walelt
                              :value "Wallet"}
                             {:key   :main-icons/play
-                             :value "Play"}]} 
+                             :value "Play"}]}
                  {:label   "Color"
                   :key     :color
                   :type    :select
