@@ -538,16 +538,14 @@ class BaseView(object):
 
     def get_back_to_home_view(self, times_to_click_on_back_btn=3):
         counter = 0
-        while self.back_button.is_element_displayed(2) or self.close_button.is_element_displayed(2) or self.navigate_up_button.is_element_displayed(2):
+        while self.back_button.is_element_displayed(2) or self.navigate_up_button.is_element_displayed(2):
             try:
                 if counter >= times_to_click_on_back_btn:
                     break
                 if self.back_button.is_element_displayed(2):
-                    self.back_button.click_until_presence_of_element(self.home_button)
-                elif self.close_button.is_element_displayed(2):
-                    self.close_button.click_until_presence_of_element(self.home_button)
+                    self.back_button.click_until_absense_of_element(self.back_button)
                 else:
-                    self.navigate_up_button.click_until_presence_of_element(self.home_button)
+                    self.navigate_up_button.click_until_absense_of_element(self.navigate_up_button)
                 counter += 1
             except (NoSuchElementException, TimeoutException):
                 continue

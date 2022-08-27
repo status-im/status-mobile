@@ -328,7 +328,7 @@
 
 (fx/defn initialize-browser [_]
   {::json-rpc/call
-   [{:method     "browsers_getBrowsers"
+   [{:method     "wakuext_getBrowsers"
      :on-success #(re-frame/dispatch [::initialize-browsers %])}
     {:method     "browsers_getBookmarks"
      :on-success #(re-frame/dispatch [::initialize-bookmarks %])}

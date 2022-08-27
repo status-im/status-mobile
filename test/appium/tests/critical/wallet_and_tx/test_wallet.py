@@ -129,6 +129,7 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.sign_in.just_fyi("Check that 0 asset is not disappearing after relogin")
         self.wallet.reopen_app()
+        self.home.continue_syncing_button.click_if_shown(5)
         self.sign_in.wallet_button.click()
         self.wallet.asset_by_name(asset).scroll_to_element()
 

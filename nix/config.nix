@@ -12,7 +12,10 @@
       abi-include = "armeabi-v7a;arm64-v8a;x86"; # Android architectures to build for
     };
 
-    status-go = { src-override = null; };
+    status-go = {
+      src-override = null;
+      ipfs-gateway-url = "https://ipfs.status.im/";
+    };
   };
 
   # Android SDK requires an accepted license
