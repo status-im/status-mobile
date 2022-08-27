@@ -186,6 +186,7 @@
 ;; Customization
 (def purple-50 "#8661C1")
 (def purple-20 (alpha "#8661C1" 0.2))
+<<<<<<< HEAD
 (def purple-60 (alpha "#8661C1" 0.6))
 (def indigo-50 "#496289")
 (def indigo-20 (alpha "#496289" 0.2))
@@ -204,11 +205,32 @@
 (def yellow-60 (alpha "#FFCB53" 0.6))
 (def orange-50 "#FB8F61")
 (def orange-20 (alpha "#FFCB53" 0.2))
+=======
+(def purple-60 "#5E478C")
+(def indigo-50 "#496289")
+(def indigo-20 (alpha "#496289" 0.2))
+(def indigo-60 "#3D5273")
+(def turquoise-50 "#448EA2")
+(def turquoise-20 (alpha "#448EA2" 0.2))
+(def turquoise-60 "#397788")
+(def blue-50 "#4CB4EF")
+(def blue-20 (alpha "#4CB4EF" 0.2))
+(def blue-60 "#4097C9")
+(def green-50 "#5BCC95")
+(def green-20 (alpha "#5BCC95" 0.2))
+(def green-60 "#4CAB7D")
+(def yellow-50 "#FFCB53")
+(def yellow-20 (alpha "#FFCB53" 0.2))
+(def yellow-60 "#D6AA46")
+(def orange-50 "#FB8F61")
+(def orange-20 (alpha "#FB8F61" 0.2))
+>>>>>>> c9d82d753 (Improve colors and used quo2.text)
 (def orange-60 "#D37851")
 (def red-50 "#F46666")
 (def red-20 (alpha "#F46666" 0.2))
 (def red-60 (alpha "#F46666" 0.6))
 (def pink-50 "#FC7BAB")
+<<<<<<< HEAD
 (def pink-20 (alpha "#FC7BAA" 0.2))
 (def pink-60 (alpha "#FC7BAA" 0.6))
 (def brown-50 "#99604D")
@@ -217,6 +239,16 @@
 (def beige-50 "#CAAE93")
 (def beige-20 (alpha "#CAAE93" 0.2))
 (def beige-60 (alpha "#CAAE93" 0.6))
+=======
+(def pink-20 (alpha "#FC7BAB" 0.2))
+(def pink-60 "#D46790")
+(def brown-50 "#99604D")
+(def brown-20 (alpha "#99604D" 0.2))
+(def brown-60 "#805141")
+(def beige-50 "#CAAE93")
+(def beige-20 (alpha "#CAAE93" 0.2))
+(def beige-60 "#AA927C")
+>>>>>>> c9d82d753 (Improve colors and used quo2.text)
 
 (def customization
   {:dark {:purple purple-60
@@ -272,3 +304,7 @@
 
 (defn theme-colors [light dark]
   (if (theme/dark?) dark light))
+
+(defn dark?
+  []
+  (theme/dark?))

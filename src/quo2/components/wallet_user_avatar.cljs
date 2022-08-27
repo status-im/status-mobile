@@ -1,6 +1,7 @@
 (ns quo2.components.wallet-user-avatar
   (:require [quo.react-native :as rn]
             [quo2.foundations.colors :as colors]
+            [quo2.components.text :as text]
             [clojure.string :as clojure-string]))
 
 (def themes {:light {:primary   {:text-color       colors/primary-50
@@ -28,7 +29,7 @@
                      :beige {:text-color       colors/beige-50
                              :background-color colors/beige-20}}
              :dark  {:primary   {:text-color       colors/primary-60
-                                 :background-color colors/primary-20}
+                                 :background-color colors/primary-50-opa-20}
                      :purple {:text-color       colors/purple-60
                               :background-color colors/purple-20}
                      :indigo {:text-color       colors/indigo-60
@@ -57,10 +58,15 @@
                    :large 48
                    :x-large 80})
 
-(def font-sizes {:small 11
-                 :medium 13
-                 :large 15
-                 :x-large 27})
+(def font-sizes {:small :label
+                 :medium :paragraph-2
+                 :large :paragraph-1
+                 :x-large :heading-1})
+
+(def font-weights {:small :medium
+                   :medium :semi-bold
+                   :large :semi-bold
+                   :x-large :medium})
 
 (defn wallet-user-avatar
   "params, first name, last name, color, size
@@ -88,8 +94,9 @@
                       :justify-content :center
                       :align-items :center
                       :background-color circle-color}}
-     [rn/text {:style {:color text-color
-                       :font-size (size font-sizes)}}
+     [text/text {:size (size font-sizes)
+                 :weight (size font-weights)
+                 :style {:color text-color}}
       (if small?
         (str f-name-initial)
         (str f-name-initial l-name-initial))]]))
