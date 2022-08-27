@@ -13,8 +13,13 @@
             [quo2.screens.activity-logs :as activity-logs]
             [quo2.screens.token-tag :as token-tag]
             [quo2.screens.counter :as counter]
+<<<<<<< HEAD
             [quo2.screens.icon-avatar :as icon-avatar]
             [quo2.screens.wallet-user-avatar :as wallet-user-avatar]
+=======
+            [quo2.screens.wallet-user-avatar :as wallet-user-avatar]
+            [quo2.screens.icon-avatar :as icon-avatar]
+>>>>>>> 868dd703d (Rebase)
             [quo2.screens.segmented :as segmented]
             [quo2.screens.info-message :as info-message]
             [quo2.screens.information-box :as information-box]

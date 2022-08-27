@@ -11,9 +11,6 @@
                  {:label   "Last name"
                   :key     :l-name
                   :type    :text}
-                 {:label   "Dark"
-                  :key     :dark?
-                  :type    :boolean}
                  {:label   "Size"
                   :key     :size
                   :type    :select
@@ -54,7 +51,10 @@
                              :value "Beige"}]}])
 
 (defn cool-preview []
-  (let [state     (reagent/atom {})]
+  (let [state     (reagent/atom {:first-name "empty"
+                                 :last-name "name"
+                                 :size :x-large
+                                 :color :indigo})]
     (fn []
       [rn/view {:margin-bottom 50
                 :padding       16}

@@ -187,6 +187,10 @@
 (def purple-20 (alpha "#8661C1" 0.2))
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+(def purple-50 "#8661C1")
+>>>>>>> 868dd703d (Rebase)
 (def purple-60 (alpha "#8661C1" 0.6))
 (def indigo-50 "#496289")
 (def indigo-20 (alpha "#496289" 0.2))
@@ -204,6 +208,7 @@
 (def yellow-20 (alpha "#FFCB53" 0.2))
 (def yellow-60 (alpha "#FFCB53" 0.6))
 (def orange-50 "#FB8F61")
+<<<<<<< HEAD
 (def orange-20 (alpha "#FFCB53" 0.2))
 =======
 (def purple-60 "#5E478C")
@@ -249,6 +254,20 @@
 (def brown-60 (alpha "#99604D" 0.6))
 (def beige-50 "#CAAE93")
 (def beige-20 (alpha "#CAAE93" 0.2))
+=======
+(def orange-60 (alpha "#FB8F61" 0.6))
+(def red-20 (alpha "#F46666" 0.2))
+(def red-50 "#F46666")
+(def red-60 (alpha "#F46666" 0.6))
+(def pink-20 (alpha "#FC7BAB" 0.2))
+(def pink-50 "#FC7BAB")
+(def pink-60 (alpha "#FC7BAB" 0.6))
+(def brown-20 (alpha "#99604D" 0.2))
+(def brown-50 "#99604D")
+(def brown-60 (alpha "#805141" 0.6))
+(def beige-20 (alpha "#CAAE93" 0.2))
+(def beige-50 "#CAAE93")
+>>>>>>> 868dd703d (Rebase)
 (def beige-60 (alpha "#CAAE93" 0.6))
 =======
 =======
