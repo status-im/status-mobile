@@ -26,7 +26,7 @@
                      :beige {:icon-color       colors/beige-50
                              :background-color colors/beige-20}}
              :dark  {:primary   {:icon-color       colors/primary-60
-                                 :background-color colors/primary-20}
+                                 :background-color colors/primary-50-opa-20}
                      :purple {:icon-color       colors/purple-60
                               :background-color colors/purple-20}
                      :indigo {:icon-color       colors/indigo-60

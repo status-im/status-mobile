@@ -52,7 +52,7 @@
                              :value "Beige"}]}])
 
 (defn cool-preview []
-  (let [state (reagent/atom {:size :small
+  (let [state (reagent/atom {:size :big
                              :icon :main-icons/placeholder20
                              :color :primary})]
     (fn []

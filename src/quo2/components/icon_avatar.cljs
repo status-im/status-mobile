@@ -12,7 +12,7 @@
 (defn icon-avatar
   [{:keys [size icon color]}]
   (let [component-size (size sizes)
-        theme (theme/get-theme) 
+        theme (theme/get-theme)
         circle-color (get-in themes [theme color :background-color])
         icon-color (get-in themes [theme color :icon-color])
         icon-size (case size
