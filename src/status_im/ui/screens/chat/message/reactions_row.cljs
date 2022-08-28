@@ -19,4 +19,4 @@
                                  :clicks quantity
                                  :on-press #(on-emoji-press emoji-id)}]])
       ;; on-press won't work until we integrate Message Context Drawer
-     [quo2.reaction/open-reactions-menu {:on-press on-open}]]))
+     [quo2.reaction/open-reactions-menu (when @on-open {:on-press @on-open})]]))

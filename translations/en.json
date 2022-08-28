@@ -1790,6 +1790,13 @@
     "link-to-community": "Link to community",
     "external-link": "External link",
     "code-snippet": "Code snippet",
-    "kicked": "Kicked"
-    
+    "kicked": "Kicked",
+    "delete-for-everyone": "Delete for everyone",
+    "pin-to-chat": "Pin to the chat",
+    "unpin-from-chat": "Unpin from the chat",
+    "copy-text": "Copy text",
+    "edit-message": "Edit message",
+    "save-image-library": "Save image to library",
+    "share-image": "Share image",
+    "see-sticker-set": "See the full sticker set"
 }

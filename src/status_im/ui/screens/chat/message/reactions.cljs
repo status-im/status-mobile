@@ -19,7 +19,7 @@
                   :width  width
                   :height height})))))
 
-(defn- extract-id [reactions id]
+(defn extract-id [reactions id]
   (->> reactions
        (filter (fn [{:keys [emoji-id]}] (= emoji-id id)))
        first

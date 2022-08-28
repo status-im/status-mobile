@@ -26,7 +26,9 @@
             [status-im.ui.components.animation :as animation]
             [status-im.chat.models.images :as images]
             [status-im.chat.models.pin-message :as models.pin-message]
-            [status-im.ui.components.fast-image :as fast-image])
+            [status-im.ui.components.fast-image :as fast-image]
+            [status-im.ui.screens.chat.bottom-sheets.context-drawer :as message-context-drawer]
+            [status-im.ui.screens.chat.message.reactions-row :as reaction-row])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn message-timestamp-anim
@@ -344,12 +346,12 @@
         (swap! dimensions assoc :loaded true)))))
 
 (defn message-content-image
-  [{:keys [content in-popover?] :as message}
-   {:keys [on-long-press]}]
+  [{:keys [content]} _]
   (let [dimensions (reagent/atom {:width image-max-width :height image-max-height :loaded false})
         visible (reagent/atom false)
         uri (:image content)]
-    (fn []
+    (fn [{:keys [in-popover?] :as message}
+         {:keys [on-long-press]}]
       (let [style-opts {:outgoing false
                         :opacity (if (:loaded @dimensions) 1 0)
                         :width   (:width @dimensions)
@@ -362,7 +364,7 @@
          [react/touchable-highlight {:on-press      (fn []
                                                       (reset! visible true)
                                                       (react/dismiss-keyboard!))
-                                     :on-long-press on-long-press
+                                     :on-long-press @on-long-press
                                      :disabled      in-popover?}
           [react/view {:style               (style/image-message style-opts)
                        :accessibility-label :image-message}
@@ -410,54 +412,66 @@
   (on-long-press
    (concat
     (when (and outgoing edit-enabled)
-      [{:on-press #(re-frame/dispatch [:chat.ui/edit-message message])
-        :label    (i18n/label :t/edit)
+      [{:type     :main
+        :on-press #(re-frame/dispatch [:chat.ui/edit-message message])
+        :label    (i18n/label :t/edit-message)
+        :icon     :main-icons/edit-context20
         :id       :edit}])
     (when show-input?
-      [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+      [{:type     :main
+        :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
         :label    (i18n/label :t/message-reply)
+        :icon     :main-icons/reply-context20
         :id       :reply}])
-    [{:on-press #(react/copy-to-clipboard
+    [{:type     :main
+      :on-press #(react/copy-to-clipboard
                   (components.reply/get-quoted-text-with-mentions
                    (get content :parsed-text)))
-      :label    (i18n/label :t/sharing-copy-to-clipboard)
+      :label    (i18n/label :t/copy-text)
+      :icon     :main-icons/copy-context20
       :id       :copy}]
     (when message-pin-enabled
-      [{:on-press #(pin-message message)
-        :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))
+      [{:type     :main
+        :on-press #(pin-message message)
+        :label    (i18n/label  (if pinned :t/unpin-from-chat :t/pin-to-chat))
+        :icon     :main-icons/pin-context20
         :id       (if pinned :unpin :pin)}])
     (when (and outgoing config/delete-message-enabled?)
-      [{:on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
-        :label    (i18n/label :t/delete)
-        :id       :delete}]))))
+      [{:type     :danger
+        :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
+        :label    (i18n/label :t/delete-for-everyone)
+        :icon     :main-icons/delete-context20
+        :id       :delete-for-all}]))))
 
 (defn collapsible-text-message [_ _]
   (let [collapsed?   (reagent/atom false)
         show-timestamp? (reagent/atom false)]
-    (fn [{:keys [content in-popover?] :as message} on-long-press modal]
-      [react/touchable-highlight
-       (when-not modal
-         {:on-press         (fn [_]
-                              (react/dismiss-keyboard!)
-                              (reset! show-timestamp? true))
-          :delay-long-press 100
-          :on-long-press    (fn []
-                              (if @collapsed?
-                                (do (reset! collapsed? false)
-                                    (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
-                                (on-long-press-fn on-long-press message content)))
-          :disabled         in-popover?})
-       [react/view style/message-view-wrapper
-        [message-timestamp message show-timestamp?]
-        [react/view {:style (style/message-view message)}
-         [react/view {:style      (style/message-view-content)}
-          [react/view
-           [render-parsed-text-with-message-status message (:parsed-text content)]]]]]])))
+    (fn [{:keys [content in-popover?] :as message} on-long-press modal ref]
+      (let [on-long-press (fn []
+                            (if @collapsed?
+                              (do (reset! collapsed? false)
+                                  (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
+                              (on-long-press-fn on-long-press message content)))]
+        (reset! ref on-long-press)
+        [react/touchable-highlight
+         (when-not modal
+           {:on-press         (fn [_]
+                                (react/dismiss-keyboard!)
+                                (reset! show-timestamp? true))
+            :delay-long-press 100
+            :on-long-press    on-long-press
+            :disabled         in-popover?})
+         [react/view style/message-view-wrapper
+          [message-timestamp message show-timestamp?]
+          [react/view {:style (style/message-view message)}
+           [react/view {:style      (style/message-view-content)}
+            [react/view
+             [render-parsed-text-with-message-status message (:parsed-text content)]]]]]]))))
 
 (defmethod ->message constants/content-type-text
-  [message {:keys [on-long-press modal] :as reaction-picker}]
+  [message {:keys [on-long-press modal ref] :as reaction-picker}]
   [message-content-wrapper message
-   [collapsible-text-message message on-long-press modal]
+   [collapsible-text-message message on-long-press modal ref]
    reaction-picker])
 
 (defmethod ->message constants/content-type-community
@@ -477,42 +491,60 @@
 (defmethod ->message constants/content-type-emoji []
   (let [show-timestamp? (reagent/atom false)]
     (fn [{:keys [content pinned in-popover? message-pin-enabled] :as message}
-         {:keys [on-long-press modal]
+         {:keys [on-long-press modal ref]
           :as   reaction-picker}]
-      [message-content-wrapper message
-       [react/touchable-highlight (when-not modal
-                                    {:disabled      in-popover?
-                                     :on-press      (fn []
-                                                      (react/dismiss-keyboard!)
-                                                      (reset! show-timestamp? true))
-                                     :delay-long-press 100
-                                     :on-long-press (fn []
-                                                      (on-long-press
-                                                       (concat
-                                                        [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-                                                          :id       :reply
-                                                          :label    (i18n/label :t/message-reply)}
-                                                         {:on-press #(react/copy-to-clipboard (get content :text))
-                                                          :id       :copy
-                                                          :label    (i18n/label :t/sharing-copy-to-clipboard)}]
-                                                        (when message-pin-enabled [{:on-press #(pin-message message)
-                                                                                    :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))}]))))})
-        [react/view style/message-view-wrapper
-         [message-timestamp message show-timestamp?]
-         [react/view (style/message-view message)
-          [react/view {:style (style/message-view-content)}
-           [react/view {:style (style/style-message-text)}
-            [react/text {:style (style/emoji-message message)}
-             (:text content)]]
-           [message-status message]]]]]
-       reaction-picker])))
+      (let [on-long-press (fn []
+                            (on-long-press
+                             (concat
+                              [{:type     :main
+                                :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                :id       :reply
+                                :icon     :main-icons/reply-context20
+                                :label    (i18n/label :t/message-reply)}
+                               {:type     :main
+                                :on-press #(react/copy-to-clipboard (get content :text))
+                                :id       :copy
+                                :icon     :main-icons/copy-context20
+                                :label    (i18n/label :t/copy-text)}]
+                              (when message-pin-enabled [{:type     :main
+                                                          :on-press #(pin-message message)
+                                                          :id       :pin
+                                                          :icon     :main-icons/pin-context20
+                                                          :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))}]))))]
+        (reset! ref on-long-press)
+        [message-content-wrapper message
+         [react/touchable-highlight (when-not modal
+                                      {:disabled         in-popover?
+                                       :on-press         (fn []
+                                                           (react/dismiss-keyboard!)
+                                                           (reset! show-timestamp? true))
+                                       :delay-long-press 100
+                                       :on-long-press    on-long-press})
+          [react/view style/message-view-wrapper
+           [message-timestamp message show-timestamp?]
+           [react/view (style/message-view message)
+            [react/view {:style (style/message-view-content)}
+             [react/view {:style (style/style-message-text)}
+              [react/text {:style (style/emoji-message message)}
+               (:text content)]]
+             [message-status message]]]]]
+         reaction-picker]))))
 
 (defmethod ->message constants/content-type-sticker
   [{:keys [content from outgoing in-popover?]
     :as   message}
-   {:keys [on-long-press modal]
+   {:keys [on-long-press modal ref]
     :as   reaction-picker}]
-  (let [pack (get-in content [:sticker :pack])]
+  (let [pack (get-in content [:sticker :pack])
+        on-long-press (fn []
+                        (on-long-press
+                         (when-not outgoing
+                           [{:type     :main
+                             :icon     :main-icons/stickers-context20
+                             :on-press #(when pack
+                                          (re-frame/dispatch [:chat.ui/show-profile from]))
+                             :label    (i18n/label :t/see-sticker-set)}])))]
+    (reset! ref on-long-press)
     [message-content-wrapper message
      [react/touchable-highlight (when-not modal
                                   {:disabled            in-popover?
@@ -521,66 +553,83 @@
                                                           (when pack
                                                             (re-frame/dispatch [:stickers/open-sticker-pack (str pack)]))
                                                           (react/dismiss-keyboard!))
-                                   :delay-long-press 100
-                                   :on-long-press       (fn []
-                                                          (on-long-press
-                                                           (when-not outgoing
-                                                             [{:on-press #(when pack
-                                                                            (re-frame/dispatch [:chat.ui/show-profile from]))
-                                                               :label    (i18n/label :t/view-details)}])))})
+                                   :delay-long-press    100
+                                   :on-long-press       on-long-press})
       [fast-image/fast-image {:style  {:margin 10 :width 140 :height 140}
                               :source {:uri (str (-> content :sticker :url) "&download=true")}}]]
      reaction-picker]))
 
 (defmethod ->message constants/content-type-image
   [{:keys [content in-popover? outgoing] :as message}
-   {:keys [on-long-press modal]
+   {:keys [on-long-press modal ref]
     :as   reaction-picker}]
-  [message-content-wrapper message
-   [message-content-image message
-    {:modal         modal
-     :disabled      in-popover?
-     :delay-long-press 100
-     :on-long-press (fn []
-                      (on-long-press
-                       (concat [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-                                 :id       :reply
-                                 :label    (i18n/label :t/message-reply)}
-                                {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
-                                 :id       :save
-                                 :label    (i18n/label :t/save)}
-                                {:on-press #(images/download-image-http
-                                             (get-in message [:content :image]) preview/share)
-                                 :id       :share
-                                 :label    (i18n/label :t/share)}]
-                               (when (and outgoing config/delete-message-enabled?)
-                                 [{:on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
-                                   :label    (i18n/label :t/delete)
-                                   :id       :delete}]))))}]
-   reaction-picker])
+  (let [on-long-press (fn []
+                        (on-long-press
+                         (concat [{:type     :main
+                                   :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                   :id       :reply
+                                   :icon     :main-icons/reply-context20
+                                   :label    (i18n/label :t/message-reply)}
+                                  {:type     :main
+                                   :on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
+                                   :id       :save
+                                   :icon     :main-icons/save-context20
+                                   :label    (i18n/label :t/save-image-library)}
+                                  {:type     :main
+                                   :on-press #(images/download-image-http
+                                               (get-in message [:content :image]) preview/share)
+                                   :id       :share
+                                   :icon     :main-icons/share-context20
+                                   :label    (i18n/label :t/share-image)}]
+                                 (when (and outgoing config/delete-message-enabled?)
+                                   [{:type     :danger
+                                     :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
+                                     :label    (i18n/label :t/delete-for-everyone)
+                                     :icon     :main-icons/delete-context20
+                                     :id       :delete}]))))]
+    (reset! ref on-long-press)
+    [message-content-wrapper message
+     [message-content-image message
+      {:modal            modal
+       :disabled         in-popover?
+       :delay-long-press 100
+       :on-long-press    ref}]
+     reaction-picker]))
 
 (defmethod ->message constants/content-type-audio []
   (let [show-timestamp? (reagent/atom false)]
-    (fn [{:keys [outgoing] :as message}
-         {:keys [on-long-press modal]
+    (fn [{:keys [outgoing pinned] :as message}
+         {:keys [on-long-press modal ref]
           :as   reaction-picker}]
-      [message-content-wrapper message
-       [react/touchable-highlight
-        (when-not modal
-          {:on-long-press
-           (fn [] (on-long-press (if (and outgoing config/delete-message-enabled?)
-                                   [{:on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
-                                     :label    (i18n/label :t/delete)
-                                     :id       :delete}]
-                                   [])))
-           :on-press (fn []
-                       (reset! show-timestamp? true))})
-        [react/view style/message-view-wrapper
-         [message-timestamp message show-timestamp?]
-         [react/view {:style (style/message-view message) :accessibility-label :audio-message}
-          [react/view {:style (style/message-view-content)}
-           [message.audio/message-content message] [message-status message]]]]]
-       reaction-picker])))
+      (let [on-long-press (fn [] (on-long-press [{:type     :main
+                                                  :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                                  :label    (i18n/label :t/message-reply)
+                                                  :icon     :main-icons/reply-context20
+                                                  :id       :reply}
+                                                 {:type     :main
+                                                  :on-press #(pin-message message)
+                                                  :label    (i18n/label  (if pinned :t/unpin-from-chat :t/pin-to-chat))
+                                                  :icon     :main-icons/pin-context20
+                                                  :id       (if pinned :unpin :pin)}
+                                                 (when (and outgoing config/delete-message-enabled?)
+                                                   {:type     :danger
+                                                    :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
+                                                    :label    (i18n/label :t/delete-for-everyone)
+                                                    :icon     :main-icons/delete-context20
+                                                    :id       :delete})]))]
+        (reset! ref on-long-press)
+        [message-content-wrapper message
+         [react/touchable-highlight
+          (when-not modal
+            {:on-long-press on-long-press
+             :on-press (fn []
+                         (reset! show-timestamp? true))})
+          [react/view style/message-view-wrapper
+           [message-timestamp message show-timestamp?]
+           [react/view {:style (style/message-view message) :accessibility-label :audio-message}
+            [react/view {:style (style/message-view-content)}
+             [message.audio/message-content message] [message-status message]]]]]
+         reaction-picker]))))
 
 (defn contact-request-status-pending []
   [react/view {:style {:flex-direction :row}}
@@ -630,22 +679,37 @@
    [unknown-content-type message]])
 
 (defn chat-message [{:keys [display-photo? pinned pinned-by] :as message}]
-  [:<>
-   [reactions/with-reaction-picker
-    {:message         message
-     :reactions       @(re-frame/subscribe [:chats/message-reactions (:message-id message) (:chat-id message)])
-     :picker-on-open  (fn [])
-     :picker-on-close (fn [])
-     :send-emoji      (fn [{:keys [emoji-id]}]
-                        (re-frame/dispatch [::models.reactions/send-emoji-reaction
-                                            {:message-id (:message-id message)
-                                             :emoji-id   emoji-id}]))
-     :retract-emoji   (fn [{:keys [emoji-id emoji-reaction-id]}]
-                        (re-frame/dispatch [::models.reactions/send-emoji-reaction-retraction
-                                            {:message-id        (:message-id message)
-                                             :emoji-id          emoji-id
-                                             :emoji-reaction-id emoji-reaction-id}]))
-     :render          ->message}]
-   (when pinned
-     [react/view {:style (style/pin-indicator-container)}
-      [pinned-by-indicator display-photo? pinned-by]])])
+  (let [reactions @(re-frame/subscribe [:chats/message-reactions (:message-id message) (:chat-id message)])
+        own-reactions (reduce (fn [acc {:keys [emoji-id own]}]
+                                (if own (conj acc emoji-id) acc))
+                              [] reactions)
+        send-emoji      (fn [{:keys [emoji-id]}]
+                          (re-frame/dispatch [::models.reactions/send-emoji-reaction
+                                              {:message-id (:message-id message)
+                                               :emoji-id   emoji-id}]))
+        retract-emoji   (fn [{:keys [emoji-id emoji-reaction-id]}]
+                          (re-frame/dispatch [::models.reactions/send-emoji-reaction-retraction
+                                              {:message-id        (:message-id message)
+                                               :emoji-id          emoji-id
+                                               :emoji-reaction-id emoji-reaction-id}]))
+        on-emoji-press  (fn [emoji-id]
+                          (let [active ((set own-reactions) emoji-id)]
+                            (if active
+                              (retract-emoji {:emoji-id          emoji-id
+                                              :emoji-reaction-id (reactions/extract-id reactions emoji-id)})
+                              (send-emoji {:emoji-id emoji-id}))))
+        on-open-drawer  (fn [actions]
+                          (re-frame/dispatch [:bottom-sheet/show-sheet
+                                              {:content (message-context-drawer/message-options
+                                                         actions
+                                                         (into #{} (js->clj own-reactions))
+                                                         #(on-emoji-press %))}]))
+        on-long-press   (atom nil)]
+    [:<>
+     [->message message {:ref           on-long-press
+                         :modal         false
+                         :on-long-press on-open-drawer}]
+     [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press] ;; TODO: pass on-open-drawer function
+     (when pinned
+       [react/view {:style (style/pin-indicator-container)}
+        [pinned-by-indicator display-photo? pinned-by]])]))
