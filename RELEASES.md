@@ -7,20 +7,21 @@
 * [#13230] Show default syncing interval by @rasom in https://github.com/status-im/status-mobile/pull/13234
 * Add support for mutual contact requests by @cammellos in https://github.com/status-im/status-mobile/pull/13054
 * Implement Information box and ens banner view by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13753
+* Profile picture sync by @siphiuel in https://github.com/status-im/status-mobile/commit/fbfab9fd3bdbcfa6cdd9a24a6bce526da8252fd3
 
 ### Improvements
 
+* Improve notifications life-cycle  by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13248
 * Simpledapp on Goerli  by @churik in https://github.com/status-im/status-mobile/pull/13732
-* [#13198] Backup deleted community by @rasom in https://github.com/status-im/status-mobile/pull/13262
 * Include share action on longpress image menu by @jo-mut in https://github.com/status-im/status-mobile/pull/13359
 * fast image loading indicator by @flexsurfer in https://github.com/status-im/status-mobile/pull/13431
 * [#13355] Long time (5-15 sec) for loading chat messages by @flexsurfer in https://github.com/status-im/status-mobile/pull/13425
 * [Fixes: #13416] resize image in status-go as well, alert user if fails by @cammellos in https://github.com/status-im/status-mobile/pull/13422
-* Synchronise Sticker Pack setting fields by @audriu in https://github.com/status-im/status-mobile/pull/13358
 * [#12566] Remove legacy dependency on mailserver password by @erikseppanen in https://github.com/status-im/status-mobile/pull/13511
 * Wallet sync for generated accounts by @siphiuel in https://github.com/status-im/status-mobile/pull/13487
 * feat: lottie splash screen by @yqrashawn in https://github.com/status-im/status-mobile/pull/13714
 * [#13647] Update all settings on pairing with a new wallet account by @rasom in https://github.com/status-im/status-mobile/pull/13742
+* Improve ethereum.send by @qfrank  in https://github.com/status-im/status-mobile/pull/13724 
 
 ### Redesign
 
@@ -38,22 +39,17 @@
 
 ### Bug Fixes
 
-* fix community preview by @cammellos in https://github.com/status-im/status-mobile/pull/13206
 * fix screen orientation on android by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13218
 * Don't unmute contact while adding by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13237
+* fix chat image long press issue by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13371
+* [#13149] Timeline images stretch off screen by @siddarthkay in https://github.com/status-im/status-mobile/pull/13211
 * [#13233] Proper message after clearing history in pubchat by @rasom in https://github.com/status-im/status-mobile/pull/13241
 * [#13235] Fix opening of the last shown chat with local notifications by @rasom in https://github.com/status-im/status-mobile/pull/13252
 * [#13201] Fix handling of favourits syncing by @rasom in https://github.com/status-im/status-mobile/pull/13253
 * [#13257] Fix sync devices sorting by @rasom in https://github.com/status-im/status-mobile/pull/13282
 * [#13283] Fix syncing of adding contact after removal by @rasom in https://github.com/status-im/status-mobile/pull/13292
 * [#13263] Fix for ENS warning showing on custom domains by @daferna in https://github.com/status-im/status-mobile/pull/13312
-* Fix currency and sticker synchronisation by @audriu in https://github.com/status-im/status-mobile/pull/13243
-* [#13357] 'Unknown Not a contact' screen with endless spinner when sta… by @flexsurfer in https://github.com/status-im/status-mobile/pull/13379
 * fix can't share deep link from profile on ios by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13420
-* [#13433] Input field in chat view is not cleared after logging out by @flexsurfer in https://github.com/status-im/status-mobile/pull/13438
-* Fix App getting stucked on logout by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13427
-* fix message sent state for audio and emoji messages by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13459
-* Fix: share images bug that freezes app by @jo-mut in https://github.com/status-im/status-mobile/pull/13482
 * Fix sending logs from iOS by @bitgamma in https://github.com/status-im/status-mobile/pull/13619
 * fix #13642: Cannot sign in on claim.lens.xyz by @qfrank in https://github.com/status-im/status-mobile/pull/13668
 * [#13493] Can not switch to xDai chain by @flexsurfer in https://github.com/status-im/status-mobile/pull/13709
@@ -61,6 +57,7 @@
 * fix: set max option not work when send from qrcode by @yqrashawn in https://github.com/status-im/status-mobile/pull/13733
 * [#13835] Fix Generate keys button by @rasom in https://github.com/status-im/status-mobile/pull/13841
 * Fix disappearing of the last notification when paired by @rasom in https://github.com/status-im/status-mobile/pull/13796
+* [#13766] custom networkid fix by @ flexsurfer in https://github.com/status-im/status-mobile/pull/13765
 
 ## New Contributors
 * @siddarthkay made their first contribution in https://github.com/status-im/status-mobile/pull/13185
