@@ -273,6 +273,14 @@
 
 (reg-root-key-sub :messenger/started? :messenger/started?)
 
+(reg-root-key-sub :information-box-states :information-box-states)
+
+(re-frame/reg-sub
+ :information-box-closed?
+ :<- [:information-box-states]
+ (fn [states [_ id]]
+   (get states id)))
+
 (re-frame/reg-sub
  :communities
  :<- [:raw-communities]

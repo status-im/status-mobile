@@ -120,7 +120,7 @@ class GithubHtmlReport(BaseTestReport):
         for step in last_testrun.steps:
             test_steps_html.append("<div>%s</div>" % step)
         if last_testrun.error:
-            error = last_testrun.error[:255]
+            error = last_testrun.error
             if test_steps_html:
                 html += "<p>"
                 html += "<blockquote>"
@@ -130,13 +130,11 @@ class GithubHtmlReport(BaseTestReport):
                 html += "</p>"
             code_error, no_code_error_str, _ = self.separate_xfail_error(error)
             if no_code_error_str:
-                html += "<code>%s</code>" % code_error
+                html += "\n\n```\n%s\n```\n\n" % code_error
                 html += "<b>%s</b>" % no_code_error_str
             else:
-                html += "<code>%s</code>" % error.replace("[[", "<b>[[").replace("]]", "]]</b>")
+                html += "\n\n```\n%s\n```\n\n" % error.replace("[[", "<b>[[").replace("]]", "]]</b>")
             html += "<br/><br/>"
-        if test.group_name:
-            html += "<p><b>Class: %s</b></p>" % test.group_name
         if last_testrun.jobs:
             html += self.build_device_sessions_html(last_testrun)
         html += "</td></tr>"

@@ -39,6 +39,10 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         self.public_chat_1, self.public_chat_2 = self.home_1.join_public_chat(
             self.public_chat_name), self.home_2.join_public_chat(self.public_chat_name)
 
+        self.home_1.just_fyi("Close the ENS banner")
+        [home.home_button.double_click() for home in (self.home_1, self.home_2)]
+        [home.ens_banner_close_button.click() for home in (self.home_1, self.home_2)]
+
     @marks.testrail_id(702281)
     def test_profile_show_profile_picture_and_online_indicator_settings(self):
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]

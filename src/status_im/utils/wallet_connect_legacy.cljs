@@ -6,3 +6,8 @@
   (WalletConnect.
    (clj->js {:uri uri
              :clientMeta config/default-wallet-connect-metadata})))
+
+(defn create-connector-from-session [session]
+  (WalletConnect.
+   (clj->js {:session session
+             :clientMeta config/default-wallet-connect-metadata})))

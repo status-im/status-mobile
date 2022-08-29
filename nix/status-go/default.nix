@@ -1,7 +1,7 @@
 { lib, callPackage, mkShell }:
 
 let
-  inherit (lib) attrValues mapAttrs;
+  inherit (lib) getConfig attrValues mapAttrs;
 
   # Metadata common to all builds of status-go
   meta = {
@@ -17,6 +17,8 @@ let
   goBuildParams = {
     GitCommit = source.rev;
     Version = source.cleanVersion;
+    # FIXME: This should be moved to status-go config.
+    IpfsGatewayURL = getConfig "status-go.ipfs-gateway-url" "https://ipfs.status.im/";
   };
 
   # These are necessary for status-go to show correct version

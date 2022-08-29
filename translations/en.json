@@ -986,6 +986,8 @@
     "open": "Open",
     "open-home": "Open...",
     "open-dapp": "Open ÐApp",
+    "open-dapp2": "Open dApp",
+    "ens-banner-message": "If you registered a stateofus.eth name you might be eligible to collect $ENS",
     "open-dapp-store": "Discover ÐApps",
     "open-nfc-settings": "Open NFC settings",
     "open-on-block-explorer": "Open on block explorer",
@@ -1214,6 +1216,7 @@
     "token-auto-validate-name-error": "Wrong name for token {{symbol}} at address {{address}} - set to {{expected}} but detected as {{actual}}",
     "token-auto-validate-symbol-error": "Wrong symbol for token {{symbol}} at address {{address}} - set to {{expected}} but detected as {{actual}}",
     "token-details": "Token details",
+    "token-price": "Token Price",
     "topic-name-error": "Use only lowercase letters (a to z), numbers & dashes (-). Do not use chat keys",
     "transaction": "Transaction",
     "transaction-data": "Transaction data",
@@ -1741,6 +1744,7 @@
     "wallet-manage-app-connections": "Manage app connections",
     "connection-request": "Connection Request",
     "disconnect": "Disconnect",
+    "app-connections": "App connections",
     "new-ui": "New UI",
     "send-contact-request-message": "To start a chat you need to become contacts",
     "contact-request": "Contact request",
@@ -1754,8 +1758,9 @@
     "contact-request-pending": "Pending...",
     "removed-from-contacts": "Removed from contacts",
     "mutual-contact-requests": "Mutual contact requests",
-    "pending": "Pending",
     "negative": "Negative",
     "positive": "Positive",
-    "public": "Public"
+    "public": "Public",
+    "successful-connection": "Successful Connection",
+    "all-connections": "All Connections"
 }

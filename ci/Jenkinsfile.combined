@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.5.0'
+library 'status-jenkins-lib@v1.5.2'
 
 pipeline {
   agent { label 'linux' }
@@ -48,6 +48,9 @@ pipeline {
         } } }
         stage('Android e2e') { steps { script {
           apke2e = jenkins.Build('status-mobile/platforms/android-e2e')
+        } } }
+        stage('Tests') { steps { script {
+          ios = jenkins.Build('status-mobile/platforms/tests')
         } } }
       }
     }

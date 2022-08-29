@@ -8,21 +8,8 @@
             [status-im.utils.wallet-connect :as wallet-connect]
             [status-im.browser.core :as browser]
             [taoensso.timbre :as log]
-            [status-im.async-storage.core :as async-storage]
             [status-im.utils.config :as config]
             [status-im.utils.types :as types]))
-
-(fx/defn switch-wallet-connect-enabled
-  {:events [:multiaccounts.ui/switch-wallet-connect-enabled]}
-  [{:keys [db]} enabled?]
-  (merge
-   {::async-storage/set! {:wallet-connect-enabled? enabled?}
-    :db (cond-> db
-          (not enabled?)
-          (dissoc :wallet-connect/client)
-          :always
-          (assoc :wallet-connect/enabled? enabled?))}
-   (when enabled? {:wc-2-init nil})))
 
 (fx/defn proposal-handler
   {:events [:wallet-connect/proposal]}
@@ -196,13 +183,10 @@
 (fx/defn pair-session
   {:events [:wallet-connect/pair]}
   [{:keys [db]} {:keys [data]}]
-  (let [client (get db :wallet-connect/client)
-        wallet-connect-enabled? (get db :wallet-connect/enabled?)]
-    (merge
-     {:dispatch [:navigate-back]}
-     (when wallet-connect-enabled?
-       {:db (assoc db :wallet-connect/scanned-uri data)
-        :wc-2-pair [client data]}))))
+  (let [client (get db :wallet-connect/client)]
+    {:db (assoc db :wallet-connect/scanned-uri data)
+     :dispatch [:navigate-back]
+     :wc-2-pair [client data]}))
 
 (fx/defn wallet-connect-client-initate
   {:events [:wallet-connect/client-init]}

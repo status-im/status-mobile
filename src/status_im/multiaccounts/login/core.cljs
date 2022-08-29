@@ -25,6 +25,7 @@
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
+            [status-im.wallet-connect-legacy.core :as wallet-connect-legacy]
             [status-im.wallet.prices :as prices]
             [taoensso.timbre :as log]
             [status-im.data-store.invitations :as data-store.invitations]
@@ -87,13 +88,6 @@
    (wallet-connect/init
     #(re-frame/dispatch [:wallet-connect/client-init %])
     #(log/error "[wallet-connect]" %))))
-
-(re-frame/reg-fx
- ::initialize-wallet-connect
- (fn []
-   (async-storage/get-item
-    :wallet-connect-enabled?
-    #(re-frame/dispatch [:multiaccounts.ui/switch-wallet-connect-enabled %]))))
 
 (defn rpc->accounts [accounts]
   (reduce (fn [acc {:keys [chat type wallet] :as account}]
@@ -169,7 +163,8 @@
      (transactions/get-fetched-transfers))
    (when (ethereum/binance-chain? db)
      (wallet/request-current-block-update))
-   (prices/update-prices)))
+   (prices/update-prices)
+   (wallet-connect-legacy/get-connector-session-from-db)))
 
 (fx/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
@@ -333,7 +328,7 @@
 
 (fx/defn initialize-browser [_]
   {::json-rpc/call
-   [{:method     "browsers_getBrowsers"
+   [{:method     "wakuext_getBrowsers"
      :on-success #(re-frame/dispatch [::initialize-browsers %])}
     {:method     "browsers_getBookmarks"
      :on-success #(re-frame/dispatch [::initialize-bookmarks %])}

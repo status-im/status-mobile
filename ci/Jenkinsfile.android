@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.5.0'
+library 'status-jenkins-lib@v1.5.2'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
@@ -56,43 +56,14 @@ pipeline {
         }
       }
     }
-    stage('Parallel Assemble') {
-      parallel {
-        stage('Checks') { stages {
-          stage('Lint') {
-            steps {
-              script {
-                /* We want the build result to be uploaded */
-                catchError(
-                  message: 'Linting check failed!',
-                  buildResult: 'FAILURE',
-                  stageResult: 'FAILURE'
-                ) {
-                  sh 'make lint'
-                }
-              }
-            }
-          }
-          stage('Tests') {
-            steps {
-              script {
-                sh 'make test'
-              }
-            }
-          }
-        } }
-        stage('Build') { stages {
-          stage('Bundle') {
-            steps {
-              script { apks = android.bundle() }
-            }
-          }
-          stage('Sign') {
-            steps {
-              script { apks = android.sign(apks) }
-            }
-          }
-        } }
+    stage('Bundle') {
+      steps {
+        script { apks = android.bundle() }
+      }
+    }
+    stage('Sign') {
+      steps {
+        script { apks = android.sign(apks) }
       }
     }
     stage('Parallel Upload') {
@@ -103,37 +74,30 @@ pipeline {
           } }
         }
         stage('Upload') {
-          steps {
-            script {
-              def urls = apks.collect { s3.uploadArtifact(it) }
-              /* return only the universal APK */
-              if (urls.size() > 1) { 
-                env.PKG_URL = urls.find { it.contains('universal') }
-              } else { /* if no universal is available pick first */
-                env.PKG_URL = urls.first()
-              }
-              jenkins.setBuildDesc(APK: env.PKG_URL)
-              /* e2e builds get tested in SauceLabs */
-              if (utils.isE2EBuild()) {
-                env.SAUCE_URL = android.uploadToSauceLabs()
-              }
-              if (utils.isNightlyBuild()) {
-                env.DIAWI_URL = android.uploadToDiawi()
-              }
+          steps { script {
+            def urls = apks.collect { s3.uploadArtifact(it) }
+            /* return only the universal APK */
+            if (urls.size() > 1) {
+              env.PKG_URL = urls.find { it.contains('universal') }
+            } else { /* if no universal is available pick first */
+              env.PKG_URL = urls.first()
             }
-          }
+            jenkins.setBuildDesc(APK: env.PKG_URL)
+            /* e2e builds get tested in SauceLabs */
+            if (utils.isE2EBuild()) {
+              env.SAUCE_URL = android.uploadToSauceLabs()
+            }
+            if (utils.isNightlyBuild()) {
+              env.DIAWI_URL = android.uploadToDiawi()
+            }
+          } }
         }
-      }
-    }
-    stage('Cleanup') {
-      steps {
-        sh 'make purge'
       }
     }
   }
   post {
     success { script { github.notifyPR(true) } }
     failure { script { github.notifyPR(false) } }
-    always { sh 'make _fix-node-perms' }
+    always  { sh 'make purge' }
   }
 }

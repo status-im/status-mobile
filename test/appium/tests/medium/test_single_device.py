@@ -906,10 +906,9 @@ class TestChatManagement(SingleDeviceTestCase):
         profile.close_button.click()
         if not profile.element_by_text(h_node).is_element_displayed():
             self.errors.append('"%s" history node is not pinned' % h_node)
-        profile.home_button.click()
 
         profile.just_fyi('Relogin and check that settings are preserved')
-        home.relogin()
+        home.reopen_app()
         home.profile_button.click()
         profile.sync_settings_button.click()
         if not profile.element_by_text(h_node).is_element_displayed():

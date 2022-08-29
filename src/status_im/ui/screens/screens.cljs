@@ -119,6 +119,7 @@
             [status-im.ui.screens.wallet.send.views :as wallet.send]
             [quo2.screens.main :as quo2.preview]
             [status-im.utils.config :as config]
+            [status-im.ui.screens.wallet.manage-connections.views :as manage-all-connections]
             [status-im.navigation2.screens :as navigation2.screens]))
             ;[quo2.foundations.colors :as quo2.colors]))
 
@@ -880,6 +881,11 @@
             ;;TODO move to popover?
             :component key-storage.views/storage}
 
+           {:name      :show-all-connections
+            :insets    {:bottom true}
+            :options   {:topBar {:title {:text (i18n/label :all-connections)}}}
+            :component manage-all-connections/views}
+
            ;; BUG REPORT
            {:name      :bug-report
             :options   {:topBar {:visible false}}
@@ -890,7 +896,7 @@
             quo.preview/screens)
           (when config/quo-preview-enabled?
             quo.preview/main-screens)
-          (when config/quo-preview-enabled?
+          (when (or config/quo-preview-enabled? @config/new-ui-enabled?)
             quo2.preview/screens)
           (when @config/new-ui-enabled?
             navigation2.screens/screen-overwrites)

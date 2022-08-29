@@ -312,3 +312,45 @@
    cofx
    (navigation/open-modal :buy-crypto nil)
    (wallet/keep-watching-history)))
+
+;; Information Box
+
+(def closable-information-boxes
+  [{:id      :ens-banner
+    :global? true}]) ;; global? - close information box across all profiles
+
+(defn information-box-id-hash [id public-key global?]
+  (if global?
+    (hash id)
+    (hash (str public-key id))))
+
+(fx/defn close-information-box
+  {:events [:close-information-box]}
+  [{:keys [db]} id global?]
+  (let [public-key (get-in db [:multiaccount :public-key])
+        hash       (information-box-id-hash id public-key global?)]
+    {::async-storage/set! {hash true}
+     :db (assoc-in db [:information-box-states id] true)}))
+
+(fx/defn information-box-states-loaded
+  {:events [:information-box-states-loaded]}
+  [{:keys [db]} hashes states]
+  {:db (assoc db :information-box-states (reduce
+                                          (fn [acc [id hash]]
+                                            (assoc acc id (get states hash)))
+                                          {} hashes))})
+
+(fx/defn load-information-box-states
+  {:events [:load-information-box-states]}
+  [{:keys [db]}]
+  (let [public-key            (get-in db [:multiaccount :public-key])
+        {:keys [keys hashes]} (reduce (fn [acc {:keys [id global?]}]
+                                        (let [hash (information-box-id-hash
+                                                    id public-key global?)]
+                                          (-> acc
+                                              (assoc-in [:hashes id] hash)
+                                              (update :keys #(conj % hash)))))
+                                      {} closable-information-boxes)]
+    {::async-storage/get {:keys keys
+                          :cb   #(re-frame/dispatch
+                                  [:information-box-states-loaded hashes %])}}))

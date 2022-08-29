@@ -5,9 +5,15 @@
             status-im.events
             [status-im.multiaccounts.logout.core :as logout]
             [status-im.transport.core :as transport]
+            status-im.subs ;;so integration tests can run independently
+            [status-im.ethereum.core :as ethereum]
             [status-im.utils.test :as utils.test]))
 
 (def password "testabc")
+
+(def community {:membership 1 :name "foo" :description "bar"})
+
+(def account-name "account-abc")
 
 (utils.test/init!)
 
@@ -48,6 +54,18 @@
 (defn assert-multiaccount-loaded []
   (is (false? @(rf/subscribe [:multiaccounts/loading]))))
 
+(defn assert-community-created []
+  (is (= @(rf/subscribe [:communities/create]) community)))
+
+(defn create-new-account! []
+  (rf/dispatch-sync [:wallet.accounts/start-adding-new-account {:type :generate}])
+  (rf/dispatch-sync [:set-in [:add-account :account :name] account-name])
+  (rf/dispatch [:wallet.accounts/add-new-account (ethereum/sha3 password)]))
+
+(defn assert-new-account-created []
+  (is (true? (some #(= (:name %) account-name)
+                   @(rf/subscribe [:multiaccount/accounts])))))
+
 (defn logout! []
   (rf/dispatch [:logout]))
 
@@ -68,24 +86,50 @@
       (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an inconsistent state between tests
                         (assert-logout)))))))
 
-;; This test is only to make sure running multiple integration tests doesn't hang
-;; can be removed as soon as another test is added
-(deftest create-account-test-safety-check
+(deftest create-community-test
   (rf-test/run-test-async
    (initialize-app!) ; initialize app
    (rf-test/wait-for
-    [:status-im.init.core/initialize-multiaccounts] ; wait so we load accounts.db
-    (generate-and-derive-addresses!) ; generate 5 new keys
+    [:status-im.init.core/initialize-multiaccounts]
+    (generate-and-derive-addresses!) ; generate 5 new keys      
     (rf-test/wait-for
-     [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
+     [:multiaccount-generate-and-derive-addresses-success]
      (assert-multiaccount-loaded) ; assert keys are generated
      (create-multiaccount!) ; create a multiaccount
      (rf-test/wait-for ; wait for login
       [::transport/messenger-started]
       (assert-messenger-started)
-      (logout!)
-      (rf-test/wait-for [::logout/logout-method]
-                        (assert-logout)))))))
+      (rf/dispatch-sync [:status-im.communities.core/open-create-community])
+      (doseq [[k v] (dissoc community :membership)]
+        (rf/dispatch-sync [:status-im.communities.core/create-field k v]))
+      (rf/dispatch [:status-im.communities.core/create-confirmation-pressed])
+      (rf-test/wait-for
+       [:status-im.communities.core/community-created]
+       (assert-community-created)
+       (logout!)
+       (rf-test/wait-for [::logout/logout-method]
+                         (assert-logout))))))))
+
+(deftest create-wallet-account-test
+  (rf-test/run-test-async
+   (initialize-app!) ; initialize app
+   (rf-test/wait-for
+    [:status-im.init.core/initialize-multiaccounts]
+    (generate-and-derive-addresses!) ; generate 5 new keys
+    (rf-test/wait-for
+     [:multiaccount-generate-and-derive-addresses-success]
+     (assert-multiaccount-loaded) ; assert keys are generated
+     (create-multiaccount!) ; create a multiaccount
+     (rf-test/wait-for ; wait for login
+      [::transport/messenger-started]
+      (assert-messenger-started)
+      (create-new-account!) ; create a new account
+      (rf-test/wait-for
+       [:wallet.accounts/account-stored]
+       (assert-new-account-created) ; assert account was created
+       (logout!)
+       (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an inconsistent state between tests
+                         (assert-logout))))))))
 
 (def chat-id "0x0402905bed83f0bbf993cee8239012ccb1a8bc86907ead834c1e38476a0eda71414eed0e25f525f270592a2eebb01c9119a4ed6429ba114e51f5cb0a28dae1adfd")
 

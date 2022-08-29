@@ -50,7 +50,7 @@
   {:events [:browser.ui/remove-browser-pressed]}
   [{:keys [db]} browser-id]
   {:db            (update-in db [:browser/browsers] dissoc browser-id)
-   ::json-rpc/call [{:method "browsers_deleteBrowser"
+   ::json-rpc/call [{:method "wakuext_deleteBrowser"
                      :params [browser-id]
                      :on-success #()}]})
 
@@ -59,7 +59,7 @@
   [{:keys [db]}]
   {:db             (dissoc db :browser/browsers)
    ::json-rpc/call (for [browser-id (keys (get db :browser/browsers))]
-                     {:method     "browsers_deleteBrowser"
+                     {:method     "wakuext_deleteBrowser"
                       :params     [browser-id]
                       :on-success #()})})
 
@@ -96,7 +96,7 @@
     {:db            (update-in db
                                [:browser/browsers browser-id]
                                merge updated-browser)
-     ::json-rpc/call [{:method "browsers_addBrowser"
+     ::json-rpc/call [{:method "wakuext_addBrowser"
                        :params [(select-keys updated-browser [:browser-id :timestamp :name :dapp? :history :history-index])]
                        :on-success #()}]}))
 

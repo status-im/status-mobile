@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@babel/preset-typescript": "^7.17.12",
-    "@react-native-community/async-storage": "^1.11.0",
+    "@react-native-async-storage/async-storage": "^1.17.9",
     "@react-native-community/audio-toolkit": "git+https://github.com/tbenr/react-native-audio-toolkit.git#refs/tags/v2.0.3-status-v6",
     "@react-native-community/blur": "git+https://github.com/Kureev/react-native-blur#refs/tags/v3.6.1",
     "@react-native-community/cameraroll": "git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.0",
@@ -83,7 +83,6 @@
     "@babel/register": "7.0.0",
     "@mapbox/node-pre-gyp": "^1.0.9",
     "clj-kondo": "^2020.1.13",
-    "coveralls": "^3.0.4",
     "jest": "^25.1.0",
     "nodemon": "^2.0.16",
     "nyc": "^14.1.1",

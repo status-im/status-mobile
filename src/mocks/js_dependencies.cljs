@@ -137,6 +137,7 @@
                                                    :setRoot identity
                                                    :dismissOverlay #(js/Promise.resolve)
                                                    :setLazyComponentRegistrator identity
+                                                   :pop identity
                                                    :push identity
                                                    :mergeOptions identity
                                                    :popToRoot identity
@@ -314,7 +315,7 @@
     "@react-native-community/audio-toolkit" react-native-audio-toolkit
     "react-native-image-viewing" react-native-image-viewing
     "react-native-share" react-native-share
-    "@react-native-community/async-storage" async-storage
+    "@react-native-async-storage/async-storage" async-storage
     "react-native-svg" react-native-svg
     "../src/js/worklet_factory.js" worklet-factory
     "./fleets.js" default-fleets

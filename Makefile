@@ -298,22 +298,17 @@ shadow-server:##@ Start shadow-cljs in server mode for watching
 	yarn shadow-cljs server
 
 test-watch: export TARGET := clojure
-test-watch: status-go-library
 test-watch: ##@ Watch tests and re-run no changes to cljs files
 	yarn install
 	nodemon --exec 'yarn shadow-cljs compile mocks && yarn shadow-cljs compile test && node --require ./test-resources/override.js target/test/test.js' -e cljs
 
 test: export TARGET := clojure
-test: status-go-library ##@test Run tests once in NodeJS
+test: ##@test Run tests once in NodeJS
 	# Here we creates the gyp bindings for nodejs
 	yarn install
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js target/test/test.js
-
-
-coverage: ##@test Run tests once in NodeJS generating coverage
-	@scripts/run-coverage.sh
 
 #--------------
 # Other

@@ -131,7 +131,7 @@
                      (update :keycard dissoc :flow)
                      (dissoc :restored-account?))}
             (multiaccounts.create/prepare-intro-wizard)
-            (navigation/navigate-to-cofx :get-your-keys nil)))
+            (navigation/set-stack-root :onboarding [:get-your-keys])))
 
 (fx/defn recovery-no-key
   {:events [:keycard.recovery.no-key.ui/generate-key-pressed]}

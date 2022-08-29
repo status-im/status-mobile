@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.5.0'
+library 'status-jenkins-lib@v1.5.2'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
@@ -55,43 +55,14 @@ pipeline {
         }
       }
     }
-    stage('Parallel Assemble') {
-      parallel {
-        stage('Checks') { stages {
-          stage('Lint') {
-            steps {
-              script {
-                /* We want the build result to be uploaded */
-                catchError(
-                  message: 'Linting check failed!',
-                  buildResult: 'FAILURE',
-                  stageResult: 'FAILURE'
-                ) {
-                  sh 'make lint'
-                }
-              }
-            }
-          }
-          stage('Tests') {
-            steps {
-              script {
-                sh 'make test'
-              }
-            }
-          }
-        } }
-        stage('Build') { stages {
-          stage('JSBundle') {
-            steps {
-              script { ios.jsbundle() }
-            }
-          }
-          stage('Bundle') {
-            steps {
-              script { api = ios.bundle() }
-            }
-          }
-        } }
+    stage('JSBundle') {
+      steps {
+        script { ios.jsbundle() }
+      }
+    }
+    stage('Bundle') {
+      steps {
+        script { api = ios.bundle() }
       }
     }
     stage('Parallel Upload') {
@@ -102,31 +73,23 @@ pipeline {
           }
         }
         stage('Upload') {
-          steps {
-            script {
-              env.PKG_URL = s3.uploadArtifact(api)
-              jenkins.setBuildDesc(IPA: env.PKG_URL)
-              /* e2e builds get tested in SauceLabs */
-              if (utils.isE2EBuild()) {
-                env.SAUCE_URL = ios.uploadToSauceLabs()
-              } else {
-                env.DIAWI_URL = ios.uploadToDiawi()
-              }
+          steps { script {
+            env.PKG_URL = s3.uploadArtifact(api)
+            jenkins.setBuildDesc(IPA: env.PKG_URL)
+            /* e2e builds get tested in SauceLabs */
+            if (utils.isE2EBuild()) {
+              env.SAUCE_URL = ios.uploadToSauceLabs()
+            } else {
+              env.DIAWI_URL = ios.uploadToDiawi()
             }
-          }
+          } }
         }
-      }
-    }
-    stage('Cleanup') {
-      steps {
-        sh 'make watchman-clean'
-        sh 'make purge'
       }
     }
   }
   post {
     success { script { github.notifyPR(true) } }
     failure { script { github.notifyPR(false) } }
-    always { sh 'make _fix-node-perms' }
+    always  { sh 'make purge' }
   }
 }
