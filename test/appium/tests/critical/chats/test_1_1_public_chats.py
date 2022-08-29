@@ -1118,7 +1118,6 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702157)
-    @marks.xfail(reason='Failing due to the known IPFS issue', run=False)
     def test_sticker_1_1_public_chat_mainnet(self):
         self.home_2.status_in_background_button.click_if_shown()
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
