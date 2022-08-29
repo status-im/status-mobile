@@ -332,6 +332,8 @@ PODS:
     - React
   - RNGestureHandler (1.8.0):
     - React
+  - RNHoleView (2.1.1):
+    - React-Core
   - RNImageCropPicker (0.36.2):
     - React-Core
     - React-RCTImage
@@ -457,6 +459,7 @@ DEPENDENCIES:
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNHoleView (from `../node_modules/react-native-hole-view`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLanguages (from `../node_modules/react-native-languages`)
@@ -594,6 +597,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fs"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNHoleView:
+    :path: "../node_modules/react-native-hole-view"
   RNImageCropPicker:
     :path: "../node_modules/react-native-image-crop-picker"
   RNKeychain:
@@ -687,6 +692,7 @@ SPEC CHECKSUMS:
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
+  RNHoleView: 07572d21c97fad71fdc47f7248a8513e15a38949
   RNImageCropPicker: 35a3ceb837446fa11547704709bb22b5fac6d584
   RNKeychain: 216f37338fcb9e5c3a2530f1e3295f737a690cb1
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
@@ -706,4 +712,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: a1de9468266e7f0b5273acea713782ab759690f1
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3
