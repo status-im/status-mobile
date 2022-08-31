@@ -19,6 +19,9 @@
             [quo2.screens.info-message :as info-message]
             [quo2.screens.information-box :as information-box]
             [quo.components.safe-area :as safe-area]
+            [quo2.screens.permission-tag :as permission-tag]
+            [quo2.screens.community-card-view :as community-card]
+            [quo2.screens.filter-tags :as filter-tags]
             [quo.core :as quo]))
 
 (def screens [{:name      :quo2-texts
@@ -65,7 +68,16 @@
                :component info-message/preview-info-message}
               {:name      :information-box
                :insets    {:top false}
-               :component information-box/preview-information-box}])
+               :component information-box/preview-information-box}
+              {:name      :quo2-permission-tag
+               :insets    {:top false}
+               :component permission-tag/preview-permission-tag}
+              {:name      :quo2-filter-tags
+               :insets    {:top false}
+               :component filter-tags/preview-filter-tags}
+              {:name      :quo2-community-cards
+               :insets    {:top false}
+               :component community-card/preview-community-card}])
 
 (defn theme-switcher []
   [rn/view {:style {:flex-direction   :row

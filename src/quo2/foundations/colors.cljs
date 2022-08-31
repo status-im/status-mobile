@@ -42,6 +42,8 @@
 (def neutral-70-opa-95 (alpha neutral-70 0.95))
 
 ;;80 with transparency
+(def neutral-80-opa-5  (alpha neutral-80 0.05))
+(def neutral-80-opa-10 (alpha neutral-80 0.1))
 (def neutral-80-opa-60 (alpha neutral-80 0.6))
 (def neutral-80-opa-70 (alpha neutral-80 0.7))
 (def neutral-80-opa-80 (alpha neutral-80 0.8))
@@ -217,6 +219,8 @@
 (def beige-20 (alpha "#CAAE93" 0.2))
 (def beige-50 "#CAAE93")
 (def beige-60 (alpha "#CAAE93" 0.6))
+
+(def shadow  "rgba(9,16,28,0.04)")
 
 (def customization
   {:dark {:purple purple-60

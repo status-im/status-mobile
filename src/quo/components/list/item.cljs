@@ -10,6 +10,8 @@
             [quo.components.tooltip :as tooltip]
             ;; FIXME:
             [status-im.ui.components.icons.icons :as icons]
+            [quo2.foundations.colors :as quo2.colors]
+            [quo2.components.icon :as quo.icons]
             [quo.components.animated.pressable :as animated]))
 
 (defn themes [theme]
@@ -38,7 +40,17 @@
                :icon-bg-color      (:ui-01 @colors/theme)
                :active-background  (:ui-01 @colors/theme)
                :passive-background (:ui-background @colors/theme)
-               :text-color         (:text-02 @colors/theme)}))
+               :text-color         (:text-02 @colors/theme)}
+    :light    {:icon-color         quo2.colors/neutral-50
+               :icon-bg-color      quo2.colors/white
+               :text-color         quo2.colors/black
+               :active-background  quo2.colors/neutral-10
+               :passive-background quo2.colors/white}
+    :dark     {:icon-color         quo2.colors/neutral-40
+               :icon-bg-color      quo2.colors/neutral-90
+               :text-color         quo2.colors/white
+               :active-background  quo2.colors/neutral-70
+               :passive-background quo2.colors/neutral-90}))
 
 (defn size->icon-size [size]
   (case size
@@ -65,7 +77,7 @@
         children))
 
 (defn icon-column
-  [{:keys [icon icon-bg-color icon-color size icon-container-style]}]
+  [{:keys [icon icon-bg-color icon-color size icon-container-style new-ui?]}]
   (when icon
     (let [icon-size (size->icon-size size)]
       [rn/view {:style (or icon-container-style (:tiny spacing/padding-horizontal))}
@@ -74,13 +86,19 @@
          icon
 
          (keyword? icon)
-         [rn/view {:style {:width            icon-size
-                           :height           icon-size
-                           :align-items      :center
-                           :justify-content  :center
-                           :border-radius    (/ icon-size 2)
-                           :background-color icon-bg-color}}
-          [icons/icon icon {:color icon-color}]])])))
+         (if new-ui?
+           [quo.icons/icon icon {:container-style {:align-items     :center
+                                                   :justify-content :center}
+                                 :color       icon-color
+                                 :size        20
+                                 :resize-mode :center}]
+           [rn/view {:style {:width            icon-size
+                             :height           icon-size
+                             :align-items      :center
+                             :justify-content  :center
+                             :border-radius    (/ icon-size 2)
+                             :background-color icon-bg-color}}
+            [icons/icon icon {:color icon-color}]]))])))
 
 (defn title-column
   [{:keys [title text-color subtitle subtitle-max-lines subtitle-secondary
@@ -252,7 +270,8 @@
                    :subtitle                  subtitle
                    :subtitle-max-lines        subtitle-max-lines
                    :subtitle-secondary        subtitle-secondary
-                   :right-side-present?       (or accessory chevron)}]
+                   :right-side-present?       (or accessory chevron)
+                   :new-ui?                   :new-ui?}]
        [right-side {:chevron             chevron
                     :active              active
                     :disabled            disabled

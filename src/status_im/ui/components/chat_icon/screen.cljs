@@ -93,6 +93,19 @@
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
     :default-chat-icon-text (styles/default-chat-icon-text 40)}])
 
+(defn chat-icon-view-chat-list-redesign
+  [chat-id group-chat name color size]
+  [chat-icon-view chat-id group-chat name
+   {:container              (if (= size 20)
+                              (styles/token-icon-container-chat-list size)
+                              (styles/community-icon-container-chat-list size))
+    :size                   size
+    :chat-icon              (if (= size 20)
+                              (styles/community-icon-chat-list-redesign size)
+                              (styles/community-icon-chat-list size))
+    :default-chat-icon      (styles/default-list-chat-icon-redesign color size)
+    :default-chat-icon-text (styles/default-chat-icon-text size)}])
+
 (defn chat-icon-view-chat-sheet
   [chat-id group-chat name color]
   [chat-icon-view chat-id group-chat name
