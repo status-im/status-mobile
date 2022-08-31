@@ -9,7 +9,7 @@
 # by setting android_sdk.accept_license = true.
 androidenv.composeAndroidPackages {
   toolsVersion = "26.1.1";
-  platformToolsVersion = "33.0.1";
+  platformToolsVersion = "33.0.2";
   buildToolsVersions = [ "31.0.0" ];
   platformVersions = [ "31" ];
   cmakeVersions = [ "3.18.1" ];

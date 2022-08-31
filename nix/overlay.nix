@@ -33,18 +33,19 @@ in {
   gradlePropParser = callPackage ./tools/gradlePropParser.nix { };
 
   # Package version adjustments
-  gradle = super.pkgs.gradle_5;
-  nodejs = super.pkgs.nodejs-16_x;
-  openjdk = super.pkgs.openjdk8_headless;
+  gradle = super.gradle_5;
+  nodejs = super.nodejs-16_x;
+  yarn = super.yarn.override { nodejs = super.nodejs-16_x; };
+  openjdk = super.openjdk8_headless;
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
     version = "13.3";
     allowHigher = true;
   };
-  go = super.pkgs.go_1_17;
-  buildGoPackage = super.pkgs.buildGo117Package;
-  buildGoModule = super.pkgs.buildGo117Module;
+  go = super.go_1_18;
+  buildGoPackage = super.buildGo118Package;
+  buildGoModule = super.buildGo118Module;
   gomobile = (super.gomobile.overrideAttrs (old: {
-    patches = self.pkgs.fetchurl { # https://github.com/golang/mobile/pull/84
+    patches = self.fetchurl { # https://github.com/golang/mobile/pull/84
       url = "https://github.com/golang/mobile/commit/f20e966e05b8f7e06bed500fa0da81cf6ebca307.patch";
       sha256 = "sha256-TZ/Yhe8gMRQUZFAs9G5/cf2b9QGtTHRSObBFD5Pbh7Y=";
     };

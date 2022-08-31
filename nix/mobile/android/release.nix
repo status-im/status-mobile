@@ -72,6 +72,9 @@ in stdenv.mkDerivation rec {
   ANDROID_SDK_ROOT = "${androidPkgs.sdk}";
   ANDROID_NDK_ROOT = "${androidPkgs.ndk}";
 
+  # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
+  NODE_OPTIONS = "--openssl-legacy-provider";
+
   # Used by the Android Gradle build script in android/build.gradle
   STATUS_GO_ANDROID_LIBDIR = status-go;
 

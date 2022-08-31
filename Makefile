@@ -36,6 +36,8 @@ endif
 export TMPDIR = /tmp/tmp-status-mobile-$(BUILD_TAG)
 # This has to be specified for both the Node.JS server process and the Qt process.
 export REACT_SERVER_PORT ?= 5001
+# Fix for ERR_OSSL_EVP_UNSUPPORTED error.
+export NODE_OPTIONS += --openssl-legacy-provider
 # The path can be anything, but home is usually safest.
 export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 

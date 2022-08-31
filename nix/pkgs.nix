@@ -13,8 +13,8 @@ let
     name = "nixpkgs-source";
     owner = "NixOS";
     repo = "nixpkgs";
-    rev = "280d485b6f94d5ee8645aaf098c61a5def5df2be";
-    sha256 = "sha256-8ZWWJEDypkTCrzIWUxpin7CS2M3uPjjbl/8mpcVZQ9I";
+    rev = "579238da5f431b7833a9f0681663900aaf0dd1e8";
+    sha256 = "sha256-cDwASlAf/h0fsHtDm9yNBHEHK0uq6do+mIUEgh1i5yg=";
     # To get the compressed Nix sha256, use:
     # nix-prefetch-url --unpack https://github.com/${ORG}/nixpkgs/archive/${REV}.tar.gz
   };
