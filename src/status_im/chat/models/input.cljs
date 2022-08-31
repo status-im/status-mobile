@@ -244,12 +244,12 @@
                                      :text              (i18n/label :t/update-to-listen-audio {"locale" "en"})})))
 
 (fx/defn send-sticker-message
-  [cofx {:keys [hash packID]} current-chat-id]
-  (when-not (or (string/blank? hash) (string/blank? packID))
+  [cofx {:keys [hash packID pack]} current-chat-id]
+  (when-not (or (string/blank? hash) (and (string/blank? packID) (string/blank? pack)))
     (chat.message/send-message cofx {:chat-id      current-chat-id
                                      :content-type constants/content-type-sticker
                                      :sticker {:hash hash
-                                               :pack (int packID)}
+                                               :pack (int (if (string/blank? packID) pack packID))}
                                      :text    (i18n/label :t/update-to-see-sticker {"locale" "en"})})))
 
 (fx/defn send-edited-message [{:keys [db] :as cofx} text {:keys [message-id]}]
@@ -306,7 +306,7 @@
 
 (fx/defn chat-send-sticker
   {:events [:chat/send-sticker]}
-  [{{:keys [current-chat-id] :as db} :db :as cofx} {:keys [hash packID] :as sticker}]
+  [{{:keys [current-chat-id] :as db} :db :as cofx} {:keys [hash packID pack] :as sticker}]
   (fx/merge
    cofx
    {:db (update db
@@ -314,7 +314,7 @@
                 (fn [recent]
                   (conj (remove #(= hash (:hash %)) recent) sticker)))
     ::json-rpc/call [{:method     "stickers_addRecent"
-                      :params     [(int packID) hash]
+                      :params     [(int (if (string/blank? packID) pack packID)) hash]
                       :on-success #()}]}
    (send-sticker-message sticker current-chat-id)))
 
