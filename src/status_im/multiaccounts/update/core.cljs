@@ -46,7 +46,7 @@
   "Add 'url' parameter to stickers that are synchronized from other devices.
    It is not sent from aanother devices but we have it in our db."
   [synced-stickers stickers-from-db]
-  (mapv #(assoc % :url (->> (get stickers-from-db (:packID %))
+  (mapv #(assoc % :url (->> (get stickers-from-db (or (:packID %) (:pack %)))
                             (:stickers)
                             (filter (fn [sticker-db] (= (:hash sticker-db) (:hash %))))
                             (first)
