@@ -15,6 +15,7 @@
             [quo2.screens.info.information-box :as information-box]
             [quo2.screens.markdown.text :as text]
             [quo2.screens.messages.gap :as messages-gap]
+            [quo2.screens.network-amount :as network-amount]
             [quo2.screens.notifications.activity-logs :as activity-logs]
             [quo2.screens.reactions.react :as react]
             [quo2.screens.tabs.segmented-tab :as segmented]
@@ -89,7 +90,10 @@
                :component filter-tags/preview-filter-tags}
               {:name      :quo2-community-cards
                :insets    {:top false}
-               :component community-card/preview-community-card}])
+               :component community-card/preview-community-card}
+              {:name      :quo2-network-amount
+               :insets    {:top false}
+               :component network-amount/preview}])
 
 (defn theme-switcher []
   [rn/view {:style {:flex-direction   :row
