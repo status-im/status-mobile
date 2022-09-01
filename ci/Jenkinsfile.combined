@@ -50,7 +50,7 @@ pipeline {
           apke2e = jenkins.Build('status-mobile/platforms/android-e2e')
         } } }
         stage('Tests') { steps { script {
-          ios = jenkins.Build('status-mobile/platforms/tests')
+          jenkins.Build('status-mobile/platforms/tests')
         } } }
       }
     }
