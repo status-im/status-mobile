@@ -18,6 +18,10 @@ in buildGoPackage {
   inherit meta;
   inherit (source) src goPackagePath;
 
+  # Sandbox causes Xcode issues on MacOS. Requires sandbox=relaxed.
+  # https://github.com/status-im/status-mobile/pull/13912
+  __noChroot = (platform == "ios");
+
   extraSrcPaths = [ gomobile ];
   nativeBuildInputs = [ gomobile removeReferencesTo ]
     ++ optional (platform == "android") openjdk
