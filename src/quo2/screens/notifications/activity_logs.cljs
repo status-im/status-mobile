@@ -146,9 +146,9 @@
 
                                        (= (:context @state) :complex-user-action)
                                        (assoc :context complex-user-action))]
-        [rn/view {:margin-bottom 50
-                  :padding       16}
-         [rn/view {:flex 1}
+        [rn/view {:margin-bottom 50}
+         [rn/view {:flex    1
+                   :padding 16}
           [preview/customizer state descriptor]]
          [rn/view {:background-color colors/neutral-95-opa-80
                    :flex-direction   :row
