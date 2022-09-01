@@ -22,9 +22,15 @@
 (goog-define INFURA_TOKEN "800c641949d64d768a5070a1b0511938")
 (goog-define OPENSEA_API_KEY "")
 
-(def mainnet-rpc-url (str "https://mainnet.infura.io/v3/" INFURA_TOKEN))
-(def testnet-rpc-url (str "https://ropsten.infura.io/v3/" INFURA_TOKEN))
-(def goerli-rpc-url  (str "https://goerli.infura.io/v3/" INFURA_TOKEN))
+(def mainnet-rpc-url
+  "https://eth-archival.gateway.pokt.network/v1/lb/6310818860d268003b9bdbda"
+  #_(str "https://mainnet.infura.io/v3/" INFURA_TOKEN))
+
+(def testnet-rpc-url
+  (str "https://ropsten.infura.io/v3/" INFURA_TOKEN))
+(def goerli-rpc-url
+  "https://eth-goerli.gateway.pokt.network/v1/lb/6310872e07dc030039f54ee2"
+  #_(str "https://goerli.infura.io/v3/" INFURA_TOKEN))
 (def opensea-api-key OPENSEA_API_KEY)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
