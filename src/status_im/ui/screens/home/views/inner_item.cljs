@@ -204,11 +204,8 @@
      (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))])
 
 (defn home-list-item [home-item opts]
-  (let [{:keys [chat-id chat-name color group-chat muted emoji highlight edit? public? unviewed-messages-count contacts users members]} home-item
-        background-color (when highlight (colors/get-color :interactive-02))
-        group-members-public-keys (->> (concat (keys users) contacts (map #(:id %) members))
-                                       (into #{})
-                                       (remove nil?))]
+  (let [{:keys [chat-id chat-name color group-chat muted emoji highlight edit? public? unviewed-messages-count contacts]} home-item
+        background-color (when highlight (colors/get-color :interactive-02))]
     [react/touchable-opacity (merge {:style {:height 64 :background-color background-color}} opts)
      [:<>
       (when (pos? unviewed-messages-count)
@@ -248,7 +245,7 @@
                                 :margin-right 4}}]
             [quo2.text/text {:weight :medium
                              :style {:color (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}}
-             (i18n/label :t/members-count {:count (count group-members-public-keys)})]]
+             (i18n/label :t/members-count {:count (count contacts)})]]
            [quo2.text/text {:monospace true
                             :weight :medium
                             :style {:color (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}

@@ -79,27 +79,7 @@ class HomeButton(TabButton):
             self.click_until_presence_of_element(element)
         return self.navigate()
 
-class CommunitiesTab(TabButton):
-    def __init__(self, driver):
-        super().__init__(driver, accessibility_id="communities-stack-tab")
 
-
-class ChatsTab(TabButton):
-    def __init__(self, driver):
-        super().__init__(driver, accessibility_id="chats-stack-tab")
-
-    def navigate(self):
-        from views.home_view import HomeView
-        return HomeView(self.driver)
-
-
-class WalletTab(TabButton):
-    def __init__(self, driver):
-        super().__init__(driver, accessibility_id="wallet-stack-tab")
-
-class BrowserTab(TabButton):
-    def __init__(self, driver):
-        super().__init__(driver, accessibility_id="browser-stack-tab")
 
 class DappTabButton(TabButton):
     def __init__(self, driver):
@@ -216,7 +196,7 @@ class AirplaneModeButton(Button):
     def click(self):
         counter = 0
         desired_element = AirplaneModeButton(self.driver)
-        while not desired_element.is_element_displayed() and counter <= 3:
+        while not desired_element.is_element_present() and counter <= 3:
             try:
                 self.open_quick_action_menu()
                 desired_element.wait_for_element(5)
@@ -244,18 +224,12 @@ class BaseView(object):
         self.send_message_button = SendMessageButton(self.driver)
         self.send_contact_request_button = Button(self.driver, translation_id="send-request")
 
-        # Old UI Tabs
+        # Tabs
         self.home_button = HomeButton(self.driver)
         self.wallet_button = WalletButton(self.driver)
         self.profile_button = ProfileButton(self.driver)
         self.dapp_tab_button = DappTabButton(self.driver)
         self.status_button = StatusButton(self.driver)
-
-        # New UI Tabs
-        self.communities_tab = CommunitiesTab(self.driver)
-        self.chats_tab = ChatsTab(self.driver)
-        self.browser_tab = BrowserTab(self.driver)
-        self.wallet_tab = WalletTab(self.driver)
 
         self.yes_button = Button(self.driver, xpath="//*[@text='YES' or @text='GOT IT']")
         self.no_button = Button(self.driver, translation_id="no")
@@ -339,7 +313,7 @@ class BaseView(object):
 
     def close_native_device_dialog(self, alert_text_part):
         element = self.element_by_text_part(alert_text_part)
-        if element.is_element_displayed(1):
+        if element.is_element_present(1):
             self.driver.info("Closing '%s' alert..." % alert_text_part)
             self.native_close_button.click()
 
@@ -356,7 +330,7 @@ class BaseView(object):
 
     def confirm_until_presence_of_element(self, desired_element, attempts=3):
         counter = 0
-        while not desired_element.is_element_displayed(1) and counter <= attempts:
+        while not desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.confirm()
                 self.driver.info("Wait for '%s'" % desired_element.name)
@@ -377,18 +351,17 @@ class BaseView(object):
     def click_system_back_button_until_element_is_shown(self, attempts=3, element='home'):
         counter = 0
         if element == 'home':
-            element = self.chats_tab
-            # Old UI
-            # element = self.home_button
-        while not element.is_element_displayed(1) and counter <= attempts:
-            self.driver.press_keycode(4)
+            element = self.home_button
+        while not element.is_element_present(1) and counter <= attempts:
             try:
-                element.wait_for_element(2)
+                self.driver.press_keycode(4)
+                element.is_element_present(5)
                 return self
             except (NoSuchElementException, TimeoutException):
                 counter += 1
         else:
             self.driver.info("Could not reach %s element by pressing back" % element.name)
+
 
     def get_app_from_background(self):
         self.driver.info('Get Status back from Recent apps')
@@ -601,9 +574,7 @@ class BaseView(object):
 
     def get_public_key_and_username(self, return_username=False):
         self.driver.info("Get public key and username")
-        # profile_view = self.profile_button.click()
-        self.browser_tab.click()  # temp, until profile is on browser tab
-        profile_view = self.get_profile_view()
+        profile_view = self.profile_button.click()
         default_username = profile_view.default_username_text.text
         profile_view.share_my_profile_button.click()
         profile_view.public_key_text.wait_for_visibility_of_element(20)
@@ -742,7 +713,7 @@ class BaseView(object):
         send_transaction.set_max_button.click()
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
-        send_transaction.set_recipient_address('0xE2363E6e91d1a29d82C2c695fa8fa2e3Fa5d55eA')
+        send_transaction.set_recipient_address('0x2127edab5d08b1e11adf7ae4bae16c2b33fdf74a')
         send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction(keycard=keycard)
 

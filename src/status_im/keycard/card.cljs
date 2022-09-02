@@ -505,6 +505,3 @@
 
 (defn set-nfc-message [args]
   (keycard/set-nfc-message card args))
-
-(defn delete-multiaccount-before-migration [args]
-  (keycard/delete-multiaccount-before-migration card args))

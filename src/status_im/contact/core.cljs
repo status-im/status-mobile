@@ -3,7 +3,7 @@
             [status-im.contact.db :as contact.db]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
@@ -151,8 +151,3 @@
    :mutual-contact-enabled?
    enabled?
    nil))
-
-(fx/defn set-search-query
-  {:events [:contacts/set-search-query]}
-  [{:keys [db] :as cofx} value]
-  {:db (assoc db :contacts/search-query value)})

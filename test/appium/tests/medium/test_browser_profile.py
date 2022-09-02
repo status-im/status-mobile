@@ -33,7 +33,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
             dapp.open_url(url)
             if dapp.web_page.is_element_differs_from_template(urls[url], 5):
                 self.errors.append('Web page does not match expected template %s' % urls[url])
-            base_web.browser_previous_page_button.click_until_presence_of_element(dapp.element_by_text_part('Discover'), attempts=2)
+            base_web.browser_previous_page_button.click_until_presence_of_element(dapp.element_by_text_part('Discover'))
 
         self.errors.verify_no_errors()
 
@@ -47,19 +47,19 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
         browsing.just_fyi("Check next page")
         browsing.just_fyi('Navigate to next page and back')
-        browsing.element_by_text_part('може редагувати кожен').scroll_and_click()
-        browsing.element_by_text_part('написана спільно її читачами').scroll_to_element()
+        browsing.element_by_text_part('може редагувати кожен').click()
+        browsing.element_by_text_part('написана спільно її читачами').wait_for_element(30)
         browsing.browser_previous_page_button.click()
-        browsing.wait_for_element_starts_with_text('Головна сторінка')
+        browsing.wait_for_element_starts_with_text('може редагувати кожен')
 
         browsing.just_fyi('Relogin and check that tap on "Next" navigates to next page')
         browsing.reopen_app()
         self.home.dapp_tab_button.click()
         browsing.open_tabs_button.click()
         dapp.element_by_text_part(ua_url).click()
-        browsing.element_by_text_part('може редагувати кожен').scroll_to_element()
+        browsing.wait_for_element_starts_with_text('може редагувати кожен')
         browsing.browser_next_page_button.click()
-        browsing.element_by_text_part('написана спільно її читачами').scroll_to_element()
+        browsing.element_by_text_part('написана спільно її читачами').wait_for_element(30)
 
         self.errors.verify_no_errors()
 
@@ -280,21 +280,18 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702166)
     def test_profile_add_custom_network(self):
         self.home.get_back_to_home_view()
-        rpc, name, id, symbol = 'https://polygon-rpc.com/', 'Polygon', '137', 'MATIC'
         profile = self.home.profile_button.click()
-        profile.add_custom_network(rpc_url=rpc, netwrok_id=id, symbol=symbol, name=name)
+        profile.add_custom_network()
         self.sign_in.sign_in()
-        wallet = self.home.wallet_button.click()
-        if not wallet.element_by_text_part(symbol).is_element_displayed():
-            self.errors.append("No %s currency is shown when switching to custom network" % symbol)
         self.home.profile_button.click()
         profile.advanced_button.click()
         profile.network_settings_button.scroll_to_element(10, 'up')
-        if not profile.element_by_text_part(name).is_element_displayed():
-            self.driver.fail("Custom network %s was not added!" % name)
+        if not profile.element_by_text_part('custom_ropsten').is_element_displayed():
+            self.driver.fail("Network custom_ropsten was not added!")
         profile.get_back_to_home_view()
         # Switching back to Goerli for the next cases
         profile.switch_network('Goerli with upstream RPC')
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702164)
@@ -309,12 +306,6 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         chat.view_profile_button.click()
         chat.set_nickname(nickname)
         self.home.back_button.click()
-
-        self.home.just_fyi('Create community chats')
-        community_name = 'test community'
-        community_description, community_pic = "test community description", 'sauce_logo.png'
-        self.home.create_community(community_name, community_description, set_image=True, file_name=community_pic)
-        self.home.home_button.double_click()
 
         self.home.just_fyi('Add ENS-user to contacts')
         user_ens = 'ensmessenger'
@@ -350,10 +341,6 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
         profile.just_fyi('Recover account from seed phrase')
         self.sign_in.recover_access(' '.join(recovery_phrase.values()))
-
-        self.sign_in.just_fyi('Check backup of community')
-        if not self.home.element_by_text(community_name).is_element_displayed():
-            self.errors.append('Community was not backed up')
 
         self.sign_in.just_fyi('Check backup of contact with nickname')
         profile.profile_button.click()

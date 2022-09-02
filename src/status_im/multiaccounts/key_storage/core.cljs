@@ -2,13 +2,12 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.mnemonic :as mnemonic]
-            [status-im.keycard.common :as common]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
             [status-im.native-module.core :as native-module]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.popover.core :as popover]
             [status-im.utils.fx :as fx]
             [status-im.utils.security :as security]
@@ -134,6 +133,17 @@
   {:db (assoc-in db [:multiaccounts/key-storage :keycard-storage-selected?] selected?)})
 
 (re-frame/reg-fx
+ ::delete-multiaccount
+ (fn [{:keys [key-uid on-success on-error]}]
+   (native-module/delete-multiaccount
+    key-uid
+    (fn [result]
+      (let [{:keys [error]} (types/json->clj result)]
+        (if-not (string/blank? error)
+          (on-error error)
+          (on-success)))))))
+
+(re-frame/reg-fx
  ::delete-imported-key
  (fn [{:keys [key-uid address password on-success on-error]}]
    (let [hashed-pass (ethereum/sha3 (security/safe-unmask-data password))]
@@ -146,6 +156,15 @@
           (if-not (string/blank? error)
             (on-error error)
             (on-success))))))))
+
+(fx/defn delete-multiaccount-and-init-keycard-onboarding
+  {:events [::delete-multiaccount-and-init-keycard-onboarding]}
+  [{:keys [db] :as cofx}]
+  (let [{:keys [key-uid]} (-> db :multiaccounts/login)]
+    {:db (assoc-in db [:multiaccounts/key-storage :reset-db-checked?] true)
+     ::delete-multiaccount {:key-uid key-uid
+                            :on-error #(re-frame/dispatch [::delete-multiaccount-error %])
+                            :on-success #(re-frame/dispatch [::delete-multiaccount-success])}}))
 
 #_"Multiaccount has been deleted from device. We now need to emulate the restore seed phrase process, and make the user land on Keycard setup screen.
 To ensure that keycard setup works, we need to:
@@ -162,20 +181,12 @@ The exact events dispatched for this flow if consumed from the UI are:
 We don't need to take the exact steps, just set the required state and redirect to correct screen
 "
 (fx/defn import-multiaccount
+  {:events [::delete-multiaccount-success]}
   [{:keys [db] :as cofx}]
   {:dispatch [:bottom-sheet/hide]
-   ::multiaccounts.recover/import-multiaccount
-   {:passphrase    (get-in db [:multiaccounts/key-storage :seed-phrase])
-    :password      nil
-    :success-event ::import-multiaccount-success}})
-
-(fx/defn delete-multiaccount-and-init-keycard-onboarding
-  {:events [::delete-multiaccount-and-init-keycard-onboarding]}
-  [{:keys [db] :as cofx}]
-  (fx/merge
-   {:dispatch [:bottom-sheet/hide]
-    :db       (assoc-in db [:multiaccounts/key-storage :reset-db-checked?] true)}
-   (import-multiaccount)))
+   ::multiaccounts.recover/import-multiaccount {:passphrase (get-in db [:multiaccounts/key-storage :seed-phrase])
+                                                :password nil
+                                                :success-event ::import-multiaccount-success}})
 
 (fx/defn storage-selected
   {:events [::storage-selected]}
@@ -231,12 +242,14 @@ We don't need to take the exact steps, just set the required state and redirect 
                       (assoc-in [:keycard :flow] :recovery)
                       (assoc-in [:keycard :from-key-storage-and-migration?] true)
                       (assoc-in [:keycard :converting-account?] (not (get-in db [:multiaccounts/key-storage :reset-db-checked?])))
-                      (assoc-in [:keycard :delete-account?]
-                                (true? (get-in db [:multiaccounts/key-storage :reset-db-checked?])))
                       (dissoc :multiaccounts/key-storage))}
             (popover/hide-popover)
-            (common/listen-to-hardware-back-button)
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
+
+(fx/defn handle-delete-multiaccount-error
+  {:events [::delete-multiaccount-error]}
+  [cofx _]
+  (popover/show-popover cofx {:view :transfer-multiaccount-unknown-error}))
 
 (fx/defn goto-multiaccounts-screen
   {:events [::hide-popover-and-goto-multiaccounts-screen]}

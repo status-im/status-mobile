@@ -21,14 +21,6 @@
 (def ^:const contact-request-state-received 3)
 (def ^:const contact-request-state-dismissed 4)
 
-(def ^:const contact-verification-status-unknown 0)
-(def ^:const contact-verification-status-pending 1)
-(def ^:const contact-verification-status-accepted 2)
-(def ^:const contact-verification-status-declined 3)
-(def ^:const contact-verification-status-cancelled 4)
-(def ^:const contact-verification-status-trusted 5)
-(def ^:const contact-verification-status-untrustworthy 6)
-
 (def ^:const emoji-reaction-love 1)
 (def ^:const emoji-reaction-thumbs-up  2)
 (def ^:const emoji-reaction-thumbs-down  3)
@@ -50,19 +42,12 @@
 
 (def request-to-join-pending-state 1)
 
-(def reactions-old {emoji-reaction-love        (:love resources/reactions-old)
-                    emoji-reaction-thumbs-up   (:thumbs-up resources/reactions-old)
-                    emoji-reaction-thumbs-down (:thumbs-down resources/reactions-old)
-                    emoji-reaction-laugh       (:laugh resources/reactions-old)
-                    emoji-reaction-sad         (:sad resources/reactions-old)
-                    emoji-reaction-angry       (:angry resources/reactions-old)})
-
-(def reactions {emoji-reaction-love        :i/love
-                emoji-reaction-thumbs-up   :i/thumbs-up
-                emoji-reaction-thumbs-down :i/thumbs-down
-                emoji-reaction-laugh       :i/laugh
-                emoji-reaction-sad         :i/sad
-                emoji-reaction-angry       :i/angry})
+(def reactions {emoji-reaction-love        (:love resources/reactions)
+                emoji-reaction-thumbs-up   (:thumbs-up resources/reactions)
+                emoji-reaction-thumbs-down (:thumbs-down resources/reactions)
+                emoji-reaction-laugh       (:laugh resources/reactions)
+                emoji-reaction-sad         (:sad resources/reactions)
+                emoji-reaction-angry       (:angry resources/reactions)})
 
 (def ^:const invitation-state-unknown 0)
 (def ^:const invitation-state-requested 1)
@@ -183,6 +168,13 @@
 (def ^:const terms-of-service-link "https://status.im/terms-of-use")
 (def ^:const docs-link "https://status.im/docs/")
 (def ^:const principles-link "https://our.status.im/our-principles/")
+
+(def ^:const activity-center-notification-type-one-to-one-chat 1)
+(def ^:const activity-center-notification-type-private-group-chat 2)
+(def ^:const activity-center-notification-type-mention 3)
+(def ^:const activity-center-notification-type-reply 4)
+(def ^:const activity-center-notification-type-contact-request 5)
+(def ^:const activity-center-notification-type-contact-request-retracted 6)
 
 (def ^:const visibility-status-unknown 0)
 (def ^:const visibility-status-automatic 1)

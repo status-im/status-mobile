@@ -8,7 +8,7 @@
             [quo.core :as quo]
             [status-im.utils.datetime :as datetime]
             [status-im.ui.screens.onboarding.views :as ui]
-            [utils.debounce :refer [dispatch-and-chill]]
+            [status-im.utils.debounce :refer [dispatch-and-chill]]
             [status-im.utils.utils :as utils]
             [reagent.core :as reagent]))
 

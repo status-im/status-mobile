@@ -1,5 +1,5 @@
 (ns status-im.keycard.delete-key
-  (:require [status-im2.navigation.events :as navigation]
+  (:require [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.keycard.common :as common]))
 

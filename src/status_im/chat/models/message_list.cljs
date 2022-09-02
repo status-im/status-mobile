@@ -1,8 +1,8 @@
 (ns status-im.chat.models.message-list
-  (:require ["functional-red-black-tree" :as rb-tree]
-            [status-im.constants :as constants]
+  (:require [status-im.constants :as constants]
+            [status-im.utils.fx :as fx]
             [status-im.utils.datetime :as time]
-            [status-im.utils.fx :as fx]))
+            ["functional-red-black-tree" :as rb-tree]))
 
 (defn- add-datemark [{:keys [whisper-timestamp] :as msg}]
   ;;TODO this is slow
@@ -16,20 +16,16 @@
                                message-type
                                from
                                outgoing
-                               whisper-timestamp
-                               deleted-for-me?]}]
+                               whisper-timestamp]}]
   (-> {:whisper-timestamp whisper-timestamp
-       :from              from
-       :one-to-one?       (= constants/message-type-one-to-one message-type)
-       :system-message?   (boolean
-                           (or
-                            (= constants/message-type-private-group-system-message
-                               message-type)
-                            deleted-for-me?))
-       :clock-value       clock-value
-       :type              :message
-       :message-id        message-id
-       :outgoing          (boolean outgoing)}
+       :from from
+       :one-to-one? (= constants/message-type-one-to-one message-type)
+       :system-message? (= constants/message-type-private-group-system-message
+                           message-type)
+       :clock-value clock-value
+       :type :message
+       :message-id message-id
+       :outgoing (boolean outgoing)}
       add-datemark
       add-timestamp))
 

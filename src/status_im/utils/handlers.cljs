@@ -2,7 +2,35 @@
   (:require [re-frame.core :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect]]
             [taoensso.timbre :as log]
-            [utils.debounce :as debounce]))
+            [status-im.utils.debounce :as debounce]))
+
+(defn- parse-json
+  ;; NOTE(dmitryn) Expects JSON response like:
+  ;; {"error": "msg"} or {"result": true}
+  [s]
+  (try
+    (let [res (-> s
+                  js/JSON.parse
+                  (js->clj :keywordize-keys true))]
+      ;; NOTE(dmitryn): AddPeer() may return {"error": ""}
+      ;; assuming empty error is a success response
+      ;; by transforming {"error": ""} to {:result true}
+      (if (and (:error res)
+               (= (:error res) ""))
+        {:result true}
+        res))
+    (catch :default ^js e
+      {:error (.-message e)})))
+
+(defn response-handler [success-fn error-fn]
+  (fn handle-response
+    ([response]
+     (let [{:keys [error result]} (parse-json response)]
+       (handle-response error result)))
+    ([error result]
+     (if error
+       (error-fn error)
+       (success-fn result)))))
 
 (defn- pretty-print-event [ctx]
   (let [[first _] (get-coeffect ctx :event)]

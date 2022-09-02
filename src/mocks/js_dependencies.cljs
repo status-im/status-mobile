@@ -248,8 +248,6 @@
 
 (def react-native-gradien #js {:default #js {}})
 
-(def masked-view #js {:default #js {}})
-
 (def react-native-permissions #js {:default #js {}})
 
 (def push-notification-ios #js {:default #js {:abandonPermissions identity}})
@@ -282,8 +280,6 @@
 (def worklet-factory
   #js {:applyAnimationsToStyle (fn [])})
 
-(def shell-worklets #js {})
-
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -312,7 +308,6 @@
     "react-native-device-info" react-native-device-info
     "react-native-push-notification" react-native-push-notification
     "react-native-linear-gradient" react-native-gradien
-    "@react-native-community/masked-view" masked-view
     "react-native-blob-util" react-native-blob-util
     "react-native-navigation" react-native-navigation
     "@react-native-community/push-notification-ios" push-notification-ios
@@ -330,7 +325,6 @@
     "@react-native-async-storage/async-storage" async-storage
     "react-native-svg" react-native-svg
     "../src/js/worklet_factory.js" worklet-factory
-    "../src/js/shell_worklets.js" shell-worklets
     "./fleets.js" default-fleets
     "./chats.js" default-chats
     "@walletconnect/client" wallet-connect-client

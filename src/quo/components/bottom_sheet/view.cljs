@@ -8,7 +8,8 @@
             [quo.components.safe-area :as safe-area]
             [quo.components.bottom-sheet.style :as styles]
             [quo.gesture-handler :as gesture-handler]
-            [quo.design-system.colors :as colors]))
+            [quo.design-system.colors :as colors]
+            [status-im.utils.config :as config]))
 
 (def opacity-coeff 0.8)
 (def close-duration 150)
@@ -44,7 +45,7 @@
                                                      (+ 50 keyboard-height-android-delta) ;; TODO : remove 50 when react-native-navigation v8 will be implemented https://github.com/wix/react-native-navigation/issues/7225
                                                      0))
         min-height                (+ (* styles/vertical-padding 2) (:bottom safe-area))
-        max-height                (- window-height (:top safe-area))
+        max-height                (- window-height (:top safe-area) styles/margin-top)
         visible                   (react/state false)
 
         master-translation-y (animated/use-value 0)
@@ -101,7 +102,8 @@
                               {:inputRange  [(animated/multiply open-snap-point opacity-coeff) 0]
                                :outputRange [1 0]
                                :extrapolate (:clamp animated/extrapolate)})))
-                          [])]
+                          [])
+        new-ui?           @config/new-ui-enabled?]
     (animated/code!
      (fn []
        (animated/cond* (animated/and* (animated/eq master-state (:end gesture-handler/states))
@@ -185,7 +187,7 @@
                                      (when platform/ios?
                                        {:opacity          opacity
                                         :background-color (:backdrop @colors/theme)}))}]]
-      [animated/view {:style (merge (styles/content-container window-height)
+      [animated/view {:style (merge (styles/content-container window-height new-ui?)
                                     {:transform [{:translateY (if (= sheet-height max-height)
                                                                 (animated/add translate-y keyboard-height-android-delta)
                                                                 translate-y)}
@@ -202,15 +204,17 @@
                                                     :wait-for master-ref
                                                     :enabled  (and (not disable-drag?)
                                                                    (not= sheet-height max-height))})
-        [animated/view {:height sheet-height
-                        :flex           1}
-         [animated/view {:style     {:padding-top    styles/vertical-padding
-                                     :padding-bottom (+ styles/vertical-padding
-                                                        (if (and platform/ios? keyboard-shown)
-                                                          keyboard-height
-                                                          (:bottom safe-area)))}
-                         :on-layout #(reset! height (.-nativeEvent.layout.height ^js %))}
-          (into [:<>]
-                (react/get-children children))]]]]])))
+        [animated/view {:height sheet-height}
+         [animated/scroll-view {:bounces        false
+                                :flex           1
+                                :scroll-enabled (= sheet-height max-height)}
+          [animated/view {:style     {:padding-top    styles/vertical-padding
+                                      :padding-bottom (+ styles/vertical-padding
+                                                         (if (and platform/ios? keyboard-shown)
+                                                           keyboard-height
+                                                           (:bottom safe-area)))}
+                          :on-layout #(reset! height (.-nativeEvent.layout.height ^js %))}
+           (into [:<>]
+                 (react/get-children children))]]]]]])))
 
 (def bottom-sheet (reagent/adapt-react-class (react/memo bottom-sheet-hooks)))

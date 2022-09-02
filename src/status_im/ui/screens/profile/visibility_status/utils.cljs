@@ -5,6 +5,7 @@
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.profile.visibility-status.styles :as styles]
+            [status-im.utils.config :as config]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.handlers :refer [<sub]]))
 
@@ -24,7 +25,7 @@
    {:color    colors/red
     :title    (i18n/label :t/error)}
    constants/visibility-status-automatic
-   {:color    quo2.colors/success-50
+   {:color    quo2.colors/color-online
     :title    (i18n/label :t/status-automatic)
     :subtitle (i18n/label :t/status-automatic-subtitle)}
    constants/visibility-status-dnd
@@ -32,7 +33,7 @@
     :title    (i18n/label :t/status-dnd)
     :subtitle (i18n/label :t/status-dnd-subtitle)}
    constants/visibility-status-always-online
-   {:color    quo2.colors/success-50
+   {:color    quo2.colors/color-online
     :title    (i18n/label :t/status-always-online)}
    constants/visibility-status-inactive
    {:color    colors/color-inactive
@@ -74,7 +75,9 @@
       status-type)))
 
 (defn icon-dot-color [{:keys [status-type] :or {status-type constants/visibility-status-inactive}}]
-  (:color (get visibility-status-type-data status-type)))
+  (if @config/new-ui-enabled?
+    (:color (get visibility-status-type-data status-type))
+    (:color (get visibility-status-type-data-old status-type))))
 
 (defn my-icon? [public-key]
   (or (string/blank? public-key)
@@ -88,17 +91,27 @@
 
 (defn icon-dot-accessibility-label
   [dot-color]
-  (if (= dot-color quo2.colors/success-50)
-    :online-profile-photo-dot
-    :offline-profile-photo-dot))
+  (if @config/new-ui-enabled?
+    (if (= dot-color quo2.colors/color-online)
+      :online-profile-photo-dot
+      :offline-profile-photo-dot)
+    (if (= dot-color colors/color-online)
+      :online-profile-photo-dot
+      :offline-profile-photo-dot)))
 
 (defn icon-dot-margin
-  [_ _]
-  -2)
+  [size identicon?]
+  (if @config/new-ui-enabled?
+    -2
+    (if identicon?
+      (/ size 6)
+      (/ size 7))))
 
 (defn icon-dot-size
   [container-size]
-  (/ container-size 2.4))
+  (if @config/new-ui-enabled?
+    (/ container-size 2.4)
+    (/ container-size 4)))
 
 (defn icon-visibility-status-dot
   [public-key container-size identicon?]
@@ -107,7 +120,7 @@
         size                     (icon-dot-size container-size)
         margin                   (icon-dot-margin size identicon?)
         dot-color                (icon-dot-color visibility-status-update)
-        new-ui?                  true]
+        new-ui?                  @config/new-ui-enabled?]
     (merge (styles/visibility-status-dot {:color   dot-color
                                           :size    size
                                           :new-ui? new-ui?})

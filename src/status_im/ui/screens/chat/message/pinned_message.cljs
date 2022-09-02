@@ -8,7 +8,7 @@
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.ui.components.list.views :as list]
             [status-im.utils.handlers :refer [<sub]]
-            [status-im.ui.screens.chat.message.message :as message]))
+            [status-im.ui.screens.chat.message.message-old :as message]))
 
 (def selected-unpin (reagent/atom nil))
 

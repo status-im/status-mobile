@@ -1,136 +1,52 @@
 (ns status-im.ui.screens.activity-center.views
-  (:require [quo.components.safe-area :as safe-area]
-            [quo.react :as react]
-            [quo.react-native :as rn]
-            [quo2.core :as quo2]
+  (:require [quo.react-native :as rn]
+            [quo2.components.buttons.button :as button]
+            [quo2.components.notifications.activity-logs :as activity-logs]
+            [quo2.components.tags.context-tags :as context-tags]
             [quo2.foundations.colors :as colors]
-            [status-im.activity-center.notification-types :as types]
+            [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.screens.activity-center.notification.contact-request.view :as contact-request]
-            [status-im.ui.screens.activity-center.notification.contact-verification.view :as contact-verification]
-            [status-im.ui.screens.activity-center.notification.mentions.view :as mentions]
-            [status-im.ui.screens.activity-center.style :as style]
-            [utils.re-frame :as rf]))
-
-(defn filter-selector-read-toggle
-  []
-  (let [unread-filter-enabled? (rf/sub [:activity-center/filter-status-unread-enabled?])]
-    ;; TODO(@ilmotta): Replace the button by a Filter Selector.
-    ;; https://github.com/status-im/status-mobile/issues/14355
-    [quo2/button {:icon           true
-                  :type           (if unread-filter-enabled? :primary :blur-bg-outline)
-                  :size           32
-                  :override-theme :dark
-                  :on-press       #(rf/dispatch [:activity-center.notifications/fetch-first-page
-                                                 {:filter-status (if unread-filter-enabled?
-                                                                   :all
-                                                                   :unread)}])}
-     :i/unread]))
-
-;; TODO(@ilmotta,2022-10-07): The empty state is still under design analysis, so we
-;; shouldn't even care about translations at this point. A placeholder box is
-;; used instead of an image.
-(defn empty-tab
-  []
-  [rn/view {:style {:align-items      :center
-                    :flex             1
-                    :justify-content  :center
-                    :padding-vertical 12}}
-   [rn/view {:style {:background-color colors/neutral-80
-                     :height           120
-                     :margin-bottom    20
-                     :width            120}}]
-   [quo2/text {:size   :paragraph-1
-               :style  {:padding-bottom 2}
-               :weight :semi-bold}
-    "No notifications"]
-   [quo2/text {:size :paragraph-2}
-    "Your notifications will be here"]])
-
-(defn tabs
-  []
-  (let [filter-type (rf/sub [:activity-center/filter-type])]
-    [quo2/scrollable-tabs {:size                32
-                           :blur?               true
-                           :override-theme      :dark
-                           :style               style/tabs
-                           :fade-end-percentage 0.79
-                           :scroll-on-press?    true
-                           :fade-end?           true
-                           :on-change           #(rf/dispatch [:activity-center.notifications/fetch-first-page {:filter-type %}])
-                           :default-active      filter-type
-                           :data                [{:id    types/no-type
-                                                  :label (i18n/label :t/all)}
-                                                 {:id    types/admin
-                                                  :label (i18n/label :t/admin)}
-                                                 {:id    types/mention
-                                                  :label (i18n/label :t/mentions)}
-                                                 {:id    types/reply
-                                                  :label (i18n/label :t/replies)}
-                                                 {:id    types/contact-request
-                                                  :label (i18n/label :t/contact-requests)}
-                                                 {:id    types/contact-verification
-                                                  :label (i18n/label :t/identity-verification)}
-                                                 {:id    types/tx
-                                                  :label (i18n/label :t/transactions)}
-                                                 {:id    types/membership
-                                                  :label (i18n/label :t/membership)}
-                                                 {:id    types/system
-                                                  :label (i18n/label :t/system)}]}]))
-
-(defn header
-  []
-  (let [screen-padding 20]
-    [rn/view
-     [quo2/button {:icon           true
-                   :type           :blur-bg
-                   :size           32
-                   :override-theme :dark
-                   :style          style/header-button
-                   :on-press       #(rf/dispatch [:hide-popover])}
-      :i/close]
-     [quo2/text {:size   :heading-1
-                 :weight :semi-bold
-                 :style  style/header-heading}
-      (i18n/label :t/notifications)]
-     [rn/view {:flex-direction   :row
-               :padding-vertical 12}
-      [rn/view {:flex       1
-                :align-self :stretch}
-       [tabs]]
-      [rn/view {:flex-grow     0
-                :margin-left   16
-                :padding-right screen-padding}
-       [filter-selector-read-toggle]]]]))
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.utils.handlers :refer [<sub >evt]]))
 
 (defn render-notification
   [notification index]
-  [rn/view {:style (style/notification-container index)}
-   (case (:type notification)
-     types/contact-verification
-     [contact-verification/view notification {}]
+  [rn/view {:flex           1
+            :flex-direction :column
+            :margin-top     (if (= 0 index) 0 4)}
+   [activity-logs/activity-log {:context   [[context-tags/group-avatar-tag "Name" {:color          :purple
+                                                                                   :override-theme :dark
+                                                                                   :size           :small
+                                                                                   :style          {:background-color colors/white-opa-10}
+                                                                                   :text-style     {:color colors/white}}]
+                                            [rn/text {:style {:color colors/white}} "did something here."]]
+                                :icon      :placeholder
+                                :message   {:body (get-in notification [:message :content :text])}
+                                :timestamp (:timestamp notification)
+                                :title     "Activity Title"
+                                :unread?   (not (:read notification))}]])
 
-     types/contact-request
-     [contact-request/view notification]
-
-     types/mention
-     [mentions/view notification]
-
-     nil)])
-
-(defn activity-center
+(defn notifications-list
   []
-  [:f>
-   (fn []
-     (let [notifications        (rf/sub [:activity-center/filtered-notifications])
-           window-width         (rf/sub [:dimensions/window-width])
-           {:keys [top bottom]} (safe-area/use-safe-area)]
-       (react/effect! #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
-       [rn/view {:style (style/screen-container window-width top bottom)}
-        [header]
-        [rn/flat-list {:data                      notifications
-                       :empty-component           [empty-tab]
-                       :key-fn                    :id
-                       :on-scroll-to-index-failed identity
-                       :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-                       :render-fn                 render-notification}]]))])
+  (let [notifications (<sub [:activity-center/notifications-per-read-status])]
+    [rn/flat-list {:style          {:padding-horizontal 8}
+                   :data           notifications
+                   :key-fn         :id
+                   :on-end-reached #(>evt [:activity-center/notifications-fetch-next-page])
+                   :render-fn      render-notification}]))
+
+(defn activity-center []
+  (reagent/create-class
+   {:component-did-mount #(>evt [:activity-center/notifications-fetch-first-page {:status-filter :unread}])
+    :reagent-render
+    (fn []
+      [:<>
+       [topbar/topbar {:navigation {:on-press #(>evt [:navigate-back])}
+                       :title      (i18n/label :t/activity)}]
+       ;; TODO(ilmotta): Temporary solution to switch between read/unread
+       ;; notifications while the Design team works on the mockups.
+       [button/button {:on-press #(>evt [:activity-center/notifications-fetch-first-page {:status-filter :unread}])}
+        "Unread"]
+       [button/button {:on-press #(>evt [:activity-center/notifications-fetch-first-page {:status-filter :read}])}
+        "Read"]
+       [notifications-list]])}))

@@ -1,30 +1,28 @@
 (ns status-im.ui.screens.communities.community
-  (:require [i18n.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [react-native.core :as rn]
-            [quo2.components.community.style :as styles]
-
-            ;; TODO reimplement with quo2 library and new designs
-            [status-im.ui.components.topbar :as topbar]
+  (:require [status-im.ui.components.topbar :as topbar]
+            [quo.react-native :as rn]
             [status-im.ui.components.toolbar :as toolbar]
+            [quo.core :as quo]
             [status-im.constants :as constants]
             [status-im.chat.models.link-preview :as link-preview]
+            [status-im.utils.handlers :refer [>evt <sub]]
+            [status-im.i18n.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
             [status-im.communities.core :as communities]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as components.react]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.core :as utils]
             [status-im.ui.components.plus-button :as components.plus-button]
+            [re-frame.core :as re-frame]
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.components.accordion :as accordion]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [quo2.components.navigation.floating-shell-button :as floating-shell-button]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]))
+            [status-im.ui.screens.communities.styles :as styles]))
 
 (def request-cooldown-ms (* 24 60 60 1000))
 
@@ -50,7 +48,7 @@
          id
          true
          display-name
-         (or color (rand-nth colors/chat-colors)) nil 36])]
+         (or color (rand-nth colors/chat-colors))])]
      [rn/view {:style {:flex 1 :justify-content :center}}
       [quo/text {:number-of-lines     1
                  :accessibility-label :community-name-text}
@@ -63,8 +61,8 @@
          (i18n/label :t/open-membership))]]]))
 
 (defn hide-sheet-and-dispatch [event]
-  (rf/dispatch [:bottom-sheet/hide])
-  (rf/dispatch event))
+  (>evt [:bottom-sheet/hide])
+  (>evt event))
 
 (defn community-plus-actions [{:keys [id permissions can-manage-users?]}]
   (let [can-invite?     (and can-manage-users? (not= (:access permissions) constants/community-no-membership-access))
@@ -89,14 +87,14 @@
          :title               (i18n/label :t/invite-people)
          :icon                :main-icons/share
          :accessibility-label :community-invite-people
-         :on-press            #(rf/dispatch [:communities/invite-people-pressed id])}])
+         :on-press            #(>evt [::communities/invite-people-pressed id])}])
      (when (and can-share? (not can-invite?))
        [quo/list-item
         {:theme               :accent
          :title               (i18n/label :t/invite-people)
          :icon                :main-icons/share
          :accessibility-label :community-share
-         :on-press            #(rf/dispatch [:communities/share-community-pressed id])}])]))
+         :on-press            #(>evt [::communities/share-community-pressed id])}])]))
 
 (defn community-actions [{:keys [id name images color can-manage-users?]}]
   (let [thumbnail-image (get-in images [:thumbnail :uri])]
@@ -155,13 +153,13 @@
    ;; unread indicator
    (assoc home-item :public? true)
    {:on-press      (fn []
-                     (rf/dispatch [:dismiss-keyboard])
-                     (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
-                     (rf/dispatch [:search/home-filter-changed nil])
-                     (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
-    :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                  {:content (fn []
-                                              [sheets/actions home-item])}])}])
+                     (re-frame/dispatch [:dismiss-keyboard])
+                     (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
+                     (re-frame/dispatch [:search/home-filter-changed nil])
+                     (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
+    :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                        {:content (fn []
+                                                    [sheets/actions home-item])}])}])
 
 (defn categories-accordion [community-id chats categories data]
   [:<>
@@ -169,8 +167,8 @@
      ^{:key (str "cat" name id)}
      [:<>
       [accordion/section
-       {:on-open  #(rf/dispatch [::communities/store-category-state community-id id true])
-        :on-close #(rf/dispatch [::communities/store-category-state community-id id false])
+       {:on-open  #(>evt [::communities/store-category-state community-id id true])
+        :on-close #(>evt [::communities/store-category-state community-id id false])
         :default  state
         :title    [rn/view styles/category-item
                    [icons/icon :main-icons/channel-category {:color colors/gray}]
@@ -182,7 +180,7 @@
       [quo/separator]])])
 
 (defn community-chat-list [community-id categories from-chat]
-  (let [chats (rf/sub [:chats/sorted-categories-by-community-id community-id])]
+  (let [chats (<sub [:chats/sorted-categories-by-community-id community-id])]
     (if (and (empty? categories) (empty? chats))
       [blank-page (i18n/label :t/welcome-community-blank-message)]
       [list/flat-list
@@ -232,25 +230,25 @@
       :render-fn                    channel-preview-item}]))
 
 (defn unknown-community [community-id]
-  (let [fetching (rf/sub [:communities/fetching-community community-id])]
+  (let [fetching (<sub [:communities/fetching-community community-id])]
     [:<> {:style {:flex 1}}
      [topbar/topbar {:title  (if fetching (i18n/label :t/fetching-community) (i18n/label :t/not-found))}]
      [rn/view {:style {:padding 16 :flex 1 :flex-direction :row :align-items :center :justify-content :center}}
 
-      [quo/button {:on-press (when-not fetching #(rf/dispatch [::link-preview/resolve-community-info community-id]))
+      [quo/button {:on-press (when-not fetching #(>evt [::link-preview/resolve-community-info community-id]))
                    :disabled fetching
-                   :color    :secondary}
+                   :color :secondary}
        (if fetching
-         [react/small-loading-indicator]
+         [components.react/small-loading-indicator]
          (i18n/label :t/fetch-community))]]]))
 
 (defn community []
-  (let [{:keys [community-id from-chat]} (rf/sub [:get-screen-params :community])]
+  (let [{:keys [community-id from-chat]} (<sub [:get-screen-params])]
     (fn []
       (let [{:keys [id chats name images members permissions color joined
                     can-request-access? can-join? requested-to-join-at admin]
-             :as   community} (rf/sub [:communities/community community-id])
-            categories        (rf/sub [:communities/sorted-categories community-id])]
+             :as   community} (<sub [:communities/community community-id])
+            categories        (<sub [:communities/sorted-categories community-id])]
         (if community
           [rn/view {:style {:flex 1}}
            [topbar/topbar
@@ -266,24 +264,24 @@
              (when (or admin joined)
                [{:icon                :main-icons/more
                  :accessibility-label :community-menu-button
-                 :on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                          {:content (fn []
-                                                      [community-actions community])}])}])}]
+                 :on-press #(>evt [:bottom-sheet/show-sheet
+                                   {:content (fn []
+                                               [community-actions community])}])}])}]
            (if joined
              [community-chat-list id categories false from-chat]
              [community-channel-preview-list id chats])
            (when admin
              [components.plus-button/plus-button-old
-              {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                        {:content (fn []
-                                                    [community-plus-actions community])}])
+              {:on-press #(>evt [:bottom-sheet/show-sheet
+                                 {:content (fn []
+                                             [community-plus-actions community])}])
                :accessibility-label :new-chat-button}])
            (when-not joined
              (cond
                can-join?
                [toolbar/toolbar
                 {:show-border? true
-                 :center       [quo/button {:on-press #(rf/dispatch [:communities/join id])
+                 :center       [quo/button {:on-press #(>evt [::communities/join id])
                                             :type     :secondary}
                                 (i18n/label :t/join)]}]
                can-request-access?
@@ -294,18 +292,13 @@
                    :left       [quo/text {:color :secondary} (i18n/label :t/membership-request-pending)]}]
                  [toolbar/toolbar
                   {:show-border? true
-                   :center       [quo/button {:on-press #(rf/dispatch [::communities/request-to-join id])
+                   :center       [quo/button {:on-press #(>evt [::communities/request-to-join id])
                                               :type     :secondary}
                                   (i18n/label :t/request-access)]}])
                :else
                [toolbar/toolbar
                 {:show-border? true
-                 :center       [quo/button {:on-press #(rf/dispatch [:communities/join id])
+                 :center       [quo/button {:on-press #(>evt [::communities/join id])
                                             :type     :secondary}
-                                (i18n/label :t/follow)]}]))
-           [floating-shell-button/floating-shell-button
-            {:jump-to {:on-press #(rf/dispatch [:shell/navigate-to-jump-to])
-                       :label    (i18n/label :t/jump-to)}}
-            {:position :absolute
-             :bottom   70}]]
+                                (i18n/label :t/follow)]}]))]
           [unknown-community community-id])))))

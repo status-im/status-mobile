@@ -4,7 +4,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.communities.core :as communities]
-            [utils.debounce :as debounce]
+            [status-im.utils.debounce :as debounce]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.ui.screens.communities.create-channel :as create-channel]))
 

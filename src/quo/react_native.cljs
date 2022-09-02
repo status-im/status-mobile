@@ -56,8 +56,6 @@
                   {:keyboardVerticalOffset (+ 44 (:status-bar-height @navigation-const))})]
           (reagent/children this))))
 
-(def status-bar (.-StatusBar ^js rn))
-
 (def keyboard (.-Keyboard ^js rn))
 
 (def dismiss-keyboard! #(.dismiss ^js keyboard))

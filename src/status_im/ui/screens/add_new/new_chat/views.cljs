@@ -11,7 +11,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
-            [utils.debounce :as debounce]
+            [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
             [reagent.core :as reagent]
             [quo.react-native :as rn]

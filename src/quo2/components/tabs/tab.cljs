@@ -1,19 +1,19 @@
 (ns quo2.components.tabs.tab
   (:require [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [quo2.theme :as theme]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.icon :as icons]))
+            [quo.react-native :as rn]
+            [quo.theme :as theme]
+            [status-im.ui.components.icons.icons :as icons]
+            [quo2.components.markdown.text :as text]))
 
 (def themes {:light {:default  {:background-color colors/neutral-20
                                 :icon-color       colors/neutral-50
-                                :label            {:style {:color colors/neutral-100}}}
+                                :label            {:style {:color colors/black}}}
                      :active   {:background-color colors/neutral-50
                                 :icon-color       colors/white
                                 :label            {:style {:color colors/white}}}
                      :disabled {:background-color colors/neutral-20
                                 :icon-color       colors/neutral-50
-                                :label            {:style {:color colors/neutral-100}}}}
+                                :label            {:style {:color colors/black}}}}
              :dark  {:default  {:background-color colors/neutral-80
                                 :icon-color       colors/neutral-40
                                 :label            {:style {:color colors/white}}}
@@ -23,25 +23,6 @@
                      :disabled {:background-color colors/neutral-80
                                 :icon-color       colors/neutral-40
                                 :label            {:style {:color colors/white}}}}})
-
-(def themes-for-blur-background {:light {:default  {:background-color colors/neutral-80-opa-5
-                                                    :icon-color       colors/neutral-80-opa-40
-                                                    :label            {:style {:color colors/neutral-100}}}
-                                         :active   {:background-color colors/neutral-80-opa-60
-                                                    :icon-color       colors/white
-                                                    :label            {:style {:color colors/white}}}
-                                         :disabled {:background-color colors/neutral-80-opa-5
-                                                    :icon-color       colors/neutral-80-opa-40
-                                                    :label            {:style {:color colors/neutral-100}}}}
-                                 :dark  {:default  {:background-color colors/white-opa-5
-                                                    :icon-color       colors/white
-                                                    :label            {:style {:color colors/white}}}
-                                         :active   {:background-color colors/white-opa-20
-                                                    :icon-color       colors/white
-                                                    :label            {:style {:color colors/white}}}
-                                         :disabled {:background-color colors/white-opa-5
-                                                    :icon-color       colors/neutral-40
-                                                    :label            {:style {:color colors/white}}}}})
 
 (defn style-container [size disabled background-color]
   (merge {:height             size
@@ -67,12 +48,12 @@
     :before :icon-keyword
     :after :icon-keyword}"
   [_ _]
-  (fn [{:keys [id on-press disabled size before active accessibility-label blur? override-theme]
+  (fn [{:keys [id on-press disabled size before active accessibility-label]
         :or   {size 32}}
        children]
     (let [state (cond disabled :disabled active :active :else :default)
           {:keys [icon-color background-color label]}
-          (get-in (if blur? themes-for-blur-background themes) [(or override-theme  (theme/get-theme))  state])]
+          (get-in themes [(theme/get-theme) state])]
       [rn/touchable-without-feedback (merge {:disabled            disabled
                                              :accessibility-label accessibility-label}
                                             (when on-press

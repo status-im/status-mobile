@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.group.views
-  (:require [clojure.string :as string]
+  (:require [cljs.spec.alpha :as spec]
+            [clojure.string :as string]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.constants :as constants]
@@ -17,7 +18,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.group.styles :as styles]
             [quo.core :as quo]
-            [utils.debounce :as debounce])
+            [status-im.utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-contact [row]
@@ -99,7 +100,7 @@
 (views/defview new-group []
   (views/letsubs [contacts   [:selected-group-contacts]
                   group-name [:new-chat-name]]
-    (let [group-name-empty? (not (and (string? group-name) (not-empty group-name)))]
+    (let [group-name-empty? (not (spec/valid? :global/not-empty-string group-name))]
       [react/keyboard-avoiding-view  {:style styles/group-container
                                       :ignore-offset true}
        [react/view {:flex 1}

@@ -19,7 +19,7 @@
                   :width  width
                   :height height})))))
 
-(defn extract-id [reactions id]
+(defn- extract-id [reactions id]
   (->> reactions
        (filter (fn [{:keys [emoji-id]}] (= emoji-id id)))
        first
@@ -69,7 +69,7 @@
                                                       (and outgoing (= outgoing-status :sent)))
                                               (reset! actions act)
                                               (get-picker-position ref on-open)))}]
-          [reaction-row/message-reactions message reactions timeline #(on-emoji-press %) on-open]]
+          [reaction-row/message-reactions message reactions timeline]]
          (when @visible
            [rn/modal {:on-request-close on-close
                       :on-show          (fn []

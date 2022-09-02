@@ -10,6 +10,7 @@
             [status-im.utils.security]
             [quo.design-system.colors :as colors]
             [quo.core :as quo]
+            [status-im.qr-scanner.core :as qr-scanner]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.icons :as icons]))
 
@@ -46,8 +47,8 @@
 (defview bottom-sheet-view []
   (letsubs [view-id [:view-id]
             acc-to-login-keycard-pairing [:intro-wizard/acc-to-login-keycard-pairing]]
-    [react/view {:flex-direction :row}
-     [react/view {}
+    [react/view {:flex 1 :flex-direction :row}
+     [react/view {:flex 1}
       ;; Show manage storage link when on login screen, only on android devices
       ;; and the selected account is not paired with keycard
       (when (and (= view-id :login)
@@ -89,7 +90,14 @@
         [quo/list-item {:theme               :accent
                         :on-press            #(hide-sheet-and-dispatch [:multiaccounts.login.ui/export-db-submitted])
                         :icon                :main-icons/send
-                        :title               "Export unencrypted"}])]]))
+                        :title               "Export unencrypted"}])
+      (when config/local-pairing-mode-enabled?
+            [quo/list-item {:theme               :accent
+                            :on-press            #(hide-sheet-and-dispatch [::qr-scanner/scan-code {:handler ::qr-scanner/on-scan-success}])
+                            :icon                :main-icons/key
+                            :title               "Scan Sync Code"}])
+
+      ]]))
 
 (def bottom-sheet
   {:content bottom-sheet-view})

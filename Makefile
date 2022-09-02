@@ -36,8 +36,6 @@ endif
 export TMPDIR = /tmp/tmp-status-mobile-$(BUILD_TAG)
 # This has to be specified for both the Node.JS server process and the Qt process.
 export REACT_SERVER_PORT ?= 5001
-# Fix for ERR_OSSL_EVP_UNSUPPORTED error.
-export NODE_OPTIONS += --openssl-legacy-provider
 # The path can be anything, but home is usually safest.
 export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 
@@ -48,7 +46,7 @@ export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-mobile
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
 export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE
 
-# Useful for Android release builds
+# Useful for Andoird release builds
 TMP_BUILD_NUMBER := $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)
 
 # MacOS root is read-only, read nix/README.md for details
@@ -178,7 +176,7 @@ fdroid-fix-tmp: ##@prepare Fix TMPDIR permissions so Vagrant user is the owner
 
 fdroid-build-env: fdroid-max-watches fdroid-nix-dir fdroid-fix-tmp ##@prepare Setup build environment for F-Droud build
 
-fdroid-pr: export TARGET := android-sdk
+fdroid-pr: export TARGET := android
 fdroid-pr: ##@prepare Create F-Droid release PR
 ifndef APK
 	$(error APK env var not defined)
@@ -272,7 +270,7 @@ run-android: export TARGET := android
 run-android: ##@run Build Android APK and start it on the device
 	npx react-native run-android --appIdSuffix debug
 
-SIMULATOR=iPhone 13
+SIMULATOR=
 run-ios: export TARGET := ios
 run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")
@@ -287,8 +285,7 @@ endif
 
 lint: export TARGET := clojure
 lint: ##@test Run code style checks
-	sh scripts/lint-re-frame-in-quo-components.sh && \
-	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
+	yarn clj-kondo --confg .clj-kondo/config.edn --lint src && \
 	TARGETS=$$(git diff --diff-filter=d --cached --name-only src && echo src) && \
 	clojure -Scp "$$CLASS_PATH" -m cljfmt.main check --indents indentation.edn $$TARGETS
 
@@ -307,40 +304,17 @@ test-watch: ##@ Watch tests and re-run no changes to cljs files
 
 test: export TARGET := clojure
 test: ##@test Run tests once in NodeJS
-	# Here we create the gyp bindings for nodejs
+	# Here we creates the gyp bindings for nodejs
 	yarn install
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js target/test/test.js
 
-
-run-visual-test-ios: export TARGET := clojure
-run-visual-test-ios: XCODE_DERIVED_DATA := $(HOME)/Library/Developer/Xcode/DerivedData
-run-visual-test-ios: APPLICATION_NAME := StatusIm-brfnruzfrkkycpbndmdoeyrigthc
-run-visual-test-ios: export TEST_BINARY_PATH := $(XCODE_DERIVED_DATA)/$(APPLICATION_NAME)/Build/Products/Debug-iphonesimulator/StatusIm.app
-run-visual-test-ios: ##@test Run tests once in NodeJS
-	detox test --configuration ios.sim.debug 
-
-component-test-watch: export TARGET := clojure
-component-test-watch: export COMPONENT_TEST := true
-component-test-watch: export BABEL_ENV := test
-component-test-watch: ##@ Watch tests and re-run no changes to cljs files
-	yarn install
-	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js' -e cljs
-
-component-test: export TARGET := clojure
-component-test: export COMPONENT_TEST := true
-component-test: export BABEL_ENV := test
-component-test: ##@test Run tests once in NodeJS
-	# Here we create the gyp bindings for nodejs
-	yarn install
-	yarn shadow-cljs compile component-test && \
-	jest --config=test/jest/jest.config.js
-
+#--------------
 # Other
 #--------------
 
-geth-connect: export TARGET := android-sdk
+geth-connect: export TARGET := android-env
 geth-connect: ##@other Connect to Geth on the device
 	adb forward tcp:8545 tcp:8545 && \
 	build/bin/geth attach http://localhost:8545
@@ -350,22 +324,22 @@ android-clean: ##@prepare Clean Gradle state
 	git clean -dxf -f ./android/app/build; \
 	[[ -d android/.gradle ]] && cd android && ./gradlew clean
 
-android-ports: export TARGET := android-sdk
+android-ports: export TARGET := android-env
 android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:8081 tcp:8081 && \
 	adb reverse tcp:3449 tcp:3449 && \
 	adb reverse tcp:4567 tcp:4567 && \
 	adb forward tcp:5561 tcp:5561
 
-android-devices: export TARGET := android-sdk
+android-devices: export TARGET := android-env
 android-devices: ##@other Invoke adb devices
 	adb devices
 
-android-logcat: export TARGET := android-sdk
+android-logcat: export TARGET := android-env
 android-logcat: ##@other Read status-mobile logs from Android phone using adb
 	adb logcat | grep -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs -e 'F DEBUG   :' -e 'Go      :' -e 'GoLog   :' -e 'libc    :'
 
-android-install: export TARGET := android-sdk
+android-install: export TARGET := android-env
 android-install: export BUILD_TYPE ?= release
 android-install: ##@other Install APK on device using adb
 	adb install result/app-$(BUILD_TYPE).apk

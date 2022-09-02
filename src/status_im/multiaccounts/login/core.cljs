@@ -20,7 +20,7 @@
             [status-im.mobile-sync-settings.core :as mobile-network]
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
-            [status-im2.setup.log :as logging]
+            [status-im.utils.logging.core :as logging]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
@@ -33,7 +33,7 @@
             [status-im.utils.mobile-sync :as utils.mobile-sync]
             [status-im.async-storage.core :as async-storage]
             [status-im.notifications-center.core :as notifications-center]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.signing.eip1559 :as eip1559]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
@@ -336,7 +336,7 @@
      :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}]})
 
 (fx/defn initialize-appearance [cofx]
-  {:multiaccounts.ui/switch-theme (get-in cofx [:db :multiaccount :appearance])})
+  {::multiaccounts/switch-theme (get-in cofx [:db :multiaccount :appearance])})
 
 (fx/defn get-group-chat-invitations [_]
   {::json-rpc/call
@@ -392,7 +392,6 @@
               (get-node-config)
               (communities/fetch)
               (logging/set-log-level (:log-level multiaccount))
-              (notifications-center/get-activity-center-notifications)
               (notifications-center/get-activity-center-notifications-count))))
 
 (re-frame/reg-fx
@@ -469,7 +468,7 @@
   "Decides which root should be initialised depending on user and app state"
   [db]
   (if (get db :tos/accepted?)
-    (re-frame/dispatch [:init-root (if config/new-ui-enabled? :shell-stack :chat-stack)])
+    (re-frame/dispatch [:init-root (if @config/new-ui-enabled? :home-stack :chat-stack)])
     (re-frame/dispatch [:init-root :tos])))
 
 (fx/defn login-only-events
@@ -516,14 +515,11 @@
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount))
-
-              (if config/new-ui-enabled?
-                (navigation/init-root :shell-stack)
-                ;; if it's a first account, the ToS will be accepted at welcome carousel
-                ;; if not a first account, the ToS might have been accepted by other account logins
-                (if (or first-account? tos-accepted?)
-                  (navigation/init-root :onboarding-notification)
-                  (navigation/init-root :tos))))))
+              ;; if it's a first account, the ToS will be accepted at welcome carousel
+              ;; if not a first account, the ToS might have been accepted by other account logins
+              (if (or first-account? tos-accepted?)
+                (navigation/init-root :onboarding-notification)
+                (navigation/init-root :tos)))))
 
 (defn- keycard-setup? [cofx]
   (boolean (get-in cofx [:db :keycard :flow])))

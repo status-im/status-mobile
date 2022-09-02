@@ -8,7 +8,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
             [status-im.i18n.i18n :as i18n]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.core :as utils.core]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
@@ -989,7 +989,7 @@
   {::async-storage/set! {:transactions-management-enabled? enabled?}
    :db (assoc db :wallet/transactions-management-enabled? enabled?)})
 
-(fx/defn update-current-block
+(fx/defn update-curent-block
   {:events [::update-current-block]}
   [{:keys [db]} block]
   {:db (assoc db :ethereum/current-block block)})

@@ -7,7 +7,6 @@
 
 # Xcode
 #
-/component-spec
 result/
 build/
 *.pbxuser
@@ -176,8 +175,3 @@ test/appium/tests/users.py
 ##node bindings
 /bin/
 /lib/
-
-## visual tests
-/artifacts
-
-/.calva/

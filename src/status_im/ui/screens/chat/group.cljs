@@ -8,7 +8,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list-selection :as list-selection]
             [quo.design-system.colors :as colors]
-            [utils.debounce :as debounce]
+            [status-im.utils.debounce :as debounce]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 

@@ -11,7 +11,7 @@ import time
 
 async def start_threads(quantity: int, func: type, returns: dict, *args):
     loop = asyncio.get_event_loop()
-    from tests.cloudbase_test_api import sauce
+    from tests.conftest import sauce
     for _ in range(60):
         if 16 - len([job for job in sauce.jobs.get_jobs() if job['status'] == 'in progress']) < quantity:
             time.sleep(10)
@@ -19,20 +19,6 @@ async def start_threads(quantity: int, func: type, returns: dict, *args):
         returns[i] = loop.run_in_executor(None, func, *args)
     for k in returns:
         returns[k] = await returns[k]
-    return returns
-
-
-async def run_in_parallel(funcs):
-    loop = asyncio.get_event_loop()
-    res = []
-    returns = []
-    for func in funcs:
-        try:
-            res.append(loop.run_in_executor(None, func[0], func[1]))
-        except IndexError:
-            res.append(loop.run_in_executor(None, func[0]))
-    for k in res:
-        returns.append(await k)
     return returns
 
 
@@ -74,7 +60,7 @@ test_dapp_web_url = "status-im.github.io/dapp"
 test_dapp_url = 'https://simpledapp.status.im/'
 test_dapp_name = 'simpledapp.status.im'
 
-emojis = {'thumbs-up': 5, 'thumbs-down': 6, 'love': 1, 'laugh': 4, 'angry': 2, 'sad': 3}
+emojis = {'thumbs-up': 2, 'thumbs-down': 3, 'love': 1, 'laugh': 4, 'angry': 6, 'sad': 5}
 
 
 with open(os.sep.join(__file__.split(os.sep)[:-1]) + '/../../../translations/en.json') as json_file:

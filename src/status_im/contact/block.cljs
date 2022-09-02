@@ -4,7 +4,7 @@
             [status-im.contact.db :as contact.db]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.types :as types]
             [status-im.notifications-center.core :as notification-center]
             [status-im.utils.fx :as fx]))

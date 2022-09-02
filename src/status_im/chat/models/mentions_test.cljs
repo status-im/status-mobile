@@ -1,7 +1,7 @@
 (ns status-im.chat.models.mentions-test
   (:require [status-im.chat.models.mentions :as mentions]
             [clojure.string :as string]
-            [cljs.test :as test]))
+            [cljs.test :as test :include-macros true]))
 
 (def ->info-input
   [[:text "H."]

@@ -47,11 +47,13 @@
    :collectible-dark   (js/require "../resources/images/ui/collectible-dark.png")
    :hand-wave          (js/require "../resources/images/ui/hand-wave.png")
    :graph              (js/require "../resources/images/ui/graph.png")
+   :switcher           (js/require "../resources/images/ui/switcher.png")
    :discover           (js/require "../resources/images/ui/discover.png")
    :community-cover    (js/require "../resources/images/ui/community-cover.png")
    :lifestyle          (js/require "../resources/images/ui/lifestyle.png")
    :music              (js/require "../resources/images/ui/music.png")
-   :podcasts           (js/require "../resources/images/ui/podcasts.png")})
+   :podcasts           (js/require "../resources/images/ui/podcasts.png")
+   :sync-new-device    (js/require "../resources/images/ui/sync-new-device-cover-background.png")})
 
 (def mock-images
   {:photo1               (js/require "../resources/images/mock/photo1.png")
@@ -76,13 +78,7 @@
     (get (swap! loaded-images assoc k
                 (get ui k)) k)))
 
-(defn get-mock-image [k]
-  (if (contains? @loaded-images k)
-    (get @loaded-images k)
-    (get (swap! loaded-images assoc k
-                (get mock-images k)) k)))
-
-(def reactions-old
+(def reactions
   {:love        (js/require "../resources/images/reactions/love.png")
    :angry       (js/require "../resources/images/reactions/angry.png")
    :sad         (js/require "../resources/images/reactions/sad.png")

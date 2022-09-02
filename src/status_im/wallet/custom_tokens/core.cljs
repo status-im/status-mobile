@@ -8,7 +8,7 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]
             [status-im.wallet.core :as wallet]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.wallet.prices :as prices]))
 
 (re-frame/reg-fx

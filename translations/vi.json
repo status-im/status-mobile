@@ -1033,6 +1033,8 @@
     "reset-card-description": "Thao tác này sẽ đặt lại thẻ về trạng thái ban đầu. Nó sẽ xóa tất cả dữ liệu thẻ bao gồm cả khóa cá nhân. Hoạt động không thể đảo ngược.",
     "retry": "Thử lại",
     "revoke-access": "Thu hồi truy cập",
+    "rinkeby-network": "Mạng thử nghiệm Rinkeby",
+    "ropsten-network": "Ropsten mạng thử nghiệm",
     "rpc-url": "URL RPC",
     "rpc-usage-copy": "Sao chép",
     "rpc-usage-get-stats": "Làm tươi",

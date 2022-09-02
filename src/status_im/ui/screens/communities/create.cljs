@@ -11,7 +11,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.communities.membership :as memberships]
             [status-im.ui.components.icons.icons :as icons]
-            [utils.debounce :as debounce]))
+            [status-im.utils.debounce :as debounce]))
 
 (def max-name-length 30)
 (def max-description-length 140)

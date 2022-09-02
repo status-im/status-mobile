@@ -13,7 +13,7 @@
             [status-im.communities.core :as communities]
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.ui.components.icons.icons :as icons]
-            [quo2.components.community.style :as styles]
+            [status-im.ui.screens.communities.styles :as styles]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.tabs :as tabs]

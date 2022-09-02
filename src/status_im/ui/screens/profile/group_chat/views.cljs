@@ -13,10 +13,10 @@
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.screens.chat.message.message :as message]
+            [status-im.ui.screens.chat.message.message-old :as message]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.utils :as chat.utils]
-            [utils.debounce :as debounce])
+            [status-im.utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn member-sheet [chat-id member us-admin?]

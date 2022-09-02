@@ -1314,6 +1314,8 @@
     "restore-defaults": "Varsayılanları Geri Yükle",
     "retry": "Yeniden Dene",
     "revoke-access": "Erişimi iptal et",
+    "rinkeby-network": "Rinkeby test ağı",
+    "ropsten-network": "Ropsten test ağı",
     "rpc-url": "RPC URL'si",
     "rpc-usage-copy": "Kopyala",
     "rpc-usage-filter": "Filtre yöntemleri",

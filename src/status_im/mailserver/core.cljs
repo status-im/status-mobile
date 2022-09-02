@@ -7,7 +7,7 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.node.core :as node]
             [status-im.utils.mobile-sync :as mobile-network-utils]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 

@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
             [status-im.keycard.common :as common]
@@ -175,9 +175,7 @@
               {:keycard/check-nfc-enabled nil}
               (if (= flow :import)
                 (navigation/navigate-to-cofx :keycard-recovery-intro nil)
-                (do
-                  (common/listen-to-hardware-back-button)
-                  (navigation/navigate-to-cofx :keycard-onboarding-intro nil))))))
+                (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))))
 
 (fx/defn start-onboarding-flow
   {:events [:keycard/start-onboarding-flow]}
@@ -185,7 +183,6 @@
   (fx/merge cofx
             {:db                           (assoc-in db [:keycard :flow] :create)
              :keycard/check-nfc-enabled nil}
-            (common/listen-to-hardware-back-button)
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
 
 (fx/defn open-nfc-settings-pressed
@@ -268,10 +265,8 @@
         pin'              (or pin (common/vector->string (get-in db [:keycard :pin :current])))]
     (fx/merge cofx
               {:keycard/generate-and-load-key
-               {:mnemonic             mnemonic
-                :pin                  pin'
-                :key-uid              (:key-uid multiaccount)
-                :delete-multiaccount? (get-in db [:keycard :delete-account?])}})))
+               {:mnemonic     mnemonic
+                :pin          pin'}})))
 
 (fx/defn factory-reset-card-toggle
   {:events [:keycard.onboarding.intro.ui/factory-reset-card-toggle]}

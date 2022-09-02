@@ -80,8 +80,7 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver).create_user(keycard=True)
         wallet = sign_in.wallet_button.click()
         status_account_address = wallet.get_wallet_address()[2:]
-        w3.donate_testnet_eth('0x%s' % status_account_address, 0.05)
-        wallet.wallet_button.double_click()
+        wallet.get_test_assets(keycard=True)
         account_name = 'subaccount'
         wallet.add_account(account_name, keycard=True)
         wallet.get_account_by_name(account_name).click()
@@ -470,14 +469,14 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
-        if wallet.backup_recovery_phrase_warning_text.is_element_displayed():
+        if wallet.backup_recovery_phrase_warning_text.is_element_present():
             self.driver.fail("'Back up your seed phrase' warning is shown on Wallet while no funds are present")
         address = wallet.get_wallet_address()
-        self.click = wallet.close_button.click()
-        w3.donate_testnet_eth(address, 0.0001)
-        wallet.wait_balance_is_changed()
-        if not wallet.backup_recovery_phrase_warning_text.is_element_displayed(30):
+        wallet.close_button.click()
+        wallet.get_test_assets()
+        if not wallet.backup_recovery_phrase_warning_text.is_element_present(30):
             self.driver.fail("'Back up your seed phrase' warning is not shown on Wallet with funds")
+        wallet.donate_leftovers()
         profile = wallet.get_profile_view()
         wallet.backup_recovery_phrase_warning_text.click()
         profile.backup_recovery_phrase()
@@ -565,7 +564,6 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(sender['passphrase'])
         wallet = sign_in.wallet_button.click()
-        wallet.scan_tokens()
         wallet.wait_balance_is_changed()
         wallet.accounts_status_account.click()
 
@@ -636,69 +634,7 @@ class TestChatManagement(SingleDeviceTestCase):
                 if not wallet.element_by_text_part(expected_params[key]).is_element_displayed():
                     self.errors.append("Custom tx param %s is not shown on tx history screen" % key)
 
-        wallet.wallet_button.double_click()
-
-        wallet.just_fyi("Check below fee popup on Goerli")
-
-        wallet.accounts_status_account.click()
-        send_transaction = wallet.send_transaction_button.click_until_presence_of_element(send_transaction.amount_edit_box)
-        send_transaction.amount_edit_box.set_value(0)
-        send_transaction.set_recipient_address(ens_user_message_sender['ens'])
-        send_transaction.next_button.click()
-        wallet.element_by_translation_id("network-fee").click()
-        send_transaction.gas_limit_input.clear()
-        send_transaction.gas_limit_input.set_value(default_limit)
-        send_transaction.per_gas_price_limit_input.clear()
-        send_transaction.per_gas_price_limit_input.click()
-        send_transaction.per_gas_price_limit_input.send_keys('0.00000000000001')
-        if not wallet.element_by_translation_id("below-base-fee").is_element_displayed(10):
-            self.errors.append("Fee is below error is not shown")
-        send_transaction.save_fee_button.scroll_and_click()
-        if not wallet.element_by_translation_id("change-tip").is_element_displayed():
-            self.errors.append("Popup about changing fee error is not shown")
-        wallet.element_by_translation_id("continue-anyway").click()
-        if not send_transaction.element_by_text_part('0.000000 ETH').is_element_displayed():
-            self.driver.fail("Custom fee is not applied!")
-        self.errors.verify_no_errors()
-
-        wallet.just_fyi("Check can change tip to higher value and sign transaction")
-        wallet.element_by_translation_id("network-fee").click()
-        send_transaction.gas_limit_input.clear()
-        send_transaction.gas_limit_input.set_value(default_limit)
-        send_transaction.per_gas_price_limit_input.clear()
-        send_transaction.per_gas_price_limit_input.click()
-        send_transaction.per_gas_price_limit_input.send_keys('0.00000000000001')
-        send_transaction.save_fee_button.scroll_and_click()
-        wallet.element_by_translation_id("change-tip").click()
-        send_transaction.per_gas_price_limit_input.clear()
-        send_transaction.per_gas_price_limit_input.click()
-        send_transaction.per_gas_price_limit_input.send_keys(default_price)
-        if wallet.element_by_translation_id("below-base-fee").is_element_displayed(10):
-            self.errors.append("Fee is below error is shown after fee correction")
-        send_transaction.save_fee_button.scroll_and_click()
-        if wallet.element_by_translation_id("change-tip").is_element_displayed():
-            self.errors.append("Popup about changing fee error is shown after fee correction")
-        send_transaction.sign_transaction()
-        self.errors.verify_no_errors()
-
-        wallet.just_fyi('Check gas limit price is calculated in case of signing contract address')
-        wallet.send_transaction_button.click_until_presence_of_element(send_transaction.amount_edit_box)
-        send_transaction.amount_edit_box.set_value(0)
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_input.set_value('0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6')
-        send_transaction.element_by_translation_id("warning-sending-to-contract-descr").wait_for_visibility_of_element()
-        send_transaction.ok_button.click()
-        send_transaction.enter_recipient_address_input.click()
-        send_transaction.done_button.click_until_absense_of_element(send_transaction.done_button)
-        send_transaction.next_button.click()
-        wallet.element_by_translation_id("network-fee").click()
-        gas_value = send_transaction.gas_limit_input.text
-        if gas_value is default_price:
-            self.errors.append('Gas limit price remains default for contract addresses')
-        send_transaction.save_fee_button.scroll_and_click()
-        send_transaction.cancel_button.click()
-
-        wallet.just_fyi("Check not enough balance to cover trans fee error on Mainnet")
+        wallet.just_fyi("Check below fee popup on mainnet")
         profile = wallet.profile_button.click()
         profile.switch_network()
         sign_in.wallet_button.click()
@@ -713,6 +649,22 @@ class TestChatManagement(SingleDeviceTestCase):
             self.errors.append("Tx is likely to fail is not shown!")
         if send_transaction.network_fee_button.is_element_displayed():
             self.errors.append("Still can set tx fee when balance is not enough")
+
+        #  TODO: should be moved to another test after 8f52b9b63ccd9a52b7fe37ab4f89a2e7b6721fcd
+        # send_transaction = wallet.get_send_transaction_view()
+        # send_transaction.gas_limit_input.clear()
+        # send_transaction.gas_limit_input.set_value(default_limit)
+        # send_transaction.per_gas_price_limit_input.clear()
+        # send_transaction.per_gas_price_limit_input.click()
+        # send_transaction.per_gas_price_limit_input.send_keys('1')
+        # if not wallet.element_by_translation_id("below-base-fee").is_element_displayed(10):
+        #     self.errors.append("Fee is below error is not shown")
+        # send_transaction.save_fee_button.scroll_and_click()
+        # if not wallet.element_by_translation_id("change-tip").is_element_displayed():
+        #     self.errors.append("Popup about changing fee error is not shown")
+        # wallet.element_by_translation_id("continue-anyway").click()
+        # if not send_transaction.element_by_text_part('0.000021 ETH').is_element_displayed():
+        #     self.driver.fail("Custom fee is not applied!")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702360)
@@ -860,7 +812,7 @@ class TestChatManagement(SingleDeviceTestCase):
         no_link_tos_error_msg = 'Could not open Terms of Use from'
 
         signin.just_fyi("Checking privacy policy and TOS links")
-        if not signin.privacy_policy_link.is_element_displayed():
+        if not signin.privacy_policy_link.is_element_present():
             self.errors.append('%s Sign in view!' % no_link_found_error_msg)
         if not signin.terms_of_use_link.is_element_displayed():
             self.driver.fail("No Terms of Use link on Sign in view!")
@@ -1037,7 +989,6 @@ class TestChatManagement(SingleDeviceTestCase):
             self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
 
     @marks.testrail_id(5721)
-    @marks.xfail(reason="may be failed due to #14013")
     def test_group_chat_cant_add_more_twenty_participants(self):
         user_20_contacts = dict()
         user_20_contacts[
@@ -1047,15 +998,15 @@ class TestChatManagement(SingleDeviceTestCase):
         home = sign_in.recover_access(user_20_contacts['passphrase'])
 
         users = [chat_users['A'],
-                 transaction_senders['A'],
+                 chat_users['B'],
                  transaction_senders['ETH_8'],
                  transaction_senders['ETH_1'],
                  transaction_senders['ETH_2'],
                  transaction_senders['ETH_7'],
                  transaction_senders['ETH_STT_3'],
                  transaction_senders['ETH_STT_ADI_1'],
-                 transaction_senders['ETH_STT_1'],
                  transaction_senders['C'],
+                 transaction_senders['F'],
                  transaction_senders['G'],
                  transaction_senders['H'],
                  transaction_senders['I'],
@@ -1113,11 +1064,10 @@ class TestChatManagement(SingleDeviceTestCase):
         self.ens_name = 'purchased%s' % self.home.get_random_chat_name()
         self.wallet = self.home.wallet_button.click()
         self.address = self.wallet.get_wallet_address()
-        w3.donate_testnet_eth(self.address, 0.1)
-        self.wallet.wait_balance_is_changed()
         self.chat_key = self.home.get_public_key_and_username()
 
-        self.wallet.just_fyi("Get required STT")
+        self.wallet.just_fyi("Get required donate")
+        self.wallet.get_test_assets()
         self.wallet.get_test_assets(token=True)
 
         self.wallet.just_fyi("Purchase ENS")
@@ -1171,7 +1121,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(6300)
     @marks.skip
-    # TODO: waiting mode (rechecked 04.10.22, valid)
+    # TODO: waiting mode (rechecked 27.07.22, valid)
     def test_webview_security(self):
         home_view = SignInView(self.driver).create_user()
         daap_view = home_view.dapp_tab_button.click()

@@ -7,7 +7,7 @@ import pytest
 from tests import bootnode_address, mailserver_address, mailserver_ams, used_fleet, background_service_message
 from tests import marks
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
-from tests.users import transaction_senders, ens_user
+from tests.users import transaction_senders, ens_user, basic_user
 from views.sign_in_view import SignInView
 
 
@@ -148,7 +148,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.profile_1.bootnodes_button.click()
         self.profile_1.add_bootnode_button.click()
         self.profile_1.specify_name_input.set_value('test')
-        # TODO: blocked as validation is missing for bootnodes (rechecked 04.10.22, valid)
+        # TODO: blocked as validation is missing for bootnodes (rechecked 27.07.22, valid)
         # profile_1.bootnode_address_input.set_value('invalid_bootnode_address')
         # if not profile_1.element_by_text_part('Invalid format').is_element_displayed():
         #      self.errors.append('Validation message about invalid format of bootnode is not shown')
@@ -185,8 +185,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702286)
-    @marks.xfail(
-        reason="flaky; history was not fetched after enabling use_history_node - something needs investigation")
+    @marks.xfail(reason="flaky; history was not fetched after enabling use_history_node - something needs investigation")
     def test_profile_use_history_node_disable_enable(self):
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
         self.home_1.toggle_airplane_mode()
@@ -226,7 +225,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702287)
-    @marks.xfail(reason="may be failed due to #13333")
+    #@marks.xfail(reason="may be failed due to #13333")
     def test_profile_can_not_connect_to_custom_history_node_add_delete(self):
         self.home_1.profile_button.double_click()
         self.home_2.home_button.double_click()
@@ -318,7 +317,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Creating group chats")
         self.initial_group_chat_name = "GroupChat before rename"
         self.new_group_chat_name = "GroupChat after rename"
-        # self.group_user_not_a_contact = basic_user
+        self.group_user_not_a_contact = basic_user
         self.group_chat_1 = self.home_1.create_group_chat(user_names_to_add=[self.default_username_2],
                                                           group_chat_name=self.initial_group_chat_name)
         self.group_chat_2 = self.home_2.get_chat(self.initial_group_chat_name).click()
@@ -421,7 +420,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.chat_1.send_message(self.message_1)
         self.chat_1.send_message(self.message_2)
         self.chat_1.pin_message(self.message_1)
-        if not self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed():
+        if not self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present():
             self.drivers[0].fail("Message is not pinned!")
 
         self.home_1.just_fyi("Check that Device2 can pin Device1 message in 1-1 chat and two pinned "
@@ -436,16 +435,16 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.chat_1.chat_options.click()
         self.chat_1.view_profile_button.click()
         self.chat_1.pinned_messages_button.click()
-        if not (self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed() and
-                self.chat_1.chat_element_by_text(self.message_2).pinned_by_label.is_element_displayed() and
-                self.chat_1.chat_element_by_text(self.message_1).is_element_displayed() and
-                self.chat_1.chat_element_by_text(self.message_2).is_element_displayed()):
+        if not (self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present() and
+                self.chat_1.chat_element_by_text(self.message_2).pinned_by_label.is_element_present() and
+                self.chat_1.chat_element_by_text(self.message_1).is_element_present() and
+                self.chat_1.chat_element_by_text(self.message_2).is_element_present()):
             self.drivers[0].fail("Something missed on Pinned messaged on Device 1!")
         self.chat_2.pinned_messages_button.click()
-        if not (self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed() and
-                self.chat_2.chat_element_by_text(self.message_2).pinned_by_label.is_element_displayed() and
-                self.chat_2.chat_element_by_text(self.message_1).is_element_displayed() and
-                self.chat_2.chat_element_by_text(self.message_2).is_element_displayed()):
+        if not (self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present() and
+                self.chat_2.chat_element_by_text(self.message_2).pinned_by_label.is_element_present() and
+                self.chat_2.chat_element_by_text(self.message_1).is_element_present() and
+                self.chat_2.chat_element_by_text(self.message_2).is_element_present()):
             self.drivers[0].fail("Something missed on Pinned messaged on Device 2!")
         self.chat_1.close_button.click()
 
@@ -455,25 +454,25 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.chat_1.send_message(self.message_4)
         self.chat_1.pin_message(self.message_3)
         self.chat_1.pin_message(self.message_4)
-        if not self.chat_1.unpin_message_popup.is_element_displayed():
+        if not self.chat_1.unpin_message_popup.is_element_present():
             self.drivers[0].fail("No 'Unpin' dialog appears when pining 4th message")
 
         self.home_1.just_fyi("Unpin one message so that another could be pinned")
         self.chat_1.unpin_message_popup.message_text(self.message_1).click()
         self.chat_1.unpin_message_popup.click_unpin_message_button()
 
-        if self.chat_1.unpin_message_popup.is_element_displayed():
+        if self.chat_1.unpin_message_popup.is_element_present():
             self.drivers[0].fail("Unpin message pop up keep staying after Unpin button pressed")
-        if self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed():
+        if self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present():
             self.drivers[0].fail("Message is not unpinned!")
-        if not self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed():
+        if not self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_present():
             self.drivers[0].fail("Message is not pinned!")
 
         self.home_1.just_fyi("Unpin another message and check it's unpinned for another user")
         self.chat_2.close_button.click()
         self.chat_2.pin_message(self.message_4, action="unpin")
         self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
-        if self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed():
+        if self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_present():
             self.drivers[0].fail("Message_4 is not unpinned!")
 
     @marks.testrail_id(702065)
@@ -569,12 +568,43 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(702070)
+    def test_chat_pin_messages_in_group_chat(self):
+
+        [chat.home_button.double_click() for chat in [self.chat_1, self.chat_2]]
+
+        self.home_1.just_fyi("Enter group chat and pin message there. It's pinned for both members.")
+        [home.get_chat(self.new_group_chat_name).click() for home in (self.home_1, self.home_2)]
+        self.group_chat_1.send_message(self.message_1)
+        self.group_chat_1.pin_message(self.message_1)
+        if not (self.group_chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present(30) and
+                self.group_chat_2.chat_element_by_text(self.message_1).pinned_by_label.is_element_present(30)):
+            self.errors.append("Message is not pinned in group chat!")
+
+        self.home_1.just_fyi("Check that non admin user can not unpin messages")
+        self.group_chat_2.chat_element_by_text(self.message_1).long_press_element()
+        if self.group_chat_2.element_by_translation_id("unpin").is_element_present():
+            self.errors.append("Unpin option is available for non-admin user")
+
+        self.home_1.just_fyi("Grant another user with admin rights and check he can unpin message now")
+        self.group_chat_1.chat_options.click()
+        group_info = self.group_chat_1.group_info.click()
+        options = group_info.get_username_options(self.default_username_2).click()
+        options.make_admin_button.click()
+        self.group_chat_2.click_system_back_button()
+        self.group_chat_2.pin_message(self.message_1, action="unpin")
+        if (self.group_chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present() and
+                self.group_chat_2.chat_element_by_text(self.message_1).pinned_by_label.is_element_present()):
+            self.errors.append("Message failed be unpinned by user who granted admin permissions!")
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702258)
     def test_chat_group_chat_set_nickname_and_ens_via_group_info_mention(self):
         self.drivers[1].reset()
 
         self.home_2 = SignInView(self.drivers[1]).recover_access(ens_user['passphrase'])
-        self.home_2.ens_banner_close_button.click_if_shown()
+        self.home_2.ens_banner_close_button.wait_and_click()
         self.home_1.home_button.double_click()
         self.profile_2 = self.home_2.profile_button.click()
         ens, full_ens, username_2 = ens_user['ens'], '@%s' % ens_user['ens'], ens_user['username']
@@ -610,7 +640,9 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         chat_2.send_message("first")
         chat_2.home_button.click()
         chat_1.home_button.click()
-        chat_1 = self.home_1.create_group_chat([full_ens], group_name)
+        chat_1 = self.home_1.add_contact(self.group_user_not_a_contact['public_key'])
+        chat_1.home_button.click()
+        chat_1 = self.home_1.create_group_chat([full_ens, self.group_user_not_a_contact['username']], group_name)
         chat_2 = self.home_2.get_chat(group_name).click()
         chat_2.join_chat_button.click_if_shown()
 
@@ -658,6 +690,17 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
                 'ENS is not resolved in chat input after setting nickname in mention suggestions list (search by nickname)!')
         chat_1.chat_message_input.clear()
 
+        self.home_1.just_fyi("Check can mention not a contact group member who hasn't sent messages yet")
+        chat_2.chat_message_input.send_keys('@')
+        if not chat_2.element_by_text('%s' % self.group_user_not_a_contact['username']).is_element_displayed():
+            self.errors.append("Username of not a contact group member is not shown in mention input")
+        chat_2.chat_message_input.clear()
+        chat_2.select_mention_from_suggestion_list('%s' % self.group_user_not_a_contact['username'], typed_search_pattern=self.group_user_not_a_contact['username'][:2])
+        if chat_2.chat_message_input.text != '@' + self.group_user_not_a_contact['username'] + ' ':
+            self.errors.append(
+                'Can not select mention of not a contact member from suggestions list')
+        chat_2.chat_message_input.clear()
+
         self.home_1.just_fyi('Can delete nickname via group info and recheck received messages')
         device_2_options = chat_1.get_user_options(full_ens)
         device_2_options.view_profile_button.click()
@@ -694,11 +737,6 @@ class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
         for member in (self.public_keys[1], self.public_keys[2]):
             self.homes[0].add_contact(member)
             self.homes[0].home_button.click()
-
-        for i in range(1, 3):
-            self.homes[i].handle_contact_request(self.usernames[0])
-            self.homes[i].home_button.double_click()
-
         [SignInView(self.drivers[i]).put_app_to_background_and_back() for i in range(1, 3)]
         self.chat_name = self.homes[0].get_random_chat_name()
         self.invite_chat_name = '%s_invite' % self.homes[0].get_random_chat_name()
@@ -708,53 +746,6 @@ class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
         self.chats[0] = self.homes[0].create_group_chat([self.usernames[1], self.usernames[2]], self.chat_name)
         for i in range(1, 3):
             self.chats[i] = self.homes[i].get_chat(self.chat_name).click()
-
-    @marks.testrail_id(702343)
-    def test_group_chat_send_delete_image(self):
-
-        self.chats[0].just_fyi("Sending image to group chat")
-        self.chats[0].show_images_button.click()
-        self.chats[0].allow_button.click()
-        self.chats[0].first_image_from_gallery.click()
-        self.chats[0].send_message_button.click()
-
-        self.chats[0].just_fyi("Verify sent image is displayed for every group member")
-        for i in range(1, 3):
-            if not self.chats[i].image_message_in_chat.is_element_displayed(60):
-                self.errors.append("Sent image is not displayed in chat for user driver '%s'" % i)
-
-        self.chats[0].just_fyi("Deleting image message from group chat")
-        self.chats[0].image_message_in_chat.long_press_element()
-        self.chats[0].element_by_translation_id("delete").click()
-
-        self.chats[0].just_fyi("Verify deleted image is NOT displayed for every group member")
-        for i in range(1, 3):
-            if not self.chats[i].image_message_in_chat.is_element_disappeared():
-                self.errors.append("Deleted image is still displayed in chat for user driver '%s'" % i)
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(702404)
-    def test_group_chat_send_delete_audio(self):
-        self.chats[0].just_fyi("Sending audio to group chat")
-        self.chats[0].record_audio_message(message_length_in_seconds=3)
-        self.chats[0].send_message_button.click()
-
-        self.chats[0].just_fyi("Verify sent audio is displayed for every group member")
-        for i in range(1, 3):
-            if not self.chats[i].play_pause_audio_message_button.is_element_displayed(60):
-                self.errors.append("Sent audio is not displayed in chat for user driver '%s'" % i)
-
-        self.chats[0].just_fyi("Deleting audio message from group chat")
-        self.chats[0].audio_message_in_chat_timer.long_press_element()
-        self.chats[0].element_by_translation_id("delete").click()
-
-        self.chats[0].just_fyi("Verify deleted audio is NOT displayed for every group members")
-        for i in range(1, 3):
-            if not self.chats[i].play_pause_audio_message_button.is_element_disappeared():
-                self.errors.append("Deleted audio is still displayed in chat for user driver '%s'" % i)
-
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(702259)
     def test_group_chat_remove_member(self):
@@ -832,11 +823,6 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.home_2 = self.device_2.recover_access(passphrase=self.sender['passphrase'],
                                                    keycard=True, enable_notifications=True)
-
-        self.home_2.element_by_text_part('Background service').wait_for_invisibility_of_element()
-
-        [home.ens_banner_close_button.click_if_shown() for home in (self.home_1, self.home_2)]
-
         self.wallet_2 = self.home_2.wallet_button.click()
         self.initial_amount_stt = self.wallet_2.get_asset_amount_by_name('STT')
         self.wallet_2.home_button.click()
@@ -882,8 +868,7 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702295)
-    @marks.xfail(
-        reason="mysterious issue when PNs are not fetched from offline, can not reproduce on real devices; needs investigation")
+    @marks.xfail(reason="mysterious issue when PNs are not fetched from offline, can not reproduce on real devices; needs investigation")
     def test_keycard_1_1_chat_command_request_and_send_tx_stt_in_1_1_chat_offline_opened_from_push(self):
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
         self.home_1.get_chat(self.sender['username']).click()

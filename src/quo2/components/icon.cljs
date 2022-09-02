@@ -1,29 +1,26 @@
 (ns quo2.components.icon
   (:require
-   [clojure.string :as string]
-   [react-native.core :as rn]
-   [quo2.components.icons.icons :as icons]
-   [quo2.foundations.colors :as colors]))
+   [quo.theme :as theme]
+   [status-im.ui.components.icons.icons :as icons]))
 
-(defn memo-icon-fn
-  ([icon-name] (memo-icon-fn icon-name nil))
-  ([icon-name {:keys [color container-style size
-                      accessibility-label no-color]
-               :or   {accessibility-label :icon}}]
+(defn icon
+  ([icon-name] (icon icon-name nil))
+  ([icon-name {:keys [size] :as props}]
    (let [size (or size 20)]
-     ^{:key icon-name}
-     [rn/image
-      {:style
-       (merge {:width  size
-               :height size}
+     [icons/icon (str (name icon-name) size) (merge props
+                                                    {:width size
+                                                     :height size})])))
+(defn icon-for-theme
+  ([icon-name theme]
+   (icon-for-theme icon-name theme nil))
+  ([icon-name theme props]
+   (let [theme-icon-name (if (= theme :dark)
+                           (str (name icon-name) "-dark")
+                           icon-name)]
+     (icon theme-icon-name props))))
 
-              (when (not no-color)
-                {:tint-color (if (and (string? color) (not (string/blank? color)))
-                               color
-                               (colors/theme-colors colors/neutral-100 colors/white))})
-
-              container-style)
-       :accessibility-label accessibility-label
-       :source              (icons/icon-source (str (name icon-name) size))}])))
-
-(def icon (memoize memo-icon-fn))
+(defn theme-icon
+  ([icon-name]
+   (theme-icon icon-name nil))
+  ([icon-name props]
+   (icon-for-theme icon-name (theme/get-theme) props)))

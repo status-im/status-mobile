@@ -4,7 +4,6 @@
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
-            [status-im.ui.screens.chat.components.messages-skeleton :as messages-skeleton]
             [status-im.ui.screens.chat.styles.input.gap :as style]))
 
 (defn on-press
@@ -19,17 +18,16 @@
                                 chat-id]
                   connected?   [:mailserver/connected?]
                   use-status-nodes? [:mailserver/use-status-nodes?]
-                  first-gap?   (= gap-ids #{:first-gap})
-                  window-height [:dimensions/window-height]]
+                  first-gap?   (= gap-ids #{:first-gap})]
     (when (or (not first-gap?) public? community?)
-      [react/view {:style (when-not in-progress? style/gap-container)}
+      [react/view {:style (style/gap-container)}
        [react/touchable-highlight
         {:on-press (when (and (not in-progress?) use-status-nodes? connected?)
                      (on-press chat-id gap-ids))
-         :style    {:height (if in-progress? window-height 48)}}
+         :style    style/touchable}
         [react/view {:style style/label-container}
          (if in-progress?
-           [messages-skeleton/messages-skeleton window-height]
+           [react/activity-indicator]
            [react/nested-text
             {:style (style/gap-text (and connected? use-status-nodes?))}
             (i18n/label (if first-gap? :t/load-more-messages :t/fetch-messages))

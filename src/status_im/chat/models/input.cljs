@@ -126,7 +126,6 @@
 
         text (get-in message [:content :text])]
     {:dispatch [:chat.ui.input/set-chat-input-text text current-chat-id]
-     :set-input-text [current-chat-id text]
      :db (-> db
              (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
                        message)
@@ -243,15 +242,11 @@
                                                :pack (int (if (string/blank? packID) pack packID))}
                                      :text    (i18n/label :t/update-to-see-sticker {"locale" "en"})})))
 
-(fx/defn send-edited-message [{:keys [db] :as cofx} text {:keys [message-id quoted-message]}]
+(fx/defn send-edited-message [{:keys [db] :as cofx} text {:keys [message-id]}]
   (fx/merge
    cofx
    {::json-rpc/call [{:method     "wakuext_editMessage"
-                      :params     [{:id message-id
-                                    :text text
-                                    :content-type (if (message-content/emoji-only-content? {:text text :response-to quoted-message})
-                                                    constants/content-type-emoji
-                                                    constants/content-type-text)}]
+                      :params     [{:id message-id :text text}]
                       :js-response true
                       :on-error #(log/error "failed to edit message " %)
                       :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
@@ -276,13 +271,12 @@
   {:events [:contacts/send-contact-request]}
   [{:keys [db] :as cofx} public-key message]
   (fx/merge cofx
-            {:chat.ui/clear-inputs     nil
-             :chat.ui/clear-inputs-old nil
-             ::json-rpc/call           [{:method "wakuext_sendContactRequest"
-                                         :js-response true
-                                         :params [{:id public-key :message message}]
-                                         :on-error #(log/warn "failed to send a contact request" %)
-                                         :on-success #(re-frame/dispatch [:transport/message-sent %])}]}
+            {:chat.ui/clear-inputs nil
+             ::json-rpc/call       [{:method "wakuext_sendContactRequest"
+                                     :js-response true
+                                     :params [{:id public-key :message message}]
+                                     :on-error #(log/warn "failed to send a contact request" %)
+                                     :on-success #(re-frame/dispatch [:transport/message-sent %])}]}
             (mentions/clear-mentions)
             (mentions/clear-cursor)
             (clean-input (:current-chat-id db))

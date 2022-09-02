@@ -210,7 +210,3 @@
 (re-frame/reg-fx
  :keycard/save-multiaccount-and-login
  card/save-multiaccount-and-login)
-
-(re-frame/reg-fx
- :keycard/delete-multiaccount-before-migration
- card/delete-multiaccount-before-migration)

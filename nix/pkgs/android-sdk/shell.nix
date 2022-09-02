@@ -1,7 +1,7 @@
 { mkShell, openjdk, androidPkgs }:
 
 mkShell {
-  name = "android-sdk-shell";
+  name = "android-env-shell";
   shellHook = ''
     export JAVA_HOME="${openjdk}"
 

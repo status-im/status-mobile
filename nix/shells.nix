@@ -23,7 +23,7 @@ let
 
     # for calling clojure targets in CI or Makefile
     clojure = mkShell {
-      buildInputs = with pkgs; [ clojure flock maven openjdk clj-kondo ];
+      buildInputs = with pkgs; [ clojure flock maven openjdk ];
       inputsFrom = [ nodejs-sh ];
       # CLASSPATH from clojure deps with 'src' appended to find local sources.
       shellHook = with pkgs; ''
@@ -56,8 +56,8 @@ let
       buildInputs = with pkgs; [ openjdk8 apksigner ];
     };
 
-    # for targets needing 'adb', 'apkanalyzer' and other SDK/NDK tools
-    android-sdk = pkgs.androidShell;
+    # for targets that need 'adb' and other SDK/NDK tools
+    android-env = pkgs.androidShell;
 
     # helpers for use with target argument
     ios = targets.mobile.ios.shell;

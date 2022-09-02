@@ -3,8 +3,7 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as photos]
-            [quo2.foundations.colors :as quo2.colors]
-            [quo2.foundations.typography :as typography]))
+            [quo2.foundations.colors :as quo2.colors]))
 
 (defn style-message-text
   []
@@ -72,16 +71,30 @@
   {:align-self    :flex-start
    :padding-left  8})
 
-(defn pin-indicator []
-  (merge {:flex-direction :row}))
+(defn pin-indicator [display-photo?]
+  (merge
+   {:flex-direction             :row
+    :border-top-left-radius     4
+    :border-top-right-radius    12
+    :border-bottom-left-radius  12
+    :border-bottom-right-radius 12
+    :padding-left               8
+    :padding-right              10
+    :padding-vertical           5
+    :background-color           colors/gray-lighter
+    :justify-content            :center
+    :max-width                  "80%"
+    :align-self  :flex-start
+    :align-items :flex-start}
+   (when display-photo?
+     {:margin-left 44})))
 
 (defn pin-indicator-container []
-  {:margin-top  4
-   :margin-left 54
-   :top 4
+  {:margin-top      2
    :justify-content :center
    :align-self   :flex-start
-   :align-items  :flex-start})
+   :align-items  :flex-start
+   :padding-left 8})
 
 (defn pinned-by-text-icon-container []
   {:flex-direction :row
@@ -95,9 +108,14 @@
    :margin-top     1})
 
 (defn pin-author-text []
-  (merge typography/font-medium
-         {:color quo2.colors/primary-50
-          :bottom 2}))
+  {:margin-left  2
+   :margin-right 12
+   :padding-right 0
+   :left         12
+   :flex-direction :row
+   :flex-shrink  1
+   :align-self   :flex-start
+   :overflow     :hidden})
 
 (defn pinned-by-text []
   {:margin-left 5})
@@ -109,7 +127,7 @@
 (defn message-author-userpic []
   (merge
    {:width      (+ 16 photos/default-size)} ;; 16 is for the padding
-   {:padding-left 0
+   {:padding-left 8
     :padding-right      8}))
 
 (def delivery-text
@@ -153,9 +171,21 @@
    :flex-direction :row-reverse})
 
 (defn message-view
-  [{:keys [content-type]}]
+  [{:keys [content-type mentioned pinned]}]
   (merge
    {:border-radius 10}
+
+   (cond
+     pinned                                             {:background-color colors/pin-background}
+     (= content-type constants/content-type-system-text) nil
+     mentioned                                           {:background-color colors/mentioned-background
+                                                          :border-color colors/mentioned-border
+                                                          :border-width 1}
+     (= content-type constants/content-type-audio)       {:background-color colors/blue
+                                                          :padding-horizontal 12
+                                                          :padding-top 6}
+     :else                                               {:background-color colors/white})
+
    (when (= content-type constants/content-type-emoji)
      {:flex-direction :row})))
 
@@ -203,7 +233,7 @@
 
 (defn message-default-style []
   {:font-family "Inter-Regular"
-   :color       (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)
+   :color       (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)
    :font-size   15
    :line-height 21.75
    :letter-spacing -0.135})

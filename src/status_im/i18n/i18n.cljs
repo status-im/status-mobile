@@ -4,8 +4,6 @@
    ["i18n-js" :as i18n]
    [status-im.i18n.i18n-resources :as i18n-resources]
    [status-im.goog.i18n :as goog.i18n]))
-;;TODO (14/11/22 flexsurfer) this namespace has been moved to the root level, we keep this only for old (status 1.0) code,
-;; can be removed with old code later
 
 (set! (.-locale i18n) (name i18n-resources/default-device-language))
 (set! (.-fallbacks i18n) true)

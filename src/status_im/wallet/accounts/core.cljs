@@ -10,7 +10,7 @@
             [status-im.native-module.core :as status]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
             [status-im.wallet.core :as wallet]

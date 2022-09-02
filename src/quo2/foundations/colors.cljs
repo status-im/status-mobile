@@ -1,58 +1,49 @@
 (ns quo2.foundations.colors
   (:require [clojure.string :as string]
-            [quo2.theme :as theme]))
+            [quo.theme :as theme]))
 
 (defn alpha [value opacity]
-  (when value
-    (if (string/starts-with? value "#")
-      (let [hex (string/replace value #"#" "")
-            r   (js/parseInt (subs hex 0 2) 16)
-            g   (js/parseInt (subs hex 2 4) 16)
-            b   (js/parseInt (subs hex 4 6) 16)]
-        (str "rgba(" r "," g "," b "," opacity ")"))
-      (let [rgb (string/split value #",")]
-        (str (string/join "," (butlast rgb)) "," opacity ")")))))
-
-(def theme-alpha
-  (memoize
-   (fn
-     ([color light-opacity dark-opacity]
-      (theme-alpha color light-opacity color dark-opacity))
-     ([light-color light-opacity dark-color dark-opacity]
-      (if (theme/dark?)
-        (alpha light-color light-opacity)
-        (alpha dark-color dark-opacity))))))
-
+  (if (string/starts-with? value "#")
+    (let [hex (string/replace value #"#" "")
+          r   (js/parseInt (subs hex 0 2) 16)
+          g   (js/parseInt (subs hex 2 4) 16)
+          b   (js/parseInt (subs hex 4 6) 16)]
+      (str "rgba(" r "," g "," b "," opacity ")"))
+    (let [rgb (string/split value #",")]
+      (str (string/join "," (butlast rgb)) "," opacity ")"))))
 
 ;;;;Neutral
 
 ;;Solid
-
-
 (def neutral-5 "#F5F6F8")
 (def neutral-10 "#F0F2F5")
-(def neutral-20 "#E7EAEE")
-(def neutral-30 "#DCE0E5")
+(def neutral-20 "#ECEEF1")
+(def neutral-30 "#E7EAEE")
 (def neutral-40 "#A1ABBD")
 (def neutral-50 "#647084")
 (def neutral-60 "#303D55")
-(def neutral-70 "#202C42")
-(def neutral-80 "#1B273D")
-(def neutral-90 "#131D2F")
-(def neutral-95 "#0D1625")
-(def neutral-100 "#09101C")
+(def neutral-70 "#192438")
+(def neutral-80 "#131D2F")
+(def neutral-90 "#0D1625")
+(def neutral-95 "#09101C")
 
-;;Blur
-(def neutral-5-opa-70  (alpha neutral-5 0.7))
-(def neutral-90-opa-70 (alpha neutral-90 0.7))
+;;50 with transparency
+(def neutral-50-opa-5 (alpha neutral-50 0.05))
+(def neutral-50-opa-10 (alpha neutral-50 0.1))
+(def neutral-50-opa-20 (alpha neutral-50 0.2))
+(def neutral-50-opa-30 (alpha neutral-50 0.3))
+(def neutral-50-opa-40 (alpha neutral-50 0.4))
+
+;;70 with transparency
+(def neutral-70-opa-60 (alpha neutral-70 0.6))
+(def neutral-70-opa-70 (alpha neutral-70 0.7))
+(def neutral-70-opa-80 (alpha neutral-70 0.8))
+(def neutral-70-opa-90 (alpha neutral-70 0.9))
+(def neutral-70-opa-95 (alpha neutral-70 0.95))
 
 ;;80 with transparency
 (def neutral-80-opa-5  (alpha neutral-80 0.05))
 (def neutral-80-opa-10 (alpha neutral-80 0.1))
-(def neutral-80-opa-20 (alpha neutral-80 0.2))
-(def neutral-80-opa-30 (alpha neutral-80 0.3))
-(def neutral-80-opa-40 (alpha neutral-80 0.4))
-(def neutral-80-opa-50 (alpha neutral-80 0.4))
 (def neutral-80-opa-60 (alpha neutral-80 0.6))
 (def neutral-80-opa-70 (alpha neutral-80 0.7))
 (def neutral-80-opa-80 (alpha neutral-80 0.8))
@@ -66,19 +57,22 @@
 (def neutral-95-opa-90 (alpha neutral-95 0.9))
 (def neutral-95-opa-95 (alpha neutral-95 0.95))
 
-;;100 with transparency
-(def neutral-100-opa-60 (alpha neutral-100 0.6))
-(def neutral-100-opa-70 (alpha neutral-100 0.7))
-(def neutral-100-opa-80 (alpha neutral-100 0.8))
-(def neutral-100-opa-90 (alpha neutral-100 0.9))
-(def neutral-100-opa-95 (alpha neutral-100 0.95))
+;;;;Black
+(def black "#000000")
+(def black-opa-5 (alpha black 0.05))
+(def black-opa-10 (alpha black 0.1))
+(def black-opa-20 (alpha black 0.2))
+(def black-opa-30 (alpha black 0.3))
+(def black-opa-40 (alpha black 0.4))
+(def black-opa-50 (alpha black 0.5))
+(def black-opa-60 (alpha black 0.6))
+(def black-opa-70 (alpha black 0.7))
+(def black-opa-80 (alpha black 0.8))
+(def black-opa-90 (alpha black 0.9))
+(def black-opa-95 (alpha black 0.95))
 
 ;;;;White
-
-;;Solid
 (def white "#ffffff")
-
-;; with transparency
 (def white-opa-5 (alpha white 0.05))
 (def white-opa-10 (alpha white 0.1))
 (def white-opa-20 (alpha white 0.2))
@@ -94,8 +88,15 @@
 ;;;;Primary
 
 ;;Solid
+(def primary-10 "#F8F9FE")
+(def primary-20 "#D9DFF9")
+(def primary-30 "#ACB9F1")
+(def primary-40 "#7F93E9")
 (def primary-50 "#4360DF")
-(def primary-60 "#354DB2")
+(def primary-60 "#3851BB")
+(def primary-70 "#2E4198")
+(def primary-80 "#233274")
+(def primary-90 "#182350")
 
 ;;50 with transparency
 (def primary-50-opa-5 (alpha primary-50 0.05))
@@ -107,8 +108,15 @@
 ;;;;Success
 
 ;;Solid
+(def success-10 "#F6FBFB")
+(def success-20 "#D4EDEB")
+(def success-30 "#9FD8D3")
+(def success-40 "#6BC2BA")
 (def success-50 "#26A69A")
 (def success-60 "#208B81")
+(def success-70 "#1A7169")
+(def success-80 "#145650")
+(def success-90 "#08211F")
 
 ;;50 with transparency
 (def success-50-opa-5 (alpha success-50 0.05))
@@ -117,17 +125,38 @@
 (def success-50-opa-30 (alpha success-50 0.3))
 (def success-50-opa-40 (alpha success-50 0.4))
 
-(def success-60-opa-5 (alpha success-60 0.05))
-(def success-60-opa-10 (alpha success-60 0.1))
-(def success-60-opa-20 (alpha success-60 0.2))
-(def success-60-opa-30 (alpha success-60 0.3))
-(def success-60-opa-40 (alpha success-60 0.4))
+;;;;Warning
+
+;;Solid
+(def warning-10 "#FFFBF9")
+(def warning-20 "#FEE9DF")
+(def warning-30 "#FDCEBA")
+(def warning-40 "#FCB394")
+(def warning-50 "#FB8F61")
+(def warning-60 "#D37851")
+(def warning-70 "#AB6142")
+(def warning-80 "#824A32")
+(def warning-90 "#5A3323")
+
+;;50 with transparency
+(def warning-50-opa-5 (alpha warning-50 0.05))
+(def warning-50-opa-10 (alpha warning-50 0.1))
+(def warning-50-opa-20 (alpha warning-50 0.2))
+(def warning-50-opa-30 (alpha warning-50 0.3))
+(def warning-50-opa-40 (alpha warning-50 0.4))
 
 ;;;;Danger
 
 ;;Solid
+(def danger-10 "#FEF9F9")
+(def danger-20 "#FADFDE")
+(def danger-30 "#F4B9B7")
+(def danger-40 "#EE9290")
 (def danger-50 "#E65F5C")
 (def danger-60 "#C1504D")
+(def danger-70 "#9C413F")
+(def danger-80 "#783130")
+(def danger-90 "#532221")
 
 ;;50 with transparency
 (def danger-50-opa-5 (alpha danger-50 0.05))
@@ -136,82 +165,117 @@
 (def danger-50-opa-30 (alpha danger-50 0.3))
 (def danger-50-opa-40 (alpha danger-50 0.4))
 
-;;;; Customization
+;;;;Info
 
-;; Colors for customizing profiles and communities themes
-(def customization
-  {:primary   {50 primary-50  ;; User can also use primary color as customisation color
-               60 primary-60}
-   :purple    {50 "#8661C1"
-               60 "#5E478C"}
-   :indigo    {50 "#496289"
-               60 "#3D5273"}
-   :turquoise {50 "#448EA2"
-               60 "#397788"}
-   :blue      {50 "#4CB4EF"
-               60 "#4097C9"}
-   :green     {50 "#5BCC95"
-               60 "#4CAB7D"}
-   :yellow    {50 "#FFCB53"
-               60 "#D6AA46"}
-   :orange    {50 "#FB8F61"
-               60 "#D37851"}
-   :red       {50 "#F46666"
-               60 "#CD5656"}
-   :pink      {50 "#FC7BAB"
-               60 "#D46790"}
-   :brown     {50 "#99604D"
-               60 "#805141"}
-   :beige     {50 "#CAAE93"
-               60 "#AA927C"}})
+;;Solid
+(def info-10 "#F6FCFD")
+(def info-20 "#D2EEF4")
+(def info-30 "#9DD9E6")
+(def info-40 "#67C4D8")
+(def info-50 "#20A8C6")
+(def info-60 "#1B8DA6")
+(def info-70 "#167287")
+(def info-80 "#115767")
+(def info-90 "#0C3C47")
 
-(def colors-map (merge {:danger  {50 danger-50
-                                  60 danger-60}
-                        :success {50 success-50
-                                  60 success-60}} customization))
+;;50 with transparency
+(def info-50-opa-5 (alpha info-50 0.05))
+(def info-50-opa-10 (alpha info-50 0.1))
+(def info-50-opa-20 (alpha info-50 0.2))
+(def info-50-opa-30 (alpha info-50 0.3))
+(def info-50-opa-40 (alpha info-50 0.4))
 
-(def custom-color
-  "(custom-color color suffix opacity)
-   color   :primary/:purple/...
-   suffix  50/60
-   opacity 0-100 (optional)"
-  (memoize
-   (fn
-     ([color suffix]
-      (custom-color color suffix nil))
-     ([color suffix opacity]
-      (let [base-color (get-in colors-map [(keyword color) suffix])]
-        (if opacity (alpha base-color (/ opacity 100)) base-color))))))
-
-(defn custom-color-by-theme
-  "(custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark)
-   color         :primary/:purple/...
-   suffix-light  50/60
-   suffix-dark   50/60
-   opacity-light 0-100 (optional)
-   opacity-dark  0-100 (optional)"
-  ([color suffix-light suffix-dark]
-   (custom-color-by-theme color suffix-light suffix-dark nil nil))
-  ([color suffix-light suffix-dark opacity-light opacity-dark]
-   (if (theme/dark?)
-     (custom-color color suffix-dark opacity-dark)
-     (custom-color color suffix-light opacity-light))))
+;; Customization
+(def purple-20 (alpha "#8661C1" 0.2))
+(def purple-50 "#8661C1")
+(def purple-60 (alpha "#8661C1" 0.6))
+(def indigo-20 (alpha "#496289" 0.2))
+(def indigo-50 "#496289")
+(def indigo-60 (alpha "#496289" 0.6))
+(def turquoise-20 (alpha "#448EA2" 0.2))
+(def turquoise-50 "#448EA2")
+(def turquoise-60 (alpha "#448EA2" 0.6))
+(def blue-20 (alpha "#4CB4EF" 0.2))
+(def blue-50 "#4CB4EF")
+(def blue-60 (alpha "#4CB4EF" 0.6))
+(def green-20 (alpha "#5BCC95" 0.2))
+(def green-50 "#5BCC95")
+(def green-60 (alpha "#5BCC95" 0.6))
+(def yellow-20 (alpha "#FFCB53" 0.2))
+(def yellow-50 "#FFCB53")
+(def yellow-60 (alpha "#FFCB53" 0.6))
+(def orange-20 (alpha "#FB8F61" 0.2))
+(def orange-50 "#FB8F61")
+(def orange-60 (alpha "#FB8F61" 0.6))
+(def red-20 (alpha "#F46666" 0.2))
+(def red-50 "#F46666")
+(def red-60 (alpha "#F46666" 0.6))
+(def pink-20 (alpha "#FC7BAB" 0.2))
+(def pink-50 "#FC7BAB")
+(def pink-60 (alpha "#FC7BAB" 0.6))
+(def brown-20 (alpha "#99604D" 0.2))
+(def brown-50 "#99604D")
+(def brown-60 (alpha "#805141" 0.6))
+(def beige-20 (alpha "#CAAE93" 0.2))
+(def beige-50 "#CAAE93")
+(def beige-60 (alpha "#CAAE93" 0.6))
 
 (def shadow  "rgba(9,16,28,0.04)")
 
+(def customization
+  {:dark {:purple purple-60
+          :indigo indigo-60
+          :turquoise turquoise-60
+          :blue blue-60
+          :green green-60
+          :yellow yellow-60
+          :orange orange-60
+          :red red-60
+          :pink pink-60
+          :brown brown-60
+          :beige beige-60}
+   :light {:purple purple-50
+           :indigo indigo-50
+           :turquoise turquoise-50
+           :blue blue-50
+           :green green-50
+           :yellow yellow-50
+           :orange orange-50
+           :red red-50
+           :pink pink-50
+           :brown brown-50
+           :beige beige-50}})
+
+(defn custom-color [color theme]
+  (get-in customization [theme color]))
+
+;;;;Switcher
+
+(def switcher-background "#040B14")
+
+;;switcher-screen with transparency
+(def switcher-background-opa-60 (alpha switcher-background 0.6))
+(def switcher-background-opa-70 (alpha switcher-background 0.7))
+(def switcher-background-opa-80 (alpha switcher-background 0.8))
+(def switcher-background-opa-90 (alpha switcher-background 0.9))
+(def switcher-background-opa-95 (alpha switcher-background 0.95))
+
 ;;General
+
+;; background
+
+(def ui-background-02-light "#F5F9FA")
 
 ;; divider
 (def divider-light "#EDF2f4")
 (def divider-dark "#0E1620")
 
-(defn theme-colors
-  "(theme-colors light dark override-theme)"
-  ([light dark]
-   (theme-colors light dark nil))
-  ([light dark override-theme]
-   (let [theme (or override-theme (theme/get-theme))]
-     (if (= theme :light) light dark))))
+;; Visibility status
+
+(def color-online "#26A69A")
+
+(defn theme-colors [light dark]
+  (if (theme/dark?) dark light))
 
 (defn dark?
   []

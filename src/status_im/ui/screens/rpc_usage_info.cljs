@@ -35,7 +35,7 @@
 (re-frame/reg-fx
  ::get-stats
  (fn []
-   (json-rpc/call
+   (status-im.ethereum.json-rpc/call
     {:method     "rpcstats_getStats"
      :params     []
      :on-success #(re-frame/dispatch [::handle-stats %])})))
@@ -43,7 +43,7 @@
 (re-frame/reg-fx
  ::reset
  (fn []
-   (json-rpc/call
+   (status-im.ethereum.json-rpc/call
     {:method     "rpcstats_reset"
      :params     []
      :on-success #(log/debug "rpcstats_reset success")})))

@@ -12,6 +12,8 @@
             [status-im.i18n.i18n :as i18n]
             [quo.design-system.colors :as colors]
             [status-im.constants :as constants]
+            [status-im.navigation :as navigation]
+            [status-im.navigation2 :as navigation2]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
@@ -19,8 +21,7 @@
             [status-im.add-new.db :as new-public-chat.db]
             [status-im.chat.models.loading :as loading]
             [status-im.ui.screens.chat.state :as chat.state]
-            [clojure.set :as set]
-            [status-im2.navigation.events :as navigation]))
+            [clojure.set :as set]))
 
 (defn chats []
   (:chats (types/json->clj (js/require "./chats.js"))))
@@ -177,11 +178,6 @@
                                :on-error #(log/error "failed to clear history " chat-id %)}]}
             (clear-history chat-id remove-chat?)))
 
-(fx/defn chat-deactivated
-  {:events [::chat-deactivated]}
-  [_ chat-id]
-  (log/debug "chat deactivated" chat-id))
-
 (fx/defn deactivate-chat
   "Deactivate chat in db, no side effects"
   [{:keys [db now] :as cofx} chat-id]
@@ -191,10 +187,10 @@
               (assoc-in db [:chats chat-id :active] false)
               (update db :chats dissoc chat-id))
             (update :chats-home-list disj chat-id)
-            (assoc :current-chat-id nil))
+            (assoc-in [:current-chat-id] nil))
     ::json-rpc/call [{:method "wakuext_deactivateChat"
                       :params [{:id chat-id}]
-                      :on-success #(re-frame/dispatch [::chat-deactivated chat-id])
+                      :on-success #(log/debug "chat deactivated" chat-id)
                       :on-error #(log/error "failed to create public chat" chat-id %)}]}
    (clear-history chat-id true)))
 
@@ -235,7 +231,9 @@
             {:clear-message-notifications
              [[chat-id] (get-in db [:multiaccount :remote-push-notifications-enabled?])]}
             (deactivate-chat chat-id)
-            (offload-messages chat-id)))
+            (offload-messages chat-id)
+            (when (not (= (:view-id db) :home))
+              (navigation/pop-to-root-tab :chat-stack))))
 
 (fx/defn show-more-chats
   {:events [:chat.ui/show-more-chats]}
@@ -256,8 +254,7 @@
   (fx/merge cofx
             {:dispatch [:navigate-to :chat]}
             (navigation/change-tab :chat)
-            (when-not (= (:view-id db) :community)
-              (navigation/pop-to-root-tab :chat-stack))
+            (navigation/pop-to-root-tab :chat-stack)
             (close-chat)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
@@ -269,18 +266,11 @@
 (fx/defn navigate-to-chat-nav2
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
   {:events [:chat.ui/navigate-to-chat-nav2]}
-  [{db :db :as cofx} chat-id from-shell?]
+  [{db :db :as cofx} chat-id from-switcher?]
   (fx/merge cofx
-            {:dispatch [:navigate-to-nav2 :chat chat-id from-shell?]}
-            (when-not (= (:view-id db) :community)
-              (navigation/pop-to-root-tab :shell-stack))
-            (close-chat)
-            (force-close-chat chat-id)
-            (fn [{:keys [db]}]
-              {:db (assoc db :current-chat-id chat-id)})
+            {:db (assoc db :current-chat-id chat-id)}
             (preload-chat-data chat-id)
-            #(when (group-chat? cofx chat-id)
-               (loading/load-chat % chat-id))))
+            (navigation2/navigate-to-nav2 :chat chat-id nil from-switcher?)))
 
 (fx/defn handle-clear-history-response
   {:events [::history-cleared]}
@@ -398,11 +388,6 @@
   (log/error "mute chat failed" chat-id error)
   {:db (assoc-in db [:chats chat-id :muted] (not muted?))})
 
-(fx/defn mute-chat-toggled-successfully
-  {:events [::mute-chat-toggled-successfully]}
-  [_ chat-id]
-  (log/debug "muted chat successfully" chat-id))
-
 (fx/defn mute-chat
   {:events [::mute-chat-toggled]}
   [{:keys [db] :as cofx} chat-id muted?]
@@ -411,7 +396,7 @@
      ::json-rpc/call [{:method method
                        :params [chat-id]
                        :on-error #(re-frame/dispatch [::mute-chat-failed chat-id muted? %])
-                       :on-success #(re-frame/dispatch [::mute-chat-toggled-successfully chat-id])}]}))
+                       :on-success #(log/debug "muted chat successfully")}]}))
 
 (fx/defn show-profile
   {:events [:chat.ui/show-profile]}

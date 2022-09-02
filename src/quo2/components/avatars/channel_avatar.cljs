@@ -1,12 +1,13 @@
 (ns quo2.components.avatars.channel-avatar
   (:require [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
+            [quo.react-native :as rn]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
-            [quo2.theme :as theme]))
+            [quo.theme :as theme]))
 
-(defn channel-avatar [{:keys [big? locked? emoji-background-color emoji]}]
-  (let [lock-exists? (some? locked?)
+(defn channel-avatar [{:keys [big? lock-status emoji-background-color emoji]}]
+  (let [locked?      (= :locked lock-status)
+        lock-exists? (not= :none lock-status)
         dark?        (theme/dark?)]
     [rn/view {:style {:width            (if big? 32 24)
                       :height           (if big? 32 24)
@@ -23,11 +24,11 @@
       (when lock-exists?
         [rn/view {:style {:position         :absolute
                           :left             (if big?
-                                              14
-                                              8)
+                                              13
+                                              5)
                           :top              (if big?
-                                              15
-                                              8)
+                                              14
+                                              5)
                           :background-color (if dark?
                                               colors/neutral-90
                                               colors/white)
@@ -39,6 +40,6 @@
           {:color           (if dark?
                               colors/neutral-40
                               colors/neutral-50)
-           :container-style {:width  12
-                             :height 12}
+           :container-style {:width  16
+                             :height 16}
            :size            12}]])]]))

@@ -16,7 +16,7 @@
   (>evt [:bottom-sheet/hide])
   (>evt event))
 
-(defn member-sheet [first-name {:keys [public-key] :as member} community-id can-kick-users? can-manage-users? admin?]
+(defn member-sheet [first-name {:keys [public-key] :as member} community-id can-kick-users? can-manage-users?]
   [:<>
    [quo/list-item
     {:theme               :accent
@@ -26,7 +26,7 @@
      :subtitle            (i18n/label :t/view-profile)
      :accessibility-label :view-chat-details-button
      :chevron             true
-     :on-press            #(hide-sheet-and-dispatch [:chat.ui/show-profile public-key])}]
+     :on-press            #(hide-sheet-and-dispatch  [:chat.ui/show-profile public-key])}]
    (when can-kick-users?
      [:<>
       [quo/separator {:style {:margin-vertical 8}}]
@@ -39,20 +39,13 @@
       [quo/list-item {:theme    :negative
                       :icon     :main-icons/cancel
                       :title    (i18n/label :t/member-ban)
-                      :on-press #(>evt [::communities/member-ban community-id public-key])}]])
-   (when admin?
-     [:<>
-      [quo/list-item {:theme    :accent
-                      :icon     :main-icons/make-admin
-                      :title    (i18n/label :t/make-moderator)
-                      :on-press #(>evt [:community.member/add-role community-id public-key constants/community-member-role-moderator])}]])])
+                      :on-press #(>evt [::communities/member-ban community-id public-key])}]])])
 
 (defn render-member [public-key _ _ {:keys [community-id
                                             my-public-key
                                             can-manage-users?
-                                            can-kick-users?
-                                            admin?]}]
-  (let [member (<sub [:contacts/contact-by-identity public-key])
+                                            can-kick-users?]}]
+  (let [member                   (<sub [:contacts/contact-by-identity public-key])
         [first-name second-name] (<sub [:contacts/contact-two-names-by-identity public-key])]
     [quo/list-item
      {:title               first-name
@@ -65,7 +58,7 @@
                              [quo/button {:on-press
                                           #(>evt [:bottom-sheet/show-sheet
                                                   {:content (fn []
-                                                              [member-sheet first-name member community-id can-kick-users? can-manage-users? admin?])}])
+                                                              [member-sheet first-name member community-id can-kick-users? can-manage-users?])}])
                                           :type                :icon
                                           :theme               :icon
                                           :accessibility-label :menu-option}
@@ -77,20 +70,20 @@
                    :title               (i18n/label :t/invite-people)
                    :accessibility-label :community-invite-people
                    :theme               :accent
-                   :on-press            #(>evt [:communities/invite-people-pressed community-id])}]
+                   :on-press            #(>evt [::communities/invite-people-pressed community-id])}]
    [quo/separator {:style {:margin-vertical 8}}]])
 
 (defn requests-to-join [community-id]
-  (let [requests       (<sub [:communities/requests-to-join-for-community community-id])
+  (let [requests (<sub [:communities/requests-to-join-for-community community-id])
         requests-count (count requests)]
     [:<>
-     [quo/list-item {:chevron  true
+     [quo/list-item {:chevron        true
                      :accessory
                      [react/view {:flex-direction :row}
                       (when (pos? requests-count)
                         [unviewed-indicator/unviewed-indicator requests-count])]
-                     :on-press #(>evt [:navigate-to :community-requests-to-join {:community-id community-id}])
-                     :title    (i18n/label :t/membership-requests)}]
+                     :on-press       #(>evt [:navigate-to :community-requests-to-join {:community-id community-id}])
+                     :title          (i18n/label :t/membership-requests)}]
      [quo/separator {:style {:margin-vertical 8}}]]))
 
 (defn members []
@@ -98,8 +91,7 @@
     (fn []
       (let [my-public-key               (<sub [:multiaccount/public-key])
             {:keys [permissions
-                    can-manage-users?
-                    admin]}             (<sub [:communities/community community-id])
+                    can-manage-users?]} (<sub [:communities/community community-id])
             sorted-members              (<sub [:communities/sorted-community-members
                                                community-id])]
         [:<>
@@ -109,19 +101,18 @@
          (when (and can-manage-users? (= constants/community-on-request-access (:access permissions)))
            [requests-to-join community-id])
          [rn/flat-list {:data        (keys sorted-members)
-                        :render-data {:community-id      community-id
-                                      :my-public-key     my-public-key
-                                      :can-kick-users?   (and can-manage-users?
-                                                              (not= (:access permissions)
-                                                                    constants/community-no-membership-access))
-                                      :can-manage-users? can-manage-users?
-                                      :admin?            admin}
+                        :render-data {:community-id community-id
+                                      :my-public-key my-public-key
+                                      :can-kick-users? (and can-manage-users?
+                                                            (not= (:access permissions)
+                                                                  constants/community-no-membership-access))
+                                      :can-manage-users? can-manage-users?}
                         :key-fn      identity
                         :render-fn   render-member}]]))))
 
 (defn members-container []
   (reagent/create-class
-   {:display-name        "community-members-view"
+   {:display-name "community-members-view"
     :component-did-mount (fn []
                            (communities/fetch-requests-to-join! (get (<sub [:get-screen-params]) :community-id)))
-    :reagent-render      members}))
+    :reagent-render members}))

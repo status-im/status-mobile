@@ -4,10 +4,8 @@
 let
   inherit (lib) catAttrs unique;
 
-  # Sub-shells preparing various dependencies.
   nodejs-sh = callPackage ./shells/nodejs.nix { };
-  bundler-sh = callPackage ./shells/bundler.nix { };
-  cocoapods-sh = callPackage ./shells/cocoapods.nix { };
+  cocoapods-sh = callPackage ./shells/pod.nix { };
   status-go-sh = callPackage ./shells/status-go.nix { inherit status-go; };
 
 in {
@@ -15,7 +13,7 @@ in {
 
   shell = mkShell {
     buildInputs = with pkgs; [
-      xcodeWrapper watchman procps
+      xcodeWrapper watchman bundler procps
       flock # used in nix/scripts/node_modules.sh
     ];
 
@@ -23,8 +21,7 @@ in {
     inputsFrom = [
       fastlane.shell
       cocoapods-sh
-      nodejs-sh    # before 'pod install'
-      bundler-sh   # before 'pod install'
+      nodejs-sh # before 'pod install'
       status-go-sh # before 'pod install'
     ];
   };

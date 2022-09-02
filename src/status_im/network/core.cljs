@@ -5,7 +5,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.node.core :as node]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
             [status-im.utils.types :as types]))
@@ -93,16 +93,21 @@
   (if-let [config (get-in db [:networks/networks network-id :config])]
     (if-let [upstream-url (get-in config [:UpstreamConfig :URL])]
       {:http-post {:url        upstream-url
-                   :data       (types/clj->json {:jsonrpc "2.0"
-                                                 :method  "net_version"
-                                                 :id      2})
+                   :data       (types/clj->json [{:jsonrpc "2.0"
+                                                  :method  "web3_clientVersion"
+                                                  :id      1}
+                                                 {:jsonrpc "2.0"
+                                                  :method  "net_version"
+                                                  :id      2}])
                    :opts       {:headers {"Content-Type" "application/json"}}
                    :on-success (fn [{:keys [response-body]}]
-                                 (let [response            (http/parse-payload response-body)
+                                 (let [responses           (http/parse-payload response-body)
+                                       client-version      (:result (first responses))
                                        expected-network-id (:NetworkId config)
-                                       rpc-network-id      (when-let [res (:result response)]
+                                       rpc-network-id      (when-let [res (:result (second responses))]
                                                              (js/parseInt res))]
-                                   (if (and network-id (= expected-network-id rpc-network-id))
+                                   (if (and client-version network-id
+                                            (= expected-network-id rpc-network-id))
                                      (re-frame/dispatch [::connect-success network-id])
                                      (re-frame/dispatch [::connect-failure (if (not= expected-network-id rpc-network-id)
                                                                              (i18n/label :t/network-invalid-network-id)

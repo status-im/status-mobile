@@ -73,15 +73,15 @@
       (dissoc :members)))
 
 (defn <-rpc-js [^js chat]
-  (-> {:name                    (.-name chat)
-       :description             (.-description chat)
-       :color                   (.-color chat)
-       :emoji                   (.-emoji chat)
-       :timestamp               (.-timestamp chat)
-       :alias                   (.-alias chat)
-       :identicon               (.-identicon chat)
-       :muted                   (.-muted chat)
-       :joined                  (.-joined chat)
+  (-> {:name (.-name chat)
+       :description (.-description chat)
+       :color (.-color chat)
+       :emoji (.-emoji chat)
+       :timestamp (.-timestamp chat)
+       :alias (.-alias chat)
+       :identicon (.-identicon chat)
+       :muted (.-muted chat)
+       :joined (.-joined chat)
 
        :chat-id                 (.-id chat)
        :community-id            (.-communityId chat)
@@ -98,8 +98,7 @@
        :last-clock-value        (.-lastClockValue chat)
        :profile-public-key      (.-profile chat)
        :highlight               (.-highlight chat)
-       :active                  (.-active chat)
-       :members                 (types/js->clj (.-members chat))}
+       :active                  (.-active chat)}
       rpc->type
       unmarshal-members))
 

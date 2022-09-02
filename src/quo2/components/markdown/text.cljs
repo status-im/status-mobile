@@ -1,6 +1,6 @@
 (ns quo2.components.markdown.text
-  (:require [react-native.core :as rn]
-            [quo2.theme :as theme]
+  (:require [quo.react-native :as rn]
+            [quo.theme :as theme]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
             [reagent.core :as reagent]))
@@ -12,7 +12,6 @@
            :semi-bold typography/font-semi-bold
            :bold      typography/font-bold
            :monospace typography/monospace
-           :code      typography/code
            :inherit   nil)
          (case (or size :paragraph-1)
            :label       typography/label
@@ -24,7 +23,7 @@
          {:text-align (or align :auto)}
          (if (:color style)
            style
-           (assoc style :color (if (= (theme/get-theme) :dark) colors/white colors/neutral-100)))))
+           (assoc style :color (if (= (theme/get-theme) :dark) colors/white colors/black)))))
 
 (defn text []
   (let [this  (reagent/current-component)

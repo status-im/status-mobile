@@ -5,14 +5,13 @@
             [status-im.react-native.resources :as resources]
             [quo.core :as quo]
             [quo.design-system.colors :as colors]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.utils.config :as config]))
+            [status-im.i18n.i18n :as i18n]))
 
 (defn button [label icon theme selected?]
   [react/touchable-highlight
    {:on-press (fn []
                 (re-frame/dispatch [:multiaccounts.ui/appearance-switched theme])
-                (re-frame/dispatch (if config/new-ui-enabled? [:reload-new-ui] [:init-root :chat-stack]))
+                (re-frame/dispatch [:init-root :chat-stack])
                 (re-frame/dispatch [:navigate-change-tab :profile])
                 (js/setTimeout #(re-frame/dispatch [:navigate-to :appearance]) 1000))}
    [react/view (merge {:align-items :center :padding 8 :border-radius 20}

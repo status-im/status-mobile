@@ -1,14 +1,14 @@
 (ns status-im.ui.screens.chat.message.reactions-picker
   (:require [cljs-bean.core :as bean]
+            [status-im.ui.screens.chat.message.styles :as styles]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.constants :as constants]
+            [reagent.core :as reagent]
+            [quo.react-native :as rn]
+            [quo.react :as react]
             [quo.animated :as animated]
             [quo.components.safe-area :as safe-area]
-            [quo.core :as quo]
-            [quo.react :as react]
-            [quo.react-native :as rn]
-            [reagent.core :as reagent]
-            [status-im.constants :as constants]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.screens.chat.message.styles :as styles]))
+            [quo.core :as quo]))
 
 (def tabbar-height 36)
 (def text-input-height 54)
@@ -33,7 +33,7 @@
   [rn/view {:style (styles/container-style {:outgoing outgoing :timeline timeline})}
    [rn/view {:style (styles/reactions-picker-row)}
     (doall
-     (for [[id resource] constants/reactions-old
+     (for [[id resource] constants/reactions
            :let          [active (own-reactions id)]]
        ^{:key id}
        [rn/touchable-opacity {:accessibility-label (str "pick-emoji-" id)
@@ -44,19 +44,18 @@
                              :width  32}}]]]))]
    (when (seq actions)
      [rn/view {:style (styles/quick-actions-container)}
-      (doall
-       (for [action actions
-             :let   [{:keys [id label on-press]} (bean/bean action)]]
-         ^{:key id}
-         [rn/touchable-opacity {:on-press (fn []
-                                            (on-close)
-                                            (js/setTimeout on-press animation-duration))}
-          [rn/view {:style (styles/quick-actions-row)}
-           [quo/text {:color  (if (= id "delete") :negative :link)
-                      :weight :medium} label]
-           (when-let [icon (get id-icon id)]
-             [icons/icon icon
-              {:color (if (= id "delete") :red :blue)}])]]))])])
+      (for [action actions
+            :let   [{:keys [id label on-press]} (bean/bean action)]]
+        ^{:key id}
+        [rn/touchable-opacity {:on-press (fn []
+                                           (on-close)
+                                           (js/setTimeout on-press animation-duration))}
+         [rn/view {:style (styles/quick-actions-row)}
+          [quo/text {:color  (if (= id "delete") :negative :link)
+                     :weight :medium} label]
+          (when-let [icon (get id-icon id)]
+            [icons/icon icon
+             {:color (if (= id "delete") :red :blue)}])]])])])
 
 (def modal
   (reagent/adapt-react-class

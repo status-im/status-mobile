@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.status.views
-  (:require [status-im.ui.screens.chat.message.message :as message]
+  (:require [status-im.ui.screens.chat.message.message-old :as message]
             [status-im.ui.components.react :as react]
             [quo.design-system.colors :as colors]
             [status-im.utils.datetime :as datetime]
@@ -15,7 +15,7 @@
             [status-im.ui.screens.chat.image.preview.views :as preview]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.components.tabs :as tabs]
-            [status-im.ui.screens.chat.message.reactions-old :as reactions]
+            [status-im.ui.screens.chat.message.reactions :as reactions]
             [status-im.chat.models.reactions :as models.reactions]
             [status-im.ui.screens.chat.components.reply :as components.reply]
             [status-im.ui.screens.chat.message.link-preview :as link-preview]

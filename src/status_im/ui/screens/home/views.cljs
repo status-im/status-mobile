@@ -12,22 +12,25 @@
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [quo.design-system.colors :as colors]
             [quo.core :as quo]
+            [quo.platform :as platform]
             [status-im.add-new.core :as new-chat]
             [status-im.ui.components.search-input.view :as search-input]
             [status-im.add-new.db :as db]
-            [utils.debounce :as debounce]
+            [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.screens.chat.sheets :as sheets]
+            [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.components.invite.views :as invite]
-            [status-im2.setup.config :as config]
+            [status-im.utils.config :as config]
             [quo2.components.markdown.text :as quo2.text]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
             [quo2.foundations.colors :as quo2.colors]
-            [quo2.components.buttons.button :as quo2.button])
+            [quo2.components.buttons.button :as quo2.button]
+            [quo2.components.info.information-box :as information-box])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn home-tooltip-view []
@@ -58,24 +61,21 @@
   [react/view {:padding-horizontal 16
                :padding-vertical   10}
    [search-input/search-input
-    {:search-active?   search-active?
-     :placeholder      (i18n/label :t/search)
-     :border-radius    10
-     :search-filter    search-filter
-     :before           true
-     :on-cancel        #(re-frame/dispatch [:search/home-filter-changed nil])
-     :on-blur          (fn []
-                         (when chats-empty
-                           (re-frame/dispatch [:search/home-filter-changed nil]))
-                         (re-frame/dispatch [::new-chat/clear-new-identity]))
-     :on-focus         (fn [search-filter]
-                         (when-not search-filter
-                           (re-frame/dispatch [:search/home-filter-changed ""])
-                           (re-frame/dispatch [::new-chat/clear-new-identity])))
-     :on-change        (fn [text]
-                         (re-frame/dispatch [:search/home-filter-changed text])
-                         (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
-                         (debounce/debounce-and-dispatch [:new-chat/set-new-identity text] 300))}]])
+    {:search-active? search-active?
+     :search-filter  search-filter
+     :on-cancel      #(re-frame/dispatch [:search/home-filter-changed nil])
+     :on-blur        (fn []
+                       (when chats-empty
+                         (re-frame/dispatch [:search/home-filter-changed nil]))
+                       (re-frame/dispatch [::new-chat/clear-new-identity]))
+     :on-focus       (fn [search-filter]
+                       (when-not search-filter
+                         (re-frame/dispatch [:search/home-filter-changed ""])
+                         (re-frame/dispatch [::new-chat/clear-new-identity])))
+     :on-change      (fn [text]
+                       (re-frame/dispatch [:search/home-filter-changed text])
+                       (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
+                       (debounce/debounce-and-dispatch [:new-chat/set-new-identity text] 300))}]])
 
 (defn search-input-wrapper-old [search-filter chats-empty]
   [react/view {:padding-horizontal 16
@@ -130,7 +130,7 @@
      home-item
      {:on-press      (fn []
                        (re-frame/dispatch [:dismiss-keyboard])
-                       (if config/new-ui-enabled?
+                       (if (and @config/new-ui-enabled? platform/android?)
                          (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                          (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
                        (re-frame/dispatch [:search/home-filter-changed nil])
@@ -147,7 +147,7 @@
      home-item
      {:on-press      (fn []
                        (re-frame/dispatch [:dismiss-keyboard])
-                       (if config/new-ui-enabled?
+                       (if (and @config/new-ui-enabled? platform/android?)
                          (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                          (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
                        (re-frame/dispatch [:search/home-filter-changed nil])
@@ -190,7 +190,8 @@
 
 (views/defview communities-and-chats-old []
   (views/letsubs [{:keys [items search-filter]} [:home-items]
-                  hide-home-tooltip?            [:hide-home-tooltip?]]
+                  hide-home-tooltip?            [:hide-home-tooltip?]
+                  information-box-closed?       [:information-box-closed? :ens-banner]]
     (if (and (empty? items)
              (empty? search-filter)
              hide-home-tooltip?
@@ -206,6 +207,18 @@
         :header                       [:<>
                                        (when (or (seq items) @search-active? (seq search-filter))
                                          [search-input-wrapper-old search-filter (empty? items)])
+                                       [information-box/information-box
+                                        {:type            :informative
+                                         :closable?       true
+                                         :closed?         information-box-closed?
+                                         :icon            :main-icons/info
+                                         :style           {:margin 20}
+                                         :button-label    (i18n/label :t/open-dapp2)
+                                         :on-button-press #(re-frame/dispatch
+                                                            [:browser.ui/open-url "https://ens-collect.status.im/"])
+                                         :id              :ens-banner
+                                         :on-close        #(re-frame/dispatch [:close-information-box :ens-banner true])}
+                                        (i18n/label :t/ens-banner-message)]
                                        (when (and (empty? items)
                                                   (or @search-active? (seq search-filter)))
                                          [start-suggestion search-filter])]
@@ -233,7 +246,7 @@
 
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]
-    [components.plus-button/plus-button-old
+    [components.plus-button/plus-button
      {:on-press (when-not logging-in?
                   #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
       :loading logging-in?
@@ -255,12 +268,10 @@
                           :width 32
                           :style {:margin-left 12}
                           :accessibility-label :notifications-button
-                          :on-press #(do (if config/new-activity-center-enabled?
-                                           (re-frame/dispatch [:activity-center/open])
-                                           (do
-                                             (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
-                                             (re-frame/dispatch [:navigate-to :notifications-center]))))}
-      [icons/icon :main-icons/notification2 {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]]
+                          :on-press #(do
+                                       (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
+                                       (re-frame/dispatch [:navigate-to :notifications-center]))}
+      [icons/icon :main-icons/notification2 {:color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}]]
      (when (pos? notif-count)
        [react/view {:style (merge (styles/counter-public-container) {:top 5 :right 5})
                     :pointer-events :none}
@@ -293,7 +304,7 @@
                        :on-press #(do
                                     (re-frame/dispatch [::qr-scanner/scan-code
                                                         {:handler ::qr-scanner/on-scan-success}]))}
-   [icons/icon :main-icons/qr2 {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]])
+   [icons/icon :main-icons/qr2 {:color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}]])
 
 (defn scan-button []
   [quo2.button/button {:type :grey
@@ -303,7 +314,7 @@
                        :on-press #(do
                                     (re-frame/dispatch [::qr-scanner/scan-code
                                                         {:handler ::qr-scanner/on-scan-success}]))}
-   [icons/icon :main-icons/scan2 {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]])
+   [icons/icon :main-icons/scan2 {:color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}]])
 
 (views/defview profile-button []
   (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]
@@ -333,7 +344,8 @@
                 :margin-bottom 8}
     [quo2.text/text {:size :heading-1 :weight :semi-bold} (i18n/label :t/messages)]
     [plus-button]]
-   [chats-list]])
+   [chats-list]
+   [tabbar/tabs-counts-subscriptions]])
 
 (defn home-old []
   [react/keyboard-avoiding-view {:style {:flex 1}
@@ -344,4 +356,5 @@
                                      [connectivity/connectivity-button]
                                      [notifications-button-old]]}]
    [chats-list-old]
-   [plus-button-old]])
+   [plus-button-old]
+   [tabbar/tabs-counts-subscriptions]])

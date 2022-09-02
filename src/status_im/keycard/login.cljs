@@ -1,6 +1,6 @@
 (ns status-im.keycard.login
   (:require [status-im.ethereum.core :as ethereum]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]

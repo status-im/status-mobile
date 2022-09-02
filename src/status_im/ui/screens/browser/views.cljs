@@ -15,7 +15,7 @@
             [status-im.ui.screens.browser.permissions.views :as permissions.views]
             [status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
             [status-im.ui.screens.browser.styles :as styles]
-            [utils.debounce :as debounce]
+            [status-im.utils.debounce :as debounce]
             [status-im.utils.http :as http]
             [status-im.utils.js-resources :as js-res]
             [status-im.ui.components.permissions :as components.permissions]

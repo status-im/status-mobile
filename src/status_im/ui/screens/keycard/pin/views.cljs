@@ -9,7 +9,8 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.pin.styles :as styles]
             [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils]))
 
 (def default-pin-retries-number 3)
 (def default-puk-retries-number 5)
@@ -163,6 +164,7 @@
           (case new-status
             :error (when (or (nil? previous-status)
                              (= :verifying previous-status))
+                     (utils/vibrate)
                      (reset! !error? true)
                      (animate-info-in error-y-translation
                                       error-opacity

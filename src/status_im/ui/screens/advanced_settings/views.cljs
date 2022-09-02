@@ -14,7 +14,9 @@
                                           wakuv2-flag
                                           current-fleet
                                           webview-debug
-                                          mutual-contact-requests-enabled?]}]
+                                          new-ui-enabled?
+                                          mutual-contact-requests-enabled?
+                                          local-pairing-mode-enabled?]}]
   (keep
    identity
    [{:size                 :small
@@ -69,13 +71,6 @@
      :on-press
      #(re-frame/dispatch [:navigate-to :rpc-usage-info])
      :chevron              true}
-    {:size                 :small
-     :title                (i18n/label :t/peers-stats)
-     :accessibility-label  :peers-stats
-     :container-margin-top 8
-     :on-press
-     #(re-frame/dispatch [:navigate-to :peers-stats])
-     :chevron              true}
     ;; If it's enabled in the config, we don't show the option
     (when (not config/communities-enabled?)
       {:size                   :small
@@ -122,7 +117,21 @@
      #(re-frame/dispatch
        [:multiaccounts.ui/switch-mutual-contact-requests-enabled (not mutual-contact-requests-enabled?)])
      :accessory               :switch
-     :active                  mutual-contact-requests-enabled?}]))
+     :active                  mutual-contact-requests-enabled?}
+    {:size                    :small
+     :title                   (i18n/label :t/new-ui)
+     :accessibility-label     :new-ui-toggle
+     :container-margin-bottom 8
+     :on-press                #(re-frame/dispatch [:toggle-new-ui])
+     :accessory               :switch
+     :active                  new-ui-enabled?}
+    {:size                    :small
+     :title                   (i18n/label :t/local-pairing-experimental-mode)
+     :accessibility-label     :local-pairing-experimental-mode
+     :container-margin-bottom 8
+     :on-press                #(re-frame/dispatch [:toggle-local-pairing-experimental-mode])
+     :accessory               :switch
+     :active                  local-pairing-mode-enabled?}]))
 
 (defn- flat-list-data [options]
   (normal-mode-settings-data options))
@@ -153,6 +162,8 @@
                    :wakuv2-flag                      wakuv2-flag
                    :waku-bloom-filter-mode           waku-bloom-filter-mode
                    :webview-debug                    webview-debug
+                   :new-ui-enabled?                  @config/new-ui-enabled?
+                   :local-pairing-mode-enabled?      @config/local-pairing-mode-enabled?
                    :mutual-contact-requests-enabled? mutual-contact-requests-enabled?})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))

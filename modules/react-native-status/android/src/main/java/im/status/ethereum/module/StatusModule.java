@@ -940,6 +940,25 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
+//     @ReactMethod
+//     public void getConnectionStringForBootstrappingAnotherDevice(final String configJSON, final Callback callback) {
+//         Log.d(TAG, "getConnectionStringForBootstrappingAnotherDevice");
+//         if (!checkAvailability()) {
+//             callback.invoke(false);
+//             return;
+//         }
+//
+//         Runnable r = new Runnable() {
+//             @Override
+//             public void run() {
+//                 String res = Statusgo.getConnectionStringForBootstrappingAnotherDevice(configJSON);
+//                 callback.invoke(res);
+//             }
+//         };
+//
+//         StatusThreadPoolExecutor.getInstance().execute(r);
+//     }
+
     @ReactMethod
     public void hashTypedData(final String data, final Callback callback) {
         Log.d(TAG, "hashTypedData");
@@ -1411,61 +1430,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         return Statusgo.identicon(seed);
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String encodeTransfer(final String to, final String value) {
-        return Statusgo.encodeTransfer(to, value);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String encodeFunctionCall(final String method, final String paramsJSON) {
-        return Statusgo.encodeFunctionCall(method, paramsJSON);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String decodeParameters(final String decodeParamJSON) {
-        return Statusgo.decodeParameters(decodeParamJSON);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String hexToNumber(final String hex) {
-        return Statusgo.hexToNumber(hex);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String numberToHex(final String numString) {
-        return Statusgo.numberToHex(numString);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String sha3(final String str) {
-        return Statusgo.sha3(str);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String utf8ToHex(final String str) {
-        return Statusgo.utf8ToHex(str);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String hexToUtf8(final String str) {
-        return Statusgo.hexToUtf8(str);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String checkAddressChecksum(final String address) {
-        return Statusgo.checkAddressChecksum(address);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String isAddress(final String address) {
-        return Statusgo.isAddress(address);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String toChecksumAddress(final String address) {
-        return Statusgo.toChecksumAddress(address);
-    }
-
     @ReactMethod
     public void identiconAsync(final String seed, final Callback callback) {
         Log.d(TAG, "identiconAsync");
@@ -1627,6 +1591,5 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
-
 }
 

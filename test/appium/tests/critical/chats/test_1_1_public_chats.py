@@ -1,13 +1,12 @@
+import emoji
 import random
 import time
 
-import emoji
-import pytest
-
-from tests import marks, common_password, run_in_parallel
+from tests import marks, common_password
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_message_sender
 from views.sign_in_view import SignInView
+import pytest
 
 
 @pytest.mark.xdist_group(name="four_2")
@@ -103,7 +102,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         [message.transaction_status.wait_for_element_text(message.confirmed, 60) for message in
          (sender_message, receiver_message)]
 
-        # TODO: should be added PNs for receiver after getting more stable feature (rechecked 04.10.22, valid)
+        # TODO: should be added PNs for receiver after getting more stable feature (rechecked 23.11.21, valid)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6265)
@@ -228,7 +227,6 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
 
     @marks.testrail_id(6315)
-    # moved
     def test_1_1_chat_message_reaction(self):
         message_from_sender = "Message sender"
         self.device_1.just_fyi("Sender start 1-1 chat, set emoji and check counter")
@@ -329,7 +327,6 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(695843)
-    # moved without edit
     def test_1_1_chat_text_message_edit_delete_push_disappear(self):
         self.device_2.just_fyi(
             "Device 1 sends text message and edits it in 1-1 chat. Device2 checks edited message is shown")
@@ -340,19 +337,19 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.chat_2.send_message(message_before_edit_1_1)
 
         self.chat_2.edit_message_in_chat(message_before_edit_1_1, message_after_edit_1_1)
-        if not self.home_1.element_by_text_part(message_after_edit_1_1).is_element_displayed():
+        if not self.home_1.element_by_text_part(message_after_edit_1_1).is_element_present():
             self.errors.append('UNedited message version displayed on preview')
         self.home_1.get_chat(self.default_username_2).click()
         chat_element = self.chat_1.chat_element_by_text(message_after_edit_1_1)
-        if not chat_element.is_element_displayed(30):
+        if not chat_element.is_element_present(30):
             self.errors.append('No edited message in 1-1 chat displayed')
-        if not self.chat_1.element_by_text_part("⌫ Edited").is_element_displayed(30):
+        if not self.chat_1.element_by_text_part("⌫ Edited").is_element_present(30):
             self.errors.append('No mark in message bubble about this message was edited on receiver side')
 
         self.device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
         chat_element.long_press_element()
         for action in ("edit", "delete"):
-            if self.chat_1.element_by_translation_id(action).is_element_displayed():
+            if self.chat_1.element_by_translation_id(action).is_element_present():
                 self.errors.append('Option to %s someone else message available!' % action)
         self.home_1.click_system_back_button()
 
@@ -381,7 +378,6 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5315)
-    # moved
     def test_1_1_chat_non_latin_message_to_newly_added_contact_with_profile_picture_on_different_networks(self):
         self.home_1.get_app_from_background()
         self.home_2.get_app_from_background()
@@ -533,12 +529,12 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
         self.home_2.just_fyi('check share and save options on opened image')
         self.chat_2.image_message_in_chat.scroll_to_element(direction='up')
-        self.chat_2.image_message_in_chat.click_until_presence_of_element(self.chat_2.share_image_icon_button)
+        self.chat_2.image_message_in_chat.click()
         self.chat_2.share_image_icon_button.click()
         self.chat_2.share_via_messenger()
-        if not self.chat_2.image_in_android_messenger.is_element_displayed():
+        if not self.chat_2.image_in_android_messenger.is_element_present():
             self.errors.append("Can't share image")
-        self.chat_2.click_system_back_button_until_element_is_shown(element=self.chat_2.save_image_icon_button)
+        self.chat_2.click_system_back_button_until_element_is_shown()
         self.chat_2.save_image_icon_button.click()
         self.chat_2.show_images_button.click()
         self.chat_2.allow_button.wait_and_click()
@@ -850,8 +846,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702188)
-    @marks.xfail(
-        reason="flaky; issue when sometimes history is not fetched from offline for public chat, needs investigation")
+    @marks.xfail(reason="flaky; issue when sometimes history is not fetched from offline for public chat, needs investigation")
     def test_cellular_settings_on_off_public_chat_fetching_history(self):
         [home.home_button.double_click() for home in [self.home_1, self.home_2]]
         public_chat_name, public_chat_message = 'e2e-started-before', 'message to pub chat'
@@ -986,7 +981,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Close the ENS banner")
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
-        [home.ens_banner_close_button.click_if_shown() for home in (self.home_1, self.home_2)]
+        [home.ens_banner_close_button.click() for home in (self.home_1, self.home_2)]
 
     @marks.testrail_id(702152)
     def test_ens_purchased_in_profile(self):
@@ -1038,8 +1033,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.chat_2.just_fyi("Check that message is fetched for receiver")
         self.home_2.get_chat(self.sender['username']).click()
         chat_2_reciever_message = self.chat_2.get_incoming_transaction(transaction_value=amount)
-        chat_2_reciever_message.transaction_status.wait_for_element_text(chat_2_reciever_message.confirmed,
-                                                                         wait_time=60)
+        chat_2_reciever_message.transaction_status.wait_for_element_text(chat_2_reciever_message.confirmed, wait_time=60)
 
     @marks.testrail_id(702155)
     def test_ens_mention_nickname_1_1_chat(self):
@@ -1159,7 +1153,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             self.errors.append('Sticker was not sent from Recent')
 
         # self.home_2.just_fyi('Check that can install stickers by tapping on sticker message')
-        # TODO: disabled because of #13683 (rechecked 04.10.22, valid)
+        # TODO: disabled because of #13683 (rechecked 27.07.22, valid)
         self.home_2.home_button.double_click()
         self.home_2.get_chat(self.sender['username']).click()
         # self.chat_2.chat_item.click()
@@ -1217,226 +1211,4 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         if not (account.public_key_text.is_element_displayed() and account.share_button.is_element_displayed()
                 and account.qr_code_image.is_element_displayed()):
             self.errors.append('No self profile pop-up data displayed after My_profile button tap')
-        self.errors.verify_no_errors()
-
-
-@pytest.mark.xdist_group(name="one_2")
-@marks.new_ui_critical
-class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
-
-    def prepare_devices(self):
-        self.drivers, self.loop = create_shared_drivers(2)
-        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user,), (self.device_2.create_user,))))
-        self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
-        self.profile_1 = self.home_1.get_profile_view()
-        users = self.loop.run_until_complete(run_in_parallel(
-            ((self.home_1.get_public_key_and_username, True),
-             (self.home_2.get_public_key_and_username, True))
-        ))
-        self.public_key_1, self.default_username_1 = users[0]
-        self.public_key_2, self.default_username_2 = users[1]
-
-        self.profile_1.switch_push_notifications()
-        self.profile_1.chats_tab.click()
-        self.chat_1 = self.home_1.add_contact(self.public_key_2)
-        self.chat_1.send_message('hey')
-        self.home_2.click_system_back_button_until_element_is_shown()
-        self.home_2.chats_tab.click()
-        self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
-        self.message_1, self.message_2, self.message_3, self.message_4 = \
-            "Message 1", "Message 2", "Message 3", "Message 4"
-
-    @marks.testrail_id(702730)
-    def test_1_1_chat_message_reaction(self):
-        message_from_sender = "Message sender"
-        self.device_1.just_fyi("Sender start 1-1 chat, set emoji and check counter")
-        self.chat_1.send_message(message_from_sender)
-        self.chat_1.set_reaction(message_from_sender)
-
-        message_sender = self.chat_1.chat_element_by_text(message_from_sender)
-        if message_sender.emojis_below_message() != 1:
-            self.errors.append("Counter of reaction is not updated on your own message!")
-
-        self.device_2.just_fyi("Receiver sets own emoji and verifies counter on received message in 1-1 chat")
-        message_receiver = self.chat_2.chat_element_by_text(message_from_sender)
-        if message_receiver.emojis_below_message() != 1:
-            self.errors.append("Counter of reaction is not updated on received message!")
-        self.chat_2.set_reaction(message_from_sender)
-        for counter in message_sender.emojis_below_message(), message_receiver.emojis_below_message():
-            if counter != 2:
-                self.errors.append('Counter is not updated after setting emoji from receiver!')
-
-        self.device_2.just_fyi("Receiver pick the same emoji and verify that counter will decrease for both users")
-        self.chat_2.set_reaction(message_from_sender)
-        for counter in message_sender.emojis_below_message(), message_receiver.emojis_below_message():
-            if counter != 1:
-                self.errors.append('Counter is not decreased after re-tapping  emoji from receiver!')
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(702731)
-    def test_1_1_chat_pin_messages(self):
-        self.home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
-        self.chat_1.send_message(self.message_1)
-        self.chat_1.send_message(self.message_2)
-        self.chat_1.pin_message(self.message_1, 'pin-to-chat')
-        if not self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed():
-            self.drivers[0].fail("Message is not pinned!")
-
-        self.home_1.just_fyi("Check that Device2 can pin Device1 message in 1-1 chat and two pinned "
-                             "messages are in Device1 profile")
-        self.chat_2.pin_message(self.message_2, 'pin-to-chat')
-        for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-            chat.pinned_messages_count.wait_for_element_text("2",
-                                                             message="Pinned messages count is not 2 as expected!")
-
-            self.home_1.just_fyi("Check pinned message are visible in Pinned panel for user %s" % (chat_number + 1))
-            chat.pinned_messages_count.click()
-            for message in self.message_1, self.message_2:
-                pinned_by = chat.pinned_messages_list.get_message_pinned_by_text(message)
-                if pinned_by.is_element_displayed():
-                    text = pinned_by.text.strip()
-                    if chat_number == 0:
-                        expected_text = "You" if message == self.message_1 else self.default_username_2
-                    else:
-                        expected_text = "You" if message == self.message_2 else self.default_username_1
-                    if text != expected_text:
-                        self.errors.append(
-                            "Pinned by '%s' doesn't match expected '%s' for user %s" % (
-                                text, expected_text, chat_number + 1)
-                        )
-                else:
-                    self.errors.append(
-                        "Message '%s' is missed on Pinned messages list for user %s" % (message, chat_number + 1)
-                    )
-            chat.click_system_back_button()
-
-        self.home_1.just_fyi("Check that Device1 can not pin more than 3 messages and 'Unpin' dialog appears")
-        self.chat_1.send_message(self.message_3)
-        self.chat_1.send_message(self.message_4)
-        self.chat_1.pin_message(self.message_3, 'pin-to-chat')
-        self.chat_1.pin_message(self.message_4, 'pin-to-chat')
-        if self.chat_1.pin_limit_popover.is_element_displayed(30):
-            self.chat_1.view_pinned_messages_button.click()
-            self.chat_1.pinned_messages_list.message_element_by_text(
-                self.message_2).click_inside_element_by_coordinate()
-            self.home_1.just_fyi("Unpin one message so that another could be pinned")
-            self.chat_1.element_by_translation_id('unpin-from-chat').double_click()
-            self.chat_1.chat_element_by_text(self.message_4).click()
-            self.chat_1.pin_message(self.message_4, 'pin-to-chat')
-            if not (self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30) and
-                    self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30)):
-                self.errors.append("Message 4 is not pinned in chat after unpinning previous one")
-        else:
-            self.errors.append("Can pin more than 3 messages in chat")
-
-        self.home_1.just_fyi("Check pinned messages are visible in Pinned panel for both users")
-        for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-            count = chat.pinned_messages_count.text
-            if count != '3':
-                self.errors.append("Pinned messages count is not 3 for user %s" % (chat_number + 1))
-
-        self.home_1.just_fyi("Unpin one message and check it's unpinned for another user")
-        self.chat_2.chat_element_by_text(self.message_4).long_press_element()
-        self.chat_2.element_by_translation_id("unpin-from-chat").click()
-        self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
-        if self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed():
-            self.errors.append("Message_4 is not unpinned!")
-
-        for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-            count = chat.pinned_messages_count.text
-            if count != '2':
-                self.errors.append(
-                    "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
-                            chat_number + 1)
-                )
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(702745)
-    def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
-        self.home_1.click_system_back_button_until_element_is_shown()
-        self.home_1.browser_tab.click()  # temp, until profile is on browser tab
-        self.profile_1.edit_profile_picture('sauce_logo.png')
-        self.profile_1.chats_tab.click()
-
-        self.chat_2.just_fyi("Send messages with non-latin symbols")
-        messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
-        [self.chat_2.send_message(message) for message in messages]
-        if not self.chat_1.chat_message_input.is_element_displayed():
-            self.chat_1.click_system_back_button_until_element_is_shown()
-            self.home_1.get_chat(self.default_username_2).click()
-        for message in messages:
-            if not self.chat_1.chat_element_by_text(message).is_element_displayed():
-                self.errors.append("Message with test '%s' was not received" % message)
-
-        self.chat_2.just_fyi("Checking updated member photo, timestamp and username on message")
-        timestamp = self.chat_2.chat_element_by_text(messages[0]).timestamp
-        sent_time_variants = self.chat_2.convert_device_time_to_chat_timestamp()
-        if timestamp not in sent_time_variants:
-            self.errors.append(
-                'Timestamp on message %s does not correspond expected [%s]' % (timestamp, *sent_time_variants))
-        for message in [messages[1], messages[2]]:
-            if self.chat_2.chat_element_by_text(message).member_photo.is_element_displayed():
-                self.errors.append('%s is not stack to 1st(they are sent in less than 5 minutes)!' % message)
-
-        self.chat_1.just_fyi("Sending message while user is still not in contacts")
-        message = 'profile_photo'
-        self.chat_1.send_message(message)
-        self.chat_2.chat_element_by_text(message).wait_for_visibility_of_element(30)
-        if not self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member2.png",
-                                                                                                       diff=5):
-            self.errors.append("Image of user in 1-1 chat is updated even when user is not added to contacts!")
-
-        self.chat_1.just_fyi("Users add to contacts each other")
-        [home.click_system_back_button_until_element_is_shown() for home in (self.home_1, self.home_2)]
-        [home.browser_tab.click() for home in (self.home_1, self.home_2)]
-        self.profile_1.add_contact_via_contacts_list(self.public_key_2)
-        self.profile_2 = self.home_2.get_profile_view()
-        self.profile_2.add_contact_via_contacts_list(self.public_key_1)
-
-        self.chat_1.just_fyi("Go back to chat view and checking that profile photo is updated")
-        [home.chats_tab.click() for home in (self.home_1, self.home_2)]
-        if not self.chat_2.chat_message_input.is_element_displayed():
-            self.home_2.get_chat(self.default_username_1).click()
-        if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member2.png",
-                                                                                                   diff=5):
-            self.errors.append("Image of user in 1-1 chat is too different from template!")
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(702733)
-    def test_1_1_chat_text_message_delete_push_disappear(self):
-        if not self.chat_1.chat_message_input.is_element_displayed():
-            self.home_1.get_chat(self.default_username_2).click()
-        self.device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
-        message_after_edit_1_1 = 'smth I should edit'
-        self.chat_2.send_message(message_after_edit_1_1)
-        chat_1_element = self.chat_1.chat_element_by_text(message_after_edit_1_1)
-        chat_1_element.long_press_element()
-        for action in ("edit", "delete-for-everyone"):
-            if self.chat_1.element_by_translation_id(action).is_element_displayed():
-                self.errors.append('Option to %s someone else message available!' % action)
-        self.home_1.click_system_back_button()
-
-        self.device_2.just_fyi("Delete message for everyone and check it is not shown in chat preview on home")
-        self.chat_2.delete_message_in_chat(message_after_edit_1_1)
-        for chat in (self.chat_2, self.chat_1):
-            if chat.chat_element_by_text(message_after_edit_1_1).is_element_displayed(30):
-                self.errors.append("Deleted message is shown in chat view for 1-1 chat")
-        self.chat_1.click_system_back_button_until_element_is_shown()
-        if self.home_1.element_by_text(message_after_edit_1_1).is_element_displayed(30):
-            self.errors.append("Deleted message is shown on chat element on home screen")
-
-        self.device_2.just_fyi("Send one more message and check that PN will be deleted with message deletion")
-        message_to_delete = 'DELETE ME'
-        self.home_1.put_app_to_background()
-        self.chat_2.send_message(message_to_delete)
-        self.home_1.open_notification_bar()
-        if not self.home_1.get_pn(message_to_delete):
-            self.errors.append("Push notification doesn't appear")
-        self.chat_2.delete_message_in_chat(message_to_delete)
-        pn_to_disappear = self.home_1.get_pn(message_to_delete)
-        if pn_to_disappear:
-            if not pn_to_disappear.is_element_disappeared(30):
-                self.errors.append("Push notification was not removed after initial message deletion")
-
         self.errors.verify_no_errors()

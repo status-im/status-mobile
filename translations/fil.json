@@ -1400,6 +1400,8 @@
     "restore-defaults": "Ibalik sa dating ayos",
     "retry": "Ulitin",
     "revoke-access": "Bawiin ang access",
+    "rinkeby-network": "Rinkeby test network",
+    "ropsten-network": "Ropsten test network",
     "rpc-url": "RPC URL",
     "rpc-usage-copy": "Kopya",
     "rpc-usage-filter": "Mga pamamaraan sa pagsala",

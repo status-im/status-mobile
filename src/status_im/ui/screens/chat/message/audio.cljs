@@ -4,6 +4,7 @@
             [reagent.core :as reagent]
             [goog.string :as gstring]
             [status-im.audio.core :as audio]
+            [status-im.utils.fx :as fx]
             [status-im.ui.screens.chat.styles.message.audio :as style]
             [status-im.ui.components.animation :as anim]
             [quo.design-system.colors :as colors]
@@ -182,6 +183,15 @@
         {:container-style     (style/play-pause-container false)
          :accessibility-label :play-pause-audio-message-button
          :color               color}]])))
+
+(fx/defn on-background
+  {:events [:audio-message/on-background]}
+  [_]
+  (when (and @current-active-state-ref-ref
+             @@current-active-state-ref-ref)
+    (update-state {:state-ref @current-active-state-ref-ref
+                   :message-id @current-player-message-id}))
+  nil)
 
 (defview message-content [{:keys [audio audio-duration-ms message-id]}]
   (letsubs [state        (reagent/atom nil)

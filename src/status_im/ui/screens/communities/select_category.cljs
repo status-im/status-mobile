@@ -3,7 +3,7 @@
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
             [status-im.i18n.i18n :as i18n]
-            [utils.debounce :as debounce]
+            [status-im.utils.debounce :as debounce]
             [status-im.ui.components.list.views :as list]
             [reagent.core :as reagent]
             [status-im.utils.handlers :refer [>evt <sub]]

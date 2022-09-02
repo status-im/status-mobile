@@ -1,6 +1,6 @@
 (ns status-im.ethereum.encode
-  (:require [status-im.native-module.core :as status]))
+  (:require ["web3-utils" :as utils]))
 
 (defn uint
   [x]
-  (str "0x" (status/number-to-hex x)))
+  (.numberToHex utils x))

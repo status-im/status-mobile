@@ -20,6 +20,14 @@
    {:mainnet     {:name     "Ether"
                   :symbol   :ETH
                   :decimals 18}
+    :testnet     {:name           "Ropsten Ether"
+                  :symbol         :ETH
+                  :symbol-display :ETHro
+                  :decimals       18}
+    :rinkeby     {:name           "Rinkeby Ether"
+                  :symbol         :ETH
+                  :symbol-display :ETHri
+                  :decimals       18}
     :goerli      {:name           "Goerli Ether"
                   :symbol         :ETH
                   :symbol-display :ETHgo
@@ -50,6 +58,8 @@
 
 (def token-icons
   {:mainnet (resolve-icons :mainnet)
+   :testnet (resolve-icons :testnet)
+   :rinkeby (resolve-icons :rinkeby)
    :xdai (resolve-icons :xdai)
    :custom []})
 

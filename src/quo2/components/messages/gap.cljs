@@ -1,12 +1,15 @@
 (ns quo2.components.messages.gap
   (:require
    [oops.core :refer [oget]]
-   [react-native.core :as rn]
-   [quo2.theme :as theme]
+   [quo.react-native :as rn]
+   [quo.theme :as theme]
    [quo2.components.icon :as icon]
    [quo2.components.markdown.text :as text]
    [quo2.foundations.colors :as colors]
-   [reagent.core :as reagent]))
+   [reagent.core :as reagent]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.ui.components.react :refer [pressable-class]]
+   [status-im.utils.handlers :refer [>evt]]))
 
 ;;; helpers
 (def themes
@@ -81,7 +84,7 @@
                       :color          (get-color :time)}} str])
 
 (defn info-button [on-press]
-  [rn/touchable-without-feedback
+  [pressable-class
    {:on-press on-press}
    [icon/icon "message-gap-info" {:size 12 :no-color true :container-style {:padding 4}}]])
 
@@ -96,7 +99,7 @@
    [rn/image {:style {:flex 1} :source (get-image :circles) :resize-mode :repeat}]
    [circle]])
 
-(defn body [timestamp-far timestamp-near on-info-button-pressed on-press warning-label]
+(defn body [timestamp-far timestamp-near chat-id gap-ids on-info-button-pressed]
   [rn/view {:flex 1}
    [rn/view
     {:flex-direction    :row
@@ -106,10 +109,12 @@
     [timestamp timestamp-far]
     (when on-info-button-pressed [info-button on-info-button-pressed])]
 
-   [rn/touchable-without-feedback
+   [pressable-class
     {:style    {:flex 1 :margin-top 16 :margin-bottom 20}
-     :on-press #(when on-press (on-press))}
-    [text/text warning-label]]
+     :on-press #(when (and chat-id gap-ids)
+                  (>evt [:chat.ui/fill-gaps chat-id gap-ids]))}
+    [text/text
+     (i18n/label :messages-gap-warning)]]
 
    [timestamp timestamp-near]])
 
@@ -119,10 +124,10 @@
   if `on-info-button-pressed` fn is provided, the info button will show up and is pressable"
   [{:keys [timestamp-far
            timestamp-near
+           gap-ids
+           chat-id
            on-info-button-pressed
-           style
-           on-press
-           warning-label]}]
+           style]}]
   (let [body-height (reagent/atom nil)]
     (fn []
       [rn/view
@@ -140,6 +145,6 @@
                        style)
 
         [timeline]
-        [body timestamp-far timestamp-near on-info-button-pressed on-press warning-label]]
+        [body timestamp-far timestamp-near chat-id gap-ids on-info-button-pressed]]
        [vborder :left body-height]
        [vborder :right body-height]])))

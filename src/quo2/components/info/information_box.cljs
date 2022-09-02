@@ -1,6 +1,6 @@
 (ns quo2.components.info.information-box
-  (:require [quo2.theme :as theme]
-            [react-native.core :as rn]
+  (:require [quo.theme :as theme]
+            [quo.react-native :as rn]
             [clojure.string :as string]
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as quo2.icons]
@@ -11,16 +11,16 @@
   {:light {:default     {:bg     colors/white
                          :border colors/neutral-20
                          :icon   colors/neutral-50
-                         :text   colors/neutral-100}
+                         :text   colors/black}
            :informative {:bg     colors/primary-50-opa-5
                          :border colors/primary-50-opa-10
                          :icon   colors/primary-50
-                         :text   colors/neutral-100}
+                         :text   colors/black}
            :error       {:bg     colors/danger-50-opa-5
                          :border colors/danger-50-opa-10
                          :icon   colors/danger-50
                          :text   colors/danger-50}
-           :close-button colors/neutral-100}
+           :close-button colors/black}
    :dark  {:default     {:bg     colors/neutral-90
                          :border colors/neutral-70
                          :icon   colors/neutral-40
@@ -49,12 +49,11 @@
     :closed?         true/false          ;; information box's state
     :id              :information-box-id ;; unique id (required for closable? information box)
     :icon            :main-icons/info    ;; information box icon
-    :no-icon-color?  false               ;; disable tint color for icon
     :style           style
     :button-label    \"PressMe\"         ;; add action button with label
     :on-button-press action              ;; (required for information box with button-label)
     :on-close        on-close            ;; (optional on-close call)"
-  [{:keys [type closable? closed? id icon style button-label on-button-press on-close no-icon-color?]} message]
+  [{:keys [type closable? closed? id icon style button-label on-button-press on-close]} message]
   (let [background-color (get-color-by-type type :bg)
         border-color     (get-color-by-type type :border)
         icon-color       (get-color-by-type type :icon)
@@ -74,16 +73,15 @@
         [info-message/info-message {:size        :default
                                     :icon        icon
                                     :text-color  text-color
-                                    :icon-color  icon-color
-                                    :no-icon-color? no-icon-color?} message]
+                                    :icon-color  icon-color} message]
         (when closable?
           [rn/touchable-opacity
            {:on-press            on-close
             :accessibility-label (str (or id "information-box") "-close-button")}
-           [quo2.icons/icon :i/close {:size            12
-                                      :color           (get-color :close-button)
-                                      :container-style {:margin-top  4
-                                                        :margin-left 8}}]])]
+           [quo2.icons/icon :main-icons2/close {:size            12
+                                                :color           (get-color :close-button)
+                                                :container-style {:margin-top  4
+                                                                  :margin-left 8}}]])]
        (when include-button?
          [quo2.button/button {:type     :primary
                               :size     24

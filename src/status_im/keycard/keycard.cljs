@@ -38,5 +38,4 @@
   (sign-typed-data [this args])
   (save-multiaccount-and-login [this args])
   (login [this args])
-  (send-transaction-with-signature [this args])
-  (delete-multiaccount-before-migration [this args]))
+  (send-transaction-with-signature [this args]))

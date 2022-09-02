@@ -1,12 +1,14 @@
 (ns status-im.ethereum.ens
   (:require [clojure.string :as string]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.native-module.core :as status]))
+            [status-im.ethereum.abi-spec :as abi-spec]))
 
 ;; this is the addresses of ens registries for the different networks
 (def ens-registries
   {:mainnet "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
-   :goerli  "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"})
+   :testnet "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
+   :goerli  "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
+   :rinkeby "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"})
 
 (def default-address "0x0000000000000000000000000000000000000000")
 (def default-key "0x0400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
@@ -63,7 +65,7 @@
                   :params [chain-id ens-name]
                   :on-success
                   ;;NOTE: returns a timestamp in s and we want ms
-                  #(cb (* (js/Number (status/hex-to-number %)) 1000))}))
+                  #(cb (* (js/Number (abi-spec/hex-to-number %)) 1000))}))
 
 (defn register-prepare-tx
   [chain-id from ens-name pubkey cb]

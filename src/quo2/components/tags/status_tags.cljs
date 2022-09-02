@@ -1,9 +1,10 @@
 (ns quo2.components.tags.status-tags
-  (:require [react-native.core :as rn]
-            [quo2.theme :as quo2.theme]
+  (:require [status-im.i18n.i18n :as i18n]
+            [quo2.foundations.colors :as colors]
+            [quo.theme :as quo.theme]
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]))
+            [quo.react-native :as rn]))
 
 (def default-container-style
   {:border-radius 20
@@ -24,6 +25,7 @@
                border-color
                background-color
                icon
+               theme
                text-color
                label]}]
     (let [paragraph-size (if (= size :small) :paragraph-2 :paragraph-1)]
@@ -38,8 +40,9 @@
                  :flex 1}
         [rn/view {:style {:justify-content :center
                           :align-items :center}}
-         [icon/icon
+         [icon/icon-for-theme
           icon
+          theme
           {:no-color true
            :size 12}]]
         [text/text {:size paragraph-size
@@ -47,48 +50,45 @@
                     :style {:padding-left 5
                             :color text-color}} label]]])))
 
-(defn- positive
-  [size theme label]
-  [base-tag {:size             size
-             :background-color colors/success-50-opa-10
-             :icon             :verified
-             :border-color     colors/success-50-opa-20
-             :label            label
-             :text-color       (if (= theme :light) colors/success-50
-                                   colors/success-60)}])
+(defn positive [_ _]
+  (fn [size theme]
+    [base-tag {:size size
+               :background-color colors/success-50-opa-10
+               :icon :verified
+               :border-color colors/success-50-opa-20
+               :text-color (if (= theme :light) colors/success-50
+                               colors/success-60)
+               :label (i18n/label :positive)}]))
 
-(defn- negative
-  [size theme label]
-  [base-tag {:size             size
-             :icon             :untrustworthy
-             :background-color colors/danger-50-opa-10
-             :border-color     colors/danger-50-opa-20
-             :label            label
-             :text-color       (if (= theme :light)
-                                 colors/danger-50
-                                 colors/danger-60)}])
+(defn negative [_ _]
+  (fn [size theme]
+    [base-tag {:size size
+               :icon :untrustworthy
+               :background-color colors/danger-50-opa-10
+               :border-color colors/danger-50-opa-20
+               :text-color (if (= theme :light)
+                             colors/danger-50
+                             colors/danger-60)
+               :label (i18n/label :negative)}]))
 
-(defn- pending
-  [size theme label]
-  [base-tag {:size             size
-             :icon             :pending
-             :label            label
-             :background-color (if (= theme :light)
-                                 colors/neutral-10
-                                 colors/neutral-80)
-             :border-color     (if (= theme :light)
-                                 colors/neutral-20
-                                 colors/neutral-70)
-             :text-color       colors/neutral-50}])
+(defn pending [_ _]
+  (fn [size theme]
+    [base-tag {:size size
+               :icon :pending
+               :background-color (if (= theme :light)
+                                   colors/neutral-10
+                                   colors/neutral-80)
+               :border-color (if (= theme :light)
+                               colors/neutral-20
+                               colors/neutral-70)
+               :text-color colors/neutral-50
+               :label (i18n/label :pending)}]))
 
-(defn status-tag [{:keys [status size override-theme label]}]
-  (when status
-    (when-let [status-component (case (:type status)
-                                  :positive positive
-                                  :negative negative
-                                  :pending  pending
-                                  nil)]
-      [status-component
-       size
-       (or override-theme (quo2.theme/get-theme))
-       label])))
+(defn status-tag [_]
+  (fn [{:keys [status size override-theme]}]
+    (let [theme (or override-theme (quo.theme/get-theme))]
+      [(case status
+         :positive positive
+         :negative negative
+         :pending pending
+         nil) size theme])))

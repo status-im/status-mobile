@@ -1,7 +1,9 @@
 (ns status-im.ui.screens.chat.components.style
   (:require [quo.platform :as platform]
             [quo.design-system.colors :as colors]
-            [quo.design-system.typography :as typography]))
+            [quo.design-system.typography :as typography]
+            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.typography :as quo2.typography]))
 
 (defn toolbar []
   {:min-height       52
@@ -35,7 +37,7 @@
          (when platform/ios?
            {:padding-top 2})))
 
-(defn text-input [contact-request]
+(defn text-input-old [contact-request]
   (merge typography/font-regular
          typography/base
          {:flex               1
@@ -49,6 +51,21 @@
            {:padding-vertical 2}
            {:padding-top    (if contact-request 10 2)
             :padding-bottom (if contact-request 5 6)})))
+
+(defn text-input []
+  (merge quo2.typography/font-regular
+         quo2.typography/paragraph-1
+         {:flex              1
+          :min-height        34
+          :margin            0
+          :flex-shrink       1
+          :color             (:text-01 @colors/theme)
+          :margin-horizontal 20}
+         (if platform/android?
+           {:padding-vertical    8
+            :text-align-vertical :top}
+           {:margin-top    8
+            :margin-bottom 8})))
 
 (defn actions-wrapper [show-send]
   (merge (when show-send
@@ -86,18 +103,15 @@
 (defn reply-container []
   {:flex-direction :row})
 
-(defn reply-content []
+(defn reply-content-old []
   {:padding-vertical   6
    :padding-horizontal 10
    :flex               1})
 
-(defn quoted-message [pin?]
-  (merge {:flex-direction :row
-          :align-items :center
-          :width "45%"}
-         (when-not pin? {:position :absolute
-                         :left 34
-                         :top 3})))
+(defn reply-content []
+  {:padding-horizontal 10
+   :flex               1
+   :flex-direction     :row})
 
 (defn contact-request-content []
   {:flex            1
@@ -129,5 +143,53 @@
    :bottom           bottom
    :background-color (colors/get-color :ui-background)
    :border-top-width 1
-   :border-top-color (colors/get-color :ui-01)
-   :z-index          3})
+   :border-top-color (colors/get-color :ui-01)})
+
+(defn new-input-bottom-sheet [window-height]
+  (merge {:border-top-left-radius  20
+          :border-top-right-radius 20
+          :position                :absolute
+          :left                    0
+          :right                   0
+          :bottom                  (- window-height)
+          :height                  window-height
+          :flex                    1
+          :background-color        (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
+          :z-index                 1000}
+         (if platform/ios?
+           {:shadow-radius  16
+            :shadow-opacity 1
+            :shadow-color   "rgba(9, 16, 28, 0.04)"
+            :shadow-offset  {:width 0 :height -2}}
+           {:elevation 2})))
+
+(defn new-bottom-sheet-handle []
+  {:width            32
+   :height           4
+   :background-color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)
+   :opacity          0.05
+   :border-radius    100
+   :align-self       :center
+   :margin-top       8})
+
+(defn new-bottom-sheet-controls [insets]
+  {:flex-direction     :row
+   :padding-horizontal 20
+   :elevation          2
+   :z-index            2000
+   :position           :absolute
+   :background-color   (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
+   ;these 3 props play together, we need this magic to hide message text in the safe area
+   :padding-top        10
+   :padding-bottom     (+ 12 (:bottom insets))
+   :bottom             (- 2 (:bottom insets))})
+
+(defn new-bottom-sheet-background [window-height]
+  {:pointerEvents    :none
+   :position         :absolute
+   :left             0
+   :right            0
+   :bottom           0
+   :height           window-height
+   :background-color quo2.colors/neutral-95-opa-70
+   :z-index          500})

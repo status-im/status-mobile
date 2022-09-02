@@ -3,8 +3,7 @@
             [clojure.string :as string]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]))
-;;TODO (14/11/22 flexsurfer) this namespace has been moved to the status-im2 namespace, we keep this only for old (status 1.0) code,
-;; can be removed with old code later
+
 (def config
   (memoize
    (fn []
@@ -14,20 +13,27 @@
   ([k] (get (config) k))
   ([k not-found] (get (config) k not-found)))
 
+;; TODO(oskarth): Extend this to deal with true/false for Jenkins parameter builds
 (defn enabled? [v] (= "1" v))
 
-(goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
+;; NOTE(oskarth): Feature flag deprecation lifecycles. We want to make sure
+;; flags stay up to date and are removed once behavior introduced is stable.
+
+(goog-define INFURA_TOKEN "800c641949d64d768a5070a1b0511938")
 (goog-define OPENSEA_API_KEY "")
 
-(def mainnet-rpc-url (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
-(def goerli-rpc-url  (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
+(def mainnet-rpc-url (str "https://mainnet.infura.io/v3/" INFURA_TOKEN))
+(def testnet-rpc-url (str "https://ropsten.infura.io/v3/" INFURA_TOKEN))
+(def goerli-rpc-url  (str "https://goerli.infura.io/v3/" INFURA_TOKEN))
 (def opensea-api-key OPENSEA_API_KEY)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
+(def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
 (def pairing-popup-disabled? (enabled? (get-config :PAIRING_POPUP_DISABLED "0")))
 (def cached-webviews-enabled? (enabled? (get-config :CACHED_WEBVIEWS_ENABLED 0)))
 (def snoopy-enabled? (enabled? (get-config :SNOOPY 0)))
 (def dev-build? (enabled? (get-config :DEV_BUILD 0)))
+(def tr-to-talk-enabled? (enabled? (get-config :TRIBUTE_TO_TALK 0)))
 (def max-message-delivery-attempts (js/parseInt (get-config :MAX_MESSAGE_DELIVERY_ATTEMPTS "6")))
 (def max-images-batch (js/parseInt (get-config :MAX_IMAGES_BATCH "1")))
 ;; NOTE: only disabled in releases
@@ -55,6 +61,8 @@
 (def fleet (get-config :FLEET "eth.staging"))
 (def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))
 (def default-network (get-config :DEFAULT_NETWORK "goerli_rpc"))
+(def pow-target (js/parseFloat (get-config :POW_TARGET "0.0001")))
+(def pow-time (js/parseInt (get-config :POW_TIME "1")))
 (def max-installations 2)
 ; currently not supported in status-go
 (def enable-remove-profile-picture? false)
@@ -112,7 +120,21 @@
                                            :URL     "https://bsc-dataseed.binance.org"}}}])
 
 (def testnet-networks
-  [{:id                  "goerli_rpc",
+  [{:id                  "testnet_rpc",
+    :chain-explorer-link "https://ropsten.etherscan.io/address/",
+    :name                "Ropsten with upstream RPC",
+    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
+                          :DataDir        "/ethereum/testnet_rpc"
+                          :UpstreamConfig {:Enabled true
+                                           :URL     testnet-rpc-url}}}
+   {:id                  "rinkeby_rpc",
+    :chain-explorer-link "https://rinkeby.etherscan.io/address/",
+    :name                "Rinkeby with upstream RPC",
+    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
+                          :DataDir        "/ethereum/rinkeby_rpc"
+                          :UpstreamConfig {:Enabled true
+                                           :URL     (str "https://rinkeby.infura.io/v3/" INFURA_TOKEN)}}}
+   {:id                  "goerli_rpc",
     :chain-explorer-link "https://goerli.etherscan.io/address/",
     :name                "Goerli with upstream RPC",
     :config              {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
@@ -136,6 +158,17 @@
                [id network])
              default-networks)))
 
+(def link-preview-enabled-site?
+  #{"youtube.com"
+    "youtu.be"
+    "our.status.im"
+    "github.com"
+    "giphy.com"
+    "gph.is"
+    "media.giphy.com"})
+
+(def default-relay-provider "https://relay.walletconnect.com")
+
 (def default-wallet-connect-metadata {:name "Status Wallet"
                                       :description "Status is a secure messaging app, crypto wallet, and Web3 browser built with state of the art technology."
                                       :url "#"
@@ -148,3 +181,6 @@
 
 ;;TODO for development only should be removed in status 2.0
 (def new-ui-enabled? true)
+
+;;TODO this needs to be removed when local-pairing is stable for usage
+(def local-pairing-mode-enabled? (atom false))

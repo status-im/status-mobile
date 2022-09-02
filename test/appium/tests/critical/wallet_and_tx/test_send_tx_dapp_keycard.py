@@ -155,7 +155,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Tx is not sent!")
         send_tx.ok_button.click()
 
-        # TODO: disabled due to 10838 (rechecked 04.10.22, valid)
+        # TODO: disabled due to 10838 (rechecked 27.07.22, valid)
         # transactions_view = wallet.transaction_history_button.click()
         # transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
         self.errors.verify_no_errors()

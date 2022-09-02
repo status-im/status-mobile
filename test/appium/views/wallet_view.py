@@ -175,14 +175,14 @@ class WalletView(BaseView):
                         self.accounts_status_account.scroll_to_element(direction='up')
                 return
 
-    def wait_balance_is_changed(self, asset='ETH', initial_balance=0, wait_time=180, scan_tokens=False, navigate_to_home=True):
+    def wait_balance_is_changed(self, asset='ETH', initial_balance=0, wait_time=120, scan_tokens=False, navigate_to_home=True):
         self.driver.info('Waiting %ss for %s updated balance' % (wait_time, asset))
         counter = 0
         while True:
             if counter >= wait_time:
                 self.driver.fail(
                     'Balance %s %s is not changed during %s seconds!' % (asset, initial_balance, wait_time))
-            elif self.asset_by_name(asset).is_element_displayed() and self.get_asset_amount_by_name(
+            elif self.asset_by_name(asset).is_element_present() and self.get_asset_amount_by_name(
                     asset) == initial_balance:
                 if scan_tokens:
                     self.scan_tokens()
@@ -192,7 +192,7 @@ class WalletView(BaseView):
                 counter += 10
                 time.sleep(10)
                 self.driver.info('Waiting %ss for %s updated balance' % (counter, asset))
-            elif not self.asset_by_name(asset).is_element_displayed(10):
+            elif not self.asset_by_name(asset).is_element_present(10):
                 if scan_tokens:
                     self.scan_tokens()
                 self.swipe_up()

@@ -4,12 +4,10 @@
             [clojure.string :as string]
             [re-frame.core :as rf]
             status-im.events
-            status-im2.navigation.core
-            [status-im.chat.models :as chat.models]
             [status-im.utils.security :as security]
             [status-im.multiaccounts.logout.core :as logout]
             [status-im.transport.core :as transport]
-            status-im2.subs.root ;;so integration tests can run independently
+            status-im.subs ;;so integration tests can run independently
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.test :as utils.test]
             [taoensso.timbre :as log]))
@@ -23,7 +21,7 @@
 (utils.test/init!)
 
 (defn initialize-app! []
-  (rf/dispatch [:setup/app-started]))
+  (rf/dispatch [:init/app-started]))
 
 (defn generate-and-derive-addresses! []
   (rf/dispatch [:generate-and-derive-addresses]))
@@ -72,11 +70,11 @@
 (deftest initialize-app-test
   (log/info "========= initialize-app-test ==================")
   (rf-test/run-test-async
-   (rf/dispatch [:setup/app-started])
+   (rf/dispatch [:init/app-started])
    (rf-test/wait-for
     ;; use initialize-view because it has the longest avg. time and
     ;; is dispatched by initialize-multiaccounts (last non-view event)
-    [:setup/initialize-view]
+    [:status-im.init.core/initialize-view]
     (assert-app-initialized))))
 
 (deftest create-account-test
@@ -84,7 +82,7 @@
   (rf-test/run-test-async
    (initialize-app!) ; initialize app
    (rf-test/wait-for
-    [:setup/initialize-view]
+    [:status-im.init.core/initialize-view]
     (generate-and-derive-addresses!) ; generate 5 new keys
     (rf-test/wait-for
      [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
@@ -102,7 +100,7 @@
   (rf-test/run-test-async
    (initialize-app!) ; initialize app
    (rf-test/wait-for
-    [:setup/initialize-view]
+    [:status-im.init.core/initialize-view]
     (generate-and-derive-addresses!) ; generate 5 new keys      
     (rf-test/wait-for
      [:multiaccount-generate-and-derive-addresses-success]
@@ -127,7 +125,7 @@
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-    [:setup/initialize-view]
+    [:status-im.init.core/initialize-view]
     (generate-and-derive-addresses!) ; generate 5 new keys
     (rf-test/wait-for
      [:multiaccount-generate-and-derive-addresses-success]
@@ -149,7 +147,7 @@
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-    [:setup/initialize-view]
+    [:status-im.init.core/initialize-view]
     (generate-and-derive-addresses!)
     (rf-test/wait-for
      [:multiaccount-generate-and-derive-addresses-success]
@@ -186,7 +184,7 @@
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-    [:setup/initialize-view]
+    [:status-im.init.core/initialize-view]
     (rf/dispatch-sync [:init-root :onboarding])
     (rf/dispatch-sync [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
     (rf/dispatch-sync [:status-im.multiaccounts.recover.core/enter-phrase-pressed])
@@ -216,7 +214,7 @@
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-    [:setup/initialize-view]
+    [:status-im.init.core/initialize-view]
     (generate-and-derive-addresses!)
     (rf-test/wait-for
      [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
@@ -232,66 +230,6 @@
        (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
        (logout!) (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an inconsistent state between tests
                                    (assert-logout))))))))
-
-(deftest delete-chat-test
-  (log/info "========= delete-chat-test ==================")
-  (rf-test/run-test-async
-   (initialize-app!)
-   (rf-test/wait-for
-    [:setup/initialize-view]
-    (generate-and-derive-addresses!)
-    (rf-test/wait-for
-     [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
-     (assert-multiaccount-loaded)
-     (create-multiaccount!)
-     (rf-test/wait-for
-      [::transport/messenger-started]
-      (assert-messenger-started)
-      (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
-      (rf-test/wait-for
-       [:status-im.chat.models/one-to-one-chat-created]
-       (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
-       (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
-       (is @(rf/subscribe [:chats/chat chat-id]))
-       (rf/dispatch-sync [:chat.ui/remove-chat-pressed chat-id])
-       (rf/dispatch-sync [:chat.ui/remove-chat chat-id])
-       (rf-test/wait-for
-        [::chat.models/chat-deactivated]
-        (is (not @(rf/subscribe [:chats/chat chat-id])))
-        (logout!) (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an inconsistent state between tests
-                                    (assert-logout)))))))))
-
-(deftest mute-chat-test
-  (log/info "========= mute-chat-test ==================")
-  (rf-test/run-test-async
-   (initialize-app!)
-   (rf-test/wait-for
-    [:setup/initialize-view]
-    (generate-and-derive-addresses!)
-    (rf-test/wait-for
-     [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
-     (assert-multiaccount-loaded)
-     (create-multiaccount!)
-     (rf-test/wait-for
-      [::transport/messenger-started]
-      (assert-messenger-started)
-      (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
-      (rf-test/wait-for
-       [:status-im.chat.models/one-to-one-chat-created]
-       (rf/dispatch-sync [:chat.ui/navigate-to-chat chat-id])
-       (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
-       (is @(rf/subscribe [:chats/chat chat-id]))
-       (rf/dispatch-sync [::chat.models/mute-chat-toggled chat-id true])
-       (rf-test/wait-for
-        [::chat.models/mute-chat-toggled-successfully]
-        (is @(rf/subscribe [:chats/muted chat-id]))
-        (rf/dispatch-sync [::chat.models/mute-chat-toggled chat-id false])
-        (rf-test/wait-for
-         [::chat.models/mute-chat-toggled-successfully]
-
-         (is (not @(rf/subscribe [:chats/muted chat-id])))
-         (logout!) (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an inconsistent state between tests
-                                     (assert-logout))))))))))
 
 (comment
   (run-tests))

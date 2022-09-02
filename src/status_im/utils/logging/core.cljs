@@ -1,5 +1,5 @@
 (ns status-im.utils.logging.core
-  (:require [react-native.mail :as react-native-mail]
+  (:require ["react-native-mail" :default react-native-mail]
             [clojure.string :as string]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
@@ -9,21 +9,53 @@
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.components.react :as react]
             [status-im.utils.build :as build]
+            [status-im.utils.config :as config]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
-            [status-im2.setup.log :as log]))
+            [taoensso.timbre :as log]))
 
 (def report-email "error-reports@status.im")
+(def max-log-entries 1000)
+(def logs-queue (atom #queue[]))
+(defn add-log-entry [entry]
+  (swap! logs-queue conj entry)
+  (when (>= (count @logs-queue) max-log-entries)
+    (swap! logs-queue pop)))
+
+(defn init-logs [level]
+  (when-not (string/blank? level)
+    (log/set-level! (-> level
+                        string/lower-case
+                        keyword))
+    (log/merge-config!
+     {:output-fn (fn [& data]
+                   (let [res (apply log/default-output-fn data)]
+                     (add-log-entry res)
+                     res))})))
+
+(defn get-js-logs []
+  (string/join "\n" @logs-queue))
 
 (re-frame/reg-fx
  :logs/archive-logs
  (fn [[db-json callback-handler]]
    (status/send-logs
     db-json
-    (string/join "\n" (log/get-logs-queue))
+    (get-js-logs)
     #(re-frame/dispatch [callback-handler %]))))
+
+(re-frame/reg-fx
+ :logs/set-level
+ (fn [level]
+   (init-logs level)))
+
+(fx/defn set-log-level
+  [{:keys [db]} log-level]
+  (let [log-level (or log-level config/log-level)]
+    {:db             (assoc-in db [:multiaccount :log-level] log-level)
+     :logs/set-level log-level}))
 
 (defn email-body
   "logs attached"
@@ -156,8 +188,9 @@
 
 (re-frame/reg-fx
  :email/send
+ ;; https://github.com/chirag04/react-native-mail#example
  (fn [[opts callback]]
-   (react-native-mail/mail (clj->js opts) callback)))
+   (.mail react-native-mail (clj->js opts) callback)))
 
 (re-frame/reg-fx
  ::share-archive

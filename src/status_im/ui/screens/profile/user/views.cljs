@@ -67,7 +67,8 @@
         @(re-frame/subscribe [:multiaccount])
         active-contacts-count @(re-frame/subscribe [:contacts/active-count])
         chain @(re-frame/subscribe [:chain-keyword])
-        registrar (stateofus/get-cached-registrar chain)]
+        registrar (stateofus/get-cached-registrar chain)
+        local-pairing-mode-enabled? @config/local-pairing-mode-enabled?]
     [:<>
      [visibility-status/visibility-status-button
       visibility-status/calculate-button-height-and-dispatch-popover]
@@ -110,6 +111,13 @@
        :accessory           (when mnemonic
                               [components.common/counter {:size 22} 1])
        :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security])}]
+     (when config/quo-preview-enabled?
+       [quo/list-item
+        {:icon                :main-icons/appearance
+         :title               "Quo Preview"
+         :accessibility-label :appearance-settings-button
+         :chevron             true
+         :on-press            #(re-frame/dispatch [:navigate-to :quo-preview])}])
      (when config/quo-preview-enabled?
        [quo/list-item
         {:icon                :main-icons/appearance
@@ -160,6 +168,12 @@
        :accessibility-label :about-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :about-app])}]
+     (when local-pairing-mode-enabled? [quo/list-item
+                                        {:icon                :main-icons/info
+                                         :title               (i18n/label :t/syncing)
+                                         :accessibility-label :synching
+                                         :chevron             true
+                                         :on-press            #(re-frame/dispatch [:navigate-to :settings-syncing])}])
      [react/view {:padding-vertical 24}
       [quo/list-item
        {:icon                :main-icons/log-out
@@ -172,7 +186,7 @@
 (defn my-profile []
   (fn []
     (let [{:keys [public-key ens-verified preferred-name]
-           :as   account} @(re-frame/subscribe [:profile/multiaccount])
+           :as   account} @(re-frame/subscribe [:multiaccount])
           on-share        #(re-frame/dispatch [:show-popover
                                                {:view     :share-chat-key
                                                 :address  public-key

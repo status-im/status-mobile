@@ -1,11 +1,9 @@
 (ns ^{:doc "Definition of the StatusMessage protocol"}
  status-im.transport.message.core
-  (:require [status-im.activity-center.core :as activity-center]
-            [status-im.chat.models.message :as models.message]
+  (:require [status-im.chat.models.message :as models.message]
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.chat.models :as models.chat]
             [status-im.chat.models.reactions :as models.reactions]
-            [status-im2.setup.config :as config]
             [status-im.contact.core :as models.contact]
             [status-im.communities.core :as models.communities]
             [status-im.pairing.core :as models.pairing]
@@ -72,13 +70,8 @@
       (do
         (js-delete response-js "activityCenterNotifications")
         (fx/merge cofx
-                  (if config/new-activity-center-enabled?
-                    (->> activity-notifications
-                         types/js->clj
-                         (map data-store.activities/<-rpc)
-                         activity-center/notifications-reconcile)
-                    (notifications-center/handle-activities (map data-store.activities/<-rpc
-                                                                 (types/js->clj activity-notifications))))
+                  (notifications-center/handle-activities (map data-store.activities/<-rpc
+                                                               (types/js->clj activity-notifications)))
                   (process-next response-js sync-handler)))
 
       (seq installations)

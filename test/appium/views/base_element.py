@@ -95,9 +95,10 @@ class BaseElement(object):
         counter = 0
         self.driver.info("Click until `%s` by `%s`: `%s` will be presented" % (
             desired_element.name, desired_element.by, desired_element.locator))
-        while not desired_element.is_element_displayed(1) and counter <= attempts:
+        while not desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.find_element().click()
+                desired_element.is_element_present(5)
                 return self.navigate()
             except (NoSuchElementException, TimeoutException):
                 counter += 1
@@ -140,17 +141,16 @@ class BaseElement(object):
             return WebDriverWait(self.driver, seconds) \
                 .until(expected_conditions.invisibility_of_element_located((self.by, self.locator)))
         except TimeoutException:
-            raise TimeoutException(
-                "Device %s: %s by %s: `%s`  is still visible on the screen after %s seconds after wait_for_invisibility_of_element" % (
-                    self.driver.number, self.name, self.by, self.locator, seconds)) from None
+            raise TimeoutException("Device %s: %s by %s: `%s`  is still visible on the screen after %s seconds after wait_for_invisibility_of_element" % (
+                self.driver.number, self.name, self.by, self.locator, seconds)) from None
 
-    def wait_for_element_text(self, text, wait_time=30, message=None):
+    def wait_for_element_text(self, text, wait_time=30):
         counter = 0
         self.driver.info("Wait for text element `%s` to be equal to `%s`" % (self.name, text))
         while True:
             if counter >= wait_time:
-                self.driver.fail(message if message else "`%s` is not equal to expected `%s` in %s sec" % (
-                    self.find_element().text, text, wait_time))
+                self.driver.fail(
+                    "`%s` is not equal to expected `%s` in %s sec" % (self.find_element().text, text, wait_time))
             elif self.find_element().text != text:
                 counter += 10
                 time.sleep(10)
@@ -178,11 +178,11 @@ class BaseElement(object):
         self.scroll_to_element(direction=direction)
         self.click()
 
-    # def is_element_present(self, sec=5):
-    #     try:
-    #         return self.wait_for_element(sec)
-    #     except TimeoutException:
-    #         return False
+    def is_element_present(self, sec=5):
+        try:
+            return self.wait_for_element(sec)
+        except TimeoutException:
+            return False
 
     def is_element_displayed(self, sec=5, ignored_exceptions=None):
         try:
@@ -374,7 +374,7 @@ class Button(BaseElement):
         counter = 0
         self.driver.info("Click until `%s` by `%s`: `%s` is NOT presented" % (
             desired_element.name, desired_element.by, desired_element.locator))
-        while desired_element.is_element_displayed(1) and counter <= attempts:
+        while desired_element.is_element_present(1) and counter <= attempts:
             try:
                 self.find_element().click()
                 counter += 1

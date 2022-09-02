@@ -1,9 +1,9 @@
 (ns quo2.components.tags.context-tags
   (:require [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo2.theme]
+            [quo.theme :as quo.theme]
             [quo2.components.markdown.text :as text]
             [quo2.components.avatars.group-avatar :as group-avatar]
-            [react-native.core :as rn]))
+            [quo.react-native :as rn]))
 
 (defn padding-left-for-type [type]
   (case type
@@ -15,7 +15,7 @@
 
 (defn base-tag [_ _]
   (fn [{:keys [override-theme style]} & children]
-    (let [theme (or override-theme (quo2.theme/get-theme))]
+    (let [theme (or override-theme (quo.theme/get-theme))]
       (into
        [rn/view
         (merge
@@ -47,20 +47,15 @@
                  :size :paragraph-2}
       (trim-public-key public-key)]]))
 
-(defn context-tag [params photo name]
-  (let [text-style (params :text-style)]
-    [base-tag (assoc-in params [:style :padding-left] 3)
-     [rn/image {:style {:width 20
-                        :border-radius 10
-                        :background-color :white
-                        :height 20}
-                :source photo}]
-     [text/text
-      (merge {:weight :medium
-              :size :paragraph-2}
-             {:style text-style})
-      (str " " name)]]))
-
 (defn user-avatar-tag []
   (fn [params username photo]
-    [context-tag params {:uri photo} username]))
+    [base-tag (assoc-in params [:style :padding-left] 3)
+     [rn/image {:style  {:width            20
+                         :border-radius    10
+                         :background-color :white
+                         :height           20}
+                :source {:uri photo}}]
+     [text/text {:weight :medium
+                 :size   :paragraph-2}
+
+      (str " " username)]]))

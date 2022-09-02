@@ -7,7 +7,7 @@
             [status-im.ui.screens.onboarding.styles :as styles]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.identicon :as identicon]
-            [utils.debounce :refer [dispatch-and-chill]]
+            [status-im.utils.debounce :refer [dispatch-and-chill]]
             [quo.core :as quo]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.onboarding.views :as ui]
@@ -83,8 +83,7 @@
        [react/view {:style {:align-items :center}}
         [react/view {:style (assoc styles/bottom-button :margin-bottom 16)}
          [quo/button
-          {:test-ID :generate-keys
-           ;:disabled            existing-account?
+          {;:disabled            existing-account?
            :on-press            #(re-frame/dispatch [:generate-and-derive-addresses])
            :accessibility-label :onboarding-next-button}
           (i18n/label :t/generate-a-key)]]

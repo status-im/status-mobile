@@ -1,5 +1,6 @@
 (ns quo2.components.tags.base-tag
-  (:require [react-native.core :as rn]))
+  (:require
+   [quo.react-native :as rn]))
 
 (defn style-container [size disabled border-color border-width background-color label type]
   (merge {:height             size

@@ -1,7 +1,8 @@
 ;; shadow-cljs configuration
 {:source-paths ["src" "test/cljs"]
 
- :dependencies [[reagent "1.0.0"]
+ :dependencies [[org.clojure/core.async "1.1.587"]
+                [reagent "1.0.0"]
                 [re-frame "0.12.0"]
                 [binaryage/oops "0.7.0"]
                 [com.andrewmcveigh/cljs-time "0.5.2"]
@@ -38,16 +39,16 @@
  :builds {:mobile
           {:target :react-native
            :output-dir "app"
-           :init-fn status-im2.setup.core/init
+           :init-fn status-im.core/init
            ;; When false, the Shadow-CLJS watcher won't automatically refresh
            ;; the target files (a.k.a hot reload). When false, you can manually
            ;; reload by calling `shadow.cljs.devtools.api/watch-compile-all!`.
            :devtools {:autobuild #shadow/env ["SHADOW_AUTOBUILD_ENABLED" :default true :as :bool]}
-           :dev {:devtools {:after-load status-im2.setup.hot-reload/reload
-                            :build-notify status-im2.setup.hot-reload/build-notify
+           :dev {:devtools {:after-load status-im.reloader/reload
+                            :build-notify status-im.reloader/build-notify
                             :preloads [re-frisk-remote.preload]}
                  :closure-defines
-                 {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
+                 {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
                   status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
                  :compiler-options {:output-feature-set :es5
                                     :closure-defines
@@ -62,17 +63,17 @@
                     :chats status-im.chat.default-chats/default-chats}
            :release
            {:closure-defines
-            {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
+            {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
              status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
-            :compiler-options {:output-feature-set :es6
+                     :compiler-options {:output-feature-set :es6
                                         ;;disable for android build as there
                                         ;;is an intermittent warning with deftype
-                               :warnings-as-errors false
-                               :infer-externs :auto
-                               :static-fns true
-                               :fn-invoke-direct true
-                               :optimizations :advanced
-                               :js-options {:js-provider :closure}}}}
+                                        :warnings-as-errors false
+                                        :infer-externs :auto
+                                        :static-fns true
+                                        :fn-invoke-direct true
+                                        :optimizations :advanced
+                                        :js-options {:js-provider :closure}}}}
           ;; the tests are ran with node, react-native dependencies are mocked
           ;; by using node --require override.js, which uses the node-library
           ;; produced by the target :mocks below and redefines node require
@@ -86,7 +87,7 @@
            ;; set :ui-driven to true to let shadow-cljs inject node-repl
            :ui-driven        true
            :closure-defines
-           {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
+           {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
             status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
            :compiler-options {;; needed because we override require and it
                               ;; messes with source-map which reports callstack
@@ -106,11 +107,4 @@
            :output-to "target/mocks/mocks.js"
            :output-dir "target/mocks"
            :compiler-options {:optimizations :simple
-                              :source-map false}}
-          :component-test {:target :npm-module
-                           :entries [quo2.core-spec]
-                           :ns-regexp "-component-spec$"
-                           :output-dir "component-spec"
-                           :compiler-options {:warnings-as-errors false
-                                              :static-fns    false
-                                              :infer-externs true}}}}
+                              :source-map false}}}}

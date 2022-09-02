@@ -6,7 +6,7 @@
             [status-im.ui.screens.network.styles :as st]
             [status-im.ui.screens.network.views :as network-settings]
             [status-im.ui.components.react :as react]
-            [utils.debounce :refer [dispatch-and-chill]])
+            [status-im.utils.debounce :refer [dispatch-and-chill]])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview network-details []

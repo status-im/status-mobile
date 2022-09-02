@@ -1,6 +1,6 @@
 (ns status-im.contact.chat
   (:require [re-frame.core :as re-frame]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.chat.models :as chat]
             [status-im.contact.core :as contact]

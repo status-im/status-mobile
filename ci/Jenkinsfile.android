@@ -1,10 +1,10 @@
-library 'status-jenkins-lib@v1.6.3'
+library 'status-jenkins-lib@v1.5.4'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
 
 pipeline {
-  agent { label 'linux && x86_64 && nix-2.11' }
+  agent { label 'linux && x86_64 && nix-2.8' }
 
   options {
     timestamps()
@@ -36,7 +36,7 @@ pipeline {
     LANG     = "en_US.UTF-8"
     LC_ALL   = "en_US.UTF-8"
     LANGUAGE = "en_US.UTF-8"
-    TARGET   = "android${utils.isE2EBuild() ? "-e2e" : ""}"
+    TARGET   = 'android'
     BUILD_ENV = 'prod'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     FASTLANE_DISABLE_COLORS = 1

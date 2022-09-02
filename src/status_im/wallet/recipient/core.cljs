@@ -10,7 +10,7 @@
             [status-im.ethereum.eip55 :as eip55]
             [status-im.i18n.i18n :as i18n]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.ethereum.json-rpc :as json-rpc]))
 
 ;;NOTE we want to handle only last resolve

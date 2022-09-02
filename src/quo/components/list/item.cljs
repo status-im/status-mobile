@@ -8,21 +8,25 @@
             [quo.components.text :as text]
             [quo.components.controls.view :as controls]
             [quo.components.tooltip :as tooltip]
+            ;; FIXME:
             [status-im.ui.components.icons.icons :as icons]
+            [quo2.foundations.colors :as quo2.colors]
+            [quo2.components.icon :as quo.icons]
+            [status-im.utils.config :as config]
             [quo.components.animated.pressable :as animated]))
 
 (defn themes [theme]
   (case theme
-    :main {:icon-color         (:icon-04 @colors/theme)
-           :icon-bg-color      (:interactive-02 @colors/theme)
-           :active-background  (:interactive-02 @colors/theme)
-           :passive-background (:ui-background @colors/theme)
-           :text-color         (:text-01 @colors/theme)}
-    :accent {:icon-color         (:icon-04 @colors/theme)
-             :icon-bg-color      (:interactive-02 @colors/theme)
-             :active-background  (:interactive-02 @colors/theme)
-             :passive-background (:ui-background @colors/theme)
-             :text-color         (:text-04 @colors/theme)}
+    :main     {:icon-color         (:icon-04 @colors/theme)
+               :icon-bg-color      (:interactive-02 @colors/theme)
+               :active-background  (:interactive-02 @colors/theme)
+               :passive-background (:ui-background @colors/theme)
+               :text-color         (:text-01 @colors/theme)}
+    :accent   {:icon-color         (:icon-04 @colors/theme)
+               :icon-bg-color      (:interactive-02 @colors/theme)
+               :active-background  (:interactive-02 @colors/theme)
+               :passive-background (:ui-background @colors/theme)
+               :text-color         (:text-04 @colors/theme)}
     :negative {:icon-color         (:negative-01 @colors/theme)
                :icon-bg-color      (:negative-02 @colors/theme)
                :active-background  (:negative-02 @colors/theme)
@@ -37,7 +41,17 @@
                :icon-bg-color      (:ui-01 @colors/theme)
                :active-background  (:ui-01 @colors/theme)
                :passive-background (:ui-background @colors/theme)
-               :text-color         (:text-02 @colors/theme)}))
+               :text-color         (:text-02 @colors/theme)}
+    :light    {:icon-color         quo2.colors/neutral-50
+               :icon-bg-color      quo2.colors/white
+               :text-color         quo2.colors/black
+               :active-background  quo2.colors/neutral-10
+               :passive-background quo2.colors/white}
+    :dark     {:icon-color         quo2.colors/neutral-40
+               :icon-bg-color      quo2.colors/neutral-90
+               :text-color         quo2.colors/white
+               :active-background  quo2.colors/neutral-70
+               :passive-background quo2.colors/neutral-90}))
 
 (defn size->icon-size [size]
   (case size
@@ -66,19 +80,26 @@
 (defn icon-column
   [{:keys [icon icon-bg-color icon-color size icon-container-style]}]
   (when icon
-    (let [icon-size (size->icon-size size)]
+    (let [icon-size (size->icon-size size)
+          new-ui? @config/new-ui-enabled?]
       [rn/view {:style (or icon-container-style (:tiny spacing/padding-horizontal))}
        (cond
          (vector? icon)
          icon
          (keyword? icon)
-         [rn/view {:style {:width            icon-size
-                           :height           icon-size
-                           :align-items      :center
-                           :justify-content  :center
-                           :border-radius    (/ icon-size 2)
-                           :background-color icon-bg-color}}
-          [icons/icon icon {:color icon-color}]])])))
+         (if new-ui?
+           [quo.icons/icon icon {:container-style {:align-items     :center
+                                                   :justify-content :center}
+                                 :color       icon-color
+                                 :size        20
+                                 :resize-mode :center}]
+           [rn/view {:style {:width            icon-size
+                             :height           icon-size
+                             :align-items      :center
+                             :justify-content  :center
+                             :border-radius    (/ icon-size 2)
+                             :background-color icon-bg-color}}
+            [icons/icon icon {:color icon-color}]]))])))
 
 (defn title-column
   [{:keys [title text-color subtitle subtitle-max-lines subtitle-secondary
@@ -196,7 +217,7 @@
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label accessory-style
            haptic-feedback haptic-type error animated animated-accessory? title-text-weight container-style
-           active-background-enabled background-color]
+           active-background-enabled]
     :or   {subtitle-max-lines        1
            theme                     :main
            haptic-feedback           true
@@ -217,12 +238,9 @@
                           rn/view
                           animated animated/pressable
                           :else    gh/touchable-highlight)]
-    [rn/view {:background-color (cond (not= background-color nil)
-                                      background-color
-                                      (and (= accessory :radio) active)
-                                      active-background
-                                      :else
-                                      passive-background)}
+    [rn/view {:background-color (if (and (= accessory :radio) active)
+                                  active-background
+                                  passive-background)}
      [component
       (merge {:type                :list-item
               :disabled            disabled

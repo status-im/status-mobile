@@ -85,6 +85,10 @@
                                                            :name     "Status Network Token"
                                                            :symbol   :SNT
                                                            :decimals 18}}
+   :testnet {"0xc55cf4b03948d7ebc8b9e8bad92643703811d162" {:address  "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"
+                                                           :name     "Status Test Token"
+                                                           :symbol   :STT
+                                                           :decimals  18}}
    :goerli  {"0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a" {:address  "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
                                                            :name     "Status Test Token"
                                                            :symbol   :STT
@@ -97,7 +101,9 @@
   (is (= "ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e/transfer?uint256=5&address=0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7&gas=10000&gasPrice=10000"
          (eip681/generate-erc20-uri "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" {:symbol :SNT :value 5 :gas 10000 :gasPrice 10000} (:mainnet all-tokens))))
   (is (= "ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e/transfer?uint256=5&address=0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"
-         (eip681/generate-erc20-uri "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" {:symbol :SNT :chain-id 1 :value 5} (:mainnet all-tokens)))))
+         (eip681/generate-erc20-uri "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" {:symbol :SNT :chain-id 1 :value 5} (:mainnet all-tokens))))
+  (is (= "ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?uint256=5&address=0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"
+         (eip681/generate-erc20-uri "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" {:symbol :STT :chain-id 3 :value 5} (:testnet all-tokens)))))
 
 (deftest generate-uri
   (is (= nil (eip681/generate-uri nil nil)))

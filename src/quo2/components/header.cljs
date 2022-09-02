@@ -1,10 +1,11 @@
 (ns quo2.components.header
   (:require [oops.core :refer [oget]]
-            [react-native.reanimated :as reanimated]
+            [quo.animated :as animated]
             [quo2.components.buttons.button :as button]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
+            [quo.design-system.spacing :as spacing]
+            [quo.react-native :as rn]
             [reagent.core :as reagent]))
 
 (def header-height 56)
@@ -60,14 +61,15 @@
       :right           (max (:width left) (:width right))})))
 
 (def header-actions-style
-  {:flex               1
-   :flex-direction     :row
-   :align-items        :center
-   :justify-content    :center
-   :padding-horizontal 4})
+  (merge
+   {:flex               1
+    :flex-direction     :row
+    :align-items        :center
+    :justify-content    :center}
+   (:x-tiny spacing/padding-horizontal)))
 
 (def header-action-placeholder
-  {:width 16})
+  {:width (:base spacing/spacing)})
 
 (def element {:align-items        :center
               :justify-content    :center
@@ -143,9 +145,9 @@
                  border-bottom false}}]
       (let [status-bar-height (get insets :top 0)
             height            (+ header-height status-bar-height)]
-        [reanimated/view {:style (header-wrapper-style {:height        height
-                                                        :background    background
-                                                        :border-bottom border-bottom})}
+        [animated/view {:style (header-wrapper-style {:height        height
+                                                      :background    background
+                                                      :border-bottom border-bottom})}
          [rn/view {:pointer-events :box-none
                    :height         status-bar-height}]
          [rn/view {:style          (merge {:height header-height}

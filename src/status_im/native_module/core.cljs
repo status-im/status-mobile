@@ -1,7 +1,7 @@
 (ns status-im.native-module.core
   (:require [re-frame.core :as re-frame]
             [status-im.utils.db :as utils.db]
-            [status-im.utils.react-native :as react-native-utils]
+            [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
@@ -98,7 +98,7 @@
   (.logout ^js (status)))
 
 (defonce listener
-  (.addListener ^js react-native-utils/device-event-emitter "gethEvent"
+  (.addListener ^js react/device-event-emitter "gethEvent"
                 #(re-frame/dispatch [:signals/signal-received (.-jsonEvent ^js %)])))
 
 (defn multiaccount-load-account
@@ -238,6 +238,12 @@
   [message callback]
   (log/debug "[native-module] hash-message")
   (.hashMessage ^js (status) message callback))
+
+;(defn get-connection-string-for-bootstrapping-another-device
+;  "used for generating connection string for local pairing"
+;  [configJSON callback]
+;  (log/debug "[native-module] get-connection-string-for-bootstrapping-another-device")
+;  (.getConnectionStringForBootstrappingAnotherDevice ^js (status) configJSON callback))
 
 (defn hash-typed-data
   "used for keycard"
@@ -390,65 +396,6 @@
   [seed]
   (log/debug "[native-module] identicon")
   (.identicon ^js (status) seed))
-
-(defn encode-transfer
-  [to-norm amount-hex]
-  (log/debug "[native-module] encode-transfer")
-  (.encodeTransfer ^js (status) to-norm amount-hex))
-
-(defn encode-function-call
-  [method params]
-  (log/debug "[native-module] encode-function-call")
-  (.encodeFunctionCall ^js (status) method (types/clj->json params)))
-
-(defn decode-parameters
-  [bytes-string types]
-  (log/debug "[native-module] decode-parameters")
-  (let [json-str (.decodeParameters ^js (status) (types/clj->json {:bytesString bytes-string :types types}))]
-    (types/json->clj json-str)))
-
-(defn hex-to-number
-  [hex]
-  (log/debug "[native-module] hex-to-number")
-  (let [json-str (.hexToNumber ^js (status) hex)]
-    (types/json->clj json-str)))
-
-(defn number-to-hex
-  [num]
-  (log/debug "[native-module] number-to-hex")
-  (.numberToHex ^js (status) (str num)))
-
-(defn sha3
-  [str]
-  (log/debug "[native-module] sha3")
-  (.sha3 ^js (status) str))
-
-(defn utf8-to-hex
-  [str]
-  (log/debug "[native-module] utf8-to-hex")
-  (.utf8ToHex ^js (status) str))
-
-(defn hex-to-utf8
-  [str]
-  (log/debug "[native-module] hex-to-utf8")
-  (.hexToUtf8 ^js (status) str))
-
-(defn check-address-checksum
-  [address]
-  (log/debug "[native-module] check-address-checksum")
-  (let [result (.checkAddressChecksum ^js (status) address)]
-    (types/json->clj result)))
-
-(defn address?
-  [address]
-  (log/debug "[native-module] address?")
-  (let [result (.isAddress ^js (status) address)]
-    (types/json->clj result)))
-
-(defn to-checksum-address
-  [address]
-  (log/debug "[native-module] to-checksum-address")
-  (.toChecksumAddress ^js (status) address))
 
 (defn identicon-async
   "Generate a icon based on a string, asynchronously"

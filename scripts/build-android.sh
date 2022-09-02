@@ -40,14 +40,14 @@ chmod 644 ${SECRETS_FILE_PATH}
 trap "rm -vf ${SECRETS_FILE_PATH}" EXIT ERR INT QUIT
 
 # Secrets like this can't be passed via args or they end up in derivation.
-if [[ -n "${POKT_TOKEN}" ]];    then append_env_export 'POKT_TOKEN';    fi
+if [[ -n "${INFURA_TOKEN}" ]];    then append_env_export 'INFURA_TOKEN';    fi
 if [[ -n "${OPENSEA_API_KEY}" ]]; then append_env_export 'OPENSEA_API_KEY'; fi
 
 # If no secrets were passed there's no need to pass the 'secretsFile'.
 if [[ -s "${SECRETS_FILE_PATH}" ]]; then
-  nixOpts+=("--option" "extra-sandbox-paths" "${SECRETS_FILE_PATH}")
   nixOpts+=("--argstr" "secretsFile" "${SECRETS_FILE_PATH}")
 fi
+nixOpts+=("--option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH}")
 
 # Used by Clojure at compile time to include JS modules
 nixOpts+=("--argstr" "buildEnv" "$(must_get_env BUILD_ENV)")

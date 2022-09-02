@@ -11,7 +11,7 @@
         thumbnail-image (get-in images [:thumbnail :uri])]
     (cond
       (= id constants/status-community-id)
-      [react/image {:source (resources/get-image :status-logo) ;; TODO replace with real data (or remove this code)
+      [react/image {:source (resources/get-image :status-logo)
                     :style  {:width  40
                              :height 40}}]
       (seq thumbnail-image)
@@ -21,13 +21,12 @@
       [chat-icon.screen/chat-icon-view-chat-list
        id true name color false false])))
 
-;; TODO (flexsurfer) reimplement with new design, its still old design, photos and chat-icon components from old design
 (defn community-icon-redesign [{:keys [id name images color]} size]
   (let [color (or color (rand-nth colors/chat-colors))
         thumbnail-image (get-in images [:thumbnail :uri])]
     (cond
       (= id constants/status-community-id)
-      [react/image {:source (resources/get-image :status-logo) ;; TODO replace with real data
+      [react/image {:source (resources/get-image :status-logo)
                     :style  {:width  size
                              :height size}}]
       (seq thumbnail-image)

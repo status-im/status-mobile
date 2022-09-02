@@ -1,5 +1,6 @@
 (ns status-im.router.core
   (:require [bidi.bidi :as bidi]
+            [cljs.spec.alpha :as spec]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.add-new.db :as public-chat.db]
@@ -64,7 +65,7 @@
 
 (defn match-contact-async
   [chain {:keys [user-id ens-name]} callback]
-  (let [valid-key (and (utils.db/valid-public-key? user-id)
+  (let [valid-key (and (spec/valid? :global/public-key user-id)
                        (not= user-id ens/default-key))]
     (cond
       valid-key
@@ -199,7 +200,7 @@
       (= handler :group-chat)
       (cb (match-group-chat chats query-params))
 
-      (utils.db/valid-public-key? uri)
+      (spec/valid? :global/public-key uri)
       (match-contact-async chain {:user-id uri} cb)
 
       (= handler :community-requests)

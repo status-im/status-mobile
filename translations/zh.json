@@ -1343,6 +1343,8 @@
     "restore-defaults": "恢复默认值",
     "retry": "重试",
     "revoke-access": "撤消访问权限",
+    "rinkeby-network": "Rinkeby测试网络",
+    "ropsten-network": "Ropsten测试网络",
     "rpc-url": "RPC URL",
     "rpc-usage-copy": "复制",
     "rpc-usage-filter": "过滤方式",

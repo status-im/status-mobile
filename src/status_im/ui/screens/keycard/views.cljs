@@ -20,7 +20,7 @@
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card.view]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.bottom-sheet.core :as bottom-sheet]
-            [status-im2.navigation.events :as navigation])
+            [status-im.navigation :as navigation])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;; NOTE(Ferossgp): Seems like it should be in popover

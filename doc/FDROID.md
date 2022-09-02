@@ -84,8 +84,7 @@ At the bottom of the file you should also update the following keys:
 * `CurrentVersion` - Same as the new `versionName` added
 * `CurrentVersionCode` - Same as the `versionCode` added
 
-Then submit a merge request with `Draft: ` prefix to the [fdroid/fdroiddata](https://gitlab.com/fdroid/fdroiddata) repository.
-Prefix is necessary to avoid F-Droid people merging the PR before it's ready.
+Then submit a merge request to the [fdroid/fdroiddata](https://gitlab.com/fdroid/fdroiddata) repository.
 
 :warning: __WARNING__: Currently GitLab PR builds will fail due to running as `root` instead of `vagrant` and failing to install Nix.
 

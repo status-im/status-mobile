@@ -50,8 +50,6 @@
                                     accounts-data))
             :logout (fn []
                       (.logout native-status))
-            :generateAlias (fn [seed]
-                             (.generateAlias native-status seed))
             :generateAliasAndIdenticonAsync (fn [seed callback]
                                               (let [generated-identicon (.identicon native-status seed)
                                                     generated-alias (.generateAlias native-status seed)]
@@ -81,41 +79,11 @@
                              (.initKeystore
                               native-status
                               (str test-dir "/keystore/" key-uid))))
-
             :identicon (fn [pk]
                          (.identicon native-status pk))
-
-            :encodeTransfer (fn [to-norm amount-hex]
-                              (.encodeTransfer native-status to-norm amount-hex))
-
-            :encodeFunctionCall (fn [method params-json]
-                                  (.encodeFunctionCall native-status method params-json))
-
-            :decodeParameters (fn [decode-param-json]
-                                (.decodeParameters native-status decode-param-json))
-
-            :hexToNumber (fn [hex]
-                           (.hexToNumber native-status hex))
-
-            :numberToHex (fn [num-str]
-                           (.numberToHex native-status num-str))
-
-            :checkAddressChecksum (fn [address]
-                                    (.checkAddressChecksum native-status address))
-
-            :sha3 (fn [str]
-                    (.sha3 native-status str))
-
-            :toChecksumAddress (fn [address]
-                                 (.toChecksumAddress native-status address))
-
-            :isAddress (fn [address]
-                         (.isAddress native-status address))
-
             :validateMnemonic (fn [json callback]
                                 (callback
                                  (.validateMnemonic
                                   native-status
                                   json)))
-
             :startLocalNotifications identity}))

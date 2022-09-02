@@ -4,7 +4,7 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
-            [utils.debounce :as debounce]
+            [status-im.utils.debounce :as debounce]
             [status-im.i18n.i18n :as i18n]
             [clojure.string :as str]
             [status-im.ui.components.list.views :as list]

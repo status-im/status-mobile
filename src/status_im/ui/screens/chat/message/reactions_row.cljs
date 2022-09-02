@@ -2,25 +2,22 @@
   (:require [status-im.constants :as constants]
             [status-im.ui.screens.chat.message.styles :as styles]
             [quo.react-native :as rn]
-            [quo2.components.reactions.reaction :as quo2.reaction]))
+            [quo.core :as quo]))
 
-(def default-reaction-margin-top 5)
+(defn reaction [{:keys [outgoing]} {:keys [own emoji-id quantity]} timeline]
+  [rn/view {:style (styles/reaction-style {:outgoing (and outgoing (not timeline))
+                                           :own      own})}
+   [rn/image {:source (get constants/reactions emoji-id)
+              :style  {:width        16
+                       :height       16
+                       :margin-right 4}}]
+   [quo/text {:accessibility-label (str "emoji-" emoji-id "-is-own-" own)
+              :style               (styles/reaction-quantity-style {:own own})}
+    quantity]])
 
-(def text-reaction-margin-top -3)
-
-(defn message-reactions [{:keys [content-type]} reactions timeline on-emoji-press on-open]
+(defn message-reactions [message reactions timeline]
   (when (seq reactions)
-    [rn/view {:style (styles/reactions-row
-                      timeline
-                      (if (= content-type constants/content-type-text)
-                        text-reaction-margin-top default-reaction-margin-top))}
-     (for [{:keys [own emoji-id quantity] :as emoji-reaction} reactions]
+    [rn/view {:style (styles/reactions-row message timeline)}
+     (for [emoji-reaction reactions]
        ^{:key (str emoji-reaction)}
-       [rn/view {:style {:margin-right 6 :margin-top 5}}
-        [quo2.reaction/reaction {:emoji               (get constants/reactions emoji-id)
-                                 :neutral?            own
-                                 :clicks              quantity
-                                 :on-press            #(on-emoji-press emoji-id)
-                                 :accessibility-label (str "emoji-reaction-" emoji-id)}]])
-      ;; on-press won't work until we integrate Message Context Drawer
-     [quo2.reaction/open-reactions-menu (when @on-open {:on-press @on-open})]]))
+       [reaction message emoji-reaction timeline])]))

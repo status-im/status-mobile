@@ -16,12 +16,16 @@
 
 (def etherscan-supported?
   #{(ethereum/chain-keyword->chain-id :mainnet)
-    (ethereum/chain-keyword->chain-id :goerli)})
+    (ethereum/chain-keyword->chain-id :testnet)
+    (ethereum/chain-keyword->chain-id :goerli)
+    (ethereum/chain-keyword->chain-id :rinkeby)})
 
 (def binance-mainnet-chain-id (ethereum/chain-keyword->chain-id :bsc))
 (def binance-testnet-chain-id (ethereum/chain-keyword->chain-id :bsc-testnet))
 
-(def network->subdomain {5 "goerli"})
+(def network->subdomain {3 "ropsten"
+                         4 "rinkeby"
+                         5 "goerli"})
 
 (defn get-transaction-details-url [chain-id hash]
   {:pre [(number? chain-id) (string? hash)]
@@ -65,7 +69,7 @@
   [chain-tokens
    {:keys [address blockNumber timestamp from txStatus txHash gasPrice
            gasUsed contract value gasLimit input nonce to type id
-           maxFeePerGas maxPriorityFeePerGas effectiveGasPrice]}]
+           maxFeePerGas maxPriorityFeePerGas]}]
   (let [erc20?  (= type "erc20")
         failed? (= txStatus "0x0")]
     (merge {:address   (eip55/address->checksum address)
@@ -73,9 +77,7 @@
             :block     (str (decode/uint blockNumber))
             :timestamp (* (decode/uint timestamp) 1000)
             :gas-used  (str (decode/uint gasUsed))
-            :gas-price (str (if effectiveGasPrice
-                              (decode/uint effectiveGasPrice)
-                              (decode/uint gasPrice)))
+            :gas-price (str (decode/uint gasPrice))
             :fee-cap   (str (decode/uint maxFeePerGas))
             :tip-cap   (str (decode/uint maxPriorityFeePerGas))
             :gas-limit (str (decode/uint gasLimit))

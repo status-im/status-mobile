@@ -11,6 +11,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.visibility-status.styles :as styles]
             [status-im.ui.screens.profile.visibility-status.utils :as utils]
+            [status-im.utils.config :as config]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.utils.platform :as platform]))
 
@@ -25,17 +26,23 @@
   (re-frame/dispatch
    [:visibility-status-updates/delayed-visibility-status-update status-type]))
 
+;; In new ui, we are allowing switcher to overlap status-bar (draw over status bar)
+;; that's why the measure will return height including, the height of the status bar in android
+;; for calculating the correct position of the button on the profile screen, we have to decrease this height
 (defn calculate-button-height-and-dispatch-popover []
   (.measure
    @button-ref
-   (fn  [_ _ _ _ _ page-y]
-     (dispatch-popover page-y))))
+   (fn  [_ _ _ _ _ py]
+     (dispatch-popover
+      (if (and platform/android? @config/new-ui-enabled?)
+        (- py (:status-bar-height @rn/navigation-const))
+        py)))))
 
 (defn profile-visibility-status-dot [status-type color]
   (let [automatic?                      (= status-type
                                            constants/visibility-status-automatic)
         [border-width margin-left size] (if automatic? [1 -10 12] [0 6 10])
-        new-ui?                         true]
+        new-ui?                         @config/new-ui-enabled?]
     [:<>
      (when automatic?
        [rn/view {:style (styles/visibility-status-profile-dot

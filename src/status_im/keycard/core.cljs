@@ -16,7 +16,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.datetime :as utils.datetime]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
@@ -591,6 +591,19 @@
   {:events [:keycard.callback/on-register-card-events]}
   [{:keys [db]} listeners]
   {:db (update-in db [:keycard :listeners] merge listeners)})
+
+(defn onboarding-intro-back-handler
+  "The back button handler is used to manage device back press.
+
+  If the handler returns false, the back button functions as usual (ie. dispatchs GO_BACK event).
+  If it returns true, the back button becomes inactive.
+
+  We want to deactivate the back button when the user comes from key-storage and migration flow."
+  []
+  (-> @re-frame.db/app-db
+      :keycard
+      :from-key-storage-and-migration?
+      boolean))
 
 (fx/defn ui-recovery-phrase-cancel-pressed
   {:events [:keycard.ui/recovery-phrase-cancel-pressed]}

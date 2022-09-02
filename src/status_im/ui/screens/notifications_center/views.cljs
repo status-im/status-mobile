@@ -10,7 +10,6 @@
             [status-im.ui.components.toolbar :as toolbar]
             [clojure.string :as string]
             [status-im.constants :as constants]
-            [status-im.activity-center.notification-types :as types]
             [status-im.ui.screens.notifications-center.views.notification :as notification]))
 
 (def selecting (reagent/atom nil))
@@ -21,9 +20,9 @@
   (when id
     (let [selected (get @selected-items id)
           on-change (fn []
-                      (when-not (= type types/mention) (swap! selected-items #(if selected (disj % id) (conj % id)))))]
+                      (when-not (= type constants/activity-center-notification-type-mention) (swap! selected-items #(if selected (disj % id) (conj % id)))))]
       [react/view {:flex-direction :row :flex 1 :align-items :center}
-       (when (and @selecting (not (= type types/mention)))
+       (when (and @selecting (not (= type constants/activity-center-notification-type-mention)))
          [react/view {:padding-left 16}
           [quo/checkbox {:value     (or @select-all selected)
                          :disabled  @select-all
@@ -36,11 +35,11 @@
                              (on-change)
                              ;; We don't dispatch on contact requests unless
                              ;; accepted
-                             (when (or (not= type types/contact-request)
+                             (when (or (not= type constants/activity-center-notification-type-contact-request)
                                        (= constants/contact-request-message-state-accepted (get-in home-item [:message :contact-request-state])))
                                (re-frame/dispatch [:accept-activity-center-notification-and-open-chat id]))))
           :on-long-press #(do (reset! selecting true)
-                              (when-not (= type types/mention) (swap! selected-items conj id)))}]]])))
+                              (when-not (= type constants/activity-center-notification-type-mention) (swap! selected-items conj id)))}]]])))
 (defn filter-item []
   [react/view {:padding-vertical 8 :border-bottom-width 1 :border-bottom-color colors/gray-lighter}
    [react/view {:align-items :center :justify-content :space-between :padding-horizontal 16 :flex-direction :row}

@@ -50,7 +50,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.just_fyi("Sharing contact code via messenger")
         self.profile.share_button.click()
         self.profile.share_via_messenger()
-        if not self.profile.element_by_text_part(public_key).is_element_displayed():
+        if not self.profile.element_by_text_part(public_key).is_element_present():
             self.errors.append("Can't share public key")
         self.profile.click_system_back_button_until_element_is_shown()
 
@@ -78,7 +78,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.just_fyi("Sharing wallet address via messenger")
         request.share_button.click()
         wallet.share_via_messenger()
-        if not wallet.element_by_text_part(address).is_element_displayed():
+        if not wallet.element_by_text_part(address).is_element_present():
             self.errors.append("Can't share address")
         wallet.click_system_back_button_until_element_is_shown()
 

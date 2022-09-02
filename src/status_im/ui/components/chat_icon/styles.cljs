@@ -44,11 +44,11 @@
           :height        20
           :border-radius 20}))
 
-(defn default-chat-icon-chat-toolbar [color size]
+(defn default-chat-icon-chat-toolbar [color]
   (merge (default-chat-icon color)
-         {:width         size
-          :height        size
-          :border-radius size}))
+         {:width         36
+          :height        36
+          :border-radius 18}))
 
 (defn default-chat-icon-profile [color size]
   (merge (default-chat-icon color)
@@ -115,10 +115,10 @@
           :height 20
           :margin 0}))
 
-(defn chat-icon-chat-toolbar [size]
+(def chat-icon-chat-toolbar
   (merge chat-icon
-         {:width  size
-          :height size
+         {:width  36
+          :height 36
           :margin 0}))
 
 (defn custom-size-icon [size]
@@ -149,9 +149,9 @@
   {:width  size
    :height size})
 
-(defn container-chat-toolbar [size]
-  {:width  size
-   :height size})
+(def container-chat-toolbar
+  {:width  36
+   :height 36})
 
 (defn chat-icon-profile-edit []
   {:width            24

@@ -1,13 +1,13 @@
 (ns status-im.multiaccounts.logout.core
   (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
+            [status-im.init.core :as init]
             [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.keychain.core :as keychain]
             [status-im.notifications.core :as notifications]
-            [status-im.wallet.core :as wallet]
-            [status-im2.setup.events :as init]))
+            [status-im.wallet.core :as wallet]))
 
 (fx/defn logout-method
   {:events [::logout-method]}
@@ -16,13 +16,12 @@
     (fx/merge cofx
               {:init-root-fx                         :progress
                :chat.ui/clear-inputs                 nil
-               :chat.ui/clear-inputs-old             nil
-               :shell/reset-bottom-tabs              nil
+               :new-ui/reset-bottom-tabs             nil
                :hide-popover                         nil
                ::logout                              nil
                ::multiaccounts/webview-debug-changed false
                :keychain/clear-user-password         key-uid
-               :setup/open-multiaccounts             #(re-frame/dispatch [:setup/initialize-multiaccounts % {:logout? logout?}])}
+               ::init/open-multiaccounts             #(re-frame/dispatch [::init/initialize-multiaccounts % {:logout? logout?}])}
               (keychain/save-auth-method key-uid auth-method)
               (wallet/clear-timeouts)
               (init/initialize-app-db))))

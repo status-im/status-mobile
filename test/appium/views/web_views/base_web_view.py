@@ -45,7 +45,7 @@ class BaseWebView(BaseView):
     def wait_for_d_aap_to_load(self, wait_time=35):
         self.driver.info("Waiting %ss for dapp to load" % wait_time)
         counter = 0
-        while self.progress_bar_icon.is_element_displayed(5):
+        while self.progress_bar_icon.is_element_present(5):
             time.sleep(1)
             counter += 1
             if counter > wait_time:

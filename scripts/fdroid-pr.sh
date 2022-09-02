@@ -2,7 +2,7 @@
 set -euo pipefail
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
-FDROIDDATA_REPO_URL="https://gitlab.com/fdroid/fdroiddata.git"
+FDROIDATA_REPO_URL="https://gitlab.com/fdroid/fdroiddata.git"
 WORKING_DIR="${HOME}/fdroid-release"
 
 source "${GIT_ROOT}/scripts/colors.sh"
@@ -43,7 +43,7 @@ fi
 
 VERSION_NAME=$(apkanalyzer manifest print "${APK_FILE}" | awk -F'"' '/android:versionName/{print $2}')
 if [[ -n "${VERSION_NAME}" ]]; then
-    log_data "Version Name: ${VERSION_NAME}"
+    log_data "Version Code: ${VERSION_NAME}"
 else
     log_warning "Failed to find version name." >&2; exit 1
 fi
@@ -55,19 +55,19 @@ else
     log_warning "Failed to find commit hash." >&2; exit 1
 fi
 
-CLONE_DIR="${WORKING_DIR}/fdroiddata"
+CLONE_DIR="${WORKING_DIR}/fdroidata"
 METADATA_FILE="${CLONE_DIR}/metadata/im.status.ethereum.yml"
 
 PREVIOUS_BRANCH=""
 if [[ -d "${CLONE_DIR}" ]]; then
-    log_info "Fetching: ${FDROIDDATA_REPO_URL}"
+    log_info "Fetching: ${FDROIDATA_REPO_URL}"
     cd "${CLONE_DIR}"
     PREVIOUS_BRANCH=$(git rev-parse --abbrev-ref HEAD)
     git checkout master
     git pull --force
 else
-    log_info "Cloning: ${FDROIDDATA_REPO_URL}"
-    git clone -q --depth=1 "${FDROIDDATA_REPO_URL}" "${CLONE_DIR}"
+    log_info "Cloning: ${FDROIDATA_REPO_URL}"
+    git clone -q --depth=1 "${FDROIDATA_REPO_URL}" "${CLONE_DIR}"
     cd "${CLONE_DIR}"
 fi
 
@@ -108,6 +108,6 @@ git add ${METADATA_FILE}
 git commit -m "${COMMIT_MESSAGE}"
 
 log_info "SUCCESS"
-log_notice "Now add your fork of fdroiddata as a remote to the repository and push."
+log_notice "Now add your fork of fdroidata as a remote to the repository and push."
 log_notice "Then create a Merge Request from the branch in your fork."
 log_notice "Repo path: ${BLD}${CLONE_DIR}${RST}"

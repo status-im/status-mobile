@@ -11,7 +11,7 @@
 let
   inherit (lib) toLower optionalString stringLength getConfig makeLibraryPath elem;
 
-  # Pass secretsFile for POKT_TOKEN to jsbundle build
+  # Pass secretsFile for INFURA_TOKEN to jsbundle build
   builtJsBundle = jsbundle { inherit secretsFile; };
 
   buildType = getConfig "build-type" "release";
@@ -45,8 +45,8 @@ in stdenv.mkDerivation rec {
     filter = lib.mkFilter {
       root = path;
       include = [
-        "package.json" "yarn.lock" "metro.config.js" "babel.config.js"
-        "resources/.*" "translations/.*" "src/js/.*"
+        "package.json" "yarn.lock" "metro.config.js" ".babelrc"
+        "resources/.*" "translations/.*" "src/js/worklet_factory.js"
         "modules/react-native-status/android.*" "android/.*"
         envFileName "VERSION" "status-go-version.json" "react-native.config.js"
       ];
@@ -71,9 +71,6 @@ in stdenv.mkDerivation rec {
   # Android SDK/NDK for use by Gradle
   ANDROID_SDK_ROOT = "${androidPkgs.sdk}";
   ANDROID_NDK_ROOT = "${androidPkgs.ndk}";
-
-  # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
-  NODE_OPTIONS = "--openssl-legacy-provider";
 
   # Used by the Android Gradle build script in android/build.gradle
   STATUS_GO_ANDROID_LIBDIR = status-go;

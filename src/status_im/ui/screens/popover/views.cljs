@@ -19,8 +19,7 @@
             [status-im.ui.screens.keycard.views :as keycard.views]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
             [status-im.ui.screens.chat.message.pinned-message :as pinned-message]
-            [status-im.ui.screens.signing.sheets :as signing-sheets]
-            [status-im.ui.screens.activity-center.views :as activity-center]))
+            [status-im.ui.screens.signing.sheets :as signing-sheets]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -96,10 +95,8 @@
       :reagent-render
       (fn []
         (when @current-popover
-          (let [{:keys [view style disable-touchable-overlay? blur-view? blur-view-props]} @current-popover
-                component (if blur-view? react/blur-view react/view)
-                overlay-component (if disable-touchable-overlay? react/view react/touchable-highlight)]
-            [component (merge  {:style {:position :absolute :top 0 :bottom 0 :left 0 :right 0}} blur-view-props)
+          (let [{:keys [view style]} @current-popover]
+            [react/view {:position :absolute :top 0 :bottom 0 :left 0 :right 0}
              (when platform/ios?
                [react/animated-view
                 {:style {:flex 1 :background-color colors/black-persist :opacity alpha-value}}])
@@ -109,10 +106,10 @@
                                     :left      0
                                     :right     0
                                     :transform [{:translateY bottom-anim-value}]}}
-              [overlay-component
+              [react/touchable-highlight
                {:style    {:flex 1 :align-items :center :justify-content :center}
                 :on-press request-close}
-               [react/view (merge {:background-color (if blur-view? :transparent colors/white)
+               [react/view (merge {:background-color colors/white
                                    :border-radius    16
                                    :margin           32
                                    :shadow-offset    {:width 0 :height 2}
@@ -120,66 +117,64 @@
                                    :shadow-opacity   1
                                    :shadow-color     "rgba(0, 9, 26, 0.12)"}
                                   style)
-                (cond
-                  (vector? view)
-                  view
+                [react/touchable-opacity {:active-opacity 1}
+                 (cond
+                   (vector? view)
+                   view
 
-                  (= :signing-phrase view)
-                  [signing-phrase/signing-phrase]
+                   (= :signing-phrase view)
+                   [signing-phrase/signing-phrase]
 
-                  (= :share-account view)
-                  [request/share-address]
+                   (= :share-account view)
+                   [request/share-address]
 
-                  (= :share-chat-key view)
-                  [profile.user/share-chat-key]
+                   (= :share-chat-key view)
+                   [profile.user/share-chat-key]
 
-                  (= :custom-seed-phrase view)
-                  [multiaccounts.recover/custom-seed-phrase]
+                   (= :custom-seed-phrase view)
+                   [multiaccounts.recover/custom-seed-phrase]
 
-                  (= :enable-biometric view)
-                  [biometric/enable-biometric-popover]
+                   (= :enable-biometric view)
+                   [biometric/enable-biometric-popover]
 
-                  (= :secure-with-biometric view)
-                  [biometric/secure-with-biometric-popover]
+                   (= :secure-with-biometric view)
+                   [biometric/secure-with-biometric-popover]
 
-                  (= :disable-password-saving view)
-                  [biometric/disable-password-saving-popover]
+                   (= :disable-password-saving view)
+                   [biometric/disable-password-saving-popover]
 
-                  (= :transaction-data view)
-                  [signing/transaction-data]
+                   (= :transaction-data view)
+                   [signing/transaction-data]
 
-                  (= :frozen-card view)
-                  [frozen-card/frozen-card]
+                   (= :frozen-card view)
+                   [frozen-card/frozen-card]
 
-                  (= :blocked-card view)
-                  [keycard.views/blocked-card-popover]
+                   (= :blocked-card view)
+                   [keycard.views/blocked-card-popover]
 
-                  (= :export-community view)
-                  [communities/export-community]
+                   (= :export-community view)
+                   [communities/export-community]
 
-                  (= :seed-key-uid-mismatch view)
-                  [multiaccounts.key-storage/seed-key-uid-mismatch-popover]
+                   (= :seed-key-uid-mismatch view)
+                   [multiaccounts.key-storage/seed-key-uid-mismatch-popover]
 
-                  (= :transfer-multiaccount-to-keycard-warning view)
-                  [multiaccounts.key-storage/transfer-multiaccount-warning-popover]
+                   (= :transfer-multiaccount-to-keycard-warning view)
+                   [multiaccounts.key-storage/transfer-multiaccount-warning-popover]
 
-                  (= :transfer-multiaccount-unknown-error view)
-                  [multiaccounts.key-storage/unknown-error-popover]
+                   (= :transfer-multiaccount-unknown-error view)
+                   [multiaccounts.key-storage/unknown-error-popover]
 
-                  (= :password-reset-popover view)
-                  [reset-password.views/reset-password-popover]
+                   (= :password-reset-popover view)
+                   [reset-password.views/reset-password-popover]
 
-                  (= :pin-limit view)
-                  [pinned-message/pin-limit-popover]
+                   (= :pin-limit view)
+                   [pinned-message/pin-limit-popover]
 
-                  (= :fees-warning view)
-                  [signing-sheets/fees-warning]
+                   (= :fees-warning view)
+                   [signing-sheets/fees-warning]
 
-                  (= :activity-center view)
-                  [activity-center/activity-center]
-
-                  :else
-                  [view])]]]])))})))
+                   :else
+                   [view])]]]]])))})))
 
 (views/defview popover []
   (views/letsubs [popover [:popover/popover]

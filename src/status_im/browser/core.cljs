@@ -9,7 +9,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im2.navigation.events :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
             [status-im.utils.platform :as platform]
@@ -22,9 +22,7 @@
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.browser.webview-ref :as webview-ref]
             ["eth-phishing-detect" :as eth-phishing-detect]
-            [utils.debounce :as debounce]
-            [status-im.browser.eip3085 :as eip3085]
-            [status-im.browser.eip3326 :as eip3326]))
+            [status-im.utils.debounce :as debounce]))
 
 (fx/defn update-browser-option
   [{:keys [db]} option-key option-value]
@@ -347,7 +345,7 @@
      constants/web3-eth-sign constants/web3-keycard-sign-typed-data} method))
 
 (fx/defn web3-send-async
-  [cofx dapp-name {:keys [method params id] :as payload} message-id]
+  [cofx {:keys [method params id] :as payload} message-id]
   (let [message?      (web3-sign-message? method)
         dapps-address (get-in cofx [:db :multiaccount :dapps-address])
         typed? (and (not= constants/web3-personal-sign method) (not= constants/web3-eth-sign method))]
@@ -373,33 +371,25 @@
                                               (dissoc :gasPrice))})
                               {:on-result [:browser.dapp/transaction-on-result message-id id]
                                :on-error  [:browser.dapp/transaction-on-error message-id]}))))
-      (cond
-        (#{"eth_accounts" "eth_coinbase"} method)
+      (if (#{"eth_accounts" "eth_coinbase"} method)
         (send-to-bridge cofx {:type      constants/web3-send-async-callback
                               :messageId message-id
                               :result    {:jsonrpc "2.0"
                                           :id      (int id)
                                           :result  (if (= method "eth_coinbase") dapps-address [dapps-address])}})
-        (= method "personal_ecRecover")
-        {:signing.fx/recover-message {:params       {:message (first params)
-                                                     :signature (second params)}
-                                      :on-completed #(re-frame/dispatch [:browser.callback/call-rpc
-                                                                         {:type      constants/web3-send-async-callback
-                                                                          :messageId message-id
-                                                                          :result    (types/json->clj %)}])}}
-        (= method "wallet_switchEthereumChain")
-        (eip3326/handle-switch-ethereum-chain cofx dapp-name id message-id (first params))
-
-        (= method "wallet_addEthereumChain")
-        (eip3085/handle-add-ethereum-chain cofx dapp-name id message-id (first params))
-
-        :else
-        {:browser/call-rpc [payload
-                            #(re-frame/dispatch [:browser.callback/call-rpc
-                                                 {:type      constants/web3-send-async-callback
-                                                  :messageId message-id
-                                                  :error     %1
-                                                  :result    %2}])]}))))
+        (if (= method "personal_ecRecover")
+          {:signing.fx/recover-message {:params       {:message (first params)
+                                                       :signature (second params)}
+                                        :on-completed #(re-frame/dispatch [:browser.callback/call-rpc
+                                                                           {:type      constants/web3-send-async-callback
+                                                                            :messageId message-id
+                                                                            :result    (types/json->clj %)}])}}
+          {:browser/call-rpc [payload
+                              #(re-frame/dispatch [:browser.callback/call-rpc
+                                                   {:type      constants/web3-send-async-callback
+                                                    :messageId message-id
+                                                    :error     %1
+                                                    :result    %2}])]})))))
 
 (fx/defn handle-no-permissions [cofx {:keys [method id]} message-id]
   (if (= method "eth_accounts")
@@ -429,7 +419,7 @@
   [{:keys [db] :as cofx} dapp-name {:keys [method] :as payload} message-id]
   (if (has-permissions? db dapp-name method)
     (handle-no-permissions cofx payload message-id)
-    (web3-send-async cofx dapp-name payload message-id)))
+    (web3-send-async cofx payload message-id)))
 
 (fx/defn handle-scanned-qr-code
   {:events [:browser.bridge.callback/qr-code-scanned]}

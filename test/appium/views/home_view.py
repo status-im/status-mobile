@@ -1,10 +1,8 @@
 import time
-
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-
-from tests import test_dapp_url
 from views.base_element import Button, Text, BaseElement, SilentButton, CheckBox
 from views.base_view import BaseView
+from tests import test_dapp_url
 
 
 class ChatButton(Button):
@@ -207,9 +205,7 @@ class HomeView(BaseView):
 
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
-        self.notifications_unread_badge = BaseElement(self.driver, accessibility_id="notifications-unread-badge") 
-        self.open_activity_center_button = Button(self.driver, accessibility_id="open-activity-center-button")
-        
+        self.notifications_unread_badge = Button(self.driver, accessibility_id="notifications-unread-badge")
         self.notifications_select_button = Button(self.driver, translation_id="select")
         self.notifications_reject_and_delete_button = Button(self.driver, accessibility_id="reject-and-delete"
                                                                                            "-activity-center")
@@ -243,9 +239,6 @@ class HomeView(BaseView):
         self.not_connected_to_node_text = Text(self.driver, accessibility_id="not-connected-nodes")
         self.not_connected_to_peers_text = Text(self.driver, accessibility_id="not-connected-to-peers")
 
-        # New UI
-        self.new_chat_button = Button(self.driver, accessibility_id="new-chat-button")
-
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing to complete')
         while True:
@@ -259,8 +252,7 @@ class HomeView(BaseView):
         self.driver.info("Looking for chat: '%s'" % username)
         chat_element = ChatElement(self.driver, username[:25], community=community)
         if not chat_element.is_element_displayed(10):
-            if self.notifications_unread_badge.is_element_displayed(30):
-                self.open_activity_center_button.click()
+            self.notifications_unread_badge.wait_and_click(wait_time)
             chat_in_ac = ActivityCenterChatElement(self.driver, username[:25])
             chat_in_ac.wait_for_element(20)
             chat_in_ac.click()
@@ -277,8 +269,7 @@ class HomeView(BaseView):
         return chat_element
 
     def handle_contact_request(self, username: str, accept=True):
-        if self.notifications_unread_badge.is_element_displayed(30):
-            self.open_activity_center_button.click()
+        self.notifications_unread_badge.wait_and_click()
         chat_element = ActivityCenterChatElement(self.driver, username[:25])
         if accept:
             self.driver.info("Accepting contact request for %s" % username)
@@ -299,8 +290,7 @@ class HomeView(BaseView):
         chat.public_key_edit_box.click()
         chat.public_key_edit_box.send_keys(public_key)
         one_to_one_chat = self.get_chat_view()
-        chat.confirm()
-        # chat.confirm_until_presence_of_element(one_to_one_chat.chat_message_input)
+        chat.confirm_until_presence_of_element(one_to_one_chat.chat_message_input)
         if add_in_contacts and one_to_one_chat.add_to_contacts.is_element_displayed():
             one_to_one_chat.add_to_contacts.click()
         if nickname:
@@ -310,12 +300,9 @@ class HomeView(BaseView):
         self.driver.info("## 1-1 chat is created successfully!", device=False)
         return one_to_one_chat
 
-    def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat', new_ui=False):
+    def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat'):
         self.driver.info("## Creating group chat '%s'" % group_chat_name, device=False)
-        if new_ui:
-            self.new_chat_button.click()
-        else:
-            self.plus_button.click()
+        self.plus_button.click()
         chat_view = self.new_group_chat_button.click()
         if user_names_to_add:
             for user_name in user_names_to_add:

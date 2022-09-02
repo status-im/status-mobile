@@ -1329,6 +1329,8 @@
     "restore-defaults": "Ripristina i valori predefiniti",
     "retry": "Riprova",
     "revoke-access": "Revoca l'accesso",
+    "rinkeby-network": "Rete di test Rinkeby",
+    "ropsten-network": "Rete di test Ropsten",
     "rpc-url": "URL RPC",
     "rpc-usage-copy": "Copia",
     "rpc-usage-filter": "Metodi di filtro",

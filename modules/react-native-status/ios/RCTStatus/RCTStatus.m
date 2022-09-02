@@ -164,22 +164,9 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     NSString *networkDirPath = @"ethereum/mainnet_rpc";
 #endif
 
-#if DEBUG
-    NSString *goerliNetworkDirPath = @"ethereum/goerli_rpc_dev";
-#else
-    NSString *goerliNetworkDirPath = @"ethereum/goerli_rpc";
-#endif
-
     NSURL *networkDir = [rootUrl URLByAppendingPathComponent:networkDirPath];
     NSURL *originalGethLogsFile = [networkDir URLByAppendingPathComponent:@"geth.log"];
-    NSURL *gethLogsFile = [logsFolderName URLByAppendingPathComponent:@"mainnet_geth.log"];
-
-    NSURL *goerliNetworkDir = [rootUrl URLByAppendingPathComponent:goerliNetworkDirPath];
-    NSURL *goerliGethLogsFile = [goerliNetworkDir URLByAppendingPathComponent:@"geth.log"];
-    NSURL *goerliLogsFile = [logsFolderName URLByAppendingPathComponent:@"goerli_geth.log"];
-
-    NSURL *mainGethLogsFile = [rootUrl URLByAppendingPathComponent:@"geth.log"];
-    NSURL *mainLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
+    NSURL *gethLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
 
     [dbJson writeToFile:dbFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     [jsLogs writeToFile:jsLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
@@ -187,8 +174,6 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     //NSString* gethLogs = StatusgoExportNodeLogs();
     //[gethLogs writeToFile:gethLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     [fileManager copyItemAtPath:originalGethLogsFile.path toPath:gethLogsFile.path error:nil];
-    [fileManager copyItemAtPath:goerliGethLogsFile.path toPath:goerliLogsFile.path error:nil];
-    [fileManager copyItemAtPath:mainGethLogsFile.path toPath:mainLogsFile.path error:nil];
 
     [SSZipArchive createZipFileAtPath:zipFile.path withContentsOfDirectory:logsFolderName.path];
     [fileManager removeItemAtPath:logsFolderName.path error:nil];
@@ -318,6 +303,17 @@ RCT_EXPORT_METHOD(hashMessage:(NSString *)message
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// getConnectionStringForBootstrappingAnotherDevice
+// RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)configJSON
+//                   callback:(RCTResponseSenderBlock)callback) {
+// #if DEBUG
+//     NSLog(@"getConnectionStringForBootstrappingAnotherDevice() method called");
+// #endif
+//     NSString *result = GetConnectionStringForBootstrappingAnotherDevice(configJSON);
+//     callback(@[result]);
+// }
+
+
 //////////////////////////////////////////////////////////////////// hashTypedData
 RCT_EXPORT_METHOD(hashTypedData:(NSString *)data
                   callback:(RCTResponseSenderBlock)callback) {
@@ -426,10 +422,12 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
     NSString *relativeDataDir = [configJSON objectForKey:@"DataDir"];
     NSString *absDataDir = [rootUrl.path stringByAppendingString:relativeDataDir];
     NSURL *absDataDirUrl = [NSURL fileURLWithPath:absDataDir];
+    NSURL *dataDirUrl = [NSURL fileURLWithPath:relativeDataDir];
+    NSURL *logUrl = [dataDirUrl URLByAppendingPathComponent:@"geth.log"];
     NSString *keystoreDir = [@"/keystore/" stringByAppendingString:keyUID];
     [configJSON setValue:keystoreDir forKey:@"KeyStoreDir"];
     [configJSON setValue:@"" forKey:@"LogDir"];
-    [configJSON setValue:@"geth.log" forKey:@"LogFile"];
+    [configJSON setValue:logUrl.path forKey:@"LogFile"];
 
     NSString *resultingConfig = [configJSON bv_jsonStringWithPrettyPrint:NO];
     NSLog(@"node config %@", resultingConfig);
@@ -439,7 +437,7 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
                withIntermediateDirectories:YES attributes:nil error:nil];
     }
 
-    NSLog(@"logUrlPath %@ rootDir %@", @"geth.log", rootUrl.path);
+    NSLog(@"logUrlPath %@ rootDir %@", logUrl.path, rootUrl.path);
     NSURL *absLogUrl = [absDataDirUrl URLByAppendingPathComponent:@"geth.log"];
     if(![fileManager fileExistsAtPath:absLogUrl.path]) {
         NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
@@ -502,11 +500,11 @@ RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)multiaccountData
 - (NSString *) getExportDbFilePath {
     NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"export.db"];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    
+
     if ([fileManager fileExistsAtPath:filePath]) {
         [fileManager removeItemAtPath:filePath error:nil];
     }
-    
+
     return filePath;
 }
 
@@ -833,52 +831,6 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(identicon:(NSString *)publicKey) {
   return StatusgoIdenticon(publicKey);
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(encodeTransfer:(NSString *)to
-                                       value:(NSString *)value) {
-  return StatusgoEncodeTransfer(to,value);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(encodeFunctionCall:(NSString *)method
-                                       paramsJSON:(NSString *)paramsJSON) {
-  return StatusgoEncodeFunctionCall(method,paramsJSON);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(decodeParameters:(NSString *)decodeParamJSON) {
-  return StatusgoDecodeParameters(decodeParamJSON);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(hexToNumber:(NSString *)hex) {
-  return StatusgoHexToNumber(hex);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(numberToHex:(NSString *)numString) {
-  return StatusgoNumberToHex(numString);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(sha3:(NSString *)str) {
-  return StatusgoSha3(str);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(utf8ToHex:(NSString *)str) {
-  return StatusgoUtf8ToHex(str);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(hexToUtf8:(NSString *)str) {
-  return StatusgoHexToUtf8(str);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(checkAddressChecksum:(NSString *)address) {
-  return StatusgoCheckAddressChecksum(address);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isAddress:(NSString *)address) {
-  return StatusgoIsAddress(address);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(toChecksumAddress:(NSString *)address) {
-  return StatusgoToChecksumAddress(address);
-}
-
 RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -957,10 +909,10 @@ RCT_EXPORT_METHOD(exportUnencryptedDatabase:(NSString *)accountData
 #if DEBUG
     NSLog(@"exportUnencryptedDatabase() method called");
 #endif
-    
+
     NSString *filePath = [self getExportDbFilePath];
     StatusgoExportUnencryptedDatabase(accountData, password, filePath);
-    
+
     callback(@[filePath]);
 }
 
