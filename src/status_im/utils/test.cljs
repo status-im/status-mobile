@@ -48,7 +48,6 @@
                                     settings
                                     config
                                     accounts-data))
-
             :logout (fn []
                       (.logout native-status))
             :generateAliasAndIdenticonAsync (fn [seed callback]
@@ -60,6 +59,11 @@
                                                        (.multiAccountGenerateAndDeriveAddresses
                                                         native-status
                                                         json)))
+            :multiAccountImportMnemonic (fn [json callback]
+                                          (callback
+                                           (.multiAccountImportMnemonic
+                                            native-status
+                                            json)))
             :multiAccountLoadAccount (fn [json callback]
                                        (callback
                                         (.multiAccountLoadAccount
@@ -75,8 +79,11 @@
                              (.initKeystore
                               native-status
                               (str test-dir "/keystore/" key-uid))))
-
             :identicon (fn [pk]
                          (.identicon native-status pk))
-
+            :validateMnemonic (fn [json callback]
+                                (callback
+                                 (.validateMnemonic
+                                  native-status
+                                  json)))
             :startLocalNotifications identity}))

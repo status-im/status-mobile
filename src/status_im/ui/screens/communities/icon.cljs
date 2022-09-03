@@ -20,3 +20,18 @@
       :else
       [chat-icon.screen/chat-icon-view-chat-list
        id true name color false false])))
+
+(defn community-icon-redesign [{:keys [id name images color]} size]
+  (let [color (or color (rand-nth colors/chat-colors))
+        thumbnail-image (get-in images [:thumbnail :uri])]
+    (cond
+      (= id constants/status-community-id)
+      [react/image {:source (resources/get-image :status-logo)
+                    :style  {:width  size
+                             :height size}}]
+      (seq thumbnail-image)
+      [photos/photo thumbnail-image {:size size}]
+
+      :else
+      [chat-icon.screen/chat-icon-view-chat-list-redesign
+       id true name color size])))

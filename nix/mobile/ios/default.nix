@@ -1,14 +1,15 @@
-{ callPackage, lib, mkShell, deps, pkgs
+{ callPackage, lib, mkShell, pkgs
 , status-go, fastlane }:
 
 let
   inherit (lib) catAttrs unique;
 
-  pod-shell = callPackage ./pod-shell.nix { };
-  status-go-shell = callPackage ./status-go-shell.nix { inherit status-go; };
+  nodejs-sh = callPackage ./shells/nodejs.nix { };
+  cocoapods-sh = callPackage ./shells/pod.nix { };
+  status-go-sh = callPackage ./shells/status-go.nix { inherit status-go; };
 
 in {
-  inherit pod-shell status-go-shell;
+  inherit nodejs-sh cocoapods-sh status-go-sh;
 
   shell = mkShell {
     buildInputs = with pkgs; [
@@ -19,14 +20,9 @@ in {
     # WARNING: Executes shellHook in reverse order.
     inputsFrom = [
       fastlane.shell
-      pod-shell
-      status-go-shell # Needs to run before pod-install
+      cocoapods-sh
+      nodejs-sh # before 'pod install'
+      status-go-sh # before 'pod install'
     ];
-
-    shellHook = ''
-      # check if node modules changed and if so install them
-      ./nix/scripts/node_modules.sh "${deps.nodejs-patched}"
-    '';
   };
-
 }

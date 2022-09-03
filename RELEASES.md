@@ -1,3 +1,79 @@
+## 1.20 Release notes
+
+### Features
+
+* Add session management for wallet connect by @cammellos in https://github.com/status-im/status-mobile/pull/13799
+* [#13181] Cannot delete images or audio messages by @flexsurfer in https://github.com/status-im/status-mobile/pull/13210
+* [#13230] Show default syncing interval by @rasom in https://github.com/status-im/status-mobile/pull/13234
+* Add support for mutual contact requests by @cammellos in https://github.com/status-im/status-mobile/pull/13054
+* Implement Information box and ens banner view by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13753
+* Profile picture sync by @siphiuel in https://github.com/status-im/status-mobile/commit/fbfab9fd3bdbcfa6cdd9a24a6bce526da8252fd3
+
+### Improvements
+
+* Improve notifications life-cycle  by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13248
+* Simpledapp on Goerli  by @churik in https://github.com/status-im/status-mobile/pull/13732
+* Include share action on longpress image menu by @jo-mut in https://github.com/status-im/status-mobile/pull/13359
+* fast image loading indicator by @flexsurfer in https://github.com/status-im/status-mobile/pull/13431
+* [#13355] Long time (5-15 sec) for loading chat messages by @flexsurfer in https://github.com/status-im/status-mobile/pull/13425
+* [Fixes: #13416] resize image in status-go as well, alert user if fails by @cammellos in https://github.com/status-im/status-mobile/pull/13422
+* [#12566] Remove legacy dependency on mailserver password by @erikseppanen in https://github.com/status-im/status-mobile/pull/13511
+* Wallet sync for generated accounts by @siphiuel in https://github.com/status-im/status-mobile/pull/13487
+* feat: lottie splash screen by @yqrashawn in https://github.com/status-im/status-mobile/pull/13714
+* [#13647] Update all settings on pairing with a new wallet account by @rasom in https://github.com/status-im/status-mobile/pull/13742
+* Improve ethereum.send by @qfrank  in https://github.com/status-im/status-mobile/pull/13724 
+
+### Redesign
+
+* Quo2, Switcher Navigation by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13167
+* Switcher and Bottom Tabs Animations and UI Performance Improvements by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13470
+* feat: add token tag component (#13599) by @J-Son89 in https://github.com/status-im/status-mobile/pull/13644
+* [13565] icon-avatar component by @ibrkhalil in https://github.com/status-im/status-mobile/pull/13692
+* [13562] Wallet user avatar component by @ibrkhalil in https://github.com/status-im/status-mobile/pull/13681
+* Reply component in chat input & quoted messages redesign by @briansztamfater in https://github.com/status-im/status-mobile/pull/13706
+* Wallet redesign by @flexsurfer in https://github.com/status-im/status-mobile/pull/13172
+* [Potential: #13596] Add status-tags component by @cammellos in https://github.com/status-im/status-mobile/pull/13597
+* Chat views redesign by @briansztamfater in https://github.com/status-im/status-mobile/pull/13184
+* Implementation of React Native Blur view for android by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13663
+* feat: add token overview component (status-im#13555) by @J-Son89 in https://github.com/status-im/status-mobile/pull/13767
+
+### Bug Fixes
+
+* fix screen orientation on android by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13218
+* Don't unmute contact while adding by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13237
+* fix chat image long press issue by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13371
+* [#13149] Timeline images stretch off screen by @siddarthkay in https://github.com/status-im/status-mobile/pull/13211
+* [#13233] Proper message after clearing history in pubchat by @rasom in https://github.com/status-im/status-mobile/pull/13241
+* [#13235] Fix opening of the last shown chat with local notifications by @rasom in https://github.com/status-im/status-mobile/pull/13252
+* [#13201] Fix handling of favourits syncing by @rasom in https://github.com/status-im/status-mobile/pull/13253
+* [#13257] Fix sync devices sorting by @rasom in https://github.com/status-im/status-mobile/pull/13282
+* [#13283] Fix syncing of adding contact after removal by @rasom in https://github.com/status-im/status-mobile/pull/13292
+* [#13263] Fix for ENS warning showing on custom domains by @daferna in https://github.com/status-im/status-mobile/pull/13312
+* fix can't share deep link from profile on ios by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13420
+* Fix sending logs from iOS by @bitgamma in https://github.com/status-im/status-mobile/pull/13619
+* fix #13642: Cannot sign in on claim.lens.xyz by @qfrank in https://github.com/status-im/status-mobile/pull/13668
+* [#13493] Can not switch to xDai chain by @flexsurfer in https://github.com/status-im/status-mobile/pull/13709
+* fix bookmarks not syncing by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13727
+* fix: set max option not work when send from qrcode by @yqrashawn in https://github.com/status-im/status-mobile/pull/13733
+* [#13835] Fix Generate keys button by @rasom in https://github.com/status-im/status-mobile/pull/13841
+* Fix disappearing of the last notification when paired by @rasom in https://github.com/status-im/status-mobile/pull/13796
+* [#13766] custom networkid fix by @ flexsurfer in https://github.com/status-im/status-mobile/pull/13765
+
+## New Contributors
+* @siddarthkay made their first contribution in https://github.com/status-im/status-mobile/pull/13185
+* @daferna made their first contribution in https://github.com/status-im/status-mobile/pull/13312
+* @smohamedjavid made their first contribution in https://github.com/status-im/status-mobile/pull/13364
+* @ibrkhalil made their first contribution in https://github.com/status-im/status-mobile/pull/13450
+* @PEZ made their first contribution in https://github.com/status-im/status-mobile/pull/13494
+* @erikseppanen made their first contribution in https://github.com/status-im/status-mobile/pull/13511
+* @Rende11 made their first contribution in https://github.com/status-im/status-mobile/pull/13609
+* @yqrashawn made their first contribution in https://github.com/status-im/status-mobile/pull/13739
+* @ilmotta made their first contribution in https://github.com/status-im/status-mobile/pull/13747
+* @phrohdoh made their first contribution in https://github.com/status-im/status-mobile/pull/13772
+* @J-Son89 made their first contribution in https://github.com/status-im/status-mobile/pull/13767
+
+**Full Changelog**: https://github.com/status-im/status-mobile/compare/1.19.0...1.20.0
+
 ## 1.19 Release notes
 
 ### Features

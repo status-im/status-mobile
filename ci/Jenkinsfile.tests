@@ -54,10 +54,10 @@ pipeline {
     stage('Checks') {
       parallel {
         stage('Lint') {
-          steps { sh "make lint > ${LOG_FILE}" }
+          steps { sh "make lint 2>&1 | tee ${LOG_FILE}" }
         }
         stage('Tests') {
-          steps { sh "make test >> ${LOG_FILE}" }
+          steps { sh "make test 2>&1 | tee -a ${LOG_FILE}" }
         }
       }
     }

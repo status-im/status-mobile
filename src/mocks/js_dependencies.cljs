@@ -26,6 +26,7 @@
             :View                     {}
             :RefreshControl           {}
             :AppState                 {}
+            :Alert                    {:alert (fn [])}
             :FlatList                 {}
             :SectionList              {}
             :Text                     {}
@@ -136,6 +137,7 @@
                                                    :setDefaultOptions identity
                                                    :setRoot identity
                                                    :dismissOverlay #(js/Promise.resolve)
+                                                   :showOverlay identity
                                                    :setLazyComponentRegistrator identity
                                                    :pop identity
                                                    :push identity
@@ -247,6 +249,9 @@
 (def rn-emoji-keyboard
   #js {:EmojiKeyboard #js {}})
 
+(def react-native-hole-view
+  #js {:RNHoleView #js {}})
+
 (def react-native-draggable-flatlist
   #js {:default #js {}})
 
@@ -305,6 +310,7 @@
     "react-native-camera-kit" react-native-camera-kit
     "react-native-permissions" react-native-permissions
     "rn-emoji-keyboard" rn-emoji-keyboard
+    "react-native-hole-view" react-native-hole-view
     "react-native-draggable-flatlist" react-native-draggable-flatlist
     "react-native-webview" react-native-webview
     "@react-native-community/audio-toolkit" react-native-audio-toolkit
