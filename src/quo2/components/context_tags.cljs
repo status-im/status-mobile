@@ -47,8 +47,14 @@
       (trim-public-key public-key)]]))
 
 (defn user-avatar-tag [_ _]
-  (fn [params public-key]
-    (let [{:keys [name photo]} @(re-frame/subscribe [:contacts/name-and-photo public-key])]
+  (fn [params public-key contacts]
+    (let [photo @(re-frame.core/subscribe [:chats/photo-path public-key])
+          username (->> contacts
+                        vals
+                        (filter #(= (:public-key %) public-key))
+                        first
+                        :names
+                        :three-words-name)]
       [base-tag (assoc-in params [:style :padding-left] 3)
        [rn/image {:style {:width 20
                           :border-radius 10
@@ -58,4 +64,4 @@
        [text/text {:weight :medium
                    :size :paragraph-2}
 
-        (str " " name)]])))
+        (str " " username)]])))
