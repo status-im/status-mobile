@@ -21,7 +21,7 @@
 
 (defn- activity-unread-dot
   []
-  [rn/view {:margin-left      :auto
+  [rn/view {:margin-left      14
             :margin-right     6
             :background-color colors/primary-50
             :width            8
@@ -134,13 +134,13 @@
              :padding-left   8
              :flex           1}
     [rn/view {:flex           1
-              :flex-wrap      :wrap
               :align-items    :center
               :flex-direction :row}
      [rn/view {:flex           1
-               :flex-direction :row
-               :align-items    :center}
-      [activity-title title]
+               :align-items    :center
+               :flex-direction :row}
+      [rn/view {:flex-shrink 1}
+       [activity-title title]]
       [activity-timestamp timestamp]]
      (when unread?
        [activity-unread-dot])]
