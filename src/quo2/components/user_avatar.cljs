@@ -1,7 +1,8 @@
 (ns quo2.components.user-avatar
   (:require [quo.react-native :as rn]
+            [quo2.components.text :as text]
             [quo2.foundations.colors :as colors]
-            [status-im.ui.components.icons.icons :as icons]
+            [quo2.components.icon :as icons]
             [clojure.string :refer [upper-case split blank?]]
             [quo.theme :refer [dark?]]
             [status-im.ui.components.react :as react]))
@@ -10,32 +11,32 @@
                   :inner 72
                   :status-indicator 20
                   :status-indicator-border 4
-                  :font-size 27}
+                  :font-size :heading-1}
             :medium {:outer 48
                      :inner 44
-                     :status-indicator 16
+                     :status-indicator 12
                      :status-indicator-border 2
-                     :font-size 15}
+                     :font-size :paragraph-1}
             :small {:outer 32
                     :inner 28
                     :status-indicator 12
                     :status-indicator-border 2
-                    :font-size 13}
+                    :font-size :paragraph-2}
             :xs {:outer 24
                  :inner 24
                  :status-indicator 0
                  :status-indicator-border 0
-                 :font-size 13}
+                 :font-size :paragraph-2}
             :xxs {:outer 20
                   :inner 20
                   :status-indicator 0
                   :status-indicator-border 0
-                  :font-size 11}
+                  :font-size :label}
             :xxxs {:outer 16
                    :inner 16
                    :status-indicator 0
                    :status-indicator-border 0
-                   :font-size 11}})
+                   :font-size :label}})
 
 (defn dot-indicator
   [size status-indicator? online? ring? dark?]
@@ -45,17 +46,17 @@
           right (case size
                   :big 2
                   :medium 0
-                  :small 0
+                  :small -2
                   0)
           bottom (case size
                    :big (if ring?
-                          4
+                          -1
                           2)
                    :medium (if ring?
                              0
                              -2)
                    :small (if ring?
-                            0
+                            -2
                             -2)
                    0)]
       [rn/view {:style {:background-color (if online?
@@ -90,6 +91,9 @@
                             (container-styling inner-dimensions outer-dimensions))}
      children]))
 
+(def small-sizes #{:xs :xxs :xxxs})
+(def identicon-sizes #{:big :medium :small})
+
 (defn user-avatar
   [{:keys [ring?
            online?
@@ -97,7 +101,7 @@
            status-indicator?
            profile-picture
            full-name]
-    :or {full-name "john doe"
+    :or {full-name "empty name"
          status-indicator? true
          online? true
          size :big
@@ -106,10 +110,8 @@
                    (reduce str (map first (split full-name " ")))
                    "")
         first-initial-letter (if full-name
-                               (first full-name)
+                               (or (first full-name) "")
                                "")
-        small-sizes #{:small :xs :xxs :xxxs}
-        identicon-sizes #{:big :medium :small}
         identicon? (contains? identicon-sizes size)
         small? (contains? small-sizes size)
         using-profile-picture? (-> profile-picture
@@ -119,24 +121,27 @@
         inner-dimensions (get-in sizes [size (if ring?
                                                :inner
                                                :outer)])
-        font-size (get-in sizes [size :font-size])]
+        font-size (get-in sizes [size :font-size])
+        icon-text (if-not (or (blank? first-initial-letter)
+                              (blank? initials))
+                    (if small?
+                      first-initial-letter
+                      initials)
+                    "")]
     [rn/view {:style {:width outer-dimensions
                       :height outer-dimensions
                       :border-radius outer-dimensions}}
      (when (and ring? identicon?)
-       [icons/icon :main-icons/identicon-ring32 {:width outer-dimensions
-                                                 :height outer-dimensions
-                                                 :no-color true}])
+       [icons/icon :main-icons/identicon-ring {:width outer-dimensions
+                                               :height outer-dimensions
+                                               :size outer-dimensions
+                                               :no-color true}])
      (if using-profile-picture?
        [react/image {:style  (container-styling inner-dimensions outer-dimensions)
                      :source {:uri profile-picture}}]
        [container inner-dimensions outer-dimensions
-        [rn/text {:style {:color colors/white-opa-70
-                          :font-size font-size}}
-         (upper-case (if-not (or (blank? first-initial-letter)
-                                 (blank? initials))
-                       (if small?
-                         first-initial-letter
-                         initials)
-                       ""))]])
+        [text/text {:weight :semi-bold
+                    :size font-size
+                    :style {:color colors/white-opa-70}}
+         (upper-case icon-text)]])
      [dot-indicator size status-indicator? online? ring? (dark?)]]))

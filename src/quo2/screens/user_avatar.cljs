@@ -37,10 +37,10 @@
                   :type  :text}])
 
 (defn cool-preview []
-  (let [state  (reagent/atom {:full-name "john doe"
+  (let [state  (reagent/atom {:full-name "A Y"
                               :status-indicator? true
                               :online? true
-                              :size :big
+                              :size :medium
                               :ring? true})]
     (fn []
       [rn/view {:margin-bottom 50
