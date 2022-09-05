@@ -29,10 +29,7 @@
 
 (defn card-stats-container []
   {:flex-direction :row
-   :position       :absolute
-   :top            116
-   :left           12
-   :right          12})
+   :margin-top 12})
 
 (defn list-stats-container []
   {:flex-direction :row
@@ -40,29 +37,23 @@
 
 (defn community-tags-container  []
   {:flex-direction :row
-   :position  :absolute
-   :top       154
-   :left      12
-   :right     12})
+   :margin-top 16})
 
-(defn card-view-content-container []
+(defn card-view-content-container [padding-horizontal]
   {:flex               1
-   :position           :absolute
-   :top                40
-   :left               0
-   :right              0
-   :bottom             0
+   :height 20
+   :padding-left padding-horizontal
+   :padding-right padding-horizontal
    :border-radius      16
-   :padding-horizontal 12
    :background-color (colors/theme-colors
                       colors/white
                       colors/neutral-90)})
 
-(defn card-view-chat-icon []
+(defn card-view-chat-icon [icon-size]
   {:border-radius    48
    :position         :absolute
-   :top              -24
-   :left             12
+   :top              (- (/ icon-size 2))
+   :left             (/ icon-size 4)
    :padding          2
    :background-color (colors/theme-colors
                       colors/white
@@ -80,15 +71,12 @@
   {:border-radius    32
    :padding          12})
 
-(defn community-title-description-container []
-  {:position  :absolute
-   :top       32
-   :left      12
-   :right     12})
+(defn community-title-description-container [margin-top]
+  {:margin-top margin-top})
 
-(defn community-cover-container []
+(defn community-cover-container [height]
   {:flex-direction          :row
-   :height                  64
+   :height                  height
    :border-top-right-radius 20
    :border-top-left-radius  20
    :background-color        colors/primary-50-opa-20})

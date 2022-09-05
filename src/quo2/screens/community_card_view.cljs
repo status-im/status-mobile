@@ -5,7 +5,8 @@
             [status-im.constants :as constants]
             [quo.design-system.colors :as quo.colors]
             [quo2.foundations.colors :as colors]
-            [quo2.components.community-card-view :as community-view]
+            [quo2.components.communities.community-list-view :as community-list-view]
+            [quo2.components.communities.community-card-view :as community-card-view]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]))
 
@@ -13,8 +14,8 @@
   {:id             constants/status-community-id
    :name           "Status"
    :description    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
-   :status         "gated"
-   :section        "popular"
+   :status         :gated
+   :section        :popular
    :permissions    true
    :cover          (resources/get-image :community-cover)
    :community-icon (resources/get-image :status-logo)
@@ -42,9 +43,8 @@
        [rn/view {:padding-vertical 60
                  :justify-content  :center}
         (if (= :card-view (:view-style @state))
-          [community-view/community-card-view-item community-data]
-          [community-view/communities-list-view-item community-data])]])))
-
+          [community-card-view/community-card-view-item community-data]
+          [community-list-view/communities-list-view-item community-data])]])))
 (defn preview-community-card []
   [rn/view {:background-color (colors/theme-colors colors/neutral-5
                                                    colors/neutral-95)
