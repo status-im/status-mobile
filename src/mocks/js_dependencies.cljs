@@ -26,7 +26,6 @@
             :View                     {}
             :RefreshControl           {}
             :AppState                 {}
-            :Alert                    {:alert (fn [])}
             :FlatList                 {}
             :SectionList              {}
             :Text                     {}
@@ -137,7 +136,6 @@
                                                    :setDefaultOptions identity
                                                    :setRoot identity
                                                    :dismissOverlay #(js/Promise.resolve)
-                                                   :showOverlay identity
                                                    :setLazyComponentRegistrator identity
                                                    :pop identity
                                                    :push identity
