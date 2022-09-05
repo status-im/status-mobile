@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.107.1",
-    "commit-sha1": "b87ecb206e5545c24abb6a36f616f8b4e030ed36",
-    "src-sha256": "0ilyhfiy93za9pskczj5abxk5g24pvjszf8bl7yi5cfxmvzpar3k"
+    "version": "fix/image-compression-again",
+    "commit-sha1": "1ca44c654f6eb34be8cc908041cd902e92b7f9c7",
+    "src-sha256": "17yg5z4q28a22zz9fpy1f655iv7i1qgw3yb4cgkp2n8p629mida7"
 }
