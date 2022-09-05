@@ -72,10 +72,25 @@ class NetworkApi(object):
         method = self.network_url + 'module=proxy&action=eth_blockNumber'
         return int(requests.request('GET', url=method).json()['result'], 0)
 
-    def find_transaction_by_hash(self,transaction_hash: str):
-        transaction = w3.transaction_status(transaction_hash)
-        if not transaction['blockHash']:
-            self.log("TX %s is still pending" %transaction_hash)
+    def find_transaction_by_hash(self, transaction_hash: str):
+        method = self.network_url + 'module=transaction&action=gettxreceiptstatus&txhash=%s&apikey=%s' % (
+            transaction_hash, self.api_key)
+        try:
+            transactions_response = requests.request('GET', url=method, headers=self.headers).json()
+            if transactions_response:
+                result = True
+                if transactions_response['result']['status'] == '1':
+                    self.log("TX %s is found and confirmed: " % transaction_hash)
+                elif transactions_response['result']['status'] == '0':
+                    self.log("TX %s is found and failed: " % transaction_hash)
+                else:
+                    result = False
+                    self.log("TX %s is not found!" % transaction_hash)
+                return result
+        except TypeError as e:
+            self.log("Check response from etherscan API. Returned values do not match expected. %s" % str(e))
+        except JSONDecodeError as e:
+            self.log("No valid JSON response from Etherscan: %s " % str(e))
 
     def find_transaction_by_unique_amount(self, address, amount, token=False, decimals=18, wait_time=300):
         additional_info = 'token transactions' if token else 'ETH transactions'
@@ -104,12 +119,6 @@ class NetworkApi(object):
                     for transaction in transactions:
                         if float(int(transaction['value']) / 10 ** decimals) == float(amount):
                             self.log("Tx is found: %s (etherscan API)" % transaction['hash'])
-                            try:
-                                w3.transaction_status(transaction['hash'])
-                                self.log("Tx is found (web3 API)")
-                            except TransactionNotFound:
-                                self.log("Tx is not found (web3 API)")
-                                continue
                             return transaction
                 except TypeError as e:
                     self.log("Failed iterate transactions(Etherscan unexpected error): " + str(e))
