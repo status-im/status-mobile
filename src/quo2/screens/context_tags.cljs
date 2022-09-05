@@ -65,7 +65,9 @@
             :public-key
             [quo2/public-key-tag {} example-pk]
             :avatar
-            [quo2/user-avatar-tag {} (:contact @state) (:photo @state) contacts])]]))))
+            [quo2/user-avatar-tag {} (or
+                                      (:contact @state)
+                                      example-pk) (:photo @state) contacts])]]))))
 
 (defn preview-context-tags []
   [rn/view {:background-color (colors/theme-colors colors/white
