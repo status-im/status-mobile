@@ -105,6 +105,9 @@
 (def primary-50-opa-30 (alpha primary-50 0.3))
 (def primary-50-opa-40 (alpha primary-50 0.4))
 
+;;60 with transparency
+(def primary-60-opa-5 (alpha primary-60 0.05))
+
 ;;;;Success
 
 ;;Solid
@@ -186,39 +189,104 @@
 (def info-50-opa-40 (alpha info-50 0.4))
 
 ;; Customization
+;;;;Purple
 (def purple-20 (alpha "#8661C1" 0.2))
 (def purple-50 "#8661C1")
-(def purple-60 (alpha "#8661C1" 0.6))
+(def purple-60 "#5E478C")
+
+;;with transparency
+(def purple-50-opa-5 (alpha purple-50 0.05))
+(def purple-60-opa-5 (alpha purple-60 0.05))
+
+;;;;Indigo
 (def indigo-20 (alpha "#496289" 0.2))
 (def indigo-50 "#496289")
-(def indigo-60 (alpha "#496289" 0.6))
+(def indigo-60 "#3D5273")
+
+;;with transparency
+(def indigo-50-opa-5 (alpha indigo-50 0.05))
+(def indigo-60-opa-5 (alpha indigo-60 0.05))
+
+;;;;Turquoise
 (def turquoise-20 (alpha "#448EA2" 0.2))
 (def turquoise-50 "#448EA2")
-(def turquoise-60 (alpha "#448EA2" 0.6))
+(def turquoise-60 "#397788")
+
+;;with transparency
+(def turquoise-50-opa-5 (alpha turquoise-50 0.05))
+(def turquoise-60-opa-5 (alpha turquoise-60 0.05))
+
+;;;;Blue
 (def blue-20 (alpha "#4CB4EF" 0.2))
 (def blue-50 "#4CB4EF")
-(def blue-60 (alpha "#4CB4EF" 0.6))
+(def blue-60 "#4097C9")
+
+;;with transparency
+(def blue-50-opa-5 (alpha blue-50 0.05))
+(def blue-60-opa-5 (alpha blue-60 0.05))
+
+;;;;Green
 (def green-20 (alpha "#5BCC95" 0.2))
 (def green-50 "#5BCC95")
-(def green-60 (alpha "#5BCC95" 0.6))
+(def green-60 "#4CAB7D")
+
+;;with transparency
+(def green-50-opa-5 (alpha green-50 0.05))
+(def green-60-opa-5 (alpha green-60 0.05))
+
+;;;;Yellow
 (def yellow-20 (alpha "#FFCB53" 0.2))
 (def yellow-50 "#FFCB53")
-(def yellow-60 (alpha "#FFCB53" 0.6))
+(def yellow-60 "#D6AA46")
+
+;;with transparency
+(def yellow-50-opa-5 (alpha yellow-50 0.05))
+(def yellow-60-opa-5 (alpha yellow-60 0.05))
+
+;;;;Orange
 (def orange-20 (alpha "#FB8F61" 0.2))
 (def orange-50 "#FB8F61")
-(def orange-60 (alpha "#FB8F61" 0.6))
+(def orange-60 "#D37851")
+
+;;with transparency
+(def orange-50-opa-5 (alpha orange-50 0.05))
+(def orange-60-opa-5 (alpha orange-60 0.05))
+
+;;;;Red
 (def red-20 (alpha "#F46666" 0.2))
 (def red-50 "#F46666")
-(def red-60 (alpha "#F46666" 0.6))
+(def red-60 "#CD5656")
+
+;;with transparency
+(def red-50-opa-5 (alpha red-50 0.05))
+(def red-60-opa-5 (alpha red-60 0.05))
+
+;;;;Pink
 (def pink-20 (alpha "#FC7BAB" 0.2))
 (def pink-50 "#FC7BAB")
-(def pink-60 (alpha "#FC7BAB" 0.6))
+(def pink-60 "#D46790")
+
+;;with transparency
+(def pink-50-opa-5 (alpha pink-50 0.05))
+(def pink-60-opa-5 (alpha pink-60 0.05))
+
+;;;;Brown
 (def brown-20 (alpha "#99604D" 0.2))
 (def brown-50 "#99604D")
-(def brown-60 (alpha "#805141" 0.6))
+(def brown-60 "#805141")
+
+;;with transparency
+(def brown-50-opa-5 (alpha brown-50 0.05))
+(def brown-60-opa-5 (alpha brown-60 0.05))
+
+;;;;Beige
 (def beige-20 (alpha "#CAAE93" 0.2))
 (def beige-50 "#CAAE93")
-(def beige-60 (alpha "#CAAE93" 0.6))
+(def beige-60 "#AA927C")
+
+;;with transparency
+(def beige-50-opa-5 (alpha beige-50 0.05))
+(def beige-60-opa-5 (alpha beige-60 0.05))
 
 (def shadow  "rgba(9,16,28,0.04)")
 

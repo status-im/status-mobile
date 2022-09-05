@@ -30,6 +30,7 @@
             [quo2.screens.list-items.preview-lists :as preview-lists]
             [quo2.screens.info.lowest-price :as lowest-price]
             [quo2.screens.avatars.channel-avatar :as channel-avatar]
+            [quo2.screens.new-messages :as new-messages]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -71,7 +72,10 @@
                :component text/preview-text}]
    :messages [{:name      :gap
                :insets    {:top false}
-               :component messages-gap/preview-messages-gap}]
+               :component messages-gap/preview-messages-gap}
+              {:name      :new-messages-header
+               :insets    {:top false}
+               :component new-messages/preview-new-messages}]
    :notifications [{:name      :activity-logs
                     :insets    {:top false}
                     :component activity-logs/preview-activity-logs}]
