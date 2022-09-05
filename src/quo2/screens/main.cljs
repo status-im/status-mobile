@@ -6,13 +6,19 @@
             [quo.theme :as theme]
             [quo2.screens.activity-logs :as activity-logs]
             [quo2.screens.button :as button]
+<<<<<<< HEAD
             [quo2.screens.community-card-view :as community-card]
             [quo2.screens.context-tags :as context-tags]
             [quo2.screens.group-avatar :as group-avatar] 
+=======
+            [quo2.screens.context-tags :as context-tags]
+            [quo2.screens.group-avatar :as group-avatar]
+>>>>>>> e0d9650f8 (Add icons)
             [quo2.screens.counter :as counter]
             [quo2.screens.segmented :as segmented]
             [quo2.screens.info-message :as info-message]
             [quo2.screens.information-box :as information-box]
+<<<<<<< HEAD
             [quo2.screens.messages-gap :as messages-gap]
             [quo2.screens.permission-tag :as permission-tag]
             [quo2.screens.status-tags :as status-tags]
@@ -20,6 +26,12 @@
             [quo2.screens.text :as text]
             [quo2.screens.token-overview :as token-overview]
             [quo2.screens.wallet-user-avatar :as wallet-user-avatar]
+=======
+            [quo2.screens.status-tags :as status-tags]
+            [quo2.screens.tabs :as tabs]
+            [quo2.screens.text :as text]
+            [quo2.screens.user-avatar :as user-avatar]
+>>>>>>> e0d9650f8 (Add icons)
             [re-frame.core :as re-frame]))
 
 (def screens [{:name      :quo2-texts
@@ -31,12 +43,18 @@
               {:name      :quo2-button
                :insets    {:top false}
                :component button/preview-button}
+<<<<<<< HEAD
               {:name      :quo2-token-overview
                :insets    {:top false}
                :component token-overview/preview-token-overview}
               {:name      :quo2-icon-avatar
                :insets    {:top false}
                :component icon-avatar/preview-icon-avatar}
+=======
+              {:name      :quo2-user-avatar
+               :insets    {:top false}
+               :component user-avatar/preview-user-avatar}
+>>>>>>> e0d9650f8 (Add icons)
               {:name      :quo2-status-tags
                :insets    {:top false}
                :component status-tags/preview-status-tags}
