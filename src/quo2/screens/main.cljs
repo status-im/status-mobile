@@ -23,6 +23,7 @@
             [quo2.screens.token-overview :as token-overview]
             [quo2.screens.token-tag :as token-tag]
             [quo2.screens.wallet-user-avatar :as wallet-user-avatar]
+            [quo2.screens.user-avatar :as user-avatar]
             [re-frame.core :as re-frame]))
 
 (def screens [{:name      :quo2-texts
@@ -31,6 +32,9 @@
               {:name      :quo2-wallet-user-avatar
                :insets    {:top false}
                :component wallet-user-avatar/preview-wallet-user-avatar}
+              {:name      :quo2-user-avatar
+               :insets    {:top false}
+               :component user-avatar/preview-user-avatar}
               {:name      :quo2-button
                :insets    {:top false}
                :component button/preview-button}
