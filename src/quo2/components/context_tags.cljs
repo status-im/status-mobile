@@ -46,10 +46,9 @@
                  :size :paragraph-2}
       (trim-public-key public-key)]]))
 
-(defn user-avatar-tag [params public-key contacts]
-  (fn [params public-key contacts]
-    (let [photo @(re-frame.core/subscribe [:chats/photo-path public-key])
-          username (->> contacts
+(defn user-avatar-tag [params public-key photo contacts]
+  (fn [params public-key photo contacts]
+    (let [username (->> contacts
                         vals
                         (filter #(= (:public-key %) public-key))
                         first

@@ -12,6 +12,7 @@
    :color :purple})
 
 (def example-pk "0x04fcf40c526b09ff9fb22f4a5dbd08490ef9b64af700870f8a0ba2133f4251d5607ed83cd9047b8c2796576bc83fa0de23a13a4dced07654b8ff137fe744047917")
+(def example-pk2 "0x04c178513eb741e8c4e50326b22baefa7d60a2f4eb81e328c4bbe0b441f87b2a014a5907a419f5897fc3c0493a0ff9db689a1999d6ca7fdc63119dd1981d0c7ccf")
 
 (def main-descriptor [{:label   "Type"
                        :key     :type
@@ -27,7 +28,10 @@
   (let [state (reagent/atom {:label "Name"
                              :type :group-avatar})]
     (fn []
-      (let [contacts @(re-frame/subscribe [:contacts/contacts])
+      (let [contacts {example-pk {:public-key example-pk
+                                  :names {:three-words-name "Automatic incompatible Coati"}}
+                      example-pk2 {:public-key example-pk2
+                                   :names {:three-words-name "Clearcut Flickering Rattlesnake"}}}
             contacts-public-keys (map (fn [{:keys [public-key]}]
                                         {:key   public-key
                                          :value (multiaccounts/displayed-name
@@ -38,13 +42,16 @@
               (= (:type @state) :group-avatar) (conj main-descriptor {:label "Label"
                                                                       :key   :label
                                                                       :type  :text})
-              (= (:type @state) :avatar) (do
+              (= (:type @state) :avatar) (let [photo @(re-frame.core/subscribe [:chats/photo-path (:contact @state)])]
                                            (when-not (contains? @state :contacts)
                                              (swap! state assoc :contacts contacts-public-keys))
-                                           (conj main-descriptor {:label   "Contacts"
-                                                                  :key     :contact
-                                                                  :type    :select
-                                                                  :options contacts-public-keys})))]
+                                           (when-not (= (:photo @state)
+                                                    photo)
+                                             (swap! state assoc :photo photo))
+                                             (conj main-descriptor {:label   "Contacts"
+                                                                    :key     :contact
+                                                                    :type    :select
+                                                                    :options contacts-public-keys})))]
         [rn/view {:margin-bottom 50
                   :padding       16}
          [rn/view {:flex 1}
@@ -57,9 +64,8 @@
             [quo2/group-avatar-tag (:label @state) group-avatar-default-params]
             :public-key
             [quo2/public-key-tag {} example-pk]
-
             :avatar
-            [quo2/user-avatar-tag {} (:contact @state) contacts])]]))))
+            [quo2/user-avatar-tag {} (:contact @state) (:photo @state) contacts])]]))))
 
 (defn preview-context-tags []
   [rn/view {:background-color (colors/theme-colors colors/white
