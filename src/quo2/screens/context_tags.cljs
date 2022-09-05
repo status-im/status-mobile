@@ -46,12 +46,12 @@
                                            (when-not (contains? @state :contacts)
                                              (swap! state assoc :contacts contacts-public-keys))
                                            (when-not (= (:photo @state)
-                                                    photo)
+                                                        photo)
                                              (swap! state assoc :photo photo))
-                                             (conj main-descriptor {:label   "Contacts"
-                                                                    :key     :contact
-                                                                    :type    :select
-                                                                    :options contacts-public-keys})))]
+                                           (conj main-descriptor {:label   "Contacts"
+                                                                  :key     :contact
+                                                                  :type    :select
+                                                                  :options contacts-public-keys})))]
         [rn/view {:margin-bottom 50
                   :padding       16}
          [rn/view {:flex 1}
