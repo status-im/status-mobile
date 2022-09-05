@@ -6,8 +6,8 @@ if [[ -z $(git diff --cached --name-only -r | grep status-go-version.json) ]]; t
 fi
 
 MERGE_BASE=$(git merge-base -a develop "$(git rev-parse --abbrev-ref HEAD)" develop)
-GO_COMMIT_MERGE_BASE=$(git show "${MERGE_BASE}":status-go-version.json | jq -r '."commit-sha1"')
-GO_COMMIT_CURRENT=$(jq -r '."commit-sha1"' status-go-version.json)
+GO_COMMIT_MERGE_BASE=$(git show "${MERGE_BASE}":status-go-version.json | awk -F'"' '/commit-sha1/{print $4}')
+GO_COMMIT_CURRENT=$(awk -F'"' '/commit-sha1/{print $4}' status-go-version.json)
 GITHUB_LINK_PREFIX="https://github.com/status-im/status-go/compare/"
 # Link to the current StatusGo changelog being updated.
 GITHUB_LINK="${GITHUB_LINK_PREFIX}${GO_COMMIT_MERGE_BASE::8}...${GO_COMMIT_CURRENT::8}"
