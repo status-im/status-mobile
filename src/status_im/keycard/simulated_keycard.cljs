@@ -1,17 +1,17 @@
 (ns status-im.keycard.simulated-keycard
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [re-frame.db :as re-frame.db]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
+            [status-im.i18n.i18n :as i18n]
             [status-im.keycard.keycard :as keycard]
+            [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.native-module.core :as status]
+            [status-im.node.core :as node]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im.i18n.i18n :as i18n]
-            [clojure.string :as string]
-            [taoensso.timbre :as log]
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.node.core :as node]))
+            [taoensso.timbre :as log]))
 
 (def kk1-password "000000")
 (def default-pin "111111")
@@ -243,9 +243,8 @@
                            {:root-key root-data
                             :derived  derived-data-extended})))))))))))
   (when (= password (get @state :password))
-    (do
-      (swap! state assoc-in [:application-info :paired?] true)
-      (later #(on-success (str (rand-int 10000000)))))))
+    (swap! state assoc-in [:application-info :paired?] true)
+    (later #(on-success (str (rand-int 10000000))))))
 
 (defn generate-and-load-key
   [{:keys [pin on-success]}]
@@ -441,111 +440,111 @@
 
 (defrecord SimulatedKeycard []
   keycard/Keycard
-  (keycard/start-nfc [this args]
+  (keycard/start-nfc [_this args]
     (log/debug "simulated card start-nfc")
     (start-nfc args))
-  (keycard/stop-nfc [this args]
+  (keycard/stop-nfc [_this args]
     (log/debug "simulated card stop-nfc")
     (stop-nfc args))
-  (keycard/set-nfc-message [this args]
+  (keycard/set-nfc-message [_this args]
     (log/debug "simulated card set-nfc-message")
     (set-nfc-message args))
-  (keycard/check-nfc-support [this args]
+  (keycard/check-nfc-support [_this args]
     (log/debug "simulated card check-nfc-support")
     (check-nfc-support args))
-  (keycard/check-nfc-enabled [this args]
+  (keycard/check-nfc-enabled [_this args]
     (log/debug "simulated card check-nfc-enabled")
     (check-nfc-enabled args))
-  (keycard/open-nfc-settings [this]
+  (keycard/open-nfc-settings [_this]
     (log/debug "simulated card open-nfc-setting")
     (open-nfc-settings))
-  (keycard/register-card-events [this args]
+  (keycard/register-card-events [_this args]
     (log/debug "simulated card register-card-event")
     (register-card-events args))
-  (keycard/set-pairings [this args]
+  (keycard/set-pairings [_this args]
     (log/debug "simulated card set-pairings")
     (set-pairings args))
-  (keycard/on-card-connected [this callback]
+  (keycard/on-card-connected [_this callback]
     (log/debug "simulated card on-card-connected")
     (on-card-connected callback))
-  (keycard/on-card-disconnected [this callback]
+  (keycard/on-card-disconnected [_this callback]
     (log/debug "simulated card on-card-disconnected")
     (on-card-disconnected callback))
-  (keycard/remove-event-listener [this event]
+  (keycard/remove-event-listener [_this event]
     (log/debug "simulated card remove-event-listener")
     (remove-event-listener event))
-  (keycard/remove-event-listeners [this]
+  (keycard/remove-event-listeners [_this]
     (log/debug "simulated card remove-event-listener")
     (remove-event-listeners))
-  (keycard/get-application-info [this args]
+  (keycard/get-application-info [_this args]
     (log/debug "simulated card get-application-info")
     (get-application-info args))
-  (keycard/factory-reset [this args]
+  (keycard/factory-reset [_this args]
     (log/debug "simulated card factory-reset")
     (factory-reset args))
-  (keycard/install-applet [this args]
+  (keycard/install-applet [_this args]
     (log/debug "simulated card install-applet")
     (install-applet args))
-  (keycard/init-card [this args]
+  (keycard/init-card [_this args]
     (log/debug "simulated card init-card")
     (init-card args))
-  (keycard/install-applet-and-init-card [this args]
+  (keycard/install-applet-and-init-card [_this args]
     (log/debug "simulated card install-applet-and-init-card")
     (install-applet-and-init-card args))
-  (keycard/pair [this args]
+  (keycard/pair [_this args]
     (log/debug "simulated card pair")
     (pair args))
-  (keycard/generate-and-load-key [this args]
+  (keycard/generate-and-load-key [_this args]
     (log/debug "simulated card generate-and-load-key")
     (generate-and-load-key args))
-  (keycard/unblock-pin [this args]
+  (keycard/unblock-pin [_this args]
     (log/debug "simulated card unblock-pin")
     (unblock-pin args))
-  (keycard/verify-pin [this args]
+  (keycard/verify-pin [_this args]
     (log/debug "simulated card verify-pin")
     (verify-pin args))
-  (keycard/change-pin [this args]
+  (keycard/change-pin [_this args]
     (log/debug "simulated card change-pin")
     (change-pin args))
-  (keycard/change-puk [this args]
+  (keycard/change-puk [_this args]
     (log/debug "simulated card change-puk")
     (change-puk args))
-  (keycard/change-pairing [this args]
+  (keycard/change-pairing [_this args]
     (log/debug "simulated card change-pairing")
     (change-pairing args))
-  (keycard/unpair [this args]
+  (keycard/unpair [_this args]
     (log/debug "simulated card unpair")
     (unpair args))
-  (keycard/delete [this args]
+  (keycard/delete [_this args]
     (log/debug "simulated card delete")
     (delete args))
-  (keycard/remove-key [this args]
+  (keycard/remove-key [_this args]
     (log/debug "simulated card remove-key")
     (remove-key args))
-  (keycard/remove-key-with-unpair [this args]
+  (keycard/remove-key-with-unpair [_this args]
     (log/debug "simulated card remove-key-with-unpair")
     (remove-key-with-unpair args))
-  (keycard/export-key [this args]
+  (keycard/export-key [_this args]
     (log/debug "simulated card export-key")
     (export-key args))
-  (keycard/unpair-and-delete [this args]
+  (keycard/unpair-and-delete [_this args]
     (log/debug "simulated card unpair-and-delete")
     (unpair-and-delete args))
-  (keycard/import-keys [this args]
+  (keycard/import-keys [_this args]
     (log/debug "simulated card import-keys")
     (import-keys args))
-  (keycard/get-keys [this args]
+  (keycard/get-keys [_this args]
     (log/debug "simulated card get-keys")
     (get-keys args))
-  (keycard/sign [this args]
+  (keycard/sign [_this args]
     (log/debug "simulated card sign")
     (sign args))
-  (keycard/save-multiaccount-and-login [this args]
+  (keycard/save-multiaccount-and-login [_this args]
     (log/debug "simulated card save-multiaccount-and-login")
     (save-multiaccount-and-login args))
-  (keycard/login [this args]
+  (keycard/login [_this args]
     (log/debug "simulated card login")
     (login args))
-  (keycard/send-transaction-with-signature [this args]
+  (keycard/send-transaction-with-signature [_this args]
     (log/debug "simulated card send-transaction-with-signature")
     (send-transaction-with-signature args)))

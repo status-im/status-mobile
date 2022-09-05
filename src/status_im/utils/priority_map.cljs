@@ -9,15 +9,16 @@
 (deftype PersistentPriorityMap [priority->set-of-items item->priority meta keyfn ^:mutable __hash]
   IPrintWithWriter
   (-pr-writer [coll writer opts]
-    (let [pr-pair (fn [keyval] (pr-sequential-writer writer pr-writer "" " " "" opts keyval))]
+    (let [pr-pair (fn [keyval]
+                    (pr-sequential-writer writer #'cljs.core/pr-writer "" " " "" opts keyval))]
       (pr-sequential-writer writer pr-pair "#status-im.utils.priority-map {" ", " "}" opts coll)))
 
   IWithMeta
-  (-with-meta [this meta]
+  (-with-meta [_this meta]
     (PersistentPriorityMap. priority->set-of-items item->priority meta keyfn __hash))
 
   IMeta
-  (-meta [this] meta)
+  (-meta [_this] meta)
 
   ICollection
   (-conj [this entry]
@@ -26,12 +27,13 @@
       (reduce -conj this entry)))
 
   IEmptyableCollection
-  (-empty [this] (with-meta
-                   status-im.utils.priority-map.PersistentPriorityMap.EMPTY
-                   meta))
+  (-empty [_this] #_{:clj-kondo/ignore [:unresolved-symbol]}
+    (with-meta
+      status-im.utils.priority-map.PersistentPriorityMap.EMPTY
+      meta))
 
   IEquiv
-  (-equiv [this other]
+  (-equiv [_this other]
     (-equiv item->priority other))
 
   IHash
@@ -39,7 +41,7 @@
     (coreclj/caching-hash this core/hash-unordered-coll __hash))
 
   ISeqable
-  (-seq [this]
+  (-seq [_this]
     (if keyfn
       (seq (for [[_ item-set] priority->set-of-items, item item-set]
              (MapEntry. item (item->priority item) nil)))
@@ -47,7 +49,7 @@
              (MapEntry. item priority nil)))))
 
   IReversible
-  (-rseq [coll]
+  (-rseq [_coll]
     (if keyfn
       (seq (for [[_ item-set] (rseq priority->set-of-items), item item-set]
              (MapEntry. item (item->priority item) nil)))
@@ -55,24 +57,24 @@
              (MapEntry. item priority nil)))))
 
   ICounted
-  (-count [this]
+  (-count [_this]
     (count item->priority))
 
   ILookup
-  (-lookup [this item]
+  (-lookup [_this item]
     (get item->priority item))
-  (-lookup [coll item not-found]
+  (-lookup [_coll item not-found]
     (get item->priority item not-found))
 
   IStack
-  (-peek [this]
+  (-peek [_this]
     (when-not (zero? (count item->priority))
       (let [f (first priority->set-of-items)
             item (first (val f))]
         (if keyfn
           [item (item->priority item)]
           [item (key f)]))))
-  (-pop [this]
+  (-pop [_this]
     (if (zero? (count item->priority))
       (throw (js/Error. "Can't pop empty priority map"))
       (let [f (first priority->set-of-items)
@@ -126,7 +128,7 @@
          keyfn
          nil))))
 
-  (-contains-key? [this item]
+  (-contains-key? [_this item]
     (contains? item->priority item))
 
   IMap
@@ -153,7 +155,7 @@
   ISorted
   (-sorted-seq [this ascending?]
     ((if ascending? seq rseq) this))
-  (-sorted-seq-from [this k ascending?]
+  (-sorted-seq-from [_this k ascending?]
     (let [sets (if ascending?
                  (subseq priority->set-of-items >= k)
                  (rsubseq priority->set-of-items <= k))]
@@ -162,9 +164,9 @@
                [item (item->priority item)]))
         (seq (for [[priority item-set] sets, item item-set]
                [item priority])))))
-  (-entry-key [this entry]
+  (-entry-key [_this entry]
     (keyfn (val entry)))
-  (-comparator [this] compare)
+  (-comparator [_this] compare)
 
   IFn
   (-invoke [this item]
@@ -172,6 +174,7 @@
   (-invoke [this item not-found]
     (-lookup this item not-found)))
 
+#_{:clj-kondo/ignore [:unresolved-symbol]}
 (set! status-im.utils.priority-map.PersistentPriorityMap.EMPTY
       (PersistentPriorityMap. (sorted-map) {} {} identity nil))
 
@@ -193,6 +196,7 @@
   "keyval => key val
   Returns a new priority map with supplied mappings."
   ([& keyvals]
+   #_{:clj-kondo/ignore [:unresolved-symbol]}
    (loop [in (seq keyvals) out status-im.utils.priority-map.PersistentPriorityMap.EMPTY]
      (if in
        (recur (nnext in) (assoc out (first in) (second in)))

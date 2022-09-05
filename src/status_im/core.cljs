@@ -1,25 +1,25 @@
 (ns status-im.core
-  (:require status-im.utils.db
-            status-im.events
-            status-im.subs
-            status-im.navigation.core
+  (:require ["react-native" :refer (DevSettings LogBox)]
+            ["react-native-languages" :default react-native-languages]
+            ["react-native-shake" :as react-native-shake]
             [re-frame.core :as re-frame]
             [re-frame.interop :as interop]
             [reagent.impl.batching :as batching]
-            [status-im.notifications.local :as notifications]
+            [status-im.async-storage.core :as async-storage]
+            status-im.events
+            [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
+            status-im.navigation.core
+            [status-im.notifications.local :as notifications]
+            status-im.subs
+            [status-im.ui.components.react :as react]
+            [status-im.utils.config :as config]
+            status-im.utils.db
             [status-im.utils.error-handler :as error-handler]
             [status-im.utils.logging.core :as utils.logs]
             [status-im.utils.platform :as platform]
             [status-im.utils.snoopy :as snoopy]
-            [status-im.utils.config :as config]
-            [status-im.utils.universal-links.core :as utils.universal-links]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [status-im.async-storage.core :as async-storage]
-            ["react-native" :refer (DevSettings LogBox)]
-            ["react-native-languages" :default react-native-languages]
-            ["react-native-shake" :as react-native-shake]))
+            [status-im.utils.universal-links.core :as utils.universal-links]))
 
 (set! interop/next-tick js/setTimeout)
 (set! batching/fake-raf #(js/setTimeout % 0))

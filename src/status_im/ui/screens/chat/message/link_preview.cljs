@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.chat.message.link-preview
-  (:require [re-frame.core :as re-frame]
-            [clojure.string :as string]
-            [status-im.ui.components.react :as react]
+  (:require [clojure.string :as string]
             [quo.core :as quo]
+            [re-frame.core :as re-frame]
+            [status-im.ui.components.react :as react]
             [status-im.utils.security :as security]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.chat.message.styles :as styles]
@@ -82,7 +82,7 @@
         (when-not error
           [react/touchable-highlight
            {:style (when-not (is-gif? thumbnailUrl) {:align-self :stretch})
-            :on-press #(when (and (security/safe-link? link))
+            :on-press #(when (security/safe-link? link)
                          (re-frame/dispatch
                           [:browser.ui/message-link-pressed link]))}
            [react/view (styles/link-preview-wrapper outgoing timeline)
