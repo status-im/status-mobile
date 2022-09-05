@@ -12,14 +12,18 @@
             [quo2.screens.counter :as counter]
             [quo2.screens.segmented :as segmented]
             [quo2.screens.info-message :as info-message]
+            [quo2.screens.icon-avatar :as icon-avatar]
+            [quo2.screens.filter-tags :as filter-tags]
             [quo2.screens.information-box :as information-box]
             [quo2.screens.messages-gap :as messages-gap]
+            [quo2.screens.token-tag :as token-tag]
             [quo2.screens.permission-tag :as permission-tag]
             [quo2.screens.status-tags :as status-tags]
             [quo2.screens.tabs :as tabs]
             [quo2.screens.text :as text]
             [quo2.screens.token-overview :as token-overview]
             [quo2.screens.wallet-user-avatar :as wallet-user-avatar]
+            [quo2.screens.user-avatar :as user-avatar]
             [re-frame.core :as re-frame]))
 
 (def screens [{:name      :quo2-texts
@@ -28,6 +32,9 @@
               {:name      :quo2-wallet-user-avatar
                :insets    {:top false}
                :component wallet-user-avatar/preview-wallet-user-avatar}
+              {:name      :quo2-user-avatar
+               :insets    {:top false}
+               :component user-avatar/preview-user-avatar}
               {:name      :quo2-button
                :insets    {:top false}
                :component button/preview-button}
@@ -37,6 +44,9 @@
               {:name      :quo2-icon-avatar
                :insets    {:top false}
                :component icon-avatar/preview-icon-avatar}
+              {:name      :quo2-token-tag
+               :insets    {:top false}
+               :component token-tag/preview-token-tag}
               {:name      :quo2-status-tags
                :insets    {:top false}
                :component status-tags/preview-status-tags}
