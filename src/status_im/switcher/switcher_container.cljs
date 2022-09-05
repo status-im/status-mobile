@@ -1,9 +1,8 @@
 (ns status-im.switcher.switcher-container
   (:require [quo.react-native :as rn]
-            status-im.switcher.cards.messaging-card
+            [status-im.switcher.cards.messaging-card :as messaging-card]
             [status-im.switcher.styles :as styles]
-            [status-im.utils.handlers :refer [<sub]]
-            [status-im.switcher.cards.messaging-card :as messaging-card]))
+            [status-im.utils.handlers :refer [<sub]]))
 
 ;; TODO - use something like this to avoid multiple renders etc.
 ;; (defn switch-screen [toggle-switcher-screen]

@@ -1,8 +1,8 @@
 (ns status-im.ethereum.abi-spec
-  (:require [cljs.spec.alpha :as spec]
+  (:require ["web3-utils" :as utils]
+            [cljs.spec.alpha :as spec]
             [clojure.string :as string]
-            [status-im.ethereum.core :as ethereum]
-            ["web3-utils" :as utils]))
+            [status-im.ethereum.core :as ethereum]))
 
 ;; Utility functions for encoding
 
@@ -213,15 +213,15 @@
 (spec/def ::string string?)
 
 (defn- single-char [code]
-  (if-let [m (#{\, \[ \] \x} (first code))]
+  (when-let [m (#{\, \[ \] \x} (first code))]
     [1 m]))
 
 (defn- number [code]
-  (if-let [m (re-find #"^[0-9]+" code)]
+  (when-let [m (re-find #"^[0-9]+" code)]
     [(count m) (js/parseInt m)]))
 
 (defn- string [s]
-  (if-let [m (re-find #"^[a-z]+" s)]
+  (when-let [m (re-find #"^[a-z]+" s)]
     [(count m) m]))
 
 (defn tokenise [code]

@@ -1,6 +1,6 @@
 (ns status-im.ethereum.core
-  (:require [clojure.string :as string]
-            ["web3-utils" :as utils]
+  (:require ["web3-utils" :as utils]
+            [clojure.string :as string]
             [status-im.ethereum.eip55 :as eip55]))
 
 (defn sha3 [s]
