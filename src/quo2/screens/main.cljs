@@ -24,6 +24,7 @@
             [quo2.screens.token-tag :as token-tag]
             [quo2.screens.wallet-user-avatar :as wallet-user-avatar]
             [quo2.screens.user-avatar :as user-avatar]
+            [quo2.screens.reacts :as reacts]
             [re-frame.core :as re-frame]))
 
 (def screens [{:name      :quo2-texts
@@ -35,6 +36,9 @@
               {:name      :quo2-user-avatar
                :insets    {:top false}
                :component user-avatar/preview-user-avatar}
+              {:name      :quo2-reacts
+               :insets    {:top false}
+               :component reacts/preview-reacts}
               {:name      :quo2-button
                :insets    {:top false}
                :component button/preview-button}
