@@ -330,8 +330,8 @@ PODS:
     - SDWebImageWebPCoder (~> 0.8.4)
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (1.8.0):
-    - React
+  - RNGestureHandler (2.5.0):
+    - React-Core
   - RNHoleView (2.1.1):
     - React-Core
   - RNImageCropPicker (0.36.2):
@@ -691,7 +691,7 @@ SPEC CHECKSUMS:
   RNCPushNotificationIOS: c145c6253ea016e5efeff604f2720736b4a596f7
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
+  RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
   RNHoleView: 07572d21c97fad71fdc47f7248a8513e15a38949
   RNImageCropPicker: 35a3ceb837446fa11547704709bb22b5fac6d584
   RNKeychain: 216f37338fcb9e5c3a2530f1e3295f737a690cb1

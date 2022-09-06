@@ -1,13 +1,11 @@
 (ns quo.gesture-handler
   (:require [oops.core :refer [oget]]
-            ["react-native-reanimated" :default animated]
             [reagent.core :as reagent]
             [quo.design-system.colors :as colors]
             ["react-native-gesture-handler"
              :refer (TapGestureHandler PanGestureHandler LongPressGestureHandler
-                                       PureNativeButton TouchableWithoutFeedback TouchableOpacity
-                                       TouchableHighlight
-                                       createNativeWrapper State NativeViewGestureHandler
+                                       TouchableWithoutFeedback TouchableOpacity
+                                       TouchableHighlight State NativeViewGestureHandler
                                        FlatList ScrollView)]))
 
 (def flat-list-raw FlatList)
@@ -25,8 +23,6 @@
 (def long-press-gesture-handler
   (reagent/adapt-react-class LongPressGestureHandler))
 
-(def pure-native-button PureNativeButton)
-
 (def touchable-without-feedback-class TouchableWithoutFeedback)
 
 (def touchable-without-feedback
@@ -41,12 +37,6 @@
 
 (def touchable-opacity
   (reagent/adapt-react-class TouchableOpacity))
-
-(def raw-button
-  (reagent/adapt-react-class
-   (createNativeWrapper (.createAnimatedComponent animated PureNativeButton)
-                        #js {:shouldActivateOnStart   true
-                             :shouldCancelWhenOutside true})))
 
 (def native-view-gesture-handler (reagent/adapt-react-class NativeViewGestureHandler))
 

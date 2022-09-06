@@ -27,10 +27,10 @@
 (def switcher-bottom-positions
   {:android
    {:home-stack 15
-    :chat       57}
+    :chat       140}
    :ios
    {:home-stack 40
-    :chat       67}})
+    :chat       140}})
 
 (defn switcher-bottom-position [view-id]
   (get-in
