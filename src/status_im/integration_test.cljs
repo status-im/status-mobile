@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [re-frame.core :as rf]
             status-im.events
+            [status-im.utils.security :as security]
             [status-im.multiaccounts.logout.core :as logout]
             [status-im.transport.core :as transport]
             status-im.subs ;;so integration tests can run independently
@@ -173,6 +174,38 @@
          (logout!)
          (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an inconsistent state between tests
                            (assert-logout)))))))))
+
+(def multiaccount-name "Narrow Frail Lemming")
+(def multiaccount-mnemonic "tattoo ramp health green tongue universe style vapor become tape lava reason")
+(def multiaccount-key-uid "0x694b8229524820a3a00a6e211141561d61b251ad99d6b65daf82a73c9a57697b")
+
+(deftest recover-multiaccount-test
+  (log/info "========= recover-multiaccount-test ==================")
+  (rf-test/run-test-async
+   (initialize-app!)
+   (rf-test/wait-for
+    [:status-im.init.core/initialize-view]
+    (rf/dispatch-sync [:init-root :onboarding])
+    (rf/dispatch-sync [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+    (rf/dispatch-sync [:status-im.multiaccounts.recover.core/enter-phrase-pressed])
+    (rf/dispatch-sync [:multiaccounts.recover/enter-phrase-input-changed
+                       (security/mask-data multiaccount-mnemonic)])
+    (rf/dispatch [:multiaccounts.recover/enter-phrase-next-pressed])
+    (rf-test/wait-for
+     [:status-im.multiaccounts.recover.core/import-multiaccount-success]
+     (rf/dispatch-sync [:multiaccounts.recover/re-encrypt-pressed])
+     (rf/dispatch [:multiaccounts.recover/enter-password-next-pressed password])
+     (rf-test/wait-for
+      [:status-im.multiaccounts.recover.core/store-multiaccount-success]
+      (let [multiaccount @(rf/subscribe [:multiaccount])] ; assert multiaccount is recovered
+        (is (= multiaccount-key-uid (:key-uid multiaccount)))
+        (is (= multiaccount-name (:name multiaccount))))
+      (rf-test/wait-for ; wait for login
+       [::transport/messenger-started]
+       (assert-messenger-started)
+       (logout!)
+       (rf-test/wait-for [::logout/logout-method] ; we need to logout to make sure the node is not in an inconsistent state between tests
+                         (assert-logout))))))))
 
 (comment
   (run-tests))
