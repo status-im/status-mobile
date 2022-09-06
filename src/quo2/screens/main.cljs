@@ -35,6 +35,9 @@
                :component wallet-user-avatar/preview-wallet-user-avatar}
               {:name      :quo2-user-avatar
                :insets    {:top false}
+               :component user-avatar/preview-user-avatar}
+              {:name      :quo2-reacts
+               :insets    {:top false}
                :component reacts/preview-reacts}
               {:name      :quo2-button
                :insets    {:top false}
