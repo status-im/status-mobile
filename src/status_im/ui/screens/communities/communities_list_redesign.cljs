@@ -4,7 +4,6 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [quo2.components.community-card-view :as community-card]
             [quo2.components.separator :as separator]
             [quo2.components.text :as quo2.text]
             [quo2.components.button :as quo2.button]
@@ -21,6 +20,8 @@
             [status-im.ui.components.plus-button :as plus-button]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.ui.components.topnav :as topnav]
+            [quo2.components.communities.community-card-view :as community-card]
+            [quo2.components.communities.community-list-view :as community-list]
             [quo2.components.icon :as icons]))
 
 (def selected-tab (reagent/atom :all))
@@ -50,7 +51,7 @@
                     {:featured       false})]
     (if (= @view-type :card-view)
       [community-card/community-card-view-item item]
-      [community-card/communities-list-view-item item])))
+      [community-list/communities-list-view-item item])))
 
 (defn render-featured-fn [community-item]
   (let [item (merge community-item

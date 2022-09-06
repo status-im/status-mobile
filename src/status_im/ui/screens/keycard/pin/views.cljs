@@ -152,8 +152,8 @@
   [{:keys [retry-counter]}]
   (let [error-y-translation (animation/create-value -8)
         error-opacity (animation/create-value 0)
-        retries-y-translation (animation/create-value (if retry-counter 8 0))
-        retries-opacity (animation/create-value (if retry-counter 0 1))
+        retries-y-translation (animation/create-value (if retry-counter 0 -8))
+        retries-opacity (animation/create-value (if retry-counter 1 0))
         !error? (reagent/atom false)]
     (reagent/create-class
      {:component-did-update

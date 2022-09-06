@@ -12,6 +12,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [quo2.foundations.colors :as quo2.colors]
             [quo2.components.icon :as quo.icons]
+            [status-im.utils.config :as config]
             [quo.components.animated.pressable :as animated]))
 
 (defn themes [theme]
@@ -77,14 +78,14 @@
         children))
 
 (defn icon-column
-  [{:keys [icon icon-bg-color icon-color size icon-container-style new-ui?]}]
+  [{:keys [icon icon-bg-color icon-color size icon-container-style]}]
   (when icon
-    (let [icon-size (size->icon-size size)]
+    (let [icon-size (size->icon-size size)
+          new-ui? @config/new-ui-enabled?]
       [rn/view {:style (or icon-container-style (:tiny spacing/padding-horizontal))}
        (cond
          (vector? icon)
          icon
-
          (keyword? icon)
          (if new-ui?
            [quo.icons/icon icon {:container-style {:align-items     :center
@@ -270,8 +271,7 @@
                    :subtitle                  subtitle
                    :subtitle-max-lines        subtitle-max-lines
                    :subtitle-secondary        subtitle-secondary
-                   :right-side-present?       (or accessory chevron)
-                   :new-ui?                   :new-ui?}]
+                   :right-side-present?       (or accessory chevron)}]
        [right-side {:chevron             chevron
                     :active              active
                     :disabled            disabled

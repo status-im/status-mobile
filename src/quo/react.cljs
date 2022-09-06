@@ -1,7 +1,7 @@
 (ns quo.react
   (:refer-clojure :exclude [ref])
-  (:require [oops.core :refer [oget oset!]]
-            ["react" :as react])
+  (:require ["react" :as react]
+            [oops.core :refer [oget oset!]])
   (:require-macros [quo.react :refer [with-deps-check
                                       maybe-js-deps]]))
 
@@ -25,21 +25,21 @@
   (-hash [o] (goog/getUid o))
 
   cljs.core/IDeref
-  (-deref [o]
+  (-deref [_o]
     value)
 
   cljs.core/IReset
-  (-reset! [o new-value]
+  (-reset! [_o new-value]
     (set-value new-value))
 
   cljs.core/ISwap
-  (-swap! [o f]
+  (-swap! [_o f]
     (set-value f))
-  (-swap! [o f a]
+  (-swap! [_o f a]
     (set-value #(f % a)))
-  (-swap! [o f a b]
+  (-swap! [_o f a b]
     (set-value #(f % a b)))
-  (-swap! [o f a b xs]
+  (-swap! [_o f a b xs]
     (set-value #(apply f % a b xs))))
 
 (defn state [value]
