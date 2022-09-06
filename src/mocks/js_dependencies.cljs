@@ -219,6 +219,8 @@
                                        :FlatList                 #js {}
                                        :ScrollView               #js {}
                                        :TouchableOpacity         #js {}
+                                       :GestureDetector          #js {}
+                                       :Gesture                  #js {:Pan nil}
                                        :createNativeWrapper      identity})
 
 (def react-native-redash #js {:clamp nil})

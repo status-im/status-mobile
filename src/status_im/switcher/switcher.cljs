@@ -8,7 +8,8 @@
             [status-im.switcher.animation :as animation]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.react-native.resources :as resources]
-            [status-im.switcher.switcher-container :as switcher-container]))
+            [status-im.switcher.switcher-container :as switcher-container]
+            [quo.react-native :as rn]))
 
 (defn switcher-button [view-id toggle-switcher-screen-fn shared-values]
   [:f>
@@ -71,7 +72,9 @@
                                       :switcher-container-scale  (reanimated/use-shared-value 0.9)
                                       :close-button-opacity      (animation/switcher-close-button-opacity switcher-button-opacity)
                                       :switcher-container-bottom (animation/switcher-container-bottom-position switcher-screen-bottom)}
-           toggle-switcher-screen-fn #(animation/switcher-touchable-on-press-out switcher-opened? view-id shared-values)]
-       [:<>
-        [switcher-screen toggle-switcher-screen-fn shared-values]
-        [switcher-button view-id toggle-switcher-screen-fn shared-values]]))])
+           toggle-switcher-screen-fn #(animation/switcher-touchable-on-press-out switcher-opened? view-id shared-values)
+           {:keys [keyboard-shown]} (rn/use-keyboard)]
+       (when-not keyboard-shown
+         [:<>
+          [switcher-screen toggle-switcher-screen-fn shared-values]
+          [switcher-button view-id toggle-switcher-screen-fn shared-values]])))])
