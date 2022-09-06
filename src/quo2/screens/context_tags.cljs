@@ -1,6 +1,5 @@
 (ns quo2.screens.context-tags
   (:require [reagent.core :as reagent]
-            [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
             [quo.react-native :as rn]
             [quo.previews.preview :as preview]

@@ -1,7 +1,6 @@
 (ns quo2.components.context-tags
   (:require [quo2.foundations.colors :as colors]
             [quo.theme :as quo.theme]
-            [re-frame.core :as re-frame]
             [quo2.components.text :as text]
             [quo2.components.group-avatar :as group-avatar]
             [quo.react-native :as rn]))
@@ -46,7 +45,7 @@
                  :size :paragraph-2}
       (trim-public-key public-key)]]))
 
-(defn user-avatar-tag [params username photo]
+(defn user-avatar-tag []
   (fn [params username photo]
     [base-tag (assoc-in params [:style :padding-left] 3)
      [rn/image {:style  {:width            20
