@@ -310,12 +310,7 @@
                       :width      250}
           [tooltip/tooltip error]]]
         [bottom-toolbar/toolbar
-         {:left
-          [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/back-pressed])
-                       :type     :secondary
-                       :before   :main-icon/back}
-           (i18n/label :t/back)]
-          :right
+         {:right
           [quo/button {:on-press            #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
                        :accessibility-label :next
                        :disabled            (empty? input-word)
