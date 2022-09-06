@@ -48,13 +48,13 @@
 
 (defn user-avatar-tag [params username photo]
   (fn [params username photo]
-      [base-tag (assoc-in params [:style :padding-left] 3)
-       [rn/image {:style  {:width            20
-                           :border-radius    10
-                           :background-color :white
-                           :height           20}
-                  :source {:uri photo}}]
-       [text/text {:weight :medium
-                   :size   :paragraph-2}
+    [base-tag (assoc-in params [:style :padding-left] 3)
+     [rn/image {:style  {:width            20
+                         :border-radius    10
+                         :background-color :white
+                         :height           20}
+                :source {:uri photo}}]
+     [text/text {:weight :medium
+                 :size   :paragraph-2}
 
-        (str " " username)]]))
+      (str " " username)]]))
