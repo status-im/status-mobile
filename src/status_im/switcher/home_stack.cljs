@@ -29,7 +29,7 @@
                                   :right            0
                                   :position         :absolute})}
         (case stack-id
-          :communities-stack [communities/views]
+          :communities-stack [communities/communities-list]
           :chats-stack       [home/home]
           :wallet-stack      [wallet.accounts/accounts-overview]
           :browser-stack     [profile.user/my-profile])])]))

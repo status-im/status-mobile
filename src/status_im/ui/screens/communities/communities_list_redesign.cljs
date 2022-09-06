@@ -18,7 +18,7 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as plus-button]
-            [status-im.utils.handlers :refer [<sub]]
+            [status-im.utils.handlers :refer [<sub  >evt]]
             [status-im.ui.components.topnav :as topnav]
             [quo2.components.community.community-card-view :as community-card]
             [quo2.components.community.community-list-view :as community-list]
@@ -28,7 +28,7 @@
 (def view-type   (reagent/atom  :card-view))
 (def sort-list-by (reagent/atom :name))
 
-(def community-item-data
+(def mock-community-item-data ;; TO Do remove once communities are loaded with this data.
   {:data {:status          :gated
           :locked         true
           :cover          (resources/get-image :community-cover)
@@ -47,17 +47,17 @@
 
 (defn render-other-fn [community-item]
   (let [item (merge community-item
-                    (get community-item-data :data)
+                    (get mock-community-item-data :data)
                     {:featured       false})]
     (if (= @view-type :card-view)
-      [community-card/community-card-view-item item]
+      [community-card/community-card-view-item item #(>evt [:navigate-to :community-overview item])]
       [community-list/communities-list-view-item item])))
 
 (defn render-featured-fn [community-item]
   (let [item (merge community-item
-                    (get community-item-data :data)
+                    (get mock-community-item-data :data)
                     {:featured       true})]
-    [community-card/community-card-view-item item]))
+    [community-card/community-card-view-item item #(>evt [:navigate-to :community-overview item])]))
 
 (defn community-list-key-fn [item]
   (:id item))
@@ -101,7 +101,7 @@
 
 (defn featured-communities [communities]
   [list/flat-list
-   {:key-fn                            community-list-key-fn
+   {:key-fn                          str
     :horizontal                        true
     :getItemLayout                     get-item-layout-js
     :keyboard-should-persist-taps      :always
@@ -112,7 +112,7 @@
 (defn other-communities [communities sort-list-by]
   (let [sorted-communities (sort-by sort-list-by communities)]
     [list/flat-list
-     {:key-fn                            community-list-key-fn
+     {:key-fn                            str
       :getItemLayout                     get-item-layout-js
       :keyboard-should-persist-taps      :always
       :shows-horizontal-scroll-indicator false
@@ -133,7 +133,7 @@
       [other-communities communities sort-list-by])))
 
 (defn featured-communities-section [communities]
-  (let [count (reagent/atom {:value 2 :type :grey})]
+  (let [count (reagent/atom {:value (count communities) :type :grey})]
     [react/view {:flex         1}
      [react/view {:flex-direction  :row
                   :height          30
@@ -202,9 +202,10 @@
                                           quo2.colors/neutral-50
                                           quo2.colors/neutral-40)}]]]))
 
-(defn views []
+(defn communities-list []
   (let [multiaccount (<sub [:multiaccount])
-        communities  (<sub [:communities/communities])]
+        communities (<sub [:communities/communities])
+        featured-communities (<sub [:communities/featured-communities])]
     (fn []
       [safe-area/consumer
        (fn [insets]
@@ -228,7 +229,7 @@
           [title-column]
           [react/scroll-view
            [community-filter-tags]
-           [featured-communities-section communities]
+           [featured-communities-section featured-communities]
            (when communities
              [:<>
               [react/view {:margin-vertical    4
