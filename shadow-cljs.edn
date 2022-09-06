@@ -91,7 +91,8 @@
                               :source-map    false
                               ;; needed because we use deref in tests
                               :static-fns    false
-                              :optimizations :simple}}
+                              :optimizations :simple
+                              :infer-externs true}}
 
           ;; mock.js-dependencies is mocking the react-native libraries
           ;; we build it as a node library so that it can be required by

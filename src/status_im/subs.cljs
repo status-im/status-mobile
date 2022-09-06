@@ -1,11 +1,17 @@
 (ns status-im.subs
   (:require [cljs.spec.alpha :as spec]
+            [clojure.set :as clojure.set]
             [clojure.string :as string]
+            [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
+            [status-im.add-new.db :as db]
             [status-im.browser.core :as browser]
             [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat.models]
+            [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message-list :as models.message-list]
+            [status-im.chat.models.reactions :as models.reactions]
+            [status-im.communities.core :as communities]
             [status-im.constants :as constants]
             [status-im.contact.db :as contact.db]
             [status-im.ens.core :as ens]
@@ -13,35 +19,29 @@
             [status-im.ethereum.tokens :as tokens]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.group-chats.db :as group-chats.db]
-            [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]
+            [status-im.group-chats.db :as group-chats.db]
             [status-im.i18n.i18n :as i18n]
+            [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.recover.core :as recover]
-            [status-im.chat.models.reactions :as models.reactions]
+            [status-im.notifications.core :as notifications]
             [status-im.pairing.core :as pairing]
             [status-im.signing.gas :as signing.gas]
-            [status-im.add-new.db :as db]
-            [status-im.utils.mobile-sync :as mobile-network-utils]
+            status-im.ui.screens.keycard.subs
+            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
             [status-im.utils.build :as build]
             [status-im.utils.config :as config]
+            [status-im.utils.currency :as currency]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.mobile-sync :as mobile-network-utils]
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.wallet.db :as wallet.db]
-            [status-im.wallet.utils :as wallet.utils]
-            status-im.ui.screens.keycard.subs
-            [status-im.chat.models.mentions :as mentions]
-            [status-im.notifications.core :as notifications]
-            [status-im.utils.currency :as currency]
-            [clojure.set :as clojure.set]
-            [quo.design-system.colors :as colors]
-            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]))
+            [status-im.wallet.utils :as wallet.utils]))
 
 ;; TOP LEVEL ===========================================================================================================
 
@@ -267,9 +267,7 @@
 (reg-root-key-sub :wallet-connect/session-managed :wallet-connect/session-managed)
 (reg-root-key-sub :contact-requests/pending :contact-requests/pending)
 
-
 ; Testing
-
 
 (reg-root-key-sub :messenger/started? :messenger/started?)
 
@@ -874,7 +872,7 @@
  (fn [chats [_ community-id]]
    (->> chats
         (keep (fn [[_ chat]]
-                (when (and (= (:community-id chat) community-id))
+                (when (= (:community-id chat) community-id)
                   chat)))
         (sort-by :timestamp >))))
 
@@ -3003,7 +3001,6 @@
    (into {} (remove #(:removed (second %)) bookmarks))))
 
 ;; NAVIGATION2
-
 
 (re-frame/reg-sub
  :navigation2/switcher-cards

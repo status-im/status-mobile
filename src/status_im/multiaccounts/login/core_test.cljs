@@ -1,9 +1,9 @@
 (ns status-im.multiaccounts.login.core-test
   (:require [cljs.test :as test]
-            [status-im.multiaccounts.login.core :as login]
             [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.utils.keychain.core :as keychain]
-            [status-im.utils.fx :as fx]))
+            [status-im.multiaccounts.login.core :as login]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.keychain.core :as keychain]))
 
 (test/deftest save-password-test
   (test/testing "check save password, biometric unavailable"
@@ -59,4 +59,4 @@
       (test/testing "disable biometric"
         (let [{:keys [db]} (biometric/disable {:db db})]
           (test/is (= false (get-in db [:multiaccounts/login :save-password?])))
-          (test/is (= keychain/auth-method-none) (:auth-method db)))))))
+          (test/is (= keychain/auth-method-none (:auth-method db))))))))

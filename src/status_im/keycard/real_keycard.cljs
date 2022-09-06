@@ -1,12 +1,12 @@
 (ns status-im.keycard.real-keycard
-  (:require ["react-native-status-keycard" :default status-keycard]
-            ["react-native" :as rn]
-            [status-im.utils.types :as types]
-            [status-im.native-module.core :as status]
+  (:require ["react-native" :as rn]
+            ["react-native-status-keycard" :default status-keycard]
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.keycard :as keycard]
-            [taoensso.timbre :as log]
-            [status-im.utils.platform :as platform]))
+            [status-im.native-module.core :as status]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (defonce event-emitter (if platform/ios?
                          (new (.-NativeEventEmitter rn) status-keycard)
@@ -199,7 +199,7 @@
 
 (defn unpair
   [{:keys [pin on-success on-failure]}]
-  (when (and pin)
+  (when pin
     (.. status-keycard
         (unpair pin)
         (then on-success)
@@ -298,79 +298,79 @@
 
 (defrecord RealKeycard []
   keycard/Keycard
-  (keycard/start-nfc [this args]
+  (keycard/start-nfc [_this args]
     (start-nfc args))
-  (keycard/stop-nfc [this args]
+  (keycard/stop-nfc [_this args]
     (stop-nfc args))
-  (keycard/set-nfc-message [this args]
+  (keycard/set-nfc-message [_this args]
     (set-nfc-message args))
-  (keycard/check-nfc-support [this args]
+  (keycard/check-nfc-support [_this args]
     (check-nfc-support args))
-  (keycard/check-nfc-enabled [this args]
+  (keycard/check-nfc-enabled [_this args]
     (check-nfc-enabled args))
-  (keycard/open-nfc-settings [this]
+  (keycard/open-nfc-settings [_this]
     (open-nfc-settings))
-  (keycard/register-card-events [this args]
+  (keycard/register-card-events [_this args]
     (register-card-events args))
-  (keycard/on-card-connected [this callback]
+  (keycard/on-card-connected [_this callback]
     (on-card-connected callback))
-  (keycard/on-card-disconnected [this callback]
+  (keycard/on-card-disconnected [_this callback]
     (on-card-disconnected callback))
-  (keycard/remove-event-listener [this event]
+  (keycard/remove-event-listener [_this event]
     (remove-event-listener event))
-  (keycard/remove-event-listeners [this]
+  (keycard/remove-event-listeners [_this]
     (remove-event-listeners))
-  (keycard/set-pairings [this args]
+  (keycard/set-pairings [_this args]
     (set-pairings args))
-  (keycard/get-application-info [this args]
+  (keycard/get-application-info [_this args]
     (get-application-info args))
-  (keycard/factory-reset [this args]
+  (keycard/factory-reset [_this args]
     (factory-reset args))
-  (keycard/install-applet [this args]
+  (keycard/install-applet [_this args]
     (install-applet args))
-  (keycard/install-cash-applet [this args]
+  (keycard/install-cash-applet [_this args]
     (install-cash-applet args))
-  (keycard/init-card [this args]
+  (keycard/init-card [_this args]
     (init-card args))
-  (keycard/install-applet-and-init-card [this args]
+  (keycard/install-applet-and-init-card [_this args]
     (install-applet-and-init-card args))
-  (keycard/pair [this args]
+  (keycard/pair [_this args]
     (pair args))
-  (keycard/generate-and-load-key [this args]
+  (keycard/generate-and-load-key [_this args]
     (generate-and-load-key args))
-  (keycard/unblock-pin [this args]
+  (keycard/unblock-pin [_this args]
     (unblock-pin args))
-  (keycard/verify-pin [this args]
+  (keycard/verify-pin [_this args]
     (verify-pin args))
-  (keycard/change-pin [this args]
+  (keycard/change-pin [_this args]
     (change-pin args))
-  (keycard/change-puk [this args]
+  (keycard/change-puk [_this args]
     (change-puk args))
-  (keycard/change-pairing [this args]
+  (keycard/change-pairing [_this args]
     (change-pairing args))
-  (keycard/unpair [this args]
+  (keycard/unpair [_this args]
     (unpair args))
-  (keycard/delete [this args]
+  (keycard/delete [_this args]
     (delete args))
-  (keycard/remove-key [this args]
+  (keycard/remove-key [_this args]
     (remove-key args))
-  (keycard/remove-key-with-unpair [this args]
+  (keycard/remove-key-with-unpair [_this args]
     (remove-key-with-unpair args))
-  (keycard/export-key [this args]
+  (keycard/export-key [_this args]
     (export-key args))
-  (keycard/unpair-and-delete [this args]
+  (keycard/unpair-and-delete [_this args]
     (unpair-and-delete args))
-  (keycard/import-keys [this args]
+  (keycard/import-keys [_this args]
     (import-keys args))
-  (keycard/get-keys [this args]
+  (keycard/get-keys [_this args]
     (get-keys args))
-  (keycard/sign [this args]
+  (keycard/sign [_this args]
     (sign args))
-  (keycard/sign-typed-data [this args]
+  (keycard/sign-typed-data [_this args]
     (sign-typed-data args))
-  (keycard/save-multiaccount-and-login [this args]
+  (keycard/save-multiaccount-and-login [_this args]
     (save-multiaccount-and-login args))
-  (keycard/login [this args]
+  (keycard/login [_this args]
     (login args))
-  (keycard/send-transaction-with-signature [this args]
+  (keycard/send-transaction-with-signature [_this args]
     (send-transaction-with-signature args)))
