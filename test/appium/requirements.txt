@@ -43,7 +43,7 @@ rlp==1.2.0
 sauceclient==1.0.0
 scrypt==0.8.17
 selenium==3.14.1
-six==1.11.0
+six==1.16.0
 urllib3==1.26.3
 yarl==1.6.3
 docker==4.4.0
