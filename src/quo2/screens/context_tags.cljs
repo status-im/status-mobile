@@ -41,6 +41,9 @@
                                          :value (multiaccounts/displayed-name
                                                  (get contacts public-key))})
                                       (vals contacts))
+            current-username (if (seq (:contact @state))
+                               (->> @state :contact contacts multiaccounts/displayed-name)
+                               "Please select a user")
             descriptor
             (cond
               (= (:type @state) :group-avatar) (conj main-descriptor {:label "Label"
@@ -69,9 +72,7 @@
             :public-key
             [quo2/public-key-tag {} example-pk]
             :avatar
-            [quo2/user-avatar-tag {} (or
-                                      (:contact @state)
-                                      example-pk) (:photo @state) contacts])]]))))
+            [quo2/user-avatar-tag {} current-username (:photo @state)])]]))))
 
 (defn preview-context-tags []
   [rn/view {:background-color (colors/theme-colors colors/white

@@ -46,14 +46,8 @@
                  :size :paragraph-2}
       (trim-public-key public-key)]]))
 
-(defn user-avatar-tag [params public-key photo contacts]
-  (fn [params public-key photo contacts]
-    (let [username (->> contacts
-                        vals
-                        (filter #(= (:public-key %) public-key))
-                        first
-                        :names
-                        :three-words-name)]
+(defn user-avatar-tag [params username photo]
+  (fn [params username photo]
       [base-tag (assoc-in params [:style :padding-left] 3)
        [rn/image {:style  {:width            20
                            :border-radius    10
@@ -63,4 +57,4 @@
        [text/text {:weight :medium
                    :size   :paragraph-2}
 
-        (str " " username)]])))
+        (str " " username)]]))
