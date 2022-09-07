@@ -22,7 +22,6 @@
 ;; reference db levels
 (def total-silence-db -160)
 (def silence-db -35)
-(def max-db 0)
 
 ;; update interval for the pulsing rec button
 (def metering-interval 100)
@@ -47,9 +46,8 @@
                    {:filename (str base-filename default-format)
                     :meteringInterval metering-interval}))
 
-;; maximum 2 minutes of recordings time
-;; to keep data under 900k
-(def max-recording-ms (* 2 60 1000))
+;; maximum 1 minute of recordings time to keep data at certain size
+(def max-recording-ms (* 1 60 1000))
 
 ;; audio objects
 (defonce recorder-ref (atom nil))
