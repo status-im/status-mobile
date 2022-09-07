@@ -1,7 +1,7 @@
 (ns status-im.ui.components.topnav
   (:require
    [re-frame.core :as re-frame]
-   [quo2.components.button :as quo2.button]
+   [quo2.components.buttons.button :as quo2.button]
    [status-im.qr-scanner.core :as qr-scanner]
    [status-im.utils.handlers :refer [<sub]]
    [status-im.i18n.i18n :as i18n]

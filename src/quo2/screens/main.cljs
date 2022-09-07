@@ -4,27 +4,27 @@
             [quo.design-system.colors :as colors]
             [quo.react-native :as rn]
             [quo.theme :as theme]
-            [quo2.screens.activity-logs :as activity-logs]
-            [quo2.screens.button :as button]
-            [quo2.screens.community-card-view :as community-card]
-            [quo2.screens.context-tags :as context-tags]
-            [quo2.screens.counter :as counter]
-            [quo2.screens.filter-tags :as filter-tags]
-            [quo2.screens.group-avatar :as group-avatar]
-            [quo2.screens.icon-avatar :as icon-avatar]
-            [quo2.screens.info-message :as info-message]
-            [quo2.screens.information-box :as information-box]
-            [quo2.screens.messages-gap :as messages-gap]
-            [quo2.screens.permission-tag :as permission-tag]
-            [quo2.screens.segmented :as segmented]
-            [quo2.screens.status-tags :as status-tags]
-            [quo2.screens.tabs :as tabs]
-            [quo2.screens.text :as text]
-            [quo2.screens.token-overview :as token-overview]
-            [quo2.screens.token-tag :as token-tag]
-            [quo2.screens.wallet-user-avatar :as wallet-user-avatar]
-            [quo2.screens.user-avatar :as user-avatar]
-            [quo2.screens.reacts :as reacts]
+            [quo2.screens.avatars.icon-avatar :as icon-avatar]
+            [quo2.screens.avatars.group-avatar :as group-avatar]
+            [quo2.screens.avatars.user-avatar :as user-avatar]
+            [quo2.screens.avatars.wallet-user-avatar :as wallet-user-avatar]
+            [quo2.screens.buttons.button :as button]
+            [quo2.screens.counter.counter :as counter]
+            [quo2.screens.community.community-card-view :as community-card]
+            [quo2.screens.info.info-message :as info-message]
+            [quo2.screens.info.information-box :as information-box]
+            [quo2.screens.markdown.text :as text]
+            [quo2.screens.messages.gap :as messages-gap]
+            [quo2.screens.notifications.activity-logs :as activity-logs]
+            [quo2.screens.reactions.react :as react]
+            [quo2.screens.tabs.segmented-tab :as segmented]
+            [quo2.screens.tabs.tabs :as tabs]
+            [quo2.screens.tags.context-tags :as context-tags]
+            [quo2.screens.tags.filter-tags :as filter-tags]
+            [quo2.screens.tags.permission-tag :as permission-tag]
+            [quo2.screens.tags.status-tags :as status-tags]
+            [quo2.screens.tags.token-tag :as token-tag]
+            [quo2.screens.wallet.token-overview :as token-overview]
             [re-frame.core :as re-frame]))
 
 (def screens [{:name      :quo2-texts
@@ -36,9 +36,9 @@
               {:name      :quo2-user-avatar
                :insets    {:top false}
                :component user-avatar/preview-user-avatar}
-              {:name      :quo2-reacts
+              {:name      :quo2-react
                :insets    {:top false}
-               :component reacts/preview-reacts}
+               :component react/preview-react}
               {:name      :quo2-button
                :insets    {:top false}
                :component button/preview-button}

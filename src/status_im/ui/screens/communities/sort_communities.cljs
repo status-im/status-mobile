@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.communities.sort-communities
   (:require [re-frame.core :as re-frame]
-            [quo2.components.text :as text]
+            [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo.core :as quo]
             [quo.theme :as theme]

@@ -13,7 +13,7 @@
             [status-im.utils.core :as utils]
             [status-im.utils.datetime :as time]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
-            [quo2.components.text :as quo2.text]
+            [quo2.components.markdown.text :as quo2.text]
             [status-im.utils.utils :as utils.utils]
             [quo2.foundations.colors :as quo2.colors]))
 

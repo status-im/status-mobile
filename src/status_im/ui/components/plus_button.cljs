@@ -3,7 +3,7 @@
             [quo.core :as quo]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.icons :as icons]
-            [quo2.components.button :as quo2.button]))
+            [quo2.components.buttons.button :as quo2.button]))
 
 (def action-button-container
   {:align-items     :center

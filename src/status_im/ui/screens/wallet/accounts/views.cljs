@@ -13,9 +13,9 @@
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.keycard.login :as keycard.login]
             [quo2.foundations.colors :as quo2.colors]
-            [quo2.components.button :as quo2.button]
-            [quo2.components.text :as quo2.text]
-            [quo2.components.tabs :as quo2.tabs]
+            [quo2.components.buttons.button :as quo2.button]
+            [quo2.components.markdown.text :as quo2.text]
+            [quo2.components.tabs.tabs :as quo2.tabs]
             [status-im.ui.screens.wallet.accounts.common :as common]
             [status-im.ui.screens.wallet.account.views :as account.views]
             [quo.components.safe-area :as safe-area])

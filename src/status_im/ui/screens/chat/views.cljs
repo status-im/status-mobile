@@ -42,7 +42,7 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.topbar :as topbar]
             [quo2.foundations.colors :as quo2.colors]
-            [quo2.components.button :as quo2.button]))
+            [quo2.components.buttons.button :as quo2.button]))
 
 (defn invitation-requests [chat-id admins]
   (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])

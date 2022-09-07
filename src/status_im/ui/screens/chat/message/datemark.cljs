@@ -2,7 +2,7 @@
   (:require [status-im.ui.components.react :as react]
             [clojure.string :as string]
             [status-im.ui.screens.chat.styles.message.datemark :as style]
-            [quo2.components.text :as quo2.text]
+            [quo2.components.markdown.text :as quo2.text]
             [quo2.foundations.colors :as quo2.colors]))
 
 (defn chat-datemark [value]

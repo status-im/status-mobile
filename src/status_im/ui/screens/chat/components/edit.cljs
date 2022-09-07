@@ -9,8 +9,8 @@
             [status-im.ui.screens.chat.components.style :as styles]
             [re-frame.core :as re-frame]
             [quo2.foundations.colors :as quo2.colors :refer [theme-colors]]
-            [quo2.components.button :as quo2.button]
-            [quo2.components.text :as quo2.text]))
+            [quo2.components.buttons.button :as quo2.button]
+            [quo2.components.markdown.text :as quo2.text]))
 
 (defn input-focus [text-input-ref]
   (some-> ^js (quo.react/current-ref text-input-ref) .focus))
