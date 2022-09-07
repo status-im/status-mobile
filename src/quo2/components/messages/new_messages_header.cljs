@@ -58,10 +58,9 @@
   "new-messages-header params - label, color"
   [{:keys [label color] :or {label "New messages"
                              color :primary}}]
-  (let [dark? (colors/dark?)
-        theme (if dark? :dark :light)
-        bg-color (get-in themes [theme color :background-color])
-        text-color (get-in themes [theme color :text-color])]
+  (let [colors (colors/theme-colors (themes :light) (themes :dark))
+        bg-color (get-in colors [color :background-color])
+        text-color (get-in colors [color :text-color])]
     [react/linear-gradient {:colors [bg-color "rgba(0,0,0,0)"]
                             :start {:x 0 :y 0} :end {:x 0 :y 1}}
      [rn/view {:style {:padding-left 60
