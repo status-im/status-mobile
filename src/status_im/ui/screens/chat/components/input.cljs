@@ -21,7 +21,7 @@
             [status-im.ui.screens.chat.photos :as photos]
             [reagent.core :as reagent]
             [clojure.string :as string]
-            [quo2.components.button :as quo2.button]
+            [quo2.components.buttons.button :as quo2.button]
             [quo2.reanimated :as reanimated]
             [quo2.gesture :as gesture]
             [quo.components.safe-area :as safe-area]))

@@ -24,13 +24,13 @@
             [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.components.invite.views :as invite]
             [status-im.utils.config :as config]
-            [quo2.components.text :as quo2.text]
+            [quo2.components.markdown.text :as quo2.text]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
             [quo2.foundations.colors :as quo2.colors]
-            [quo2.components.button :as quo2.button]
-            [quo2.components.information-box :as information-box])
+            [quo2.components.buttons.button :as quo2.button]
+            [quo2.components.info.information-box :as information-box])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn home-tooltip-view []

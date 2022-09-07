@@ -1,8 +1,8 @@
 (ns quo2.components.header
   (:require [oops.core :refer [oget]]
             [quo.animated :as animated]
-            [quo2.components.button :as button]
-            [quo2.components.text :as text]
+            [quo2.components.buttons.button :as button]
+            [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo.design-system.spacing :as spacing]
             [quo.react-native :as rn]
