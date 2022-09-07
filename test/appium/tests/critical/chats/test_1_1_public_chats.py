@@ -253,17 +253,17 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6316)
-    def test_1_1_chat_text_message_with_push(self):
+    def test_1_1_chat_audio_message_with_push(self):
         self.home_2.just_fyi("Put app on background (to check Push notification received for audio message)")
         self.home_2.click_system_home_button()
 
         self.home_2.just_fyi("Sending audio message to device who is on background")
-        self.chat_1.record_audio_message(message_length_in_seconds=125)
+        self.chat_1.record_audio_message(message_length_in_seconds=65)
         if not self.chat_1.element_by_text("Maximum recording time reached").is_element_displayed():
-            self.drivers[0].fail("Exceeded 2 mins limit of recording time.")
+            self.drivers[0].fail("Exceeded 1 min limit of recording time.")
 
         self.chat_1.ok_button.click()
-        if self.chat_1.audio_message_recorded_time.text != "1:59":
+        if self.chat_1.audio_message_recorded_time.text != "0:59":
             self.errors.append("Timer exceed 2 minutes")
         self.chat_1.send_message_button.click()
 
