@@ -121,11 +121,6 @@
                 "node-01.ac-cn-hongkong-c.wakuv2.prod": "/ip4/8.210.222.231/tcp/30303/p2p/16Uiu2HAm4v86W3bmT1BiH6oSPzcsSr24iDQpSN5Qa992BCjjwgrD",
                 "node-01.do-ams3.wakuv2.prod": "/ip4/188.166.135.145/tcp/30303/p2p/16Uiu2HAmL5okWopX7NqZWBUKVqW8iUxCEmd5GMHLVPwCgzYzQv3e",
                 "node-01.gc-us-central1-a.wakuv2.prod": "/ip4/34.121.100.108/tcp/30303/p2p/16Uiu2HAmVkKntsECaYfefR1V2yCR79CegLATuTPE6B9TxgxBiiiA"
-            },
-            "waku-websocket": {
-                "node-01.ac-cn-hongkong-c.wakuv2.prod": "/dns4/node-01.ac-cn-hongkong-c.wakuv2.prod.statusim.net/tcp/443/wss/p2p/16Uiu2HAm4v86W3bmT1BiH6oSPzcsSr24iDQpSN5Qa992BCjjwgrD",
-                "node-01.do-ams3.wakuv2.prod": "/dns4/node-01.do-ams3.wakuv2.prod.statusim.net/tcp/443/wss/p2p/16Uiu2HAmL5okWopX7NqZWBUKVqW8iUxCEmd5GMHLVPwCgzYzQv3e",
-                "node-01.gc-us-central1-a.wakuv2.prod": "/dns4/node-01.gc-us-central1-a.wakuv2.prod.statusim.net/tcp/443/wss/p2p/16Uiu2HAmVkKntsECaYfefR1V2yCR79CegLATuTPE6B9TxgxBiiiA"
             }
         },
         "wakuv2.test": {
@@ -133,11 +128,6 @@
                 "node-01.ac-cn-hongkong-c.wakuv2.test": "/ip4/47.242.210.73/tcp/30303/p2p/16Uiu2HAkvWiyFsgRhuJEb9JfjYxEkoHLgnUQmr1N5mKWnYjxYRVm",
                 "node-01.do-ams3.wakuv2.test": "/ip4/134.209.139.210/tcp/30303/p2p/16Uiu2HAmPLe7Mzm8TsYUubgCAW1aJoeFScxrLj8ppHFivPo97bUZ",
                 "node-01.gc-us-central1-a.wakuv2.test": "/ip4/104.154.239.128/tcp/30303/p2p/16Uiu2HAmJb2e28qLXxT5kZxVUUoJt72EMzNGXB47Rxx5hw3q4YjS"
-            },
-            "waku-websocket": {
-                "node-01.ac-cn-hongkong-c.wakuv2.test": "/dns4/node-01.ac-cn-hongkong-c.wakuv2.test.statusim.net/tcp/443/wss/p2p/16Uiu2HAkvWiyFsgRhuJEb9JfjYxEkoHLgnUQmr1N5mKWnYjxYRVm",
-                "node-01.do-ams3.wakuv2.test": "/dns4/node-01.do-ams3.wakuv2.test.statusim.net/tcp/443/wss/p2p/16Uiu2HAmPLe7Mzm8TsYUubgCAW1aJoeFScxrLj8ppHFivPo97bUZ",
-                "node-01.gc-us-central1-a.wakuv2.test": "/dns4/node-01.gc-us-central1-a.wakuv2.test.statusim.net/tcp/443/wss/p2p/16Uiu2HAmJb2e28qLXxT5kZxVUUoJt72EMzNGXB47Rxx5hw3q4YjS"
             }
         }
     },
