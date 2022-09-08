@@ -97,6 +97,7 @@
         current-fleet-key (current-fleet-key db)
         current-fleet (get-current-fleet db)
         wakuv2-enabled (boolean (:waku current-fleet))
+        ;; todo?: remove `(vals (get wakuv2-config :CustomNodes))`
         wakuv2-nodes (into (vals (:waku current-fleet)) (vals (get wakuv2-config :CustomNodes)))
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
         {:keys [installation-id log-level
