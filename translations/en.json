@@ -683,6 +683,7 @@
     "invalid-username-or-key": "Invalid username or chat key",
     "join-me": "Hey join me on Status: {{url}}",
     "join-a-community": "or join a community",
+    "join-open-community": "Join community",
     "http-gateway-error": "Oops, request failed!",
     "sign-request-failed": "Could not sign message",
     "invite-friends": "Invite friends",
