@@ -79,7 +79,7 @@ pipeline {
             /* e2e builds get tested in SauceLabs */
             if (utils.isE2EBuild()) {
               env.SAUCE_URL = ios.uploadToSauceLabs()
-            } else {
+            } else if (!utils.isReleaseBuild()) {
               env.DIAWI_URL = ios.uploadToDiawi()
             }
           } }
