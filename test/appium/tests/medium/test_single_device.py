@@ -77,11 +77,10 @@ class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(6292)
     def test_keycard_send_funds_between_accounts_set_max_in_multiaccount_instance(self):
-        sign_in_view = SignInView(self.driver).create_user(keycard=True)
-        wallet = sign_in_view.wallet_button.click()
+        sign_in = SignInView(self.driver).create_user(keycard=True)
+        wallet = sign_in.wallet_button.click()
         status_account_address = wallet.get_wallet_address()[2:]
-        self.network_api.get_donate(status_account_address, external_faucet=True)
-        wallet.wait_balance_is_changed()
+        wallet.get_test_assets(keycard=True)
         account_name = 'subaccount'
         wallet.add_account(account_name, keycard=True)
         wallet.get_account_by_name(account_name).click()
@@ -160,6 +159,7 @@ class TestChatManagement(SingleDeviceTestCase):
         send_transaction.sign_transaction(keycard=True)
         wallet.element_by_text('Assets').click()
         wallet.wait_balance_is_equal_expected_amount(asset='ETH', expected_balance=0, main_screen=False)
+        wallet.donate_leftovers(keycard=True)
 
     @marks.testrail_id(5742)
     def test_keycard_onboarding_interruption_creating_flow(self):
@@ -472,11 +472,11 @@ class TestChatManagement(SingleDeviceTestCase):
         if wallet.backup_recovery_phrase_warning_text.is_element_present():
             self.driver.fail("'Back up your seed phrase' warning is shown on Wallet while no funds are present")
         address = wallet.get_wallet_address()
-        self.network_api.get_donate(address[2:], external_faucet=True, wait_time=200)
         wallet.close_button.click()
-        wallet.wait_balance_is_changed(scan_tokens=True)
+        wallet.get_test_assets()
         if not wallet.backup_recovery_phrase_warning_text.is_element_present(30):
             self.driver.fail("'Back up your seed phrase' warning is not shown on Wallet with funds")
+        wallet.donate_leftovers()
         profile = wallet.get_profile_view()
         wallet.backup_recovery_phrase_warning_text.click()
         profile.backup_recovery_phrase()
@@ -1067,11 +1067,8 @@ class TestChatManagement(SingleDeviceTestCase):
         self.chat_key = self.home.get_public_key_and_username()
 
         self.wallet.just_fyi("Get required donate")
-        w3.donate_testnet_eth(self.address, amount=0.1, inscrease_default_gas_price=10)
-        self.home.wallet_button.click()
-        self.wallet.wait_balance_is_changed()
-        w3.donate_testnet_token('STT', address=self.address, amount=10, inscrease_default_gas_price=10)
-        self.wallet.wait_balance_is_changed('STT', scan_tokens=True)
+        self.wallet.get_test_assets()
+        self.wallet.get_test_assets(token=True)
 
         self.wallet.just_fyi("Purchase ENS")
         self.profile = self.home.profile_button.click()
@@ -1099,13 +1096,7 @@ class TestChatManagement(SingleDeviceTestCase):
         self.wallet.just_fyi("Send leftovers")
         self.wallet.wallet_button.double_click()
         address = self.wallet.get_wallet_address()
-        send_transaction = self.wallet.send_transaction_button.click()
-        send_transaction.set_max_button.click()
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.set_recipient_address(w3.ACCOUNT_ADDRESS)
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction()
+        self.wallet.donate_leftovers()
 
         self.wallet.just_fyi("Verify purchased ENS")
         self.home.home_button.click()
@@ -1118,6 +1109,8 @@ class TestChatManagement(SingleDeviceTestCase):
                 "Public key in not resolved correctly from %s ENS name on stateofus!" % self.ens_name)
         self.home.get_back_to_home_view()
         self.wallet.wallet_button.double_click()
+        from views.send_transaction_view import SendTransactionView
+        send_transaction = SendTransactionView(self.driver)
         self.wallet.send_transaction_from_main_screen.click_until_presence_of_element(send_transaction.chose_recipient_button)
         send_transaction.chose_recipient_button.scroll_and_click()
         send_transaction.set_recipient_address(self.ens_name)

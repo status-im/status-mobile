@@ -100,7 +100,7 @@ class StatusTestDAppView(BaseWebView):
         self.driver = driver
 
         self.assets_button = Button(self.driver, webview="Assets")
-        self.request_eth_button = Button(self.driver, webview="Request Ropsten ETH")
+        self.request_eth_button = Button(self.driver, webview="Request Goerli ETH")
         self.request_stt_button = RequestSTTButton(self.driver)
 
         self.transactions_button = TransactionsButton(self.driver)
@@ -119,15 +119,3 @@ class StatusTestDAppView(BaseWebView):
         self.driver.info("**Wait %ss for assets in simpledapp**" % wait_time)
         self.assets_button.wait_for_visibility_of_element(seconds=wait_time)
 
-    def faucet_asset(self, asset='eth'):
-        self.driver.info("**Faucet %s in dapp**" % asset)
-        self.wait_for_d_aap_to_load()
-        self.assets_button.click()
-        if asset == 'eth':
-            self.request_eth_button.click()
-            self.element_by_text('Faucet request recieved').wait_for_visibility_of_element()
-            self.ok_button.click()
-            self.element_by_text('Faucet request recieved').wait_for_invisibility_of_element()
-        elif asset == 'stt':
-            send_transaction_view = self.request_stt_button.click()
-            send_transaction_view.sign_transaction()

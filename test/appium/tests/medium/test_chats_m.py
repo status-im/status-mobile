@@ -604,6 +604,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.drivers[1].reset()
 
         self.home_2 = SignInView(self.drivers[1]).recover_access(ens_user['passphrase'])
+        self.home_2.ens_banner_close_button.wait_and_click()
         self.home_1.home_button.double_click()
         self.profile_2 = self.home_2.profile_button.click()
         ens, full_ens, username_2 = ens_user['ens'], '@%s' % ens_user['ens'], ens_user['username']

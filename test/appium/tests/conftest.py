@@ -189,7 +189,7 @@ def pytest_configure(config):
                                               headers={'Content-Type': 'application/octet-stream'})
                                 break
                             except ConnectionError:
-                                time.sleep(3)
+                                time.sleep(10)
                     else:
                         sauce.storage.upload_file(config.getoption('apk'))
 
@@ -340,11 +340,11 @@ def pytest_runtest_protocol(item, nextitem):
             return True  # no need to rerun
 
 
-@pytest.fixture(scope="session", autouse=False)
-def faucet_for_senders():
-    network_api = NetworkApi()
-    for user in transaction_senders.values():
-        network_api.faucet(address=user['address'])
+# @pytest.fixture(scope="session", autouse=False)
+# def faucet_for_senders():
+#     network_api = NetworkApi()
+#     for user in transaction_senders.values():
+#         network_api.faucet(address=user['address'])
 
 
 @pytest.fixture
