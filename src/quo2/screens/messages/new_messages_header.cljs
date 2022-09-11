@@ -2,7 +2,7 @@
   (:require [quo.react-native :as rn]
             [reagent.core :as reagent]
             [quo.previews.preview :as preview]
-            [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as colors]
             [quo2.components.messages.new-messages-header :as new-messages-header]))
 
 (def descriptor [{:label   "Label"
@@ -46,7 +46,9 @@
         [new-messages-header/new-messages-header @state]]])))
 
 (defn preview-new-messages-header []
-  [rn/view  {:background-color (:ui-background @colors/theme)
+  [rn/view  {:background-color (colors/theme-colors
+                                colors/white
+                                colors/neutral-90)
              :flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always

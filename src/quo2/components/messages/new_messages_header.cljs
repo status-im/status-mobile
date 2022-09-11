@@ -2,6 +2,7 @@
   (:require [quo.react-native :as rn]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]))
 
 (def themes
@@ -56,7 +57,7 @@
 
 (defn new-messages-header
   "new-messages-header params - label, color"
-  [{:keys [label color] :or {label "New messages"
+  [{:keys [label color] :or {label (i18n/label :new-messages-header)
                              color :primary}}]
   (let [colors (colors/theme-colors (themes :light) (themes :dark))
         bg-color (get-in colors [color :background-color])
