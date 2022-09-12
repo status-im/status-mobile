@@ -113,7 +113,7 @@
 (defn set-view-id [view-id]
   (log/debug "set-view-id" view-id)
   (when-let [{:keys [on-focus]} (get views/screens view-id)]
-    (re-frame/dispatch [:set :view-id view-id])
+    (re-frame/dispatch [:set-view-id view-id])
     (re-frame/dispatch [:screens/on-will-focus view-id])
     (when on-focus
       (re-frame/dispatch on-focus))))

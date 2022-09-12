@@ -175,7 +175,9 @@
               {:keycard/check-nfc-enabled nil}
               (if (= flow :import)
                 (navigation/navigate-to-cofx :keycard-recovery-intro nil)
-                (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))))
+                (do
+                  (common/listen-to-hardware-back-button)
+                  (navigation/navigate-to-cofx :keycard-onboarding-intro nil))))))
 
 (fx/defn start-onboarding-flow
   {:events [:keycard/start-onboarding-flow]}
@@ -183,6 +185,7 @@
   (fx/merge cofx
             {:db                           (assoc-in db [:keycard :flow] :create)
              :keycard/check-nfc-enabled nil}
+            (common/listen-to-hardware-back-button)
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
 
 (fx/defn open-nfc-settings-pressed

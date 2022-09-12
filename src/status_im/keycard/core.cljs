@@ -592,19 +592,6 @@
   [{:keys [db]} listeners]
   {:db (update-in db [:keycard :listeners] merge listeners)})
 
-(defn onboarding-intro-back-handler
-  "The back button handler is used to manage device back press.
-
-  If the handler returns false, the back button functions as usual (ie. dispatchs GO_BACK event).
-  If it returns true, the back button becomes inactive.
-
-  We want to deactivate the back button when the user comes from key-storage and migration flow."
-  []
-  (-> @re-frame.db/app-db
-      :keycard
-      :from-key-storage-and-migration?
-      boolean))
-
 (fx/defn ui-recovery-phrase-cancel-pressed
   {:events [:keycard.ui/recovery-phrase-cancel-pressed]}
   [{:keys [db]}]

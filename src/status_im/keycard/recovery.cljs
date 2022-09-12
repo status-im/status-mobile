@@ -86,6 +86,7 @@
   (fx/merge cofx
             {:db                           (assoc-in db [:keycard :flow] :recovery)
              :keycard/check-nfc-enabled nil}
+            (common/listen-to-hardware-back-button)
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
 
 (fx/defn cancel-pressed
