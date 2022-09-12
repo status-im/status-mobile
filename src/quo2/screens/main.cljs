@@ -28,6 +28,7 @@
             [quo2.screens.tags.token-tag :as token-tag]
             [quo2.screens.wallet.token-overview :as token-overview]
             [quo2.screens.list-items.preview-lists :as preview-lists]
+            [quo2.screens.info.lowest-price :as lowest-price]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -57,7 +58,10 @@
            :component info-message/preview-info-message}
           {:name      :information-box
            :insets    {:top false}
-           :component information-box/preview-information-box}]
+           :component information-box/preview-information-box}
+          {:name      :lowest-price
+           :insets    {:top false}
+           :component lowest-price/preview-lowest-price}]
    :markdown [{:name      :texts
                :insets    {:top false}
                :component text/preview-text}]
