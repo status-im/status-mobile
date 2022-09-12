@@ -141,6 +141,10 @@
                                                    :setLazyComponentRegistrator identity
                                                    :pop identity
                                                    :push identity
+                                                   :mergeOptions identity
+                                                   :popToRoot identity
+                                                   :showModal identity
+                                                   :dismissModal identity
                                                    :registerComponent identity
                                                    :events
                                                    (fn []
