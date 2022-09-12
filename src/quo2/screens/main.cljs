@@ -27,6 +27,7 @@
             [quo2.screens.tags.status-tags :as status-tags]
             [quo2.screens.tags.token-tag :as token-tag]
             [quo2.screens.wallet.token-overview :as token-overview]
+            [quo2.screens.list-items.preview-lists :as preview-lists]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -92,7 +93,10 @@
            :component token-tag/preview-token-tag}]
    :wallet [{:name      :token-overview
              :insets    {:top false}
-             :component token-overview/preview-token-overview}]})
+             :component token-overview/preview-token-overview}]
+   :list-items [{:name      :preview-lists
+                 :insets    {:top false}
+                 :component preview-lists/preview-preview-lists}]})
 
 (def screens (flatten (map val screens-categories)))
 
