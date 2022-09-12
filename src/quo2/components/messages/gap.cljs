@@ -70,8 +70,8 @@
 ;;;; others
 (defn circle []
   [rn/view
-   {:width         8
-    :height        8
+   {:width         9
+    :height        9
     :border-width  1
     :margin        4
     :flex          0
@@ -88,24 +88,24 @@
    {:on-press on-press}
    [icon/icon "message-gap-info" {:size 12 :no-color true :container-style {:padding 4}}]])
 
-;;;; left/right
-(defn left []
+;;;; timeline/body
+(defn timeline []
   [rn/view {:flex            0
-            :padding-left    11.5
-            :margin-right    20.5
+            :margin-right    20
             :align-items     :center
+            :width           9
             :justify-content :space-between}
    [circle]
    [rn/image {:style {:flex 1} :source (get-image :circles) :resize-mode :repeat}]
    [circle]])
 
-(defn right [timestamp-far timestamp-near chat-id gap-ids on-info-button-pressed]
+(defn body [timestamp-far timestamp-near chat-id gap-ids on-info-button-pressed]
   [rn/view {:flex 1}
    [rn/view
-    {:flex-direction  :row
-     :align-items     :center
-     :justify-content :space-between
-     :margin-right    2}
+    {:flex-direction    :row
+     :align-items       :center
+     :justify-content   :space-between
+     :margin-right      2}
     [timestamp timestamp-far]
     (when on-info-button-pressed [info-button on-info-button-pressed])]
 
@@ -119,7 +119,7 @@
    [timestamp timestamp-near]])
 
 ;;; main
-(defn messages-gap
+(defn gap
   "if `gap-ids` and `chat-id` are provided, press the main text area to fetch messages
   if `on-info-button-pressed` fn is provided, the info button will show up and is pressable"
   [{:keys [timestamp-far
@@ -132,17 +132,19 @@
     (fn []
       [rn/view
        {:on-layout #(reset! body-height (oget % "nativeEvent.layout.height"))
-        :overflow  :hidden}
+        :overflow  :hidden
+        :flex      1}
        [hborder {:type :top}]
        [hborder {:type :bottom}]
        [rn/view (merge {:width            "100%"
                         :background-color (get-color :background)
                         :flex-direction   :row
                         :padding          20
+                        :padding-left     31
                         :margin-vertical  4}
                        style)
 
-        [left]
-        [right timestamp-far timestamp-near chat-id gap-ids on-info-button-pressed]]
+        [timeline]
+        [body timestamp-far timestamp-near chat-id gap-ids on-info-button-pressed]]
        [vborder :left body-height]
        [vborder :right body-height]])))

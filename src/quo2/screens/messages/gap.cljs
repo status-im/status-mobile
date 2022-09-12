@@ -2,7 +2,7 @@
   (:require
    [quo.previews.preview :as preview]
    [quo.react-native :as rn]
-   [quo2.components.messages.gap :as quo2]
+   [quo2.components.messages.gap :as gap]
    [reagent.core :as reagent]))
 
 (def descriptor [{:label "Timestamp Far"
@@ -20,7 +20,7 @@
         [preview/customizer state descriptor]]
        [rn/view {:padding-vertical 60
                  :align-items      :center}
-        [quo2/messages-gap @state]]])))
+        [gap/gap @state]]])))
 
 (defn preview-messages-gap []
   [rn/view {:flex 1}
