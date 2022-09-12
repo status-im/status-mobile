@@ -80,6 +80,7 @@
             [status-im.ui.screens.network.network-details.views :as network-details]
             [status-im.ui.screens.network.views :as network]
             [status-im.ui.screens.notifications-center.views :as notifications-center]
+            [status-im.ui.screens.activity-center.views :as activity-center]
             [status-im.ui.screens.notifications-settings.views :as notifications-settings]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views
              :as
@@ -255,6 +256,9 @@
             ;;TODO custom nav
             :options   {:topBar {:visible false}}
             :component notifications-center/center}
+           {:name      :activity-center
+            :options   {:topBar {:visible false}}
+            :component activity-center/center}
            ;; Community
            {:name      :community
             ;;TODO custom

@@ -1935,6 +1935,31 @@
 
 ;;ACTIVITY CENTER NOTIFICATIONS ========================================================================================
 
+(re-frame/reg-sub
+ :activity-center/notifications-read
+ (fn [db]
+   (get-in db [:activity-center :notifications-read :data])))
+
+(re-frame/reg-sub
+ :activity-center/notifications-unread
+ (fn [db]
+   (get-in db [:activity-center :notifications-unread :data])))
+
+(re-frame/reg-sub
+ :activity-center/current-status-filter
+ (fn [db]
+   (get-in db [:activity-center :current-status-filter])))
+
+(re-frame/reg-sub
+ :activity-center/notifications-per-read-status
+ :<- [:activity-center/notifications-read]
+ :<- [:activity-center/notifications-unread]
+ :<- [:activity-center/current-status-filter]
+ (fn [[notifications-read notifications-unread status-filter]]
+   (if (= status-filter :unread)
+     notifications-unread
+     notifications-read)))
+
 (defn- group-notifications-by-date
   [notifications]
   (->> notifications
