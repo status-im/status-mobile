@@ -1,7 +1,7 @@
 (ns status-im.utils.datetime
   (:require [re-frame.core :as re-frame]
             [cljs-time.core :as t :refer [plus minus days hours before?]]
-            [cljs-time.coerce :refer [from-long from-date]]
+            [cljs-time.coerce :refer [from-long]]
             [cljs-time.format :refer [formatters
                                       formatter
                                       unparse]]
@@ -9,6 +9,8 @@
             [status-im.native-module.core :as status]
             [clojure.string :as s]
             [status-im.goog.i18n :as goog.18n]))
+
+;;;; Datetime constants
 
 (defn now []
   (t/now))
@@ -29,28 +31,54 @@
 
 (def time-zone-offset (hours (- (/ (.getTimezoneOffset ^js (js/Date.)) 60))))
 
-;; detects if given locale symbols timeformat generates AM/PM ("a")
-(defn- is24Hour-locsym [^js locsym]
+;;;; Utilities
+
+(defn- is24Hour-locsym
+  "Detects if given locale symbols timeformat generates AM/PM ('a')."
+  [^js locsym]
   (not (s/includes?
         (nth (.-TIMEFORMATS locsym) 2)
         "a")))
 
-;; returns is24Hour from device or from given locale symbols
-;; whenever we get non-nil value use it, else calculate it from the given locale symbol
-(defn- is24Hour [locsym]
+(defn- is24Hour
+  "Returns is24Hour from device or from given locale symbols. Whenever we get
+  non-nil value use it, else calculate it from the given locale symbol."
+  [^js locsym]
   (if-some [fromdev (status/is24Hour)]
     fromdev
     (is24Hour-locsym locsym)))
 
-;; time formats
-(defn- short-time-format [locsym] (if (is24Hour locsym) "HH:mm" "h:mm a"))
-(defn- time-format [locsym] (if (is24Hour locsym) "HH:mm:ss" "h:mm:ss a"))
+;;;; Time formats
 
-;; date formats
+(defn- short-time-format
+  [^js locsym]
+  (if (is24Hour locsym)
+    "HH:mm"
+    "h:mm a"))
+
+(defn- time-format
+  [^js locsym]
+  (if (is24Hour locsym)
+    "HH:mm:ss"
+    "h:mm:ss a"))
+
+;;;; Date formats
+
 (defn- short-date-format [_] "dd MMM")
-(defn- medium-date-format [^js locsym] (nth (.-DATEFORMATS locsym) 2)) ; get medium format from current locale symbols
 
-;; date-time formats
+(defn- datetime-within-one-week-format
+  [^js locsym]
+  (if (is24Hour locsym)
+    "E HH:mm"
+    "E h:mm a"))
+
+(defn- medium-date-format
+  "Get medium format from current locale symbols."
+  [^js locsym]
+  (nth (.-DATEFORMATS locsym) 2))
+
+;;;; Datetime formats
+
 (defn- medium-date-time-format [locsym]
   (str (medium-date-format locsym) ", " (time-format locsym)))
 
@@ -61,19 +89,13 @@
           (reset! formatter
                   (goog.18n/mk-fmt status-im.i18n.i18n/locale format))))))
 
-;; generate formatters for different formats
-(def date-time-fmt
-  (get-formatter-fn medium-date-time-format))
-(def date-fmt
-  (get-formatter-fn medium-date-format))
-(def time-fmt
-  (get-formatter-fn short-time-format))
-(def short-date-fmt
-  (get-formatter-fn short-date-format))
+(def date-time-fmt (get-formatter-fn medium-date-time-format))
+(def date-fmt (get-formatter-fn medium-date-format))
+(def time-fmt (get-formatter-fn short-time-format))
+(def short-date-fmt (get-formatter-fn short-date-format))
+(def datetime-within-one-week-fmt (get-formatter-fn datetime-within-one-week-format))
 
-;;
-;; functions which apply formats for the given timestamp
-;;
+;;;; Timestamp formatters
 
 (defn- to-str [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
   (let [date (from-long ms)
@@ -96,6 +118,35 @@
           #(.format ^js (date-fmt) %)
           #(label :t/datetime-yesterday)
           #(label :t/datetime-today)))
+
+(defn timestamp->relative [ms]
+  (let [datetime       (from-long ms)
+        datetime-local (plus datetime time-zone-offset)
+        today          (minus (t/today-at-midnight) time-zone-offset)
+        yesterday      (minus today (days 1))
+        six-days-ago   (minus today (days 6))]
+    (cond
+      ;; Previous years.
+      (< (t/year datetime) (t/year today))
+      (.format ^js (date-fmt) datetime-local)
+
+      ;; Current year.
+      (before? datetime six-days-ago)
+      (.format ^js (short-date-fmt) datetime-local)
+
+      ;; Within 6 days window.
+      (before? datetime yesterday)
+      (.format ^js (datetime-within-one-week-fmt) datetime-local)
+
+      ;; Yesterday
+      (before? datetime today)
+      (str (s/capitalize (label :t/datetime-yesterday))
+           " "
+           (.format ^js (time-fmt) datetime-local))
+
+      ;; Today
+      :else
+      (.format ^js (time-fmt) datetime-local))))
 
 (defn timestamp->mini-date [ms]
   (.format ^js (short-date-fmt) (-> ms
@@ -170,22 +221,6 @@
  :now
  (fn [coeffects _]
    (assoc coeffects :now (timestamp))))
-
-(defn format-date [format date]
-  (let [local (plus (from-date date) time-zone-offset)]
-    (unparse (formatter format) local)))
-
-(defn get-ordinal-date [date]
-  (let [local (plus (from-date date) time-zone-offset)
-        day   (js/parseInt (unparse (formatter "d") local))
-        s     {0 "th"
-               1 "st"
-               2 "nd"
-               3 "rd"}
-        m     (mod day 100)]
-    (str day (or (s (mod (- m 20) 10))
-                 (s m)
-                 (s 0)))))
 
 (defn to-ms [sec]
   (* 1000 sec))

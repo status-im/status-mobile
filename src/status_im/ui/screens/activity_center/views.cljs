@@ -5,26 +5,88 @@
             [quo2.components.tags.context-tags :as context-tags]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
+            [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.topbar :as topbar]
+            [status-im.utils.datetime :as datetime]
             [status-im.utils.handlers :refer [<sub >evt]]))
+
+(defn activity-title
+  [{:keys [type]}]
+  (case type
+    constants/activity-center-notification-type-contact-request
+    (i18n/label :t/contact-request)
+
+    constants/activity-center-notification-type-one-to-one-chat
+    "Dummy 1:1 chat title"
+
+    "Dummy fallback title"))
+
+(defn activity-icon
+  [{:keys [type]}]
+  (case type
+    constants/activity-center-notification-type-contact-request
+    :add-user
+    :placeholder))
+
+(defn activity-context
+  [{:keys [message last-message type]}]
+  (case type
+    constants/activity-center-notification-type-contact-request
+    (let [message     (or message last-message)
+          contact     (<sub [:contacts/contact-by-identity (:from message)])
+          sender-name (or (get-in contact [:names :nickname])
+                          (get-in contact [:names :three-words-name]))]
+      [[context-tags/user-avatar-tag
+        {:color          :purple
+         :override-theme :dark
+         :size           :small
+         :style          {:background-color colors/white-opa-10}
+         :text-style     {:color colors/white}}
+        sender-name
+        (multiaccounts/displayed-photo contact)]
+       [rn/text {:style {:color colors/white}}
+        (i18n/label :t/contact-request-sent)]])
+    nil))
+
+(defn activity-message
+  [{:keys [message last-message]}]
+  {:body (get-in (or message last-message) [:content :text])})
+
+(defn activity-status
+  [notification]
+  (case (get-in notification [:message :contact-request-state])
+    constants/contact-request-message-state-accepted
+    {:type :positive :label (i18n/label :t/accepted)}
+    constants/contact-request-message-state-declined
+    {:type :negative :label (i18n/label :t/declined)}
+    nil))
+
+(defn activity-buttons
+  [{:keys [type]}]
+  (case type
+    constants/activity-center-notification-type-contact-request
+    {:button-1 {:label (i18n/label :t/decline)
+                :type  :danger}
+     :button-2 {:label (i18n/label :t/accept)
+                :type  :success}}
+    nil))
 
 (defn render-notification
   [notification index]
   [rn/view {:flex           1
             :flex-direction :column
             :margin-top     (if (= 0 index) 0 4)}
-   [activity-logs/activity-log {:context   [[context-tags/group-avatar-tag "Name" {:color          :purple
-                                                                                   :override-theme :dark
-                                                                                   :size           :small
-                                                                                   :style          {:background-color colors/white-opa-10}
-                                                                                   :text-style     {:color colors/white}}]
-                                            [rn/text {:style {:color colors/white}} "did something here."]]
-                                :icon      :placeholder
-                                :message   {:body (get-in notification [:message :content :text])}
-                                :timestamp (:timestamp notification)
-                                :title     "Activity Title"
-                                :unread?   (not (:read notification))}]])
+   [activity-logs/activity-log
+    (merge {:context   (activity-context notification)
+            :icon      (activity-icon notification)
+            :message   (activity-message notification)
+            :status    (activity-status notification)
+            :timestamp (datetime/timestamp->relative (:timestamp notification))
+            :title     (activity-title notification)
+            :unread?   (not (:read notification))}
+           (activity-buttons notification))]])
 
 (defn notifications-list
   []

@@ -1,5 +1,5 @@
 (ns status-im.utils.datetime-test
-  (:require [cljs.test :refer-macros [deftest is]]
+  (:require [cljs.test :refer-macros [deftest testing is]]
             [status-im.utils.datetime :as d]
             [status-im.goog.i18n :as i18n]
             [cljs-time.core :as t]))
@@ -74,6 +74,36 @@
                 d/time-zone-offset (t/period :hours 0)
                 d/date-fmt (fn [] (i18n/mk-fmt "nb-NO" #'status-im.utils.datetime/medium-date-time-format))]
     (is (= (d/day-relative epoch) "1. jan. 1970, 00:00:00"))))
+
+(deftest timestamp->relative-test
+  ;; Today is Monday, March 10, 1975 3:15:45 PM GMT
+  (with-redefs [t/*ms-fn*          (constantly 163696545000)
+                d/time-zone-offset (t/period :hours 0)
+                d/is24Hour         (constantly false)]
+    (testing "formats previous years"
+      (is (= "Dec 31, 1974" (d/timestamp->relative 157734000000)))
+      (is (= "Dec 31, 1973" (d/timestamp->relative 126198000000))))
+
+    (testing "formats 7 days ago or older, but in the current year"
+      (is (= "03 Mar" (d/timestamp->relative 163091745000)))
+      (is (= "02 Mar" (d/timestamp->relative 163004400000)))
+      (is (= "01 Jan" (d/timestamp->relative 157820400000))))
+
+    (testing "formats dates within the last 6 days"
+      (is (= "Sat 3:15 PM" (d/timestamp->relative 163523745000)))
+      (is (= "Fri 3:15 PM" (d/timestamp->relative 163437345000)))
+      (is (= "Thu 3:15 PM" (d/timestamp->relative 163350945000)))
+      (is (= "Wed 3:15 PM" (d/timestamp->relative 163264545000)))
+      (is (= "Tue 3:15 PM" (d/timestamp->relative 163178145000))))
+
+    (testing "formats within yesterday window"
+      (is (= "Yesterday 3:15 PM" (d/timestamp->relative 163610145000)))
+      (is (= "Yesterday 11:59 PM" (d/timestamp->relative 163641599000))))
+
+    (testing "formats today, at various timestamps"
+      (is (= "3:15 PM" (d/timestamp->relative 163696545000)))
+      (is (= "12:00 PM" (d/timestamp->relative 163684800000)))
+      (is (= "12:00 AM" (d/timestamp->relative 163641600000))))))
 
 #_((deftest day-relative-before-yesterday-force-24H-test
      (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)

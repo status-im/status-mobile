@@ -1766,6 +1766,7 @@
     "opened" : "Opened",
     "accepted": "Accepted",
     "declined": "Declined",
+    "contact-request-sent": "sent contact request",
     "contact-request-header": "👋  Contact requests",
     "contact-request-declined": "Declined ⓧ",
     "contact-request-accepted": "Accepted ✓",
