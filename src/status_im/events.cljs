@@ -36,6 +36,7 @@
             [status-im.native-module.core :as status]
             [status-im.navigation :as navigation]
             status-im.notifications-center.core
+            status-im.activity-center.core
             status-im.pairing.core
             [status-im.popover.core :as popover]
             status-im.profile.core

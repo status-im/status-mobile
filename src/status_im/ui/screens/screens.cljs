@@ -80,6 +80,7 @@
             [status-im.ui.screens.network.network-details.views :as network-details]
             [status-im.ui.screens.network.views :as network]
             [status-im.ui.screens.notifications-center.views :as notifications-center]
+            [status-im.ui.screens.activity-center.views :as activity-center]
             [status-im.ui.screens.notifications-settings.views :as notifications-settings]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.views
              :as
@@ -134,7 +135,7 @@
 (defn screens []
   (concat [;;INTRO, ONBOARDING, LOGIN
 
-           ;Multiaccounts
+                                        ;Multiaccounts
            {:name          :multiaccounts
             :insets        {:bottom true}
             :options       {:topBar {:title        {:text (i18n/label :t/your-keys)}
@@ -142,7 +143,7 @@
             :right-handler multiaccounts/topbar-button
             :component     multiaccounts/multiaccounts}
 
-           ;Login
+                                        ;Login
            {:name          :login
             :insets        {:bottom true}
             :options       {:topBar {:rightButtons (right-button-options :login :more)}}
@@ -152,17 +153,17 @@
            {:name      :progress
             :component progress/progress}
 
-           ;[Onboarding]
+                                        ;[Onboarding]
            {:name      :intro
             :insets    {:bottom true}
             :component onboarding.intro/intro}
 
-           ;[Onboarding]
+                                        ;[Onboarding]
            {:name      :get-your-keys
             :insets    {:bottom true}
             :component onboarding.keys/get-your-keys}
 
-           ;[Onboarding]
+                                        ;[Onboarding]
            {:name      :choose-name
             :options   {:topBar             {:visible false}
                         :popGesture         false
@@ -171,7 +172,7 @@
             :insets    {:bottom true}
             :component onboarding.keys/choose-a-chat-name}
 
-           ;[Onboarding]
+                                        ;[Onboarding]
            {:name      :select-key-storage
             :insets    {:bottom true}
             :options   {:popGesture         false
@@ -179,7 +180,7 @@
                                              :popStackOnPress     false}}
             :component onboarding.storage/select-key-storage}
 
-           ;[Onboarding] Create Password
+                                        ;[Onboarding] Create Password
            {:name      :create-password
             :options   {:popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
@@ -187,7 +188,7 @@
             :insets    {:bottom true}
             :component onboarding.password/screen}
 
-           ;[Onboarding] Welcome
+                                        ;[Onboarding] Welcome
            {:name      :welcome
             :options   {:popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
@@ -195,7 +196,7 @@
             :insets    {:bottom true}
             :component onboarding.welcome/welcome}
 
-           ;[Onboarding] Notification
+                                        ;[Onboarding] Notification
            {:name      :onboarding-notification
             :options   {:popGesture         false
                         :hardwareBackButton {:dismissModalOnPress false
@@ -203,7 +204,7 @@
             :insets    {:bottom true}
             :component onboarding.notifications/notifications-onboarding}
 
-           ;[Onboarding] Recovery
+                                        ;[Onboarding] Recovery
            {:name      :recover-multiaccount-enter-phrase
             :insets    {:bottom true}
             :component onboarding.phrase/enter-phrase}
@@ -216,11 +217,11 @@
 
            ;;CHAT
 
-           ;Home
+                                        ;Home
            {:name      :home
             :component home/home-old}
 
-           ;Chat
+                                        ;Chat
            {:name          :chat
             :options       {:popGesture false
                             :hardwareBackButton {:dismissModalOnPress false
@@ -228,7 +229,7 @@
                             :topBar             {:visible false}}
             :component     chat/chat-old}
 
-           ;Pinned messages
+                                        ;Pinned messages
            {:name      :chat-pinned-messages
                                         ;TODO custom subtitle
             :options   {:topBar {:visible false}}
@@ -255,6 +256,9 @@
             ;;TODO custom nav
             :options   {:topBar {:visible false}}
             :component notifications-center/center}
+           {:name      :activity-center
+            :options   {:topBar {:visible false}}
+            :component activity-center/activity-center}
            ;; Community
            {:name      :community
             ;;TODO custom
@@ -590,38 +594,38 @@
 
            ;;MODALS
 
-           ;[Chat] New Chat
+                                        ;[Chat] New Chat
            {:name      :new-chat
             :on-focus  [::new-chat.events/new-chat-focus]
             ;;TODO accessories
             :options   {:topBar {:visible false}}
             :component new-chat/new-chat}
 
-           ;[Chat] New Public chat
+                                        ;[Chat] New Public chat
            {:name      :new-public-chat
             :insets    {:bottom true}
             :options   {:topBar {:title {:text (i18n/label :t/new-public-group-chat)}}}
             :component new-public-chat/new-public-chat}
 
-           ;[Chat] Link preview settings
+                                        ;[Chat] Link preview settings
            {:name      :link-preview-settings
             :options   {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}}
             :component link-previews-settings/link-previews-settings}
 
-           ;[Chat] Edit nickname
+                                        ;[Chat] Edit nickname
            {:name      :nickname
             :insets    {:bottom true}
             ;;TODO dyn subtitle
             :options   {:topBar {:visible false}}
             :component contact/nickname}
 
-           ;[Group chat] Edit group chat name
+                                        ;[Group chat] Edit group chat name
            {:name      :edit-group-chat-name
             :insets    {:bottom true}
             :options   {:topBar {:title {:text (i18n/label :t/edit-group)}}}
             :component group-chat/edit-group-chat-name}
 
-           ;[Group chat] Add participants
+                                        ;[Group chat] Add participants
            {:name      :add-participants-toggle-list
             :on-focus  [:group/add-participants-toggle-list]
             :insets    {:bottom true}
@@ -629,34 +633,34 @@
             :options   {:topBar {:visible false}}
             :component group-chat/add-participants-toggle-list}
 
-           ;[Communities] Invite people
+                                        ;[Communities] Invite people
            {:name      :invite-people-community
             ;;TODO dyn title
             :options   {:topBar {:visible false}}
             :component communities.invite/invite
             :insets    {:bottom true}}
 
-           ;New Contact
+                                        ;New Contact
            {:name      :new-contact
             :on-focus  [::new-chat.events/new-chat-focus]
             ;;TODO accessories
             :options   {:topBar {:visible false}}
             :component new-chat/new-contact}
 
-           ;[Wallet] Recipient
+                                        ;[Wallet] Recipient
            {:name      :recipient
             :insets    {:bottom true}
             ;;TODO accessories
             :options   {:topBar {:visible false}}
             :component recipient/recipient}
 
-           ;[Wallet] New favourite
+                                        ;[Wallet] New favourite
            {:name      :new-favourite
             :insets    {:bottom true}
             :options   {:topBar {:title {:text (i18n/label :t/new-favourite)}}}
             :component recipient/new-favourite}
 
-           ;QR Scanner
+                                        ;QR Scanner
            {:name      :qr-scanner
             :insets    {:top false :bottom false}
             ;;TODO custom topbar
@@ -667,7 +671,7 @@
             :component qr-scanner/qr-scanner}
 
            ;;TODO WHY MODAL?
-           ;[Profile] Notifications settings
+                                        ;[Profile] Notifications settings
            {:name      :notifications-settings
             :options   {:topBar             {:title {:text (i18n/label :t/notification-settings)}}
                         :popGesture         false
@@ -677,7 +681,7 @@
             :component notifications-settings/notifications-settings}
 
            ;;TODO WHY MODAL?
-           ;[Profile] Notifications Advanced settings
+                                        ;[Profile] Notifications Advanced settings
            {:name      :notifications-advanced-settings
             :options   {:topBar             {:title {:text (i18n/label :t/notification-settings)}}
                         :popGesture         false
@@ -686,7 +690,7 @@
             :insets    {:bottom true}
             :component notifications-settings/notifications-advanced-settings}
 
-           ;[Wallet] Prepare Transaction
+                                        ;[Wallet] Prepare Transaction
            {:name        :prepare-send-transaction
             :insets      {:bottom true}
             :on-dissmiss [:wallet/cancel-transaction-command]
@@ -695,7 +699,7 @@
                           :hardwareBackButton {:dismissModalOnPress false}}
             :component   wallet.send/prepare-send-transaction}
 
-           ;[Wallet] Request Transaction
+                                        ;[Wallet] Request Transaction
            {:name        :request-transaction
             :insets      {:bottom true}
             :on-dissmiss [:wallet/cancel-transaction-command]
@@ -704,12 +708,12 @@
                           :hardwareBackButton {:dismissModalOnPress false}}
             :component   wallet.send/request-transaction}
 
-           ;[Wallet] Buy crypto
+                                        ;[Wallet] Buy crypto
            {:name      :buy-crypto
             :insets    {:bottom true}
             :component wallet.buy-crypto/container}
 
-           ;[Wallet] Buy crypto website
+                                        ;[Wallet] Buy crypto website
            {:name      :buy-crypto-website
             :insets    {:bottom true}
             ;;TODO subtitle
@@ -722,27 +726,27 @@
             :options   {:topBar {:visible false}}
             :component wallet.collectibles/nft-details-modal}
 
-           ;My Status
+                                        ;My Status
            {:name      :my-status
             :insets    {:bottom true}
             :options   {:topBar {:title {:text (i18n/label :t/my-status)}}}
             :component status.new/my-status}
 
-           ;[Browser] New bookmark
+                                        ;[Browser] New bookmark
            {:name      :new-bookmark
             :insets    {:bottom true}
             ;;TODO dynamic title
             :options   {:topBar {:visible false}}
             :component bookmarks/new-bookmark}
 
-           ;Profile
+                                        ;Profile
            {:name      :profile
             :insets    {:bottom true}
             ;;TODO custom toolbar
             :options   {:topBar {:visible false}}
             :component contact/profile}
 
-           ;KEYCARD
+                                        ;KEYCARD
            {:name         :keycard-onboarding-intro
             :insets       {:bottom true}
             :back-handler keycard.core/onboarding-intro-back-handler
