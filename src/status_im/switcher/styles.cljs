@@ -51,7 +51,7 @@
     :position        :absolute
     :z-index         2
     :align-items     :center
-    :align-self      :center
+    :align-self       :center
     :justify-content :center}
    style))
 
@@ -88,3 +88,27 @@
 (defn switcher-switch-screen []
   {:margin-top  40
    :align-items :center})
+
+;; Tabs
+
+(defn switcher-header [top-offset]
+  {:position :absolute
+   :top top-offset
+   :flex-direction :row})
+
+(defn switcher-header-tab []
+  {:padding-horizontal constants/switcher-header-tab-padding-horizontal
+   :padding-vertical 10})
+
+(defn switcher-header-tab-text []
+  {:color colors/white})
+
+(defn switcher-tab []
+  (let [{:keys [width]} (constants/dimensions)]
+    {:width width
+     :flex 1
+     :flex-shrink 0
+     :align-items :center
+     :justify-content :center}))
+
+

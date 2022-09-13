@@ -2,6 +2,7 @@
   (:require [quo.react-native :as rn]
             [status-im.switcher.cards.messaging-card :as messaging-card]
             [status-im.switcher.styles :as styles]
+            [status-im.switcher.tabs :as tabs]
             [status-im.utils.handlers :refer [<sub]]))
 
 ;; TODO - use something like this to avoid multiple renders etc.
@@ -27,5 +28,6 @@
                     :num-columns               2
                     :key-fn                    str}]]))
 
-(defn tabs [toggle-switcher-screen]
-  [switch-screen toggle-switcher-screen])
+(defn tabs [_toggle-switcher-screen]
+  ;; [switch-screen toggle-switcher-screen]
+  [tabs/switcher-tabs])

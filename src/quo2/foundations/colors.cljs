@@ -254,6 +254,8 @@
 (def switcher-background "#040B14")
 
 ;;switcher-screen with transparency
+(def switcher-background-opa-20 (alpha switcher-background 0.2))
+(def switcher-background-opa-40 (alpha switcher-background 0.4))
 (def switcher-background-opa-60 (alpha switcher-background 0.6))
 (def switcher-background-opa-70 (alpha switcher-background 0.7))
 (def switcher-background-opa-80 (alpha switcher-background 0.8))

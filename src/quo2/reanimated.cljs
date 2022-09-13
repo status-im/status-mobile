@@ -2,19 +2,26 @@
   (:require ["react-native" :as rn]
             [reagent.core :as reagent]
             [clojure.string :as string]
+            [oops.core :refer [oget]]
             ["react-native-reanimated" :default reanimated
-             :refer (useSharedValue useAnimatedStyle withTiming withDelay withSpring Easing Keyframe)]))
+             :refer (useSharedValue useAnimatedStyle useAnimatedGestureHandler withTiming withDelay withSpring Easing Keyframe runOnUI runOnJS)]))
 
 ;; Animated Components
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
 
-(def view (reagent/adapt-react-class (.-View reanimated)))
-(def image (reagent/adapt-react-class (.-Image reanimated)))
+;; Components
+
+(def view (reagent/adapt-react-class (.-View ^js reanimated)))
+(def text (reagent/adapt-react-class (.-Text ^js reanimated)))
+(def image (reagent/adapt-react-class (.-Image ^js reanimated)))
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
+(def scroll-view (reagent/adapt-react-class (.-ScrollView ^js reanimated)))
+(def flat-list (reagent/adapt-react-class (.-FlatList ^js reanimated)))
 
 ;; Hooks 
 (def use-shared-value useSharedValue)
 (def use-animated-style useAnimatedStyle)
+(def use-animated-gesture-handler useAnimatedGestureHandler)
 
 ;; Animations
 (def with-timing withTiming)
@@ -47,6 +54,10 @@
   (->> (map (fn [[k v]] [(f k) v]) m)
        (into {})))
 
+;; Utils
+(def run-on-ui runOnUI)
+(def run-on-js runOnJS)
+
 ;; Worklets
 (def worklet-factory (js/require "../src/js/worklet_factory.js"))
 
@@ -68,3 +79,9 @@
 (defn animate-shared-value-with-delay [anim val duration easing delay]
   (set-shared-value anim (with-delay delay (with-timing val (js-obj "duration" duration
                                                                     "easing"   (get easings easing))))))
+
+(defn interpolate [anim-value input-range output-range options]
+  (let [input-range (clj->js input-range)
+        output-range (clj->js output-range)
+        options (clj->js (map-keys kebab-case->camelCase options))]
+    (.interpolate ^js reanimated (oget anim-value "value") input-range output-range options)))

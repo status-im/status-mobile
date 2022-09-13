@@ -15,5 +15,13 @@ module.exports = {
     },
     resolver: {
         extraNodeModules: require('node-libs-react-native'),
+        sourceExts: [
+            'js',
+            'json',
+            'jsx',
+            'mjs',
+            'ts',
+            'tsx',
+          ],
     },
 };

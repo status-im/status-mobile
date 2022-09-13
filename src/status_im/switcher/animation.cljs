@@ -48,7 +48,6 @@
                                     (+ constants/switcher-container-height-padding
                                        constants/switcher-height-offset)))
 
-
 ;;;; Bottom Tabs & Home Stack Animations
 
 
@@ -63,3 +62,15 @@
       (if selected-tab?
         (reanimated/animate-shared-value-with-delay stack-opacity-shared-value 1 300 :easing3 150)
         (reanimated/animate-shared-value-with-timing stack-opacity-shared-value 0 300 :easing3)))))
+
+;; Tabs Animations
+
+(def switcher-tabs-js (js/require "../src/js/switcher_tabs.js"))
+
+(def use-switcher-scroll-handler (.-useSwitcherScrollHandler ^js switcher-tabs-js))
+
+(def use-header-offset-left
+  (.-useHeaderOffsetLeft ^js switcher-tabs-js))
+
+(def use-header-text-opacity
+  (.-useHeaderTextOpacity ^js switcher-tabs-js))

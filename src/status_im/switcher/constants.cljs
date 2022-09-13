@@ -1,7 +1,8 @@
 (ns status-im.switcher.constants
   (:require [quo.react-native :as rn]
             [status-im.utils.handlers :refer [<sub]]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [quo2.foundations.colors :as colors]))
 
 ;; For translucent status bar(android), dimensions/window also includes status bar's height,
 ;; this offset is used for correctly calculating switcher position
@@ -72,3 +73,12 @@
    :chats-stack       :chats-tab-opacity
    :wallet-stack      :wallet-tab-opacity
    :browser-stack     :browser-tab-opacity})
+
+;; Tabs
+
+(def switcher-header-tab-padding-horizontal 10)
+
+(def switcher-tabs-data [{:name "Switch" :color colors/switcher-background-opa-20}
+                         {:name "Scan" :color colors/switcher-background-opa-40}
+                         {:name "Share" :color colors/switcher-background-opa-20}
+                         {:name "Activity" :color colors/switcher-background-opa-20}])

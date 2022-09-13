@@ -121,9 +121,9 @@
                                      :align-items     :center}
                           :on-press #(theme/set-theme :light)}
     [quo/text "Set light theme"]]
-   [rn/view {:width            1
-             :margin-vertical  4
-             :background-color (:ui-02 @colors/theme)}]
+   [rn/view {:style {:width            1
+                     :margin-vertical  4
+                     :background-color (:ui-02 @colors/theme)}}]
    [rn/touchable-opacity {:style    {:padding         8
                                      :flex            1
                                      :justify-content :center

@@ -2,12 +2,23 @@
 # taking the result of yarn2nix and symlinking what is fine,
 # and copying and modifying what needs to be adjusted.
 
-{ stdenv, deps, nodejs, patchMavenSources }:
+{ stdenv, deps, nodejs, patchutils, patchMavenSources }:
 
 stdenv.mkDerivation {
   name = "${deps.nodejs.name}-patched";
+
+  buildInputs = [ patchutils ];
+
+  # This patch was introduced in this PR (https://github.com/status-im/status-mobile/pull/13885)
+  # This bug has been fixed in later versions of `react-native-reanimated` (> 3.0.0), but upgrading
+  # is blocked for Status because of other migration issues
+  patches = [
+    ./react-native-reanimated-2.3.3-flatlist-fix.patch
+  ];
+
   phases = [
     "unpackPhase"
+    "patchPhase"
     "patchGradlePhase"
     "patchBuildIdPhase"
     "patchHermesPhase"
@@ -15,12 +26,18 @@ stdenv.mkDerivation {
     "installPhase"
   ];
 
-  # First symlink all modules as is
+  # First symlink all modules as is, copy those that we patch.
   # WARNING: Metro has issues when dealing with symlinks!
   unpackPhase = ''
+    toPatch=$(lsdiff --strip 2 $patches)
     mkdir -p ./node_modules/
     for module in $(ls ${deps.nodejs}/node_modules); do
-      ln -s ${deps.nodejs}/node_modules/$module ./node_modules/
+      if [[ $toPatch =~ ^$module/.* ]]; then
+        cp -r ${deps.nodejs}/node_modules/$module ./node_modules/
+        chmod u+w -R ./node_modules/$module
+      else
+        ln -s ${deps.nodejs}/node_modules/$module ./node_modules/
+      fi
     done
     cp -r ${deps.nodejs}/node_modules/.bin ./node_modules/
   '';

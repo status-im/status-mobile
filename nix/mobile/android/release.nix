@@ -46,7 +46,7 @@ in stdenv.mkDerivation rec {
       root = path;
       include = [
         "package.json" "yarn.lock" "metro.config.js" ".babelrc"
-        "resources/.*" "translations/.*" "src/js/worklet_factory.js"
+        "resources/.*" "translations/.*" "src/js/.*"
         "modules/react-native-status/android.*" "android/.*"
         envFileName "VERSION" "status-go-version.json" "react-native.config.js"
       ];

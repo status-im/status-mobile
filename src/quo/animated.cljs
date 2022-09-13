@@ -4,7 +4,7 @@
             [quo.react-native :as rn]
             [quo.gesture-handler :as gh]
             [oops.core :refer [oget ocall]]
-            ["react-native-reanimated" :default animated :refer (clockRunning EasingNode)]
+            ["react-native-reanimated" :default animated :refer [clockRunning EasingNode withSpring]]
             ["react-native-redash/lib/module/v1" :as redash]
             quo.react)
   (:require-macros [quo.react :refer [maybe-js-deps]]))
@@ -150,8 +150,8 @@
 (def clamp (oget redash "clamp"))
 (def diff-clamp (.-diffClamp ^js redash))
 
-(defn with-spring [config]
-  (ocall redash "withSpring" (clj->js config)))
+(defn with-spring [value, & [config]]
+  (withSpring value (clj->js config)))
 
 (defn with-decay [config]
   (.withDecay ^js redash (clj->js config)))

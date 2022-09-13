@@ -41,6 +41,7 @@ local.properties
 # VS Code
 .vscode/
 workspace.code-workspace
+.calva/
 
 # node.js
 #
