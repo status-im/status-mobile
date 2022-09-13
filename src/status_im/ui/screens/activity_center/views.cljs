@@ -37,8 +37,7 @@
 
 (defn activity-center []
   (reagent/create-class
-   {:display-name        "activity-center"
-    :component-did-mount #(>evt [:activity-center/notifications:fetch-first-page {:status-filter :unread}])
+   {:component-did-mount #(>evt [:activity-center/notifications:fetch-first-page {:status-filter :unread}])
     :reagent-render
     (fn []
       [:<>
