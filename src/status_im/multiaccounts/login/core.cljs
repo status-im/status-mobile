@@ -315,14 +315,14 @@
                              :on-error reject})))
           (js/Promise.
            (fn [resolve reject]
-             (json-rpc/call {:method "wallet_getFavourites"
+             (json-rpc/call {:method "wallet_getSavedAddresses"
                              :on-success resolve
                              :on-error reject})))]))
        (.then (fn [[accounts tokens custom-tokens favourites]]
                 (callback accounts
                           (normalize-tokens network-id tokens)
                           (mapv #(update % :symbol keyword) custom-tokens)
-                          favourites)))
+                          (filter :favourite favourites))))
        (.catch (fn [_]
                  (log/error "Failed to initialize wallet"))))))
 

@@ -88,10 +88,11 @@
   {:events [:wallet/add-favourite]}
   [{:keys [db] :as cofx} address name]
   (let [new-favourite {:address  address
-                       :name     (or name "")}]
+                       :name     (or name "")
+                       :favourite true}]
     (fx/merge cofx
               {:db (assoc-in db [:wallet/favourites address] new-favourite)
-               ::json-rpc/call [{:method "wallet_addFavourite"
+               ::json-rpc/call [{:method "wallet_addSavedAddress"
                                  :params [new-favourite]
                                  :on-success #()}]}
               (navigation/navigate-back))))
