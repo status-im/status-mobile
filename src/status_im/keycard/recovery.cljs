@@ -126,12 +126,15 @@
 (fx/defn intro-wizard
   {:events [:multiaccounts.create.ui/intro-wizard]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (-> db
-                     (update :keycard dissoc :flow)
-                     (dissoc :restored-account?))}
-            (multiaccounts.create/prepare-intro-wizard)
-            (navigation/set-stack-root :onboarding [:get-your-keys])))
+  (let [accs (get db :multiaccounts/multiaccounts)]
+    (fx/merge cofx
+              {:db (-> db
+                       (update :keycard dissoc :flow)
+                       (dissoc :restored-account?))}
+              (multiaccounts.create/prepare-intro-wizard)
+              (if (pos? (count accs))
+                (navigation/navigate-to-cofx :get-your-keys nil)
+                (navigation/set-stack-root :onboarding [:get-your-keys])))))
 
 (fx/defn recovery-no-key
   {:events [:keycard.recovery.no-key.ui/generate-key-pressed]}
