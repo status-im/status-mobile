@@ -1,9 +1,9 @@
 (ns quo2.screens.markdown.text
-  (:require [quo.react-native :as rn]
+  (:require [quo.design-system.colors :as colors]
             [quo.previews.preview :as preview]
-            [reagent.core :as reagent]
+            [quo.react-native :as rn]
             [quo2.components.markdown.text :as quo2]
-            [quo.design-system.colors :as colors]))
+            [reagent.core :as reagent]))
 
 (def descriptor [{:label   "Size:"
                   :key     :size
@@ -31,7 +31,7 @@
                              :value "Monospace"}]}])
 
 (defn cool-preview []
-  (let [state     (reagent/atom {})]
+  (let [state (reagent/atom {})]
     (fn []
       [rn/view {:margin-bottom 50
                 :padding       16}
