@@ -29,11 +29,11 @@
     {:db             (assoc-in db [:activity-center notifications-group :loading?] true)
      ::json-rpc/call [{:method     (notifications-group->rpc-method notifications-group)
                        :params     [cursor notifications-per-page]
-                       :on-success #(re-frame/dispatch [:activity-center/notifications:fetch:success notifications-group %])
-                       :on-error   #(re-frame/dispatch [:activity-center/notifications:fetch:error notifications-group %])}]}))
+                       :on-success #(re-frame/dispatch [:activity-center/notifications-fetch-success notifications-group %])
+                       :on-error   #(re-frame/dispatch [:activity-center/notifications-fetch-error notifications-group %])}]}))
 
 (fx/defn notifications-fetch-first-page
-  {:events [:activity-center/notifications:fetch-first-page]}
+  {:events [:activity-center/notifications-fetch-first-page]}
   [{:keys [db] :as cofx} {:keys [status-filter] :or {status-filter :unread}}]
   (let [notifications-group (notifications-read-status->group status-filter)]
     (fx/merge cofx
@@ -44,7 +44,7 @@
               (notifications-fetch start-or-end-cursor notifications-group))))
 
 (fx/defn notifications-fetch-next-page
-  {:events [:activity-center/notifications:fetch-next-page]}
+  {:events [:activity-center/notifications-fetch-next-page]}
   [{:keys [db] :as cofx}]
   (let [status-filter       (get-in db [:activity-center :current-status-filter])
         notifications-group (notifications-read-status->group status-filter)
@@ -53,7 +53,7 @@
       (notifications-fetch cofx cursor notifications-group))))
 
 (fx/defn notifications-fetch-success
-  {:events [:activity-center/notifications:fetch:success]}
+  {:events [:activity-center/notifications-fetch-success]}
   [{:keys [db]} notifications-group {:keys [cursor notifications]}]
   {:db (-> db
            (update-in [:activity-center notifications-group] dissoc :loading?)
@@ -63,7 +63,7 @@
                       (map data-store.activities/<-rpc notifications)))})
 
 (fx/defn notifications-fetch-error
-  {:events [:activity-center/notifications:fetch:error]}
+  {:events [:activity-center/notifications-fetch-error]}
   [{:keys [db]} notifications-group error]
   (log/warn "Failed to load Activity Center notifications" error)
   {:db (update-in db [:activity-center notifications-group] dissoc :loading?)})

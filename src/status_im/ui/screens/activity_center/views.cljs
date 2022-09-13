@@ -32,12 +32,12 @@
     [rn/flat-list {:style          {:padding-horizontal 8}
                    :data           notifications
                    :key-fn         :id
-                   :on-end-reached #(>evt [:activity-center/notifications:fetch-next-page])
+                   :on-end-reached #(>evt [:activity-center/notifications-fetch-next-page])
                    :render-fn      render-notification}]))
 
 (defn activity-center []
   (reagent/create-class
-   {:component-did-mount #(>evt [:activity-center/notifications:fetch-first-page {:status-filter :unread}])
+   {:component-did-mount #(>evt [:activity-center/notifications-fetch-first-page {:status-filter :unread}])
     :reagent-render
     (fn []
       [:<>
@@ -45,8 +45,8 @@
                        :title      (i18n/label :t/activity)}]
        ;; TODO(ilmotta): Temporary solution to switch between read/unread
        ;; notifications while the Design team works on the mockups.
-       [button/button {:on-press #(>evt [:activity-center/notifications:fetch-first-page {:status-filter :unread}])}
+       [button/button {:on-press #(>evt [:activity-center/notifications-fetch-first-page {:status-filter :unread}])}
         "Unread"]
-       [button/button {:on-press #(>evt [:activity-center/notifications:fetch-first-page {:status-filter :read}])}
+       [button/button {:on-press #(>evt [:activity-center/notifications-fetch-first-page {:status-filter :read}])}
         "Read"]
        [notifications-list]])}))
