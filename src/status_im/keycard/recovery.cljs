@@ -224,11 +224,13 @@
               (multiaccounts.model/logged-in? cofx)
               (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])
 
-              (:multiaccounts/login db)
+              (= (get-in db [:multiaccounts/login :key-uid]) (get-in db [:keycard :application-info :key-uid]))
               (return-to-keycard-login)
 
               :else
-              (navigation/set-stack-root :onboarding [:get-your-keys]))))
+              (if (seq (get db :multiaccounts/multiaccounts))
+                (navigation/pop-to-root-tab :multiaccounts)
+                (navigation/set-stack-root :onboarding [:get-your-keys])))))
 
 (re-frame/reg-fx
  ::finish-migration
