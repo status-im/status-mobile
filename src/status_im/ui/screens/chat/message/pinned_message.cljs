@@ -60,7 +60,7 @@
 
 (defn pin-limit-popover []
   (let [{:keys [message]} (<sub [:popover/popover])]
-    [react/view
+    [react/view {:style {:flex-shrink 1}}
      [react/view {:style {:height 60
                           :justify-content :center}}
       [react/text {:style {:padding-horizontal 40
