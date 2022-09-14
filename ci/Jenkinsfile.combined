@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.5.3'
+library 'status-jenkins-lib@v1.5.4'
 
 pipeline {
   agent { label 'linux' }
@@ -33,7 +33,7 @@ pipeline {
   stages {
     stage('Prep') {
       steps { script {
-        println "Current JOB: ${env.JOB_NAME}"
+        println("Current JOB: ${env.JOB_NAME}")
         /* just for a shorter access */
         btype = utils.getBuildType()
       } }
