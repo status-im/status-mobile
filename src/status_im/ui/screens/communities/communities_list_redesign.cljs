@@ -28,9 +28,10 @@
 (def view-type   (reagent/atom  :card-view))
 (def sort-list-by (reagent/atom :name))
 
-(def mock-community-item-data ;; TO Do remove once communities are loaded with this data.
-  {:data {:status          :gated
+(def mock-community-item-data ;; TODO: remove once communities are loaded with this data.
+  {:data {:status         :gated
           :locked         true
+          :images {:thumbnail {:uri (resources/get-image :status-logo)}}
           :cover          (resources/get-image :community-cover)
           :tokens         [{:id  1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]
           :tags           [{:id 1 :tag-label (i18n/label :t/music) :resource (resources/get-image :music)}
@@ -59,9 +60,6 @@
                     {:featured       true})]
     [community-card/community-card-view-item item #(>evt [:navigate-to :community-overview item])]))
 
-(defn community-list-key-fn [item]
-  (:id item))
-
 (defn get-item-layout-js [_ index]
   #js {:length 64 :offset (* 64 index) :index index})
 
@@ -69,39 +67,42 @@
   [react/view {:flex               1
                :margin-bottom      8
                :padding-horizontal 20}
-   [react/view {:flex-direction     :row
-                :padding-top        20
-                :padding-bottom     8
-                :height             60}
-    [react/view {:flex   1}
-     [quo2.tabs/tabs {:size              32
-                      :on-change         #(reset! selected-tab %)
-                      :default-active    :all
-                      :data [{:id :all   :label (i18n/label :t/all)}
-                             {:id :open  :label (i18n/label :t/open)}
-                             {:id :gated :label (i18n/label :t/gated)}]}]]
+   [react/view {:flex-direction :row
+                :padding-top    20
+                :padding-bottom 8
+                :height         60}
+    [react/view {:flex 1}
+     [quo2.tabs/tabs {:size           32
+                      :on-change      #(reset! selected-tab %)
+                      :default-active :all
+                      :data           [{:id    :all
+                                        :label (i18n/label :t/all)}
+                                       {:id    :open
+                                        :label (i18n/label :t/open)}
+                                       {:id    :gated
+                                        :label (i18n/label :t/gated)}]}]]
     [react/view {:flex-direction :row}
      [quo2.button/button
-      {:icon                true
-       :type                :outline
-       :size                32
-       :style               {:margin-right 12}
-       :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet :sort-communities {}])}
+      {:icon     true
+       :type     :outline
+       :size     32
+       :style    {:margin-right 12}
+       :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet :sort-communities {}])}
       :main-icons2/lightning]
      [quo2.button/button
-      {:icon                true
-       :type                :outline
-       :size                32
-       :on-press            #(if (= @view-type :card-view)
-                               (reset! view-type :list-view)
-                               (reset! view-type :card-view))}
+      {:icon     true
+       :type     :outline
+       :size     32
+       :on-press #(if (= @view-type :card-view)
+                    (reset! view-type :list-view)
+                    (reset! view-type :card-view))}
       (if (= @view-type :card-view)
         :main-icons2/card-view
         :main-icons2/list-view)]]]])
 
 (defn featured-communities [communities]
   [list/flat-list
-   {:key-fn                          str
+   {:key-fn                          :id
     :horizontal                        true
     :getItemLayout                     get-item-layout-js
     :keyboard-should-persist-taps      :always
@@ -112,7 +113,7 @@
 (defn other-communities [communities sort-list-by]
   (let [sorted-communities (sort-by sort-list-by communities)]
     [list/flat-list
-     {:key-fn                            str
+     {:key-fn                            :id
       :getItemLayout                     get-item-layout-js
       :keyboard-should-persist-taps      :always
       :shows-horizontal-scroll-indicator false
@@ -206,34 +207,34 @@
   (let [multiaccount (<sub [:multiaccount])
         communities (<sub [:communities/communities])
         featured-communities (<sub [:communities/featured-communities])]
-    (fn []
-      [safe-area/consumer
-       (fn [insets]
-         [react/view {:style {:flex             1
-                              :padding-top      (:top insets)
-                              :background-color (quo2.colors/theme-colors
-                                                 quo2.colors/neutral-5
-                                                 quo2.colors/neutral-95)}}
-          [topbar/topbar
-           {:navigation      :none
-            :left-component  [react/view {:margin-left 16}
-                              [photos/photo (multiaccounts/displayed-photo multiaccount)
-                               {:size 32}]]
-            :right-component [react/view {:flex-direction :row
-                                          :margin-right 16}
-                              [topnav/qr-scanner]
-                              [topnav/qr-code]
-                              [topnav/notifications-button]]
-            :new-ui?         true
-            :border-bottom   false}]
-          [title-column]
-          [react/scroll-view
-           [community-filter-tags]
-           [featured-communities-section featured-communities]
-           (when communities
-             [:<>
-              [react/view {:margin-vertical    4
-                           :padding-horizontal 20}
-               [separator/separator]]
-              [community-segments]])
-           [community-segments-view communities]]])])))
+
+    [safe-area/consumer
+     (fn [insets]
+       [react/view {:style {:flex             1
+                            :padding-top      (:top insets)
+                            :background-color (quo2.colors/theme-colors
+                                               quo2.colors/neutral-5
+                                               quo2.colors/neutral-95)}}
+        [topbar/topbar
+         {:navigation      :none
+          :left-component  [react/view {:margin-left 16}
+                            [photos/photo (multiaccounts/displayed-photo multiaccount)
+                             {:size 32}]]
+          :right-component [react/view {:flex-direction :row
+                                        :margin-right 16}
+                            [topnav/qr-scanner]
+                            [topnav/qr-code]
+                            [topnav/notifications-button]]
+          :new-ui?         true
+          :border-bottom   false}]
+        [title-column]
+        [react/scroll-view
+         [community-filter-tags]
+         [featured-communities-section featured-communities]
+         (when communities
+           [:<>
+            [react/view {:margin-vertical    4
+                         :padding-horizontal 20}
+             [separator/separator]]
+            [community-segments]])
+         [community-segments-view communities]]])]))
