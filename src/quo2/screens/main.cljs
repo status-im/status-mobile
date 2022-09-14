@@ -13,6 +13,7 @@
             [quo2.screens.buttons.button :as button]
             [quo2.screens.counter.counter :as counter]
             [quo2.screens.community.community-card-view :as community-card]
+            [quo2.screens.dividers.new-messages :as new-messages]
             [quo2.screens.info.info-message :as info-message]
             [quo2.screens.info.information-box :as information-box]
             [quo2.screens.markdown.text :as text]
@@ -30,7 +31,6 @@
             [quo2.screens.list-items.preview-lists :as preview-lists]
             [quo2.screens.info.lowest-price :as lowest-price]
             [quo2.screens.avatars.channel-avatar :as channel-avatar]
-            [quo2.screens.messages.new-messages-header :as new-messages-header]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -58,6 +58,9 @@
    :counter [{:name      :counter
               :insets    {:top false}
               :component counter/preview-counter}]
+   :dividers [{:name      :new-messages
+               :insets    {:top false}
+               :component new-messages/preview-new-messages}]
    :info [{:name      :info-message
            :insets    {:top false}
            :component info-message/preview-info-message}
@@ -72,10 +75,7 @@
                :component text/preview-text}]
    :messages [{:name      :gap
                :insets    {:top false}
-               :component messages-gap/preview-messages-gap}
-              {:name      :new-messages-header
-               :insets    {:top false}
-               :component new-messages-header/preview-new-messages-header}]
+               :component messages-gap/preview-messages-gap}]
    :notifications [{:name      :activity-logs
                     :insets    {:top false}
                     :component activity-logs/preview-activity-logs}]

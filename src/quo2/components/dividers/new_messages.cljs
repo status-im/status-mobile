@@ -1,4 +1,4 @@
-(ns quo2.components.messages.new-messages-header
+(ns quo2.components.dividers.new-messages
   (:require [quo.react-native :as rn]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
@@ -55,8 +55,8 @@
            :beige      {:text-color       colors/beige-60
                         :background-color colors/beige-60-opa-5}}})
 
-(defn new-messages-header
-  "new-messages-header params - label, color"
+(defn new-messages
+  "new-messages params - label, color"
   [{:keys [label color] :or {label (i18n/label :new-messages-header)
                              color :primary}}]
   (let [colors (colors/theme-colors (themes :light) (themes :dark))

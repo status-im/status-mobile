@@ -1,9 +1,9 @@
-(ns quo2.screens.messages.new-messages-header
+(ns quo2.screens.dividers.new-messages
   (:require [quo.react-native :as rn]
             [reagent.core :as reagent]
             [quo.previews.preview :as preview]
             [quo2.foundations.colors :as colors]
-            [quo2.components.messages.new-messages-header :as new-messages-header]))
+            [quo2.components.dividers.new-messages :as new-messages]))
 
 (def descriptor [{:label   "Label"
                   :key     :label
@@ -43,9 +43,9 @@
                 :padding       16}
        [preview/customizer state descriptor]
        [rn/view {:padding-vertical 60}
-        [new-messages-header/new-messages-header @state]]])))
+        [new-messages/new-messages @state]]])))
 
-(defn preview-new-messages-header []
+(defn preview-new-messages []
   [rn/view  {:background-color (colors/theme-colors
                                 colors/white
                                 colors/neutral-90)
