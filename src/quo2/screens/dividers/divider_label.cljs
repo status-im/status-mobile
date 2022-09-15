@@ -1,9 +1,9 @@
-(ns quo2.screens.community.divider-label
+(ns quo2.screens.dividers.divider-label
   (:require [quo.react-native :as rn]
             [reagent.core :as reagent]
             [quo.previews.preview :as preview]
             [quo2.foundations.colors :as colors]
-            [quo2.components.community.divider-label :as divider-label]))
+            [quo2.components.dividers.divider-label :as divider-label]))
 
 (def descriptor [{:label   "Label:"
                   :key     :label

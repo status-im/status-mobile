@@ -1,4 +1,4 @@
-(ns quo2.components.community.divider-label
+(ns quo2.components.dividers.divider-label
   (:require [quo.react-native :as rn]
             [quo2.components.markdown.text :as markdown.text]
             [status-im.ui.components.icons.icons :as icons]
@@ -12,13 +12,12 @@
   "label -> string
    chevron-position -> :left, :right
    counter-value -> number
-   tight -> boolean
-   blur -> boolean"
-  [{:keys [label chevron-position counter-value tight blur] :or {tight false
-                                                                 blur false}}]
+   increase-padding-top? -> boolean
+   blur? -> boolean"
+  [{:keys [label chevron-position counter-value increase-padding-top? blur?]}]
   (let [dark? (colors/dark?)
-        border-and-counter-bg-color (if dark? (if blur colors/white-opa-5 colors/neutral-70) colors/neutral-10)
-        padding-top (if tight 8 16)
+        border-and-counter-bg-color (if dark? (if blur? colors/white-opa-5 colors/neutral-70) colors/neutral-10)
+        padding-top (if increase-padding-top? 8 16)
         text-and-icon-color (if dark? colors/neutral-40 colors/neutral-50)
         counter-text-color  (if dark? colors/white colors/black)]
     [rn/view {:style {:border-top-width 1
@@ -45,7 +44,7 @@
         {:color  text-and-icon-color
          :width  chevron-icon-container-width
          :height chevron-icon-container-height}])
-     (when (> counter-value 0)
+     (when (pos? counter-value)
        [rn/view {:style {:border-radius 6
                          :height 16
                          :width  (case (count counter-value)
