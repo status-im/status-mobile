@@ -21,7 +21,7 @@
     constants/activity-center-notification-type-one-to-one-chat
     "Dummy 1:1 chat title"
 
-    "Dummy fallback title"))
+    "Dummy default title"))
 
 (defn activity-icon
   [{:keys [type]}]
