@@ -4,7 +4,8 @@
              [quo2.components.markdown.text :as quo2.text]
              [quo2.components.buttons.button :as quo2.button]
              [quo2.components.community.community-view :as community-view]
-             [status-im.utils.handlers :refer [<sub]]
+             [status-im.ui.screens.communities.request-to-join-bottom-sheet-redesign :as request-to-join]
+             [status-im.utils.handlers :refer [<sub >evt]]
              [status-im.ui.screens.communities.styles :as styles]
              [status-im.ui.screens.communities.icon :as communities.icon]))
 
@@ -22,7 +23,7 @@
                     :size                :label}
     "placeholder for channel list component"]])
 
-(defn community-card-page-view [{:keys [name description locked
+(defn community-card-page-view [{:keys [name description locked joined
                                         status tokens cover tags] :as community}]
   [react/view
    {:style
@@ -49,14 +50,18 @@
     [community-view/community-stats-column :card-view]
     [community-view/community-tags tags]
     [preview-list-component]
-    [quo2.button/button
-     {:style
-      {:width "100%"
-       :margin-top 20
-       :margin-left :auto
-       :margin-right :auto}
-      :before :main-icons/community}
-     (i18n/label :join-open-community)]
+    (when (not joined)
+      [quo2.button/button
+       {:on-press  #(>evt [:bottom-sheet/show-sheet
+                           {:content (fn [] [request-to-join/request-to-join community])
+                            :content-height 300}])
+        :style
+        {:width "100%"
+         :margin-top 20
+         :margin-left :auto
+         :margin-right :auto}
+        :before :main-icons/community}
+       (i18n/label :join-open-community)])
     [channel-list-component]]])
 
 (defn overview []
