@@ -17,7 +17,7 @@
   [{:keys [label chevron-position counter-value increase-padding-top? blur?]}]
   (let [dark? (colors/dark?)
         border-and-counter-bg-color (if dark? (if blur? colors/white-opa-5 colors/neutral-70) colors/neutral-10)
-        padding-top (if increase-padding-top? 8 16)
+        padding-top (if increase-padding-top? 16 8)
         text-and-icon-color (if dark? colors/neutral-40 colors/neutral-50)
         counter-text-color  (if dark? colors/white colors/black)]
     [rn/view {:style {:border-top-width 1

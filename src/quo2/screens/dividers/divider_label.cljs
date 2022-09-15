@@ -9,7 +9,7 @@
                   :key     :label
                   :type    :text}
                  {:label   "Chevron position:"
-                  :key     :chevron-position?
+                  :key     :chevron-position
                   :type    :select
                   :options [{:key   :left
                              :value "Left"}
@@ -18,19 +18,19 @@
                  {:label   "Counter value:"
                   :key     :counter-value
                   :type    :text}
-                 {:label   "Tight:"
-                  :key     :tight
+                 {:label   "Increase padding top:"
+                  :key     :increase-padding-top?
                   :type    :boolean}
                  {:label   "Blur:"
-                  :key     :blur
+                  :key     :blur?
                   :type    :boolean}])
 
 (defn cool-preview []
   (let [state     (reagent/atom {:label "Welcome"
-                                 :chevron-position? :left
+                                 :chevron-position :left
                                  :counter-value 0
-                                 :tight false
-                                 :blue false})]
+                                 :increase-padding-top? true
+                                 :blur? false})]
     (fn []
       [rn/view {:margin-bottom 50
                 :padding       16}
