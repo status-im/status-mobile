@@ -31,7 +31,7 @@
 (def mock-community-item-data ;; TODO: remove once communities are loaded with this data.
   {:data {:status         :gated
           :locked         true
-          :images {:thumbnail {:uri (resources/get-image :status-logo)}}
+          ;; :images {:thumbnail {:uri []}} ;; TODO address issue with context tag image
           :cover          (resources/get-image :community-cover)
           :tokens         [{:id  1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]
           :tags           [{:id 1 :tag-label (i18n/label :t/music) :resource (resources/get-image :music)}

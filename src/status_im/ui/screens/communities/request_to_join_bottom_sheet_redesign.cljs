@@ -8,7 +8,7 @@
             [quo2.components.buttons.button :as quo2.button]
             [quo2.components.icon :as quo2.icon]
             [status-im.utils.handlers :refer [>evt]]
-            [quo2.components.tags.context-tags :as quo2.context-tags]
+            ;; [quo2.components.tags.context-tags :as quo2.context-tags]
             [status-im.communities.core :as communities]
             [quo2.foundations.colors :as quo2.colors]))
 
@@ -115,9 +115,8 @@
                              :display :flex
                              :justify-content :center}}
          [quo2.icon/icon  :main-icons2/info]]]
-
-       [quo2.context-tags/context-tag {:style {:margin-right :auto :margin-top 8}} (get-in community [:images :thumbnail :uri]) (:name community)]
-
+       ;; TODO address issue with context tag image
+      ;;  [quo2.context-tags/context-tag {:style {:margin-right :auto :margin-top 8}} (get-in community [:images :thumbnail :uri]) (:name community)]
        [quo2.text/text {:style {:margin-top 24}
                         :accessibility-label :communities-rules-title
                         :weight              :semi-bold
