@@ -95,6 +95,31 @@
 (def short-date-fmt (get-formatter-fn short-date-format))
 (def datetime-within-one-week-fmt (get-formatter-fn datetime-within-one-week-format))
 
+;;;; Utilities
+
+(defn previous-years?
+  [datetime]
+  (< (t/year datetime) (t/year (t/now))))
+
+(defn current-year?
+  [datetime]
+  (= (t/year datetime) (t/year (t/now))))
+
+(defn today?
+  [datetime]
+  (let [now (t/now)]
+    (and (= (t/year now) (t/year datetime))
+         (= (t/month now) (t/month datetime))
+         (= (t/day now) (t/day datetime)))))
+
+(defn within-last-n-days?
+  "Returns true if `datetime` is within last `n` days (inclusive on both ends)."
+  [datetime n]
+  (let [now   (t/now)
+        start (t/at-midnight (t/minus now (t/days n)))
+        end   (t/plus now (t/millis 1))]
+    (t/within? start end datetime)))
+
 ;;;; Timestamp formatters
 
 (defn- to-str [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
@@ -120,33 +145,24 @@
           #(label :t/datetime-today)))
 
 (defn timestamp->relative [ms]
-  (let [datetime       (from-long ms)
-        datetime-local (plus datetime time-zone-offset)
-        today          (minus (t/today-at-midnight) time-zone-offset)
-        yesterday      (minus today (days 1))
-        six-days-ago   (minus today (days 6))]
+  (let [datetime (from-long ms)]
     (cond
-      ;; Previous years.
-      (< (t/year datetime) (t/year today))
-      (.format ^js (date-fmt) datetime-local)
+      (today? datetime)
+      (.format ^js (time-fmt) datetime)
 
-      ;; Current year.
-      (before? datetime six-days-ago)
-      (.format ^js (short-date-fmt) datetime-local)
-
-      ;; Within 6 days window.
-      (before? datetime yesterday)
-      (.format ^js (datetime-within-one-week-fmt) datetime-local)
-
-      ;; Yesterday
-      (before? datetime today)
+      (within-last-n-days? datetime 1)
       (str (s/capitalize (label :t/datetime-yesterday))
            " "
-           (.format ^js (time-fmt) datetime-local))
+           (.format ^js (time-fmt) datetime))
 
-      ;; Today
-      :else
-      (.format ^js (time-fmt) datetime-local))))
+      (within-last-n-days? datetime 6)
+      (.format ^js (datetime-within-one-week-fmt) datetime)
+
+      (current-year? datetime)
+      (.format ^js (short-date-fmt) datetime)
+
+      (previous-years? datetime)
+      (.format ^js (date-fmt) datetime))))
 
 (defn timestamp->mini-date [ms]
   (.format ^js (short-date-fmt) (-> ms

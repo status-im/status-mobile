@@ -1,8 +1,9 @@
 (ns status-im.utils.datetime-test
-  (:require [cljs.test :refer-macros [deftest testing is]]
-            [status-im.utils.datetime :as d]
+  (:require [cljs-time.coerce :as time-coerce]
+            [cljs-time.core :as t]
+            [cljs.test :refer-macros [deftest testing is]]
             [status-im.goog.i18n :as i18n]
-            [cljs-time.core :as t]))
+            [status-im.utils.datetime :as d]))
 
 (defn match [name symbols]
   (is (identical? (.-dateTimeSymbols_ (i18n/mk-fmt name #'status-im.utils.datetime/medium-date-format))
@@ -75,14 +76,71 @@
                 d/date-fmt (fn [] (i18n/mk-fmt "nb-NO" #'status-im.utils.datetime/medium-date-time-format))]
     (is (= (d/day-relative epoch) "1. jan. 1970, 00:00:00"))))
 
+(deftest current-year?-test
+  ;; Today is Monday, 1975-03-10 15:15:45Z
+  (with-redefs [t/*ms-fn*          (constantly 163696545000)
+                d/time-zone-offset (t/period :hours 0)]
+    (is (d/current-year? (t/now)))
+
+    (testing "returns false for future years"
+      (is (not (d/current-year? (t/plus (t/now) (t/years 1))))))
+
+    (testing "returns true at 1975-01-01 00:00:00"
+      (is (d/current-year? (time-coerce/from-long 157766400000))))
+
+    (testing "returns false at 1974-12-31 23:59:59"
+      (is (not (d/current-year? (time-coerce/from-long 157766399000)))))))
+
+(deftest previous-years?-test
+  ;; Today is Monday, 1975-03-10 15:15:45Z
+  (with-redefs [t/*ms-fn*          (constantly 163696545000)
+                d/time-zone-offset (t/period :hours 0)]
+    (is (not (d/previous-years? (t/now))))
+
+    (testing "returns false for future years"
+      (is (not (d/current-year? (t/plus (t/now) (t/years 1))))))
+
+    (testing "returns false at 1975-01-01 00:00:00"
+      (is (not (d/previous-years? (time-coerce/from-long 1640995200000)))))
+
+    (testing "returns true at 1974-12-31 23:59:59"
+      (is (not (d/previous-years? (time-coerce/from-long 1640995199000)))))))
+
+(deftest within-last-n-days?-test
+  ;; Today is Monday, 1975-03-10 15:15:45Z
+  (let [now 163696545000]
+    (with-redefs [t/*ms-fn*          (constantly now)
+                  d/time-zone-offset (t/period :hours 0)]
+      (testing "start of the period, 6 days ago (inclusive)"
+        ;; Tuesday, 1975-03-03 23:59:59Z
+        (is (not (d/within-last-n-days? (time-coerce/from-long 163123199000) 6)))
+
+        ;; Tuesday, 1975-03-04 00:00:00Z
+        (is (d/within-last-n-days? (time-coerce/from-long 163123200000) 6))
+
+        ;; Tuesday, 1975-03-04 00:00:01Z
+        (is (d/within-last-n-days? (time-coerce/from-long 163123201000) 6)))
+
+      (testing "end of the period (inclusive)"
+        ;; Monday, 1975-03-10 15:15:44Z
+        (is (d/within-last-n-days? (time-coerce/from-long 163696544000) 6))
+
+        ;; Monday, 1975-03-10 15:15:45Z
+        (is (d/within-last-n-days? (time-coerce/from-long now) 6))
+
+        ;; Monday, 1975-03-10 15:15:46Z
+        (is (not (d/within-last-n-days? (time-coerce/from-long 163696546000) 6)))))))
+
 (deftest timestamp->relative-test
-  ;; Today is Monday, March 10, 1975 3:15:45 PM GMT
+  ;; Today is Monday, 1975-03-10 15:15:45Z
   (with-redefs [t/*ms-fn*          (constantly 163696545000)
                 d/time-zone-offset (t/period :hours 0)
                 d/is24Hour         (constantly false)]
     (testing "formats previous years"
-      (is (= "Dec 31, 1974" (d/timestamp->relative 157734000000)))
-      (is (= "Dec 31, 1973" (d/timestamp->relative 126198000000))))
+      ;; 1974-12-31 23:59:59Z
+      (is (= "Dec 31, 1974" (d/timestamp->relative 157766399000)))
+      ;; 1973-01-01 00:00:00Z
+      (is (= "Jan 1, 1973" (d/timestamp->relative 94694400000))))
 
     (testing "formats 7 days ago or older, but in the current year"
       (is (= "03 Mar" (d/timestamp->relative 163091745000)))
