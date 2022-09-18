@@ -603,6 +603,7 @@
     "get-started": "Get started",
     "get-status-at": "Get Status at http://status.im",
     "get-stickers": "Get Stickers",
+    "gif": "GIF",
     "go-to-settings": "Go to Settings...",
     "got-it": "Got it",
     "group-chat": "Group chat",
@@ -1437,6 +1438,7 @@
     "system": "System",
     "give-permissions-camera": "Give permission\nto access camera",
     "photos": "Photos",
+    "n-photos": "{{count}} photos",
     "image": "Image",
     "sign-anyway": "Sign anyway",
     "tx-fail-description1": "This transaction is likely to fail. Sign at your own risk using custom network fee.",
@@ -1458,6 +1460,7 @@
     "audio-recorder-max-ms-reached": "Maximum recording time reached",
     "audio-recorder-permissions-error": "You have to give permission to send audio messages",
     "audio": "Audio",
+    "audio-message": "Audio message",
     "update-to-see-image": "Update to latest version to see a nice image here!",
     "update-to-listen-audio": "Update to latest version to listen to an audio message here!",
     "update-to-see-sticker": "Update to latest version to see a nice sticker here!",
@@ -1594,6 +1597,7 @@
     "community-message-preview": "Invitation to join {{community-name}}",
     "non-contacts": "Non contacts",
     "community": "Community",
+    "community-channel": "Community channel",
     "verified-community": "✓ Verified community",
     "community-info-not-found": "Community information not found",
     "community-info": "Community info",
@@ -1781,6 +1785,10 @@
     "lifestyle": "Lifestyle",
     "podcasts": "Podcasts",
     "NFT":"NFT",
-    "new-messages-header": "New Messages"
+    "new-messages-header": "New Messages",
+    "link-to-community": "Link to community",
+    "external-link": "External link",
+    "code-snippet": "Code snippet",
+    "kicked": "Kicked"
     
 }

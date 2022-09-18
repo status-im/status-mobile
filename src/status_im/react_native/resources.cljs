@@ -54,6 +54,15 @@
    :music              (js/require "../resources/images/ui/music.png")
    :podcasts           (js/require "../resources/images/ui/podcasts.png")})
 
+(def mock-images
+  {:photo1           (js/require "../resources/images/mock/photo1.png")
+   :photo2           (js/require "../resources/images/mock/photo2.png")
+   :photo3           (js/require "../resources/images/mock/photo3.png")
+   :community-banner (js/require "../resources/images/mock/community-banner.png")
+   :community-logo   (js/require "../resources/images/mock/community-logo.png")
+   :gif              (js/require "../resources/images/mock/gif.png")
+   :sticker          (js/require "../resources/images/mock/sticker.png")})
+
 (defn get-theme-image [k]
   (get ui (when (colors/dark?) (keyword (str (name k) "-dark"))) (get ui k)))
 
@@ -64,6 +73,12 @@
     (get @loaded-images k)
     (get (swap! loaded-images assoc k
                 (get ui k)) k)))
+
+(defn get-mock-image [k]
+  (if (contains? @loaded-images k)
+    (get @loaded-images k)
+    (get (swap! loaded-images assoc k
+                (get mock-images k)) k)))
 
 (def reactions
   {:love        (js/require "../resources/images/reactions/love.png")

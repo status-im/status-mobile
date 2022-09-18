@@ -3,6 +3,7 @@
             [status-im.i18n.i18n :as i18n]
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as quo2.icons]
+            [status-im.ui.components.fast-image :as fast-image]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.markdown.text :as quo2.text]))
 
@@ -26,16 +27,20 @@
                  :hole-y        -1}})
 
 ;; TODO - Add avatar components for other types once implemented
-(defn avatar [item type size]
+(defn avatar [item type size border-radius]
   (case type
     :user [user-avatar/user-avatar
            (merge {:ring?             false
                    :status-indicator? false
                    :size              (case size 32 :small 24 :xs 16 :xxxs)}
-                  item)]))
+                  item)]
+    (:photo :collectible) [fast-image/fast-image {:source (:source item)
+                                                  :style  {:width         size
+                                                           :height        size
+                                                           :border-radius border-radius}}]))
 
 (defn list-item [index type size item list-size margin-left
-                 hole-size hole-radius hole-x hole-y]
+                 hole-size hole-radius hole-x hole-y border-radius]
   (let [last-item? (= index (- list-size 1))]
     [rn/hole-view {:style {:margin-left   (if (= index 0) 0 margin-left)}
                    :holes (if last-item? []
@@ -44,14 +49,14 @@
                                 :width         hole-size
                                 :height        hole-size
                                 :borderRadius  hole-radius}])}
-     [avatar item type size]]))
+     [avatar item type size border-radius]]))
 
-(defn get-overflow-color [transparent? transparent-color light-color dark-color]
+(defn get-overflow-color [transparent? transparent-color light-color dark-color override-theme]
   (if transparent?
     transparent-color
-    (colors/theme-colors light-color dark-color)))
+    (colors/theme-colors light-color dark-color override-theme)))
 
-(defn overflow-label [label size transparent? border-radius margin-left]
+(defn overflow-label [label size transparent? border-radius margin-left override-theme]
   [rn/view {:style {:width            size
                     :height           size
                     :margin-left      margin-left
@@ -62,21 +67,24 @@
                                        transparent?
                                        colors/white-opa-10
                                        colors/neutral-20
-                                       colors/neutral-70)}}
+                                       colors/neutral-70
+                                       override-theme)}}
    (if (= size 16)
      [quo2.icons/icon :main-icons2/more {:size 12
                                          :color (get-overflow-color
                                                  transparent?
                                                  colors/white-opa-70
                                                  colors/neutral-50
-                                                 colors/neutral-40)}]
+                                                 colors/neutral-40
+                                                 override-theme)}]
      [quo2.text/text {:size   (if (= size 32) :paragraph-2 :label)
                       :weight :medium
                       :style  {:color       (get-overflow-color
                                              transparent?
                                              colors/white-opa-70
                                              colors/neutral-60
-                                             colors/neutral-40)
+                                             colors/neutral-40
+                                             override-theme)
                                :margin-left -2}}
       ;; If overflow label is below 100, show label as +label (ex. +30), else just show 99+
       (if (< label 100)
@@ -85,7 +93,7 @@
 
 (defn border-type [type]
   (case type
-    (:account :collectible) :rounded
+    (:account :collectible :photo) :rounded
     :circular))
 
 (defn preview-list
@@ -97,7 +105,7 @@
     :transparent?  overflow-label transparent?}
    items           preview list items (only 4 items is required for preview)
   "
-  [{:keys [type size list-size transparent?]} items]
+  [{:keys [type size list-size transparent? override-theme]} items]
   (let [items-arr     (into [] items)
         list-size     (or list-size (count items))
         margin-left   (get-in params [size :margin-left])
@@ -110,6 +118,6 @@
      (for [index (range (if (> list-size 4) 3 list-size))]
        ^{:key (str index list-size)}
        [list-item index type size (get items-arr index) list-size
-        margin-left hole-size hole-radius hole-x hole-y])
+        margin-left hole-size hole-radius hole-x hole-y border-radius])
      (when (> list-size 4)
-       [overflow-label (- list-size 3) size transparent? border-radius margin-left])]))
+       [overflow-label (- list-size 3) size transparent? border-radius margin-left override-theme])]))

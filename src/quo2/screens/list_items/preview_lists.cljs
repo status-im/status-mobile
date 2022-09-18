@@ -3,6 +3,7 @@
             [reagent.core :as reagent]
             [quo.previews.preview :as preview]
             [quo2.foundations.colors :as colors]
+            [status-im.react-native.resources :as resources]
             [quo2.components.list-items.preview-list :as quo2]))
 
 (def descriptor [{:label   "Size:"
@@ -14,16 +15,32 @@
                              :value "24"}
                             {:key   16
                              :value "16"}]}
-                 {:label "List Size"
-                  :key   :list-size
+                 {:label   "Type:"
+                  :key     :type
+                  :type    :select
+                  :options [{:key   :user
+                             :value "User"}
+                            {:key   :photo
+                             :value "Photo"}]}
+                 {:label   "List Size"
+                  :key     :list-size
                   :default 10
-                  :type  :text}])
+                  :type    :text}])
 
-(def user-list-mock
+;; Mocked list items
+(def user-list
   [{:full-name "ABC DEF"}
    {:full-name "GHI JKL"}
    {:full-name "MNO PQR"}
    {:full-name "STU VWX"}])
+
+(def photos-list
+  [{:source (resources/get-mock-image :photo1)}
+   {:source (resources/get-mock-image :photo2)}
+   {:source (resources/get-mock-image :photo3)}
+   {:source (resources/get-mock-image :photo4)}
+   {:source (resources/get-mock-image :photo5)}
+   {:source (resources/get-mock-image :photo6)}])
 
 (defn cool-preview []
   (let [state (reagent/atom {:type      :user
@@ -37,9 +54,9 @@
        [rn/view {:padding-vertical 60
                  :align-items      :center}
         [quo2/preview-list @state
-         ;; Mocked list items
          (case @type
-           :user user-list-mock)]]])))
+           :user        user-list
+           :photo       photos-list)]]])))
 
 (defn preview-preview-lists []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
