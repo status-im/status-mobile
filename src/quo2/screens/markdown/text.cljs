@@ -1,5 +1,5 @@
 (ns quo2.screens.markdown.text
-  (:require [quo.design-system.colors :as colors]
+  (:require [quo2.foundations.colors :as colors]
             [quo.previews.preview :as preview]
             [quo.react-native :as rn]
             [quo2.components.markdown.text :as quo2]
@@ -41,7 +41,7 @@
          "The quick brown fox jumped over the lazy dog."]]])))
 
 (defn preview-text []
-  [rn/view {:background-color (:ui-background @colors/theme)
+  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
             :flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always

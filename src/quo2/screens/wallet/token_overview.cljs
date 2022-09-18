@@ -3,7 +3,7 @@
             [quo.previews.preview :as preview]
             [reagent.core :as reagent]
             [quo2.components.wallet.token-overview :as quo2]
-            [quo.design-system.colors :as colors]))
+            [quo2.foundations.colors :as colors]))
 
 (def descriptor [{:label   "Token:"
                   :key     :token
@@ -47,7 +47,7 @@
         [quo2/token-price (assoc @state :token-img-src (if (= (:token @state) "ETH") eth-token snt-token))]]])))
 
 (defn preview-token-overview []
-  [rn/view {:background-color (:ui-background @colors/theme)
+  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
             :flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always

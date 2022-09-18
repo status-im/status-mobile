@@ -2,7 +2,7 @@
   (:require [reagent.core :as reagent]
             [quo.react-native :as rn]
             [quo.previews.preview :as preview]
-            [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as colors]
             [quo2.components.buttons.button :as quo2]))
 
 (def descriptor [{:label   "Type:"
@@ -78,7 +78,7 @@
          (if @icon :main-icons2/placeholder @label)]]])))
 
 (defn preview-button []
-  [rn/view {:background-color (:ui-background @colors/theme)
+  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
             :flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always

@@ -2,7 +2,7 @@
   (:require [reagent.core :as reagent]
             [quo.react-native :as rn]
             [quo.previews.preview :as preview]
-            [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as colors]
             [quo2.components.avatars.icon-avatar :as quo2]))
 
 (def descriptor [{:label   "Size"
@@ -26,30 +26,11 @@
                  {:label   "Color"
                   :key     :color
                   :type    :select
-                  :options [{:key   :primary
-                             :value "Primary"}
-                            {:key   :purple
-                             :value "Purple"}
-                            {:key   :indigo
-                             :value "Indigo"}
-                            {:key   :turquoise
-                             :value "Turquoise"}
-                            {:key   :blue
-                             :value "Blue"}
-                            {:key   :green
-                             :value "Green"}
-                            {:key   :yellow
-                             :value "yellow"}
-                            {:key   :orange
-                             :value "Orange"}
-                            {:key   :red
-                             :value "Red"}
-                            {:key   :pink
-                             :value "Pink"}
-                            {:key   :brown
-                             :value "Brown"}
-                            {:key   :beige
-                             :value "Beige"}]}])
+                  :options (map
+                            (fn [c]
+                              {:key   c
+                               :value c})
+                            (keys colors/customization))}])
 
 (defn cool-preview []
   (let [state (reagent/atom {:size :big
@@ -64,7 +45,7 @@
         [quo2/icon-avatar @state]]])))
 
 (defn preview-icon-avatar []
-  [rn/view {:background-color (:ui-background @colors/theme)
+  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
             :flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always

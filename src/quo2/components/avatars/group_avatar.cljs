@@ -1,6 +1,5 @@
 (ns quo2.components.avatars.group-avatar
   (:require [quo2.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
             [quo2.components.icon :as icon]
             [quo.react-native :as rn]))
 
@@ -14,14 +13,16 @@
 
 (defn group-avatar [_]
   (fn [{:keys [color size override-theme]}]
-    (let [theme (or override-theme (quo.theme/get-theme))
+    (let [theme          (or override-theme (if (colors/dark?) :dark :light))
           container-size (get-in sizes [:container size])
-          icon-size (get-in sizes [:icon size])]
-      [rn/view {:width container-size
-                :height container-size
-                :align-items :center
-                :justify-content :center
-                :border-radius (/ container-size 2)
-                :background-color (colors/custom-color color theme)}
+          icon-size      (get-in sizes [:icon size])]
+      [rn/view {:width            container-size
+                :height           container-size
+                :align-items      :center
+                :justify-content  :center
+                :border-radius    (/ container-size 2)
+                :background-color (if (= theme :light)
+                                    (colors/custom-color color 50)
+                                    (colors/custom-color color 60))}
        [icon/icon :total-members {:size icon-size
                                   :color colors/white-opa-70}]])))

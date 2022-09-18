@@ -25,7 +25,7 @@
    {:color    colors/red
     :title    (i18n/label :t/error)}
    constants/visibility-status-automatic
-   {:color    quo2.colors/color-online
+   {:color    quo2.colors/success-50
     :title    (i18n/label :t/status-automatic)
     :subtitle (i18n/label :t/status-automatic-subtitle)}
    constants/visibility-status-dnd
@@ -33,7 +33,7 @@
     :title    (i18n/label :t/status-dnd)
     :subtitle (i18n/label :t/status-dnd-subtitle)}
    constants/visibility-status-always-online
-   {:color    quo2.colors/color-online
+   {:color    quo2.colors/success-50
     :title    (i18n/label :t/status-always-online)}
    constants/visibility-status-inactive
    {:color    colors/color-inactive
@@ -92,7 +92,7 @@
 (defn icon-dot-accessibility-label
   [dot-color]
   (if @config/new-ui-enabled?
-    (if (= dot-color quo2.colors/color-online)
+    (if (= dot-color quo2.colors/success-50)
       :online-profile-photo-dot
       :offline-profile-photo-dot)
     (if (= dot-color colors/color-online)

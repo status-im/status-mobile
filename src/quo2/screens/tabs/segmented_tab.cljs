@@ -1,6 +1,6 @@
 (ns quo2.screens.tabs.segmented-tab
   (:require [quo.react-native :as rn]
-            [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as colors]
             [quo.previews.preview :as preview]
             [quo2.components.tabs.segmented-tab :as quo2]
             [reagent.core :as reagent]))
@@ -36,7 +36,7 @@
                                         :on-change #(println "Active tab" %)})]]])))
 
 (defn preview-segmented []
-  [rn/view {:background-color (:ui-background @colors/theme)
+  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
             :flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always

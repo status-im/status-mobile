@@ -82,14 +82,11 @@
    :border-radius inner-dimensions})
 
 (defn container [inner-dimensions outer-dimensions & children]
-  (let [dark-kw (if dark? :dark :light)]
-    [rn/view {:style (merge {:background-color (colors/custom-color
-                                                :turquoise
-                                                dark-kw)
-                             :justify-content :center
-                             :align-items :center}
-                            (container-styling inner-dimensions outer-dimensions))}
-     children]))
+  [rn/view {:style (merge {:background-color (colors/custom-color-by-theme :turquoise 50 60)
+                           :justify-content :center
+                           :align-items :center}
+                          (container-styling inner-dimensions outer-dimensions))}
+   children])
 
 (def small-sizes #{:xs :xxs :xxxs})
 (def identicon-sizes #{:big :medium :small})

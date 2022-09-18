@@ -20,11 +20,9 @@
                   :options
                   (map
                    (fn [c]
-                     {:key c
+                     {:key   c
                       :value c})
-                   (-> colors/customization
-                       :light
-                       keys))}])
+                   (keys colors/customization))}])
 
 (defn cool-preview []
   (let [state (reagent/atom {:theme :light
