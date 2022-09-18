@@ -128,13 +128,6 @@
            (assoc-in [:keycard :recovery-phrase :input-word] nil)
            (assoc-in [:keycard :setup-step] :recovery-phrase-confirm-word2))})
 
-(fx/defn recovery-phrase-confirm-word-back-pressed
-  {:events [:keycard.onboarding.recovery-phrase-confirm-word.ui/back-pressed]}
-  [{:keys [db] :as cofx}]
-  (if (= (:view-id db) :keycard-onboarding-recovery-phrase-confirm-word1)
-    (navigation/navigate-to-cofx cofx :keycard-onboarding-recovery-phrase nil)
-    (navigation/navigate-to-cofx cofx :keycard-onboarding-recovery-phrase-confirm-word1 nil)))
-
 (fx/defn proceed-with-generating-key
   [{:keys [db] :as cofx}]
   (let [pin (get-in db [:keycard :secrets :pin]

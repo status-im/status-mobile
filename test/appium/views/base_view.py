@@ -685,6 +685,38 @@ class BaseView(object):
             web_view.new_tab_button.click()
         return web_view
 
+    def get_test_assets(self, token=False, keycard=False):
+        from views.home_view import HomeView
+        status_test_dapp = HomeView(self.driver).open_status_test_dapp()
+        status_test_dapp.wait_for_d_aap_to_load()
+
+        self.just_fyi("Requesting test assets in dapp")
+        status_test_dapp.assets_button.click()
+        if token:
+            send_tx = status_test_dapp.request_stt_button.click()
+            send_tx.sign_transaction(keycard=keycard)
+            wallet = self.wallet_button.click()
+            wallet.wait_balance_is_changed(asset='STT', scan_tokens=True)
+        else:
+            status_test_dapp.request_eth_button.click()
+            status_test_dapp.ok_button.wait_and_click()
+            wallet = self.wallet_button.click()
+            wallet.wait_balance_is_changed()
+
+        return wallet
+
+    def donate_leftovers(self, keycard=False):
+        self.just_fyi("Send leftovers from test accounts")
+        wallet = self.wallet_button.click()
+        self.wallet_button.click()
+        send_transaction = wallet.send_transaction_from_main_screen.click()
+        send_transaction.set_max_button.click()
+        send_transaction.confirm()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.set_recipient_address('0x2127edab5d08b1e11adf7ae4bae16c2b33fdf74a')
+        send_transaction.sign_transaction_button.click()
+        send_transaction.sign_transaction(keycard=keycard)
+
     # Method-helper
     def write_page_source_to_file(self, full_path_to_file):
         string_source = self.driver.page_source

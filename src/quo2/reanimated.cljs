@@ -3,7 +3,7 @@
             [reagent.core :as reagent]
             [clojure.string :as string]
             ["react-native-reanimated" :default reanimated
-             :refer (useSharedValue useAnimatedStyle withTiming withDelay Easing Keyframe)]))
+             :refer (useSharedValue useAnimatedStyle withTiming withDelay withSpring Easing Keyframe)]))
 
 ;; Animated Components
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
@@ -19,6 +19,7 @@
 ;; Animations
 (def with-timing withTiming)
 (def with-delay withDelay)
+(def with-spring withSpring)
 (def key-frame Keyframe)
 
 ;; Easings

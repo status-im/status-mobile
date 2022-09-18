@@ -391,6 +391,33 @@
   (log/debug "[native-module] identicon")
   (.identicon ^js (status) seed))
 
+(defn encode-transfer
+  [to-norm amount-hex]
+  (log/debug "[native-module] encode-transfer")
+  (.encodeTransfer ^js (status) to-norm amount-hex))
+
+(defn encode-function-call
+  [method params]
+  (log/debug "[native-module] encode-function-call")
+  (.encodeFunctionCall ^js (status) method (types/clj->json params)))
+
+(defn decode-parameters
+  [bytes-string types]
+  (log/debug "[native-module] decode-parameters")
+  (let [json-str (.decodeParameters ^js (status) (types/clj->json {:bytesString bytes-string :types types}))]
+    (types/json->clj json-str)))
+
+(defn hex-to-number
+  [hex]
+  (log/debug "[native-module] hex-to-number")
+  (let [json-str (.hexToNumber ^js (status) hex)]
+    (types/json->clj json-str)))
+
+(defn number-to-hex
+  [num]
+  (log/debug "[native-module] number-to-hex")
+  (.numberToHex ^js (status) (str num)))
+
 (defn identicon-async
   "Generate a icon based on a string, asynchronously"
   [seed callback]

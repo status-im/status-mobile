@@ -1,4 +1,4 @@
-library 'status-jenkins-lib@v1.5.0'
+library 'status-jenkins-lib@v1.5.5'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
@@ -44,10 +44,7 @@ pipeline {
     stage('Prep') {
       steps {
         script {
-          btype = utils.getBuildType()
-          print "Running ${btype} build!"
-          /* Cleanup and Prep */
-          commonPrep(btype)
+          utils.doGitRebasePR()
         }
       }
     }

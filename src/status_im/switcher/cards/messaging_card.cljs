@@ -1,8 +1,8 @@
 (ns status-im.switcher.cards.messaging-card
   (:require [quo.react-native :as rn]
-            [quo2.components.text :as text]
+            [quo2.components.markdown.text :as text]
             [status-im.constants :as constants]
-            [quo2.components.button :as button]
+            [quo2.components.buttons.button :as button]
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.switcher.cards.styles :as styles]))
 

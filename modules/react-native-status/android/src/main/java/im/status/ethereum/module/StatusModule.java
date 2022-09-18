@@ -1411,6 +1411,31 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         return Statusgo.identicon(seed);
     }
 
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String encodeTransfer(final String to, final String value) {
+        return Statusgo.encodeTransfer(to, value);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String encodeFunctionCall(final String method, final String paramsJSON) {
+        return Statusgo.encodeFunctionCall(method, paramsJSON);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String decodeParameters(final String decodeParamJSON) {
+        return Statusgo.decodeParameters(decodeParamJSON);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String hexToNumber(final String hex) {
+        return Statusgo.hexToNumber(hex);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String numberToHex(final String numString) {
+        return Statusgo.numberToHex(numString);
+    }
+
     @ReactMethod
     public void identiconAsync(final String seed, final Callback callback) {
         Log.d(TAG, "identiconAsync");
@@ -1572,5 +1597,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
+
 }
 

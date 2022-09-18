@@ -48,7 +48,6 @@
                                     settings
                                     config
                                     accounts-data))
-
             :logout (fn []
                       (.logout native-status))
             :generateAliasAndIdenticonAsync (fn [seed callback]
@@ -60,6 +59,11 @@
                                                        (.multiAccountGenerateAndDeriveAddresses
                                                         native-status
                                                         json)))
+            :multiAccountImportMnemonic (fn [json callback]
+                                          (callback
+                                           (.multiAccountImportMnemonic
+                                            native-status
+                                            json)))
             :multiAccountLoadAccount (fn [json callback]
                                        (callback
                                         (.multiAccountLoadAccount
@@ -78,5 +82,26 @@
 
             :identicon (fn [pk]
                          (.identicon native-status pk))
+
+            :encodeTransfer (fn [to-norm amount-hex]
+                              (.encodeTransfer native-status to-norm amount-hex))
+
+            :encodeFunctionCall (fn [method params-json]
+                                  (.encodeFunctionCall native-status method params-json))
+
+            :decodeParameters (fn [decode-param-json]
+                                (.decodeParameters native-status decode-param-json))
+
+            :hexToNumber (fn [hex]
+                           (.hexToNumber native-status hex))
+
+            :numberToHex (fn [num-str]
+                           (.numberToHex native-status num-str))
+
+            :validateMnemonic (fn [json callback]
+                                (callback
+                                 (.validateMnemonic
+                                  native-status
+                                  json)))
 
             :startLocalNotifications identity}))

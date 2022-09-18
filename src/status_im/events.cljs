@@ -36,6 +36,7 @@
             [status-im.native-module.core :as status]
             [status-im.navigation :as navigation]
             status-im.notifications-center.core
+            status-im.activity-center.core
             status-im.pairing.core
             [status-im.popover.core :as popover]
             status-im.profile.core
@@ -119,31 +120,35 @@
 (fx/defn system-theme-mode-changed
   {:events [:system-theme-mode-changed]}
   [{:keys [db] :as cofx} theme]
-  (let [cur-theme      (get-in db [:multiaccount :appearance])
-        current-tab    (get db :current-tab :chat)
-        view-id        (:view-id db)
-        screen-params  (get-in db [:navigation/screen-params view-id])
-        root-id        @navigation.state/root-id
-        dispatch-later (cond-> []
-                         (= view-id :chat)
-                         (conj {:ms       1000
-                                :dispatch [:chat.ui/navigate-to-chat (:current-chat-id db)]})
+  (let [cur-theme        (get-in db [:multiaccount :appearance])
+        current-tab      (get db :current-tab :chat)
+        view-id          (:view-id db)
+        screen-params    (get-in db [:navigation/screen-params view-id])
+        root-id          @navigation.state/root-id
+        key-uid          (get-in db [:multiaccounts/login :key-uid])
+        keycard-account? (boolean (get-in db [:multiaccounts/multiaccounts
+                                              key-uid
+                                              :keycard-pairing]))
+        dispatch-later   (cond-> []
+                           (= view-id :chat)
+                           (conj {:ms       1000
+                                  :dispatch [:chat.ui/navigate-to-chat (:current-chat-id db)]})
 
-                         (and
-                          (= root-id :chat-stack)
-                          (not-any? #(= view-id %) '(:home :empty-tab :wallet :status :my-profile :chat)))
-                         (conj {:ms       1000
-                                :dispatch [:navigate-to view-id screen-params]})
+                           (and
+                            (= root-id :chat-stack)
+                            (not-any? #(= view-id %) '(:home :empty-tab :wallet :status :my-profile :chat)))
+                           (conj {:ms       1000
+                                  :dispatch [:navigate-to view-id screen-params]})
 
-                         (some #(= view-id %) navigation.core/community-screens)
-                         (conj {:ms 800 :dispatch
-                                [:navigate-to :community
-                                 (get-in db [:navigation/screen-params :community])]})
+                           (some #(= view-id %) navigation.core/community-screens)
+                           (conj {:ms 800 :dispatch
+                                  [:navigate-to :community
+                                   (get-in db [:navigation/screen-params :community])]})
 
-                         (= view-id :community-emoji-thumbnail-picker)
-                         (conj {:ms 900 :dispatch
-                                [:navigate-to :create-community-channel
-                                 (get-in db [:navigation/screen-params :create-community-channel])]}))]
+                           (= view-id :community-emoji-thumbnail-picker)
+                           (conj {:ms 900 :dispatch
+                                  [:navigate-to :create-community-channel
+                                   (get-in db [:navigation/screen-params :create-community-channel])]}))]
     (when (and (some? root-id) (or (nil? cur-theme) (zero? cur-theme)))
       (navigation.core/dismiss-all-modals)
       (fx/merge cofx
@@ -159,7 +164,9 @@
                   (visibility-status-popover/hide-visibility-status-popover))
                 (when (get-in db [:signing/tx])
                   (signing/discard))
-                (navigation/init-root root-id)
+                (if (and (= root-id :multiaccounts) keycard-account?)
+                  (navigation/init-root-with-component :multiaccounts-keycard :multiaccounts)
+                  (navigation/init-root root-id))
                 (when (= root-id :chat-stack)
                   (navigation/change-tab current-tab))))))
 

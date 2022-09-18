@@ -1,16 +1,16 @@
 (ns status-im.ui.screens.qr-scanner.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
+  (:require ["react-native-camera-kit" :refer (CameraKitCamera)]
             [clojure.string :as string]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.qr-scanner.styles :as styles]
-            [quo.design-system.colors :as colors]
-            [status-im.utils.config :as config]
             [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            ["react-native-camera-kit" :refer (CameraKitCamera)]))
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.qr-scanner.styles :as styles]
+            [status-im.utils.config :as config]))
 
 (def camera (reagent/adapt-react-class CameraKitCamera))
 
@@ -48,7 +48,7 @@
        {:on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel opts])}
        "Cancel"]
       [quo/button
-       {:on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (when-let [text @text-value] (string/trim text))])}
+       {:on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (when-let [text @text-value] (-> text string/trim (string/replace #"^Ethereum:" "ethereum:")))])}
        "Ok"]]]))
 
 (defn corner [border1 border2 corner]

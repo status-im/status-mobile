@@ -8,7 +8,7 @@
             [status-im.utils.utils :as utils.utils]
             [re-frame.core :as re-frame]
             [quo2.foundations.colors :as quo2.colors]
-            [quo2.components.text :as quo2.text]))
+            [quo2.components.markdown.text :as quo2.text]))
 
 ;; Note(rasom): sometimes `refreshing` might get stuck on iOS if action happened
 ;; too fast. By updating this atom in 1s we ensure that `refreshing?` property

@@ -1,6 +1,5 @@
 (ns status-im.signing.keycard
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
             [status-im.i18n.i18n :as i18n]
@@ -36,15 +35,15 @@
              :message-id message-id
              :command?   command?}
       maxPriorityFeePerGas
-      (assoc :maxPriorityFeePerGas (str "0x" (abi-spec/number-to-hex
+      (assoc :maxPriorityFeePerGas (str "0x" (status/number-to-hex
                                               (js/parseInt maxPriorityFeePerGas))))
       maxFeePerGas
-      (assoc :maxFeePerGas (str "0x" (abi-spec/number-to-hex
+      (assoc :maxFeePerGas (str "0x" (status/number-to-hex
                                       (js/parseInt maxFeePerGas))))
       gas
-      (assoc :gas (str "0x" (abi-spec/number-to-hex gas)))
+      (assoc :gas (str "0x" (status/number-to-hex gas)))
       gasPrice
-      (assoc :gasPrice (str "0x" (abi-spec/number-to-hex gasPrice)))
+      (assoc :gasPrice (str "0x" (status/number-to-hex gasPrice)))
       data
       (assoc :data data)
       nonce

@@ -4,13 +4,13 @@ This document describes how to update Status APK builds for the [F-Droid](https:
 
 # Intro
 
-In simplest terms F-Droid requires a YAML file that defines the steps necessary to create a universal unsigned APK build. This is achieved by submitting a new app versions into the `metadata/im.status.ethereum.yml` file in the [fdroiddata](https://gitlab.com/fdroid/fdroiddata) repository.
+In simplest terms F-Droid requires a YAML file that defines the steps necessary to create a universal unsigned APK build. This is achieved by submitting a new app version into the `metadata/im.status.ethereum.yml` file in the [fdroiddata](https://gitlab.com/fdroid/fdroiddata) repository.
 
-The app builds defined this way run on servers that generate the unsigned APKs using the [fdroidserver](https://gitlab.com/fdroid/fdroidserver) software. The [server setup](https://f-droid.org/en/docs/Build_Server_Setup/) is quite involved but is not necessary unless you want to run your own instance. Normally the applications defines in `fdroiddata` are built by servers maintained by [the F-Droid volunteers](https://f-droid.org/en/contribute/).
+The app builds defined this way run on servers that generate the unsigned APKs using the [fdroidserver](https://gitlab.com/fdroid/fdroidserver) software. The [server setup](https://f-droid.org/en/docs/Build_Server_Setup/) is quite involved but is not necessary unless you want to run your own instance. Normally the applications defined in `fdroiddata` are built by servers maintained by [the F-Droid volunteers](https://f-droid.org/en/contribute/).
 
 First release of Status app was merged in [fdroid/fdroiddata#7179](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/7179).
 
-:warning: __WARNING__: Once changes are commited into `fdroiddata` repo they __cannot be changed__.
+:warning: __WARNING__: Once changes are committed into `fdroiddata` repo they __cannot be changed__.
 
 # Adding New Versions
 

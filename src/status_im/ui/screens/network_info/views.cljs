@@ -4,8 +4,8 @@
             [reagent.core :as reagent]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.decode :as decode]
-            [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.utils.datetime :as time]))
+            [status-im.utils.datetime :as time]
+            [status-im.native-module.core :as status]))
 
 (defn get-block [block callback]
   (json-rpc/call
@@ -31,7 +31,7 @@
            (fn [res]
              (reset! latest-block res)
              (get-block
-              (str "0x" (abi-spec/number-to-hex
+              (str "0x" (status/number-to-hex
                          (last-loaded-block-number)))
               (fn [res]
                 (reset! last-loaded-block res))))))]

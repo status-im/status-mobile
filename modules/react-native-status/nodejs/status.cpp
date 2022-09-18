@@ -386,6 +386,182 @@ void _Identicon(const FunctionCallbackInfo<Value>& args) {
 
 }
 
+void _EncodeTransfer(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+        Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 2) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for EncodeTransfer")));
+		return;
+	}
+
+	// Check the argument types
+
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'to'")));
+		return;
+	}
+
+	if (!args[1]->IsString()) {
+    		isolate->ThrowException(Exception::TypeError(
+    			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'value'")));
+    		return;
+    	}
+
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+	String::Utf8Value arg1Obj(isolate, args[1]->ToString(context).ToLocalChecked());
+    char *arg1 = *arg1Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = EncodeTransfer(arg0, arg1);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+
+}
+
+void _EncodeFunctionCall(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+        Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 2) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for EncodeFunctionCall")));
+		return;
+	}
+
+	// Check the argument types
+
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'method'")));
+		return;
+	}
+
+	if (!args[1]->IsString()) {
+    		isolate->ThrowException(Exception::TypeError(
+    			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'paramsJSON'")));
+    		return;
+    	}
+
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+	String::Utf8Value arg1Obj(isolate, args[1]->ToString(context).ToLocalChecked());
+    char *arg1 = *arg1Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = EncodeFunctionCall(arg0, arg1);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+
+}
+
+void _DecodeParameters(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+        Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 1) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for DecodeParameters")));
+		return;
+	}
+
+	// Check the argument types
+
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'decodeParamJSON'")));
+		return;
+	}
+
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = DecodeParameters(arg0);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+
+}
+
+void _HexToNumber(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+        Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 1) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for HexToNumber")));
+		return;
+	}
+
+	// Check the argument types
+
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'hex'")));
+		return;
+	}
+
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = HexToNumber(arg0);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+
+}
+
+void _NumberToHex(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+        Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 1) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for NumberToHex")));
+		return;
+	}
+
+	// Check the argument types
+
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'numString'")));
+		return;
+	}
+
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = NumberToHex(arg0);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+
+}
+
 void _Logout(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
 
@@ -1583,6 +1759,11 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "initKeystore", _InitKeystore);
 	NODE_SET_METHOD(exports, "stopCPUProfiling", _StopCPUProfiling);
 	NODE_SET_METHOD(exports, "identicon", _Identicon);
+	NODE_SET_METHOD(exports, "encodeTransfer", _EncodeTransfer);
+	NODE_SET_METHOD(exports, "encodeFunctionCall", _EncodeFunctionCall);
+	NODE_SET_METHOD(exports, "decodeParameters", _DecodeParameters);
+	NODE_SET_METHOD(exports, "hexToNumber", _HexToNumber);
+	NODE_SET_METHOD(exports, "numberToHex", _NumberToHex);
 	NODE_SET_METHOD(exports, "logout", _Logout);
 	NODE_SET_METHOD(exports, "hashMessage", _HashMessage);
 	NODE_SET_METHOD(exports, "resetChainData", _ResetChainData);

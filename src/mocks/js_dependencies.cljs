@@ -26,6 +26,7 @@
             :View                     {}
             :RefreshControl           {}
             :AppState                 {}
+            :Alert                    {:alert (fn [])}
             :FlatList                 {}
             :SectionList              {}
             :Text                     {}
@@ -136,9 +137,14 @@
                                                    :setDefaultOptions identity
                                                    :setRoot identity
                                                    :dismissOverlay #(js/Promise.resolve)
+                                                   :showOverlay identity
                                                    :setLazyComponentRegistrator identity
                                                    :pop identity
                                                    :push identity
+                                                   :mergeOptions identity
+                                                   :popToRoot identity
+                                                   :showModal identity
+                                                   :dismissModal identity
                                                    :registerComponent identity
                                                    :events
                                                    (fn []
@@ -219,6 +225,8 @@
                                        :FlatList                 #js {}
                                        :ScrollView               #js {}
                                        :TouchableOpacity         #js {}
+                                       :GestureDetector          #js {}
+                                       :Gesture                  #js {:Pan nil}
                                        :createNativeWrapper      identity})
 
 (def react-native-redash #js {:clamp nil})

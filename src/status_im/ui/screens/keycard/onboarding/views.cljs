@@ -6,6 +6,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.i18n.i18n :as i18n]
+            [status-im.utils.handlers :refer [<sub]]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
@@ -264,61 +265,57 @@
                      :after    :main-icon/next}
          (i18n/label :t/confirm)]}]]]))
 
-(defview recovery-phrase-confirm-word []
-  (letsubs [word [:keycard-recovery-phrase-word]
-            input-word [:keycard-recovery-phrase-input-word]
-            error [:keycard-recovery-phrase-confirm-error]]
-    (let [{:keys [idx]} word]
-      [react/keyboard-avoiding-view {:style styles/container
-                                     :ignore-offset true}
-       [topbar/topbar
-        {:navigation {:on-press            #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
-                      :accessibility-label :cancel-keycard-setup
-                      :label               (i18n/label :t/cancel)}
-         :title      (i18n/label :t/step-i-of-n {:step   "3"
-                                                 :number "3"})}]
-       [react/view {:flex            1
-                    :flex-direction  :column
-                    :justify-content :space-between
-                    :align-items     :center}
-        [react/view {:flex-direction :column
-                     :align-items    :center}
-         [react/view {:margin-top 16}
-          [react/text {:style {:typography :header
-                               :text-align :center}}
-           (i18n/label :t/keycard-recovery-phrase-confirm-header)]]
-         [react/view {:margin-top  16
-                      :align-items :center}
-          [react/text {:style               {:typography :header
-                                             :color      colors/gray
-                                             :text-align :center}
-                       :accessibility-label :word-number}
+(defn recovery-phrase-confirm-word []
+  (let [word (<sub [:keycard-recovery-phrase-word])]
+    (fn []
+      (let [input-word   (<sub [:keycard-recovery-phrase-input-word])
+            error        (<sub [:keycard-recovery-phrase-confirm-error])
+            {:keys [idx]} word]
+        [react/keyboard-avoiding-view {:style styles/container
+                                       :ignore-offset true}
+         [topbar/topbar
+          {:navigation {:on-press            #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
+                        :accessibility-label :cancel-keycard-setup
+                        :label               (i18n/label :t/cancel)}
+           :title      (i18n/label :t/step-i-of-n {:step   "3"
+                                                   :number "3"})}]
+         [react/view {:flex            1
+                      :flex-direction  :column
+                      :justify-content :space-between
+                      :align-items     :center}
+          [react/view {:flex-direction :column
+                       :align-items    :center}
+           [react/view {:margin-top 16}
+            [react/text {:style {:typography :header
+                                 :text-align :center}}
+             (i18n/label :t/keycard-recovery-phrase-confirm-header)]]
+           [react/view {:margin-top  16
+                        :align-items :center}
+            [react/text {:style               {:typography :header
+                                               :color      colors/gray
+                                               :text-align :center}
+                         :accessibility-label :word-number}
 
-           (i18n/label :t/word-n {:number (inc idx)})]]]
-        [react/view {:flex            1
-                     :padding         16
-                     :justify-content :center}
-         [quo/text-input
-          {:on-change-text      #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-changed %])
-           :auto-focus          true
-           :on-submit-editing   #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-submitted])
-           :placeholder         (i18n/label :t/word-n {:number (inc idx)})
-           :auto-correct        false
-           :accessibility-label :enter-word
-           :monospace           true}]
-         [react/view {:margin-top 5
-                      :width      250}
-          [tooltip/tooltip error]]]
-        [bottom-toolbar/toolbar
-         {:left
-          [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/back-pressed])
-                       :type     :secondary
-                       :before   :main-icon/back}
-           (i18n/label :t/back)]
-          :right
-          [quo/button {:on-press            #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
-                       :accessibility-label :next
-                       :disabled            (empty? input-word)
-                       :type                :secondary
-                       :after               :main-icon/next}
-           (i18n/label :t/next)]}]]])))
+             (i18n/label :t/word-n {:number (inc idx)})]]]
+          [react/view {:flex            1
+                       :padding         16
+                       :justify-content :center}
+           [quo/text-input
+            {:on-change-text      #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-changed %])
+             :auto-focus          true
+             :on-submit-editing   #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-submitted])
+             :placeholder         (i18n/label :t/word-n {:number (inc idx)})
+             :auto-correct        false
+             :accessibility-label :enter-word
+             :monospace           true}]
+           [react/view {:margin-top 5
+                        :width      250}
+            [tooltip/tooltip error]]]
+          [bottom-toolbar/toolbar
+           {:right
+            [quo/button {:on-press            #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
+                         :accessibility-label :next
+                         :disabled            (empty? input-word)
+                         :type                :secondary
+                         :after               :main-icon/next}
+             (i18n/label :t/next)]}]]]))))

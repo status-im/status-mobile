@@ -42,7 +42,7 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.topbar :as topbar]
             [quo2.foundations.colors :as quo2.colors]
-            [quo2.components.button :as quo2.button]))
+            [quo2.components.buttons.button :as quo2.button]))
 
 (defn invitation-requests [chat-id admins]
   (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])
@@ -85,23 +85,23 @@
   (let [contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
     [react/view {:style style/contact-request}
      [react/image {:source (resources/get-image :hand-wave)
-                   :style  {:width 112
-                            :height 96.71
+                   :style  {:width      112
+                            :height     96.71
                             :margin-top 17}}]
-     [quo/text {:style {:margin-top 14}
+     [quo/text {:style  {:margin-top 14}
                 :weight :bold
                 :size   :large}
       (i18n/label :t/say-hi)]
-     [quo/text {:style {:margin-top 2
+     [quo/text {:style {:margin-top    2
                         :margin-bottom 14}}
       (i18n/label :t/send-contact-request-message)]
      (when-not contact-request
        [react/view {:style {:padding-horizontal 16
-                            :padding-bottom 8}}
+                            :padding-bottom     8}}
         [quo/button
-         {:style {:width "100%"}
+         {:style               {:width "100%"}
           :accessibility-label :contact-request--button
-          :on-press #(re-frame/dispatch [:chat.ui/send-contact-request])}
+          :on-press            #(re-frame/dispatch [:chat.ui/send-contact-request])}
          (i18n/label :t/contact-request)]])]))
 
 (defn chat-intro [{:keys [chat-id
@@ -116,7 +116,7 @@
                           no-messages?
                           contact-request-state
                           emoji]}]
-  [react/view {:style (style/intro-header-container loading-messages? no-messages?)
+  [react/view {:style               (style/intro-header-container loading-messages? no-messages?)
                :accessibility-label :history-chat}
    ;; Icon section
    [react/view {:style {:margin-top    52
@@ -133,34 +133,25 @@
     (if group-chat chat-name contact-name)]
    ;; Description section
    (if group-chat
-     [chat.group/group-chat-description-container {:chat-id chat-id
-                                                   :invitation-admin invitation-admin
+     [chat.group/group-chat-description-container {:chat-id           chat-id
+                                                   :invitation-admin  invitation-admin
                                                    :loading-messages? loading-messages?
-                                                   :chat-name chat-name
-                                                   :chat-type chat-type
-                                                   :no-messages? no-messages?}]
-     [react/text {:style (assoc style/intro-header-description
-                                :margin-bottom 32)}
-
-      (str
-       (i18n/label :t/empty-chat-description-one-to-one)
-       contact-name)])
-   (when
-    (and
-     mutual-contact-requests-enabled?
-     (= chat-type constants/one-to-one-chat-type)
-     (or
-      (= contact-request-state constants/contact-request-state-none)
-      (= contact-request-state constants/contact-request-state-received)
-      (= contact-request-state constants/contact-request-state-dismissed)))
+                                                   :chat-name         chat-name
+                                                   :chat-type         chat-type
+                                                   :no-messages?      no-messages?}]
+     [react/text {:style (assoc style/intro-header-description :margin-bottom 32)}
+      (str (i18n/label :t/empty-chat-description-one-to-one) contact-name)])
+   (when (and mutual-contact-requests-enabled?
+              (= chat-type constants/one-to-one-chat-type)
+              (or (= contact-request-state constants/contact-request-state-none)
+                  (= contact-request-state constants/contact-request-state-received)
+                  (= contact-request-state constants/contact-request-state-dismissed)))
      [contact-request])])
 
 (defn chat-intro-one-to-one [{:keys [chat-id] :as opts}]
-  (let [contact       @(re-frame/subscribe
-                        [:contacts/contact-by-identity chat-id])
+  (let [contact @(re-frame/subscribe [:contacts/contact-by-identity chat-id])
         mutual-contact-requests-enabled? @(re-frame/subscribe [:mutual-contact-requests/enabled?])
-        contact-names @(re-frame/subscribe
-                        [:contacts/contact-two-names-by-identity chat-id])]
+        contact-names @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])]
     [chat-intro (assoc opts
                        :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
                        :contact-name (first contact-names)
@@ -175,21 +166,21 @@
            public? emoji]}
    no-messages]
   [react/touchable-without-feedback
-   {:style               {:flex        1
-                          :align-items :flex-start}
+   {:style    {:flex        1
+               :align-items :flex-start}
     :on-press (fn [_]
                 (react/dismiss-keyboard!))}
    (let [opts
-         {:chat-id chat-id
-          :group-chat group-chat
-          :invitation-admin invitation-admin
-          :chat-type chat-type
-          :chat-name chat-name
-          :public? public?
-          :color color
+         {:chat-id           chat-id
+          :group-chat        group-chat
+          :invitation-admin  invitation-admin
+          :chat-type         chat-type
+          :chat-name         chat-name
+          :public?           public?
+          :color             color
           :loading-messages? (not (pos? synced-to))
-          :no-messages? no-messages
-          :emoji emoji}]
+          :no-messages?      no-messages
+          :emoji             emoji}]
      (if group-chat
        [chat-intro opts]
        [chat-intro-one-to-one opts]))])
@@ -241,15 +232,15 @@
        [toolbar/toolbar {:show-border? true
                          :right
                          [quo/button
-                          {:type     :secondary
+                          {:type                :secondary
                            :accessibility-label :retry-button
-                           :on-press #(re-frame/dispatch [:group-chats.ui/membership-retry])}
+                           :on-press            #(re-frame/dispatch [:group-chats.ui/membership-retry])}
                           (i18n/label :t/mailserver-retry)]
                          :left
                          [quo/button
-                          {:type     :secondary
+                          {:type                :secondary
                            :accessibility-label :remove-group-button
-                           :on-press #(re-frame/dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}
+                           :on-press            #(re-frame/dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}
                           (i18n/label :t/remove-group)]}]
        :else
        [toolbar/toolbar {:show-border? true
@@ -442,7 +433,7 @@
   (let [{:keys [group-chat chat-type chat-id public? community-id admins]} chat
 
         messages @(re-frame/subscribe [:chats/raw-chat-messages-stream chat-id])
-        one-to-one?   (= chat-type constants/one-to-one-chat-type)
+        one-to-one? (= chat-type constants/one-to-one-chat-type)
         contact-added? (when one-to-one? @(re-frame/subscribe [:contacts/contact-added? chat-id]))
         should-send-contact-request?
         (and
@@ -473,9 +464,9 @@
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               list-on-end-reached
        :on-scroll-to-index-failed    identity              ;;don't remove this
-       :content-container-style      {:padding-top (+ bottom-space 16)
+       :content-container-style      {:padding-top    (+ bottom-space 16)
                                       :padding-bottom 16}
-       :scroll-indicator-insets      {:top bottom-space}    ;;ios only
+       :scroll-indicator-insets      {:top bottom-space}   ;;ios only
        :keyboard-dismiss-mode        :interactive
        :keyboard-should-persist-taps :handled
        :onMomentumScrollBegin        state/start-scrolling
@@ -525,10 +516,10 @@
 (defn topbar-old []
   ;;we don't use topbar component, because we want chat view as simple (fast) as possible
   [react/view {:height 56}
-   [react/touchable-highlight {:on-press-in navigate-back-handler
+   [react/touchable-highlight {:on-press-in         navigate-back-handler
                                :accessibility-label :back-button
-                               :style {:height 56 :width 40 :align-items :center :justify-content :center
-                                       :padding-left 16}}
+                               :style               {:height       56 :width 40 :align-items :center :justify-content :center
+                                                     :padding-left 16}}
     [icons/icon :main-icons/arrow-left {:color colors/black}]]
    [react/view {:flex 1 :left 52 :right 52 :top 0 :bottom 0 :position :absolute}
     [topbar-content-old]]
@@ -537,9 +528,9 @@
                                                                              [sheets/current-chat-actions])
                                                                   :height  256}])
                                :accessibility-label :chat-menu-button
-                               :style {:right 0 :top 0 :bottom 0 :position :absolute
-                                       :height 56 :width 40 :align-items :center :justify-content :center
-                                       :padding-right 16}}
+                               :style               {:right         0 :top 0 :bottom 0 :position :absolute
+                                                     :height        56 :width 40 :align-items :center :justify-content :center
+                                                     :padding-right 16}}
     [icons/icon :main-icons/more {:color colors/black}]]])
 
 (defn chat-render-old []
@@ -592,7 +583,7 @@
              ;; We set the key so we can force a re-render as
              ;; it does not rely on ratom but just atoms
              ^{:key (str @components/chat-input-key "chat-input")}
-             [components/chat-toolbar
+             [components/chat-toolbar-old
               {:chat-id          chat-id
                :active-panel     @active-panel
                :set-active-panel set-active-panel
@@ -601,70 +592,33 @@
             [bottom-sheet @active-panel]])]))))
 
 (defn chat-render []
-  (let [bottom-space (reagent/atom 0)
-        panel-space (reagent/atom 52)
-        active-panel (reagent/atom nil)
-        position-y (animated/value 0)
-        pan-state (animated/value 0)
-        text-input-ref (quo.react/create-ref)
-        on-update #(when-not (zero? %) (reset! panel-space %))
-        pan-responder (accessory/create-pan-responder position-y pan-state)
-        space-keeper (get-space-keeper-ios bottom-space panel-space active-panel text-input-ref)
-        set-active-panel (get-set-active-panel active-panel)
-        on-close #(set-active-panel nil)]
-    (fn []
-      (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as chat}
-            ;;we want to react only on these fields, do not use full chat map here
-            @(re-frame/subscribe [:chats/current-chat-chat-view])
-            mutual-contact-requests-enabled? @(re-frame/subscribe [:mutual-contact-requests/enabled?])
-            max-bottom-space (max @bottom-space @panel-space)]
-        [:<>
-         ;; It is better to not use topbar component because of performance
-         [topbar/topbar {:navigation :none
-                         :left-component [react/view {:flex-direction :row :margin-left 16}
-                                          [back-button]]
-                         :title-component [topbar-content]
-                         :right-component [react/view {:flex-direction :row :margin-right 16}
-                                           [search-button]]
-                         :border-bottom false
-                         :new-ui? true}]
-         [connectivity/loading-indicator]
-         (when chat-id
-           (if group-chat
-             [invitation-requests chat-id admins]
-             (when-not mutual-contact-requests-enabled? [add-contact-bar chat-id])))
-         ;;MESSAGES LIST
-         [messages-view {:chat          chat
-                         :bottom-space  max-bottom-space
-                         :pan-responder pan-responder
-                         :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
-                         :space-keeper  space-keeper
-                         :show-input?   show-input?}]
-         (when (and group-chat invitation-admin)
-           [accessory/view {:y               position-y
-                            :on-update-inset on-update}
-            [invitation-bar chat-id]])
-         [components/autocomplete-mentions text-input-ref max-bottom-space]
-         (when show-input?
-           ;; NOTE: this only accepts two children
-           [accessory/view {:y               position-y
-                            :pan-state       pan-state
-                            :has-panel       (boolean @active-panel)
-                            :on-close        on-close
-                            :on-update-inset on-update}
-            [react/view
-             [edit/edit-message-auto-focus-wrapper text-input-ref]
-             [reply/reply-message-auto-focus-wrapper text-input-ref]
-             ;; We set the key so we can force a re-render as
-             ;; it does not rely on ratom but just atoms
-             ^{:key (str @components/chat-input-key "chat-input")}
-             [components/chat-toolbar
-              {:chat-id          chat-id
-               :active-panel     @active-panel
-               :set-active-panel set-active-panel
-               :text-input-ref   text-input-ref}]
-             [contact-request/contact-request-message-auto-focus-wrapper text-input-ref]]
-            [bottom-sheet @active-panel]])]))))
+  (let [{:keys [chat-id show-input? group-chat admins] :as chat}
+        ;;we want to react only on these fields, do not use full chat map here
+        @(re-frame/subscribe [:chats/current-chat-chat-view])
+        mutual-contact-requests-enabled? @(re-frame/subscribe [:mutual-contact-requests/enabled?])]
+    [react/keyboard-avoiding-view-new {:style {:flex 1}
+                                       :ignore-offset false}
+     ;; It is better to not use topbar component because of performance
+     [topbar/topbar {:navigation :none
+                     :left-component [react/view {:flex-direction :row :margin-left 16}
+                                      [back-button]]
+                     :title-component [topbar-content]
+                     :right-component [react/view {:flex-direction :row :margin-right 16}
+                                       [search-button]]
+                     :border-bottom false
+                     :new-ui? true}]
+     [connectivity/loading-indicator]
+     (when chat-id
+       (if group-chat
+         [invitation-requests chat-id admins]
+         (when-not mutual-contact-requests-enabled? [add-contact-bar chat-id])))
+     ;;MESSAGES LIST
+     [messages-view {:chat                             chat
+                     :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
+                     :show-input?                      show-input?}]
+     ;;INPUT COMPONENT
+     (when show-input?
+       [components/chat-input-bottom-sheet chat-id])]))
 
 (defn chat-old []
   (reagent/create-class
@@ -676,8 +630,8 @@
 
 (defn chat []
   (reagent/create-class
-   {:component-did-mount (fn []
-                           (react/hw-back-remove-listener navigate-back-handler)
-                           (react/hw-back-add-listener navigate-back-handler))
+   {:component-did-mount    (fn []
+                              (react/hw-back-remove-listener navigate-back-handler)
+                              (react/hw-back-add-listener navigate-back-handler))
     :component-will-unmount (fn [] (react/hw-back-remove-listener navigate-back-handler))
-    :reagent-render chat-render}))
+    :reagent-render         chat-render}))

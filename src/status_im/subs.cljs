@@ -41,7 +41,8 @@
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.wallet.db :as wallet.db]
-            [status-im.wallet.utils :as wallet.utils]))
+            [status-im.wallet.utils :as wallet.utils]
+            [status-im.utils.image-server :as image-server]))
 
 ;; TOP LEVEL ===========================================================================================================
 
@@ -267,6 +268,9 @@
 (reg-root-key-sub :wallet-connect/session-managed :wallet-connect/session-managed)
 (reg-root-key-sub :contact-requests/pending :contact-requests/pending)
 
+; media-server
+(reg-root-key-sub :mediaserver/port :mediaserver/port)
+
 ; Testing
 
 (reg-root-key-sub :messenger/started? :messenger/started?)
@@ -346,6 +350,21 @@
      (->> members
           (sort-by #(get names (get % 0)))
           (sort-by #(visibility-status-utils/visibility-status-order (get % 0)))))))
+
+(re-frame/reg-sub
+ :communities/featured-communities
+ :<- [:communities/enabled?]
+ :<- [:search/home-filter]
+ :<- [:communities]
+ (fn [[communities-enabled? search-filter communities]]
+   (filterv
+    (fn [{:keys [name featured id]}]
+      (and (or featured (= name "Status")) ;; TO DO: remove once featured communities exist
+           (or communities-enabled?
+               (= id constants/status-community-id))
+           (or (empty? search-filter)
+               (string/includes? (string/lower-case (str name)) search-filter))))
+    (vals communities))))
 
 (re-frame/reg-sub
  :communities/communities
@@ -1288,15 +1307,27 @@
 (re-frame/reg-sub
  :chats/photo-path
  :<- [:contacts/contacts]
+ :<- [:profile/multiaccount]
+ :<- [:mediaserver/port]
+ (fn [[contacts multiaccount port] [_ id]]
+   (let [contact (or (get contacts id)
+                     (when (= id (:public-key multiaccount))
+                       multiaccount))]
+     (if (nil? contact)
+       (image-server/get-identicons-uri port id)
+       (multiaccounts/displayed-photo contact)))))
+
+(re-frame/reg-sub
+ :contacts/name-and-photo
+ :<- [:contacts/contacts]
  :<- [:multiaccount]
- (fn [[contacts multiaccount] [_ id identicon]]
+ (fn [[contacts multiaccount] [_ id]]
    (let [contact (or (get contacts id)
                      (when (= id (:public-key multiaccount))
                        multiaccount)
-                     (if (not (string/blank? identicon))
-                       {:identicon identicon}
-                       (contact.db/public-key->new-contact id)))]
-     (multiaccounts/displayed-photo contact))))
+                     (contact.db/public-key->new-contact id))]
+     {:name  (multiaccounts/displayed-name contact)
+      :photo (multiaccounts/displayed-photo contact)})))
 
 (re-frame/reg-sub
  :chats/unread-messages-number
@@ -1920,6 +1951,31 @@
 
 ;;ACTIVITY CENTER NOTIFICATIONS ========================================================================================
 
+(re-frame/reg-sub
+ :activity-center/notifications-read
+ (fn [db]
+   (get-in db [:activity-center :notifications-read :data])))
+
+(re-frame/reg-sub
+ :activity-center/notifications-unread
+ (fn [db]
+   (get-in db [:activity-center :notifications-unread :data])))
+
+(re-frame/reg-sub
+ :activity-center/current-status-filter
+ (fn [db]
+   (get-in db [:activity-center :current-status-filter])))
+
+(re-frame/reg-sub
+ :activity-center/notifications-per-read-status
+ :<- [:activity-center/notifications-read]
+ :<- [:activity-center/notifications-unread]
+ :<- [:activity-center/current-status-filter]
+ (fn [[notifications-read notifications-unread status-filter]]
+   (if (= status-filter :unread)
+     notifications-unread
+     notifications-read)))
+
 (defn- group-notifications-by-date
   [notifications]
   (->> notifications
@@ -2280,13 +2336,34 @@
  (fn [multiaccount]
    (get multiaccount :profile-pictures-visibility)))
 
+(defn- replace-contact-image-uri [contact port identity]
+  (let [identicon (image-server/get-identicons-uri port identity)
+        contact-images (:images contact)
+        contact-images (reduce (fn [acc image] (let [image-name (:type image)
+                                                       ; We pass the clock so that we reload the image if the image is updated
+                                                     clock (:clock image)
+                                                     uri (image-server/get-contact-image-uri port identity image-name clock)]
+                                                 (assoc-in acc [(keyword image-name) :uri] uri)))
+                               contact-images
+                               (vals contact-images))]
+    (assoc contact :identicon identicon :images contact-images)))
+
+(defn- reduce-contacts-image-uri [contacts port]
+  (reduce-kv (fn [acc public-key contact]
+               (let [contact (replace-contact-image-uri contact port public-key)]
+                 (assoc acc public-key contact)))
+             {}
+             contacts))
+
 (re-frame/reg-sub
  :contacts/contacts
  :<- [::contacts]
  :<- [::profile-pictures-visibility]
  :<- [:multiaccount/public-key]
- (fn [[contacts profile-pictures-visibility public-key]]
-   (contact.db/enrich-contacts contacts profile-pictures-visibility public-key)))
+ :<- [:mediaserver/port]
+ (fn [[contacts profile-pictures-visibility public-key port]]
+   (let [contacts (contact.db/enrich-contacts contacts profile-pictures-visibility public-key)]
+     (reduce-contacts-image-uri contacts port))))
 
 (re-frame/reg-sub
  :contacts/active
@@ -2346,15 +2423,21 @@
                         (string/lower-case search-filter))
                contacts)))))
 
+(defn- enrich-contact [_ identity ens-name port]
+  (let [contact (contact.db/enrich-contact
+                 (contact.db/public-key-and-ens-name->new-contact identity ens-name))]
+    (replace-contact-image-uri contact port identity)))
+
 (re-frame/reg-sub
  :contacts/current-contact
  :<- [:contacts/contacts]
  :<- [:contacts/current-contact-identity]
  :<- [:contacts/current-contact-ens-name]
- (fn [[contacts identity ens-name]]
-   (or (get contacts identity)
-       (contact.db/enrich-contact
-        (contact.db/public-key-and-ens-name->new-contact identity ens-name)))))
+ :<- [:mediaserver/port]
+ (fn [[contacts identity ens-name port]]
+   (let [contact (get contacts identity)]
+     (cond-> contact
+       (nil? contact) (enrich-contact identity ens-name port)))))
 
 (re-frame/reg-sub
  :contacts/contact-by-identity
@@ -2964,6 +3047,27 @@
  :<- [:multiaccount]
  (fn [multiaccount]
    (pos? (count (get multiaccount :images)))))
+
+(defn- replace-multiaccount-image-uri [multiaccount port]
+  (let [public-key (:public-key multiaccount)
+        identicon (image-server/get-identicons-uri port public-key)
+        multiaccount (assoc multiaccount :identicon identicon)
+        images (:images multiaccount)
+        images (reduce (fn [acc current]
+                         (let [key-uid (:keyUid current)
+                               image-name (:type current)
+                               uri (image-server/get-account-image-uri port public-key image-name key-uid)]
+                           (conj acc (assoc current :uri uri))))
+                       []
+                       images)]
+    (assoc multiaccount :images images)))
+
+(re-frame/reg-sub
+ :profile/multiaccount
+ :<- [:multiaccount]
+ :<- [:mediaserver/port]
+ (fn [[multiaccount port]]
+   (replace-multiaccount-image-uri multiaccount port)))
 
 (re-frame/reg-sub
  :mobile-network/syncing-allowed?

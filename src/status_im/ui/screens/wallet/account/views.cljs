@@ -20,9 +20,9 @@
             [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
             [quo2.foundations.colors :as quo2.colors]
             [status-im.utils.handlers :refer [<sub]]
-            [quo2.components.text :as quo2.text]
-            [quo2.components.button :as quo2.button]
-            [quo2.components.tabs :as quo2.tabs])
+            [quo2.components.markdown.text :as quo2.text]
+            [quo2.components.buttons.button :as quo2.button]
+            [quo2.components.tabs.tabs :as quo2.tabs])
   (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
