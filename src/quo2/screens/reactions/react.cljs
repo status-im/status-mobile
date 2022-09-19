@@ -3,7 +3,7 @@
             [quo.previews.preview :as preview]
             [reagent.core :as reagent]
             [quo2.components.reactions.react :as quo2]
-            [quo.design-system.colors :as colors]))
+            [quo2.foundations.colors :as colors]))
 
 (def descriptor [{:label "Count"
                   :key   :clicks
@@ -37,7 +37,7 @@
         [quo2/open-reactions-menu @state]]])))
 
 (defn preview-react []
-  [rn/view {:background-color (:ui-background @colors/theme)
+  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
             :flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always

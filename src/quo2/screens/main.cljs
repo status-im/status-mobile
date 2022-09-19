@@ -1,7 +1,8 @@
 (ns quo2.screens.main
   (:require [quo.components.safe-area :as safe-area]
             [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+            [quo.design-system.colors :as quo.colors]
+            [quo2.foundations.colors :as colors]
             [quo.react-native :as rn]
             [quo.theme :as theme]
             [quo2.components.markdown.text :as quo2-text]
@@ -120,9 +121,9 @@
   [rn/view {:style {:flex-direction   :row
                     :margin-vertical  8
                     :border-radius    4
-                    :background-color (:ui-01 @colors/theme)
+                    :background-color (:ui-01 @quo.colors/theme)
                     :border-width     1
-                    :border-color     (:ui-02 @colors/theme)}}
+                    :border-color     (:ui-02 @quo.colors/theme)}}
    [rn/touchable-opacity {:style    {:padding         8
                                      :flex            1
                                      :justify-content :center
@@ -131,7 +132,7 @@
     [quo/text "Set light theme"]]
    [rn/view {:width            1
              :margin-vertical  4
-             :background-color (:ui-02 @colors/theme)}]
+             :background-color (:ui-02 @quo.colors/theme)}]
    [rn/touchable-opacity {:style    {:padding         8
                                      :flex            1
                                      :justify-content :center
@@ -147,11 +148,12 @@
                         :padding-top        (:top insets)
                         :padding-bottom     8
                         :padding-horizontal 16
-                        :background-color   (:ui-background @colors/theme)}
+                        :background-color   (colors/theme-colors colors/white colors/neutral-90)}
         [theme-switcher]
         [quo2-text/text {:size :heading-1} "Preview Quo2 Components"]
         [rn/view
          (map (fn [category]
+                ^{:key (get category 0)}
                 [rn/view  {:style {:margin-vertical 8}}
                  [quo2-text/text
                   {:weight :semi-bold

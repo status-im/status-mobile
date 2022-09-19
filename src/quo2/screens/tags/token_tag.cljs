@@ -3,7 +3,7 @@
             [quo.previews.preview :as preview]
             [reagent.core :as reagent]
             [quo2.components.tags.token-tag :as quo2]
-            [quo.design-system.colors :as colors]))
+            [quo2.foundations.colors :as colors]))
 
 (def descriptor [{:label   "Size:"
                   :key     :size
@@ -61,7 +61,7 @@
         [quo2/token-tag  (merge @state {:token-img-src (if (=  (get-in @state [:token]) "ETH") eth-token snt-token)})]]])))
 
 (defn preview-token-tag []
-  [rn/view {:background-color (:ui-background @colors/theme)
+  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
             :flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always

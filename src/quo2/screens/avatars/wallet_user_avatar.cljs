@@ -3,7 +3,7 @@
             [quo.previews.preview :as preview]
             [reagent.core :as reagent]
             [quo2.components.avatars.wallet-user-avatar :as quo2]
-            [quo.design-system.colors :as colors]))
+            [quo2.foundations.colors :as colors]))
 
 (def descriptor [{:label   "First name"
                   :key     :f-name
@@ -25,30 +25,11 @@
                  {:label   "Color"
                   :key     :color
                   :type    :select
-                  :options [{:key   :primary
-                             :value "Primary"}
-                            {:key   :purple
-                             :value "Purple"}
-                            {:key   :indigo
-                             :value "Indigo"}
-                            {:key   :turquoise
-                             :value "Turquoise"}
-                            {:key   :blue
-                             :value "Blue"}
-                            {:key   :green
-                             :value "Green"}
-                            {:key   :yellow
-                             :value "yellow"}
-                            {:key   :orange
-                             :value "Orange"}
-                            {:key   :red
-                             :value "Red"}
-                            {:key   :pink
-                             :value "Pink"}
-                            {:key   :brown
-                             :value "Brown"}
-                            {:key   :beige
-                             :value "Beige"}]}])
+                  :options (map
+                            (fn [c]
+                              {:key   c
+                               :value c})
+                            (keys colors/customization))}])
 
 (defn cool-preview []
   (let [state     (reagent/atom {:first-name "empty"
@@ -63,7 +44,7 @@
         [quo2/wallet-user-avatar @state]]])))
 
 (defn preview-wallet-user-avatar []
-  [rn/view {:background-color (:ui-background @colors/theme)
+  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
             :flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always

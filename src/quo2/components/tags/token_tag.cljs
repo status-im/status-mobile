@@ -31,7 +31,7 @@
   [_ _]
   (fn [{:keys [token value size token-img-src border-color is-required is-purchasable]
         :or
-        {size :small border-color (if (=  (theme/get-theme) :dark) colors/purple-60 colors/purple-50)}}]
+        {size :small border-color (colors/custom-color-by-theme :purple 50 60)}}]
 
     [tag/tag {:size size
               :token-img-src token-img-src

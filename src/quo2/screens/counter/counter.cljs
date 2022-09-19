@@ -3,7 +3,7 @@
             [quo.previews.preview :as preview]
             [reagent.core :as reagent]
             [quo2.components.counter.counter :as quo2]
-            [quo.design-system.colors :as colors]))
+            [quo2.foundations.colors :as colors]))
 
 (def descriptor [{:label   "Type:"
                   :key     :type
@@ -32,7 +32,7 @@
         [quo2/counter @state (:value @state)]]])))
 
 (defn preview-counter []
-  [rn/view {:background-color (:ui-background @colors/theme)
+  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
             :flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always
