@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as style]
-            [status-im.profile.db :as profile.db]
             [status-im.multiaccounts.core :as multiaccounts]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.fast-image :as fast-image]))

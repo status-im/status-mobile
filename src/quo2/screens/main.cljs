@@ -13,6 +13,7 @@
             [quo2.screens.buttons.button :as button]
             [quo2.screens.counter.counter :as counter]
             [quo2.screens.community.community-card-view :as community-card]
+            [quo2.screens.dividers.divider-label :as divider-label]
             [quo2.screens.dividers.new-messages :as new-messages]
             [quo2.screens.info.info-message :as info-message]
             [quo2.screens.info.information-box :as information-box]
@@ -58,7 +59,10 @@
    :counter [{:name      :counter
               :insets    {:top false}
               :component counter/preview-counter}]
-   :dividers [{:name      :new-messages
+   :dividers [{:name      :divider-label
+               :inset     {:top false}
+               :component divider-label/preview-divider-label}
+              {:name      :new-messages
                :insets    {:top false}
                :component new-messages/preview-new-messages}]
    :info [{:name      :info-message
