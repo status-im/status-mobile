@@ -4,10 +4,12 @@
             [quo2.components.counter.counter :as quo2.counter]
             [quo2.components.icon :as quo2.icons]
             [quo2.components.avatars.channel-avatar :as channel-avatar]
-            [quo2.components.markdown.text :as quo2.text]))
+            [quo2.components.markdown.text :as quo2.text]
+            [quo.theme :as theme]))
 
-(defn list-item [{:keys [name lock-status mentions-count unread-messages? muted is-active-channel? emoji channel-color] :or {channel-color colors/primary-50}}]
-
+(defn list-item [{:keys [name locked? mentions-count unread-messages?
+                         muted? is-active-channel? emoji channel-color]
+                  :or {channel-color colors/primary-50}}]
   [rn/view {:style (merge {:height          48
                            :display         :flex
                            :border-radius   12
@@ -17,31 +19,40 @@
                            :width           "100%"
                            :padding-left    12
                            :padding-right   12}
-                          (when is-active-channel? {:background-color (colors/theme-alpha channel-color 0.05 0.05)}))}
-
+                          (when is-active-channel?
+                            {:background-color (colors/theme-alpha channel-color 0.05 0.05)}))}
    [rn/view {:display :flex
              :flex-direction :row
              :justify-content :flex-start
              :align-items :center}
     [channel-avatar/channel-avatar
      {:big?                   true
-      :lock-status            lock-status
+      :locked?            locked?
       :emoji-background-color (colors/theme-alpha channel-color 0.1 0.1)
       :emoji                  emoji}]
-    [quo2.text/text {:style (merge {:margin-left 12} (when  (and (not (= lock-status :locked))  muted) {:color colors/neutral-40}))
-                     :weight :medium :size :paragraph-1} (str "# " name)]]
-
+    [quo2.text/text
+     {:style (merge {:margin-left 12}
+                    (when
+                     (and (not locked?)
+                          muted?)
+                      {:color (if (theme/dark?) colors/neutral-60 colors/neutral-40)}))
+      :weight :medium :size :paragraph-1} (str "# " name)]]
    [rn/view {:style {:height 20}}
-
-    (when (and (not (= lock-status :locked))  muted) [quo2.icons/icon :main-icons2/muted {:size            20
-                                                                                          :no-color         true}])
-    (when (and (not (= lock-status :locked)) (not muted)  (pos? (int mentions-count)))
+    (when (and (not locked?)
+               muted?)
+      [quo2.icons/icon :main-icons2/muted?
+       {:size     20
+        :no-color true}])
+    (when (and (not locked?)
+               (not muted?)
+               (pos? (int mentions-count)))
       [rn/view {:style {:margin-right 2
-                        :margin-top 2}}
-
+                        :margin-top   2}}
        [quo2.counter/counter {:override-bg-color channel-color} mentions-count]])
-
-    (when (and (not (= lock-status :locked)) (not muted) (not (pos? (int mentions-count))) unread-messages?)
-
-      [quo2.icons/icon :main-icons2/channel-notification {:size            20
-                                                          :no-color         true}])]])
+    (when (and (not locked?)
+               (not muted?)
+               (not (pos? (int mentions-count)))
+               unread-messages?)
+      [quo2.icons/theme-icon :main-icons2/channel-notification
+       {:size     20
+        :no-color true}])]])

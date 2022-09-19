@@ -5,8 +5,8 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.list-items.channel :as quo2-channel]))
 
-(def descriptor [{:label   "Muted:"
-                  :key     :muted
+(def descriptor [{:label   "Muted?:"
+                  :key     :muted?
                   :type    :boolean}
                  {:label "Name"
                   :key   :name
@@ -20,16 +20,16 @@
                  {:label "Avatar emoji"
                   :key   :emoji
                   :type  :text}
-                 {:label   "Lock status"
-                  :key     :lock-status
+                 {:label   "is Locked?"
+                  :key     :locked?
                   :type    :select
-                  :options [{:key   :none
+                  :options [{:key   nil
                              :value "None"}
-                            {:key   :unlocked
+                            {:key  false
                              :value "Unlocked"}
-                            {:key   :locked
+                            {:key   true
                              :value "Locked"}]}
-                 {:label   "Is Active Channel:"
+                 {:label   "Is Pressed Channel:"
                   :key     :is-active-channel?
                   :type    :boolean}
                  {:label   "Channel color"
@@ -44,16 +44,20 @@
 
 (defn cool-preview []
   (let [state (reagent/atom {:is-active-channel? false
-                             :muted false
+                             :muted? false
                              :unread-messages? false
                              :emoji "🍑"
                              :channel-color "#4360DF"
                              :mentions-count "5"
                              :name "channel"
-                             :lock-status :locked})]
+                             :locked? true})]
     (fn []
       [rn/view {:margin-bottom 50
-                :padding       16}
+                :padding-bottom 16
+                :padding-right 8
+                :padding-left 8
+
+                :padding-top 16}
        [preview/customizer state descriptor]
        [rn/view {:padding-vertical 60
                  :align-items      :center}

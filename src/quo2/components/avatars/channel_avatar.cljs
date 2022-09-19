@@ -5,9 +5,8 @@
             [quo2.components.markdown.text :as text]
             [quo.theme :as theme]))
 
-(defn channel-avatar [{:keys [big? lock-status emoji-background-color emoji]}]
-  (let [locked?      (= :locked lock-status)
-        lock-exists? (and lock-status (not= :none lock-status))
+(defn channel-avatar [{:keys [big? locked? emoji-background-color emoji]}]
+  (let [lock-exists? (some? locked?)
         dark?        (theme/dark?)]
     [rn/view {:style {:width            (if big? 32 24)
                       :height           (if big? 32 24)
@@ -24,11 +23,11 @@
       (when lock-exists?
         [rn/view {:style {:position         :absolute
                           :left             (if big?
-                                              13
-                                              5)
-                          :top              (if big?
                                               14
-                                              5)
+                                              8)
+                          :top              (if big?
+                                              15
+                                              8)
                           :background-color (if dark?
                                               colors/neutral-90
                                               colors/white)
@@ -40,6 +39,6 @@
           {:color           (if dark?
                               colors/neutral-40
                               colors/neutral-50)
-           :container-style {:width  16
-                             :height 16}
+           :container-style {:width  12
+                             :height 12}
            :size            12}]])]]))

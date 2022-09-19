@@ -130,8 +130,6 @@
    :wallet [{:name      :token-overview
              :insets    {:top false}
              :component token-overview/preview-token-overview}]})
-   
- 
 
 (def screens (flatten (map val screens-categories)))
 
