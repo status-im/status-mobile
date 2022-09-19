@@ -83,7 +83,7 @@
     "@babel/preset-env": "7.1.0",
     "@babel/register": "7.0.0",
     "@mapbox/node-pre-gyp": "^1.0.9",
-    "clj-kondo": "^2020.1.13",
+    "clj-kondo": "^2022.9.8",
     "jest": "^25.1.0",
     "nodemon": "^2.0.16",
     "nyc": "^14.1.1",

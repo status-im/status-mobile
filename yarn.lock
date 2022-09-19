@@ -3147,10 +3147,10 @@ cliui@^6.0.0:
     strip-ansi "^6.0.0"
     wrap-ansi "^6.2.0"
 
-clj-kondo@^2020.1.13:
-  version "2020.1.13"
-  resolved "https://registry.yarnpkg.com/clj-kondo/-/clj-kondo-2020.1.13.tgz#bffe0dde83169f3b7a605f459f835cbf90ef9347"
-  integrity sha512-hLKi4toY3UFe1WnuX/HGr2e3PWEt4++7286Jiv/nyBoy1zcEopz7k+e0XnjX5GkxFUgXv1KrIyHQ3eM4+iW2dw==
+clj-kondo@^2022.9.8:
+  version "2022.9.8"
+  resolved "https://registry.yarnpkg.com/clj-kondo/-/clj-kondo-2022.9.8.tgz#50bd2ca712d92876226d2fbe8083adbfd57e1af8"
+  integrity sha512-YAJivlvKxdGrnE/RhYh+ggHJKzF7wCnKQn9UVrQNrxJAE2wCirWbxjypt4S5FzlTGlzDaIDxLZSuECxI4iuXdA==
   dependencies:
     binwrap "^0.2.2"
     request "^2.88.0"

@@ -6,15 +6,15 @@
             [quo2.components.tags.status-tags :as quo2]))
 
 (def status-tags-options
-  {:label "Status"
-   :key :status
-   :type :select
+  {:label   "Status"
+   :key     :status
+   :type    :select
    :options [{:value "Positive"
-              :key :positive}
+              :key   :positive}
              {:value "Negative"
-              :key :negative}
+              :key   :negative}
              {:value "Pending"
-              :key :pending}]})
+              :key   :pending}]})
 
 (def descriptor [status-tags-options
                  {:label "Size"
@@ -27,16 +27,20 @@
 
 (defn cool-preview []
   (let [state (reagent/atom {:status :positive
-                             :size :small})]
+                             :size   :small})]
     (fn []
-      [rn/view {:margin-bottom 50
-                :padding       16}
-       [rn/view {:flex 1}
-        [preview/customizer state descriptor]]
-       [rn/view {:padding-vertical 60
-                 :flex-direction   :row
-                 :justify-content  :center}
-        [quo2/status-tag @state]]])))
+      (let [props (cond-> @state
+                    (= :positive (:status @state)) (assoc :status {:label "Positive" :type :positive})
+                    (= :negative (:status @state)) (assoc :status {:label "Negative" :type :negative})
+                    (= :pending (:status @state))  (assoc :status {:label "Pending" :type :pending}))]
+        [rn/view {:margin-bottom 50
+                  :padding       16}
+         [rn/view {:flex 1}
+          [preview/customizer state descriptor]]
+         [rn/view {:padding-vertical 60
+                   :flex-direction   :row
+                   :justify-content  :center}
+          [quo2/status-tag props]]]))))
 
 (defn preview-status-tags []
   [rn/view {:background-color (colors/theme-colors colors/white
