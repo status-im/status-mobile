@@ -19,15 +19,16 @@
   "type:    default, secondary, grey
    outline: true, false
    value:   integer"
-  [{:keys [type outline]} value]
+  [{:keys [type outline override-text-color override-bg-color]} value]
   (let [type       (or type :default)
-        text-color (if (or
-                        (= (theme/get-theme) :dark)
-                        (and
-                         (= type :default)
-                         (not outline)))
-                     colors/white
-                     colors/black)
+        text-color (or override-text-color
+                       (if (or
+                            (= (theme/get-theme) :dark)
+                            (and
+                             (= type :default)
+                             (not outline)))
+                         colors/white
+                         colors/black))
         value      (if (integer? value)
                      value
                      (js/parseInt value))
@@ -48,7 +49,9 @@
                                :border-color (get-color (or type :default))})
 
                        (not outline)
-                       (assoc :background-color (get-color (or type :default)))
+                       (assoc :background-color
+                              (or override-bg-color
+                                  (get-color (or type :default))))
 
                        (> value 99)
                        (assoc :padding-left 0.5))}
