@@ -131,7 +131,7 @@
            :time-formatted (datetime/timestamp->time timestamp)
            :on-touch-fn #(re-frame/dispatch [:wallet.ui/show-transaction-details hash address]))))
 
-(defn- group-transactions-by-date
+(defn group-transactions-by-date
   [transactions]
   (->> transactions
        (group-by #(datetime/timestamp->date-key (:timestamp %)))

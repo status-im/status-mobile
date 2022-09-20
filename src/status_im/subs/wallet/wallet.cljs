@@ -59,7 +59,7 @@
  (fn [settings]
    (or (get settings :currency) :usd)))
 
-(defn- get-balance-total-value
+(defn get-balance-total-value
   [balance prices currency token->decimals]
   (reduce-kv (fn [acc symbol value]
                (if-let [price (get-in prices [symbol currency :price])]

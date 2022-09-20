@@ -263,7 +263,8 @@
 (re-frame/reg-sub
  :mnemonic
  :<- [:multiaccount]
- :mnemonic)
+ (fn [{:keys [mnemonic]}]
+   mnemonic))
 
 (re-frame/reg-sub
  :get-profile-unread-messages-number
