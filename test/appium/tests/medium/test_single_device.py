@@ -998,15 +998,15 @@ class TestChatManagement(SingleDeviceTestCase):
         home = sign_in.recover_access(user_20_contacts['passphrase'])
 
         users = [chat_users['A'],
-                 chat_users['B'],
+                 transaction_senders['A'],
                  transaction_senders['ETH_8'],
                  transaction_senders['ETH_1'],
                  transaction_senders['ETH_2'],
                  transaction_senders['ETH_7'],
                  transaction_senders['ETH_STT_3'],
                  transaction_senders['ETH_STT_ADI_1'],
+                 transaction_senders['ETH_STT_1'],
                  transaction_senders['C'],
-                 transaction_senders['F'],
                  transaction_senders['G'],
                  transaction_senders['H'],
                  transaction_senders['I'],

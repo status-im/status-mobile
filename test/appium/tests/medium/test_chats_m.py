@@ -317,7 +317,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Creating group chats")
         self.initial_group_chat_name = "GroupChat before rename"
         self.new_group_chat_name = "GroupChat after rename"
-        self.group_user_not_a_contact = basic_user
+        # self.group_user_not_a_contact = basic_user
         self.group_chat_1 = self.home_1.create_group_chat(user_names_to_add=[self.default_username_2],
                                                           group_chat_name=self.initial_group_chat_name)
         self.group_chat_2 = self.home_2.get_chat(self.initial_group_chat_name).click()
@@ -640,9 +640,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         chat_2.send_message("first")
         chat_2.home_button.click()
         chat_1.home_button.click()
-        chat_1 = self.home_1.add_contact(self.group_user_not_a_contact['public_key'])
-        chat_1.home_button.click()
-        chat_1 = self.home_1.create_group_chat([full_ens, self.group_user_not_a_contact['username']], group_name)
+        chat_1 = self.home_1.create_group_chat([full_ens], group_name)
         chat_2 = self.home_2.get_chat(group_name).click()
         chat_2.join_chat_button.click_if_shown()
 
@@ -690,17 +688,6 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
                 'ENS is not resolved in chat input after setting nickname in mention suggestions list (search by nickname)!')
         chat_1.chat_message_input.clear()
 
-        self.home_1.just_fyi("Check can mention not a contact group member who hasn't sent messages yet")
-        chat_2.chat_message_input.send_keys('@')
-        if not chat_2.element_by_text('%s' % self.group_user_not_a_contact['username']).is_element_displayed():
-            self.errors.append("Username of not a contact group member is not shown in mention input")
-        chat_2.chat_message_input.clear()
-        chat_2.select_mention_from_suggestion_list('%s' % self.group_user_not_a_contact['username'], typed_search_pattern=self.group_user_not_a_contact['username'][:2])
-        if chat_2.chat_message_input.text != '@' + self.group_user_not_a_contact['username'] + ' ':
-            self.errors.append(
-                'Can not select mention of not a contact member from suggestions list')
-        chat_2.chat_message_input.clear()
-
         self.home_1.just_fyi('Can delete nickname via group info and recheck received messages')
         device_2_options = chat_1.get_user_options(full_ens)
         device_2_options.view_profile_button.click()
@@ -737,6 +724,11 @@ class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
         for member in (self.public_keys[1], self.public_keys[2]):
             self.homes[0].add_contact(member)
             self.homes[0].home_button.click()
+
+        for i in range(1, 3):
+            self.homes[i].handle_contact_request(self.usernames[0])
+            self.homes[i].home_button.double_click()
+
         [SignInView(self.drivers[i]).put_app_to_background_and_back() for i in range(1, 3)]
         self.chat_name = self.homes[0].get_random_chat_name()
         self.invite_chat_name = '%s_invite' % self.homes[0].get_random_chat_name()

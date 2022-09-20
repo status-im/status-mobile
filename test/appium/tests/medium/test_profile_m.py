@@ -24,7 +24,7 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         self.home_1.just_fyi("Creating 1-1 chats")
         self.chat_1 = self.home_1.add_contact(self.public_key_2)
         self.first_message = 'first message'
-        self.chat_2 = self.home_2.add_contact(self.public_key_1, add_in_contacts=False)
+        self.chat_2 = self.home_2.add_contact(self.public_key_1)
         [home.home_button.click() for home in (self.home_1, self.home_2)]
 
         self.home_1.just_fyi("Creating group chat")
@@ -46,7 +46,16 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
     @marks.testrail_id(702281)
     def test_profile_show_profile_picture_and_online_indicator_settings(self):
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
-        logo_online, logo_default, logo_chats, logo_group = 'logo_new.png', 'sauce_logo.png', 'logo_chats_view.png', 'group_logo.png'
+
+        self.chat_2.just_fyi('Removing user 1 from contacts')
+        self.home_2.get_chat(self.default_username_1).click()
+        self.chat_2.chat_options.click()
+        self.chat_2.view_profile_button.click()
+        self.chat_2.remove_from_contacts.click_until_absense_of_element(self.chat_2.remove_from_contacts)
+        self.chat_2.close_button.click()
+        self.chat_2.home_button.double_click()
+
+        logo_online, logo_default, logo_chats, logo_group = 'logo_new.png', 'sauce_logo.png', 'logo_chats_view_2.png', 'group_logo.png'
         profile_1 = self.home_1.profile_button.click()
 
         profile_1.just_fyi("Set user Profile image from Gallery")
@@ -149,7 +158,7 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         one_to_one_chat_2.get_back_to_home_view()
         one_to_one_chat_2.home_button.double_click()
         if self.home_2.get_chat(self.default_username_1).chat_image.is_element_image_similar_to_template(logo_default):
-            self.errors.append('User profile picture is not default to default after user removed from Contacts')
+            self.errors.append('User profile picture is not returned to default after user removed from Contacts')
 
         profile_2.just_fyi('Enable to see profile image from "Everyone" setting')
         self.home_2.profile_button.double_click()
@@ -160,7 +169,7 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         profile_2.home_button.click(desired_view='home')
         if not self.home_2.get_chat(self.default_username_1).chat_image.is_element_image_similar_to_template(
                 logo_chats):
-            self.errors.append('User profile picture is not returned to default after user removed from Contacts')
+            self.errors.append('User profile picture is not shown after user after enabling see profile image from Everyone')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702282)

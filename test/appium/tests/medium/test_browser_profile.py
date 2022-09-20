@@ -33,7 +33,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
             dapp.open_url(url)
             if dapp.web_page.is_element_differs_from_template(urls[url], 5):
                 self.errors.append('Web page does not match expected template %s' % urls[url])
-            base_web.browser_previous_page_button.click_until_presence_of_element(dapp.element_by_text_part('Discover'))
+            base_web.browser_previous_page_button.click_until_presence_of_element(dapp.element_by_text_part('Discover'), attempts=2)
 
         self.errors.verify_no_errors()
 
@@ -47,19 +47,19 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
         browsing.just_fyi("Check next page")
         browsing.just_fyi('Navigate to next page and back')
-        browsing.element_by_text_part('може редагувати кожен').click()
-        browsing.element_by_text_part('написана спільно її читачами').wait_for_element(30)
+        browsing.element_by_text_part('може редагувати кожен').scroll_and_click()
+        browsing.element_by_text_part('написана спільно її читачами').scroll_to_element()
         browsing.browser_previous_page_button.click()
-        browsing.wait_for_element_starts_with_text('може редагувати кожен')
+        browsing.wait_for_element_starts_with_text('Головна сторінка')
 
         browsing.just_fyi('Relogin and check that tap on "Next" navigates to next page')
         browsing.reopen_app()
         self.home.dapp_tab_button.click()
         browsing.open_tabs_button.click()
         dapp.element_by_text_part(ua_url).click()
-        browsing.wait_for_element_starts_with_text('може редагувати кожен')
+        browsing.element_by_text_part('може редагувати кожен').scroll_to_element()
         browsing.browser_next_page_button.click()
-        browsing.element_by_text_part('написана спільно її читачами').wait_for_element(30)
+        browsing.element_by_text_part('написана спільно її читачами').scroll_to_element()
 
         self.errors.verify_no_errors()
 

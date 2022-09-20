@@ -18,6 +18,8 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             self.drivers[1]), SignInView(self.drivers[2])
         self.home_1 = self.device_1.create_user()
 
+        self.public_key_1, self.username_1 = self.home_1.get_public_key_and_username(return_username=True)
+
         self.profile_1 = self.home_1.profile_button.click()
         self.profile_1.privacy_and_security_button.click()
         self.profile_1.backup_recovery_phrase_button.click()
@@ -81,6 +83,10 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.device_1.just_fyi('Add contact, start group chat')
         self.home_1.home_button.click()
         self.home_1.add_contact(self.public_key_3)
+
+        self.home_3.handle_contact_request(self.username_1)
+        self.home_3.home_button.double_click()
+
         self.device_2.put_app_to_background_and_back()
         self.home_1.get_back_to_home_view()
         self.chat_1 = self.home_1.create_group_chat([self.username_3], self.group_chat_name)

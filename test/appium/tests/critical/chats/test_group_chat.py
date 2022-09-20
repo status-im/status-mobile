@@ -29,9 +29,10 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.homes[0].add_contact(self.public_keys[i])
             self.homes[0].home_button.double_click()
 
-        self.homes[0].just_fyi('Member adds admin to contacts to see PNs and put app in background')
-        self.homes[1].add_contact(self.public_keys[0])
-        self.homes[1].home_button.double_click()
+        self.homes[0].just_fyi('Members add admin to contacts to see PNs and put app in background')
+        for i in range(1, 3):
+            self.homes[i].handle_contact_request(self.usernames[0])
+            self.homes[i].home_button.double_click()
 
         self.homes[0].just_fyi('Admin creates group chat')
         self.chats[0] = self.homes[0].create_group_chat([self.usernames[1]], self.chat_name)
@@ -102,19 +103,24 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(700732)
-    def test_group_chat_add_new_member_activity_centre(self):
+    def test_group_chat_add_new_member(self):
         [self.homes[i].home_button.double_click() for i in range(3)]
         self.homes[0].get_chat(self.chat_name).click()
         self.chats[0].add_members_to_group_chat([self.usernames[2]])
 
-        self.chats[2].just_fyi("Check there will be no PN but unread in AC if got invite from non-contact")
-        if not self.homes[2].notifications_unread_badge.is_element_displayed(60):
-            self.drivers[2].fail("Group chat is not appeared in AC!")
+        self.chats[2].just_fyi("Check there will be PN and no unread in AC for a new member")
+        if self.homes[2].notifications_unread_badge.is_element_displayed(60):
+            self.drivers[2].fail("Group chat appeared in AC!")
         self.homes[2].open_notification_bar()
-        if self.homes[2].element_by_text_part(self.usernames[0]).is_element_displayed():
-            self.errors.append("PN about group chat invite is shown when invited by non-contact")
+        if not self.homes[2].element_by_text_part(self.usernames[0]).is_element_displayed():
+            self.errors.append("PN about group chat invite is not shown when invited by mutual contact")
 
         self.homes[2].click_system_back_button()
+
+        self.homes[2].just_fyi("Check new group appeared in chat list for a new member")
+        if not self.homes[2].get_chat(self.chat_name).is_element_displayed(60):
+            self.drivers[2].fail("New group chat hasn't appeared in chat list")
+
         self.homes[2].get_chat(self.chat_name).click()
 
         for message in (self.message_to_admin, self.message_before_adding):
