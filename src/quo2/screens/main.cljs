@@ -35,6 +35,7 @@
             [quo2.screens.avatars.channel-avatar :as channel-avatar]
             [quo2.screens.switcher.switcher-cards :as switcher-cards]
             [quo2.screens.tabs.account-selector :as account-selector]
+            [quo2.screens.list-items.dropdown :as dropdown]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -116,6 +117,9 @@
    :wallet [{:name      :token-overview
              :insets    {:top false}
              :component token-overview/preview-token-overview}]
+   :dropdowns [{:name      :dropdown
+                :insets    {:top false}
+                :component dropdown/preview-dropdown}]
    :list-items [{:name      :preview-lists
                  :insets    {:top false}
                  :component preview-lists/preview-preview-lists}]
