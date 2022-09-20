@@ -36,6 +36,7 @@
         <meta-data android:name="commitHash" android:value="${commitHash}"/>
         <activity
                 android:name=".MainActivity"
+                android:exported="true"
                 android:label="@string/app_name"
                 android:screenOrientation="portrait"
                 android:windowSoftInputMode="adjustResize"
