@@ -989,7 +989,7 @@
   {::async-storage/set! {:transactions-management-enabled? enabled?}
    :db (assoc db :wallet/transactions-management-enabled? enabled?)})
 
-(fx/defn update-curent-block
+(fx/defn update-current-block
   {:events [::update-current-block]}
   [{:keys [db]} block]
   {:db (assoc db :ethereum/current-block block)})

@@ -7,7 +7,7 @@
             [status-im.utils.security :as security]
             [status-im.multiaccounts.logout.core :as logout]
             [status-im.transport.core :as transport]
-            status-im.subs ;;so integration tests can run independently
+            status-im.subs.root ;;so integration tests can run independently
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.test :as utils.test]
             [taoensso.timbre :as log]))
