@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.activity-center.views
-  (:require [quo.react-native :as rn]
+  (:require [quo.components.animated.pressable :as animation]
+            [quo.react-native :as rn]
             [quo2.components.buttons.button :as button]
             [quo2.components.notifications.activity-logs :as activity-logs]
             [quo2.components.tags.context-tags :as context-tags]
@@ -64,29 +65,44 @@
     nil))
 
 (defn activity-buttons
-  [{:keys [type]}]
+  [{:keys [id type]}]
   (case type
     constants/activity-center-notification-type-contact-request
-    {:button-1 {:label (i18n/label :t/decline)
-                :type  :danger}
-     :button-2 {:label (i18n/label :t/accept)
-                :type  :success}}
+    {:button-1 {:label    (i18n/label :t/decline)
+                :type     :danger
+                :on-press #(>evt [:contact-requests.ui/decline-request id])}
+     :button-2 {:label    (i18n/label :t/accept)
+                :type     :success
+                :on-press #(>evt [:contact-requests.ui/accept-request id])}}
     nil))
+
+(defn activity-pressable
+  [notification & children]
+  (case (get-in notification [:message :contact-request-state])
+    constants/contact-request-message-state-accepted
+    ;; NOTE [2022-09-21]: We need to dispatch to
+    ;; `:contact.ui/send-message-pressed` instead of
+    ;; `:chat.ui/navigate-to-chat`, otherwise the chat screen looks completely
+    ;; broken if it has never been opened before for the accepted contact.
+    [animation/pressable {:on-press #(>evt [:contact.ui/send-message-pressed {:public-key (:author notification)}])}
+     children]
+    [:<> children]))
 
 (defn render-notification
   [notification index]
   [rn/view {:flex           1
             :flex-direction :column
             :margin-top     (if (= 0 index) 0 4)}
-   [activity-logs/activity-log
-    (merge {:context   (activity-context notification)
-            :icon      (activity-icon notification)
-            :message   (activity-message notification)
-            :status    (activity-status notification)
-            :timestamp (datetime/timestamp->relative (:timestamp notification))
-            :title     (activity-title notification)
-            :unread?   (not (:read notification))}
-           (activity-buttons notification))]])
+   [activity-pressable notification
+    [activity-logs/activity-log
+     (merge {:context   (activity-context notification)
+             :icon      (activity-icon notification)
+             :message   (activity-message notification)
+             :status    (activity-status notification)
+             :timestamp (datetime/timestamp->relative (:timestamp notification))
+             :title     (activity-title notification)
+             :unread?   (not (:read notification))}
+            (activity-buttons notification))]]])
 
 (defn notifications-list
   []
@@ -94,12 +110,12 @@
     [rn/flat-list {:style          {:padding-horizontal 8}
                    :data           notifications
                    :key-fn         :id
-                   :on-end-reached #(>evt [:activity-center/notifications-fetch-next-page])
+                   :on-end-reached #(>evt [:activity-center.notifications/fetch-next-page])
                    :render-fn      render-notification}]))
 
 (defn activity-center []
   (reagent/create-class
-   {:component-did-mount #(>evt [:activity-center/notifications-fetch-first-page {:status-filter :unread}])
+   {:component-did-mount #(>evt [:activity-center.notifications/fetch-first-page {:status-filter :unread}])
     :reagent-render
     (fn []
       [:<>
@@ -107,8 +123,8 @@
                        :title      (i18n/label :t/activity)}]
        ;; TODO(ilmotta): Temporary solution to switch between read/unread
        ;; notifications while the Design team works on the mockups.
-       [button/button {:on-press #(>evt [:activity-center/notifications-fetch-first-page {:status-filter :unread}])}
+       [button/button {:on-press #(>evt [:activity-center.notifications/fetch-first-page {:status-filter :unread}])}
         "Unread"]
-       [button/button {:on-press #(>evt [:activity-center/notifications-fetch-first-page {:status-filter :read}])}
+       [button/button {:on-press #(>evt [:activity-center.notifications/fetch-first-page {:status-filter :read}])}
         "Read"]
        [notifications-list]])}))
