@@ -3,7 +3,6 @@
             [quo.previews.main :as quo.preview]
             [status-im.add-new.core :as new-chat.events]
             [status-im.i18n.i18n :as i18n]
-            [status-im.keycard.core :as keycard.core]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.add-new.new-chat.views :as new-chat]
@@ -749,7 +748,10 @@
                                         ;KEYCARD
            {:name         :keycard-onboarding-intro
             :insets       {:bottom true}
-            :back-handler keycard.core/onboarding-intro-back-handler
+            :options      {:topBar             {:visible false}
+                           :popGesture         false
+                           :hardwareBackButton {:dismissModalOnPress false
+                                                :popStackOnPress     false}}
             :component    keycard.onboarding/intro}
            {:name      :keycard-onboarding-puk-code
             :insets    {:bottom true}

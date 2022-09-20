@@ -4,6 +4,7 @@
             [status-im.utils.utils :as utils]
             [status-im.i18n.i18n :as i18n]
             [status-im.ethereum.mnemonic :as mnemonic]
+            [status-im.keycard.common :as common]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.navigation :as navigation]
             [status-im.signing.core :as signing.core]
@@ -64,4 +65,5 @@
                       (assoc-in [:keycard :flow] :recovery)
                       (update :multiaccounts/key-storage dissoc :seed-phrase))
              :dismiss-keyboard nil}
+            (common/listen-to-hardware-back-button)
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))

@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.mnemonic :as mnemonic]
+            [status-im.keycard.common :as common]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.multiaccounts.model :as multiaccounts.model]
@@ -244,6 +245,7 @@ We don't need to take the exact steps, just set the required state and redirect 
                       (assoc-in [:keycard :converting-account?] (not (get-in db [:multiaccounts/key-storage :reset-db-checked?])))
                       (dissoc :multiaccounts/key-storage))}
             (popover/hide-popover)
+            (common/listen-to-hardware-back-button)
             (navigation/navigate-to-cofx :keycard-onboarding-intro nil)))
 
 (fx/defn handle-delete-multiaccount-error
