@@ -522,7 +522,7 @@ public class PushNotificationHelper {
                     actionIntent.setPackage(packageName);
 
                     PendingIntent pendingActionIntent = PendingIntent.getBroadcast(context, notificationID, actionIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT);
+                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                       notification.addAction(new NotificationCompat.Action.Builder(icon, action, pendingActionIntent).build());
@@ -708,26 +708,30 @@ public class PushNotificationHelper {
         Intent intent = new Intent(ACTION_DELETE_NOTIFICATION);
         intent.putExtra("im.status.ethereum.deepLink", deepLink);
         intent.putExtra("im.status.ethereum.groupId", groupId);
-        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
     }
 
     private PendingIntent createGroupOnTapIntent(Context context, int notificationId, String groupId, String deepLink) {
         Intent intent = new Intent(ACTION_TAP_NOTIFICATION);
         intent.putExtra("im.status.ethereum.deepLink", deepLink);
         intent.putExtra("im.status.ethereum.groupId", groupId);
-        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
    }
 
     private PendingIntent createOnTapIntent(Context context, int notificationId, String deepLink) {
         Intent intent = new Intent(ACTION_TAP_NOTIFICATION);
         intent.putExtra("im.status.ethereum.deepLink", deepLink);
-        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
    }
 
     private PendingIntent createOnDismissedIntent(Context context, int notificationId, String deepLink) {
         Intent intent = new Intent(ACTION_DELETE_NOTIFICATION);
         intent.putExtra("im.status.ethereum.deepLink", deepLink);
-        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
     }
 
     public void removeStatusMessage(Bundle bundle) {
