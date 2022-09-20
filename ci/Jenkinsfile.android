@@ -4,7 +4,7 @@ library 'status-jenkins-lib@v1.5.5'
 def isPRBuild = utils.isPRBuild()
 
 pipeline {
-  agent { label 'linux && x86_64 && nix-2.8' }
+  agent { label 'linux && x86_64 && nix-2.11' }
 
   options {
     timestamps()

@@ -20,14 +20,10 @@ And use `sudo sysctl --system` to load these new settings.
 
 ### Multi-User Installation
 
-The other reason why this error could appear are limits fo `nix-daemon` service:
-https://github.com/NixOS/nix/issues/6007
+This has been fixed in Nix `2.9.0`:
 
-Since Systemd services ignore system-wide limits you will have to add the following line:
-```
-LimitNOFILE=4096:1048576
-```
-To the `/etc/systemd/system/nix-daemon.service` service definition.
+* https://github.com/NixOS/nix/issues/6007
+* https://github.com/NixOS/nix/pull/6553
 
 ## Cache Downloads Timing Out
 
