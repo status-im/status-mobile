@@ -45,9 +45,9 @@ if [[ -n "${OPENSEA_API_KEY}" ]]; then append_env_export 'OPENSEA_API_KEY'; fi
 
 # If no secrets were passed there's no need to pass the 'secretsFile'.
 if [[ -s "${SECRETS_FILE_PATH}" ]]; then
+  nixOpts+=("--option" "extra-sandbox-paths" "${SECRETS_FILE_PATH}")
   nixOpts+=("--argstr" "secretsFile" "${SECRETS_FILE_PATH}")
 fi
-nixOpts+=("--option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH}")
 
 # Used by Clojure at compile time to include JS modules
 nixOpts+=("--argstr" "buildEnv" "$(must_get_env BUILD_ENV)")
