@@ -70,8 +70,8 @@
                                                        :background-color (if @open?
                                                                            dd-color
                                                                            (color-by-10 dd-color))})
-                                                                   use-border? (assoc :border-width 1
-                                                                                      :border-color (if @open? border-color (color-by-10 border-color))))}
+                                               use-border? (assoc :border-width 1
+                                                                  :border-color (if @open? border-color (color-by-10 border-color))))}
                             disabled? (assoc-in [:style :opacity] 0.3)
                             disabled? (assoc :disabled true))
      (when icon
