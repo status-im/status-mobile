@@ -76,13 +76,22 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
  *   extraPackagerArgs: []
  * ]
  */
+
+/*
+ Enabling Hermes on x86 devices is crashing the app after a few reloads,
+ this flag can be used to disable Hermes while building app.
+ https://github.com/status-im/status-mobile/issues/14031
+ */
+
+def disableHermes = new Boolean(System.getenv('DISABLE_HERMES') ?: false)
+
 project.ext.react = [
     nodeExecutableAndArgs: ["node", "--max-old-space-size=16384"],
     entryFile: "index.js",
     /* NOTE: Hermes engine is required for Android 64-bit builds running on 64 devices,
      *       to guard against a hang in the UI thread after invoking status-go.
      * Also a clean and rebuild is required when changing this. */
-    enableHermes: true,
+    enableHermes: !disableHermes,
     /* Disable 'The first definition was here.' warnings */
     hermesFlagsRelease: ["-w"],
     bundleInPr: true,
