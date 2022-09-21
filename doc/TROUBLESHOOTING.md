@@ -102,7 +102,7 @@ Alternatively, run adb commands only from `make shell TARGET=android` shell. Don
 ## APP Crashes on reloading changes
 
 ### Cause
-Status-mobile uses watchman for monitoring changes and uses its own [reloader](https://github.com/status-im/status-mobile/blob/develop/src/status_im/reloader.cljs) for updating the running app. If react-native's fast refresh is also enabled then it creates conflicts and crashes the app.
+Status-mobile uses `shadow-cljs` for hot reloading changes and uses its own [reloader](https://github.com/status-im/status-mobile/blob/develop/src/status_im/reloader.cljs) for updating them in the running app. If react-native's fast refresh is also enabled then it creates conflicts and crashes the app.
 
 ### Solution
 Open react native's [In-App Developer Menu](https://reactnative.dev/docs/debugging#accessing-the-in-app-developer-menu) and press "Disable Fast Refresh" or "Disable Hot Reloading"
