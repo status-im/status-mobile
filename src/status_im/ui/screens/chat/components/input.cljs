@@ -255,7 +255,7 @@
       (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
 (defn text-input-old [{:keys [set-active-panel refs chat-id sending-image]}]
-  (let [cooldown-enabled? @(re-frame/subscribe [:chats/cooldown-enabled?])
+  (let [cooldown-enabled? @(re-frame/subscribe [:chats/current-chat-cooldown-enabled?])
         mentionable-users @(re-frame/subscribe [:chats/mentionable-users])
         timeout-id (atom nil)
         last-text-change (atom nil)
@@ -294,7 +294,7 @@
        (get @input-texts chat-id))]))
 
 (defn text-input [{:keys [set-active-panel refs chat-id sending-image on-content-size-change]}]
-  (let [cooldown-enabled? @(re-frame/subscribe [:chats/cooldown-enabled?])
+  (let [cooldown-enabled? @(re-frame/subscribe [:chats/current-chat-cooldown-enabled?])
         mentionable-users @(re-frame/subscribe [:chats/mentionable-users])
         timeout-id (atom nil)
         last-text-change (atom nil)

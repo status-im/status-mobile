@@ -1,6 +1,10 @@
 (ns status-im.search.core-test
   (:require [cljs.test :refer-macros [deftest testing is]]
-            [status-im.subs :as search.subs]))
+            [status-im.subs.search :as search.subs]))
+
+(defn extract-chat-attributes [chat]
+  (let [{:keys [name alias tags]} (val chat)]
+    (into [name alias] tags)))
 
 (deftest filter-chats
   (let [chats {:chat-1 {:name "name1"
@@ -19,35 +23,35 @@
       (is (= (count chats)
              (count (search.subs/apply-filter ""
                                               chats
-                                              search.subs/extract-chat-attributes
+                                              extract-chat-attributes
                                               false)))))
     (testing "searching for a specific tag"
       (is (= 1
              (count (search.subs/apply-filter "tag2"
                                               chats
-                                              search.subs/extract-chat-attributes
+                                              extract-chat-attributes
                                               false)))))
     (testing "searching for a partial tag"
       (is (= 3
              (count (search.subs/apply-filter "tag"
                                               chats
-                                              search.subs/extract-chat-attributes
+                                              extract-chat-attributes
                                               false)))))
     (testing "searching for a specific alias"
       (is (= 1
              (count (search.subs/apply-filter "alias4"
                                               chats
-                                              search.subs/extract-chat-attributes
+                                              extract-chat-attributes
                                               false)))))
     (testing "searching for a partial alias"
       (is (= 4
              (count (search.subs/apply-filter "alias"
                                               chats
-                                              search.subs/extract-chat-attributes
+                                              extract-chat-attributes
                                               false)))))
     (testing "searching for a specific chat name"
       (is (= 1
              (count (search.subs/apply-filter "name4"
                                               chats
-                                              search.subs/extract-chat-attributes
+                                              extract-chat-attributes
                                               false)))))))

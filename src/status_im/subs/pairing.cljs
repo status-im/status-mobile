@@ -1,0 +1,22 @@
+(ns status-im.subs.pairing
+  (:require [re-frame.core :as re-frame]
+            [status-im.pairing.core :as pairing]))
+
+(re-frame/reg-sub
+ :pairing/installations
+ :<- [:get-pairing-installations]
+ :<- [:pairing/installation-id]
+ (fn [[installations installation-id]]
+   (->> installations
+        vals
+        (pairing/sort-installations installation-id))))
+
+(re-frame/reg-sub
+ :pairing/installation-id
+ :<- [:multiaccount]
+ (fn [multiaccount] (:installation-id multiaccount)))
+
+(re-frame/reg-sub
+ :pairing/installation-name
+ :<- [:multiaccount]
+ (fn [multiaccount] (:installation-name multiaccount)))
