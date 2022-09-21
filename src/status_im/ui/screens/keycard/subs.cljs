@@ -1,4 +1,4 @@
-(ns status-im.subs.keycard
+(ns status-im.ui.screens.keycard.subs
   (:require [re-frame.core :as re-frame]
             [status-im.keycard.common :as common]
             [status-im.utils.datetime :as utils.datetime]

@@ -11,7 +11,7 @@
             [status-im.native-module.core :as status]
             status-im.navigation.core
             [status-im.notifications.local :as notifications]
-            status-im.subs.root
+            status-im.subs
             [status-im.ui.components.react :as react]
             [status-im.utils.config :as config]
             status-im.utils.db
