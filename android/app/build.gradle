@@ -83,7 +83,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
  https://github.com/status-im/status-mobile/issues/14031
  */
 
-def disableHermes = new Boolean(System.getenv('DISABLE_HERMES') ?: false)
+def disableHermes = System.getenv('DISABLE_HERMES') == 'true'
 
 project.ext.react = [
     nodeExecutableAndArgs: ["node", "--max-old-space-size=16384"],
