@@ -146,7 +146,8 @@
             [quo/text "↓"]]]]]))))
 
 (defn customizer [state descriptors]
-  [rn/view {:style {:flex 1}}
+  [rn/view {:style              {:flex 1}
+            :padding-horizontal 16}
    (doall
     (for [{:keys [key type]
            :as   desc} descriptors

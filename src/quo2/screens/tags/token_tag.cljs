@@ -53,12 +53,12 @@
 (defn cool-preview []
   (let [state (reagent/atom {:size :big :value 10 :token "ETH" :is-required true :is-purchasable false})]
     (fn []
-      [rn/view {:margin-bottom 50
-                :padding       16}
-       [preview/customizer state descriptor]
-       [rn/view {:padding-vertical 60
-                 :align-items      :center}
-        [quo2/token-tag  (merge @state {:token-img-src (if (=  (get-in @state [:token]) "ETH") eth-token snt-token)})]]])))
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [preview/customizer state descriptor]
+        [rn/view {:padding-vertical 60
+                  :align-items      :center}
+         [quo2/token-tag  (merge @state {:token-img-src (if (=  (get-in @state [:token]) "ETH") eth-token snt-token)})]]]])))
 
 (defn preview-token-tag []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)

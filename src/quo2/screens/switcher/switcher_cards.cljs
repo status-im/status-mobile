@@ -131,12 +131,12 @@
                              :content-type        :text
                              :last-message        "This is fantastic! Ethereum"})]
     (fn []
-      [rn/view {:margin-bottom 50
-                :padding       16}
-       [preview/customizer state descriptor]
-       [rn/view {:padding-vertical 60
-                 :align-items      :center}
-        [switcher-cards/card (:type @state) (get-mock-data @state)]]])))
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [preview/customizer state descriptor]
+        [rn/view {:padding-vertical 60
+                  :align-items      :center}
+         [switcher-cards/card (:type @state) (get-mock-data @state)]]]])))
 
 (defn preview-switcher-cards []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-100)

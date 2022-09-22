@@ -35,14 +35,14 @@
                              :bottom-value-bg-color   colors/black
                              :bottom-value-text-color colors/white})]
     (fn []
-      [rn/view {:margin-bottom 50
-                :padding       16}
-       [rn/view {:flex 1}
-        [preview/customizer state descriptor]]
-       [rn/view {:padding-vertical 60
-                 :flex-direction   :row
-                 :justify-content  :center}
-        [quo2/lowest-price @state]]])))
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [rn/view {:flex 1}
+         [preview/customizer state descriptor]]
+        [rn/view {:padding-vertical 60
+                  :flex-direction   :row
+                  :justify-content  :center}
+         [quo2/lowest-price @state]]]])))
 
 (defn preview-lowest-price []
   [rn/view {:background-color (colors/theme-colors colors/white

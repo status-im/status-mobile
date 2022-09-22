@@ -39,11 +39,11 @@
   (let [state     (reagent/atom {:label "New messages"
                                  :color :primary})]
     (fn []
-      [rn/view {:margin-bottom 50
-                :padding       16}
-       [preview/customizer state descriptor]
-       [rn/view {:padding-vertical 60}
-        [new-messages/new-messages @state]]])))
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [preview/customizer state descriptor]
+        [rn/view {:padding-vertical 60}
+         [new-messages/new-messages @state]]]])))
 
 (defn preview-new-messages []
   [rn/view  {:background-color (colors/theme-colors

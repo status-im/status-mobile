@@ -35,12 +35,12 @@
         closed?  (reagent/cursor state [:closed?])
         on-close #(reset! closed? true)]
     (fn []
-      [rn/view {:margin-bottom 50
-                :padding       16}
-       [preview/customizer state descriptor]
-       [rn/view {:padding-vertical 60
-                 :align-items      :center}
-        [quo2/information-box (merge @state {:on-close on-close}) (:message @state)]]])))
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [preview/customizer state descriptor]
+        [rn/view {:padding-vertical 60
+                  :align-items      :center}
+         [quo2/information-box (merge @state {:on-close on-close}) (:message @state)]]]])))
 
 (defn preview-information-box []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)

@@ -59,14 +59,14 @@
         selected-item (reagent/cursor state [:default-item])
         on-select     #(reset! selected-item %)]
     (fn []
-      [rn/view {:margin-bottom 50
-                :padding       16}
-       [preview/customizer state descriptor]
-       [rn/view {:padding-vertical 60
-                 :align-items      :center}
-        [text/text {:color :main} (str "Selected item: " @selected-item)]
-        [quo2/dropdown (merge @state {:on-select on-select
-                                      :items     items})]]])))
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [preview/customizer state descriptor]
+        [rn/view {:padding-vertical 60
+                  :align-items      :center}
+         [text/text {:color :main} (str "Selected item: " @selected-item)]
+         [quo2/dropdown (merge @state {:on-select on-select
+                                       :items     items})]]]])))
 
 (defn preview-dropdown []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
