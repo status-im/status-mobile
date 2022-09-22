@@ -166,7 +166,7 @@
 
 (re-frame/reg-sub
  :get-app-short-version
- build/app-short-version)
+ (fn [_] build/app-short-version))
 
 (re-frame/reg-sub
  :get-commit-hash
