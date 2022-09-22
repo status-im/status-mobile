@@ -189,7 +189,7 @@
                                         [home-tooltip-view]
                                         [react/view {:height 68}])}])))
 
-(def ENS_BANNER_EXPIRE_TIMESTAMP 1665010800)
+(def ens-banner-expire-timestamp 1665010800)
 
 (views/defview communities-and-chats-old []
   (views/letsubs [{:keys [items search-filter]} [:home-items]
@@ -210,7 +210,7 @@
         :header                       [:<>
                                        (when (or (seq items) @search-active? (seq search-filter))
                                          [search-input-wrapper-old search-filter (empty? items)])
-                                       (when (< (datetime/timestamp-sec) ENS_BANNER_EXPIRE_TIMESTAMP)
+                                       (when (< (datetime/timestamp-sec) ens-banner-expire-timestamp)
                                          [information-box/information-box
                                           {:type            :informative
                                            :closable?       true
