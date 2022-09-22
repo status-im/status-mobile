@@ -36,15 +36,16 @@
 (defn cool-preview []
   (let [state (reagent/atom {:view-style :card-view})]
     (fn []
-      [rn/view {:margin-bottom 50}
-       [rn/view {:flex 1
-                 :padding       16}
-        [preview/customizer state descriptor]]
-       [rn/view {:padding-vertical 60
-                 :justify-content  :center}
-        (if (= :card-view (:view-style @state))
-          [community-card-view/community-card-view-item community-data]
-          [community-list-view/communities-list-view-item community-data])]])))
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [rn/view {:flex 1
+                  :padding       16}
+         [preview/customizer state descriptor]]
+        [rn/view {:padding-vertical 60
+                  :justify-content  :center}
+         (if (= :card-view (:view-style @state))
+           [community-card-view/community-card-view-item community-data]
+           [community-list-view/communities-list-view-item community-data])]]])))
 (defn preview-community-card []
   [rn/view {:background-color (colors/theme-colors colors/neutral-5
                                                    colors/neutral-95)

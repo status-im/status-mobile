@@ -140,22 +140,22 @@
 (defn cool-preview []
   (let [state  (reagent/atom {:size  32})]
     (fn []
-      [rn/view {:margin-bottom 50
-                :padding       16}
-       [rn/view {:flex 1}
-        [preview/customizer state descriptor]]
-       [rn/view {:padding-vertical 60
-                 :justify-content  :center}
-        (when @state
-          (for [{:keys [tokens]} community-tokens]
-            ^{:key tokens}
-            [rn/view {:margin-top    20
-                      :align-self    :flex-end}
-             [permission-tag/tag  (merge @state
-                                         {:tokens           tokens
-                                          :background-color  (colors/theme-colors
-                                                              colors/neutral-10
-                                                              colors/neutral-80)})]]))]])))
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [rn/view {:flex 1}
+         [preview/customizer state descriptor]]
+        [rn/view {:padding-vertical 60
+                  :justify-content  :center}
+         (when @state
+           (for [{:keys [tokens]} community-tokens]
+             ^{:key tokens}
+             [rn/view {:margin-top    20
+                       :align-self    :flex-end}
+              [permission-tag/tag  (merge @state
+                                          {:tokens           tokens
+                                           :background-color  (colors/theme-colors
+                                                               colors/neutral-10
+                                                               colors/neutral-80)})]]))]]])))
 
 (defn preview-permission-tag []
   [rn/view {:background-color (colors/theme-colors

@@ -58,20 +58,20 @@
                                                                   :key     :contact
                                                                   :type    :select
                                                                   :options contacts-public-keys})))]
-        [rn/view {:margin-bottom 50
-                  :padding       16}
-         [rn/view {:flex 1}
-          [preview/customizer state descriptor]]
-         [rn/view {:padding-vertical 60
-                   :flex-direction   :row
-                   :justify-content  :center}
-          (case (:type @state)
-            :group-avatar
-            [quo2/group-avatar-tag (:label @state) group-avatar-default-params]
-            :public-key
-            [quo2/public-key-tag {} example-pk]
-            :avatar
-            [quo2/user-avatar-tag {} current-username (:photo @state)])]]))))
+        [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+         [rn/view {:padding-bottom 150}
+          [rn/view {:flex 1}
+           [preview/customizer state descriptor]]
+          [rn/view {:padding-vertical 60
+                    :flex-direction   :row
+                    :justify-content  :center}
+           (case (:type @state)
+             :group-avatar
+             [quo2/group-avatar-tag (:label @state) group-avatar-default-params]
+             :public-key
+             [quo2/public-key-tag {} example-pk]
+             :avatar
+             [quo2/user-avatar-tag {} current-username (:photo @state)])]]]))))
 
 (defn preview-context-tags []
   [rn/view {:background-color (colors/theme-colors colors/white

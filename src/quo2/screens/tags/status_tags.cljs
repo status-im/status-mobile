@@ -33,14 +33,14 @@
                     (= :positive (:status @state)) (assoc :status {:label "Positive" :type :positive})
                     (= :negative (:status @state)) (assoc :status {:label "Negative" :type :negative})
                     (= :pending (:status @state))  (assoc :status {:label "Pending" :type :pending}))]
-        [rn/view {:margin-bottom 50
-                  :padding       16}
-         [rn/view {:flex 1}
-          [preview/customizer state descriptor]]
-         [rn/view {:padding-vertical 60
-                   :flex-direction   :row
-                   :justify-content  :center}
-          [quo2/status-tag props]]]))))
+        [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+         [rn/view {:padding-bottom 150}
+          [rn/view {:flex 1}
+           [preview/customizer state descriptor]]
+          [rn/view {:padding-vertical 60
+                    :flex-direction   :row
+                    :justify-content  :center}
+           [quo2/status-tag props]]]]))))
 
 (defn preview-status-tags []
   [rn/view {:background-color (colors/theme-colors colors/white

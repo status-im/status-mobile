@@ -36,15 +36,16 @@
 (defn cool-preview []
   (let [state (reagent/atom {:token  "ETH" :account-balance "3.00" :price "1.00" :percentage-change "-3.0" :currency :usd})]
     (fn []
-      [rn/view {:margin-bottom 50 :padding 16}
-       [preview/customizer state descriptor]
-       [rn/view {:border :black
-                 :border-width 1
-                 :align-items      :center}
-        [quo2/token-balance (assoc @state :token-img-src (if (= (:token @state) "ETH") eth-token snt-token))]
-        [rn/view {:padding-vertical 25
-                  :align-items      :center}]
-        [quo2/token-price (assoc @state :token-img-src (if (= (:token @state) "ETH") eth-token snt-token))]]])))
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+       [rn/view {:padding-bottom 150}
+        [preview/customizer state descriptor]
+        [rn/view {:border :black
+                  :border-width 1
+                  :align-items      :center}
+         [quo2/token-balance (assoc @state :token-img-src (if (= (:token @state) "ETH") eth-token snt-token))]
+         [rn/view {:padding-vertical 25
+                   :align-items      :center}]
+         [quo2/token-price (assoc @state :token-img-src (if (= (:token @state) "ETH") eth-token snt-token))]]]])))
 
 (defn preview-token-overview []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
