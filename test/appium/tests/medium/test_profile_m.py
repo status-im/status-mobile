@@ -41,7 +41,7 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
 
         self.home_1.just_fyi("Close the ENS banner")
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
-        [home.ens_banner_close_button.click() for home in (self.home_1, self.home_2)]
+        [home.ens_banner_close_button.click_if_shown() for home in (self.home_1, self.home_2)]
 
     @marks.testrail_id(702281)
     def test_profile_show_profile_picture_and_online_indicator_settings(self):

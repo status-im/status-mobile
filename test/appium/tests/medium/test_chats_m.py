@@ -225,7 +225,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702287)
-    #@marks.xfail(reason="may be failed due to #13333")
+    @marks.xfail(reason="may be failed due to #13333")
     def test_profile_can_not_connect_to_custom_history_node_add_delete(self):
         self.home_1.profile_button.double_click()
         self.home_2.home_button.double_click()
@@ -604,7 +604,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.drivers[1].reset()
 
         self.home_2 = SignInView(self.drivers[1]).recover_access(ens_user['passphrase'])
-        self.home_2.ens_banner_close_button.wait_and_click()
+        self.home_2.ens_banner_close_button.click_if_shown()
         self.home_1.home_button.double_click()
         self.profile_2 = self.home_2.profile_button.click()
         ens, full_ens, username_2 = ens_user['ens'], '@%s' % ens_user['ens'], ens_user['username']
@@ -739,6 +739,53 @@ class TestGroupChatMultipleDeviceMediumMerged(MultipleSharedDeviceTestCase):
         for i in range(1, 3):
             self.chats[i] = self.homes[i].get_chat(self.chat_name).click()
 
+    @marks.testrail_id(702343)
+    def test_group_chat_send_delete_image(self):
+
+        self.chats[0].just_fyi("Sending image to group chat")
+        self.chats[0].show_images_button.click()
+        self.chats[0].allow_button.click()
+        self.chats[0].first_image_from_gallery.click()
+        self.chats[0].send_message_button.click()
+
+        self.chats[0].just_fyi("Verify sent image is displayed for every group member")
+        for i in range(1, 3):
+            if not self.chats[i].image_message_in_chat.is_element_displayed(60):
+                self.errors.append("Sent image is not displayed in chat for user driver '%s'" % i)
+
+        self.chats[0].just_fyi("Deleting image message from group chat")
+        self.chats[0].image_message_in_chat.long_press_element()
+        self.chats[0].element_by_translation_id("delete").click()
+
+        self.chats[0].just_fyi("Verify deleted image is NOT displayed for every group member")
+        for i in range(1, 3):
+            if not self.chats[i].image_message_in_chat.is_element_disappeared():
+                self.errors.append("Deleted image is still displayed in chat for user driver '%s'" % i)
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702404)
+    def test_group_chat_send_delete_audio(self):
+        self.chats[0].just_fyi("Sending audio to group chat")
+        self.chats[0].record_audio_message(message_length_in_seconds=3)
+        self.chats[0].send_message_button.click()
+
+        self.chats[0].just_fyi("Verify sent audio is displayed for every group member")
+        for i in range(1, 3):
+            if not self.chats[i].play_pause_audio_message_button.is_element_displayed(60):
+                self.errors.append("Sent audio is not displayed in chat for user driver '%s'" % i)
+
+        self.chats[0].just_fyi("Deleting audio message from group chat")
+        self.chats[0].audio_message_in_chat_timer.long_press_element()
+        self.chats[0].element_by_translation_id("delete").click()
+
+        self.chats[0].just_fyi("Verify deleted audio is NOT displayed for every group members")
+        for i in range(1, 3):
+            if not self.chats[i].play_pause_audio_message_button.is_element_disappeared():
+                self.errors.append("Deleted audio is still displayed in chat for user driver '%s'" % i)
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702259)
     def test_group_chat_remove_member(self):
         self.chats[0].just_fyi("Admin: get options for device 2 in group chat and remove him")
@@ -815,6 +862,9 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.home_2 = self.device_2.recover_access(passphrase=self.sender['passphrase'],
                                                    keycard=True, enable_notifications=True)
+
+        [home.ens_banner_close_button.click_if_shown() for home in (self.home_1, self.home_2)]
+
         self.wallet_2 = self.home_2.wallet_button.click()
         self.initial_amount_stt = self.wallet_2.get_asset_amount_by_name('STT')
         self.wallet_2.home_button.click()

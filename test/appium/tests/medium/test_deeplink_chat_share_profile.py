@@ -32,7 +32,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.public_chat.get_back_to_home_view()
 
         self.home.just_fyi("Close the ENS banner")
-        self.home.ens_banner_close_button.click()
+        self.home.ens_banner_close_button.click_if_shown()
 
     @marks.testrail_id(702244)
     def test_deep_link_with_invalid_user_public_key_own_profile_key(self):

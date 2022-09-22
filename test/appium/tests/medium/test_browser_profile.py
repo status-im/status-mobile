@@ -307,6 +307,12 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         chat.set_nickname(nickname)
         self.home.back_button.click()
 
+        self.home.just_fyi('Create community chats')
+        community_name = 'test community'
+        community_description, community_pic = "test community description", 'sauce_logo.png'
+        self.home.create_community(community_name, community_description, set_image=True, file_name=community_pic)
+        self.home.home_button.double_click()
+
         self.home.just_fyi('Add ENS-user to contacts')
         user_ens = 'ensmessenger'
         self.home.add_contact(user_ens)
@@ -341,6 +347,10 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
         profile.just_fyi('Recover account from seed phrase')
         self.sign_in.recover_access(' '.join(recovery_phrase.values()))
+
+        self.sign_in.just_fyi('Check backup of community')
+        if not self.home.element_by_text(community_name).is_element_displayed():
+            self.errors.append('Community was not backed up')
 
         self.sign_in.just_fyi('Check backup of contact with nickname')
         profile.profile_button.click()

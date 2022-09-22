@@ -153,7 +153,7 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Close the ENS banner")
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
-        [home.ens_banner_close_button.click() for home in (self.home_1, self.home_2)]
+        [home.ens_banner_close_button.click_if_shown() for home in (self.home_1, self.home_2)]
 
         self.device_2.just_fyi('Pair main and secondary devices')
         [device.profile_button.double_click() for device in (self.profile_1, self.profile_2)]
