@@ -49,14 +49,11 @@
                      (assoc-in [:content :text] (:content-text @state))
                      (:content-info @state)
                      (assoc-in [:content :info] (:content-info @state)))]
-        [rn/view {:margin-bottom 50
-                  :padding       16}
-         [rn/view {:flex 1}
-          [preview/customizer state descriptor]]
-         [rn/view {:flex-direction   :row
-                   :justify-content  :center
-                   :padding-vertical 60}
-          [system-message/system-message state2]]]))))
+        [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+         [rn/view {:padding-bottom 150}
+          [preview/customizer state descriptor]
+          [rn/view {:padding-vertical 60}
+           [system-message/system-message state2]]]]))))
 
 (defn preview-system-message []
   [rn/view {:flex 1}
