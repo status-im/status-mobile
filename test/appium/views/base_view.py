@@ -353,8 +353,8 @@ class BaseView(object):
         if element == 'home':
             element = self.home_button
         while not element.is_element_present(1) and counter <= attempts:
+            self.driver.press_keycode(4)
             try:
-                self.driver.press_keycode(4)
                 element.is_element_present(5)
                 return self
             except (NoSuchElementException, TimeoutException):
@@ -713,7 +713,7 @@ class BaseView(object):
         send_transaction.set_max_button.click()
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
-        send_transaction.set_recipient_address('0x2127edab5d08b1e11adf7ae4bae16c2b33fdf74a')
+        send_transaction.set_recipient_address('0xE2363E6e91d1a29d82C2c695fa8fa2e3Fa5d55eA')
         send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction(keycard=keycard)
 

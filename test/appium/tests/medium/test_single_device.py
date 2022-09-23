@@ -80,7 +80,8 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver).create_user(keycard=True)
         wallet = sign_in.wallet_button.click()
         status_account_address = wallet.get_wallet_address()[2:]
-        wallet.get_test_assets(keycard=True)
+        w3.donate_testnet_eth('0x%s' % status_account_address, 0.05)
+        wallet.wallet_button.double_click()
         account_name = 'subaccount'
         wallet.add_account(account_name, keycard=True)
         wallet.get_account_by_name(account_name).click()
@@ -472,11 +473,11 @@ class TestChatManagement(SingleDeviceTestCase):
         if wallet.backup_recovery_phrase_warning_text.is_element_present():
             self.driver.fail("'Back up your seed phrase' warning is shown on Wallet while no funds are present")
         address = wallet.get_wallet_address()
-        wallet.close_button.click()
-        wallet.get_test_assets()
+        self.click = wallet.close_button.click()
+        w3.donate_testnet_eth(address, 0.0001)
+        wallet.wait_balance_is_changed()
         if not wallet.backup_recovery_phrase_warning_text.is_element_present(30):
             self.driver.fail("'Back up your seed phrase' warning is not shown on Wallet with funds")
-        wallet.donate_leftovers()
         profile = wallet.get_profile_view()
         wallet.backup_recovery_phrase_warning_text.click()
         profile.backup_recovery_phrase()
@@ -1064,10 +1065,11 @@ class TestChatManagement(SingleDeviceTestCase):
         self.ens_name = 'purchased%s' % self.home.get_random_chat_name()
         self.wallet = self.home.wallet_button.click()
         self.address = self.wallet.get_wallet_address()
+        w3.donate_testnet_eth(self.address, 0.1)
+        self.wallet.wait_balance_is_changed()
         self.chat_key = self.home.get_public_key_and_username()
 
-        self.wallet.just_fyi("Get required donate")
-        self.wallet.get_test_assets()
+        self.wallet.just_fyi("Get required STT")
         self.wallet.get_test_assets(token=True)
 
         self.wallet.just_fyi("Purchase ENS")

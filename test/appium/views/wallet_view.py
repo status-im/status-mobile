@@ -175,7 +175,7 @@ class WalletView(BaseView):
                         self.accounts_status_account.scroll_to_element(direction='up')
                 return
 
-    def wait_balance_is_changed(self, asset='ETH', initial_balance=0, wait_time=120, scan_tokens=False, navigate_to_home=True):
+    def wait_balance_is_changed(self, asset='ETH', initial_balance=0, wait_time=180, scan_tokens=False, navigate_to_home=True):
         self.driver.info('Waiting %ss for %s updated balance' % (wait_time, asset))
         counter = 0
         while True:
