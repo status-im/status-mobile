@@ -529,7 +529,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
         self.home_2.just_fyi('check share and save options on opened image')
         self.chat_2.image_message_in_chat.scroll_to_element(direction='up')
-        self.chat_2.image_message_in_chat.click()
+        self.chat_2.image_message_in_chat.click_until_presence_of_element(self.chat_2.share_image_icon_button)
         self.chat_2.share_image_icon_button.click()
         self.chat_2.share_via_messenger()
         if not self.chat_2.image_in_android_messenger.is_element_present():

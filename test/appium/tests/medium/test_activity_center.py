@@ -153,7 +153,7 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Device1 checks unread indicator on Activity center bell")
         if not self.home_1.notifications_unread_badge.is_element_displayed():
             self.errors.append("Unread badge is NOT shown after receiving mentions from Group")
-        self.home_1.notifications_unread_badge.click_until_absense_of_element(self.home_1.plus_button)
+        self.home_1.notifications_unread_badge.click_until_absense_of_element(self.home_1.plus_button, 6)
 
         self.home_1.just_fyi("Check that notification from group is presented in Activity Center")
         if not self.home_1.get_chat_from_activity_center_view(
@@ -172,6 +172,6 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Check there is an empty view on Activity Center")
         self.home_1.notifications_button.click()
         if not self.home_1.element_by_translation_id('empty-activity-center').is_element_present():
-            self.errors.append("Activity Center still has some chats after user opened all of them")
+            self.errors.append("Activity Center still has some chats after user has opened all of them")
 
         self.errors.verify_no_errors()

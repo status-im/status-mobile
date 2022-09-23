@@ -863,6 +863,8 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.home_2 = self.device_2.recover_access(passphrase=self.sender['passphrase'],
                                                    keycard=True, enable_notifications=True)
 
+        self.home_2.element_by_text_part('Background service').wait_for_invisibility_of_element()
+
         [home.ens_banner_close_button.click_if_shown() for home in (self.home_1, self.home_2)]
 
         self.wallet_2 = self.home_2.wallet_button.click()
