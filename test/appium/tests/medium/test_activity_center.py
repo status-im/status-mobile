@@ -134,6 +134,10 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
     def test_activity_center_notifications_on_mentions_in_groups_and_empty_state(self):
         [home.home_button.double_click() for home in [self.home_1, self.home_2]]
 
+        if not self.home_1.element_by_text_part(self.username_2).is_element_displayed():
+            self.home_1.handle_contact_request(self.username_2)
+            self.home_1.home_button.double_click()
+
         self.device_2.just_fyi('Device2 creates Group chat 3')
         self.home_2.create_group_chat([self.username_1], group_chat_name=self.group_chat_name_1)
         self.home_2.home_button.double_click()
