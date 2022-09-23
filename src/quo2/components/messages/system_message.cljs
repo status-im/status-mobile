@@ -1,5 +1,6 @@
 (ns quo2.components.messages.system-message
-  (:require [quo.react-native :as rn]
+  (:require [status-im.i18n.i18n :as i18n]
+            [quo.react-native :as rn]
             [quo.theme :as theme]
             [quo2.components.buttons.button :as button]
             [quo2.components.markdown.text :as text]
@@ -24,7 +25,8 @@
   [rn/view {:margin-left 6}
    [text/text {:size  :label
                :style {:color          (get-color :time)
-                       :text-transform :none}} timestamp-str]])
+                       :text-transform :none}}
+    timestamp-str]])
 
 (defn sm-icon [icon]
   [rn/view {:align-items  :center
@@ -45,10 +47,11 @@
     [sm-icon :main-icons/placeholder20]
     [text/text {:size  :paragraph-2
                 :style {:color        (get-color :text)
-                        :margin-right 5}} "Message deleted for everyone"]]
+                        :margin-right 5}}
+     (i18n/label :message-deleted-for-everyone)]]
    [button/button {:size   24
                    :before :main-icons/timeout
-                   :type   :grey} "Undo"]])
+                   :type   :grey} (i18n/label :undo)]])
 
 (defmethod sm-render :added [{:keys [mentions timestamp-str]}]
   [rn/view {:align-items    :center
@@ -60,18 +63,21 @@
                              :profile-picture   (:image (first mentions))
                              :ring?             false}]
    [text/text {:weight :semi-bold
-               :size   :paragraph-2} (:name (first mentions))]
+               :size   :paragraph-2}
+    (:name (first mentions))]
    [text/text {:size  :paragraph-2
                :style {:color        (get-color :text)
                        :margin-left  3
-                       :margin-right 3}} "added"]
+                       :margin-right 3}}
+    (i18n/label :added)]
    [user-avatar/user-avatar {:status-indicator? false
                              :online?           false
                              :size              :xxxs
                              :profile-picture   (:image (second mentions))
                              :ring?             false}]
    [text/text {:weight :semi-bold
-               :size   :paragraph-2} (:name (second mentions))]
+               :size   :paragraph-2}
+    (:name (second mentions))]
    [sm-timestamp timestamp-str]])
 
 (defmethod sm-render :pinned
@@ -86,9 +92,11 @@
               :flex-direction :row}
      [text/text {:size   :paragraph-2
                  :weight :semi-bold
-                 :style  {:color (get-color :text)}} pinned-by]
+                 :style  {:color (get-color :text)}}
+      pinned-by]
      [text/text {:size  :paragraph-2
-                 :style {:color (get-color :text)}} " pinned a message"]
+                 :style {:color (get-color :text)}}
+      (i18n/label :pinned-a-message)]
      [sm-timestamp timestamp-str]]
     [rn/view {:flex-direction :row}
      [rn/view {:flex-direction :row
@@ -99,7 +107,8 @@
                                 :profile-picture   (:image (:mentions content))
                                 :ring?             false}]
       [text/text {:weight :semi-bold
-                  :size   :label} (:name (:mentions content))]]
+                  :size   :label}
+       (:name (:mentions content))]]
      (when (seq (:text content))
        [rn/view {:margin-right   20
                  :flex-direction :row
@@ -107,13 +116,15 @@
         [text/text {:size            :label
                     :style           {:color (get-color :time)}
                     :number-of-lines 1
-                    :ellipsize-mode  :tail} (:text content)]])
+                    :ellipsize-mode  :tail}
+         (:text content)]])
      [rn/view {:justify-content :flex-end
                :flex-direction  :row
                :min-width       10}
       (when (seq (:info content))
         [text/text {:size  :label
-                    :style {:color (get-color :time)}} (:info content)])]]]])
+                    :style {:color (get-color :time)}}
+         (:info content)])]]]])
 
 (defn system-message
   [{:keys [unread?] :as message}]
