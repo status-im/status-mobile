@@ -14,17 +14,19 @@
                  {:label "Avatar color"
                   :key   :emoji
                   :type  :text}
-                 {:label   "Lock status"
-                  :key     :lock-status
+                 {:label   "is Locked?"
+                  :key     :locked?
                   :type    :select
-                  :options [{:key   :unlocked
+                  :options [{:key   nil
+                             :value "None"}
+                            {:key  false
                              :value "Unlocked"}
-                            {:key   :locked
+                            {:key   true
                              :value "Locked"}]}])
 
 (defn cool-preview []
   (let [state (reagent/atom {:big?                   true
-                             :lock-status            :none
+                             :locked?                nil
                              :emoji                  "🍑"
                              :emoji-background-color :gray})]
     (fn []

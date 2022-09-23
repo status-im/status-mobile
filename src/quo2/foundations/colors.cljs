@@ -13,9 +13,22 @@
       (let [rgb (string/split value #",")]
         (str (string/join "," (butlast rgb)) "," opacity ")")))))
 
+(def theme-alpha
+  (memoize
+   (fn
+     ([color light-opacity dark-opacity]
+      (theme-alpha color light-opacity color dark-opacity))
+     ([light-color light-opacity dark-color dark-opacity]
+      (if (theme/dark?)
+        (alpha light-color light-opacity)
+        (alpha dark-color dark-opacity))))))
+
+
 ;;;;Neutral
 
 ;;Solid
+
+
 (def neutral-5 "#F5F6F8")
 (def neutral-10 "#F0F2F5")
 (def neutral-20 "#E7EAEE")

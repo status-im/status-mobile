@@ -7,6 +7,7 @@
             [quo.theme :as theme]
             [quo2.components.markdown.text :as quo2-text]
             [quo2.components.buttons.button :as quo2-button]
+            [quo2.screens.avatars.channel-avatar :as channel-avatar]
             [quo2.screens.avatars.icon-avatar :as icon-avatar]
             [quo2.screens.avatars.group-avatar :as group-avatar]
             [quo2.screens.avatars.user-avatar :as user-avatar]
@@ -16,12 +17,18 @@
             [quo2.screens.community.community-card-view :as community-card]
             [quo2.screens.dividers.divider-label :as divider-label]
             [quo2.screens.dividers.new-messages :as new-messages]
+            [quo2.screens.list-items.dropdown :as dropdown]
             [quo2.screens.info.info-message :as info-message]
             [quo2.screens.info.information-box :as information-box]
+            [quo2.screens.info.lowest-price :as lowest-price]
+            [quo2.screens.list-items.preview-lists :as preview-lists]
+            [quo2.screens.list-items.channel :as channel]
             [quo2.screens.markdown.text :as text]
             [quo2.screens.messages.gap :as messages-gap]
             [quo2.screens.notifications.activity-logs :as activity-logs]
             [quo2.screens.reactions.react :as react]
+            [quo2.screens.switcher.switcher-cards :as switcher-cards]
+            [quo2.screens.tabs.account-selector :as account-selector]
             [quo2.screens.tabs.segmented-tab :as segmented]
             [quo2.screens.tabs.tabs :as tabs]
             [quo2.screens.tags.context-tags :as context-tags]
@@ -30,12 +37,6 @@
             [quo2.screens.tags.status-tags :as status-tags]
             [quo2.screens.tags.token-tag :as token-tag]
             [quo2.screens.wallet.token-overview :as token-overview]
-            [quo2.screens.list-items.preview-lists :as preview-lists]
-            [quo2.screens.info.lowest-price :as lowest-price]
-            [quo2.screens.avatars.channel-avatar :as channel-avatar]
-            [quo2.screens.switcher.switcher-cards :as switcher-cards]
-            [quo2.screens.tabs.account-selector :as account-selector]
-            [quo2.screens.list-items.dropdown :as dropdown]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -69,6 +70,9 @@
               {:name      :new-messages
                :insets    {:top false}
                :component new-messages/preview-new-messages}]
+   :dropdowns [{:name      :dropdown
+                :insets    {:top false}
+                :component dropdown/preview-dropdown}]
    :info [{:name      :info-message
            :insets    {:top false}
            :component info-message/preview-info-message}
@@ -78,6 +82,12 @@
           {:name      :lowest-price
            :insets    {:top false}
            :component lowest-price/preview-lowest-price}]
+   :list-items [{:name      :channel
+                 :insets    {:top false}
+                 :component channel/preview-channel}
+                {:name      :preview-lists
+                 :insets    {:top false}
+                 :component preview-lists/preview-preview-lists}]
    :markdown [{:name      :texts
                :insets    {:top false}
                :component text/preview-text}]
@@ -90,6 +100,9 @@
    :reactions [{:name      :react
                 :insets    {:top false}
                 :component react/preview-react}]
+   :switcher [{:name :switcher-cards
+               :insets {:top false}
+               :component switcher-cards/preview-switcher-cards}]
    :tabs [{:name      :segmented
            :insets    {:top false}
            :component segmented/preview-segmented}
@@ -116,16 +129,7 @@
            :component token-tag/preview-token-tag}]
    :wallet [{:name      :token-overview
              :insets    {:top false}
-             :component token-overview/preview-token-overview}]
-   :dropdowns [{:name      :dropdown
-                :insets    {:top false}
-                :component dropdown/preview-dropdown}]
-   :list-items [{:name      :preview-lists
-                 :insets    {:top false}
-                 :component preview-lists/preview-preview-lists}]
-   :switcher [{:name :switcher-cards
-               :insets {:top false}
-               :component switcher-cards/preview-switcher-cards}]})
+             :component token-overview/preview-token-overview}]})
 
 (def screens (flatten (map val screens-categories)))
 
