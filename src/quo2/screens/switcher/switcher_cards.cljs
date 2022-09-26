@@ -129,7 +129,8 @@
                              :notification-type   :counter
                              :counter-label       2
                              :content-type        :text
-                             :last-message        "This is fantastic! Ethereum"})]
+                             :last-message        "This is fantastic! Ethereum"
+                             :preview-label-color colors/white})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -139,7 +140,7 @@
          [switcher-cards/card (:type @state) (get-mock-data @state)]]]])))
 
 (defn preview-switcher-cards []
-  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-100)
+  [rn/view {:background-color colors/neutral-100
             :flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always
