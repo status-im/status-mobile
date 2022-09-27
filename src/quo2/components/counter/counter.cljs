@@ -19,7 +19,7 @@
   "type:    default, secondary, grey
    outline: true, false
    value:   integer"
-  [{:keys [type outline override-text-color override-bg-color]} value]
+  [{:keys [type outline override-text-color override-bg-color style]} value]
   (let [type       (or type :default)
         text-color (or override-text-color
                        (if (or
@@ -39,11 +39,13 @@
                      1     16
                      2     20
                      28)]
-    [rn/view {:style (cond-> {:align-items     :center
-                              :justify-content :center
-                              :border-radius   6
-                              :width           width
-                              :height          16}
+    [rn/view {:style (cond-> (merge
+                              {:align-items     :center
+                               :justify-content :center
+                               :border-radius   6
+                               :width           width
+                               :height          16}
+                              style)
                        outline
                        (merge {:border-width 1
                                :border-color (get-color (or type :default))})

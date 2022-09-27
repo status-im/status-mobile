@@ -39,6 +39,13 @@
 (def label-style {:flex          0.4
                   :padding-right 8})
 
+(defn label-view [state label]
+  [rn/view {:style label-style}
+   [quo/text
+    (when-let [label-color (:preview-label-color @state)]
+      {:style {:color label-color}})
+    label]])
+
 (defn modal-container []
   {:flex               1
    :justify-content    :center
@@ -56,8 +63,7 @@
   [{:keys [label key state]}]
   (let [state* (reagent/cursor state [key])]
     [rn/view {:style container}
-     [rn/view {:style label-style}
-      [quo/text label]]
+     [label-view state label]
      [rn/view {:style {:flex-direction   :row
                        :flex             0.6
                        :border-radius    4
@@ -80,8 +86,7 @@
   [{:keys [label key state]}]
   (let [state* (reagent/cursor state [key])]
     [rn/view {:style container}
-     [rn/view {:style label-style}
-      [quo/text label]]
+     [label-view state label]
      [rn/view {:style {:flex 0.6}}
       [quo/text-input {:value          @state*
                        :show-cancel    false
@@ -102,8 +107,7 @@
       (let [state*   (reagent/cursor state [key])
             selected (value-for-key @state* options)]
         [rn/view {:style container}
-         [rn/view {:style label-style}
-          [quo/text label]]
+         [label-view state label]
          [rn/view {:style {:flex 0.6}}
           [rn/modal {:visible              @open
                      :on-request-close     #(reset! open false)

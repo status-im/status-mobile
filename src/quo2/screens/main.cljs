@@ -28,6 +28,7 @@
             [quo2.screens.notifications.activity-logs :as activity-logs]
             [quo2.screens.reactions.react :as react]
             [quo2.screens.switcher.switcher-cards :as switcher-cards]
+            [quo2.screens.navigation.bottom-nav-tab :as bottom-nav-tab]
             [quo2.screens.tabs.account-selector :as account-selector]
             [quo2.screens.tabs.segmented-tab :as segmented]
             [quo2.screens.tabs.tabs :as tabs]
@@ -94,6 +95,9 @@
    :messages [{:name      :gap
                :insets    {:top false}
                :component messages-gap/preview-messages-gap}]
+   :navigation [{:name      :bottom-nav-tab
+                 :insets    {:top false}
+                 :component bottom-nav-tab/preview-bottom-nav-tab}]
    :notifications [{:name      :activity-logs
                     :insets    {:top false}
                     :component activity-logs/preview-activity-logs}]

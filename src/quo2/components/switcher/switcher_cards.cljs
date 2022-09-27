@@ -15,8 +15,8 @@
 
 ;; Supporting Components
 
-(defn content-container [{:keys [content-type data notification? color-50]}]
-  [rn/view {:style (styles/content-container notification?)}
+(defn content-container [{:keys [content-type data new-notifications? color-50]}]
+  [rn/view {:style (styles/content-container new-notifications?)}
    (case content-type
      :text [text/text (styles/last-message-text-props) data]
      :photo [preview-list/preview-list {:type           :photo
@@ -46,18 +46,18 @@
      (:audio :community :link :code) ;; Components not available
      [:<>])])
 
-(defn notification-container [{:keys [notification-type counter-label color-60]}]
+(defn notification-container [{:keys [notification-indicator counter-label color-60]}]
   [rn/view {:style (styles/notification-container)}
-   (if (= notification-type :counter)
+   (if (= notification-indicator :counter)
      [counter/counter {:outline             false
                        :override-text-color colors/white
                        :override-bg-color   color-60} counter-label]
      [rn/view {:style (styles/unread-dot color-60)}])])
 
-(defn bottom-container [{:keys [notification?] :as content}]
+(defn bottom-container [{:keys [new-notifications?] :as content}]
   [:<>
    [content-container content]
-   (when notification?
+   (when new-notifications?
      [notification-container content])])
 
 (defn avatar [avatar-params type customization-color]
