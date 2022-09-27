@@ -52,7 +52,8 @@
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
         [preview/customizer current descriptor]
-        [rn/view {:padding-vertical 60}
+        [rn/view {:padding-vertical 60
+                  :align-items      :center}
          [system-message/system-message (finalize-state current)]]]])))
 
 (defn preview-system-message []

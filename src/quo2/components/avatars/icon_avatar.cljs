@@ -5,16 +5,19 @@
 
 (def sizes
   {:big 48
+   :large 32
    :medium 32
    :small 20})
 
 (defn icon-avatar
-  [{:keys [size icon color]}]
+  [{:keys [size icon color opacity]
+    :or   {opacity 20}}]
   (let [component-size (size sizes)
-        circle-color   (colors/custom-color color 50 20)
+        circle-color   (colors/custom-color color 50 opacity)
         icon-color     (colors/custom-color-by-theme color 50 60)
         icon-size      (case size
                          :big    20
+                         :large  20
                          :medium 16
                          :small  12)]
     [rn/view {:style {:width            component-size
@@ -25,4 +28,4 @@
                       :align-items      :center}}
      [icons/icon icon {:container-style {:width  icon-size
                                          :height icon-size}
-                       :color icon-color}]]))
+                       :color           icon-color}]]))

@@ -30,10 +30,11 @@
 
 (defn sm-icon [icon]
   [rn/view {:align-items  :center
-            :margin-right 6}
-   [icon-avatar/icon-avatar {:size  :medium
+            :margin-right 8}
+   [icon-avatar/icon-avatar {:size  :large
                              :icon  icon
-                             :color :primary}]])
+                             :color :primary
+                             :opacity 5}]])
 
 (defmulti sm-render :type)
 
@@ -57,11 +58,12 @@
   [rn/view {:align-items    :center
             :flex-direction :row}
    [sm-icon :main-icons/placeholder20]
-   [user-avatar/user-avatar {:status-indicator? false
-                             :online?           false
-                             :size              :xxxs
-                             :profile-picture   (:image (first mentions))
-                             :ring?             false}]
+   [rn/view {:margin-right 4}
+    [user-avatar/user-avatar {:status-indicator? false
+                              :online?           false
+                              :size              :xxxs
+                              :profile-picture   (:image (first mentions))
+                              :ring?             false}]]
    [text/text {:weight :semi-bold
                :size   :paragraph-2}
     (:name (first mentions))]
@@ -70,11 +72,12 @@
                        :margin-left  3
                        :margin-right 3}}
     (i18n/label :added)]
-   [user-avatar/user-avatar {:status-indicator? false
-                             :online?           false
-                             :size              :xxxs
-                             :profile-picture   (:image (second mentions))
-                             :ring?             false}]
+   [rn/view {:margin-right 4}
+    [user-avatar/user-avatar {:status-indicator? false
+                              :online?           false
+                              :size              :xxxs
+                              :profile-picture   (:image (second mentions))
+                              :ring?             false}]]
    [text/text {:weight :semi-bold
                :size   :paragraph-2}
     (:name (second mentions))]
@@ -94,18 +97,21 @@
                  :weight :semi-bold
                  :style  {:color (get-color :text)}}
       pinned-by]
-     [text/text {:size  :paragraph-2
-                 :style {:color (get-color :text)}}
-      (i18n/label :pinned-a-message)]
+     [rn/view {:margin-left  4
+               :margin-right 2}
+      [text/text {:size  :paragraph-2
+                  :style {:color (get-color :text)}}
+       (i18n/label :pinned-a-message)]]
      [sm-timestamp timestamp-str]]
     [rn/view {:flex-direction :row}
      [rn/view {:flex-direction :row
                :margin-right   4}
-      [user-avatar/user-avatar {:status-indicator? false
-                                :online?           false
-                                :size              :xxxs
-                                :profile-picture   (:image (:mentions content))
-                                :ring?             false}]
+      [rn/view {:margin-right 4}
+       [user-avatar/user-avatar {:status-indicator? false
+                                 :online?           false
+                                 :size              :xxxs
+                                 :profile-picture   (:image (:mentions content))
+                                 :ring?             false}]]
       [text/text {:weight :semi-bold
                   :size   :label}
        (:name (:mentions content))]]
@@ -114,7 +120,7 @@
                  :flex-direction :row
                  :flex           1}
         [text/text {:size            :label
-                    :style           {:color (get-color :time)}
+                    :style           {:color (get-color :text)}
                     :number-of-lines 1
                     :ellipsize-mode  :tail}
          (:text content)]])
@@ -131,8 +137,9 @@
   [rn/view {:flex-direction     :row
             :flex               1
             :border-radius      16
-            :padding-top        8
-            :padding-horizontal 8
-            :padding-bottom     8
+            :padding-vertical   9
+            :padding-horizontal 11
+            :width              359
+            :height             52
             :background-color   (when unread? (get-color :background))}
    [sm-render message]])
