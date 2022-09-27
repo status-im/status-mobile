@@ -2,7 +2,7 @@
   (:require [quo.react-native :as rn]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
-            [quo2.components.icon :as quo2.icons]
+            [quo2.components.icon :as icon]
             [quo2.components.counter.counter :as counter]))
 
 (defn toggle-background-color [background-color press-out? pass-through?]
@@ -15,17 +15,17 @@
 (defn bottom-nav-tab
   "[bottom-nav-tab opts]
    opts
-   {:icon              :main-icons2/communities
-    :selected?         true/false
-    :notification?     true/false
-    :notification-type :unread/:counter
-    :counter-label     number
-    :on-press          bottom-tab on-press function
-    :pass-through?     true/false
+   {:icon                   :main-icons2/communities
+    :selected?              true/false
+    :new-notifications?     true/false
+    :notification-indicator :unread-dot/:counter
+    :counter-label          number
+    :on-press               bottom-tab on-press function
+    :pass-through?          true/false
   "
   [_]
   (let [background-color (reagent/atom nil)]
-    (fn [{:keys [icon selected? notification? notification-type counter-label on-press pass-through?]}]
+    (fn [{:keys [icon selected? new-notifications? notification-indicator counter-label on-press pass-through?]}]
       [rn/touchable-without-feedback
        {:on-press       on-press
         :on-press-in    #(toggle-background-color background-color false pass-through?)
@@ -36,18 +36,18 @@
                          :border-radius    10}}
         [rn/hole-view {:style {:padding-left 33
                                :padding-top  8}
-                       :holes  (if (and notification? (= notification-type :unread))
+                       :holes  (if (and new-notifications? (= notification-indicator :unread-dot))
                                  [{:x 49 :y 4 :width 12 :height 12 :borderRadius 6}]
                                  [])}
-         [quo2.icons/icon
+         [icon/icon
           icon
           {:size 24
            :color (cond
                     selected?     colors/white
                     pass-through? colors/white-opa-40
                     :else         colors/neutral-50)}]]
-        (when notification?
-          (if (= notification-type :counter)
+        (when new-notifications?
+          (if (= notification-indicator :counter)
             [counter/counter {:outline             false
                               :override-text-color colors/white
                               :override-bg-color   colors/primary-50

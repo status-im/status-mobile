@@ -44,7 +44,8 @@
                                :justify-content :center
                                :border-radius   6
                                :width           width
-                               :height          16} style)
+                               :height          16}
+                              style)
                        outline
                        (merge {:border-width 1
                                :border-color (get-color (or type :default))})

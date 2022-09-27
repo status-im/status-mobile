@@ -5,7 +5,7 @@
             [quo2.components.navigation.bottom-nav-tab :as quo2]
             [quo2.foundations.colors :as colors]))
 
-(def descriptor [{:label   "Type:"
+(def descriptor [{:label   "Type"
                   :key     :icon
                   :type    :select
                   :options [{:key   :main-icons2/communities
@@ -16,34 +16,34 @@
                              :value "Wallet"}
                             {:key   :main-icons2/browser
                              :value "Browser"}]}
-                 {:label "Selected?:"
+                 {:label "Selected?"
                   :key   :selected?
                   :type  :boolean}
-                 {:label "Pass through?:"
+                 {:label "Pass through?"
                   :key   :pass-through?
                   :type  :boolean}
-                 {:label "Notification?:"
-                  :key   :notification?
+                 {:label "New Notifications?"
+                  :key   :new-notifications?
                   :type  :boolean}
-                 {:label   "Notification Type"
-                  :key     :notification-type
+                 {:label   "Notification Indicator"
+                  :key     :notification-indicator
                   :type    :select
                   :options [{:key   :counter
                              :value :counter}
-                            {:key   :unread
-                             :value :unread}]}
+                            {:key   :unread-dot
+                             :value :unread-dot}]}
                  {:label "Counter Label"
                   :key   :counter-label
                   :type  :text}])
 
 (defn cool-preview []
-  (let [state (reagent/atom {:icon                :main-icons2/communities
-                             :selected?           true
-                             :pass-through?       true
-                             :notification?       true
-                             :notification-type   :counter
-                             :counter-label       8
-                             :preview-label-color colors/white})]
+  (let [state (reagent/atom {:icon                   :main-icons2/communities
+                             :selected?              true
+                             :pass-through?          true
+                             :new-notifications?     true
+                             :notification-indicator :counter
+                             :counter-label          8
+                             :preview-label-color    colors/white})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}

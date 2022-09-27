@@ -6,7 +6,7 @@
             [status-im.react-native.resources :as resources]
             [quo2.components.switcher.switcher-cards :as switcher-cards]))
 
-(def descriptor [{:label   "Type:"
+(def descriptor [{:label   "Type"
                   :key     :type
                   :type    :select
                   :options [{:key   :communities-discover
@@ -28,19 +28,19 @@
                  {:label "Title"
                   :key   :title
                   :type  :text}
-                 {:label "Notification?:"
-                  :key   :notification?
+                 {:label "New Notifications?"
+                  :key   :new-notifications?
                   :type  :boolean}
-                 {:label "Banner?:"
+                 {:label "Banner?"
                   :key   :banner?
                   :type  :boolean}
-                 {:label   "Notification Type"
-                  :key     :notification-type
+                 {:label   "Notification Indicator"
+                  :key     :notification-indicator
                   :type    :select
                   :options [{:key   :counter
                              :value :counter}
-                            {:key   :unread
-                             :value :unread}]}
+                            {:key   :unread-dot
+                             :value :unread-dot}]}
                  {:label "Counter Label"
                   :key   :counter-label
                   :type  :text}
@@ -109,11 +109,11 @@
   (merge
    data
    {:banner  (when (:banner? data) banner)
-    :content {:notification?     (:notification? data)
-              :notification-type (:notification-type data)
-              :counter-label     (:counter-label data)
-              :content-type      (:content-type data)
-              :data              (get-mock-content data)}}
+    :content {:new-notifications?     (:new-notifications? data)
+              :notification-indicator (:notification-indicator data)
+              :counter-label          (:counter-label data)
+              :content-type           (:content-type data)
+              :data                   (get-mock-content data)}}
    (case (:type data)
      :messaging       {:avatar-params {:full-name (:title data)}}
      :group-messaging {}
@@ -121,16 +121,16 @@
      {})))
 
 (defn cool-preview []
-  (let [state (reagent/atom {:type                :group-messaging
-                             :title               "Alisher Yakupov"
-                             :customization-color :turquoise
-                             :notification?       true
-                             :banner?             false
-                             :notification-type   :counter
-                             :counter-label       2
-                             :content-type        :text
-                             :last-message        "This is fantastic! Ethereum"
-                             :preview-label-color colors/white})]
+  (let [state (reagent/atom {:type                   :group-messaging
+                             :title                  "Alisher Yakupov"
+                             :customization-color    :turquoise
+                             :new-notifications?     true
+                             :banner?                false
+                             :notification-indicator :counter
+                             :counter-label          2
+                             :content-type           :text
+                             :last-message           "This is fantastic! Ethereum"
+                             :preview-label-color    colors/white})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
