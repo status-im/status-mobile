@@ -36,9 +36,16 @@
                          :border-radius    10}}
         [rn/hole-view {:style {:padding-left 33
                                :padding-top  8}
-                       :holes  (if (and new-notifications? (= notification-indicator :unread-dot))
-                                 [{:x 49 :y 4 :width 12 :height 12 :borderRadius 6}]
-                                 [])}
+                       :key    new-notifications? ;; Key is required to force removal of holes
+                       :holes  (cond
+                                 (not new-notifications?) ;; No new notifications, remove holes
+                                 []
+
+                                 (= notification-indicator :unread-dot)
+                                 [{:x 50 :y 5 :width 10 :height 10 :borderRadius 5}]
+
+                                 :else
+                                 [{:x 47 :y 1 :width 18 :height 18 :borderRadius 7}])}
          [icon/icon
           icon
           {:size 24
