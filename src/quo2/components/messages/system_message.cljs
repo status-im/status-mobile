@@ -31,9 +31,9 @@
 (defn sm-icon [icon]
   [rn/view {:align-items  :center
             :margin-right 8}
-   [icon-avatar/icon-avatar {:size  :large
-                             :icon  icon
-                             :color :primary
+   [icon-avatar/icon-avatar {:size    :medium
+                             :icon    icon
+                             :color   :primary
                              :opacity 5}]])
 
 (defmulti sm-render :type)
@@ -45,7 +45,7 @@
             :flex-direction  :row}
    [rn/view {:align-items    :center
              :flex-direction :row}
-    [sm-icon :main-icons/placeholder20]
+    [sm-icon :main-icons/placeholder16]
     [text/text {:size  :paragraph-2
                 :style {:color        (get-color :text)
                         :margin-right 5}}
@@ -57,7 +57,7 @@
 (defmethod sm-render :added [{:keys [mentions timestamp-str]}]
   [rn/view {:align-items    :center
             :flex-direction :row}
-   [sm-icon :main-icons/placeholder20]
+   [sm-icon :main-icons/placeholder16]
    [rn/view {:margin-right 4}
     [user-avatar/user-avatar {:status-indicator? false
                               :online?           false
@@ -83,12 +83,11 @@
     (:name (second mentions))]
    [sm-timestamp timestamp-str]])
 
-(defmethod sm-render :pinned
-  [{:keys [pinned-by content timestamp-str]}]
+(defmethod sm-render :pinned [{:keys [pinned-by content timestamp-str]}]
   [rn/view {:flex-direction :row
             :flex           1
             :align-items    :center}
-   [sm-icon :main-icons/pin20]
+   [sm-icon :main-icons/pin16]
    [rn/view {:flex-direction :column
              :flex           1}
     [rn/view {:align-items    :baseline

@@ -5,7 +5,6 @@
 
 (def sizes
   {:big 48
-   :large 32
    :medium 32
    :small 20})
 
@@ -17,7 +16,6 @@
         icon-color     (colors/custom-color-by-theme color 50 60)
         icon-size      (case size
                          :big    20
-                         :large  20
                          :medium 16
                          :small  12)]
     [rn/view {:style {:width            component-size
