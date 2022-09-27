@@ -29,10 +29,10 @@
                              :value "Ethereum"}]}])
 
 (defn cool-preview []
-  (let [state (reagent/atom {:icon :main-icons/arbitrum
-                             :network "Mainnet"
-                             :conversion "5.1234 ETH"
-                             :top-value "10 ETH"})]
+  (let [state (reagent/atom {:icon       :main-icons/arbitrum
+                             :network    "Mainnet"
+                             :conversion "5.1234"
+                             :top-value  "10 ETH"})]
     (fn []
       [rn/view {:margin-bottom 50
                 :padding       16}
@@ -42,12 +42,12 @@
                  :flex-direction   :row
                  :justify-content  :center}
         [quo2/network-breakdown @state]]
-       [rn/touchable-opacity {:style {:background-color colors/black
-                                      :width 100}
+       [rn/touchable-opacity {:style    {:background-color colors/black
+                                         :width            100}
                               :on-press (fn []
                                           (swap! state update-in [:network-conversions] conj {:conversion (:conversion @state)
-                                                                                              :icon (:icon @state)
-                                                                                              :network (:network @state)}))}
+                                                                                              :icon       (:icon @state)
+                                                                                              :network    (:network @state)}))}
         [rn/text {:style {:color colors/white}} "Add current conversion"]]])))
 
 (defn preview-network-breakdown []
