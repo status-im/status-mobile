@@ -4,6 +4,7 @@
             [quo.react-native :as rn]
             [quo2.foundations.colors :as colors]
             [cljs-bean.core :as bean]
+            [quo.theme :as theme]
             [quo2.components.icon :as icons]))
 
 (defn get-color [value disabled?]
@@ -113,7 +114,10 @@
        [rn/view {:style {:margin-left (if value 12 2)
                          :height 16
                          :width 16
-                         :background-color (colors/alpha colors/white 1)
+                         :background-color (colors/alpha colors/white
+                                                         (if (theme/dark?)
+                                                           (if disabled? 0.3 1)
+                                                           1))
                          :border-radius 40
                          :margin-right :auto
                          :margin-top :auto
