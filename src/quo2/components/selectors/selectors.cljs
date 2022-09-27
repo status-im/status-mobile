@@ -113,7 +113,7 @@
        [rn/view {:style {:margin-left (if value 12 2)
                          :height 16
                          :width 16
-                         :background-color (colors/alpha colors/white 0.3)
+                         :background-color (colors/alpha colors/white 1)
                          :border-radius 40
                          :margin-right :auto
                          :margin-top :auto
