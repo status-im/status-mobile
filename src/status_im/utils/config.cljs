@@ -177,3 +177,8 @@
 (def wallet-connect-project-id "87815d72a81d739d2a7ce15c2cfdefb3")
 
 (def new-ui-enabled? (atom false))
+
+;; TODO: Remove this (highly) temporary flag once the new Activity Center is
+;; usable enough to replace the old one **in the new UI**.
+(def new-activity-center-enabled?
+  (atom false))

@@ -274,7 +274,9 @@
                           :accessibility-label :notifications-button
                           :on-press #(do
                                        (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
-                                       (re-frame/dispatch [:navigate-to :notifications-center]))}
+                                       (if (and @config/new-ui-enabled? @config/new-activity-center-enabled?)
+                                         (re-frame/dispatch [:navigate-to :activity-center])
+                                         (re-frame/dispatch [:navigate-to :notifications-center])))}
       [icons/icon :main-icons/notification2 {:color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}]]
      (when (pos? notif-count)
        [react/view {:style (merge (styles/counter-public-container) {:top 5 :right 5})
