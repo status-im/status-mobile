@@ -54,13 +54,11 @@
 
 (defn displayed-name
   "Use preferred name, name or alias in that order"
-  [{:keys [name preferred-name alias public-key ens-verified]}]
-  (let [ens-name (or preferred-name
-                     name)]
-    ;; Preferred name is our own otherwise we make sure it's verified
-    (if (or preferred-name (and ens-verified name))
+  [{:keys [name preferred-name alias public-key]}]
+  (let [ens-name (or preferred-name name)]
+    (if (or preferred-name name)
       (let [username (stateofus/username ens-name)]
-        (str "@" (or username ens-name)))
+        (or username ens-name))
       (or alias (gfycat/generate-gfy public-key)))))
 
 (defn contact-by-identity [contacts identity]

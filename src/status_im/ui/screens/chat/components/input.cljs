@@ -12,6 +12,7 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.chat.constants :as chat.constants]
             [status-im.utils.utils :as utils.utils]
+            [status-im.subs.chat.chats :as chats.subs]
             [quo.components.animated.pressable :as pressable]
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
@@ -217,11 +218,16 @@
   {:events [:chat.ui.input/set-chat-input-text]}
   [{:keys [db] :as cofx} text chat-id]
   (let [text-with-mentions (mentions/->input-field text)
+        current-chat (get (:chats db) chat-id)
+        all-contacts (:contacts/contacts db)
         contacts (:contacts db)
+        current-multiaccount (:multiaccount db)
+        mentionable-users (chats.subs/compute-mentionable-users current-chat nil all-contacts current-multiaccount)
         hydrated-mentions (map (fn [[t mention :as e]]
                                  (if (= t :mention)
                                    [:mention (str "@" (multiaccounts/displayed-name
                                                        (or (get contacts mention)
+                                                           (get mentionable-users mention)
                                                            {:public-key mention})))]
                                    e)) text-with-mentions)
         info (mentions/->info hydrated-mentions)]
