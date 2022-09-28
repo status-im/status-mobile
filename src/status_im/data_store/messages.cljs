@@ -31,6 +31,7 @@
                                 :quotedMessage :quoted-message
                                 :outgoingStatus :outgoing-status
                                 :audioDurationMs :audio-duration-ms
+                                :deletedForMe :deleted-for-me?
                                 :new :new?})
 
       (update :quoted-message clojure.set/rename-keys {:parsedText :parsed-text :communityId :community-id})
