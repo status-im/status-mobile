@@ -84,8 +84,6 @@
 (def animated-scroll-view-class
   (reagent/adapt-react-class (.-ScrollView ^js animated)))
 
-(def animated-linear-gradient (reagent/adapt-react-class (.createAnimatedComponent animated LinearGradient)))
-
 (defn animated-view [props & content]
   (vec (conj content props animated-view-class)))
 
