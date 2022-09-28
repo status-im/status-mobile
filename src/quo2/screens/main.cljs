@@ -27,6 +27,7 @@
             [quo2.screens.messages.gap :as messages-gap]
             [quo2.screens.notifications.activity-logs :as activity-logs]
             [quo2.screens.reactions.react :as react]
+            [quo2.screens.selectors.disclaimer :as disclaimer]
             [quo2.screens.selectors.selectors :as selectors]
             [quo2.screens.switcher.switcher-cards :as switcher-cards]
             [quo2.screens.navigation.bottom-nav-tab :as bottom-nav-tab]
@@ -107,7 +108,10 @@
    :switcher [{:name :switcher-cards
                :insets {:top false}
                :component switcher-cards/preview-switcher-cards}]
-   :selectors [{:name :selectors
+   :selectors [{:name :disclaimer
+                :insets {:top false}
+                :component disclaimer/preview-disclaimer}
+               {:name :selectors
                 :insets {:top false}
                 :component selectors/preview-selectors}]
    :tabs [{:name      :segmented
