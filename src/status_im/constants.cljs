@@ -164,7 +164,7 @@
 (def ^:const one-week (* one-day 7))
 (def ^:const one-month (* one-day 31))
 
-(def ^:const privacy-policy-link "https://status.im/privacy-policy/")
+(def ^:const privacy-policy-link "https://status.im/app-privacy-statement")
 (def ^:const terms-of-service-link "https://status.im/terms-of-use")
 (def ^:const docs-link "https://status.im/docs/")
 (def ^:const principles-link "https://our.status.im/our-principles/")
