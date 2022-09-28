@@ -94,6 +94,7 @@
             :align-items :flex-start
             :flex        1}
    [status-tags/status-tag {:size   :small
+                            :label  (:label status)
                             :status status}]])
 
 (defn- activity-title

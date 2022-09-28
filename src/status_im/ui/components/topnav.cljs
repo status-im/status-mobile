@@ -1,12 +1,12 @@
 (ns status-im.ui.components.topnav
-  (:require
-   [re-frame.core :as re-frame]
-   [quo2.components.buttons.button :as quo2.button]
-   [status-im.qr-scanner.core :as qr-scanner]
-   [status-im.utils.handlers :refer [<sub]]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.screens.home.styles :as styles]
-   [status-im.ui.components.react :as react]))
+  (:require [quo2.components.buttons.button :as quo2.button]
+            [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.home.styles :as styles]
+            [status-im.utils.config :as config]
+            [status-im.utils.handlers :refer [<sub]]))
 
 (defn qr-scanner []
   [quo2.button/button
@@ -39,7 +39,9 @@
                           :accessibility-label :notifications-button
                           :on-press #(do
                                        (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
-                                       (re-frame/dispatch [:navigate-to :notifications-center]))}
+                                       (if (and @config/new-ui-enabled? @config/new-activity-center-enabled?)
+                                         (re-frame/dispatch [:navigate-to :activity-center])
+                                         (re-frame/dispatch [:navigate-to :notifications-center])))}
       :main-icons2/notifications]
      (when (pos? notif-count)
        [react/view {:style (merge (styles/counter-public-container) {:top 5 :right 5})

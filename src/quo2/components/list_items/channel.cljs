@@ -40,7 +40,7 @@
    [rn/view {:style {:height 20}}
     (when (and (not locked?)
                muted?)
-      [quo2.icons/icon :main-icons2/muted?
+      [quo2.icons/icon :main-icons2/muted
        {:size     20
         :no-color true}])
     (when (and (not locked?)

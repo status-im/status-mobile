@@ -48,13 +48,13 @@
    :weight          :medium
    :style           (subtitle)})
 
-(defn content-container [notification?]
+(defn content-container [new-notifications?]
   {:position          :absolute
-   :max-width         (if notification? 108 136)
+   :max-width         (if new-notifications? 108 136)
    :flex-shrink       1
    :bottom            12
    :margin-left       12
-   :margin-right      (if notification? 8 12)})
+   :margin-right      (if new-notifications? 8 12)})
 
 (defn notification-container []
   {:position        :absolute

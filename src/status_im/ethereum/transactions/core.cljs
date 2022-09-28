@@ -69,7 +69,7 @@
   [chain-tokens
    {:keys [address blockNumber timestamp from txStatus txHash gasPrice
            gasUsed contract value gasLimit input nonce to type id
-           maxFeePerGas maxPriorityFeePerGas]}]
+           maxFeePerGas maxPriorityFeePerGas effectiveGasPrice]}]
   (let [erc20?  (= type "erc20")
         failed? (= txStatus "0x0")]
     (merge {:address   (eip55/address->checksum address)
@@ -77,7 +77,9 @@
             :block     (str (decode/uint blockNumber))
             :timestamp (* (decode/uint timestamp) 1000)
             :gas-used  (str (decode/uint gasUsed))
-            :gas-price (str (decode/uint gasPrice))
+            :gas-price (str (if effectiveGasPrice
+                              (decode/uint effectiveGasPrice)
+                              (decode/uint gasPrice)))
             :fee-cap   (str (decode/uint maxFeePerGas))
             :tip-cap   (str (decode/uint maxPriorityFeePerGas))
             :gas-limit (str (decode/uint gasLimit))
