@@ -2,16 +2,21 @@
   (:require [quo.components.animated.pressable :as animation]
             [quo.react-native :as rn]
             [quo2.components.buttons.button :as button]
+            [quo2.components.markdown.text :as text]
             [quo2.components.notifications.activity-logs :as activity-logs]
+            [quo2.components.tabs.tabs :as tabs]
             [quo2.components.tags.context-tags :as context-tags]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.react :as react]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.handlers :refer [<sub >evt]]))
+
+(defonce selected-activity-type
+  (reagent/atom :activity-type/all))
 
 (defn activity-title
   [{:keys [type]}]
@@ -107,24 +112,88 @@
 (defn notifications-list
   []
   (let [notifications (<sub [:activity-center/notifications-per-read-status])]
-    [rn/flat-list {:style          {:padding-horizontal 8}
-                   :data           notifications
+    [rn/flat-list {:data           notifications
                    :key-fn         :id
                    :on-end-reached #(>evt [:activity-center.notifications/fetch-next-page])
                    :render-fn      render-notification}]))
+
+(defn filter-selector-read []
+  (let [unread-filter-enabled?  (<sub [:activity-center/status-filter-unread-enabled?])]
+    ;; TODO: Replace the button by a Filter Selector component once available for use.
+    [button/button {:icon     true
+                    :type     (if unread-filter-enabled? :primary :outline)
+                    :size     32
+                    :on-press #(if unread-filter-enabled?
+                                 (>evt [:activity-center.notifications/fetch-first-page {:status-filter :read}])
+                                 (>evt [:activity-center.notifications/fetch-first-page {:status-filter :unread}]))}
+     :unread]))
+
+(defn filter-tabs
+  [{:keys [fade-end-max-percentage]
+    :or   {fade-end-max-percentage 0.25}}]
+  (let [state (reagent/atom {:fade-end-percentage fade-end-max-percentage})]
+    (fn [{:keys [fade-end-max-percentage]}]
+      [rn/masked-view {:mask-element (reagent/as-element
+                                      [react/linear-gradient {:colors         ["black" "transparent"]
+                                                              :locations      [(- 1 (@state :fade-end-percentage))
+                                                                               1]
+                                                              :start          {:x 0 :y 0}
+                                                              :end            {:x 1 :y 0}
+                                                              :pointer-events :none
+                                                              :style          {:width  "100%"
+                                                                               :height "100%"}}])}
+       [tabs/scrollable-tabs {:size             32
+                              :style            {:padding-left 20}
+                              :scroll-on-press? true
+                              :on-layout        (fn [_]
+                                                  (when-not (@state :fade-end-percentage)
+                                                    (swap! state assoc :fade-end-percentage fade-end-max-percentage)))
+                              :on-scroll        (fn [^js e]
+                                                  (let [offset-x      (.. e -nativeEvent -contentOffset -x)
+                                                        content-width (.. e -nativeEvent -contentSize -width)
+                                                        layout-width  (.. e -nativeEvent -layoutMeasurement -width)]
+                                                    (swap! state assoc :fade-end-percentage
+                                                           (min 0.2 (- 1 (/ (+ layout-width offset-x)
+                                                                            content-width))))))
+                              :on-change        (partial reset! selected-activity-type)
+                              :default-active   :activity-type/all
+                              :data             [{:id :activity-type/all :label (i18n/label :t/all)}
+                                                 {:id :activity-type/admin :label (i18n/label :t/admin)}
+                                                 {:id :activity-type/mention :label (i18n/label :t/mentions)}
+                                                 {:id :activity-type/reply :label (i18n/label :t/replies)}
+                                                 {:id :activity-type/contact-request :label (i18n/label :t/contact-requests)}
+                                                 {:id :activity-type/identity-verification :label (i18n/label :t/identity-verification)}
+                                                 {:id :activity-type/transaction :label (i18n/label :t/transactions)}
+                                                 {:id :activity-type/membership :label (i18n/label :t/membership)}
+                                                 {:id :activity-type/system :label (i18n/label :t/system)}]}]])))
 
 (defn activity-center []
   (reagent/create-class
    {:component-did-mount #(>evt [:activity-center.notifications/fetch-first-page {:status-filter :unread}])
     :reagent-render
     (fn []
-      [:<>
-       [topbar/topbar {:navigation {:on-press #(>evt [:navigate-back])}
-                       :title      (i18n/label :t/activity)}]
-       ;; TODO(ilmotta): Temporary solution to switch between read/unread
-       ;; notifications while the Design team works on the mockups.
-       [button/button {:on-press #(>evt [:activity-center.notifications/fetch-first-page {:status-filter :unread}])}
-        "Unread"]
-       [button/button {:on-press #(>evt [:activity-center.notifications/fetch-first-page {:status-filter :read}])}
-        "Read"]
-       [notifications-list]])}))
+      (let [screen-padding 20]
+        [:<>
+         [button/button {:icon     true
+                         :type     :grey
+                         :size     32
+                         :style    {:margin-vertical 12
+                                    :margin-left     screen-padding}
+                         :on-press #(>evt [:navigate-back])}
+          :close]
+         [text/text {:size   :heading-1
+                     :weight :semi-bold
+                     :style  {:padding-horizontal screen-padding
+                              :padding-vertical   12}}
+          (i18n/label :t/notifications)]
+         [rn/view {:flex-direction   :row
+                   :padding-vertical 12}
+          [rn/view {:flex       1
+                    :align-self :stretch}
+           [filter-tabs]]
+          [rn/view {:flex-grow     0
+                    :margin-left   16
+                    :padding-right screen-padding}
+           [filter-selector-read]]]
+         [rn/view {:padding-horizontal screen-padding}
+          [notifications-list]]]))}))
