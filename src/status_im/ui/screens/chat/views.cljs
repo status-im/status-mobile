@@ -27,7 +27,8 @@
             [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.screens.chat.components.accessory :as accessory]
             [status-im.ui.screens.chat.components.input :as components]
-            [status-im.ui.screens.chat.message.datemark :as message-datemark]
+            [status-im.ui.screens.chat.components.messages-skeleton :as messages-skeleton]
+            [status-im.ui.screens.chat.message.datemark :as message-datemark] 
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
             [clojure.string :as string]
@@ -38,6 +39,11 @@
             [status-im.utils.debounce :as debounce]
             [status-im2.navigation.state :as navigation.state]
             [status-im.react-native.resources :as resources]))
+
+(def messages-view-height (reagent/atom 0))
+
+(defn on-messages-view-layout [^js ev]
+  (reset! messages-view-height (-> ev .-nativeEvent .-layout .-height)))
 
 (defn invitation-requests [chat-id admins]
   (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])
@@ -268,8 +274,8 @@
         all-loaded? @(re-frame/subscribe [:chats/all-loaded? chat-id])]
     [react/view {:style (when platform/android? {:scaleY -1})}
      (if (or loading-messages? (not chat-id) (not all-loaded?))
-       [react/view {:height 324 :align-items :center :justify-content :center}
-        [react/activity-indicator {:animating true}]]
+       [react/view {:height @messages-view-height}
+        [messages-skeleton/messages-skeleton]]
        [chat-intro-header-container chat no-messages?])]))
 
 (defn list-header [{:keys [chat-id chat-type invitation-admin]}]
@@ -382,7 +388,8 @@
        :onMomentumScrollEnd          state/stop-scrolling
         ;;TODO https://github.com/facebook/react-native/issues/30034
        :inverted                     (when platform/ios? true)
-       :style                        (when platform/android? {:scaleY -1})})]))
+       :style                        (when platform/android? {:scaleY -1})
+       :on-layout                    on-messages-view-layout})]))
 
 (defn navigate-back-handler []
   (when (and (not @navigation.state/curr-modal) (= (get @re-frame.db/app-db :view-id) :chat))
