@@ -38,6 +38,8 @@
             [quo2.screens.tags.status-tags :as status-tags]
             [quo2.screens.tags.token-tag :as token-tag]
             [quo2.screens.wallet.token-overview :as token-overview]
+            [quo2.screens.info.network-breakdown :as network-breakdown]
+            [quo2.screens.info.network-amount :as network-amount]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -82,7 +84,13 @@
            :component information-box/preview-information-box}
           {:name      :lowest-price
            :insets    {:top false}
-           :component lowest-price/preview-lowest-price}]
+           :component lowest-price/preview-lowest-price}
+          {:name      :network-breakdown
+           :insets    {:top false}
+           :component network-breakdown/preview-network-breakdown}
+          {:name      :network-amount
+           :insets    {:top false}
+           :component network-amount/preview}]
    :list-items [{:name      :channel
                  :insets    {:top false}
                  :component channel/preview-channel}
