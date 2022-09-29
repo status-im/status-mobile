@@ -1,6 +1,7 @@
 (ns quo2.screens.selectors.disclaimer
   (:require [quo.react-native :as rn]
             [reagent.core :as reagent]
+            [quo2.components.buttons.button :as button]
             [quo2.components.selectors.disclaimer :as quo2]
             [quo2.foundations.colors :as colors]))
 
@@ -14,8 +15,12 @@
                  :align-items      :center}
         [quo2/disclaimer
          {:checked?  @checked?
+          :container-style {:margin-bottom 40}
           :on-change #(swap! checked? not)}
-         "I agree with the community rules"]]])))
+         "I agree with the community rules"]
+        [button/button
+         {:disabled (not @checked?)}
+         "submit"]]])))
 
 (defn preview-disclaimer []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
