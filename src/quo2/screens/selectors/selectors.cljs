@@ -11,8 +11,7 @@
                   :type  :boolean}])
 
 (defn cool-preview []
-  (let [state (reagent/atom {:disabled false})
-        checked? (reagent/atom false)]
+  (let [state (reagent/atom {:disabled false})]
     (fn []
       [rn/view {:margin-bottom 50
                 :padding       16}
@@ -21,24 +20,16 @@
                  :align-items      :center}
         [text/text {:size :heading-2} "Toggle"]
         [quo2/toggle {:container-style {:margin-top 0}
-                      :disabled? (:disabled? @state)
-                      :checked? @checked?
-                      :on-change #(swap! checked? not)}]
+                      :disabled? (:disabled? @state)}]
         [text/text {:size :heading-2} "Radio"]
         [quo2/radio {:container-style {:margin-top 0}
-                     :disabled? (:disabled? @state)
-                     :checked? @checked?
-                     :on-change #(swap! checked? not)}]
+                     :disabled? (:disabled? @state)}]
         [text/text {:size :heading-2} "Checkbox"]
         [quo2/checkbox {:container-style {:margin-top 0}
-                        :disabled? (:disabled? @state)
-                        :checked? @checked?
-                        :on-change #(swap! checked? not)}]
+                        :disabled? (:disabled? @state)}]
         [text/text {:size :heading-2} "Checkbox Prefill"]
         [quo2/checkbox-prefill {:container-style {:margin-top 0}
-                                :disabled? (:disabled? @state)
-                                :checked? @checked?
-                                :on-change #(swap! checked? not)}]]])))
+                                :disabled? (:disabled? @state)}]]])))
 
 (defn preview-selectors []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
