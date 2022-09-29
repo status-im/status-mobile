@@ -67,16 +67,11 @@
                                       :end      {:x 1 :y 0}
                                       :style    animated-gradient-style}]]]))])
 
-(def number-of-skeletons (reagent/atom nil))
-
-(defn messages-skeleton []
-  [rn/view {:style {:background-color (colors/theme-colors
-                                       colors/white
-                                       colors/neutral-90)
-                    :flex              1}
-            :on-layout (fn [^js ev]
-                         (let [height (-> ev .-nativeEvent .-layout .-height)
-                               skeletons (int (Math/floor (/ height message-skeleton-height)))]
-                           (reset! number-of-skeletons skeletons)))}
-   (for [n (range @number-of-skeletons)]
-     [message-skeleton {:key n}])])
+(defn messages-skeleton [parent-height]
+  (let [number-of-skeletons (int (Math/floor (/ parent-height message-skeleton-height)))]
+    [rn/view {:style {:background-color (colors/theme-colors
+                                         colors/white
+                                         colors/neutral-90)
+                      :flex              1}}
+     (for [n (range number-of-skeletons)]
+       [message-skeleton {:key n}])]))

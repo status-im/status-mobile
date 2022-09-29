@@ -274,8 +274,7 @@
         all-loaded? @(re-frame/subscribe [:chats/all-loaded? chat-id])]
     [react/view {:style (when platform/android? {:scaleY -1})}
      (if (or loading-messages? (not chat-id) (not all-loaded?))
-       [react/view {:height @messages-view-height}
-        [messages-skeleton/messages-skeleton]]
+       [messages-skeleton/messages-skeleton @messages-view-height]
        [chat-intro-header-container chat no-messages?])]))
 
 (defn list-header [{:keys [chat-id chat-type invitation-admin]}]
