@@ -32,7 +32,7 @@
                                       :on-press-out   toggle-switcher-screen-fn
                                       :style          touchable-animated-style}
         [reanimated/view {:style close-button-animated-style}
-         [icons/icon :main-icons/close {:color colors/black}]]
+         [icons/icon :main-icons/close {:color colors/neutral-100}]]
         [reanimated/image {:source (resources/get-image :switcher)
                            :style  switcher-button-animated-style}]]))])
 

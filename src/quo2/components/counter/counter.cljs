@@ -6,29 +6,28 @@
 
 (def themes
   {:light {:default    colors/primary-50
-           :secondary  colors/black-opa-5
-           :grey       colors/neutral-30}
+           :secondary  colors/neutral-80-opa-5
+           :grey       colors/neutral-10
+           :outline    colors/neutral-20}
    :dark  {:default    colors/primary-60
-           :secondary  colors/white-opa-10
-           :grey       colors/neutral-70}})
+           :secondary  colors/white-opa-5
+           :grey       colors/neutral-70
+           :outline    colors/neutral-70}})
 
 (defn get-color [key]
   (get-in themes [(theme/get-theme) key]))
 
 (defn counter
-  "type:    default, secondary, grey
-   outline: true, false
+  "type:    default, secondary, grey, outline
    value:   integer"
-  [{:keys [type outline override-text-color override-bg-color style]} value]
+  [{:keys [type override-text-color override-bg-color style]} value]
   (let [type       (or type :default)
         text-color (or override-text-color
                        (if (or
                             (= (theme/get-theme) :dark)
-                            (and
-                             (= type :default)
-                             (not outline)))
+                            (= type :default))
                          colors/white
-                         colors/black))
+                         colors/neutral-100))
         value      (if (integer? value)
                      value
                      (js/parseInt value))
@@ -46,14 +45,14 @@
                                :width           width
                                :height          16}
                               style)
-                       outline
+                       (= type :outline)
                        (merge {:border-width 1
-                               :border-color (get-color (or type :default))})
+                               :border-color (get-color type)})
 
-                       (not outline)
+                       (not= type :outline)
                        (assoc :background-color
                               (or override-bg-color
-                                  (get-color (or type :default))))
+                                  (get-color type)))
 
                        (> value 99)
                        (assoc :padding-left 0.5))}

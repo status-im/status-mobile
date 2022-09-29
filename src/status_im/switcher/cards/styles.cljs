@@ -5,11 +5,11 @@
 (def themes
   {:light {:messaging-card-container-background-color           "#26A69A"
            :messaging-card-secondary-container-background-color colors/white
-           :messaging-card-title-color                          colors/black
+           :messaging-card-title-color                          colors/neutral-100
            :messaging-card-subtitle-color                       colors/neutral-50
-           :messaging-card-last-message-text-color              colors/black
+           :messaging-card-last-message-text-color              colors/neutral-100
            :messaging-card-close-button-bg-color                colors/white-opa-50
-           :messaging-card-close-button-icon-color              colors/black}
+           :messaging-card-close-button-icon-color              colors/neutral-100}
    :dark  {:messaging-card-container-background-color           "#26A69A"
            :messaging-card-secondary-container-background-color colors/neutral-90
            :messaging-card-title-color                          colors/white

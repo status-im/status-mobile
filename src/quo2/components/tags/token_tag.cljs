@@ -43,7 +43,7 @@
                                 {:width 15.5
                                  :height 15.5
                                  :background-color border-color
-                                 :border-color (if (=  (theme/get-theme) :dark) colors/black colors/white)
+                                 :border-color (if (=  (theme/get-theme) :dark) colors/neutral-100 colors/white)
                                  :border-width 1
                                  :right  (get-value-from-size size -3.75 -5.75)
                                  :bottom (get-value-from-size size (- 32 7.75 4) (- 24 7.75 2)) ; (- height (icon-height/2) spacing)

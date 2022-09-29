@@ -1,8 +1,8 @@
-(ns quo2.components.info.network-breakdown
+(ns quo2.components.wallet.network-breakdown
   (:require [quo.react-native :as rn]
             [quo2.foundations.colors :as colors]
             [quo2.components.markdown.text :as text]
-            [quo2.components.info.network-amount :refer [network-amount]]))
+            [quo2.components.wallet.network-amount :refer [network-amount]]))
 
 (defn network-breakdown
   [{:keys [top-value network-conversions]}]
@@ -22,7 +22,7 @@
                      :padding-vertical    6}}
     [text/text {:weight :medium
                 :style  {:color     (colors/theme-colors
-                                     colors/black
+                                     colors/neutral-100
                                      colors/white)
                          :font-size 19}}
      (str top-value)]]

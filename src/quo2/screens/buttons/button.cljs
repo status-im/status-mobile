@@ -14,6 +14,8 @@
                              :value "Secondary"}
                             {:key   :grey
                              :value "Grey"}
+                            {:key   :dark-grey
+                             :value "Dark Grey"}
                             {:key   :outline
                              :value "Outline"}
                             {:key   :ghost

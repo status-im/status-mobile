@@ -1,8 +1,8 @@
-(ns quo2.screens.info.lowest-price
+(ns quo2.screens.wallet.lowest-price
   (:require [quo2.foundations.colors :as colors]
             [quo.react-native :as rn]
             [quo.previews.preview :as preview]
-            [quo2.components.info.lowest-price :as quo2]
+            [quo2.components.wallet.lowest-price :as quo2]
             [reagent.core :as reagent]))
 
 (def descriptor [{:label "Top value"
@@ -30,9 +30,9 @@
 (defn cool-preview []
   (let [state (reagent/atom {:top-value               20
                              :bottom-value            20
-                             :top-value-bg-color      colors/black
+                             :top-value-bg-color      colors/neutral-100
                              :top-value-text-color    colors/white
-                             :bottom-value-bg-color   colors/black
+                             :bottom-value-bg-color   colors/neutral-100
                              :bottom-value-text-color colors/white})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}

@@ -478,14 +478,14 @@
                        :width    32
                        :accessibility-label "back-button"
                        :on-press #(re-frame/dispatch [:navigate-back])}
-   [icons/icon :main-icons/arrow-left {:color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}]])
+   [icons/icon :main-icons/arrow-left {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]])
 
 (defn search-button []
   [quo2.button/button {:type     :grey
                        :size     32
                        :width    32
                        :accessibility-label "search-button"}
-   [icons/icon :main-icons/search {:color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}]])
+   [icons/icon :main-icons/search {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]])
 
 (defn topbar-content []
   (let [window-width @(re-frame/subscribe [:dimensions/window-width])

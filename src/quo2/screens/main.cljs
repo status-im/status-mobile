@@ -17,10 +17,10 @@
             [quo2.screens.community.community-card-view :as community-card]
             [quo2.screens.dividers.divider-label :as divider-label]
             [quo2.screens.dividers.new-messages :as new-messages]
-            [quo2.screens.list-items.dropdown :as dropdown]
+            [quo2.screens.dropdowns.dropdown :as dropdown]
             [quo2.screens.info.info-message :as info-message]
             [quo2.screens.info.information-box :as information-box]
-            [quo2.screens.info.lowest-price :as lowest-price]
+            [quo2.screens.wallet.lowest-price :as lowest-price]
             [quo2.screens.list-items.preview-lists :as preview-lists]
             [quo2.screens.list-items.channel :as channel]
             [quo2.screens.markdown.text :as text]
@@ -39,8 +39,8 @@
             [quo2.screens.tags.status-tags :as status-tags]
             [quo2.screens.tags.token-tag :as token-tag]
             [quo2.screens.wallet.token-overview :as token-overview]
-            [quo2.screens.info.network-breakdown :as network-breakdown]
-            [quo2.screens.info.network-amount :as network-amount]
+            [quo2.screens.wallet.network-breakdown :as network-breakdown]
+            [quo2.screens.wallet.network-amount :as network-amount]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -82,16 +82,7 @@
            :component info-message/preview-info-message}
           {:name      :information-box
            :insets    {:top false}
-           :component information-box/preview-information-box}
-          {:name      :lowest-price
-           :insets    {:top false}
-           :component lowest-price/preview-lowest-price}
-          {:name      :network-breakdown
-           :insets    {:top false}
-           :component network-breakdown/preview-network-breakdown}
-          {:name      :network-amount
-           :insets    {:top false}
-           :component network-amount/preview}]
+           :component information-box/preview-information-box}]
    :list-items [{:name      :channel
                  :insets    {:top false}
                  :component channel/preview-channel}
@@ -143,9 +134,18 @@
           {:name      :token-tag
            :insets    {:top false}
            :component token-tag/preview-token-tag}]
-   :wallet [{:name      :token-overview
+   :wallet [{:name      :lowest-price
              :insets    {:top false}
-             :component token-overview/preview-token-overview}]})
+             :component lowest-price/preview-lowest-price}
+            {:name      :token-overview
+             :insets    {:top false}
+             :component token-overview/preview-token-overview}
+            {:name      :network-breakdown
+             :insets    {:top false}
+             :component network-breakdown/preview-network-breakdown}
+            {:name      :network-amount
+             :insets    {:top false}
+             :component network-amount/preview}]})
 
 (def screens (flatten (map val screens-categories)))
 

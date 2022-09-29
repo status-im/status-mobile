@@ -1,4 +1,4 @@
-(ns quo2.components.info.network-amount
+(ns quo2.components.wallet.network-amount
   (:require [clojure.string :as string]
             [quo.react-native :as rn]
             [quo2.components.icon :as icon]
@@ -34,7 +34,7 @@
                        :align-items    :center}}
       [text/text {:weight :medium
                   :size   :paragraph-2
-                  :style  {:color (colors/theme-colors colors/black colors/white)}}
+                  :style  {:color (colors/theme-colors colors/neutral-100 colors/white)}}
        eth-value \space (i18n/label :t/eth)]
       [rn/view {:style {:border-right-width (when show-right-border? 1)
                         :border-right-color (colors/theme-colors colors/neutral-40 colors/neutral-50)

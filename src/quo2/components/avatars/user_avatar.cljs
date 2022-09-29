@@ -67,7 +67,7 @@
                         :border-width border-width
                         :border-radius dimensions
                         :border-color (if dark?
-                                        colors/black
+                                        colors/neutral-100
                                         colors/white)
                         :position :absolute
                         :bottom bottom

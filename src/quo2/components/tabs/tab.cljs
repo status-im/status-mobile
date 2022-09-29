@@ -7,13 +7,13 @@
 
 (def themes {:light {:default  {:background-color colors/neutral-20
                                 :icon-color       colors/neutral-50
-                                :label            {:style {:color colors/black}}}
+                                :label            {:style {:color colors/neutral-100}}}
                      :active   {:background-color colors/neutral-50
                                 :icon-color       colors/white
                                 :label            {:style {:color colors/white}}}
                      :disabled {:background-color colors/neutral-20
                                 :icon-color       colors/neutral-50
-                                :label            {:style {:color colors/black}}}}
+                                :label            {:style {:color colors/neutral-100}}}}
              :dark  {:default  {:background-color colors/neutral-80
                                 :icon-color       colors/neutral-40
                                 :label            {:style {:color colors/white}}}

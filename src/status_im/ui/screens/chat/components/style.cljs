@@ -166,7 +166,7 @@
 (defn new-bottom-sheet-handle []
   {:width            32
    :height           4
-   :background-color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)
+   :background-color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)
    :opacity          0.05
    :border-radius    100
    :align-self       :center
