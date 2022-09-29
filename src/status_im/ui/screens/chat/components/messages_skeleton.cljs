@@ -31,8 +31,7 @@
            translate-x (reanimated/use-shared-value (- window-width))
            animated-gradient-style (reanimated/apply-animations-to-style
                                     {:transform [{:translateX translate-x}]}
-                                    {:position         :absolute
-                                     :width            window-width
+                                    {:width            window-width
                                      :height           "100%"})]
        (reanimated/animate-shared-value-with-repeat translate-x window-width 1000 :linear (- 1) false)
        [react/masked-view
