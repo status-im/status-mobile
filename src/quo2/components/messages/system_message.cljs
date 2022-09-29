@@ -9,17 +9,24 @@
             [quo2.components.avatars.icon-avatar :as icon-avatar]))
 
 (def themes
-  {:light {:text       colors/black
-           :icon       colors/primary-50
-           :time       colors/neutral-50
-           :background colors/neutral-5}
-   :dark  {:text       colors/white
-           :icon       colors/primary-50
-           :time       colors/neutral-40
-           :background colors/neutral-95}})
+  {:light {:text colors/neutral-100
+           :time colors/neutral-50
+           :bg   {:default colors/white
+                  :pressed colors/neutral-5
+                  :landed  {:pinned  colors/primary-50-opa-5
+                            :added   colors/primary-50-opa-5
+                            :deleted colors/danger-50-opa-5}}}
+   :dark  {:text colors/white
+           :time colors/neutral-40
+           :bg   {:default colors/neutral-90
+                  :pressed colors/neutral-80
+                  :landed  {:pinned  colors/primary-50-opa-5
+                            :added   colors/primary-50-opa-5
+                            :deleted colors/danger-50-opa-5}}}})
 
-(defn get-color [key]
-  (get-in themes [(theme/get-theme) key]))
+(defn get-color [& keys]
+  (reduce (fn [acc k] (get acc k (reduced acc)))
+          ((theme/get-theme) themes) (vec keys)))
 
 (defn sm-timestamp [timestamp-str]
   [rn/view {:margin-left 6}
@@ -28,42 +35,50 @@
                        :text-transform :none}}
     timestamp-str]])
 
-(defn sm-icon [icon]
+(defn sm-icon [{:keys [icon color opacity]}]
   [rn/view {:align-items  :center
             :margin-right 8}
    [icon-avatar/icon-avatar {:size    :medium
                              :icon    icon
-                             :color   :primary
-                             :opacity 5}]])
+                             :color   color
+                             :opacity opacity}]])
+
+(defn sm-user-avatar [image]
+  [rn/view {:margin-right 4}
+   [user-avatar/user-avatar {:status-indicator? false
+                             :online?           false
+                             :size              :xxxs
+                             :profile-picture   image
+                             :ring?             false}]])
 
 (defmulti sm-render :type)
 
-(defmethod sm-render :deleted [_]
+(defmethod sm-render :deleted [{:keys [state action timestamp-str]}]
   [rn/view {:align-items     :center
             :justify-content :space-between
             :flex            1
             :flex-direction  :row}
    [rn/view {:align-items    :center
              :flex-direction :row}
-    [sm-icon :main-icons/placeholder16]
+    [sm-icon {:icon    :main-icons/delete16
+              :color   :danger
+              :opacity (if (= state :landed) 0 5)}]
     [text/text {:size  :paragraph-2
                 :style {:color        (get-color :text)
                         :margin-right 5}}
-     (i18n/label :message-deleted-for-everyone)]]
-   [button/button {:size   24
-                   :before :main-icons/timeout
-                   :type   :grey} (i18n/label :undo)]])
+     (i18n/label (if action :message-deleted-for-you :message-deleted))]
+    (when (nil? action) [sm-timestamp timestamp-str])]
+   (when action [button/button {:size   24
+                                :before :main-icons/timeout
+                                :type   :grey} (i18n/label :undo)])])
 
-(defmethod sm-render :added [{:keys [mentions timestamp-str]}]
+(defmethod sm-render :added [{:keys [state mentions timestamp-str]}]
   [rn/view {:align-items    :center
             :flex-direction :row}
-   [sm-icon :main-icons/placeholder16]
-   [rn/view {:margin-right 4}
-    [user-avatar/user-avatar {:status-indicator? false
-                              :online?           false
-                              :size              :xxxs
-                              :profile-picture   (:image (first mentions))
-                              :ring?             false}]]
+   [sm-icon {:icon    :main-icons/add-user16
+             :color   :primary
+             :opacity (if (= state :landed) 0 5)}]
+   [sm-user-avatar (:image (first mentions))]
    [text/text {:weight :semi-bold
                :size   :paragraph-2}
     (:name (first mentions))]
@@ -72,22 +87,19 @@
                        :margin-left  3
                        :margin-right 3}}
     (i18n/label :added)]
-   [rn/view {:margin-right 4}
-    [user-avatar/user-avatar {:status-indicator? false
-                              :online?           false
-                              :size              :xxxs
-                              :profile-picture   (:image (second mentions))
-                              :ring?             false}]]
+   [sm-user-avatar (:image (second mentions))]
    [text/text {:weight :semi-bold
                :size   :paragraph-2}
     (:name (second mentions))]
    [sm-timestamp timestamp-str]])
 
-(defmethod sm-render :pinned [{:keys [pinned-by content timestamp-str]}]
+(defmethod sm-render :pinned [{:keys [state pinned-by content timestamp-str]}]
   [rn/view {:flex-direction :row
             :flex           1
             :align-items    :center}
-   [sm-icon :main-icons/pin16]
+   [sm-icon {:icon    :main-icons/pin16
+             :color   :primary
+             :opacity (if (= state :landed) 0 5)}]
    [rn/view {:flex-direction :column
              :flex           1}
     [rn/view {:align-items    :baseline
@@ -105,12 +117,7 @@
     [rn/view {:flex-direction :row}
      [rn/view {:flex-direction :row
                :margin-right   4}
-      [rn/view {:margin-right 4}
-       [user-avatar/user-avatar {:status-indicator? false
-                                 :online?           false
-                                 :size              :xxxs
-                                 :profile-picture   (:image (:mentions content))
-                                 :ring?             false}]]
+      [sm-user-avatar (:image (:mentions content))]
       [text/text {:weight :semi-bold
                   :size   :label}
        (:name (:mentions content))]]
@@ -132,7 +139,7 @@
          (:info content)])]]]])
 
 (defn system-message
-  [{:keys [unread?] :as message}]
+  [{:keys [type state] :as message}]
   [rn/view {:flex-direction     :row
             :flex               1
             :border-radius      16
@@ -140,5 +147,5 @@
             :padding-horizontal 11
             :width              359
             :height             52
-            :background-color   (when unread? (get-color :background))}
+            :background-color   (get-color :bg state type)}
    [sm-render message]])

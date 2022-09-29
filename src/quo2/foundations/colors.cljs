@@ -122,6 +122,8 @@
 (def customization
   {:primary   {50 primary-50  ;; User can also use primary color as customisation color
                60 primary-60}
+   :danger    {50 danger-50
+               60 danger-60}
    :purple    {50 "#8661C1"
                60 "#5E478C"}
    :indigo    {50 "#496289"
