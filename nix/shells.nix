@@ -56,8 +56,8 @@ let
       buildInputs = with pkgs; [ openjdk8 apksigner ];
     };
 
-    # for targets that need 'adb' and other SDK/NDK tools
-    android-env = pkgs.androidShell;
+    # for targets needing 'adb', 'apkanalyzer' and other SDK/NDK tools
+    android-sdk = pkgs.androidShell;
 
     # helpers for use with target argument
     ios = targets.mobile.ios.shell;

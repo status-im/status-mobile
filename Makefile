@@ -176,7 +176,7 @@ fdroid-fix-tmp: ##@prepare Fix TMPDIR permissions so Vagrant user is the owner
 
 fdroid-build-env: fdroid-max-watches fdroid-nix-dir fdroid-fix-tmp ##@prepare Setup build environment for F-Droud build
 
-fdroid-pr: export TARGET := android
+fdroid-pr: export TARGET := android-sdk
 fdroid-pr: ##@prepare Create F-Droid release PR
 ifndef APK
 	$(error APK env var not defined)
@@ -314,7 +314,7 @@ test: ##@test Run tests once in NodeJS
 # Other
 #--------------
 
-geth-connect: export TARGET := android-env
+geth-connect: export TARGET := android-sdk
 geth-connect: ##@other Connect to Geth on the device
 	adb forward tcp:8545 tcp:8545 && \
 	build/bin/geth attach http://localhost:8545
@@ -324,22 +324,22 @@ android-clean: ##@prepare Clean Gradle state
 	git clean -dxf -f ./android/app/build; \
 	[[ -d android/.gradle ]] && cd android && ./gradlew clean
 
-android-ports: export TARGET := android-env
+android-ports: export TARGET := android-sdk
 android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:8081 tcp:8081 && \
 	adb reverse tcp:3449 tcp:3449 && \
 	adb reverse tcp:4567 tcp:4567 && \
 	adb forward tcp:5561 tcp:5561
 
-android-devices: export TARGET := android-env
+android-devices: export TARGET := android-sdk
 android-devices: ##@other Invoke adb devices
 	adb devices
 
-android-logcat: export TARGET := android-env
+android-logcat: export TARGET := android-sdk
 android-logcat: ##@other Read status-mobile logs from Android phone using adb
 	adb logcat | grep -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs -e 'F DEBUG   :' -e 'Go      :' -e 'GoLog   :' -e 'libc    :'
 
-android-install: export TARGET := android-env
+android-install: export TARGET := android-sdk
 android-install: export BUILD_TYPE ?= release
 android-install: ##@other Install APK on device using adb
 	adb install result/app-$(BUILD_TYPE).apk
