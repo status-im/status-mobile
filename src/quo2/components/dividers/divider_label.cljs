@@ -19,7 +19,7 @@
         border-and-counter-bg-color (if dark? (if blur? colors/white-opa-5 colors/neutral-70) colors/neutral-10)
         padding-top (if increase-padding-top? 16 8)
         text-and-icon-color (if dark? colors/neutral-40 colors/neutral-50)
-        counter-text-color  (if dark? colors/white colors/black)]
+        counter-text-color  (if dark? colors/white colors/neutral-100)]
     [rn/view {:style {:border-top-width 1
                       :border-top-color border-and-counter-bg-color
                       :padding-top padding-top

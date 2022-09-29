@@ -120,7 +120,7 @@
                             :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])}
         [icons/icon :main-icons/close {:width 16
                                        :height 16
-                                       :color (theme-colors quo2.colors/black quo2.colors/neutral-40)}]])]))
+                                       :color (theme-colors quo2.colors/neutral-100 quo2.colors/neutral-40)}]])]))
 
 (defn send-image [images]
   [rn/view {:style (styles/reply-container-image)}

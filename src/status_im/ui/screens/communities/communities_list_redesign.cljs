@@ -194,7 +194,7 @@
                                :labelled       false
                                :type           :icon
                                :icon-color     (quo2.colors/theme-colors
-                                                quo2.colors/black
+                                                quo2.colors/neutral-100
                                                 quo2.colors/white)}]]
       [filter-tags/tags {:data          filters
                          :labelled      true

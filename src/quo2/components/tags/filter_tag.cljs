@@ -8,13 +8,13 @@
 
 (def themes {:light {:default  {:border-color             colors/neutral-20
                                 :blurred-border-color     colors/neutral-80-opa-5
-                                :text-color               {:style {:color colors/black}}}
+                                :text-color               {:style {:color colors/neutral-100}}}
                      :active   {:border-color             colors/neutral-30
                                 :blurred-border-color     colors/neutral-80-opa-10
-                                :text-color               {:style {:color colors/black}}}
+                                :text-color               {:style {:color colors/neutral-100}}}
                      :disabled {:border-color             colors/neutral-20
                                 :blurred-border-color     colors/neutral-80-opa-5
-                                :text-color               {:style {:color colors/black}}}}
+                                :text-color               {:style {:color colors/neutral-100}}}}
              :dark  {:default  {:border-color             colors/neutral-70
                                 :blurred-border-color     colors/white-opa-10
                                 :text-color               {:style {:color colors/white}}}

@@ -1,4 +1,4 @@
-(ns quo2.components.info.lowest-price
+(ns quo2.components.wallet.lowest-price
   (:require [quo.react-native :as rn]
             [clojure.string :as string]))
 

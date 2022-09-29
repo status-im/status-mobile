@@ -1,9 +1,9 @@
-(ns quo2.screens.info.network-breakdown
+(ns quo2.screens.wallet.network-breakdown
   (:require [reagent.core :as reagent]
             [quo.react-native :as rn]
             [quo.previews.preview :as preview]
             [quo2.foundations.colors :as colors]
-            [quo2.components.info.network-breakdown :as quo2]))
+            [quo2.components.wallet.network-breakdown :as quo2]))
 
 (def descriptor [{:label "Ethereum Value"
                   :key   :top-value
@@ -42,7 +42,7 @@
                  :flex-direction   :row
                  :justify-content  :center}
         [quo2/network-breakdown @state]]
-       [rn/touchable-opacity {:style    {:background-color colors/black
+       [rn/touchable-opacity {:style    {:background-color colors/neutral-100
                                          :width            100}
                               :on-press (fn []
                                           (swap! state update-in [:network-conversions] conj {:conversion (:conversion @state)

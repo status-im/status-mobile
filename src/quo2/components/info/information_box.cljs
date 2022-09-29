@@ -11,16 +11,16 @@
   {:light {:default     {:bg     colors/white
                          :border colors/neutral-20
                          :icon   colors/neutral-50
-                         :text   colors/black}
+                         :text   colors/neutral-100}
            :informative {:bg     colors/primary-50-opa-5
                          :border colors/primary-50-opa-10
                          :icon   colors/primary-50
-                         :text   colors/black}
+                         :text   colors/neutral-100}
            :error       {:bg     colors/danger-50-opa-5
                          :border colors/danger-50-opa-10
                          :icon   colors/danger-50
                          :text   colors/danger-50}
-           :close-button colors/black}
+           :close-button colors/neutral-100}
    :dark  {:default     {:bg     colors/neutral-90
                          :border colors/neutral-70
                          :icon   colors/neutral-40

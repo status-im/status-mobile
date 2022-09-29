@@ -6,70 +6,125 @@
             [reagent.core :as reagent]
             [quo2.components.icon :as quo2.icons]))
 
-(def themes {:light {:primary   {:icon-color       colors/white
-                                 :label            {:style {:color colors/white}}
-                                 :background-color {:default  colors/primary-50
-                                                    :pressed  colors/primary-70
+(def themes
+  {:light {:primary         {:icon-color           colors/white
+                             :label                {:style    {:color colors/white}}
+                             :background-color     {:default  colors/primary-50
+                                                    :pressed  colors/primary-60
                                                     :disabled colors/primary-50}}
-                     :secondary {:icon-color       colors/primary-50
-                                 :label            {:style {:color colors/primary-50}}
-                                 :background-color {:default  colors/primary-50-opa-20
+           :secondary       {:icon-color           colors/primary-50
+                             :label                {:style    {:color colors/primary-50}}
+                             :background-color     {:default  colors/primary-50-opa-20
                                                     :pressed  colors/primary-50-opa-40
                                                     :disabled colors/primary-50-opa-20}}
-                     :grey      {:icon-color       colors/black
-                                 :label            {:style {:color colors/black}}
-                                 :background-color {:default  colors/neutral-20
+           :grey            {:icon-color           colors/neutral-100
+                             :icon-secondary-color colors/neutral-50
+                             :label                {:style    {:color colors/neutral-100}}
+                             :background-color     {:default  colors/neutral-10
+                                                    :pressed  colors/neutral-20
+                                                    :disabled colors/neutral-10}}
+           :dark-grey       {:icon-color           colors/neutral-100
+                             :icon-secondary-color colors/neutral-50
+                             :label                {:style    {:color colors/neutral-100}}
+                             :background-color     {:default  colors/neutral-20
                                                     :pressed  colors/neutral-30
                                                     :disabled colors/neutral-20}}
-                     :outline   {:icon-color   colors/neutral-50
-                                 :label        {:style {:color colors/black}}
-                                 :border-color {:default colors/neutral-30
-                                                :pressed colors/neutral-40}}
-                     :ghost     {:icon-color       colors/neutral-50
-                                 :label            {:style {:color colors/black}}
-                                 :background-color {:pr:pressedess colors/neutral-10}}
-                     :success   {:icon-color       colors/white
-                                 :label            {:style {:color colors/white}}
-                                 :background-color {:default colors/success-50
-                                                    :pressed colors/success-70
-                                                    :disabled colors/success-50}}
-                     :danger    {:icon-color       colors/white
-                                 :label            {:style {:color colors/white}}
-                                 :background-color {:default  colors/danger-50
+           :outline         {:icon-color           colors/neutral-50
+                             :icon-secondary-color colors/neutral-50
+                             :label                {:style    {:color colors/neutral-100}}
+                             :border-color         {:default  colors/neutral-20
+                                                    :pressed  colors/neutral-40
+                                                    :disabled colors/neutral-20}}
+           :ghost           {:icon-color           colors/neutral-50
+                             :icon-secondary-color colors/neutral-50
+                             :label                {:style    {:color colors/neutral-100}}
+                             :background-color     {:pressed colors/neutral-10}}
+           :danger          {:icon-color           colors/white
+                             :label                {:style    {:color colors/white}}
+                             :background-color     {:default  colors/danger-50
                                                     :pressed  colors/danger-60
-                                                    :disabled colors/danger-50}}}
-             :dark  {:primary   {:icon-color       colors/white
-                                 :label            {:style {:color colors/white}}
-                                 :background-color {:default  colors/primary-60
-                                                    :pressed  colors/primary-40
-                                                    :disabled colors/primary-60}}
-                     :secondary {:icon-color       colors/primary-50
-                                 :label            {:style {:color colors/primary-50}}
-                                 :background-color {:default  colors/primary-50-opa-20
-                                                    :pressed  colors/primary-50-opa-30
-                                                    :disabled colors/primary-50-opa-20}}
-                     :grey      {:icon-color       colors/white
-                                 :label            {:style {:color colors/white}}
-                                 :background-color {:default  colors/neutral-80
+                                                    :disabled colors/danger-50}}
+           :photo-bg        {:icon-color           colors/neutral-100
+                             :icon-secondary-color colors/neutral-80-opa-40
+                             :label                {:style    {:color colors/neutral-100}}
+                             :background-color     {:default  colors/white-opa-40
+                                                    :pressed  colors/white-opa-50
+                                                    :disabled colors/white-opa-40}}
+           :blur-bg         {:icon-color           colors/neutral-100
+                             :icon-secondary-color colors/neutral-80-opa-40
+                             :label                {:style    {:color colors/neutral-100}}
+                             :background-color     {:default  colors/neutral-80-opa-5
+                                                    :pressed  colors/neutral-80-opa-10
+                                                    :disabled colors/neutral-80-opa-5}}
+           :blur-bg-outline {:icon-color           colors/neutral-100
+                             :icon-secondary-color colors/neutral-80-opa-40
+                             :label                {:style    {:color colors/neutral-100}}
+                             :border-color         {:default  colors/neutral-80-opa-10
+                                                    :pressed  colors/neutral-80-opa-20
+                                                    :disabled colors/neutral-80-opa-10}}
+           :shell            {:icon-color           colors/white
+                              :label                {:style    {:color colors/white}}
+                              :background-color     {:default  colors/neutral-95
+                                                     :pressed  colors/neutral-95
+                                                     :disabled colors/neutral-95}}}
+   :dark  {:primary         {:icon-color          colors/white
+                             :label               {:style    {:color colors/white}}
+                             :background-color    {:default  colors/primary-60
+                                                   :pressed  colors/primary-50
+                                                   :disabled colors/primary-60}}
+           :secondary       {:icon-color          colors/primary-50
+                             :label               {:style    {:color colors/primary-50}}
+                             :background-color    {:default  colors/primary-50-opa-20
+                                                   :pressed  colors/primary-50-opa-30
+                                                   :disabled colors/primary-50-opa-20}}
+           :grey            {:icon-color           colors/white
+                             :icon-secondary-color colors/neutral-40
+                             :label                {:style    {:color colors/white}}
+                             :background-color     {:default  colors/neutral-80
                                                     :pressed  colors/neutral-60
                                                     :disabled colors/neutral-80}}
-                     :outline   {:icon-color   colors/neutral-40
-                                 :label        {:style {:color colors/white}}
-                                 :border-color {:default colors/neutral-70
-                                                :pressed colors/neutral-60}}
-                     :ghost     {:icon-color       colors/neutral-40
-                                 :label            {:style {:color colors/white}}
-                                 :background-color {:pressed colors/neutral-80}}
-                     :success   {:icon-color       colors/white
-                                 :label            {:style {:color colors/white}}
-                                 :background-color {:default colors/success-60
-                                                    :pressed colors/success-40
-                                                    :disabled colors/success-60}}
-                     :danger    {:icon-color       colors/white
-                                 :label            {:style {:color colors/white}}
-                                 :background-color {:default  colors/danger-50
-                                                    :pressed  colors/danger-40
-                                                    :disabled colors/danger-50}}}})
+           :dark-grey       {:icon-color           colors/white
+                             :icon-secondary-color colors/neutral-40
+                             :label                {:style    {:color colors/white}}
+                             :background-color     {:default  colors/neutral-70
+                                                    :pressed  colors/neutral-60
+                                                    :disabled colors/neutral-70}}
+           :outline         {:icon-color           colors/neutral-40
+                             :icon-secondary-color colors/neutral-40
+                             :label                {:style    {:color colors/white}}
+                             :border-color         {:default  colors/neutral-70
+                                                    :pressed  colors/neutral-60
+                                                    :disabled colors/neutral-70}}
+           :ghost           {:icon-color           colors/neutral-40
+                             :icon-secondary-color colors/neutral-40
+                             :label                {:style    {:color colors/white}}
+                             :background-color     {:pressed  colors/neutral-80}}
+           :danger          {:icon-color           colors/white
+                             :label                {:style    {:color colors/white}}
+                             :background-color     {:default  colors/danger-60
+                                                    :pressed  colors/danger-50
+                                                    :disabled colors/danger-60}}
+           :photo-bg        {:icon-color           colors/white
+                             :icon-secondary-color colors/neutral-30
+                             :label                {:style    {:color colors/white}}
+                             :background-color     {:default  colors/neutral-80-opa-40
+                                                    :pressed  colors/neutral-80-opa-50
+                                                    :disabled colors/neutral-80-opa-40}}
+           :blur-bg         {:icon-color           colors/white
+                             :icon-secondary-color colors/white-opa-40
+                             :label                {:style    {:color colors/white}}
+                             :background-color     {:default  colors/white-opa-5
+                                                    :pressed  colors/white-opa-10
+                                                    :disabled colors/white-opa-5}}
+           :blur-bg-outline {:icon-color           colors/white
+                             :icon-secondary-color colors/white-opa-40
+                             :label                {:style    {:color colors/white}}
+                             :border-color         {:default  colors/white-opa-10
+                                                    :pressed  colors/white-opa-20
+                                                    :disabled colors/white-opa-5}}
+           :shell            {:icon-color          colors/white
+                              :label               {:style   {:color colors/white}}
+                              :background-color    {:default colors/neutral-95}}}})
 
 (defn style-container [type size disabled background-color border-color icon above width before after]
   (merge {:height             size
@@ -108,11 +163,12 @@
   "with label
    [button opts \"label\"]
    opts
-   {:type :primary/:secondary/:grey/:outline/:ghost/:danger
-    :size 40/32/24
-    :icon true/false
+   {:type   :primary/:secondary/:grey/:dark-grey/:outline/:ghost/
+            :danger/:photo-bg/:blur-bg/:blur-bg-ouline/:shell
+    :size   40/32/24
+    :icon   true/false
     :before :icon-keyword
-    :after :icon-keyword}
+    :after  :icon-keyword}
 
    only icon
    [button {:icon true} :main-icons/close-circle]"
@@ -124,12 +180,13 @@
           :or   {type :primary
                  size 40}}
          children]
-      (let [{:keys [icon-color background-color label border-color]}
+      (let [{:keys [icon-color icon-secondary-color background-color label border-color]}
             (get-in themes [(or
                              override-theme
                              (theme/get-theme)) type])
-            state (cond disabled :disabled @pressed :pressed :else :default)
-            icon-size (when (= 24 size) 12)]
+            state                (cond disabled :disabled @pressed :pressed :else :default)
+            icon-size            (when (= 24 size) 12)
+            icon-secondary-color (or icon-secondary-color icon-color)]
         [rn/touchable-without-feedback (merge {:disabled            disabled
                                                :accessibility-label accessibility-label}
                                               (when on-press
@@ -159,13 +216,13 @@
           (when above
             [rn/view
              [quo2.icons/icon above {:container-style {:margin-bottom 2}
-                                     :color           icon-color
+                                     :color           icon-secondary-color
                                      :size            icon-size}]])
           (when before
             [rn/view
              [quo2.icons/icon before {:container-style {:margin-left  (if (= size 40) 12 8)
                                                         :margin-right 4}
-                                      :color           icon-color
+                                      :color           icon-secondary-color
                                       :size            icon-size}]])
           [rn/view
            (cond
@@ -186,5 +243,5 @@
             [rn/view
              [quo2.icons/icon after {:container-style {:margin-left  4
                                                        :margin-right (if (= size 40) 12 8)}
-                                     :color           icon-color
+                                     :color           icon-secondary-color
                                      :size            icon-size}]])]]))))

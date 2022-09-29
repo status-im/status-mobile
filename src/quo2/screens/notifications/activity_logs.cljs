@@ -150,7 +150,7 @@
          [rn/view {:flex    1
                    :padding 16}
           [preview/customizer state descriptor]]
-         [rn/view {:background-color colors/neutral-95-opa-80
+         [rn/view {:background-color colors/neutral-90
                    :flex-direction   :row
                    :justify-content  :center
                    :padding-vertical 60}

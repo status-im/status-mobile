@@ -29,14 +29,14 @@
        :height 20
        :color (if dark?
                 colors/white
-                colors/black)}]]))
+                colors/neutral-100)}]]))
 
 (defn reaction
   "Add your emoji as a param here"
   [{:keys [emoji clicks neutral? on-press]}]
   (let [dark? (theme/dark?)
         text-color (if dark? colors/white
-                       colors/black)
+                       colors/neutral-100)
         numeric-value (int clicks)
         clicks-positive? (pos? numeric-value)]
     [rn/touchable-opacity {:on-press on-press

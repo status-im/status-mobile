@@ -1,8 +1,8 @@
-(ns quo2.screens.list-items.dropdown
+(ns quo2.screens.dropdowns.dropdown
   (:require [quo.components.text :as text]
             [quo.previews.preview :as preview]
             [quo.react-native :as rn]
-            [quo2.components.list-items.dropdown :as quo2]
+            [quo2.components.dropdowns.dropdown :as quo2]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]))
 

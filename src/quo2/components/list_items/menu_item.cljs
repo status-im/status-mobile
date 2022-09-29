@@ -8,7 +8,7 @@
   (case type
     :main     {:icon-color (theme-colors colors/neutral-50 colors/neutral-10)
                :background (theme-colors colors/white colors/neutral-90)
-               :text-color (theme-colors colors/black colors/white)}
+               :text-color (theme-colors colors/neutral-100 colors/white)}
     :danger   {:icon-color (theme-colors colors/danger-50 colors/danger-60)
                :background (theme-colors colors/white colors/neutral-90)
                :text-color (theme-colors colors/danger-50 colors/danger-60)}))

@@ -277,7 +277,7 @@
                                        (if (and @config/new-ui-enabled? @config/new-activity-center-enabled?)
                                          (re-frame/dispatch [:navigate-to :activity-center])
                                          (re-frame/dispatch [:navigate-to :notifications-center])))}
-      [icons/icon :main-icons/notification2 {:color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}]]
+      [icons/icon :main-icons/notification2 {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]]
      (when (pos? notif-count)
        [react/view {:style (merge (styles/counter-public-container) {:top 5 :right 5})
                     :pointer-events :none}
@@ -310,7 +310,7 @@
                        :on-press #(do
                                     (re-frame/dispatch [::qr-scanner/scan-code
                                                         {:handler ::qr-scanner/on-scan-success}]))}
-   [icons/icon :main-icons/qr2 {:color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}]])
+   [icons/icon :main-icons/qr2 {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]])
 
 (defn scan-button []
   [quo2.button/button {:type :grey
@@ -320,7 +320,7 @@
                        :on-press #(do
                                     (re-frame/dispatch [::qr-scanner/scan-code
                                                         {:handler ::qr-scanner/on-scan-success}]))}
-   [icons/icon :main-icons/scan2 {:color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}]])
+   [icons/icon :main-icons/scan2 {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]])
 
 (views/defview profile-button []
   (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]

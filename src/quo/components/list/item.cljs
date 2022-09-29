@@ -44,7 +44,7 @@
                :text-color         (:text-02 @colors/theme)}
     :light    {:icon-color         quo2.colors/neutral-50
                :icon-bg-color      quo2.colors/white
-               :text-color         quo2.colors/black
+               :text-color         quo2.colors/neutral-100
                :active-background  quo2.colors/neutral-10
                :passive-background quo2.colors/white}
     :dark     {:icon-color         quo2.colors/neutral-40

@@ -13,10 +13,9 @@
                             {:key   :secondary
                              :value "Secondary"}
                             {:key   :grey
-                             :value "Gray"}]}
-                 {:label "Outline?:"
-                  :key   :outline
-                  :type  :boolean}
+                             :value "Gray"}
+                            {:key   :outline
+                             :value "Outline"}]}
                  {:label "Value"
                   :key   :value
                   :type  :text}])

@@ -23,7 +23,7 @@
          {:text-align (or align :auto)}
          (if (:color style)
            style
-           (assoc style :color (if (= (theme/get-theme) :dark) colors/white colors/black)))))
+           (assoc style :color (if (= (theme/get-theme) :dark) colors/white colors/neutral-100)))))
 
 (defn text []
   (let [this  (reagent/current-component)
