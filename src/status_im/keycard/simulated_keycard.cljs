@@ -247,22 +247,36 @@
     (later #(on-success (str (rand-int 10000000))))))
 
 (defn generate-and-load-key
-  [{:keys [pin on-success]}]
+  [{:keys [pin on-success key-uid delete-multiaccount?]}]
   (when (= pin (get @state :pin))
     (let [[id response] (multiaccount->keys
                          (:intro-wizard @re-frame.db/app-db))]
       (log/debug "[simulated kk] generate-and-load-key response" response)
       (swap! state assoc-in
              [:application-info :key-uid] (:key-uid response))
-      (status/multiaccount-store-derived
-       id
-       (:key-uid response)
-       [constants/path-wallet-root
-        constants/path-eip1581
-        constants/path-whisper
-        constants/path-default-wallet]
-       account-password
-       #(on-success response)))))
+      (let [deletion-wrapper
+            (if delete-multiaccount?
+              (fn [on-deletion-success]
+                (js/alert "OH SHEET")
+                (status/delete-multiaccount
+                 key-uid
+                 (fn [result]
+                   (let [{:keys [error]} (types/json->clj result)]
+                     (if-not (string/blank? error)
+                       (log/error error)
+                       (on-deletion-success))))))
+              (fn [cb] (cb)))]
+        (deletion-wrapper
+         (fn []
+           (status/multiaccount-store-derived
+            id
+            (:key-uid response)
+            [constants/path-wallet-root
+             constants/path-eip1581
+             constants/path-whisper
+             constants/path-default-wallet]
+            account-password
+            #(on-success response))))))))
 
 (defn unblock-pin
   [{:keys [puk new-pin on-success on-failure]}]
@@ -438,6 +452,10 @@
   [{:keys [transaction on-completed]}]
   (status/send-transaction transaction account-password on-completed))
 
+(defn delete-multiaccount-before-migration
+  [{:keys [on-success]}]
+  (on-success))
+
 (defrecord SimulatedKeycard []
   keycard/Keycard
   (keycard/start-nfc [_this args]
@@ -547,4 +565,7 @@
     (login args))
   (keycard/send-transaction-with-signature [_this args]
     (log/debug "simulated card send-transaction-with-signature")
-    (send-transaction-with-signature args)))
+    (send-transaction-with-signature args))
+  (keycard/delete-multiaccount-before-migration [_ args]
+    (log/debug "simulated card delete-multiaccount-before-migration")
+    (delete-multiaccount-before-migration args)))

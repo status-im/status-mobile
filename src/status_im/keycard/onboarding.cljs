@@ -268,8 +268,10 @@
         pin'              (or pin (common/vector->string (get-in db [:keycard :pin :current])))]
     (fx/merge cofx
               {:keycard/generate-and-load-key
-               {:mnemonic     mnemonic
-                :pin          pin'}})))
+               {:mnemonic             mnemonic
+                :pin                  pin'
+                :key-uid              (:key-uid multiaccount)
+                :delete-multiaccount? (get-in db [:keycard :delete-account?])}})))
 
 (fx/defn factory-reset-card-toggle
   {:events [:keycard.onboarding.intro.ui/factory-reset-card-toggle]}

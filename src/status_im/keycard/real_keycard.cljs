@@ -6,6 +6,7 @@
             [status-im.native-module.core :as status]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
+            [clojure.string :as string]
             [taoensso.timbre :as log]))
 
 (defonce event-emitter (if platform/ios?
@@ -296,6 +297,16 @@
   [{:keys [transaction signature on-completed]}]
   (status/send-transaction-with-signature transaction signature on-completed))
 
+(defn delete-multiaccount-before-migration
+  [{:keys [key-uid on-success on-error]}]
+  (status/delete-multiaccount
+   key-uid
+   (fn [result]
+     (let [{:keys [error]} (types/json->clj result)]
+       (if-not (string/blank? error)
+         (on-error error)
+         (on-success))))))
+
 (defrecord RealKeycard []
   keycard/Keycard
   (keycard/start-nfc [_this args]
@@ -373,4 +384,6 @@
   (keycard/login [_this args]
     (login args))
   (keycard/send-transaction-with-signature [_this args]
-    (send-transaction-with-signature args)))
+    (send-transaction-with-signature args))
+  (keycard/delete-multiaccount-before-migration [_ args]
+    (delete-multiaccount-before-migration args)))
