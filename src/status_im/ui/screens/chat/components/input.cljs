@@ -218,11 +218,20 @@
   [{:keys [db] :as cofx} text chat-id]
   (let [text-with-mentions (mentions/->input-field text)
         contacts (:contacts db)
+        all-contacts (:contacts/contacts db)
+        chat (get-in db [:chats chat-id])
+        current-multiaccount (:multiaccount db)
+        mentionable-users (mentions/get-mentionable-users chat all-contacts current-multiaccount nil)
         hydrated-mentions (map (fn [[t mention :as e]]
                                  (if (= t :mention)
-                                   [:mention (str "@" (multiaccounts/displayed-name
-                                                       (or (get contacts mention)
-                                                           {:public-key mention})))]
+                                   (let [displayed-name (multiaccounts/displayed-name
+                                                         (or (get contacts mention)
+                                                             (get mentionable-users mention)
+                                                             (get all-contacts mention)
+                                                             {:public-key mention}))]
+                                     [:mention (if (string/starts-with? displayed-name "@")
+                                                 displayed-name
+                                                 (str "@" displayed-name))])
                                    e)) text-with-mentions)
         info (mentions/->info hydrated-mentions)]
     {:set-input-text [chat-id text]

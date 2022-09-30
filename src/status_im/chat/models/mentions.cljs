@@ -225,6 +225,17 @@
           {}
           (remove #(= my-public-key %) identities)))
 
+(defn set-ens-verification-statuses
+  "set status of :ens-verified form all-contacts data"
+  [all-contacts mentionable-users]
+  (into {}
+        (for [[id contact] mentionable-users]
+          [id (assoc contact
+                     :ens-verified
+                     (-> all-contacts
+                         (get id)
+                         :ens-verified))])))
+
 (defn get-mentionable-users [chat all-contacts current-multiaccount community-members]
   (let [{:keys [name preferred-name public-key]} current-multiaccount
         {:keys [chat-id users contacts chat-type]} chat
@@ -232,27 +243,29 @@
         mentionable-users (assoc users public-key {:alias      name
                                                    :name       (or preferred-name name)
                                                    :public-key public-key})]
-    (cond
-      (= chat-type constants/private-group-chat-type)
-      (merge mentionable-users
-             (mentionable-contacts-from-identites all-contacts public-key contacts))
+    (set-ens-verification-statuses
+     all-contacts
+     (cond
+       (= chat-type constants/private-group-chat-type)
+       (merge mentionable-users
+              (mentionable-contacts-from-identites all-contacts public-key contacts))
 
-      (= chat-type constants/one-to-one-chat-type)
-      (assoc mentionable-users chat-id (get mentionable-contacts chat-id
-                                            (-> chat-id
-                                                contact.db/public-key->new-contact
-                                                contact.db/enrich-contact)))
+       (= chat-type constants/one-to-one-chat-type)
+       (assoc mentionable-users chat-id (get mentionable-contacts chat-id
+                                             (-> chat-id
+                                                 contact.db/public-key->new-contact
+                                                 contact.db/enrich-contact)))
 
-      (= chat-type constants/community-chat-type)
-      (mentionable-contacts-from-identites
-       all-contacts
-       public-key
-       (distinct (concat (keys community-members) (keys mentionable-users))))
+       (= chat-type constants/community-chat-type)
+       (mentionable-contacts-from-identites
+        all-contacts
+        public-key
+        (distinct (concat (keys community-members) (keys mentionable-users))))
 
-      (= chat-type constants/public-chat-type)
-      (merge mentionable-users (select-keys mentionable-contacts (keys mentionable-users)))
+       (= chat-type constants/public-chat-type)
+       (merge mentionable-users (select-keys mentionable-contacts (keys mentionable-users)))
 
-      :else mentionable-users)))
+       :else mentionable-users))))
 
 (def ending-chars "[\\s\\.,;:]")
 (def ending-chars-regex (re-pattern ending-chars))
