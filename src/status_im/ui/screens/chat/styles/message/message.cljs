@@ -395,7 +395,8 @@
    :border-color       (case state
                          constants/contact-request-message-state-accepted colors/green-transparent-10
                          constants/contact-request-message-state-declined colors/red-light
-                         constants/contact-request-message-state-pending colors/gray-lighter)
+                         constants/contact-request-message-state-pending colors/gray-lighter
+                         colors/gray-lighter)
    :padding-vertical   10
    :padding-horizontal 16})
 
