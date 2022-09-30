@@ -656,7 +656,8 @@
    (case state
      constants/contact-request-message-state-pending  [contact-request-status-pending]
      constants/contact-request-message-state-accepted [contact-request-status-accepted]
-     constants/contact-request-message-state-declined [contact-request-status-declined])])
+     constants/contact-request-message-state-declined [contact-request-status-declined]
+     nil)])
 
 (defmethod ->message constants/content-type-contact-request
   [{:keys [outgoing] :as message} _]
