@@ -175,7 +175,7 @@
   [_ _]
   (let [pressed (reagent/atom false)]
     (fn [{:keys [on-press disabled type size before after above width
-                 override-theme
+                 override-theme override-background-color
                  on-long-press accessibility-label icon style]
           :or   {type :primary
                  size 40}}
@@ -205,7 +205,7 @@
                             type
                             size
                             disabled
-                            (get background-color state)
+                            (or override-background-color (get background-color state))
                             (get border-color state)
                             icon
                             above

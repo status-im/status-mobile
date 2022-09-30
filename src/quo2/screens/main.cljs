@@ -30,6 +30,7 @@
             [quo2.screens.selectors.disclaimer :as disclaimer]
             [quo2.screens.selectors.selectors :as selectors]
             [quo2.screens.switcher.switcher-cards :as switcher-cards]
+            [quo2.screens.navigation.top-nav :as top-nav]
             [quo2.screens.navigation.bottom-nav-tab :as bottom-nav-tab]
             [quo2.screens.tabs.account-selector :as account-selector]
             [quo2.screens.tabs.segmented-tab :as segmented]
@@ -98,7 +99,10 @@
                :component messages-gap/preview-messages-gap}]
    :navigation [{:name      :bottom-nav-tab
                  :insets    {:top false}
-                 :component bottom-nav-tab/preview-bottom-nav-tab}]
+                 :component bottom-nav-tab/preview-bottom-nav-tab}
+                {:name      :top-nav
+                 :insets    {:top false}
+                 :component top-nav/preview-top-nav}]
    :notifications [{:name      :activity-logs
                     :insets    {:top false}
                     :component activity-logs/preview-activity-logs}]
