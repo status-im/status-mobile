@@ -225,6 +225,17 @@
           {}
           (remove #(= my-public-key %) identities)))
 
+(defn set-ens-verification-statuses
+  "set status of :ens-verified form all-contacts data"
+  [mentionable-users all-contacts]
+  (into {}
+        (for [[id contact] mentionable-users]
+          [id (assoc contact
+                     :ens-verified
+                     (-> all-contacts
+                         (get id)
+                         :ens-verified))])))
+
 (defn get-mentionable-users [chat all-contacts current-multiaccount community-members]
   (let [{:keys [name preferred-name public-key]} current-multiaccount
         {:keys [chat-id users contacts chat-type]} chat
@@ -238,10 +249,12 @@
              (mentionable-contacts-from-identites all-contacts public-key contacts))
 
       (= chat-type constants/one-to-one-chat-type)
-      (assoc mentionable-users chat-id (get mentionable-contacts chat-id
-                                            (-> chat-id
-                                                contact.db/public-key->new-contact
-                                                contact.db/enrich-contact)))
+      (let [users
+            (assoc mentionable-users chat-id (get mentionable-contacts chat-id
+                                                  (-> chat-id
+                                                      contact.db/public-key->new-contact
+                                                      contact.db/enrich-contact)))]
+        (set-ens-verification-statuses users all-contacts))
 
       (= chat-type constants/community-chat-type)
       (mentionable-contacts-from-identites
