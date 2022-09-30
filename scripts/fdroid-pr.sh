@@ -43,7 +43,7 @@ fi
 
 VERSION_NAME=$(apkanalyzer manifest print "${APK_FILE}" | awk -F'"' '/android:versionName/{print $2}')
 if [[ -n "${VERSION_NAME}" ]]; then
-    log_data "Version Code: ${VERSION_NAME}"
+    log_data "Version WRONG: ${VERSION_NAME}"
 else
     log_warning "Failed to find version name." >&2; exit 1
 fi
