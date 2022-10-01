@@ -1,10 +1,11 @@
 (ns quo2.screens.messages.system-message
   (:require [reagent.core :as reagent]
+            [status-im.react-native.resources :as resources]
             [quo.react-native :as rn]
             [quo.previews.preview :as preview]
             [quo2.foundations.colors :as colors]
             [quo2.components.messages.system-message :as system-message]
-            [quo2.screens.messages.resources :as resources]))
+            [quo2.foundations.colors :as colors]))
 
 (def descriptor [{:label   "Message Type"
                   :key     :type
@@ -47,17 +48,16 @@
 (defn finalize-state [state]
   (merge @state
          {:mentions [{:name  "Alicia Keys"
-                      :image (:alicia-keys resources/images)}
+                      :image (resources/get-mock-image :user-picture-female2)}
                      {:name  "pedro.eth"
-                      :image (:pedro-eth resources/images)}]
+                      :image (resources/get-mock-image :user-picture-male4)}]
           :content  {:text     (:content-text @state)
                      :info     (:content-info @state)
                      :mentions {:name  "Alisher"
-                                :image (:alisher resources/images)}}}))
-
+                                :image (resources/get-mock-image :user-picture-male5)}}}))
 (defn preview []
   (let [state (reagent/atom {:type          :pinned
-                             :state         :default
+                             :state         :pressed
                              :pinned-by     "Steve"
                              :content-text  "Hello! This is an example of a pinned message!"
                              :content-info  "3 photos"
