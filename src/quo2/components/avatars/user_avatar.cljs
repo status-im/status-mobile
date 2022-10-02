@@ -4,8 +4,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as icons]
             [clojure.string :refer [upper-case split blank?]]
-            [quo.theme :refer [dark?]]
-            [status-im.ui.components.react :as react]))
+            [quo.theme :refer [dark?]]))
 
 (def sizes {:big {:outer 80
                   :inner 72

@@ -8,21 +8,21 @@
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.avatars.icon-avatar :as icon-avatar]))
 
+(def themes-landed {:pinned  colors/primary-50-opa-5
+                    :added   colors/primary-50-opa-5
+                    :deleted colors/danger-50-opa-5})
+
 (def themes
   {:light {:text colors/neutral-100
            :time colors/neutral-50
            :bg   {:default colors/white
                   :pressed colors/neutral-5
-                  :landed  {:pinned  colors/primary-50-opa-5
-                            :added   colors/primary-50-opa-5
-                            :deleted colors/danger-50-opa-5}}}
+                  :landed  themes-landed}}
    :dark  {:text colors/white
            :time colors/neutral-40
            :bg   {:default colors/neutral-90
                   :pressed colors/neutral-80
-                  :landed  {:pinned  colors/primary-50-opa-5
-                            :added   colors/primary-50-opa-5
-                            :deleted colors/danger-50-opa-5}}}})
+                  :landed  themes-landed}}})
 
 (defn get-color [& keys]
   (reduce (fn [acc k] (get acc k (reduced acc)))

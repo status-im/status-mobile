@@ -3,7 +3,6 @@
             [status-im.react-native.resources :as resources]
             [quo.react-native :as rn]
             [quo.previews.preview :as preview]
-            [quo2.foundations.colors :as colors]
             [quo2.components.messages.system-message :as system-message]
             [quo2.foundations.colors :as colors]))
 
