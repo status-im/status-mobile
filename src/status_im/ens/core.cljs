@@ -179,7 +179,7 @@
 (defn- state [custom-domain? username usernames]
   (cond
     (or (string/blank? username)
-        (> 4 (count username))) :too-short
+        (> 1 (count username))) :too-short
     (valid-username? custom-domain? username)
     (if (usernames (fullname custom-domain? username))
       :already-added
