@@ -23,6 +23,7 @@
 
 (def view (reagent/adapt-react-class (.-View ^js rn)))
 (def image (reagent/adapt-react-class (.-Image rn)))
+(def image-background (reagent/adapt-react-class (.-ImageBackground rn)))
 (def text (reagent/adapt-react-class (.-Text ^js rn)))
 
 (defn resolve-asset-source [uri] (js->clj (.resolveAssetSource ^js (.-Image ^js rn) uri) :keywordize-keys true))

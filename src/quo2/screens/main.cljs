@@ -43,6 +43,7 @@
             [quo2.screens.wallet.token-overview :as token-overview]
             [quo2.screens.wallet.network-breakdown :as network-breakdown]
             [quo2.screens.wallet.network-amount :as network-amount]
+            [quo2.screens.shell.scan :as scan]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -153,7 +154,10 @@
              :component network-breakdown/preview-network-breakdown}
             {:name      :network-amount
              :insets    {:top false}
-             :component network-amount/preview}]})
+             :component network-amount/preview}]
+   :shell [{:name      :scan
+            :insets    {:top false}
+            :component scan/preview-scan}]})
 
 (def screens (flatten (map val screens-categories)))
 
