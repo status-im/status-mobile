@@ -3,7 +3,7 @@
             [quo.react :as react]
             [reagent.core :as reagent]
             [quo.react-native :as rn]
-            [status-im.ui.components.icons.icons :as icons]
+            [quo2.components.icon :as icons]
             [status-im.ui.components.react :as rn-comps]
             [quo2.reanimated :as reanimated]
             [status-im.utils.dimensions :as dimensions]))
@@ -69,8 +69,9 @@
                                 :right            20}
                                :on-press #(swap! flashlight-on? not)}
          [icons/icon (if @flashlight-on?
-                       :main-icons/flashlight-on20
-                       :main-icons/flashlight-off20) {:color colors/neutral-95}]]
+                       :main-icons/flashlight-on
+                       :main-icons/flashlight-off) {:size 20
+                                                    :color colors/neutral-95}]]
         [rn/view {:style {:position :absolute :z-index 0 :elevation 0}}
          [rn/hole-view (cond->
                         {:style {:width            2000
