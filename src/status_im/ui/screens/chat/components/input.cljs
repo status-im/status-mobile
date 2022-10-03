@@ -12,7 +12,6 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.chat.constants :as chat.constants]
             [status-im.utils.utils :as utils.utils]
-            [status-im.ui.components.react :as react]
             [quo.components.animated.pressable :as pressable]
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
@@ -588,7 +587,7 @@
                                       (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0)))
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
-              [react/view
+              [:<>
                [reply/reply-message-auto-focus-wrapper text-input-ref]
                [reanimated/view {:style (reanimated/apply-animations-to-style
                                          {:height shared-height}
