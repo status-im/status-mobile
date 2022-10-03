@@ -86,7 +86,7 @@
           {:name      :information-box
            :insets    {:top false}
            :component information-box/preview-information-box}
-          {:name      :quo2-nfc-prompt
+          {:name      :nfc-prompt
            :insets    {:top false}
            :component nfc-prompt/preview-nfc-prompt}]
    :list-items [{:name      :channel
