@@ -2,7 +2,7 @@
   (:require [status-im.ui.components.icons.icons :as icons]
             [quo.react-native :as rn]
             [oops.core :refer [oget]]
-            [quo.react :as react]
+            [quo.react :as quo.react]
             [quo.platform :as platform]
             [quo.components.text :as text]
             [quo.design-system.colors :as colors]
@@ -12,6 +12,7 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.chat.constants :as chat.constants]
             [status-im.utils.utils :as utils.utils]
+            [status-im.ui.components.react :as react]
             [quo.components.animated.pressable :as pressable]
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
@@ -27,7 +28,7 @@
             [quo.components.safe-area :as safe-area]))
 
 (defn input-focus [text-input-ref]
-  (some-> ^js (react/current-ref text-input-ref) .focus))
+  (some-> ^js (quo.react/current-ref text-input-ref) .focus))
 
 (def panel->icons {:extensions :main-icons/commands
                    :images     :main-icons/photo})
@@ -157,7 +158,7 @@
     (quo.react/set-native-props sticker-ref #js {:width nil :right nil})))
 
 (defn reset-input [refs chat-id]
-  (some-> ^js (react/current-ref (:text-input-ref refs)) .clear)
+  (some-> ^js (quo.react/current-ref (:text-input-ref refs)) .clear)
   (swap! mentions-enabled update :render not)
   (swap! input-texts dissoc chat-id))
 
@@ -587,36 +588,38 @@
                                       (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0)))
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
-              [reanimated/view {:style (reanimated/apply-animations-to-style
-                                        {:height shared-height}
-                                        {})}
-               ;;INPUT MESSAGE bottom sheet
-               [gesture/gesture-detector {:gesture bottom-sheet-gesture}
-                [reanimated/view {:style (reanimated/apply-animations-to-style
-                                          {:transform [{:translateY translate-y}]}
-                                          (styles/new-input-bottom-sheet window-height))}
-                 ;handle
-                 [rn/view {:style (styles/new-bottom-sheet-handle)}]
-                 [rn/view {:style {:height (- max-y 80)}}
-                  [text-input {:chat-id                chat-id
-                               :on-content-size-change input-content-change
-                               :sending-image          false
-                               :refs                   refs
-                               :set-active-panel       #()}]]]]
-               ;CONTROLS
-               [rn/view {:style (styles/new-bottom-sheet-controls insets)}
-                [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/image]
-                [rn/view {:width 12}]
-                [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/reaction]
-                [rn/view {:flex 1}]
-                ;;SEND button
-                [rn/view {:ref send-ref :style (when-not (seq (get @input-texts chat-id)) {:width 0 :right -100})}
-                 [quo2.button/button {:icon     true :size 32 :accessibility-label :send-message-button
-                                      :on-press #(do (swap! context assoc :clear true)
-                                                     (clear-input chat-id refs)
-                                                     (re-frame/dispatch [:chat.ui/send-current-message]))}
-                  :main-icons2/arrow-up]]]
-               ;black background
+              [react/view
+               [reply/reply-message-auto-focus-wrapper text-input-ref]
                [reanimated/view {:style (reanimated/apply-animations-to-style
-                                         {:opacity bg-opacity}
-                                         (styles/new-bottom-sheet-background window-height))}]]))])))])
+                                         {:height shared-height}
+                                         {})}
+               ;;INPUT MESSAGE bottom sheet
+                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
+                 [reanimated/view {:style (reanimated/apply-animations-to-style
+                                           {:transform [{:translateY translate-y}]}
+                                           (styles/new-input-bottom-sheet window-height))}
+                 ;handle
+                  [rn/view {:style (styles/new-bottom-sheet-handle)}]
+                  [rn/view {:style {:height (- max-y 80)}}
+                   [text-input {:chat-id                chat-id
+                                :on-content-size-change input-content-change
+                                :sending-image          false
+                                :refs                   refs
+                                :set-active-panel       #()}]]]]
+               ;CONTROLS
+                [rn/view {:style (styles/new-bottom-sheet-controls insets)}
+                 [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/image]
+                 [rn/view {:width 12}]
+                 [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/reaction]
+                 [rn/view {:flex 1}]
+                ;;SEND button
+                 [rn/view {:ref send-ref :style (when-not (seq (get @input-texts chat-id)) {:width 0 :right -100})}
+                  [quo2.button/button {:icon     true :size 32 :accessibility-label :send-message-button
+                                       :on-press #(do (swap! context assoc :clear true)
+                                                      (clear-input chat-id refs)
+                                                      (re-frame/dispatch [:chat.ui/send-current-message]))}
+                   :main-icons2/arrow-up]]]
+               ;black background
+                [reanimated/view {:style (reanimated/apply-animations-to-style
+                                          {:opacity bg-opacity}
+                                          (styles/new-bottom-sheet-background window-height))}]]]))])))])
