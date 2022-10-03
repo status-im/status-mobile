@@ -4,13 +4,10 @@
             [quo.platform :as platform]
             ["react-native" :as rn]
             ["@react-native-community/hooks" :as hooks]
-            ["@react-native-community/masked-view" :default MaskedView]
             ["react-native-navigation" :refer (Navigation)]
             ["react-native-hole-view" :refer (RNHoleView)]
             ["rn-emoji-keyboard" :refer (EmojiKeyboard)]
             ["react-native-draggable-flatlist" :default DraggableFlatList]))
-
-(def masked-view (reagent/adapt-react-class MaskedView))
 
 (def hole-view (reagent/adapt-react-class RNHoleView))
 

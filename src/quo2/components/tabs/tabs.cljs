@@ -79,7 +79,7 @@
                  size                  default-tab-size}
           :as   props}]
       (let [maybe-mask-wrapper (if fade-end?
-                                 [rn/masked-view
+                                 [react/masked-view
                                   {:mask-element (reagent/as-element
                                                   [react/linear-gradient {:colors         ["black" "transparent"]
                                                                           :locations      [(@fading :fade-end-percentage) 1]

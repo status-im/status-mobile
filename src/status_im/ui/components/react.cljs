@@ -12,6 +12,7 @@
              :refer (SafeAreaProvider SafeAreaInsetsContext)]
             ["@react-native-community/clipboard" :default Clipboard]
             ["react-native-linear-gradient" :default LinearGradient]
+            ["@react-native-community/masked-view" :default MaskedView]
             ["react-native-navigation" :refer (Navigation)]
             ["react-native-fast-image" :as FastImage]
             ["@react-native-community/blur" :as blur])
@@ -39,6 +40,8 @@
 (defn resolve-asset-source [uri] (js->clj (.resolveAssetSource (.-Image react-native) uri) :keywordize-keys true))
 
 (def linear-gradient (reagent/adapt-react-class LinearGradient))
+
+(def masked-view (reagent/adapt-react-class MaskedView))
 
 (def blur-view (reagent/adapt-react-class (.-BlurView blur)))
 
