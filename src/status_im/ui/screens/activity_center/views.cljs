@@ -150,21 +150,22 @@
                    :padding-vertical 12}
           [rn/view {:flex       1
                     :align-self :stretch}
-           [tabs/scrollable-tabs {:size             32
-                                  :style            {:padding-left 20}
-                                  :scroll-on-press? true
-                                  :fade-end?        true
-                                  :on-change        (partial reset! selected-activity-type)
-                                  :default-active   :activity-type/all
-                                  :data             [{:id :activity-type/all :label (i18n/label :t/all)}
-                                                     {:id :activity-type/admin :label (i18n/label :t/admin)}
-                                                     {:id :activity-type/mention :label (i18n/label :t/mentions)}
-                                                     {:id :activity-type/reply :label (i18n/label :t/replies)}
-                                                     {:id :activity-type/contact-request :label (i18n/label :t/contact-requests)}
-                                                     {:id :activity-type/identity-verification :label (i18n/label :t/identity-verification)}
-                                                     {:id :activity-type/transaction :label (i18n/label :t/transactions)}
-                                                     {:id :activity-type/membership :label (i18n/label :t/membership)}
-                                                     {:id :activity-type/system :label (i18n/label :t/system)}]}]]
+           [tabs/scrollable-tabs {:size                32
+                                  :style               {:padding-left screen-padding}
+                                  :fade-end-percentage 0.79
+                                  :scroll-on-press?    true
+                                  :fade-end?           true
+                                  :on-change           (partial reset! selected-activity-type)
+                                  :default-active      :activity-type/all
+                                  :data                [{:id :activity-type/all :label (i18n/label :t/all)}
+                                                        {:id :activity-type/admin :label (i18n/label :t/admin)}
+                                                        {:id :activity-type/mention :label (i18n/label :t/mentions)}
+                                                        {:id :activity-type/reply :label (i18n/label :t/replies)}
+                                                        {:id :activity-type/contact-request :label (i18n/label :t/contact-requests)}
+                                                        {:id :activity-type/identity-verification :label (i18n/label :t/identity-verification)}
+                                                        {:id :activity-type/transaction :label (i18n/label :t/transactions)}
+                                                        {:id :activity-type/membership :label (i18n/label :t/membership)}
+                                                        {:id :activity-type/system :label (i18n/label :t/system)}]}]]
           [rn/view {:flex-grow     0
                     :margin-left   16
                     :padding-right screen-padding}

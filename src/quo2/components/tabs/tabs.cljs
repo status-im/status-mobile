@@ -2,7 +2,8 @@
   (:require [quo.react-native :as rn]
             [quo2.components.tabs.tab :as tab]
             [reagent.core :as reagent]
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.utils.number :as number-utils]))
 
 (def default-tab-size 32)
 
@@ -24,16 +25,15 @@
                             (on-change press-event id)))}
              label]])]))))
 
-(defn- linear-gradient-mask
-  [fade-end-percentage]
-  [react/linear-gradient {:colors         ["black" "transparent"]
-                          :locations      [(- 1 fade-end-percentage)
-                                           1]
-                          :start          {:x 0 :y 0}
-                          :end            {:x 1 :y 0}
-                          :pointer-events :none
-                          :style          {:width  "100%"
-                                           :height "100%"}}])
+(defn- calculate-fade-end-percentage
+  [{:keys [offset-x content-width layout-width max-fade-percentage]}]
+  (let [fade-percentage (max max-fade-percentage
+                             (/ (+ layout-width offset-x)
+                                content-width))]
+    ;; Truncate to avoid unnecessary rendering.
+    (if (> fade-percentage 0.99)
+      0.99
+      (number-utils/naive-round fade-percentage 2))))
 
 (defn scrollable-tabs
   "Just like the component `tabs`, displays horizontally scrollable tabs with
@@ -57,36 +57,43 @@
   - `scroll-on-press?` When non-nil, clicking on a tab centers it the middle
   (with animation enabled).
   - `fade-end?` When non-nil, causes the end of the scrollable view to fade out.
-  - `fade-end-max-percentage` a number between 0 and 1 limiting the maximum size
-  of the linear gradient mask. Default 0.25"
-  [{:keys [default-active fade-end-max-percentage]
-    :or   {fade-end-max-percentage 0.25}}]
+  - `fade-end-percentage` Percentage where fading starts relative to the total
+  layout width of the `flat-list` data."
+  [{:keys [default-active fade-end-percentage]
+    :or   {fade-end-percentage 0.8}}]
   (let [active-tab-id (reagent/atom default-active)
-        fading        (reagent/atom {:fade-end-percentage fade-end-max-percentage})
+        fading        (reagent/atom {:fade-end-percentage fade-end-percentage})
         flat-list-ref (atom nil)]
     (fn [{:keys [data
-                 fade-end-max-percentage
+                 fade-end-percentage
                  fade-end?
                  on-change
                  on-scroll
                  scroll-event-throttle
                  scroll-on-press?
                  size]
-          :or   {fade-end-max-percentage fade-end-max-percentage
-                 fade-end?               false
-                 scroll-event-throttle   64
-                 scroll-on-press?        false
-                 size                    default-tab-size}
+          :or   {fade-end-percentage   fade-end-percentage
+                 fade-end?             false
+                 scroll-event-throttle 64
+                 scroll-on-press?      false
+                 size                  default-tab-size}
           :as   props}]
       (let [maybe-mask-wrapper (if fade-end?
-                                 [rn/masked-view {:mask-element (reagent/as-element
-                                                                 [linear-gradient-mask (@fading :fade-end-percentage)])}]
+                                 [rn/masked-view
+                                  {:mask-element (reagent/as-element
+                                                  [react/linear-gradient {:colors         ["black" "transparent"]
+                                                                          :locations      [(@fading :fade-end-percentage) 1]
+                                                                          :start          {:x 0 :y 0}
+                                                                          :end            {:x 1 :y 0}
+                                                                          :pointer-events :none
+                                                                          :style          {:width  "100%"
+                                                                                           :height "100%"}}])}]
                                  [:<>])]
         (conj maybe-mask-wrapper
               [rn/flat-list
                (merge (dissoc props
                               :default-active
-                              :fade-end-max-percentage
+                              :fade-end-percentage
                               :fade-end?
                               :on-change
                               :scroll-on-press?
@@ -100,13 +107,16 @@
                        :key-fn                            :id
                        :on-scroll                         (fn [^js e]
                                                             (when fade-end?
-                                                              (let [offset-x      (.. e -nativeEvent -contentOffset -x)
-                                                                    content-width (.. e -nativeEvent -contentSize -width)
-                                                                    layout-width  (.. e -nativeEvent -layoutMeasurement -width)]
-                                                                (swap! fading assoc :fade-end-percentage
-                                                                       (min fade-end-max-percentage
-                                                                            (- 1 (/ (+ layout-width offset-x)
-                                                                                    content-width))))))
+                                                              (let [offset-x       (.. e -nativeEvent -contentOffset -x)
+                                                                    content-width  (.. e -nativeEvent -contentSize -width)
+                                                                    layout-width   (.. e -nativeEvent -layoutMeasurement -width)
+                                                                    new-percentage (calculate-fade-end-percentage {:offset-x            offset-x
+                                                                                                                   :content-width       content-width
+                                                                                                                   :layout-width        layout-width
+                                                                                                                   :max-fade-percentage fade-end-percentage})]
+                                                                ;; Avoid unnecessary re-rendering.
+                                                                (when (not= new-percentage (@fading :fade-end-percentage))
+                                                                  (swap! fading assoc :fade-end-percentage new-percentage))))
                                                             (when on-scroll
                                                               (on-scroll e)))
                        :render-fn                         (fn [{:keys [id label]} index]
