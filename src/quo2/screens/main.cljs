@@ -43,6 +43,7 @@
             [quo2.screens.wallet.token-overview :as token-overview]
             [quo2.screens.wallet.network-breakdown :as network-breakdown]
             [quo2.screens.wallet.network-amount :as network-amount]
+            [quo2.screens.info.nfc-prompt :as nfc-prompt]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -84,7 +85,10 @@
            :component info-message/preview-info-message}
           {:name      :information-box
            :insets    {:top false}
-           :component information-box/preview-information-box}]
+           :component information-box/preview-information-box}
+          {:name      :quo2-nfc-prompt
+           :insets    {:top false}
+           :component nfc-prompt/preview-nfc-prompt}]
    :list-items [{:name      :channel
                  :insets    {:top false}
                  :component channel/preview-channel}

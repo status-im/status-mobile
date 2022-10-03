@@ -188,6 +188,12 @@
    (let [theme (or override-theme (theme/get-theme))]
      (if (= theme :light) light dark))))
 
+(def dark-prompt-bg "#1C1C1E")
+(def dark-prompt-title "#9F9FA5")
+(def dark-prompt-button "#8E8E93")
+(def light-prompt-title "#8F8E94")
+(def light-prompt-button "#D5D4DB")
+
 (defn dark?
   []
   (theme/dark?))
