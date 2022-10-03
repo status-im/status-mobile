@@ -11,7 +11,6 @@
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.react :as react]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.handlers :refer [<sub >evt]]))
 
@@ -128,45 +127,6 @@
                                  (>evt [:activity-center.notifications/fetch-first-page {:status-filter :unread}]))}
      :unread]))
 
-(defn filter-tabs
-  [{:keys [fade-end-max-percentage]
-    :or   {fade-end-max-percentage 0.25}}]
-  (let [state (reagent/atom {:fade-end-percentage fade-end-max-percentage})]
-    (fn [{:keys [fade-end-max-percentage]}]
-      [rn/masked-view {:mask-element (reagent/as-element
-                                      [react/linear-gradient {:colors         ["black" "transparent"]
-                                                              :locations      [(- 1 (@state :fade-end-percentage))
-                                                                               1]
-                                                              :start          {:x 0 :y 0}
-                                                              :end            {:x 1 :y 0}
-                                                              :pointer-events :none
-                                                              :style          {:width  "100%"
-                                                                               :height "100%"}}])}
-       [tabs/scrollable-tabs {:size             32
-                              :style            {:padding-left 20}
-                              :scroll-on-press? true
-                              :on-layout        (fn [_]
-                                                  (when-not (@state :fade-end-percentage)
-                                                    (swap! state assoc :fade-end-percentage fade-end-max-percentage)))
-                              :on-scroll        (fn [^js e]
-                                                  (let [offset-x      (.. e -nativeEvent -contentOffset -x)
-                                                        content-width (.. e -nativeEvent -contentSize -width)
-                                                        layout-width  (.. e -nativeEvent -layoutMeasurement -width)]
-                                                    (swap! state assoc :fade-end-percentage
-                                                           (min 0.2 (- 1 (/ (+ layout-width offset-x)
-                                                                            content-width))))))
-                              :on-change        (partial reset! selected-activity-type)
-                              :default-active   :activity-type/all
-                              :data             [{:id :activity-type/all :label (i18n/label :t/all)}
-                                                 {:id :activity-type/admin :label (i18n/label :t/admin)}
-                                                 {:id :activity-type/mention :label (i18n/label :t/mentions)}
-                                                 {:id :activity-type/reply :label (i18n/label :t/replies)}
-                                                 {:id :activity-type/contact-request :label (i18n/label :t/contact-requests)}
-                                                 {:id :activity-type/identity-verification :label (i18n/label :t/identity-verification)}
-                                                 {:id :activity-type/transaction :label (i18n/label :t/transactions)}
-                                                 {:id :activity-type/membership :label (i18n/label :t/membership)}
-                                                 {:id :activity-type/system :label (i18n/label :t/system)}]}]])))
-
 (defn activity-center []
   (reagent/create-class
    {:component-did-mount #(>evt [:activity-center.notifications/fetch-first-page {:status-filter :unread}])
@@ -190,7 +150,21 @@
                    :padding-vertical 12}
           [rn/view {:flex       1
                     :align-self :stretch}
-           [filter-tabs]]
+           [tabs/scrollable-tabs {:size             32
+                                  :style            {:padding-left 20}
+                                  :scroll-on-press? true
+                                  :fade-end?        true
+                                  :on-change        (partial reset! selected-activity-type)
+                                  :default-active   :activity-type/all
+                                  :data             [{:id :activity-type/all :label (i18n/label :t/all)}
+                                                     {:id :activity-type/admin :label (i18n/label :t/admin)}
+                                                     {:id :activity-type/mention :label (i18n/label :t/mentions)}
+                                                     {:id :activity-type/reply :label (i18n/label :t/replies)}
+                                                     {:id :activity-type/contact-request :label (i18n/label :t/contact-requests)}
+                                                     {:id :activity-type/identity-verification :label (i18n/label :t/identity-verification)}
+                                                     {:id :activity-type/transaction :label (i18n/label :t/transactions)}
+                                                     {:id :activity-type/membership :label (i18n/label :t/membership)}
+                                                     {:id :activity-type/system :label (i18n/label :t/system)}]}]]
           [rn/view {:flex-grow     0
                     :margin-left   16
                     :padding-right screen-padding}
