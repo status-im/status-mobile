@@ -1,5 +1,6 @@
 (ns quo2.components.tabs.tabs
-  (:require [quo.react-native :as rn]
+  (:require [oops.core :refer [oget]]
+            [quo.react-native :as rn]
             [quo2.components.tabs.tab :as tab]
             [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
@@ -107,9 +108,9 @@
                        :key-fn                            (comp str :id)
                        :on-scroll                         (fn [^js e]
                                                             (when fade-end?
-                                                              (let [offset-x       (.. e -nativeEvent -contentOffset -x)
-                                                                    content-width  (.. e -nativeEvent -contentSize -width)
-                                                                    layout-width   (.. e -nativeEvent -layoutMeasurement -width)
+                                                              (let [offset-x       (oget e "nativeEvent.contentOffset.x")
+                                                                    content-width  (oget e "nativeEvent.contentSize.width")
+                                                                    layout-width   (oget e "nativeEvent.layoutMeasurement.width")
                                                                     new-percentage (calculate-fade-end-percentage {:offset-x            offset-x
                                                                                                                    :content-width       content-width
                                                                                                                    :layout-width        layout-width
