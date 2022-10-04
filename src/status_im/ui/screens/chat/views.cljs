@@ -268,6 +268,16 @@
     (when panel
       (js/setTimeout #(react/dismiss-keyboard!) 100))))
 
+(defn list-footer-old [{:keys [chat-id] :as chat}]
+  (let [loading-messages? @(re-frame/subscribe [:chats/loading-messages? chat-id])
+        no-messages? @(re-frame/subscribe [:chats/chat-no-messages? chat-id])
+        all-loaded? @(re-frame/subscribe [:chats/all-loaded? chat-id])]
+    [react/view {:style (when platform/android? {:scaleY -1})}
+     (if (or loading-messages? (not chat-id) (not all-loaded?))
+       [react/view {:height 324 :align-items :center :justify-content :center}
+        [react/activity-indicator {:animating true}]]
+       [chat-intro-header-container chat no-messages?])]))
+
 (defn list-footer [{:keys [chat-id] :as chat}]
   (let [loading-messages? @(re-frame/subscribe [:chats/loading-messages? chat-id])
         no-messages? @(re-frame/subscribe [:chats/chat-no-messages? chat-id])
@@ -362,7 +372,7 @@
       {:key-fn                       list-key-fn
        :ref                          list-ref
        :header                       [list-header chat]
-       :footer                       [list-footer chat]
+       :footer                       [list-footer-old chat]
        :data                         (when-not should-send-contact-request?
                                        messages)
        :render-data                  (get-render-data {:group-chat      group-chat
@@ -387,8 +397,7 @@
        :onMomentumScrollEnd          state/stop-scrolling
         ;;TODO https://github.com/facebook/react-native/issues/30034
        :inverted                     (when platform/ios? true)
-       :style                        (when platform/android? {:scaleY -1})
-       :on-layout                    on-messages-view-layout})]))
+       :style                        (when platform/android? {:scaleY -1})})]))
 
 (defn navigate-back-handler []
   (when (and (not @navigation.state/curr-modal) (= (get @re-frame.db/app-db :view-id) :chat))
