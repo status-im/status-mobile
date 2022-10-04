@@ -15,27 +15,15 @@ This step will take a while the first time as it will download all dependencies.
 There are three steps necessary to start development, in this case for Android:
 
 1. `make run-clojure` - Compiles Clojure into JavaScript, watches for changes on cljs files, and hot-reloads code in the app
-2. `make run-metro` - Starts metro bundler and watches JavaScript code
+2. `make run-metro` - Starts metro bundler and watches JavaScript code.
 3. `make run-android` - Builds the Android app and starts it on the device.
-
-> If you're on Mac and wish to develop for iOS you can use:
-
-- `make run-ios`
+4. `make run-ios` - Build the iOS app and starts it .. Must be on a Mac with XCode installed.
 
 > You can specify the simulator type by adding the SIMULATOR flag like this
 
 - `make run-ios SIMULATOR="iPhone 11 Pro"`
 
-> If you wish to work on a physical iPhone:
-
-1. You must have your device UDID registered on our development team on Apple.
-2. To get your UDID, Connect your iPhone to your Mac.
-3. Open Finder on your Mac, Navigate to your iPhone and right click your UDID and press copy.
-4. Ask in the mobile channel on Discord and @jakubgs will help you out adding your iPhone to our development devices.
-5. Start XCode and press open project and select the `status-mobile/ios` directory.
-6. Press the build button on xCode, And then it'll tell you that you have not selected a development team to work with.
-7. Select STATUS HOLDINGS PTE. LTD. as the development team and rebuild again.
-8. Voila!, In a few minutes Status should start on your iPhone with it's logs printed out on the terminal you ran `make run-metro` on.
+> [Developing on a physical iOS Device](#physical-ios-device)
 
 The first two will continue watching for changes and keep re-building the app. They need to be ready first.
 The last one will exit once the app is up and ready.
@@ -90,3 +78,15 @@ Steps:
 2. [Setup Git to use your GPG key](https://help.github.com/en/github/authenticating-to-github/telling-git-about-your-signing-key)
 3. [Setup Git to sign commits](https://help.github.com/en/github/authenticating-to-github/signing-commits)
 4. [Setup GitHub to validate commits](https://help.github.com/en/github/authenticating-to-github/adding-a-new-gpg-key-to-your-github-account)
+
+## Physical iOS Device
+
+> If you wish to work on a physical iPhone:
+
+1. You must have your device UDID registered on our development team on Apple.
+2. [Getting your iPhone's UDID.](https://www.extentia.com/post/finding-the-udid-of-an-ios-device)
+3. Ask in the mobile channel on Discord and @jakubgs will help you out adding your iPhone to our development devices.
+4. Start XCode and press open project and select the `status-mobile/ios` directory.
+5. Press the build button on xCode, And then it'll tell you that you have not selected a development team to work with.
+6. Select STATUS HOLDINGS PTE. LTD. as the development team and rebuild again.
+7. Voila!, In a few minutes Status should start on your iPhone with it's logs printed out on the terminal you ran `make run-metro` on.
