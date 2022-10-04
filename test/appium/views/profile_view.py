@@ -470,7 +470,7 @@ class ProfileView(BaseView):
     def retry_to_connect_to_mailserver(self):
         self.driver.info("Retrying to connect to mailserver 5 times")
         i = 0
-        while self.element_by_translation_id("mailserver-error-title").is_element_present(20) and i < 5:
+        while self.element_by_translation_id("mailserver-error-title").is_element_displayed(20) and i < 5:
             self.element_by_translation_id("mailserver-retry", uppercase=True).click()
             i += 1
             self.just_fyi("retrying to connect: %s attempt" % i)

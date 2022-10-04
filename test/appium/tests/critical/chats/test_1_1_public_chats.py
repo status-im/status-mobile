@@ -102,7 +102,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         [message.transaction_status.wait_for_element_text(message.confirmed, 60) for message in
          (sender_message, receiver_message)]
 
-        # TODO: should be added PNs for receiver after getting more stable feature (rechecked 23.11.21, valid)
+        # TODO: should be added PNs for receiver after getting more stable feature (rechecked 04.10.22, valid)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6265)
@@ -337,19 +337,19 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.chat_2.send_message(message_before_edit_1_1)
 
         self.chat_2.edit_message_in_chat(message_before_edit_1_1, message_after_edit_1_1)
-        if not self.home_1.element_by_text_part(message_after_edit_1_1).is_element_present():
+        if not self.home_1.element_by_text_part(message_after_edit_1_1).is_element_displayed():
             self.errors.append('UNedited message version displayed on preview')
         self.home_1.get_chat(self.default_username_2).click()
         chat_element = self.chat_1.chat_element_by_text(message_after_edit_1_1)
-        if not chat_element.is_element_present(30):
+        if not chat_element.is_element_displayed(30):
             self.errors.append('No edited message in 1-1 chat displayed')
-        if not self.chat_1.element_by_text_part("⌫ Edited").is_element_present(30):
+        if not self.chat_1.element_by_text_part("⌫ Edited").is_element_displayed(30):
             self.errors.append('No mark in message bubble about this message was edited on receiver side')
 
         self.device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
         chat_element.long_press_element()
         for action in ("edit", "delete"):
-            if self.chat_1.element_by_translation_id(action).is_element_present():
+            if self.chat_1.element_by_translation_id(action).is_element_displayed():
                 self.errors.append('Option to %s someone else message available!' % action)
         self.home_1.click_system_back_button()
 
@@ -532,9 +532,9 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.chat_2.image_message_in_chat.click_until_presence_of_element(self.chat_2.share_image_icon_button)
         self.chat_2.share_image_icon_button.click()
         self.chat_2.share_via_messenger()
-        if not self.chat_2.image_in_android_messenger.is_element_present():
+        if not self.chat_2.image_in_android_messenger.is_element_displayed():
             self.errors.append("Can't share image")
-        self.chat_2.click_system_back_button_until_element_is_shown()
+        self.chat_2.click_system_back_button_until_element_is_shown(element=self.chat_2.save_image_icon_button)
         self.chat_2.save_image_icon_button.click()
         self.chat_2.show_images_button.click()
         self.chat_2.allow_button.wait_and_click()
@@ -1153,7 +1153,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             self.errors.append('Sticker was not sent from Recent')
 
         # self.home_2.just_fyi('Check that can install stickers by tapping on sticker message')
-        # TODO: disabled because of #13683 (rechecked 27.07.22, valid)
+        # TODO: disabled because of #13683 (rechecked 04.10.22, valid)
         self.home_2.home_button.double_click()
         self.home_2.get_chat(self.sender['username']).click()
         # self.chat_2.chat_item.click()

@@ -196,7 +196,7 @@ class AirplaneModeButton(Button):
     def click(self):
         counter = 0
         desired_element = AirplaneModeButton(self.driver)
-        while not desired_element.is_element_present() and counter <= 3:
+        while not desired_element.is_element_displayed() and counter <= 3:
             try:
                 self.open_quick_action_menu()
                 desired_element.wait_for_element(5)
@@ -313,7 +313,7 @@ class BaseView(object):
 
     def close_native_device_dialog(self, alert_text_part):
         element = self.element_by_text_part(alert_text_part)
-        if element.is_element_present(1):
+        if element.is_element_displayed(1):
             self.driver.info("Closing '%s' alert..." % alert_text_part)
             self.native_close_button.click()
 
@@ -330,7 +330,7 @@ class BaseView(object):
 
     def confirm_until_presence_of_element(self, desired_element, attempts=3):
         counter = 0
-        while not desired_element.is_element_present(1) and counter <= attempts:
+        while not desired_element.is_element_displayed(1) and counter <= attempts:
             try:
                 self.confirm()
                 self.driver.info("Wait for '%s'" % desired_element.name)
@@ -352,16 +352,15 @@ class BaseView(object):
         counter = 0
         if element == 'home':
             element = self.home_button
-        while not element.is_element_present(1) and counter <= attempts:
+        while not element.is_element_displayed(1) and counter <= attempts:
             self.driver.press_keycode(4)
             try:
-                element.is_element_present(5)
+                element.wait_for_element(2)
                 return self
             except (NoSuchElementException, TimeoutException):
                 counter += 1
         else:
             self.driver.info("Could not reach %s element by pressing back" % element.name)
-
 
     def get_app_from_background(self):
         self.driver.info('Get Status back from Recent apps')

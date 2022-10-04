@@ -43,7 +43,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.sign_in.open_weblink_and_login(deep_link)
         self.home = self.sign_in.get_home_view()
         self.home.plus_button.click_until_presence_of_element(self.home.start_new_chat_button)
-        if not self.home.start_new_chat_button.is_element_present():
+        if not self.home.start_new_chat_button.is_element_displayed():
             self.errors.append(
                 "Can't navigate to start new chat after app opened from deep link with invalid public key")
         self.drivers[0].close_app()
@@ -78,7 +78,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         web_view = self.sign_in.get_chat_view()
         try:
             test_dapp_view = web_view.open_in_status_button.click()
-            test_dapp_view.allow_button.is_element_present()
+            test_dapp_view.allow_button.is_element_displayed()
         except NoSuchElementException:
             self.drivers[0].fail("DApp '%s' is not opened!" % dapp_name)
         self.home.reopen_app()
@@ -96,7 +96,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         chat.share_button.click()
         chat.share_via_messenger()
         if not chat.element_by_text_part(
-                'https://join.status.im/u/%s' % dummy_user["public_key"]).is_element_present():
+                'https://join.status.im/u/%s' % dummy_user["public_key"]).is_element_displayed():
             self.errors.append("Can't share public key of contact")
         for _ in range(2):
             chat.click_system_back_button_until_element_is_shown()
@@ -112,7 +112,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.public_chat.share_chat_button.click()
         self.public_chat.share_via_messenger()
         if not self.public_chat.element_by_text_part(
-                'https://join.status.im/%s' % self.public_chat_name).is_element_present():
+                'https://join.status.im/%s' % self.public_chat_name).is_element_displayed():
             self.errors.append("Can't share link to public chat")
         for _ in range(2):
             self.public_chat.click_system_back_button_until_element_is_shown()
@@ -130,8 +130,8 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         expeceted_text_1 = 'https://join.status.im/b/https://dap.ps'
         expeceted_text_2 = 'https://join.status.im/b/http://dap.ps'
 
-        if not (browser.element_by_text_part(expeceted_text_1).is_element_present() or
-                browser.element_by_text_part(expeceted_text_2).is_element_present()):
+        if not (browser.element_by_text_part(expeceted_text_1).is_element_displayed() or
+                browser.element_by_text_part(expeceted_text_2).is_element_displayed()):
             self.errors.append("Can't share link to URL")
 
         browser.click_system_back_button_until_element_is_shown()
