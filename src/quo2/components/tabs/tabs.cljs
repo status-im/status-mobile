@@ -104,7 +104,7 @@
                        :scroll-event-throttle             scroll-event-throttle
                        :shows-horizontal-scroll-indicator false
                        :data                              data
-                       :key-fn                            :id
+                       :key-fn                            (comp str :id)
                        :on-scroll                         (fn [^js e]
                                                             (when fade-end?
                                                               (let [offset-x       (.. e -nativeEvent -contentOffset -x)
