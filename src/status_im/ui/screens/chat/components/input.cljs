@@ -204,11 +204,11 @@
 (re-frame/reg-fx
  :set-input-text
  (fn [[chat-id text]]
-   ;; We enable mentions
+    ;; We enable mentions
    (swap! mentions-enabled assoc chat-id true)
    (on-text-change text chat-id)
-   ;; We update the key so that we force a refresh of the text input, as those
-   ;; are not ratoms
+    ;; We update the key so that we force a refresh of the text input, as those
+    ;; are not ratoms
    (force-text-input-update!)))
 
 (fx/defn set-input-text
@@ -506,7 +506,7 @@
                (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
                (re-frame/dispatch [:dismiss-keyboard]))))))))
 
-(defn get-input-content-change [context translate-y shared-height max-height bg-opacity keyboard-shown min-y max-y]
+(defn get-input-content-change [context translate-y shared-height max-height bg-opacity keyboard-shown min-y max-y reply]
   (fn [evt]
     (if (:clear @context)
       (do
@@ -517,7 +517,8 @@
         (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
         (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0)))
       (when (not= (:state @context) :max)
-        (let [new-y (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") 22) 22))]
+        (let [new-y (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") 22) 22))
+              new-y (+ new-y (if reply 38 0))]
           (if (< new-y max-y)
             (do
               (if (> (- max-y new-y) 120)
@@ -554,30 +555,30 @@
                           :pdy   0      ;used for gesture
                           :state :min   ;:min, :custom-chat-available, :custom-chat-unavailable, :max
                           :clear false})
-           keyboard-was-shown (atom false)]
+           keyboard-was-shown (atom false)
+           text-input-ref (quo.react/create-ref)
+           send-ref (quo.react/create-ref)
+           refs {:send-ref       send-ref
+                 :text-input-ref text-input-ref}]
        (fn []
          [:f>
           (fn []
-            (let [text-input-ref (quo.react/create-ref)
-                  send-ref (quo.react/create-ref)
-                  refs {:send-ref       send-ref
-                        :text-input-ref text-input-ref}
-
+            (let [reply @(re-frame/subscribe [:chats/reply-message])
                   {window-height :height} (rn/use-window-dimensions)
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
 
-                  max-y (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - defaul height
+                  max-y (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - default height
                   max-height (- max-y 56 (:bottom insets))  ; 56 - topbar height
                   y (calculate-y context keyboard-shown min-y max-y)
-
+                  y (+ y (if reply 38 0))
                   translate-y (reanimated/use-shared-value 0)
                   shared-height (reanimated/use-shared-value min-y)
                   bg-opacity (reanimated/use-shared-value 0)
 
-                  bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
-                                                                 min-y max-y shared-height max-height bg-opacity)
                   input-content-change (get-input-content-change context translate-y shared-height max-height
-                                                                 bg-opacity keyboard-shown min-y max-y)]
+                                                                 bg-opacity keyboard-shown min-y max-y reply)
+                  bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
+                                                                 min-y max-y shared-height max-height bg-opacity)]
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown (not keyboard-shown))
                                       (swap! context assoc :state :min))
@@ -587,38 +588,37 @@
                                       (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0)))
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
-              [:<>
-               [reply/reply-message-auto-focus-wrapper text-input-ref]
-               [reanimated/view {:style (reanimated/apply-animations-to-style
-                                         {:height shared-height}
-                                         {})}
+              [reanimated/view {:style (reanimated/apply-animations-to-style
+                                        {:height shared-height}
+                                        {})}
                ;;INPUT MESSAGE bottom sheet
-                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
-                 [reanimated/view {:style (reanimated/apply-animations-to-style
-                                           {:transform [{:translateY translate-y}]}
-                                           (styles/new-input-bottom-sheet window-height))}
-                 ;handle
-                  [rn/view {:style (styles/new-bottom-sheet-handle)}]
-                  [rn/view {:style {:height (- max-y 80)}}
-                   [text-input {:chat-id                chat-id
-                                :on-content-size-change input-content-change
-                                :sending-image          false
-                                :refs                   refs
-                                :set-active-panel       #()}]]]]
-               ;CONTROLS
-                [rn/view {:style (styles/new-bottom-sheet-controls insets)}
-                 [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/image]
-                 [rn/view {:width 12}]
-                 [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/reaction]
-                 [rn/view {:flex 1}]
-                ;;SEND button
-                 [rn/view {:ref send-ref :style (when-not (seq (get @input-texts chat-id)) {:width 0 :right -100})}
-                  [quo2.button/button {:icon     true :size 32 :accessibility-label :send-message-button
-                                       :on-press #(do (swap! context assoc :clear true)
-                                                      (clear-input chat-id refs)
-                                                      (re-frame/dispatch [:chat.ui/send-current-message]))}
-                   :main-icons2/arrow-up]]]
-               ;black background
+               [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                 [reanimated/view {:style (reanimated/apply-animations-to-style
-                                          {:opacity bg-opacity}
-                                          (styles/new-bottom-sheet-background window-height))}]]]))])))])
+                                          {:transform [{:translateY translate-y}]}
+                                          (styles/new-input-bottom-sheet window-height))}
+                 ;handle
+                 [rn/view {:style (styles/new-bottom-sheet-handle)}]
+                 [reply/reply-message-auto-focus-wrapper (:text-input-ref refs)]
+                 [rn/view {:style {:height (- max-y 80)}}
+                  [text-input {:chat-id                chat-id
+                               :on-content-size-change input-content-change
+                               :sending-image          false
+                               :refs                   refs
+                               :set-active-panel       #()}]]]]
+               ;CONTROLS
+               [rn/view {:style (styles/new-bottom-sheet-controls insets)}
+                [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/image]
+                [rn/view {:width 12}]
+                [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/reaction]
+                [rn/view {:flex 1}]
+                ;;SEND button
+                [rn/view {:ref send-ref :style (when-not (seq (get @input-texts chat-id)) {:width 0 :right -100})}
+                 [quo2.button/button {:icon     true :size 32 :accessibility-label :send-message-button
+                                      :on-press #(do (swap! context assoc :clear true)
+                                                     (clear-input chat-id refs)
+                                                     (re-frame/dispatch [:chat.ui/send-current-message]))}
+                  :main-icons2/arrow-up]]]
+               ;black background
+               [reanimated/view {:style (reanimated/apply-animations-to-style
+                                         {:opacity bg-opacity}
+                                         (styles/new-bottom-sheet-background window-height))}]]))])))])

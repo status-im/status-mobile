@@ -144,7 +144,7 @@
   (when-not (= reply @had-reply)
     (reset! had-reply reply)
     (when reply
-      (js/setTimeout #(input-focus text-input-ref) 250))))
+      (js/setTimeout #(input-focus text-input-ref) 0))))
 
 (defn reply-message-wrapper-old [reply]
   [rn/view {:style {:padding-horizontal 15
@@ -155,8 +155,6 @@
 
 (defn reply-message-wrapper [reply]
   [rn/view {:style {:padding-horizontal 15
-                    :border-top-width 1
-                    :border-top-color (:ui-01 @quo.colors/theme)
                     :padding-vertical 8}}
    [reply-message reply true]])
 
