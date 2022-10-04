@@ -99,7 +99,7 @@
                               :scroll-on-press?
                               :size)
                       {:ref                               (partial reset! flat-list-ref)
-                       :extra-data                        @active-tab-id
+                       :extra-data                        (str @active-tab-id)
                        :horizontal                        true
                        :scroll-event-throttle             scroll-event-throttle
                        :shows-horizontal-scroll-indicator false
