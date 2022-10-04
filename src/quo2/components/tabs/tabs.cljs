@@ -14,7 +14,7 @@
         [rn/view {:flex-direction :row}
          (for [{:keys [label id]} data]
            ^{:key id}
-           [rn/view {:margin-right (if (= size default-tab-size) 12 8)}
+           [rn/view {:style {:margin-right (if (= size default-tab-size) 12 8)}}
             [tab/tab
              {:id       id
               :size     size
@@ -120,9 +120,9 @@
                                                             (when on-scroll
                                                               (on-scroll e)))
                        :render-fn                         (fn [{:keys [id label]} index]
-                                                            [rn/view {:margin-right  (if (= size default-tab-size) 12 8)
-                                                                      :padding-right (when (= index (dec (count data)))
-                                                                                       (get-in props [:style :padding-left]))}
+                                                            [rn/view {:style {:margin-right  (if (= size default-tab-size) 12 8)
+                                                                              :padding-right (when (= index (dec (count data)))
+                                                                                               (get-in props [:style :padding-left]))}}
                                                              [tab/tab {:id       id
                                                                        :size     size
                                                                        :active   (= id @active-tab-id)
