@@ -4,6 +4,7 @@
             [quo.theme :as theme]
             [quo2.components.buttons.button :as button]
             [quo2.components.markdown.text :as text]
+            [quo2.reanimated :as ra]
             [quo2.foundations.colors :as colors]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.avatars.icon-avatar :as icon-avatar]))
@@ -138,14 +139,23 @@
                     :style {:color (get-color :time)}}
          (:info content)])]]]])
 
-(defn system-message
-  [{:keys [type state] :as message}]
-  [rn/view {:flex-direction     :row
-            :flex               1
-            :border-radius      16
-            :padding-vertical   9
-            :padding-horizontal 11
-            :width              359
-            :height             52
-            :background-color   (get-color :bg state type)}
-   [sm-render message]])
+(defn system-message [{:keys [type] :as message}]
+  [:f>
+   (fn []
+     (let [sv-color (ra/use-shared-value (get-color :bg :landed type))]
+       (ra/animate-shared-value-with-delay
+        sv-color (get-color :bg :default type) 0 :linear 1000)
+       [ra/touchable-opacity
+        {:on-press #(ra/set-shared-value
+                     sv-color (get-color :bg :pressed type))
+         :style    (ra/apply-animations-to-style
+                    {:background-color sv-color}
+                    {:flex-direction     :row
+                     :flex               1
+                     :border-radius      16
+                     :padding-vertical   9
+                     :padding-horizontal 11
+                     :width              359
+                     :height             52
+                     :background-color   sv-color})}
+        [sm-render message]]))])

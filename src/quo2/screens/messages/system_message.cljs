@@ -15,15 +15,6 @@
                              :key   :added}
                             {:value "Message deleted"
                              :key   :deleted}]}
-                 {:label   "Message State"
-                  :key     :state
-                  :type    :select
-                  :options [{:value "Default"
-                             :key   :default}
-                            {:value "Pressed"
-                             :key   :pressed}
-                            {:value "Landed"
-                             :key   :landed}]}
                  {:label   "Action"
                   :key     :action
                   :type    :select
@@ -55,8 +46,7 @@
                      :mentions {:name  "Alisher"
                                 :image (resources/get-mock-image :user-picture-male5)}}}))
 (defn preview []
-  (let [state (reagent/atom {:type          :pinned
-                             :state         :pressed
+  (let [state (reagent/atom {:type          :deleted
                              :pinned-by     "Steve"
                              :content-text  "Hello! This is an example of a pinned message!"
                              :content-info  "3 photos"
