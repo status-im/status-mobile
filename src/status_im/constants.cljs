@@ -176,12 +176,20 @@
 (def ^:const docs-link "https://status.im/docs/")
 (def ^:const principles-link "https://our.status.im/our-principles/")
 
+(def ^:const activity-center-notification-type-no-type 0)
 (def ^:const activity-center-notification-type-one-to-one-chat 1)
 (def ^:const activity-center-notification-type-private-group-chat 2)
 (def ^:const activity-center-notification-type-mention 3)
 (def ^:const activity-center-notification-type-reply 4)
 (def ^:const activity-center-notification-type-contact-request 5)
 (def ^:const activity-center-notification-type-contact-request-retracted 6)
+
+;; TODO: Replace with correct enum values once status-go implements them.
+(def ^:const activity-center-notification-type-admin 66610)
+(def ^:const activity-center-notification-type-identity-verification 66611)
+(def ^:const activity-center-notification-type-tx 66612)
+(def ^:const activity-center-notification-type-membership 66613)
+(def ^:const activity-center-notification-type-system 66614)
 
 (def ^:const visibility-status-unknown 0)
 (def ^:const visibility-status-automatic 1)
