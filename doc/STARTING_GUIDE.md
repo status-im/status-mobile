@@ -24,7 +24,7 @@ The last one will exit once the app is up and ready.
 ## Simulators and Devices
 ### Android
 
-You need to have an emulator like [AVD](https://developer.android.com/studio/run/emulator), or [Genymotion](#genymotion-virtualization), or a real device running and visible to `adb`, before you run `make run-android`.
+You need to have an emulator like [AVD](https://developer.android.com/studio/run/emulator), or [Genymotion](#genymotion-virtualization), or a real device running and visible to [adb](https://developer.android.com/studio/command-line/adb), before you run `make run-android`.
 
 ### iOS
 
