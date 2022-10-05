@@ -8,6 +8,7 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.screens.chat.components.style :as styles]
             [status-im.utils.fx :as fx]
+            [status-im.utils.handlers :refer [<sub]]
             [status-im.ui.screens.chat.components.reply :as reply]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.chat.constants :as chat.constants]
@@ -563,7 +564,7 @@
        (fn []
          [:f>
           (fn []
-            (let [reply @(re-frame/subscribe [:chats/reply-message])
+            (let [reply (<sub [:chats/reply-message])
                   {window-height :height} (rn/use-window-dimensions)
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
 
