@@ -119,6 +119,7 @@
 
 ;;;; Customization
 
+;; Colors for customizing profiles and communities themes
 (def customization
   {:primary   {50 primary-50  ;; User can also use primary color as customisation color
                60 primary-60}
@@ -145,7 +146,6 @@
    :beige     {50 "#CAAE93"
                60 "#AA927C"}})
 
-;; Colors for customizing profiles and communities themes
 (def colors-map (merge {:danger  {50 danger-50
                                   60 danger-60}
                         :success {50 success-50
