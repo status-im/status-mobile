@@ -8,8 +8,7 @@
             [quo2.components.markdown.text :as quo2.text]
             [quo2.components.buttons.button :as quo2.button]
             [quo2.components.counter.counter :as quo2.counter]
-            [quo2.components.tags.filter-tags :as filter-tags]
-            [quo2.components.tags.filter-tag  :as filter-tag]
+            [quo2.components.tags.tags :as tags]
             [quo2.foundations.colors :as quo2.colors]
             [quo.components.safe-area :as safe-area]
             [quo2.components.tabs.tabs :as quo2.tabs]
@@ -188,20 +187,12 @@
                         :padding-top                       4
                         :padding-bottom                    12
                         :padding-horizontal                20}
-     [react/view {:flex-direction :row}
-      [react/view {:margin-right  8}
-       [filter-tag/filter-tag {:resource       :main-icons2/search
-                               :labelled       false
-                               :type           :icon
-                               :icon-color     (quo2.colors/theme-colors
-                                                quo2.colors/neutral-100
-                                                quo2.colors/white)}]]
-      [filter-tags/tags {:data          filters
-                         :labelled      true
-                         :type          :emoji
-                         :icon-color     (quo2.colors/theme-colors
-                                          quo2.colors/neutral-50
-                                          quo2.colors/neutral-40)}]]]))
+     [tags/tags {:data          filters
+                 :labelled      true
+                 :type          :emoji
+                 :icon-color     (quo2.colors/theme-colors
+                                  quo2.colors/neutral-50
+                                  quo2.colors/neutral-40)}]]))
 
 (defn communities-list []
   (let [multiaccount (<sub [:multiaccount])

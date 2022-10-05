@@ -1,7 +1,7 @@
-(ns quo2.components.tags.filter-tags
+(ns quo2.components.tags.tags
   (:require [reagent.core :as reagent]
             [quo.react-native :as rn]
-            [quo2.components.tags.filter-tag :as tag]))
+            [quo2.components.tags.tag :as tag]))
 
 (defn tags [{:keys [default-active on-change]}]
   (let [active-tab-id (reagent/atom default-active)]
@@ -11,7 +11,7 @@
          (for [{:keys [tag-label id resource]} data]
            ^{:key id}
            [rn/view {:margin-right 8}
-            [tag/filter-tag
+            [tag/tag
              (merge {:id            id
                      :size          size
                      :type          type

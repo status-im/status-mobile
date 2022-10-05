@@ -4,7 +4,7 @@
    [quo2.components.icon :as icons]
    [quo2.foundations.colors :as colors]
    [quo2.components.tags.permission-tag :as permission]
-   [quo2.components.tags.filter-tag  :as filter-tag]
+   [quo2.components.tags.tag  :as tag]
    [status-im.ui.components.react :as react]
    [status-im.utils.money :as money]
    [status-im.i18n.i18n :as i18n]
@@ -49,7 +49,7 @@
    (for [{:keys [id tag-label resource]} tags]
      ^{:key id}
      [react/view {:margin-right 8}
-      [filter-tag/filter-tag
+      [tag/tag
        {:id          id
         :size        24
         :label       tag-label

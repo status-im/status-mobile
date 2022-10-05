@@ -36,7 +36,7 @@
             [quo2.screens.tabs.segmented-tab :as segmented]
             [quo2.screens.tabs.tabs :as tabs]
             [quo2.screens.tags.context-tags :as context-tags]
-            [quo2.screens.tags.filter-tags :as filter-tags]
+            [quo2.screens.tags.tags :as tags]
             [quo2.screens.tags.permission-tag :as permission-tag]
             [quo2.screens.tags.status-tags :as status-tags]
             [quo2.screens.tags.token-tag :as token-tag]
@@ -130,9 +130,9 @@
    :tags [{:name      :context-tags
            :insets    {:top false}
            :component context-tags/preview-context-tags}
-          {:name      :filter-tags
+          {:name      :tags
            :insets    {:top false}
-           :component filter-tags/preview-filter-tags}
+           :component tags/preview-tags}
           {:name      :permission-tag
            :insets    {:top false}
            :component permission-tag/preview-permission-tag}

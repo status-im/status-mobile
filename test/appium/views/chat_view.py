@@ -976,7 +976,7 @@ class ChatView(BaseView):
 
         if image:
             self.timeline_open_images_panel_button.click()
-            if self.allow_button.is_element_present():
+            if self.allow_button.is_element_displayed():
                 self.allow_button.click()
             self.first_image_from_gallery.click()
         self.timeline_send_my_status_button.click()

@@ -1,9 +1,9 @@
-(ns quo2.screens.tags.filter-tags
+(ns quo2.screens.tags.tags
   (:require [quo.react-native :as rn]
             [quo.previews.preview :as preview]
             [status-im.ui.components.react :as react]
             [quo2.foundations.colors :as colors]
-            [quo2.components.tags.filter-tags :as quo2.tags]
+            [quo2.components.tags.tags :as tags]
             [status-im.react-native.resources :as resources]
             [reagent.core :as reagent]))
 
@@ -70,15 +70,15 @@
                           :align-items        :center
                           :position           :absolute
                           :padding-horizontal 10}
-          [quo2.tags/tags (merge @state
-                                 {:default-active 1
-                                  :data           [{:id 1 :tag-label "Music" :resource (resources/get-image :music)}
-                                                   {:id 2 :tag-label "Lifestyle" :resource (resources/get-image :lifestyle)}
-                                                   {:id 3 :tag-label "Podcasts" :resource (resources/get-image :podcasts)}]})]]]]])))
-(defn preview-filter-tags []
+          [tags/tags (merge @state
+                            {:default-active 1
+                             :data           [{:id 1 :tag-label "Music" :resource (resources/get-image :music)}
+                                              {:id 2 :tag-label "Lifestyle" :resource (resources/get-image :lifestyle)}
+                                              {:id 3 :tag-label "Podcasts" :resource (resources/get-image :podcasts)}]})]]]]])))
+(defn preview-tags []
   [rn/view {:flex             1
             :background-color (colors/theme-colors
-                               colors/neutral-5
+                               colors/white
                                colors/neutral-90)}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always
