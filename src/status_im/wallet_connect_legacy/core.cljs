@@ -142,30 +142,40 @@
                     (:wallet-connect-legacy/sessions db))]
     {:wc-1-clean-up-sessions connectors}))
 
-(fx/defn session-connected
-  {:events [:wallet-connect-legacy/created]}
-  [{:keys [db]} session]
-  (let [connector (get db :wallet-connect-legacy/proposal-connector)
-        session (assoc (types/js->clj session)
-                       :wc-version constants/wallet-connect-version-1
-                       :connector connector)
-        info (.stringify js/JSON (.-session connector))
-        peer-id (get-in session [:params 0 :peerId])
-        dapp-name (get-in session [:params 0 :peerMeta :name])
-        dapp-url (get-in session [:params 0 :peerMeta :url])]
-    {:show-wallet-connect-success-sheet nil
-     :db (-> db
-             (assoc :wallet-connect/session-connected session)
-             (update :wallet-connect-legacy/sessions
-                     conj
-                     session))
-     ::json-rpc/call [{:method     "wakuext_addWalletConnectSession"
+(fx/defn save-session
+  {:events [:wallet-connect-legacy/save-session]}
+  [{:keys [db]} {:keys [peer-id dapp-name dapp-url connector]}]
+  (let [info (.stringify js/JSON (.-session connector))]
+    {::json-rpc/call [{:method     "wakuext_addWalletConnectSession"
                        :params     [{:id peer-id
                                      :info info
+                                    ;;  info will be the updated value
                                      :dappName dapp-name
                                      :dappUrl dapp-url}]
                        :on-success #(log/info "wakuext_addWalletConnectSession success call back , data =>" %)
                        :on-error   #(log/error "wakuext_addWalletConnectSession error call back , data =>" %)}]}))
+
+(fx/defn session-connected
+  {:events [:wallet-connect-legacy/created]}
+  [{:keys [db] :as cofx} session]
+  (let [connector (get db :wallet-connect-legacy/proposal-connector)
+        session (assoc (types/js->clj session)
+                       :wc-version constants/wallet-connect-version-1
+                       :connector connector)
+        peer-id (get-in session [:params 0 :peerId])
+        dapp-name (get-in session [:params 0 :peerMeta :name])
+        dapp-url (get-in session [:params 0 :peerMeta :url])]
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc :wallet-connect/session-connected session)
+                       (update :wallet-connect-legacy/sessions
+                               conj
+                               session))
+               :show-wallet-connect-success-sheet nil}
+              (save-session {:peer-id peer-id
+                             :dapp-name dapp-name
+                             :dapp-url dapp-url
+                             :connector connector}))))
 
 (fx/defn manage-app
   {:events [:wallet-connect-legacy/manage-app]}
@@ -211,16 +221,20 @@
 
 (fx/defn change-session-account
   {:events [:wallet-connect-legacy/change-session-account]}
-  [{:keys [db]} session account]
-  (let [connector (:connector session)
-        address (:address account)
-        networks (get db :networks/networks)
+  [{:keys [db] :as cofx} session account]
+  (let [connector          (:connector session)
+        address            (:address account)
+        networks           (get db :networks/networks)
         current-network-id (get db :networks/current-network)
-        current-network (get networks current-network-id)
-        chain-id (get-in current-network [:config :NetworkId])]
-    {:hide-wallet-connect-app-management-sheet nil
-     :wc-1-update-session [connector chain-id address]
-     :db (assoc db :wallet-connect/showing-app-management-sheet? false)}))
+        current-network    (get networks current-network-id)
+        dapp-name          (get-in session [:params 0 :peerMeta :name])
+        dapp-url           (get-in session [:params 0 :peerMeta :url])
+        peer-id            (get-in session [:params 0 :peerId])
+        chain-id           (get-in current-network [:config :NetworkId])]
+    (fx/merge cofx
+              {:hide-wallet-connect-app-management-sheet nil
+               :wc-1-update-session                      [connector chain-id address]
+               :db                                       (assoc db :wallet-connect/showing-app-management-sheet? false)})))
 
 (fx/defn disconnect-by-peer-id
   {:events [:wallet-connect-legacy/disconnect-by-peer-id]}
@@ -268,10 +282,18 @@
   (let [sessions (get db :wallet-connect-legacy/sessions)
         accounts-new (:accounts (first (:params payload)))
         session (first (filter #(= (:connector %) connector) sessions))
-        updated-session (assoc-in session [:params 0 :accounts] accounts-new)]
-    {:db (-> db
-             (assoc :wallet-connect-legacy/sessions (conj (filter #(not= (:connector %) connector) sessions) updated-session))
-             (dissoc :wallet-connect/session-managed))}))
+        updated-session (assoc-in session [:params 0 :accounts] accounts-new)
+        peer-id (get-in updated-session [:params 0 :peerId])
+        dapp-name (get-in updated-session [:params 0 :peerMeta :name])
+        dapp-url (get-in updated-session [:params 0 :peerMeta :url])]
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc :wallet-connect-legacy/sessions (conj (filter #(not= (:connector %) connector) sessions) updated-session))
+                       (dissoc :wallet-connect/session-managed))
+               :dispatch [:wallet-connect-legacy/save-session {:peer-id   peer-id
+                                                               :dapp-url  dapp-url
+                                                               :dapp-name dapp-name
+                                                               :connector connector}]})))
 
 (fx/defn wallet-connect-legacy-complete-transaction
   {:events [:wallet-connect-legacy.dapp/transaction-on-result]}
@@ -338,7 +360,8 @@
 (fx/defn sync-app-db-with-wc-sessions
   {:events [:sync-wallet-connect-app-sessions]}
   [{:keys [db]} session-data]
-  (let [chain-id (get-in db [:networks/networks (:networks/current-network db) :config :NetworkId])
+  (let [_        (log/debug "sync-app-db-with-wc-sessions")
+        chain-id (get-in db [:networks/networks (:networks/current-network db) :config :NetworkId])
         sessions (->> session-data
                       (map :info)
                       (map js/JSON.parse)
@@ -347,7 +370,7 @@
       {:initialize-wc-sessions [chain-id sessions]})))
 
 (fx/defn get-connector-session-from-db
-  {:events [:get-connector-session-from-db]}
+  {:events [:wallet-connect-legacy/get-connector-session-from-db]}
   [_]
   {::json-rpc/call [{:method     "wakuext_getWalletConnectSession"
                      :on-success #(re-frame/dispatch [:sync-wallet-connect-app-sessions %])
