@@ -284,6 +284,8 @@
 
 (def shell-worklets #js {})
 
+(def record-audio-worklets #js {})
+
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -331,6 +333,7 @@
     "react-native-svg" react-native-svg
     "../src/js/worklet_factory.js" worklet-factory
     "../src/js/shell_worklets.js" shell-worklets
+    "../src/js/record_audio_worklets.js" record-audio-worklets
     "./fleets.js" default-fleets
     "./chats.js" default-chats
     "@walletconnect/client" wallet-connect-client

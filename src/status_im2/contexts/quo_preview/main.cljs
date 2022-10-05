@@ -35,6 +35,7 @@
             [status-im2.contexts.quo-preview.notifications.activity-logs :as activity-logs]
             [status-im2.contexts.quo-preview.posts-and-attachments.messages-skeleton :as messages-skeleton]
             [status-im2.contexts.quo-preview.reactions.react :as react]
+            [status-im2.contexts.quo-preview.record-audio.record-audio :as record-audio]
             [status-im2.contexts.quo-preview.selectors.disclaimer :as disclaimer]
             [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
             [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
@@ -164,6 +165,9 @@
    :reactions [{:name      :react
                 :insets    {:top false}
                 :component react/preview-react}]
+   :record-audio [{:name      :record-audio
+                   :insets    {:top false}
+                   :component record-audio/preview-record-audio}]
    :switcher [{:name :switcher-cards
                :insets {:top false}
                :component switcher-cards/preview-switcher-cards}]

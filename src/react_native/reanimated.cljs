@@ -4,7 +4,7 @@
             [clojure.string :as string]
             ["react-native-linear-gradient" :default LinearGradient]
             ["react-native-reanimated" :default reanimated
-             :refer (useSharedValue useAnimatedStyle withTiming withDelay withSpring withRepeat Easing Keyframe)]))
+             :refer (useSharedValue useAnimatedStyle withTiming withDelay withSpring withRepeat Easing Keyframe cancelAnimation)]))
 
 ;; Animated Components
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
@@ -25,6 +25,7 @@
 (def with-spring withSpring)
 (def key-frame Keyframe)
 (def with-repeat withRepeat)
+(def cancel-animation cancelAnimation)
 
 ;; Easings
 (def bezier (.-bezier ^js Easing))
@@ -54,6 +55,12 @@
 ;; Worklets
 (def worklet-factory (js/require "../src/js/worklet_factory.js"))
 
+(defn interpolate [shared-value input-range output-range]
+  (.interpolateValue ^js worklet-factory
+                     shared-value
+                     (clj->js input-range)
+                     (clj->js output-range)))
+
 ;;;; Component Animations
 
 ;; kebab-case styles are not working for worklets
@@ -76,3 +83,15 @@
 (defn animate-shared-value-with-repeat [anim val duration easing number-of-repetitions reverse?]
   (set-shared-value anim (with-repeat (with-timing val (js-obj "duration" duration
                                                                "easing"   (get easings easing))) number-of-repetitions reverse?)))
+
+(defn animate-shared-value-with-delay-repeat
+  ([anim val duration easing delay number-of-repetitions]
+   (animate-shared-value-with-delay-repeat anim val duration easing delay number-of-repetitions false))
+  ([anim val duration easing delay number-of-repetitions reverse?]
+   (set-shared-value anim
+                     (with-delay delay
+                       (with-repeat
+                         (with-timing val
+                           #js {:duration duration
+                                :easing   (get easings easing)})
+                         number-of-repetitions reverse?)))))
