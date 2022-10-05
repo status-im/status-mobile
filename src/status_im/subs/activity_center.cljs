@@ -21,12 +21,18 @@
    (get-in db [:activity-center :current-status-filter])))
 
 (re-frame/reg-sub
+ :activity-center/status-filter-unread-enabled?
+ :<- [:activity-center/current-status-filter]
+ (fn [current-status-filter]
+   (= :unread current-status-filter)))
+
+(re-frame/reg-sub
  :activity-center/notifications-per-read-status
  :<- [:activity-center/notifications-read]
  :<- [:activity-center/notifications-unread]
- :<- [:activity-center/current-status-filter]
- (fn [[notifications-read notifications-unread status-filter]]
-   (if (= status-filter :unread)
+ :<- [:activity-center/status-filter-unread-enabled?]
+ (fn [[notifications-read notifications-unread unread-filter-enabled?]]
+   (if unread-filter-enabled?
      notifications-unread
      notifications-read)))
 

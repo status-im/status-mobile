@@ -1762,6 +1762,7 @@
     "new-ui": "New UI",
     "send-contact-request-message": "To start a chat you need to become contacts",
     "contact-request": "Contact request",
+    "contact-requests": "Contact Requests",
     "say-hi": "Say hi",
     "opened" : "Opened",
     "accepted": "Accepted",
@@ -1798,5 +1799,10 @@
     "edit-message": "Edit message",
     "save-image-library": "Save image to library",
     "share-image": "Share image",
-    "see-sticker-set": "See the full sticker set"
+    "see-sticker-set": "See the full sticker set",
+    "mentions": "Mentions",
+    "admin": "Admin",
+    "replies": "Replies",
+    "identity-verification": "Identity verification",
+    "membership": "Membership"
 }
