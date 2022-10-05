@@ -1,6 +1,7 @@
 (ns quo2.components.messages.system-message
   (:require [status-im.i18n.i18n :as i18n]
             [quo.react-native :as rn]
+            [status-im.utils.core :as utils]
             [quo.theme :as theme]
             [quo2.components.buttons.button :as button]
             [quo2.components.markdown.text :as text]
@@ -108,7 +109,7 @@
      [text/text {:size   :paragraph-2
                  :weight :semi-bold
                  :style  {:color (get-color :text)}}
-      pinned-by]
+      (utils/truncate-str pinned-by 18)]
      [rn/view {:margin-left  4
                :margin-right 2}
       [text/text {:size  :paragraph-2
@@ -137,7 +138,7 @@
       (when (seq (:info content))
         [text/text {:size  :label
                     :style {:color (get-color :time)}}
-         (:info content)])]]]])
+         (utils/truncate-str (:info content) 24)])]]]])
 
 (defn system-message [{:keys [type] :as message}]
   [:f>
