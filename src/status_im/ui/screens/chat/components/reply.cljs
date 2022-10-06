@@ -89,7 +89,7 @@
      [rn/view {:style (styles/reply-content)}
       [icons/icon :main-icons/connector {:color (theme-colors quo2.colors/neutral-40 quo2.colors/neutral-60)
                                          :container-style {:position :absolute :left 10 :bottom -4 :width 16 :height 16}}]
-      [rn/view {:style {:position :absolute :left 34 :right 54 :top 3 :flex-direction :row :align-items :center :width 150}}
+      [rn/view {:style {:position :absolute :left 34 :right 54 :top 3 :flex-direction :row :align-items :center :width "45%"}}
        [photos/member-photo from identicon 16]
        [quo2.text/text {:weight          :semi-bold
                         :size            :paragraph-2
