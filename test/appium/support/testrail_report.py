@@ -288,6 +288,7 @@ class TestrailReport(BaseTestReport):
         return self.get('get_results_for_run/%s' % (test_run_id if test_run_id else self.run_id))['results']
 
     def is_run_successful(self):
+        #'lll'
         for test in self.get_run_results():
             if test['status_id'] != 1:
                 return False
