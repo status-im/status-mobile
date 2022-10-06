@@ -569,7 +569,7 @@
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
 
                   max-y (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - default height
-                  max-height (- max-y 56 (:bottom insets))  ; 56 - top-bar height
+                  max-height (- max-y 56 (:bottom insets))  ; 56 - topbar height
                   y (calculate-y context keyboard-shown min-y max-y)
                   y (+ y (when reply 38))
                   translate-y (reanimated/use-shared-value 0)
