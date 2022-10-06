@@ -57,17 +57,17 @@
 ;; Instead of not changing panel we can show a placeholder with no permission
 (defn- request-record-audio-permission [set-active panel]
   (re-frame/dispatch
-   [:request-permissions
-    {:permissions [:record-audio]
-     :on-allowed
-     #(set-active panel)
-     :on-denied
-     #(utils.utils/set-timeout
-       (fn []
-         (utils.utils/show-popup
-          (i18n/label :t/audio-recorder-error)
-          (i18n/label :t/audio-recorder-permissions-error)))
-       50)}]))
+    [:request-permissions
+     {:permissions [:record-audio]
+      :on-allowed
+      #(set-active panel)
+      :on-denied
+      #(utils.utils/set-timeout
+         (fn []
+           (utils.utils/show-popup
+             (i18n/label :t/audio-recorder-error)
+             (i18n/label :t/audio-recorder-permissions-error)))
+         50)}]))
 
 (defn touchable-audio-icon [{:keys [panel active set-active accessibility-label input-focus]}]
   [pressable/pressable {:type                :scale
@@ -107,13 +107,13 @@
     ;; typing. Timeout might be canceled on `on-change`.
     (when platform/ios?
       (reset!
-       timeout-id
-       (utils.utils/set-timeout
-        #(re-frame/dispatch [::mentions/on-selection-change
-                             {:start start
-                              :end   end}
-                             mentionable-users])
-        50)))
+        timeout-id
+        (utils.utils/set-timeout
+          #(re-frame/dispatch [::mentions/on-selection-change
+                               {:start start
+                                :end   end}
+                               mentionable-users])
+          50)))
     ;; NOTE(rasom): on Android we dispatch event only in case if there
     ;; was no text changes during last 50ms. `on-selection-change` is
     ;; dispatched after `on-change`, that's why there is no another way
@@ -131,11 +131,11 @@
 (defonce chat-input-key (reagent/atom 1))
 
 (re-frame/reg-fx
- :chat.ui/clear-inputs
- (fn []
-   (reset! input-texts {})
-   (reset! mentions-enabled {})
-   (reset! chat-input-key 1)))
+  :chat.ui/clear-inputs
+  (fn []
+    (reset! input-texts {})
+    (reset! mentions-enabled {})
+    (reset! chat-input-key 1)))
 
 (defn force-text-input-update!
   "force-text-input-update! forces the
@@ -203,14 +203,14 @@
       (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
 (re-frame/reg-fx
- :set-input-text
- (fn [[chat-id text]]
+  :set-input-text
+  (fn [[chat-id text]]
     ;; We enable mentions
-   (swap! mentions-enabled assoc chat-id true)
-   (on-text-change text chat-id)
+    (swap! mentions-enabled assoc chat-id true)
+    (on-text-change text chat-id)
     ;; We update the key so that we force a refresh of the text input, as those
     ;; are not ratoms
-   (force-text-input-update!)))
+    (force-text-input-update!)))
 
 (fx/defn set-input-text
   "Set input text for current-chat. Takes db and input text and cofx
@@ -222,8 +222,8 @@
         hydrated-mentions (map (fn [[t mention :as e]]
                                  (if (= t :mention)
                                    [:mention (str "@" (multiaccounts/displayed-name
-                                                       (or (get contacts mention)
-                                                           {:public-key mention})))]
+                                                        (or (get contacts mention)
+                                                            {:public-key mention})))]
                                    e)) text-with-mentions)
         info (mentions/->info hydrated-mentions)]
     {:set-input-text [chat-id text]
@@ -244,11 +244,11 @@
       (swap! mentions-enabled assoc chat-id true))
 
     (re-frame/dispatch
-     [::mentions/on-text-input
-      {:new-text      text
-       :previous-text previous-text
-       :start         start
-       :end           end}])
+      [::mentions/on-text-input
+       {:new-text      text
+        :previous-text previous-text
+        :start         start
+        :end           end}])
     ;; NOTE(rasom): on Android `on-text-input` is dispatched after
     ;; `on-change`, that's why mention suggestions are calculated
     ;; on `on-change`
@@ -286,9 +286,9 @@
       :on-text-input            (partial on-text-input mentionable-users chat-id)}
      (if mentions-enabled
        (for [[idx [type text]] (map-indexed
-                                (fn [idx item]
-                                  [idx item])
-                                @(re-frame/subscribe [:chat/input-with-mentions]))]
+                                 (fn [idx item]
+                                   [idx item])
+                                 @(re-frame/subscribe [:chat/input-with-mentions]))]
          ^{:key (str idx "_" type "_" text)}
          [rn/text (when (= type :mention) {:style {:color "#0DA4C9"}})
           text])
@@ -327,9 +327,9 @@
       :on-text-input            (partial on-text-input mentionable-users chat-id)}
      (if mentions-enabled
        (for [[idx [type text]] (map-indexed
-                                (fn [idx item]
-                                  [idx item])
-                                @(re-frame/subscribe [:chat/input-with-mentions]))]
+                                 (fn [idx item]
+                                   [idx item])
+                                 @(re-frame/subscribe [:chat/input-with-mentions]))]
          ^{:key (str idx "_" type "_" text)}
          [rn/text (when (= type :mention) {:style {:color "#0DA4C9"}})
           text])
@@ -366,8 +366,8 @@
               (fn []
                 (re-frame/dispatch [:chat.ui/select-mention text-input-ref user]))}
 
-       ens-name?
-       (assoc :subtitle alias))]))
+             ens-name?
+             (assoc :subtitle alias))]))
 
 (def chat-toolbar-height (reagent/atom nil))
 
@@ -478,34 +478,34 @@
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height bg-opacity]
   (-> (gesture/gesture-pan)
       (gesture/on-start
-       (fn [_]
-         (if keyboard-shown
-           (swap! context assoc :pan-y (reanimated/get-shared-value translate-y))
-           (input-focus text-input-ref))))
+        (fn [_]
+          (if keyboard-shown
+            (swap! context assoc :pan-y (reanimated/get-shared-value translate-y))
+            (input-focus text-input-ref))))
       (gesture/on-update
-       (fn [evt]
-         (when keyboard-shown
-           (swap! context assoc :dy (- (.-translationY evt) (:pdy @context)))
-           (swap! context assoc :pdy (.-translationY evt))
-           (reanimated/set-shared-value
-            translate-y
-            (max (min (+ (.-translationY evt) (:pan-y @context)) (- min-y)) (- max-y))))))
+        (fn [evt]
+          (when keyboard-shown
+            (swap! context assoc :dy (- (.-translationY evt) (:pdy @context)))
+            (swap! context assoc :pdy (.-translationY evt))
+            (reanimated/set-shared-value
+              translate-y
+              (max (min (+ (.-translationY evt) (:pan-y @context)) (- min-y)) (- max-y))))))
       (gesture/on-end
-       (fn [_]
-         (when keyboard-shown
-           (if (< (:dy @context) 0)
-             (do
-               (swap! context assoc :state :max)
-               (input-focus text-input-ref)
-               (reanimated/set-shared-value translate-y (reanimated/with-timing (- max-y)))
-               (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
-               (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1)))
-             (do
-               (swap! context assoc :state :min)
-               (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
-               (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
-               (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
-               (re-frame/dispatch [:dismiss-keyboard]))))))))
+        (fn [_]
+          (when keyboard-shown
+            (if (< (:dy @context) 0)
+              (do
+                (swap! context assoc :state :max)
+                (input-focus text-input-ref)
+                (reanimated/set-shared-value translate-y (reanimated/with-timing (- max-y)))
+                (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
+                (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1)))
+              (do
+                (swap! context assoc :state :min)
+                (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
+                (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
+                (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
+                (re-frame/dispatch [:dismiss-keyboard]))))))))
 
 (defn get-input-content-change [context translate-y shared-height max-height bg-opacity keyboard-shown min-y max-y]
   (fn [evt]
@@ -531,19 +531,19 @@
               (swap! context assoc :y new-y)
               (when keyboard-shown
                 (reanimated/set-shared-value
-                 translate-y
-                 (reanimated/with-timing (- new-y)))
+                  translate-y
+                  (reanimated/with-timing (- new-y)))
                 (reanimated/set-shared-value
-                 shared-height
-                 (reanimated/with-timing (min new-y max-height)))))
+                  shared-height
+                  (reanimated/with-timing (min new-y max-height)))))
             (do
               (swap! context assoc :state :max)
               (swap! context assoc :y max-y)
               (when keyboard-shown
                 (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1))
                 (reanimated/set-shared-value
-                 translate-y
-                 (reanimated/with-timing (- max-y)))))))))))
+                  translate-y
+                  (reanimated/with-timing (- max-y)))))))))))
 
 (defn chat-input-bottom-sheet [chat-id]
   [safe-area/consumer
@@ -590,13 +590,13 @@
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
               [reanimated/view {:style (reanimated/apply-animations-to-style
-                                        {:height shared-height}
-                                        {})}
+                                         {:height shared-height}
+                                         {})}
                ;;INPUT MESSAGE bottom sheet
                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                 [reanimated/view {:style (reanimated/apply-animations-to-style
-                                          {:transform [{:translateY translate-y}]}
-                                          (styles/new-input-bottom-sheet window-height))}
+                                           {:transform [{:translateY translate-y}]}
+                                           (styles/new-input-bottom-sheet window-height))}
                  ;handle
                  [rn/view {:style (styles/new-bottom-sheet-handle)}]
                  [reply/reply-message-auto-focus-wrapper (:text-input-ref refs) reply]
@@ -621,5 +621,5 @@
                   :main-icons2/arrow-up]]]
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
-                                         {:opacity bg-opacity}
-                                         (styles/new-bottom-sheet-background window-height))}]]))])))])
+                                          {:opacity bg-opacity}
+                                          (styles/new-bottom-sheet-background window-height))}]]))])))])
