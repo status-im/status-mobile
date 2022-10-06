@@ -170,6 +170,6 @@
 (defn reply-message-auto-focus-wrapper [text-input-ref _]
   (let [had-reply (atom nil)]
     (fn [_ reply]
-        (focus-input-on-reply reply had-reply text-input-ref)
-        (when reply
-          [reply-message-wrapper reply]))))
+      (focus-input-on-reply reply had-reply text-input-ref)
+      (when reply
+        [reply-message-wrapper reply]))))

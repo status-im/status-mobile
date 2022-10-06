@@ -462,19 +462,18 @@
                                        :input-focus         #(input-focus text-input-ref)
                                        :set-active          set-active-panel}])])]]]))))
 
-(defn calculate-y [context keyboard-shown min-y max-y reply]
-  (let [added-value (if reply 38 0)]
-    (if keyboard-shown
-      (if (= (:state @context) :max)
-        (+ max-y added-value)
-        (if (< (:y @context) max-y)
-          (+ (:y @context) added-value)
-          (do
-            (swap! context assoc :state :max)
-            (+ max-y added-value))))
-      (do
-        (swap! context assoc :state :min)
-        min-y))))
+(defn calculate-y [context keyboard-shown min-y max-y added-value]
+  (if keyboard-shown
+    (if (= (:state @context) :max)
+      (+ max-y added-value)
+      (if (< (:y @context) max-y)
+        (+ (:y @context) added-value)
+        (do
+          (swap! context assoc :state :max)
+          (+ max-y added-value))))
+    (do
+      (swap! context assoc :state :min)
+      min-y)))
 
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height bg-opacity]
   (-> (gesture/gesture-pan)
@@ -570,8 +569,9 @@
 
                   max-y (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - default height
                   max-height (- max-y 56 (:bottom insets))  ; 56 - topbar height
-                  min-y (+ min-y (when reply 38))
-                  y (calculate-y context keyboard-shown min-y max-y reply)
+                  added-value (if reply 38 0)
+                  min-y (+ min-y (when reply added-value))
+                  y (calculate-y context keyboard-shown min-y max-y added-value)
                   translate-y (reanimated/use-shared-value 0)
                   shared-height (reanimated/use-shared-value min-y)
                   bg-opacity (reanimated/use-shared-value 0)
@@ -600,7 +600,7 @@
                  ;handle
                  [rn/view {:style (styles/new-bottom-sheet-handle)}]
                  [reply/reply-message-auto-focus-wrapper (:text-input-ref refs) reply]
-                 [rn/view {:style {:height (- max-y 80)}}
+                 [rn/view {:style {:height (- max-y 80 added-value)}}
                   [text-input {:chat-id                chat-id
                                :on-content-size-change input-content-change
                                :sending-image          false
