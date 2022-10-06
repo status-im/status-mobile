@@ -298,7 +298,8 @@ class TestrailReport(BaseTestReport):
         try:
             test_id = self.get('get_results_for_case/%s/%s' % (test_run_id, test_case_id))['results'][0]['test_id']
             return '%stests/view/%s' % (self.url, test_id)
-        except KeyError:
+        except (KeyError, JSONDecodeError):
+            print('Cannot extract result for %s e2e' % test_case_id)
             return None
 
     def get_not_executed_tests(self, test_run_id):
