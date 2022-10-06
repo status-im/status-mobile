@@ -144,7 +144,7 @@
   (when-not (= reply @had-reply)
     (reset! had-reply reply)
     (when reply
-      ;; A seTimeout of 0 is necessary to ensure the statement is enqueued and will get executed ASAP.
+      ;; A setTimeout of 0 is necessary to ensure the statement is enqueued and will get executed ASAP.
       (js/setTimeout #(input-focus text-input-ref) 0))))
 
 (defn reply-message-wrapper-old [reply]
@@ -167,10 +167,9 @@
         (when reply
           [reply-message-wrapper-old reply])))))
 
-(defn reply-message-auto-focus-wrapper [text-input-ref]
+(defn reply-message-auto-focus-wrapper [text-input-ref _]
   (let [had-reply (atom nil)]
-    (fn []
-      (let [reply @(re-frame/subscribe [:chats/reply-message])]
+    (fn [_ reply]
         (focus-input-on-reply reply had-reply text-input-ref)
         (when reply
-          [reply-message-wrapper reply])))))
+          [reply-message-wrapper reply]))))

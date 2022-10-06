@@ -599,7 +599,7 @@
                                           (styles/new-input-bottom-sheet window-height))}
                  ;handle
                  [rn/view {:style (styles/new-bottom-sheet-handle)}]
-                 [reply/reply-message-auto-focus-wrapper (:text-input-ref refs)]
+                 [reply/reply-message-auto-focus-wrapper (:text-input-ref refs) reply]
                  [rn/view {:style {:height (- max-y 80)}}
                   [text-input {:chat-id                chat-id
                                :on-content-size-change input-content-change
