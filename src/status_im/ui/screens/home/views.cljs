@@ -26,12 +26,10 @@
             [status-im.utils.config :as config]
             [quo2.components.markdown.text :as quo2.text]
             [status-im.qr-scanner.core :as qr-scanner]
-            [status-im.utils.datetime :as datetime]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
             [quo2.foundations.colors :as quo2.colors]
-            [quo2.components.buttons.button :as quo2.button]
-            [quo2.components.info.information-box :as information-box])
+            [quo2.components.buttons.button :as quo2.button])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn home-tooltip-view []
@@ -189,12 +187,9 @@
                                         [home-tooltip-view]
                                         [react/view {:height 68}])}])))
 
-(def ens-banner-expire-timestamp 1665010800)
-
 (views/defview communities-and-chats-old []
   (views/letsubs [{:keys [items search-filter]} [:home-items]
-                  hide-home-tooltip?            [:hide-home-tooltip?]
-                  information-box-closed?       [:information-box-closed? :ens-banner]]
+                  hide-home-tooltip?            [:hide-home-tooltip?]]
     (if (and (empty? items)
              (empty? search-filter)
              hide-home-tooltip?
@@ -210,19 +205,6 @@
         :header                       [:<>
                                        (when (or (seq items) @search-active? (seq search-filter))
                                          [search-input-wrapper-old search-filter (empty? items)])
-                                       (when (< (datetime/timestamp-sec) ens-banner-expire-timestamp)
-                                         [information-box/information-box
-                                          {:type            :informative
-                                           :closable?       true
-                                           :closed?         information-box-closed?
-                                           :icon            :main-icons/info
-                                           :style           {:margin 20}
-                                           :button-label    (i18n/label :t/open-dapp2)
-                                           :on-button-press #(re-frame/dispatch
-                                                              [:browser.ui/open-url "https://ens-collect.status.im/"])
-                                           :id              :ens-banner
-                                           :on-close        #(re-frame/dispatch [:close-information-box :ens-banner true])}
-                                          (i18n/label :t/ens-banner-message)])
                                        (when (and (empty? items)
                                                   (or @search-active? (seq search-filter)))
                                          [start-suggestion search-filter])]

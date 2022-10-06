@@ -328,8 +328,9 @@
 ;; Information Box
 
 (def closable-information-boxes
-  [{:id      :ens-banner
-    :global? true}]) ;; global? - close information box across all profiles
+  "[{:id      information box id
+     :global? true/false (close information box across all profiles)}]"
+  [])
 
 (defn information-box-id-hash [id public-key global?]
   (if global?
