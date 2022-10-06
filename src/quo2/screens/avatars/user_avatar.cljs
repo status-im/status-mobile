@@ -3,7 +3,8 @@
             [quo2.foundations.colors :as colors]
             [quo.previews.preview :as preview]
             [quo2.components.avatars.user-avatar :as quo2]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im.react-native.resources :as resources]))
 
 (def descriptor [{:label   "Size:"
                   :key     :size
@@ -32,9 +33,15 @@
                  {:label "Full name separated by space"
                   :key   :full-name
                   :type  :text}
-                 {:label "Profile Picture URL"
-                  :key   :profile-picture
-                  :type  :text}])
+                 {:label   "Profile Picture"
+                  :key     :profile-picture
+                  :type    :select
+                  :options [{:value "None"
+                             :key   nil}
+                            {:value "Alicia Keys"
+                             :key   (resources/get-mock-image :user-picture-female2)}
+                            {:value "pedro.eth"
+                             :key   (resources/get-mock-image :user-picture-male4)}]}])
 
 (defn cool-preview []
   (let [state  (reagent/atom {:full-name "A Y"

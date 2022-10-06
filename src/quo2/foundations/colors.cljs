@@ -119,6 +119,7 @@
 
 ;;;; Customization
 
+;; Colors for customizing profiles and communities themes
 (def customization
   {:primary   {50 primary-50  ;; User can also use primary color as customisation color
                60 primary-60}
@@ -145,6 +146,11 @@
    :beige     {50 "#CAAE93"
                60 "#AA927C"}})
 
+(def colors-map (merge {:danger  {50 danger-50
+                                  60 danger-60}
+                        :success {50 success-50
+                                  60 success-60}} customization))
+
 (def custom-color
   "(custom-color color suffix opacity)
    color   :primary/:purple/...
@@ -155,7 +161,7 @@
      ([color suffix]
       (custom-color color suffix nil))
      ([color suffix opacity]
-      (let [base-color (get-in customization [(keyword color) suffix])]
+      (let [base-color (get-in colors-map [(keyword color) suffix])]
         (if opacity (alpha base-color (/ opacity 100)) base-color))))))
 
 (defn custom-color-by-theme

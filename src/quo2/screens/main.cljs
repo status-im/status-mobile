@@ -25,6 +25,7 @@
             [quo2.screens.list-items.channel :as channel]
             [quo2.screens.markdown.text :as text]
             [quo2.screens.messages.gap :as messages-gap]
+            [quo2.screens.messages.system-message :as system-message]
             [quo2.screens.notifications.activity-logs :as activity-logs]
             [quo2.screens.reactions.react :as react]
             [quo2.screens.selectors.disclaimer :as disclaimer]
@@ -96,7 +97,10 @@
                :component text/preview-text}]
    :messages [{:name      :gap
                :insets    {:top false}
-               :component messages-gap/preview-messages-gap}]
+               :component messages-gap/preview-messages-gap}
+              {:name      :system-messages
+               :insets    {:top false}
+               :component system-message/preview-system-message}]
    :navigation [{:name      :bottom-nav-tab
                  :insets    {:top false}
                  :component bottom-nav-tab/preview-bottom-nav-tab}

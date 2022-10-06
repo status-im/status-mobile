@@ -4,8 +4,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as icons]
             [clojure.string :refer [upper-case split blank?]]
-            [quo.theme :refer [dark?]]
-            [status-im.ui.components.react :as react]))
+            [quo.theme :refer [dark?]]))
 
 (def sizes {:big {:outer 80
                   :inner 72
@@ -98,47 +97,46 @@
            status-indicator?
            profile-picture
            full-name]
-    :or {full-name "empty name"
-         status-indicator? true
-         online? true
-         size :big
-         ring? true}}]
-  (let [initials (if full-name
-                   (reduce str (map first (split full-name " ")))
-                   "")
+    :or   {full-name         "empty name"
+           status-indicator? true
+           online?           true
+           size              :big
+           ring?             true}}]
+  (let [initials             (if full-name
+                               (reduce str (map first (split full-name " ")))
+                               "")
         first-initial-letter (if full-name
                                (or (first full-name) "")
                                "")
-        identicon? (contains? identicon-sizes size)
-        small? (contains? small-sizes size)
-        using-profile-picture? (-> profile-picture
-                                   blank?
-                                   false?)
-        outer-dimensions (get-in sizes [size :outer])
-        inner-dimensions (get-in sizes [size (if ring?
-                                               :inner
-                                               :outer)])
-        font-size (get-in sizes [size :font-size])
-        icon-text (if-not (or (blank? first-initial-letter)
-                              (blank? initials))
-                    (if small?
-                      first-initial-letter
-                      initials)
-                    "")]
-    [rn/view {:style {:width outer-dimensions
-                      :height outer-dimensions
+        identicon?           (contains? identicon-sizes size)
+        small?               (contains? small-sizes size)
+        outer-dimensions     (get-in sizes [size :outer])
+        inner-dimensions     (get-in sizes [size (if ring?
+                                                   :inner
+                                                   :outer)])
+        font-size            (get-in sizes [size :font-size])
+        icon-text            (if-not (or (blank? first-initial-letter)
+                                         (blank? initials))
+                               (if small?
+                                 first-initial-letter
+                                 initials)
+                               "")]
+    [rn/view {:style {:width         outer-dimensions
+                      :height        outer-dimensions
                       :border-radius outer-dimensions}}
      (when (and ring? identicon?)
-       [icons/icon :main-icons/identicon-ring {:width outer-dimensions
-                                               :height outer-dimensions
-                                               :size outer-dimensions
+       [icons/icon :main-icons/identicon-ring {:width    outer-dimensions
+                                               :height   outer-dimensions
+                                               :size     outer-dimensions
                                                :no-color true}])
-     (if using-profile-picture?
-       [react/image {:style  (container-styling inner-dimensions outer-dimensions)
-                     :source {:uri profile-picture}}]
+     (if profile-picture
+       ;; display image
+       [rn/image {:style  (container-styling inner-dimensions outer-dimensions)
+                  :source profile-picture}]
+       ;; else display initials
        [container inner-dimensions outer-dimensions
         [text/text {:weight :semi-bold
-                    :size font-size
-                    :style {:color colors/white-opa-70}}
+                    :size   font-size
+                    :style  {:color colors/white-opa-70}}
          (upper-case icon-text)]])
      [dot-indicator size status-indicator? online? ring? (dark?)]]))

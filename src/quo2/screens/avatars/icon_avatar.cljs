@@ -19,7 +19,7 @@
                   :type    :select
                   :options [{:key   :main-icons/placeholder20
                              :value "Placeholder"}
-                            {:key   :main-icons/walelt
+                            {:key   :main-icons/wallet
                              :value "Wallet"}
                             {:key   :main-icons/play
                              :value "Play"}]}
