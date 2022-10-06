@@ -462,18 +462,19 @@
                                        :input-focus         #(input-focus text-input-ref)
                                        :set-active          set-active-panel}])])]]]))))
 
-(defn calculate-y [context keyboard-shown min-y max-y]
-  (if keyboard-shown
-    (if (= (:state @context) :max)
-      max-y
-      (if (< (:y @context) max-y)
-        (:y @context)
-        (do
-          (swap! context assoc :state :max)
-          max-y)))
-    (do
-      (swap! context assoc :state :min)
-      min-y)))
+(defn calculate-y [context keyboard-shown min-y max-y reply]
+  (let [added-value (if reply 38 0)]
+    (if keyboard-shown
+      (if (= (:state @context) :max)
+        (+ max-y added-value)
+        (if (< (:y @context) max-y)
+          (+ (:y @context) added-value)
+          (do
+            (swap! context assoc :state :max)
+            (+ max-y added-value))))
+      (do
+        (swap! context assoc :state :min)
+        min-y))))
 
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height bg-opacity]
   (-> (gesture/gesture-pan)
@@ -507,7 +508,7 @@
                (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
                (re-frame/dispatch [:dismiss-keyboard]))))))))
 
-(defn get-input-content-change [context translate-y shared-height max-height bg-opacity keyboard-shown min-y max-y reply]
+(defn get-input-content-change [context translate-y shared-height max-height bg-opacity keyboard-shown min-y max-y]
   (fn [evt]
     (if (:clear @context)
       (do
@@ -518,8 +519,7 @@
         (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
         (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0)))
       (when (not= (:state @context) :max)
-        (let [new-y (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") 22) 22))
-              new-y (+ new-y (if reply 38 0))]
+        (let [new-y (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") 22) 22))]
           (if (< new-y max-y)
             (do
               (if (> (- max-y new-y) 120)
@@ -570,14 +570,14 @@
 
                   max-y (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - default height
                   max-height (- max-y 56 (:bottom insets))  ; 56 - topbar height
-                  y (calculate-y context keyboard-shown min-y max-y)
-                  y (+ y (when reply 38))
+                  min-y (+ min-y (when reply 38))
+                  y (calculate-y context keyboard-shown min-y max-y reply)
                   translate-y (reanimated/use-shared-value 0)
                   shared-height (reanimated/use-shared-value min-y)
                   bg-opacity (reanimated/use-shared-value 0)
 
                   input-content-change (get-input-content-change context translate-y shared-height max-height
-                                                                 bg-opacity keyboard-shown min-y max-y reply)
+                                                                 bg-opacity keyboard-shown min-y max-y)
                   bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
                                                                  min-y max-y shared-height max-height bg-opacity)]
               (quo.react/effect! #(do
