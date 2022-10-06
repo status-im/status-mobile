@@ -28,14 +28,21 @@
 (def sort-list-by (reagent/atom :name))
 
 (def mock-community-item-data ;; TODO: remove once communities are loaded with this data.
-  {:data {:status         :gated
-          :locked         true
-          ;; :images {:thumbnail {:uri []}} ;; TODO address issue with context tag image
-          :cover          (resources/get-image :community-cover)
-          :tokens         [{:id  1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]
-          :tags           [{:id 1 :tag-label (i18n/label :t/music) :resource (resources/get-image :music)}
-                           {:id 2 :tag-label (i18n/label :t/lifestyle) :resource (resources/get-image :lifestyle)}
-                           {:id 3 :tag-label (i18n/label :t/podcasts) :resource (resources/get-image :podcasts)}]}})
+  {:data {:status :gated
+          :locked true
+          :cover  (resources/get-image :community-cover)
+          :tokens [{:id    1
+                    :group [{:id         1
+                             :token-icon (resources/get-image :status-logo)}]}]
+          :tags   [{:id        1
+                    :tag-label (i18n/label :t/music)
+                    :resource  (resources/get-image :music)}
+                   {:id        2
+                    :tag-label (i18n/label :t/lifestyle)
+                    :resource  (resources/get-image :lifestyle)}
+                   {:id        3
+                    :tag-label (i18n/label :t/podcasts)
+                    :resource  (resources/get-image :podcasts)}]}})
 
 (defn plus-button []
   (let [logging-in? (<sub [:multiaccounts/login])]

@@ -14,8 +14,7 @@
        [rn/view {:padding-vertical 60
                  :align-items      :center}
         [quo2/disclaimer
-         {:checked?  @checked?
-          :container-style {:margin-bottom 40}
+         {:container-style {:margin-bottom 40}
           :on-change #(swap! checked? not)}
          "I agree with the community rules"]
         [button/button
