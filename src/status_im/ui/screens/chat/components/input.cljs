@@ -465,12 +465,12 @@
 (defn calculate-y [context keyboard-shown min-y max-y added-value]
   (if keyboard-shown
     (if (= (:state @context) :max)
-      (+ max-y added-value)
+      max-y
       (if (< (:y @context) max-y)
         (+ (:y @context) added-value)
         (do
           (swap! context assoc :state :max)
-          (+ max-y added-value))))
+          max-y)))
     (do
       (swap! context assoc :state :min)
       min-y)))
