@@ -35,14 +35,14 @@
         connectivity-status (if isConnected :online :offline)
         status-changed?     (not= connectivity-status old-network-status)
         type-changed?       (= type old-network-type)
-        reconnected?        (when (and isInternetReachable
-                                       @app-went-offline?)
-                              (swap! app-went-offline? not)
-                              true)
         _                   (when (and (not isConnected)
                                        (not isInternetReachable)
                                        (not @app-went-offline?))
-                              (swap! app-went-offline? not))]
+                              (swap! app-went-offline? not))
+        reconnected?        (when (and isInternetReachable
+                                       @app-went-offline?)
+                              (swap! app-went-offline? not)
+                              true)]
     (log/debug "[net-info]"
                "old-network-status"  old-network-status
                "old-network-type"    old-network-type
@@ -50,7 +50,7 @@
                "type"                type
                "details"             details)
     (fx/merge cofx
-              (when status-changed?
+              (when (or status-changed? reconnected?)
                 (change-network-status isConnected reconnected?))
               (when-not type-changed?
                 (change-network-type old-network-type type (:is-connection-expensive details))))))
