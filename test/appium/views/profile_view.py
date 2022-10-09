@@ -298,12 +298,13 @@ class ProfileView(BaseView):
         self.active_network_name = Text(self.driver,
                                         xpath="//android.widget.TextView[contains(@text,'with upstream RPC')]")
         self.plus_button = Button(self.driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[2]")
-        self.ropsten_chain_button = Button(self.driver, translation_id="ropsten-network")
+        self.custom_chain_button = Button(self.driver, translation_id="custom")
         self.custom_network_url_input = EditBox(self.driver, translation_id="rpc-url",
                                                 suffix="/following-sibling::*[1]/android.widget.EditText")
         self.custom_network_symbol_input = EditBox(self.driver, translation_id="specify-symbol")
         self.specify_name_input = EditBox(self.driver, translation_id="name",
                                           suffix="/following-sibling::*[1]/android.widget.EditText")
+        self.specify_network_id_input = EditBox(self.driver, translation_id="specify-network-id")
         self.connect_button = Button(self.driver, accessibility_id="network-connect-button")
         ## Toggles
         self.transaction_management_enabled_toggle = Button(self.driver,
@@ -361,19 +362,18 @@ class ProfileView(BaseView):
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
-    def add_custom_network(self, rpc_url='https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a',
-                           name='custom_ropsten', symbol='ETHro'):
-        self.driver.info("## Add predefined custom network", device=False)
+    def add_custom_network(self, rpc_url: str, name: str, symbol: str, netwrok_id:str):
+        self.driver.info("## Add custom network", device=False)
         self.advanced_button.click()
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
-        self.plus_button.click_until_presence_of_element(self.ropsten_chain_button)
-        self.custom_network_url_input.send_keys(rpc_url)
-        self.specify_name_input.send_keys(name)
+        self.plus_button.click_until_presence_of_element(self.custom_chain_button)
+        self.custom_network_url_input.set_value(rpc_url)
+        self.specify_name_input.set_value(name)
         self.custom_network_symbol_input.set_value(symbol)
-        self.ropsten_chain_button.scroll_to_element()
-        self.ropsten_chain_button.click()
-        self.ropsten_chain_button.click()
+        self.custom_chain_button.scroll_and_click()
+        self.specify_network_id_input.scroll_to_element()
+        self.specify_network_id_input.set_value(netwrok_id)
         self.save_button.click()
         self.element_by_text_part(name).scroll_to_element()
         self.element_by_text_part(name).click_until_presence_of_element(self.connect_button)
@@ -470,7 +470,7 @@ class ProfileView(BaseView):
     def retry_to_connect_to_mailserver(self):
         self.driver.info("Retrying to connect to mailserver 5 times")
         i = 0
-        while self.element_by_translation_id("mailserver-error-title").is_element_present(20) and i < 5:
+        while self.element_by_translation_id("mailserver-error-title").is_element_displayed(20) and i < 5:
             self.element_by_translation_id("mailserver-retry", uppercase=True).click()
             i += 1
             self.just_fyi("retrying to connect: %s attempt" % i)

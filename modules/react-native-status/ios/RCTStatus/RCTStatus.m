@@ -164,9 +164,19 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     NSString *networkDirPath = @"ethereum/mainnet_rpc";
 #endif
 
+#if DEBUG
+    NSString *goerliNetworkDirPath = @"ethereum/goerli_rpc_dev";
+#else
+    NSString *goerliNetworkDirPath = @"ethereum/goerli_rpc";
+#endif
+
     NSURL *networkDir = [rootUrl URLByAppendingPathComponent:networkDirPath];
     NSURL *originalGethLogsFile = [networkDir URLByAppendingPathComponent:@"geth.log"];
     NSURL *gethLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
+
+    NSURL *goerliNetworkDir = [rootUrl URLByAppendingPathComponent:goerliNetworkDirPath];
+    NSURL *goerliGethLogsFile = [goerliNetworkDir URLByAppendingPathComponent:@"geth.log"];
+    NSURL *goerliLogsFile = [logsFolderName URLByAppendingPathComponent:@"goerli_geth.log"];
 
     [dbJson writeToFile:dbFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     [jsLogs writeToFile:jsLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
@@ -174,6 +184,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     //NSString* gethLogs = StatusgoExportNodeLogs();
     //[gethLogs writeToFile:gethLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     [fileManager copyItemAtPath:originalGethLogsFile.path toPath:gethLogsFile.path error:nil];
+    [fileManager copyItemAtPath:goerliGethLogsFile.path toPath:goerliLogsFile.path error:nil];
 
     [SSZipArchive createZipFileAtPath:zipFile.path withContentsOfDirectory:logsFolderName.path];
     [fileManager removeItemAtPath:logsFolderName.path error:nil];

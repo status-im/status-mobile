@@ -55,13 +55,16 @@
    :podcasts           (js/require "../resources/images/ui/podcasts.png")})
 
 (def mock-images
-  {:photo1           (js/require "../resources/images/mock/photo1.png")
-   :photo2           (js/require "../resources/images/mock/photo2.png")
-   :photo3           (js/require "../resources/images/mock/photo3.png")
-   :community-banner (js/require "../resources/images/mock/community-banner.png")
-   :community-logo   (js/require "../resources/images/mock/community-logo.png")
-   :gif              (js/require "../resources/images/mock/gif.png")
-   :sticker          (js/require "../resources/images/mock/sticker.png")})
+  {:photo1               (js/require "../resources/images/mock/photo1.png")
+   :photo2               (js/require "../resources/images/mock/photo2.png")
+   :photo3               (js/require "../resources/images/mock/photo3.png")
+   :community-banner     (js/require "../resources/images/mock/community-banner.png")
+   :community-logo       (js/require "../resources/images/mock/community-logo.png")
+   :gif                  (js/require "../resources/images/mock/gif.png")
+   :sticker              (js/require "../resources/images/mock/sticker.png")
+   :user-picture-female2 (js/require "../resources/images/mock/user_picture_female2.png")
+   :user-picture-male4   (js/require "../resources/images/mock/user_picture_male4.png")
+   :user-picture-male5   (js/require "../resources/images/mock/user_picture_male5.png")})
 
 (defn get-theme-image [k]
   (get ui (when (colors/dark?) (keyword (str (name k) "-dark"))) (get ui k)))

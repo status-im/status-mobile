@@ -148,7 +148,7 @@ class TestTimelineHistoryNodesBootnodesMultipleDeviceMergedMedium(MultipleShared
         self.profile_1.bootnodes_button.click()
         self.profile_1.add_bootnode_button.click()
         self.profile_1.specify_name_input.set_value('test')
-        # TODO: blocked as validation is missing for bootnodes (rechecked 27.07.22, valid)
+        # TODO: blocked as validation is missing for bootnodes (rechecked 04.10.22, valid)
         # profile_1.bootnode_address_input.set_value('invalid_bootnode_address')
         # if not profile_1.element_by_text_part('Invalid format').is_element_displayed():
         #      self.errors.append('Validation message about invalid format of bootnode is not shown')
@@ -420,7 +420,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.chat_1.send_message(self.message_1)
         self.chat_1.send_message(self.message_2)
         self.chat_1.pin_message(self.message_1)
-        if not self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present():
+        if not self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed():
             self.drivers[0].fail("Message is not pinned!")
 
         self.home_1.just_fyi("Check that Device2 can pin Device1 message in 1-1 chat and two pinned "
@@ -435,16 +435,16 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.chat_1.chat_options.click()
         self.chat_1.view_profile_button.click()
         self.chat_1.pinned_messages_button.click()
-        if not (self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present() and
-                self.chat_1.chat_element_by_text(self.message_2).pinned_by_label.is_element_present() and
-                self.chat_1.chat_element_by_text(self.message_1).is_element_present() and
-                self.chat_1.chat_element_by_text(self.message_2).is_element_present()):
+        if not (self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed() and
+                self.chat_1.chat_element_by_text(self.message_2).pinned_by_label.is_element_displayed() and
+                self.chat_1.chat_element_by_text(self.message_1).is_element_displayed() and
+                self.chat_1.chat_element_by_text(self.message_2).is_element_displayed()):
             self.drivers[0].fail("Something missed on Pinned messaged on Device 1!")
         self.chat_2.pinned_messages_button.click()
-        if not (self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present() and
-                self.chat_2.chat_element_by_text(self.message_2).pinned_by_label.is_element_present() and
-                self.chat_2.chat_element_by_text(self.message_1).is_element_present() and
-                self.chat_2.chat_element_by_text(self.message_2).is_element_present()):
+        if not (self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed() and
+                self.chat_2.chat_element_by_text(self.message_2).pinned_by_label.is_element_displayed() and
+                self.chat_2.chat_element_by_text(self.message_1).is_element_displayed() and
+                self.chat_2.chat_element_by_text(self.message_2).is_element_displayed()):
             self.drivers[0].fail("Something missed on Pinned messaged on Device 2!")
         self.chat_1.close_button.click()
 
@@ -454,25 +454,25 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         self.chat_1.send_message(self.message_4)
         self.chat_1.pin_message(self.message_3)
         self.chat_1.pin_message(self.message_4)
-        if not self.chat_1.unpin_message_popup.is_element_present():
+        if not self.chat_1.unpin_message_popup.is_element_displayed():
             self.drivers[0].fail("No 'Unpin' dialog appears when pining 4th message")
 
         self.home_1.just_fyi("Unpin one message so that another could be pinned")
         self.chat_1.unpin_message_popup.message_text(self.message_1).click()
         self.chat_1.unpin_message_popup.click_unpin_message_button()
 
-        if self.chat_1.unpin_message_popup.is_element_present():
+        if self.chat_1.unpin_message_popup.is_element_displayed():
             self.drivers[0].fail("Unpin message pop up keep staying after Unpin button pressed")
-        if self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present():
+        if self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed():
             self.drivers[0].fail("Message is not unpinned!")
-        if not self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_present():
+        if not self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed():
             self.drivers[0].fail("Message is not pinned!")
 
         self.home_1.just_fyi("Unpin another message and check it's unpinned for another user")
         self.chat_2.close_button.click()
         self.chat_2.pin_message(self.message_4, action="unpin")
         self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
-        if self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_present():
+        if self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed():
             self.drivers[0].fail("Message_4 is not unpinned!")
 
     @marks.testrail_id(702065)
@@ -577,13 +577,13 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         [home.get_chat(self.new_group_chat_name).click() for home in (self.home_1, self.home_2)]
         self.group_chat_1.send_message(self.message_1)
         self.group_chat_1.pin_message(self.message_1)
-        if not (self.group_chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present(30) and
-                self.group_chat_2.chat_element_by_text(self.message_1).pinned_by_label.is_element_present(30)):
+        if not (self.group_chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed(30) and
+                self.group_chat_2.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed(30)):
             self.errors.append("Message is not pinned in group chat!")
 
         self.home_1.just_fyi("Check that non admin user can not unpin messages")
         self.group_chat_2.chat_element_by_text(self.message_1).long_press_element()
-        if self.group_chat_2.element_by_translation_id("unpin").is_element_present():
+        if self.group_chat_2.element_by_translation_id("unpin").is_element_displayed():
             self.errors.append("Unpin option is available for non-admin user")
 
         self.home_1.just_fyi("Grant another user with admin rights and check he can unpin message now")
@@ -593,8 +593,8 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
         options.make_admin_button.click()
         self.group_chat_2.click_system_back_button()
         self.group_chat_2.pin_message(self.message_1, action="unpin")
-        if (self.group_chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_present() and
-                self.group_chat_2.chat_element_by_text(self.message_1).pinned_by_label.is_element_present()):
+        if (self.group_chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed() and
+                self.group_chat_2.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed()):
             self.errors.append("Message failed be unpinned by user who granted admin permissions!")
 
         self.errors.verify_no_errors()

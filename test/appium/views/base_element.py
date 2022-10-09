@@ -95,10 +95,9 @@ class BaseElement(object):
         counter = 0
         self.driver.info("Click until `%s` by `%s`: `%s` will be presented" % (
             desired_element.name, desired_element.by, desired_element.locator))
-        while not desired_element.is_element_present(1) and counter <= attempts:
+        while not desired_element.is_element_displayed(1) and counter <= attempts:
             try:
                 self.find_element().click()
-                desired_element.is_element_present(5)
                 return self.navigate()
             except (NoSuchElementException, TimeoutException):
                 counter += 1
@@ -178,11 +177,11 @@ class BaseElement(object):
         self.scroll_to_element(direction=direction)
         self.click()
 
-    def is_element_present(self, sec=5):
-        try:
-            return self.wait_for_element(sec)
-        except TimeoutException:
-            return False
+    # def is_element_present(self, sec=5):
+    #     try:
+    #         return self.wait_for_element(sec)
+    #     except TimeoutException:
+    #         return False
 
     def is_element_displayed(self, sec=5, ignored_exceptions=None):
         try:
@@ -374,7 +373,7 @@ class Button(BaseElement):
         counter = 0
         self.driver.info("Click until `%s` by `%s`: `%s` is NOT presented" % (
             desired_element.name, desired_element.by, desired_element.locator))
-        while desired_element.is_element_present(1) and counter <= attempts:
+        while desired_element.is_element_displayed(1) and counter <= attempts:
             try:
                 self.find_element().click()
                 counter += 1

@@ -169,13 +169,13 @@ class TestActivityCenterMultipleDeviceMedium(MultipleSharedDeviceTestCase):
         self.home_1.home_button.double_click()
 
         self.home_1.just_fyi("Check there are no unread messages counter on chats after message is read")
-        if (self.home_1.notifications_unread_badge.is_element_present() or
+        if (self.home_1.notifications_unread_badge.is_element_displayed() or
                 self.home_1.get_chat_from_home_view(self.group_chat_name_1).new_messages_counter.text == "1"):
             self.errors.append("Unread message indicator is kept after message is read in chat")
 
         self.home_1.just_fyi("Check there is an empty view on Activity Center")
         self.home_1.notifications_button.click()
-        if not self.home_1.element_by_translation_id('empty-activity-center').is_element_present():
+        if not self.home_1.element_by_translation_id('empty-activity-center').is_element_displayed():
             self.errors.append("Activity Center still has some chats after user has opened all of them")
 
         self.errors.verify_no_errors()

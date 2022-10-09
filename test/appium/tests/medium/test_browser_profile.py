@@ -280,18 +280,21 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702166)
     def test_profile_add_custom_network(self):
         self.home.get_back_to_home_view()
+        rpc, name, id, symbol = 'https://polygon-rpc.com/', 'Polygon', '137', 'MATIC'
         profile = self.home.profile_button.click()
-        profile.add_custom_network()
+        profile.add_custom_network(rpc_url=rpc, netwrok_id=id, symbol=symbol, name=name)
         self.sign_in.sign_in()
+        wallet = self.home.wallet_button.click()
+        if not wallet.element_by_text_part(symbol).is_element_displayed():
+            self.errors.append("No %s currency is shown when switching to custom network" % symbol)
         self.home.profile_button.click()
         profile.advanced_button.click()
         profile.network_settings_button.scroll_to_element(10, 'up')
-        if not profile.element_by_text_part('custom_ropsten').is_element_displayed():
-            self.driver.fail("Network custom_ropsten was not added!")
+        if not profile.element_by_text_part(name).is_element_displayed():
+            self.driver.fail("Custom network %s was not added!" % name)
         profile.get_back_to_home_view()
         # Switching back to Goerli for the next cases
         profile.switch_network('Goerli with upstream RPC')
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702164)

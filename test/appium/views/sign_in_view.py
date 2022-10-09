@@ -105,7 +105,7 @@ class TermsOfUseLink(Button):
 
     def click(self):
         counter = 0
-        while PrivacyPolicyLink(self.driver).is_element_present(1) and counter <= 5:
+        while PrivacyPolicyLink(self.driver).is_element_displayed(1) and counter <= 5:
             try:
                 self.click_inside_element_by_coordinate(times_to_click=2)
                 counter += 1

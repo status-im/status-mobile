@@ -470,13 +470,13 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
-        if wallet.backup_recovery_phrase_warning_text.is_element_present():
+        if wallet.backup_recovery_phrase_warning_text.is_element_displayed():
             self.driver.fail("'Back up your seed phrase' warning is shown on Wallet while no funds are present")
         address = wallet.get_wallet_address()
         self.click = wallet.close_button.click()
         w3.donate_testnet_eth(address, 0.0001)
         wallet.wait_balance_is_changed()
-        if not wallet.backup_recovery_phrase_warning_text.is_element_present(30):
+        if not wallet.backup_recovery_phrase_warning_text.is_element_displayed(30):
             self.driver.fail("'Back up your seed phrase' warning is not shown on Wallet with funds")
         profile = wallet.get_profile_view()
         wallet.backup_recovery_phrase_warning_text.click()
@@ -813,7 +813,7 @@ class TestChatManagement(SingleDeviceTestCase):
         no_link_tos_error_msg = 'Could not open Terms of Use from'
 
         signin.just_fyi("Checking privacy policy and TOS links")
-        if not signin.privacy_policy_link.is_element_present():
+        if not signin.privacy_policy_link.is_element_displayed():
             self.errors.append('%s Sign in view!' % no_link_found_error_msg)
         if not signin.terms_of_use_link.is_element_displayed():
             self.driver.fail("No Terms of Use link on Sign in view!")
@@ -990,6 +990,7 @@ class TestChatManagement(SingleDeviceTestCase):
             self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
 
     @marks.testrail_id(5721)
+    @marks.xfail(reason="may be failed due to #14013")
     def test_group_chat_cant_add_more_twenty_participants(self):
         user_20_contacts = dict()
         user_20_contacts[
@@ -1123,7 +1124,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(6300)
     @marks.skip
-    # TODO: waiting mode (rechecked 27.07.22, valid)
+    # TODO: waiting mode (rechecked 04.10.22, valid)
     def test_webview_security(self):
         home_view = SignInView(self.driver).create_user()
         daap_view = home_view.dapp_tab_button.click()

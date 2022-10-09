@@ -25,6 +25,7 @@
             [quo2.screens.list-items.channel :as channel]
             [quo2.screens.markdown.text :as text]
             [quo2.screens.messages.gap :as messages-gap]
+            [quo2.screens.messages.system-message :as system-message]
             [quo2.screens.notifications.activity-logs :as activity-logs]
             [quo2.screens.reactions.react :as react]
             [quo2.screens.selectors.disclaimer :as disclaimer]
@@ -36,7 +37,7 @@
             [quo2.screens.tabs.segmented-tab :as segmented]
             [quo2.screens.tabs.tabs :as tabs]
             [quo2.screens.tags.context-tags :as context-tags]
-            [quo2.screens.tags.filter-tags :as filter-tags]
+            [quo2.screens.tags.tags :as tags]
             [quo2.screens.tags.permission-tag :as permission-tag]
             [quo2.screens.tags.status-tags :as status-tags]
             [quo2.screens.tags.token-tag :as token-tag]
@@ -97,7 +98,10 @@
                :component text/preview-text}]
    :messages [{:name      :gap
                :insets    {:top false}
-               :component messages-gap/preview-messages-gap}]
+               :component messages-gap/preview-messages-gap}
+              {:name      :system-messages
+               :insets    {:top false}
+               :component system-message/preview-system-message}]
    :navigation [{:name      :bottom-nav-tab
                  :insets    {:top false}
                  :component bottom-nav-tab/preview-bottom-nav-tab}
@@ -131,9 +135,9 @@
    :tags [{:name      :context-tags
            :insets    {:top false}
            :component context-tags/preview-context-tags}
-          {:name      :filter-tags
+          {:name      :tags
            :insets    {:top false}
-           :component filter-tags/preview-filter-tags}
+           :component tags/preview-tags}
           {:name      :permission-tag
            :insets    {:top false}
            :component permission-tag/preview-permission-tag}

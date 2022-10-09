@@ -89,6 +89,7 @@ class TestrailReport(BaseTestReport):
                         'include_all': False}
         run = self.post('add_run/%s' % self.project_id, request_body)
         self.run_id = run['id']
+        print("Testrun: %sruns/view/%s" % (self.url, self.run_id))
 
     def get_cases(self, section_ids):
         test_cases = list()
@@ -157,9 +158,7 @@ class TestrailReport(BaseTestReport):
             else:
                 for phase in test_cases:
                     if phase != 'upgrade':
-                        print("For %s phase" % phase)
                         for category in test_cases[phase]:
-                            print("For %s category" % category)
                             for case in self.get_cases([test_cases[phase][category]]):
                                 case_ids.append(case['id'])
         return case_ids
@@ -299,7 +298,8 @@ class TestrailReport(BaseTestReport):
         try:
             test_id = self.get('get_results_for_case/%s/%s' % (test_run_id, test_case_id))['results'][0]['test_id']
             return '%stests/view/%s' % (self.url, test_id)
-        except KeyError:
+        except (KeyError, JSONDecodeError):
+            print('Cannot extract result for %s e2e' % test_case_id)
             return None
 
     def get_not_executed_tests(self, test_run_id):

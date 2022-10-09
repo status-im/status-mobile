@@ -292,7 +292,7 @@ class TestPublicChatBrowserOneDeviceMerged(MultipleSharedDeviceTestCase):
     def test_public_chat_copy_and_paste_message_in_chat_input(self):
         message_text = {'text_message': 'mmmeowesage_text'}
         formatted_message = {'message_with_link': 'https://status.im',
-                             # TODO: blocked with 11161 (rechecked 23.11.21, valid)
+                             # TODO: blocked with 11161 (rechecked 04.10.22, valid)
                              # 'message_with_tag': '#successishere'
                              }
         message_input = self.chat.chat_message_input
