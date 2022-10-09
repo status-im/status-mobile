@@ -172,11 +172,14 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 
     NSURL *networkDir = [rootUrl URLByAppendingPathComponent:networkDirPath];
     NSURL *originalGethLogsFile = [networkDir URLByAppendingPathComponent:@"geth.log"];
-    NSURL *gethLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
+    NSURL *gethLogsFile = [logsFolderName URLByAppendingPathComponent:@"mainnet_geth.log"];
 
     NSURL *goerliNetworkDir = [rootUrl URLByAppendingPathComponent:goerliNetworkDirPath];
     NSURL *goerliGethLogsFile = [goerliNetworkDir URLByAppendingPathComponent:@"geth.log"];
     NSURL *goerliLogsFile = [logsFolderName URLByAppendingPathComponent:@"goerli_geth.log"];
+
+    NSURL *mainGethLogsFile = [rootUrl URLByAppendingPathComponent:@"geth.log"];
+    NSURL *mainLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
 
     [dbJson writeToFile:dbFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     [jsLogs writeToFile:jsLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
@@ -185,6 +188,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     //[gethLogs writeToFile:gethLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     [fileManager copyItemAtPath:originalGethLogsFile.path toPath:gethLogsFile.path error:nil];
     [fileManager copyItemAtPath:goerliGethLogsFile.path toPath:goerliLogsFile.path error:nil];
+    [fileManager copyItemAtPath:mainGethLogsFile.path toPath:mainLogsFile.path error:nil];
 
     [SSZipArchive createZipFileAtPath:zipFile.path withContentsOfDirectory:logsFolderName.path];
     [fileManager removeItemAtPath:logsFolderName.path error:nil];
@@ -422,12 +426,10 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
     NSString *relativeDataDir = [configJSON objectForKey:@"DataDir"];
     NSString *absDataDir = [rootUrl.path stringByAppendingString:relativeDataDir];
     NSURL *absDataDirUrl = [NSURL fileURLWithPath:absDataDir];
-    NSURL *dataDirUrl = [NSURL fileURLWithPath:relativeDataDir];
-    NSURL *logUrl = [dataDirUrl URLByAppendingPathComponent:@"geth.log"];
     NSString *keystoreDir = [@"/keystore/" stringByAppendingString:keyUID];
     [configJSON setValue:keystoreDir forKey:@"KeyStoreDir"];
     [configJSON setValue:@"" forKey:@"LogDir"];
-    [configJSON setValue:logUrl.path forKey:@"LogFile"];
+    [configJSON setValue:@"geth.log" forKey:@"LogFile"];
 
     NSString *resultingConfig = [configJSON bv_jsonStringWithPrettyPrint:NO];
     NSLog(@"node config %@", resultingConfig);
@@ -437,7 +439,7 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
                withIntermediateDirectories:YES attributes:nil error:nil];
     }
 
-    NSLog(@"logUrlPath %@ rootDir %@", logUrl.path, rootUrl.path);
+    NSLog(@"logUrlPath %@ rootDir %@", @"geth.log", rootUrl.path);
     NSURL *absLogUrl = [absDataDirUrl URLByAppendingPathComponent:@"geth.log"];
     if(![fileManager fileExistsAtPath:absLogUrl.path]) {
         NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
