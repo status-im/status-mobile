@@ -568,8 +568,8 @@
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
 
                   max-y (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - default height
-                  max-height (- max-y 56 (:bottom insets))  ; 56 - topbar height
-                  added-value (if reply 38 0)
+                  max-height (- max-y 56 (:bottom insets))  ; 56 - top-bar height
+                  added-value (if reply 38 0) ; the increased height of the input box needed when replying
                   min-y (+ min-y added-value)
                   y (calculate-y context keyboard-shown min-y max-y added-value)
                   translate-y (reanimated/use-shared-value 0)
