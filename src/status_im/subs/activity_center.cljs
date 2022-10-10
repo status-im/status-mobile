@@ -7,18 +7,21 @@
 
 (re-frame/reg-sub
  :activity-center/notifications
- (fn [db]
-   (get-in db [:activity-center :notifications])))
+ :<- [:activity-center]
+ (fn [activity-center]
+   (:notifications activity-center)))
 
 (re-frame/reg-sub
  :activity-center/filter-status
- (fn [db]
-   (get-in db [:activity-center :filter :status])))
+ :<- [:activity-center]
+ (fn [activity-center]
+   (get-in activity-center [:filter :status])))
 
 (re-frame/reg-sub
  :activity-center/filter-type
- (fn [db]
-   (get-in db [:activity-center :filter :type] constants/activity-center-notification-type-no-type)))
+ :<- [:activity-center]
+ (fn [activity-center]
+   (get-in activity-center [:filter :type] constants/activity-center-notification-type-no-type)))
 
 (re-frame/reg-sub
  :activity-center/filtered-notifications
