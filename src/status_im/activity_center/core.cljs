@@ -103,8 +103,7 @@
                                  :reset-data?   false}))))
 
 (fx/defn notifications-fetch-success
-  {:events       [:activity-center.notifications/fetch-success]
-   :interceptors [(re-frame/path [:activity-center :notifications])]}
+  {:events [:activity-center.notifications/fetch-success]}
   [{:keys [db]}
    filter-type
    filter-status
@@ -112,9 +111,9 @@
    {:keys [cursor notifications]}]
   (let [processed (map data-store.activities/<-rpc notifications)]
     {:db (-> db
-             (assoc-in [filter-type filter-status :cursor] cursor)
-             (update-in [filter-type filter-status] dissoc :loading?)
-             (update-in [filter-type filter-status :data]
+             (assoc-in [:activity-center :notifications filter-type filter-status :cursor] cursor)
+             (update-in [:activity-center :notifications filter-type filter-status] dissoc :loading?)
+             (update-in [:activity-center :notifications filter-type filter-status :data]
                         (if reset-data?
                           (constantly processed)
                           #(concat %1 processed))))}))
