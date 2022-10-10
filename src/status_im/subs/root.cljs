@@ -228,6 +228,7 @@
 
 (reg-root-key-sub :activity.center/notifications :activity.center/notifications)
 (reg-root-key-sub :activity.center/notifications-count :activity.center/notifications-count)
+(reg-root-key-sub :activity-center :activity-center)
 
 (reg-root-key-sub :bug-report/description-error :bug-report/description-error)
 (reg-root-key-sub :bug-report/details :bug-report/details)

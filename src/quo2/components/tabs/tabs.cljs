@@ -4,6 +4,7 @@
             [quo2.components.tabs.tab :as tab]
             [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
+            [status-im.utils.core :as utils]
             [status-im.utils.number :as number-utils]))
 
 (def default-tab-size 32)
@@ -82,8 +83,8 @@
       (let [maybe-mask-wrapper (if fade-end?
                                  [react/masked-view
                                   {:mask-element (reagent/as-element
-                                                  [react/linear-gradient {:colors         ["black" "transparent"]
-                                                                          :locations      [(@fading :fade-end-percentage) 1]
+                                                  [react/linear-gradient {:colors         [:black :transparent]
+                                                                          :locations      [(get @fading :fade-end-percentage) 1]
                                                                           :start          {:x 0 :y 0}
                                                                           :end            {:x 1 :y 0}
                                                                           :pointer-events :none
@@ -99,7 +100,9 @@
                               :on-change
                               :scroll-on-press?
                               :size)
-                      {:ref                               (partial reset! flat-list-ref)
+                      (when scroll-on-press?
+                        {:initial-scroll-index (utils/first-index #(= @active-tab-id (:id %)) data)})
+                      {:ref                               #(reset! flat-list-ref %)
                        :extra-data                        (str @active-tab-id)
                        :horizontal                        true
                        :scroll-event-throttle             scroll-event-throttle
@@ -116,7 +119,7 @@
                                                                                                                    :layout-width        layout-width
                                                                                                                    :max-fade-percentage fade-end-percentage})]
                                                                 ;; Avoid unnecessary re-rendering.
-                                                                (when (not= new-percentage (@fading :fade-end-percentage))
+                                                                (when (not= new-percentage (get @fading :fade-end-percentage))
                                                                   (swap! fading assoc :fade-end-percentage new-percentage))))
                                                             (when on-scroll
                                                               (on-scroll e)))

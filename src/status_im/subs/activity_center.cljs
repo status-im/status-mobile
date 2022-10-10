@@ -6,35 +6,36 @@
             [clojure.string :as string]))
 
 (re-frame/reg-sub
- :activity-center/notifications-read
- (fn [db]
-   (get-in db [:activity-center :notifications-read :data])))
+ :activity-center/notifications
+ :<- [:activity-center]
+ (fn [activity-center]
+   (:notifications activity-center)))
 
 (re-frame/reg-sub
- :activity-center/notifications-unread
- (fn [db]
-   (get-in db [:activity-center :notifications-unread :data])))
+ :activity-center/filter-status
+ :<- [:activity-center]
+ (fn [activity-center]
+   (get-in activity-center [:filter :status])))
 
 (re-frame/reg-sub
- :activity-center/current-status-filter
- (fn [db]
-   (get-in db [:activity-center :current-status-filter])))
+ :activity-center/filter-type
+ :<- [:activity-center]
+ (fn [activity-center]
+   (get-in activity-center [:filter :type] constants/activity-center-notification-type-no-type)))
 
 (re-frame/reg-sub
- :activity-center/status-filter-unread-enabled?
- :<- [:activity-center/current-status-filter]
- (fn [current-status-filter]
-   (= :unread current-status-filter)))
+ :activity-center/filtered-notifications
+ :<- [:activity-center/filter-type]
+ :<- [:activity-center/filter-status]
+ :<- [:activity-center/notifications]
+ (fn [[filter-type filter-status notifications]]
+   (get-in notifications [filter-type filter-status :data])))
 
 (re-frame/reg-sub
- :activity-center/notifications-per-read-status
- :<- [:activity-center/notifications-read]
- :<- [:activity-center/notifications-unread]
- :<- [:activity-center/status-filter-unread-enabled?]
- (fn [[notifications-read notifications-unread unread-filter-enabled?]]
-   (if unread-filter-enabled?
-     notifications-unread
-     notifications-read)))
+ :activity-center/filter-status-unread-enabled?
+ :<- [:activity-center/filter-status]
+ (fn [filter-status]
+   (= :unread filter-status)))
 
 (defn- group-notifications-by-date
   [notifications]

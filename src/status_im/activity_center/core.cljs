@@ -1,5 +1,6 @@
 (ns status-im.activity-center.core
   (:require [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
             [status-im.data-store.activities :as data-store.activities]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
@@ -8,90 +9,117 @@
 ;;;; Notification reconciliation
 
 (defn- update-notifications
-  [old new]
-  (let [ids-to-be-removed (->> new
-                               (filter #(or (:dismissed %) (:accepted %)))
-                               (map :id))
-        grouped-new       (apply dissoc (group-by :id new) ids-to-be-removed)
-        grouped-old       (apply dissoc (group-by :id old) ids-to-be-removed)]
-    (->> (merge grouped-old grouped-new)
-         vals
-         (map first))))
+  "Insert `new-notifications` in `db-notifications`.
+
+  Although correct, this is a naive implementation for reconciling notifications
+  because for every notification in `new-notifications`, linear scans will be
+  performed to remove it and sorting will be performed for every new insertion.
+  If the number of existing notifications cached in the app db becomes
+  ~excessively~ big, this implementation will probably need to be revisited."
+  [db-notifications new-notifications]
+  (reduce (fn [acc {:keys [id type read] :as notification}]
+            (let [filter-status (if read :read :unread)]
+              (cond-> (-> acc
+                          (update-in [type :read :data]
+                                     (fn [data]
+                                       (remove #(= id (:id %)) data)))
+                          (update-in [type :unread :data]
+                                     (fn [data]
+                                       (remove #(= id (:id %)) data))))
+                (not (or (:dismissed notification) (:accepted notification)))
+                (update-in [type filter-status :data]
+                           (fn [data]
+                             (->> notification
+                                  (conj data)
+                                  (sort-by (juxt :timestamp :id))
+                                  reverse))))))
+          db-notifications
+          new-notifications))
 
 (fx/defn notifications-reconcile
   {:events [:activity-center.notifications/reconcile]}
   [{:keys [db]} new-notifications]
-  (let [{read-new   true
-         unread-new false} (group-by :read new-notifications)
-        read-old           (get-in db [:activity-center :notifications-read :data])
-        unread-old         (get-in db [:activity-center :notifications-unread :data])]
-    {:db (-> db
-             (assoc-in [:activity-center :notifications-read :data]
-                       (update-notifications read-old read-new))
-             (assoc-in [:activity-center :notifications-unread :data]
-                       (update-notifications unread-old unread-new)))}))
+  (when (seq new-notifications)
+    {:db (update-in db [:activity-center :notifications]
+                    update-notifications new-notifications)}))
 
 ;;;; Notifications fetching and pagination
 
-(def notifications-per-page
-  20)
+(def defaults
+  {:filter-status          :unread
+   :filter-type            constants/activity-center-notification-type-no-type
+   :notifications-per-page 10})
 
 (def start-or-end-cursor
   "")
 
-(defn notifications-group->rpc-method
-  [notifications-group]
-  (if (= notifications-group :notifications-read)
+(defn- valid-cursor?
+  [cursor]
+  (and (some? cursor)
+       (not= cursor start-or-end-cursor)))
+
+(defn- filter-status->rpc-method
+  [filter-status]
+  (if (= filter-status :read)
     "wakuext_readActivityCenterNotifications"
     "wakuext_unreadActivityCenterNotifications"))
 
-(defn notifications-read-status->group
-  [status-filter]
-  (if (= status-filter :read)
-    :notifications-read
-    :notifications-unread))
-
 (fx/defn notifications-fetch
-  [{:keys [db]} cursor notifications-group]
-  (when-not (get-in db [:activity-center notifications-group :loading?])
-    {:db             (assoc-in db [:activity-center notifications-group :loading?] true)
-     ::json-rpc/call [{:method     (notifications-group->rpc-method notifications-group)
-                       :params     [cursor notifications-per-page]
-                       :on-success #(re-frame/dispatch [:activity-center.notifications/fetch-success notifications-group %])
-                       :on-error   #(re-frame/dispatch [:activity-center.notifications/fetch-error notifications-group %])}]}))
+  [{:keys [db]} {:keys [cursor filter-type filter-status reset-data?]}]
+  (when-not (get-in db [:activity-center :notifications filter-type filter-status :loading?])
+    {:db             (assoc-in db [:activity-center :notifications filter-type filter-status :loading?] true)
+     ::json-rpc/call [{:method     (filter-status->rpc-method filter-status)
+                       :params     [cursor (defaults :notifications-per-page) filter-type]
+                       :on-success #(re-frame/dispatch [:activity-center.notifications/fetch-success filter-type filter-status reset-data? %])
+                       :on-error   #(re-frame/dispatch [:activity-center.notifications/fetch-error filter-type filter-status %])}]}))
 
 (fx/defn notifications-fetch-first-page
   {:events [:activity-center.notifications/fetch-first-page]}
-  [{:keys [db] :as cofx} {:keys [status-filter] :or {status-filter :unread}}]
-  (let [notifications-group (notifications-read-status->group status-filter)]
+  [{:keys [db] :as cofx} {:keys [filter-type filter-status]}]
+  (let [filter-type   (or filter-type
+                          (get-in db [:activity-center :filter :type]
+                                  (defaults :filter-type)))
+        filter-status (or filter-status
+                          (get-in db [:activity-center :filter :status]
+                                  (defaults :filter-status)))]
     (fx/merge cofx
               {:db (-> db
-                       (assoc-in [:activity-center :current-status-filter] status-filter)
-                       (update-in [:activity-center notifications-group] dissoc :loading?)
-                       (update-in [:activity-center notifications-group] dissoc :data))}
-              (notifications-fetch start-or-end-cursor notifications-group))))
+                       (assoc-in [:activity-center :filter :type] filter-type)
+                       (assoc-in [:activity-center :filter :status] filter-status))}
+              (notifications-fetch {:cursor        start-or-end-cursor
+                                    :filter-type   filter-type
+                                    :filter-status filter-status
+                                    :reset-data?   true}))))
 
 (fx/defn notifications-fetch-next-page
   {:events [:activity-center.notifications/fetch-next-page]}
   [{:keys [db] :as cofx}]
-  (let [status-filter       (get-in db [:activity-center :current-status-filter])
-        notifications-group (notifications-read-status->group status-filter)
-        {:keys [cursor]}    (get-in db [:activity-center notifications-group])]
-    (when-not (= cursor start-or-end-cursor)
-      (notifications-fetch cofx cursor notifications-group))))
+  (let [{:keys [type status]} (get-in db [:activity-center :filter])
+        {:keys [cursor]}      (get-in db [:activity-center :notifications type status])]
+    (when (valid-cursor? cursor)
+      (notifications-fetch cofx {:cursor        cursor
+                                 :filter-type   type
+                                 :filter-status status
+                                 :reset-data?   false}))))
 
 (fx/defn notifications-fetch-success
   {:events [:activity-center.notifications/fetch-success]}
-  [{:keys [db]} notifications-group {:keys [cursor notifications]}]
-  {:db (-> db
-           (update-in [:activity-center notifications-group] dissoc :loading?)
-           (assoc-in [:activity-center notifications-group :cursor] cursor)
-           (update-in [:activity-center notifications-group :data]
-                      concat
-                      (map data-store.activities/<-rpc notifications)))})
+  [{:keys [db]}
+   filter-type
+   filter-status
+   reset-data?
+   {:keys [cursor notifications]}]
+  (let [processed (map data-store.activities/<-rpc notifications)]
+    {:db (-> db
+             (assoc-in [:activity-center :notifications filter-type filter-status :cursor] cursor)
+             (update-in [:activity-center :notifications filter-type filter-status] dissoc :loading?)
+             (update-in [:activity-center :notifications filter-type filter-status :data]
+                        (if reset-data?
+                          (constantly processed)
+                          #(concat %1 processed))))}))
 
 (fx/defn notifications-fetch-error
   {:events [:activity-center.notifications/fetch-error]}
-  [{:keys [db]} notifications-group error]
+  [{:keys [db]} filter-type filter-status error]
   (log/warn "Failed to load Activity Center notifications" error)
-  {:db (update-in db [:activity-center notifications-group] dissoc :loading?)})
+  {:db (update-in db [:activity-center :notifications filter-type filter-status] dissoc :loading?)})
