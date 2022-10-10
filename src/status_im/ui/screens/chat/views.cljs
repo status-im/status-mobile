@@ -427,8 +427,7 @@
 (def threshold-percentage-to-show-floating-scroll-down-button 75)
 
 (defn scroll-to-bottom []
-  (when @messages-list-ref
-    (.scrollToOffset @messages-list-ref #js {:y 0 :animated true})))
+  (some-> ^js @messages-list-ref (.scrollToOffset #js {:y 0 :animated true})))
 
 (defn floating-scroll-down-button [show-input?]
   [rn/touchable-without-feedback
