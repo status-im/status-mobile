@@ -2,9 +2,10 @@
   (:require [cljs.test :refer [deftest is testing]]
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
+            [status-im.constants :as c]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.test-helpers :as h]
-            status-im.events))
+            status-im.events
+            [status-im.test-helpers :as h]))
 
 (defn setup []
   (h/register-helper-events)
@@ -24,13 +25,23 @@
   (testing "does nothing when there are no new notifications"
     (rf-test/run-test-sync
      (setup)
-     (let [notifications {1 {:read   {:cursor ""
-                                      :data   [{:id "0x1" :read true :type 1}
-                                               {:id "0x2" :read true :type 1}]}
-                             :unread {:cursor ""
-                                      :data   [{:id "0x3" :read false :type 1}]}}
-                          2 {:unread {:cursor ""
-                                      :data   [{:id "0x4" :read false :type 2}]}}}]
+     (let [notifications {c/activity-center-notification-type-one-to-one-chat
+                          {:read   {:cursor ""
+                                    :data   [{:id   "0x1"
+                                              :read true
+                                              :type c/activity-center-notification-type-one-to-one-chat}
+                                             {:id   "0x2"
+                                              :read true
+                                              :type c/activity-center-notification-type-one-to-one-chat}]}
+                           :unread {:cursor ""
+                                    :data   [{:id   "0x3"
+                                              :read false
+                                              :type c/activity-center-notification-type-one-to-one-chat}]}}
+                          c/activity-center-notification-type-private-group-chat
+                          {:unread {:cursor ""
+                                    :data   [{:id   "0x4"
+                                              :read false
+                                              :type c/activity-center-notification-type-private-group-chat}]}}}]
        (rf/dispatch [:test/assoc-in [:activity-center :notifications] notifications])
 
        (rf/dispatch [:activity-center.notifications/reconcile nil])
@@ -41,67 +52,120 @@
     (rf-test/run-test-sync
      (setup)
      (rf/dispatch [:test/assoc-in [:activity-center :notifications]
-                   {1 {:read   {:cursor ""
-                                :data   [{:id "0x1" :read true :type 1}
-                                         {:id "0x2" :read true :type 1}]}
-                       :unread {:cursor ""
-                                :data   [{:id "0x3" :read false :type 1}]}}
+                   {c/activity-center-notification-type-one-to-one-chat
+                    {:read   {:cursor ""
+                              :data   [{:id "0x1" :read true :type c/activity-center-notification-type-one-to-one-chat}
+                                       {:id "0x2" :read true :type c/activity-center-notification-type-one-to-one-chat}]}
+                     :unread {:cursor ""
+                              :data   [{:id "0x3" :read false :type c/activity-center-notification-type-one-to-one-chat}]}}
                     2 {:unread {:cursor ""
                                 :data   [{:id "0x4" :read false :type 2}
                                          {:id "0x6" :read false :type 2}]}}}])
 
      (rf/dispatch [:activity-center.notifications/reconcile
-                   [{:id "0x1" :read true :type 1 :dismissed true}
-                    {:id "0x3" :read false :type 1 :accepted true}
-                    {:id "0x4" :read false :type 2 :dismissed true}
-                    {:id "0x5" :read false :type 2 :accepted true}]])
+                   [{:id        "0x1"
+                     :read      true
+                     :type      c/activity-center-notification-type-one-to-one-chat
+                     :dismissed true}
+                    {:id       "0x3"
+                     :read     false
+                     :type     c/activity-center-notification-type-one-to-one-chat
+                     :accepted true}
+                    {:id        "0x4"
+                     :read      false
+                     :type      c/activity-center-notification-type-private-group-chat
+                     :dismissed true}
+                    {:id       "0x5"
+                     :read     false
+                     :type     c/activity-center-notification-type-private-group-chat
+                     :accepted true}]])
 
-     (is (= {1 {:read   {:cursor ""
-                         :data   [{:id "0x2" :read true :type 1}]}
-                :unread {:cursor ""
-                         :data   []}}
-             2 {:read   {:data []}
-                :unread {:cursor ""
-                         :data   [{:id "0x6" :read false :type 2}]}}}
+     (is (= {c/activity-center-notification-type-one-to-one-chat
+             {:read   {:cursor ""
+                       :data   [{:id   "0x2"
+                                 :read true
+                                 :type c/activity-center-notification-type-one-to-one-chat}]}
+              :unread {:cursor ""
+                       :data   []}}
+             c/activity-center-notification-type-private-group-chat
+             {:read   {:data []}
+              :unread {:cursor ""
+                       :data   [{:id   "0x6"
+                                 :read false
+                                 :type c/activity-center-notification-type-private-group-chat}]}}}
             (get-in (h/db) [:activity-center :notifications])))))
 
   (testing "replaces old notifications with newly arrived ones"
     (rf-test/run-test-sync
      (setup)
      (rf/dispatch [:test/assoc-in [:activity-center :notifications]
-                   {1 {:read {:cursor ""
-                              :data   [{:id "0x1" :read true :type 1}]}}
-                    2 {:unread {:cursor ""
-                                :data   [{:id "0x4" :read false :type 2}
-                                         {:id "0x6" :read false :type 2}]}}}])
+                   {c/activity-center-notification-type-one-to-one-chat
+                    {:read {:cursor ""
+                            :data   [{:id   "0x1"
+                                      :read true
+                                      :type c/activity-center-notification-type-one-to-one-chat}]}}
+                    c/activity-center-notification-type-private-group-chat
+                    {:unread {:cursor ""
+                              :data   [{:id   "0x4"
+                                        :read false
+                                        :type c/activity-center-notification-type-private-group-chat}
+                                       {:id   "0x6"
+                                        :read false
+                                        :type c/activity-center-notification-type-private-group-chat}]}}}])
 
      (rf/dispatch [:activity-center.notifications/reconcile
-                   [{:id "0x1" :read true :type 1 :last-message {}}
-                    {:id "0x4" :read false :type 2 :author "0xabc"}
-                    {:id "0x6" :read false :type 2}]])
+                   [{:id           "0x1"
+                     :read         true
+                     :type         c/activity-center-notification-type-one-to-one-chat
+                     :last-message {}}
+                    {:id     "0x4"
+                     :read   false
+                     :type   c/activity-center-notification-type-private-group-chat
+                     :author "0xabc"}
+                    {:id   "0x6"
+                     :read false
+                     :type c/activity-center-notification-type-private-group-chat}]])
 
-     (is (= {1 {:read   {:cursor ""
-                         :data   [{:id "0x1" :read true :type 1 :last-message {}}]}
-                :unread {:data []}}
-             2 {:read   {:data []}
-                :unread {:cursor ""
-                         :data   [{:id "0x6" :read false :type 2}
-                                  {:id "0x4" :read false :type 2 :author "0xabc"}]}}}
+     (is (= {c/activity-center-notification-type-one-to-one-chat
+             {:read   {:cursor ""
+                       :data   [{:id           "0x1"
+                                 :read         true
+                                 :type         c/activity-center-notification-type-one-to-one-chat
+                                 :last-message {}}]}
+              :unread {:data []}}
+             c/activity-center-notification-type-private-group-chat
+             {:read   {:data []}
+              :unread {:cursor ""
+                       :data   [{:id   "0x6"
+                                 :read false
+                                 :type c/activity-center-notification-type-private-group-chat}
+                                {:id     "0x4"
+                                 :read   false
+                                 :type   c/activity-center-notification-type-private-group-chat
+                                 :author "0xabc"}]}}}
             (get-in (h/db) [:activity-center :notifications])))))
 
   (testing "reconciles notifications that switched their read/unread status"
     (rf-test/run-test-sync
      (setup)
      (rf/dispatch [:test/assoc-in [:activity-center :notifications]
-                   {1 {:read {:cursor ""
-                              :data   [{:id "0x1" :read true :type 1}]}}}])
+                   {c/activity-center-notification-type-one-to-one-chat
+                    {:read {:cursor ""
+                            :data   [{:id   "0x1"
+                                      :read true
+                                      :type c/activity-center-notification-type-one-to-one-chat}]}}}])
 
      (rf/dispatch [:activity-center.notifications/reconcile
-                   [{:id "0x1" :read false :type 1}]])
+                   [{:id   "0x1"
+                     :read false
+                     :type c/activity-center-notification-type-one-to-one-chat}]])
 
-     (is (= {1 {:read   {:cursor ""
-                         :data   []}
-                :unread {:data [{:id "0x1" :read false :type 1}]}}}
+     (is (= {c/activity-center-notification-type-one-to-one-chat
+             {:read   {:cursor ""
+                       :data   []}
+              :unread {:data [{:id   "0x1"
+                               :read false
+                               :type c/activity-center-notification-type-one-to-one-chat}]}}}
             (get-in (h/db) [:activity-center :notifications])))))
 
   ;; Sorting by timestamp and ID is compatible with what the backend does when
