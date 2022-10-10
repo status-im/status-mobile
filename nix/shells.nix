@@ -23,7 +23,7 @@ let
 
     # for calling clojure targets in CI or Makefile
     clojure = mkShell {
-      buildInputs = with pkgs; [ clojure flock maven openjdk clj-kondo ];
+      buildInputs = with pkgs; [ clojure flock maven openjdk clj-kondo zprint clojure-lsp];
       inputsFrom = [ nodejs-sh ];
       # CLASSPATH from clojure deps with 'src' appended to find local sources.
       shellHook = with pkgs; ''

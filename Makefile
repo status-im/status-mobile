@@ -288,12 +288,15 @@ endif
 lint: export TARGET := clojure
 lint: ##@test Run code style checks
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
-	TARGETS=$$(git diff --diff-filter=d --cached --name-only src && echo src) && \
-	clojure -Scp "$$CLASS_PATH" -m cljfmt.main check --indents indentation.edn $$TARGETS
+	TARGETS=$$(git diff --diff-filter=d --cached --name-only | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$ || echo shadow-cljs.edn) && \
+	clojure-lsp clean-ns --dry --filenames $$TARGETS && \
+	zprint '{:search-config? true}' -fc $$TARGETS
 
 lint-fix: export TARGET := clojure
 lint-fix: ##@test Run code style checks and fix issues
-	clojure -Scp "$$CLASS_PATH" -m cljfmt.main fix src --indents indentation.edn
+	TARGETS=$$(git diff --diff-filter=d --cached --name-only | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$ || echo shadow-cljs.edn) && \
+	clojure-lsp clean-ns --filenames $$TARGETS && \
+	zprint '{:search-config? true}' -fw $$TARGETS
 
 shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching

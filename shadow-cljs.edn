@@ -20,9 +20,7 @@
                 [bidi "2.1.6"]
                 ;; test dependencies
                 [day8.re-frame/test "0.1.5"]
-                [com.taoensso/tufte "2.1.0"]
-                ;; linting
-                [cljfmt/cljfmt "0.6.7"]]
+                [com.taoensso/tufte "2.1.0"]]
 
  ;; port and middleware for repl in development
  :nrepl {:port 7888
