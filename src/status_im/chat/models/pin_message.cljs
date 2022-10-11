@@ -4,6 +4,7 @@
             [status-im.data-store.pin-messages :as data-store.pin-messages]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
+            [status-im.transport.message.protocol :as protocol]
             [re-frame.core :as re-frame]))
 
 (fx/defn handle-failed-loading-pin-messages
@@ -73,7 +74,8 @@
   {:events [::send-pin-message]}
   [{:keys [db] :as cofx} {:keys [chat-id message-id pinned] :as pin-message}]
   (let [current-public-key (get-in db [:multiaccount :public-key])
-        message (merge pin-message {:pinned-by current-public-key})]
+        message (merge pin-message {:pinned-by current-public-key})
+        preferred-name (get-in db [:multiaccount :preferred-name])]
     (fx/merge cofx
               {:db (cond-> db
                      pinned
@@ -86,7 +88,13 @@
                       (update-in [:pin-messages chat-id] dissoc message-id)))}
               (data-store.pin-messages/send-pin-message {:chat-id    (pin-message :chat-id)
                                                          :message_id (pin-message :message-id)
-                                                         :pinned     (pin-message :pinned)}))))
+                                                         :pinned     (pin-message :pinned)})
+              (when pinned
+                (protocol/send-chat-messages [{:chat-id      (pin-message :chat-id)
+                                               :content-type constants/content-type-pin
+                                               :text "This is a pin!"
+                                               :response-to (pin-message :message-id)
+                                               :ens-name preferred-name}])))))
 
 (fx/defn load-pin-messages
   {:events [::load-pin-messages]}

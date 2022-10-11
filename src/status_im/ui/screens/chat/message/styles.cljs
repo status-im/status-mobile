@@ -92,6 +92,7 @@
 (defn reactions-row [timeline margin-top]
   {:flex-direction  :row
    :padding-right   8
+   :padding-bottom   8
    :justify-content :flex-start
    :margin-top      margin-top
    :flex-wrap       :wrap

@@ -30,6 +30,15 @@
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
+            [status-im.utils.security :as security]
+            [status-im.ui.screens.chat.message.reactions :as reactions]
+            [status-im.ui.screens.chat.image.preview.views :as preview]
+            [status-im.ui.screens.chat.styles.photos :as photos.style]
+            [quo.core :as quo]
+            [status-im.utils.config :as config]
+            [reagent.core :as reagent]
+            [status-im.ui.screens.chat.components.reply :as components.reply]
+            [status-im.ui.screens.chat.message.link-preview :as link-preview]
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.utils.config :as config]
             [status-im.utils.security :as security])
@@ -93,9 +102,9 @@
         timestamp-str]])))
 
 (defview quoted-message
-  [_ reply]
-  [react/view {:style (style/quoted-message-container)}
-   [components.reply/reply-message reply false]])
+  [_ reply pin?]
+  [react/view {:style (when-not pin? (style/quoted-message-container))}
+   [components.reply/reply-message reply false pin?]])
 
 (defn render-inline [message-text content-type acc {:keys [type literal destination]}]
   (case type
@@ -224,28 +233,22 @@
   (let [user-contact @(re-frame/subscribe [:multiaccount/contact])
         contact-names @(re-frame/subscribe [:contacts/contact-two-names-by-identity pinned-by])]
     ;; We append empty spaces to the name as a workaround to make one-line and multi-line label components show correctly
-    (str "                   " (if (= pinned-by (user-contact :public-key)) (i18n/label :t/You) (first contact-names)))))
+    (str " " (if (= pinned-by (user-contact :public-key)) (i18n/label :t/You) (first contact-names)))))
 
-(def pin-icon-width 9)
+(def pin-icon-width 10)
 
 (def pin-icon-height 15)
 
-(defn pinned-by-indicator [display-photo? pinned-by]
-  [react/view {:style (style/pin-indicator display-photo?)
+(defn pin-icon []
+  [icons/icon :main-icons/pin16 {:color          (:text-04 @colors/theme)
+                                 :height           pin-icon-height
+                                 :width            pin-icon-width}])
+
+(defn pinned-by-indicator [pinned-by]
+  [react/view {:style (style/pin-indicator)
                :accessibility-label :pinned-by}
-   [react/view {:style (style/pinned-by-text-icon-container)}
-    [react/view {:style (style/pin-icon-container)}
-     [icons/icon :main-icons/pin {:color            colors/gray
-                                  :height           pin-icon-height
-                                  :width            pin-icon-width
-                                  :background-color :red}]]
-    [quo/text {:weight :regular
-               :size   :small
-               :color  :main
-               :style  (style/pinned-by-text)}
-     (i18n/label :t/pinned-by)]]
-   [quo/text {:weight :medium
-              :size   :small
+   [pin-icon]
+   [quo/text {:size   :small
               :color  :main
               :style  (style/pin-author-text)}
     (pin-author-name pinned-by)]])
@@ -300,7 +303,7 @@
   [{:keys [last-in-group?
            identicon
            from in-popover? timestamp-str
-           deleted-for-me?]
+           deleted-for-me? pinned]
     :as   message} content {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
     [react/view {:style               (style/message-wrapper message)
@@ -311,12 +314,12 @@
      [react/view {:style          (style/message-body)
                   :pointer-events :box-none}
       [react/view (style/message-author-userpic)
-       (when (or (and (seq response-to) (:quoted-message message)) last-in-group?)
+       (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
          [react/touchable-highlight {:on-press #(do (when modal (close-modal))
                                                     (re-frame/dispatch [:chat.ui/show-profile from]))}
           [photos/member-photo from identicon]])]
       [react/view {:style (style/message-author-wrapper)}
-       (when (or (and (seq response-to) (:quoted-message message)) last-in-group?)
+       (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
          [react/view {:style {:flex-direction :row :align-items :center}}
           [react/touchable-opacity {:style    style/message-author-touchable
                                     :disabled in-popover?
@@ -491,6 +494,34 @@
   [message-content-wrapper message
    [collapsible-text-message message on-long-press modal ref]
    reaction-picker])
+
+(defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str] :as message} {:keys [modal close-modal]}]
+  (let [response-to (:response-to (:content message))]
+    [react/view {:style (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
+     [react/view {:style {:width photos.style/default-size
+                          :height photos.style/default-size
+                          :margin-horizontal 8
+                          :border-radius photos.style/default-size
+                          :justify-content :center
+                          :align-items :center
+                          :background-color "rgba(67,96,223,0.05)"}}
+      [pin-icon]]
+     [react/view
+      [react/view {:style {:flex-direction :row :align-items :center}}
+       [react/touchable-opacity {:style    style/message-author-touchable
+                                 :disabled in-popover?
+                                 :on-press #(do (when modal (close-modal))
+                                                (re-frame/dispatch [:chat.ui/show-profile from]))}
+        [message-author-name from {:modal modal}]]
+       [react/text {:style {:font-size 13}} " pinned a message"]
+       [react/text
+        {:style               (merge
+                               {:padding-left 5
+                                :margin-top 2}
+                               (style/message-timestamp-text))
+         :accessibility-label :message-timestamp}
+        timestamp-str]]
+      [quoted-message response-to (:quoted-message message) true]]]))
 
 (defmethod ->message constants/content-type-community
   [message]
@@ -710,7 +741,7 @@
   [message-content-wrapper message
    [unknown-content-type message]])
 
-(defn chat-message [{:keys [display-photo? pinned pinned-by mentioned] :as message}]
+(defn chat-message [{:keys [pinned pinned-by mentioned] :as message}]
   (let [reactions @(re-frame/subscribe [:chats/message-reactions (:message-id message) (:chat-id message)])
         own-reactions (reduce (fn [acc {:keys [emoji-id own]}]
                                 (if own (conj acc emoji-id) acc))
@@ -737,11 +768,11 @@
                                                          (into #{} (js->clj own-reactions))
                                                          #(on-emoji-press %))}]))
         on-long-press   (atom nil)]
-    [react/view   {:style (merge (when mentioned {:background-color quo2.colors/primary-50-opa-5 :border-radius 16 :margin-bottom 4}) {:margin-horizontal 8})}
-     [->message message {:ref           on-long-press
+[react/view   {:style (merge (when mentioned {:background-color quo2.colors/primary-50-opa-5 :border-radius 16 :margin-bottom 4}) {:margin-horizontal 8})}
+  [->message message {:ref           on-long-press
                          :modal         false
                          :on-long-press on-open-drawer}]
      [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press] ;; TODO: pass on-open-drawer function
-     (when pinned
-       [react/view {:style (style/pin-indicator-container)}
-        [pinned-by-indicator display-photo? pinned-by]])]))
+ (when pinned
+   [react/view {:style (style/pin-indicator-container)}
+    [pinned-by-indicator pinned-by]])]))

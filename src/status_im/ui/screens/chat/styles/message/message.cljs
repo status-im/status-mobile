@@ -71,30 +71,15 @@
   {:align-self    :flex-start
    :padding-left  8})
 
-(defn pin-indicator [display-photo?]
-  (merge
-   {:flex-direction             :row
-    :border-top-left-radius     4
-    :border-top-right-radius    12
-    :border-bottom-left-radius  12
-    :border-bottom-right-radius 12
-    :padding-left               8
-    :padding-right              10
-    :padding-vertical           5
-    :background-color           colors/gray-lighter
-    :justify-content            :center
-    :max-width                  "80%"
-    :align-self  :flex-start
-    :align-items :flex-start}
-   (when display-photo?
-     {:margin-left 44})))
+(defn pin-indicator []
+  (merge {:flex-direction :row}))
 
 (defn pin-indicator-container []
-  {:margin-top      2
+  {:margin-top      8
+   :margin-left 68
    :justify-content :center
    :align-self   :flex-start
-   :align-items  :flex-start
-   :padding-left 8})
+   :align-items  :flex-start})
 
 (defn pinned-by-text-icon-container []
   {:flex-direction :row
@@ -108,14 +93,9 @@
    :margin-top     1})
 
 (defn pin-author-text []
-  {:margin-left  2
-   :margin-right 12
-   :padding-right 0
-   :left         12
-   :flex-direction :row
-   :flex-shrink  1
-   :align-self   :flex-start
-   :overflow     :hidden})
+  {:color (:text-04 @colors/theme)
+   :font-weight "500"
+   :bottom 2})
 
 (defn pinned-by-text []
   {:margin-left 5})
@@ -171,8 +151,23 @@
    :flex-direction :row-reverse})
 
 (defn message-view
+<<<<<<< HEAD
   [{:keys [content-type]}]
   (merge
+=======
+  [{:keys [content-type mentioned]}]
+  (merge
+   {:border-radius 10}
+   (cond
+     (= content-type constants/content-type-system-text) nil
+     mentioned                                           {:background-color colors/mentioned-background
+                                                          :border-color colors/mentioned-border
+                                                          :border-width 1}
+     (= content-type constants/content-type-audio)       {:background-color colors/blue
+                                                          :padding-horizontal 12
+                                                          :padding-top 6})
+
+>>>>>>> 348a97211... feat: pinned messages new ui
    (when (= content-type constants/content-type-emoji)
      {:flex-direction :row})))
 
