@@ -7,9 +7,9 @@
             [quo2.components.markdown.text :as text]))
 
 (defn- in?
-  "true if coll contains elm"
-  [coll elm]
-  (some #(= elm %) coll))
+  "true if collection contains element"
+  [collection element]
+  (some #(= element %) collection))
 
 (defn- get-button-color [type pressed? customization-color]
   (if (in? '(:jump-to :mention) type)
