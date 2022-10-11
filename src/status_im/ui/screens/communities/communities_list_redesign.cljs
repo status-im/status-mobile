@@ -186,7 +186,7 @@
   (let [filters [{:id 1 :tag-label (i18n/label :t/music) :resource (resources/get-image :music)}
                  {:id 2 :tag-label (i18n/label :t/lifestyle) :resource (resources/get-image :lifestyle)}
                  {:id 3 :tag-label (i18n/label :t/podcasts) :resource (resources/get-image :podcasts)}
-                 {:id 3 :tag-label (i18n/label :t/podcasts) :resource (resources/get-image :podcasts)}]]
+                 {:id 4 :tag-label (i18n/label :t/podcasts) :resource (resources/get-image :podcasts)}]]
     [react/scroll-view {:horizontal                        true
                         :height                            48
                         :shows-horizontal-scroll-indicator false

@@ -106,15 +106,6 @@
        (.catch #(log/error "[wallet-connect] " %)))))
 
 (re-frame/reg-fx
- :wc-2-change-session
- (fn [[client topic accounts]]
-   (-> ^js client
-       (.update (clj->js {:topic topic
-                          :state {:accounts accounts}}))
-       (.then #(log/debug "[wallet-connect] session topic " topic " changed to account " (first accounts)))
-       (.catch #(log/error "[wallet-connect] " %)))))
-
-(re-frame/reg-fx
  :wc-2-pair
  (fn [[client uri]]
    (.pair client (clj->js {:uri uri}))))
