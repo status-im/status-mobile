@@ -60,7 +60,7 @@
                             :mid-section-description-color      "black"
                             :mid-section-description-icon       :main-icons/placeholder
                             :mid-section-description-user-icon  "https://i.picsum.photos/id/810/200/300.jpg?hmac=HgwlXd-OaLOAqhGyCiZDUb_75EgUI4u0GtS7nfgxd8s"
-                            :left-section-icon                  :main-icons/peach
+                            :left-section-icon                  :main-icons/unlocked
                             :left-section-icon-background-color (if (colors/dark?)
                                                                   colors/neutral-80
                                                                   colors/neutral-20)}

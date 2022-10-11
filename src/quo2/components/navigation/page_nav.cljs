@@ -7,12 +7,11 @@
             [quo2.components.markdown.text :as text]))
 
 (def ^:private centrify-style
-  {:display :flex
+  {:display         :flex
    :justify-content :center
    :align-items     :center})
 
-(def ^:private align-left
-  (assoc centrify-style :align-items :flex-start))
+(def ^:private align-left (assoc centrify-style :align-items :flex-start))
 
 (def ^:private icon-styles (assoc centrify-style :width 32 :height 32 :border-radius 10))
 
@@ -31,15 +30,7 @@
            {:no-color true})))
 
 (defn- mid-section-comp
-  [{:keys [mid-section-description-user-icon
-           horizontal-description?
-           text-secondary-color
-           align-mid?
-           text-color
-           mid-section-icon
-           mid-section-main-text
-           mid-section-type
-           mid-section-description]}]
+  [{:keys [mid-section-description-user-icon horizontal-description? text-secondary-color align-mid? text-color mid-section-icon mid-section-main-text mid-section-type mid-section-description]}]
   [rn/view {:style (assoc
                     centrify-style
                     :flex-direction    :row
@@ -69,22 +60,13 @@
                                    :color         text-secondary-color
                                    :line-height   18}
                             horizontal-description? (assoc :margin-left 4 :margin-top 2))}
-
        mid-section-description])]])
 
 (defn- mid-section
-  [{:keys [horizontal-description? one-icon-align-left? mid-section-type left-align? mid-section-description mid-section-description-user-icon mid-section-main-text mid-section-right-icon mid-section-icon align-mid? mid-section-main-text-icon-color mid-section-left-icon]}]
+  [{:keys [horizontal-description? one-icon-align-left? mid-section-type left-align? mid-section-main-text mid-section-right-icon mid-section-main-text-icon-color mid-section-left-icon] :as mid-section-props}]
   (let [text-color                (if (colors/dark?) colors/neutral-5 colors/neutral-95)
         text-secondary-color      (if (colors/dark?) colors/neutral-40 colors/neutral-50)
-        mid-section-comp-instance [mid-section-comp {:mid-section-description-user-icon mid-section-description-user-icon
-                                                     :horizontal-description?           horizontal-description?
-                                                     :text-secondary-color              text-secondary-color
-                                                     :text-color                        text-color
-                                                     :align-mid?                        align-mid?
-                                                     :mid-section-icon                  mid-section-icon
-                                                     :mid-section-type                  mid-section-type
-                                                     :mid-section-main-text             mid-section-main-text
-                                                     :mid-section-description           mid-section-description}]]
+        mid-section-comp-instance [mid-section-comp (assoc mid-section-props :text-secondary-color text-secondary-color)]]
     [rn/view {:style (merge
                       (if left-align?
                         align-left
@@ -152,6 +134,7 @@
                        :flex-direction     :row
                        :width              width
                        :height             (* 0.0497 height)
+                      ;;  iPhone 11 Pro's height in Figma divided by Component height 56/1125
                        :align-items        :center
                        :padding-horizontal 20
                        :justify-content    :space-between}
@@ -168,13 +151,13 @@
                         (when put-middle-section-on-left? {:margin-right 5}))}
        [icons/icon left-section-icon (icon-props left-section-icon-color :big)]]
       (when put-middle-section-on-left?
-        [mid-section (merge {:left-align?                       true
-                             :mid-section-description           mid-section-description
-                             :mid-section-description-color     mid-section-description-color
-                             :mid-section-description-icon      mid-section-description-icon
-                             :align-mid?                        align-mid?
-                             :mid-section-description-user-icon mid-section-description-user-icon}
-                            mid-section-props)])]
+        [mid-section (assoc mid-section-props
+                            :left-align?                       true
+                            :mid-section-description           mid-section-description
+                            :mid-section-description-color     mid-section-description-color
+                            :mid-section-description-icon      mid-section-description-icon
+                            :align-mid?                        align-mid?
+                            :mid-section-description-user-icon mid-section-description-user-icon)])]
      (when-not put-middle-section-on-left?
        [mid-section mid-section-props])
      [rn/view {:style (assoc
