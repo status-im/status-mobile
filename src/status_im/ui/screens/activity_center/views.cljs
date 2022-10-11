@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.activity-center.views
   (:require [quo.components.animated.pressable :as animation]
+            [quo.design-system.colors :as quo.colors]
             [quo.react-native :as rn]
             [quo2.components.buttons.button :as button]
             [quo2.components.markdown.text :as text]
@@ -13,9 +14,6 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.handlers :refer [<sub >evt]]))
-
-(defonce selected-activity-type
-  (reagent/atom :activity-type/all))
 
 (defn activity-title
   [{:keys [type]}]
@@ -32,8 +30,8 @@
   [{:keys [type]}]
   (case type
     constants/activity-center-notification-type-contact-request
-    :add-user
-    :placeholder))
+    :main-icons2/add-user
+    :main-icons2/placeholder))
 
 (defn activity-context
   [{:keys [message last-message type]}]
@@ -81,7 +79,7 @@
     nil))
 
 (defn activity-pressable
-  [notification & children]
+  [notification activity]
   (case (get-in notification [:message :contact-request-state])
     constants/contact-request-message-state-accepted
     ;; NOTE [2022-09-21]: We need to dispatch to
@@ -89,14 +87,13 @@
     ;; `:chat.ui/navigate-to-chat`, otherwise the chat screen looks completely
     ;; broken if it has never been opened before for the accepted contact.
     [animation/pressable {:on-press #(>evt [:contact.ui/send-message-pressed {:public-key (:author notification)}])}
-     children]
-    [:<> children]))
+     activity]
+    activity))
 
 (defn render-notification
   [notification index]
-  [rn/view {:flex           1
-            :flex-direction :column
-            :margin-top     (if (= 0 index) 0 4)}
+  [rn/view {:margin-top         (if (= 0 index) 0 4)
+            :padding-horizontal 20}
    [activity-pressable notification
     [activity-logs/activity-log
      (merge {:context   (activity-context notification)
@@ -108,67 +105,108 @@
              :unread?   (not (:read notification))}
             (activity-buttons notification))]]])
 
-(defn notifications-list
+(defn filter-selector-read-toggle
   []
-  (let [notifications (<sub [:activity-center/notifications-per-read-status])]
-    [rn/flat-list {:data           notifications
-                   :key-fn         :id
-                   :on-end-reached #(>evt [:activity-center.notifications/fetch-next-page])
-                   :render-fn      render-notification}]))
-
-(defn filter-selector-read []
-  (let [unread-filter-enabled?  (<sub [:activity-center/status-filter-unread-enabled?])]
+  (let [unread-filter-enabled? (<sub [:activity-center/filter-status-unread-enabled?])]
     ;; TODO: Replace the button by a Filter Selector component once available for use.
     [button/button {:icon     true
                     :type     (if unread-filter-enabled? :primary :outline)
                     :size     32
-                    :on-press #(if unread-filter-enabled?
-                                 (>evt [:activity-center.notifications/fetch-first-page {:status-filter :read}])
-                                 (>evt [:activity-center.notifications/fetch-first-page {:status-filter :unread}]))}
-     :unread]))
+                    :on-press #(>evt [:activity-center.notifications/fetch-first-page
+                                      {:filter-status (if unread-filter-enabled?
+                                                        :read
+                                                        :unread)}])}
+     :main-icons2/unread]))
 
-(defn activity-center []
+;; TODO(2022-10-07): The empty state is still under design analysis, so we
+;; shouldn't even care about translations at this point. A placeholder box is
+;; used instead of an image.
+(defn empty-tab
+  []
+  [rn/view {:style {:align-items      :center
+                    :flex             1
+                    :justify-content  :center
+                    :padding-vertical 12}}
+   [rn/view {:style {:background-color colors/neutral-80
+                     :height           120
+                     :margin-bottom    20
+                     :width            120}}]
+   [text/text {:size   :paragraph-1
+               :style  {:padding-bottom 2}
+               :weight :semi-bold}
+    "No notifications"]
+   [text/text {:size :paragraph-2}
+    "Your notifications will be here"]])
+
+(defn tabs
+  []
+  (let [filter-type (<sub [:activity-center/filter-type])]
+    [tabs/scrollable-tabs {:size                32
+                           :style               {:padding-left 20}
+                           :fade-end-percentage 0.79
+                           :scroll-on-press?    true
+                           :fade-end?           true
+                           :on-change           #(>evt [:activity-center.notifications/fetch-first-page {:filter-type %}])
+                           :default-active      filter-type
+                           :data                [{:id    constants/activity-center-notification-type-no-type
+                                                  :label (i18n/label :t/all)}
+                                                 {:id    constants/activity-center-notification-type-admin
+                                                  :label (i18n/label :t/admin)}
+                                                 {:id    constants/activity-center-notification-type-mention
+                                                  :label (i18n/label :t/mentions)}
+                                                 {:id    constants/activity-center-notification-type-reply
+                                                  :label (i18n/label :t/replies)}
+                                                 {:id    constants/activity-center-notification-type-contact-request
+                                                  :label (i18n/label :t/contact-requests)}
+                                                 {:id    constants/activity-center-notification-type-identity-verification
+                                                  :label (i18n/label :t/identity-verification)}
+                                                 {:id    constants/activity-center-notification-type-tx
+                                                  :label (i18n/label :t/transactions)}
+                                                 {:id    constants/activity-center-notification-type-membership
+                                                  :label (i18n/label :t/membership)}
+                                                 {:id    constants/activity-center-notification-type-system
+                                                  :label (i18n/label :t/system)}]}]))
+
+(defn header
+  []
+  (let [screen-padding 20]
+    ;; TODO: Remove temporary (and old) background color when the screen and
+    ;; header are properly blurred.
+    [rn/view {:background-color (:ui-background @quo.colors/theme)}
+     [button/button {:icon     true
+                     :type     :grey
+                     :size     32
+                     :style    {:margin-vertical 12
+                                :margin-left     screen-padding}
+                     :on-press #(>evt [:navigate-back])}
+      :main-icons2/close]
+     [text/text {:size   :heading-1
+                 :weight :semi-bold
+                 :style  {:padding-horizontal screen-padding
+                          :padding-vertical   12}}
+      (i18n/label :t/notifications)]
+     [rn/view {:flex-direction   :row
+               :padding-vertical 12}
+      [rn/view {:flex       1
+                :align-self :stretch}
+       [tabs]]
+      [rn/view {:flex-grow     0
+                :margin-left   16
+                :padding-right screen-padding}
+       [filter-selector-read-toggle]]]]))
+
+(defn activity-center
+  []
   (reagent/create-class
-   {:component-did-mount #(>evt [:activity-center.notifications/fetch-first-page {:status-filter :unread}])
+   {:component-did-mount #(>evt [:activity-center.notifications/fetch-first-page])
     :reagent-render
     (fn []
-      (let [screen-padding 20]
-        [:<>
-         [button/button {:icon     true
-                         :type     :grey
-                         :size     32
-                         :style    {:margin-vertical 12
-                                    :margin-left     screen-padding}
-                         :on-press #(>evt [:navigate-back])}
-          :close]
-         [text/text {:size   :heading-1
-                     :weight :semi-bold
-                     :style  {:padding-horizontal screen-padding
-                              :padding-vertical   12}}
-          (i18n/label :t/notifications)]
-         [rn/view {:flex-direction   :row
-                   :padding-vertical 12}
-          [rn/view {:flex       1
-                    :align-self :stretch}
-           [tabs/scrollable-tabs {:size                32
-                                  :style               {:padding-left screen-padding}
-                                  :fade-end-percentage 0.79
-                                  :scroll-on-press?    true
-                                  :fade-end?           true
-                                  :on-change           (partial reset! selected-activity-type)
-                                  :default-active      :activity-type/all
-                                  :data                [{:id :activity-type/all :label (i18n/label :t/all)}
-                                                        {:id :activity-type/admin :label (i18n/label :t/admin)}
-                                                        {:id :activity-type/mention :label (i18n/label :t/mentions)}
-                                                        {:id :activity-type/reply :label (i18n/label :t/replies)}
-                                                        {:id :activity-type/contact-request :label (i18n/label :t/contact-requests)}
-                                                        {:id :activity-type/identity-verification :label (i18n/label :t/identity-verification)}
-                                                        {:id :activity-type/transaction :label (i18n/label :t/transactions)}
-                                                        {:id :activity-type/membership :label (i18n/label :t/membership)}
-                                                        {:id :activity-type/system :label (i18n/label :t/system)}]}]]
-          [rn/view {:flex-grow     0
-                    :margin-left   16
-                    :padding-right screen-padding}
-           [filter-selector-read]]]
-         [rn/view {:padding-horizontal screen-padding}
-          [notifications-list]]]))}))
+      (let [notifications (<sub [:activity-center/filtered-notifications])]
+        [rn/flat-list {:content-container-style {:flex-grow 1}
+                       :data                    notifications
+                       :empty-component         [empty-tab]
+                       :header                  [header]
+                       :key-fn                  :id
+                       :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
+                       :render-fn               render-notification
+                       :sticky-header-indices   [0]}]))}))

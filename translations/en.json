@@ -1807,5 +1807,6 @@
     "admin": "Admin",
     "replies": "Replies",
     "identity-verification": "Identity verification",
-    "membership": "Membership"
+    "membership": "Membership",
+    "jump-to": "Jump to"
 }

@@ -423,6 +423,38 @@
        :inverted                     (when platform/ios? true)
        :style                        (when platform/android? {:scaleY -1})})]))
 
+(def show-floating-scroll-down-button (reagent/atom false))
+(def threshold-percentage-to-show-floating-scroll-down-button 75)
+
+(defn scroll-to-bottom []
+  (some-> ^js @messages-list-ref (.scrollToOffset #js {:y 0 :animated true})))
+
+(defn floating-scroll-down-button [show-input?]
+  [rn/touchable-without-feedback
+   {:on-press scroll-to-bottom}
+   [rn/view {:style {:position         :absolute
+                     :bottom           (if show-input? 126 12)
+                     :right            12
+                     :height           24
+                     :width            24
+                     :align-items      :center
+                     :justify-content  :center
+                     :border-radius    (/ 24 2)
+                     :background-color  (quo2.colors/theme-colors quo2.colors/neutral-80-opa-70 quo2.colors/white-opa-70)}}
+    [icons/icon
+     :main-icons/arrow-down {:color  (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-100)
+                             :width  12
+                             :height 12}]]])
+
+(defn on-scroll [^js ev]
+  (let [y (-> ev .-nativeEvent .-contentOffset .-y)
+        layout-height (-> ev .-nativeEvent .-layoutMeasurement .-height)
+        threshold-height (* (/ layout-height 100) threshold-percentage-to-show-floating-scroll-down-button)
+        reached-threshold? (> y threshold-height)]
+    (when (not= reached-threshold? @show-floating-scroll-down-button)
+      (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
+      (reset! show-floating-scroll-down-button reached-threshold?))))
+
 (defn messages-view [{:keys [chat
                              bottom-space
                              pan-responder
@@ -438,39 +470,43 @@
          mutual-contact-requests-enabled?
          one-to-one?
          (not contact-added?))]
-
-    ;;do not use anonymous functions for handlers
-    [list/flat-list
-     (merge
-      pan-responder
-      {:key-fn                       list-key-fn
-       :ref                          list-ref
-       :header                       [list-header chat]
-       :footer                       [list-footer chat]
-       :data                         (when-not should-send-contact-request?
-                                       messages)
-       :render-data                  (get-render-data {:group-chat      group-chat
-                                                       :chat-id         chat-id
-                                                       :public?         public?
-                                                       :community-id    community-id
-                                                       :admins          admins
-                                                       :show-input?     show-input?
-                                                       :edit-enabled    true
-                                                       :in-pinned-view? false})
-       :render-fn                    render-fn
-       :on-viewable-items-changed    on-viewable-items-changed
-       :on-end-reached               list-on-end-reached
-       :on-scroll-to-index-failed    identity              ;;don't remove this
-       :content-container-style      {:padding-top    (+ bottom-space 16)
-                                      :padding-bottom 16}
-       :scroll-indicator-insets      {:top bottom-space}   ;;ios only
-       :keyboard-dismiss-mode        :interactive
-       :keyboard-should-persist-taps :handled
-       :onMomentumScrollBegin        state/start-scrolling
-       :onMomentumScrollEnd          state/stop-scrolling
+    [:<>
+     ;;do not use anonymous functions for handlers
+     [list/flat-list
+      (merge
+       pan-responder
+       {:key-fn                       list-key-fn
+        :ref                          list-ref
+        :header                       [list-header chat]
+        :footer                       [list-footer chat]
+        :data                         (when-not should-send-contact-request?
+                                        messages)
+        :render-data                  (get-render-data {:group-chat      group-chat
+                                                        :chat-id         chat-id
+                                                        :public?         public?
+                                                        :community-id    community-id
+                                                        :admins          admins
+                                                        :show-input?     show-input?
+                                                        :edit-enabled    true
+                                                        :in-pinned-view? false})
+        :render-fn                    render-fn
+        :on-viewable-items-changed    on-viewable-items-changed
+        :on-end-reached               list-on-end-reached
+        :on-scroll-to-index-failed    identity              ;;don't remove this
+        :content-container-style      {:padding-top    (+ bottom-space 16)
+                                       :padding-bottom 16}
+        :scroll-indicator-insets      {:top bottom-space}   ;;ios only
+        :keyboard-dismiss-mode        :interactive
+        :keyboard-should-persist-taps :handled
+        :onMomentumScrollBegin        state/start-scrolling
+        :onMomentumScrollEnd          state/stop-scrolling
+        :scrollEventThrottle          16
+        :on-scroll                    on-scroll
        ;;TODO https://github.com/facebook/react-native/issues/30034
-       :inverted                     (when platform/ios? true)
-       :style                        (when platform/android? {:scaleY -1})})]))
+        :inverted                     (when platform/ios? true)
+        :style                        (when platform/android? {:scaleY -1})})]
+     (when @show-floating-scroll-down-button
+       [floating-scroll-down-button show-input?])]))
 
 (defn back-button []
   [quo2.button/button {:type     :grey

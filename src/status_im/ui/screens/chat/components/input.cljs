@@ -2,12 +2,13 @@
   (:require [status-im.ui.components.icons.icons :as icons]
             [quo.react-native :as rn]
             [oops.core :refer [oget]]
-            [quo.react :as react]
+            [quo.react :as quo.react]
             [quo.platform :as platform]
             [quo.components.text :as text]
             [quo.design-system.colors :as colors]
             [status-im.ui.screens.chat.components.style :as styles]
             [status-im.utils.fx :as fx]
+            [status-im.utils.handlers :refer [<sub]]
             [status-im.ui.screens.chat.components.reply :as reply]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.chat.constants :as chat.constants]
@@ -27,7 +28,7 @@
             [quo.components.safe-area :as safe-area]))
 
 (defn input-focus [text-input-ref]
-  (some-> ^js (react/current-ref text-input-ref) .focus))
+  (some-> ^js (quo.react/current-ref text-input-ref) .focus))
 
 (def panel->icons {:extensions :main-icons/commands
                    :images     :main-icons/photo})
@@ -157,7 +158,7 @@
     (quo.react/set-native-props sticker-ref #js {:width nil :right nil})))
 
 (defn reset-input [refs chat-id]
-  (some-> ^js (react/current-ref (:text-input-ref refs)) .clear)
+  (some-> ^js (quo.react/current-ref (:text-input-ref refs)) .clear)
   (swap! mentions-enabled update :render not)
   (swap! input-texts dissoc chat-id))
 
@@ -204,11 +205,11 @@
 (re-frame/reg-fx
  :set-input-text
  (fn [[chat-id text]]
-   ;; We enable mentions
+    ;; We enable mentions
    (swap! mentions-enabled assoc chat-id true)
    (on-text-change text chat-id)
-   ;; We update the key so that we force a refresh of the text input, as those
-   ;; are not ratoms
+    ;; We update the key so that we force a refresh of the text input, as those
+    ;; are not ratoms
    (force-text-input-update!)))
 
 (fx/defn set-input-text
@@ -461,12 +462,12 @@
                                        :input-focus         #(input-focus text-input-ref)
                                        :set-active          set-active-panel}])])]]]))))
 
-(defn calculate-y [context keyboard-shown min-y max-y]
+(defn calculate-y [context keyboard-shown min-y max-y added-value]
   (if keyboard-shown
     (if (= (:state @context) :max)
       max-y
       (if (< (:y @context) max-y)
-        (:y @context)
+        (+ (:y @context) added-value)
         (do
           (swap! context assoc :state :max)
           max-y)))
@@ -554,30 +555,31 @@
                           :pdy   0      ;used for gesture
                           :state :min   ;:min, :custom-chat-available, :custom-chat-unavailable, :max
                           :clear false})
-           keyboard-was-shown (atom false)]
+           keyboard-was-shown (atom false)
+           text-input-ref (quo.react/create-ref)
+           send-ref (quo.react/create-ref)
+           refs {:send-ref       send-ref
+                 :text-input-ref text-input-ref}]
        (fn []
          [:f>
           (fn []
-            (let [text-input-ref (quo.react/create-ref)
-                  send-ref (quo.react/create-ref)
-                  refs {:send-ref       send-ref
-                        :text-input-ref text-input-ref}
-
+            (let [reply (<sub [:chats/reply-message])
                   {window-height :height} (rn/use-window-dimensions)
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
 
-                  max-y (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - defaul height
-                  max-height (- max-y 56 (:bottom insets))  ; 56 - topbar height
-                  y (calculate-y context keyboard-shown min-y max-y)
-
+                  max-y (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - default height
+                  max-height (- max-y 56 (:bottom insets))  ; 56 - top-bar height
+                  added-value (if reply 38 0) ; increased height of input box needed when reply
+                  min-y (+ min-y added-value)
+                  y (calculate-y context keyboard-shown min-y max-y added-value)
                   translate-y (reanimated/use-shared-value 0)
                   shared-height (reanimated/use-shared-value min-y)
                   bg-opacity (reanimated/use-shared-value 0)
 
-                  bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
-                                                                 min-y max-y shared-height max-height bg-opacity)
                   input-content-change (get-input-content-change context translate-y shared-height max-height
-                                                                 bg-opacity keyboard-shown min-y max-y)]
+                                                                 bg-opacity keyboard-shown min-y max-y)
+                  bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
+                                                                 min-y max-y shared-height max-height bg-opacity)]
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown (not keyboard-shown))
                                       (swap! context assoc :state :min))
@@ -597,7 +599,8 @@
                                           (styles/new-input-bottom-sheet window-height))}
                  ;handle
                  [rn/view {:style (styles/new-bottom-sheet-handle)}]
-                 [rn/view {:style {:height (- max-y 80)}}
+                 [reply/reply-message-auto-focus-wrapper (:text-input-ref refs) reply]
+                 [rn/view {:style {:height (- max-y 80 added-value)}}
                   [text-input {:chat-id                chat-id
                                :on-content-size-change input-content-change
                                :sending-image          false

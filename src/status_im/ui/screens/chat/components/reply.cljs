@@ -89,7 +89,7 @@
      [rn/view {:style (styles/reply-content)}
       [icons/icon :main-icons/connector {:color (theme-colors quo2.colors/neutral-40 quo2.colors/neutral-60)
                                          :container-style {:position :absolute :left 10 :bottom -4 :width 16 :height 16}}]
-      [rn/view {:style {:position :absolute :left 34 :right 54 :top 3 :flex-direction :row :align-items :center}}
+      [rn/view {:style {:position :absolute :left 34 :top 3 :flex-direction :row :align-items :center :width "45%"}}
        [photos/member-photo from identicon 16]
        [quo2.text/text {:weight          :semi-bold
                         :size            :paragraph-2
@@ -144,7 +144,8 @@
   (when-not (= reply @had-reply)
     (reset! had-reply reply)
     (when reply
-      (js/setTimeout #(input-focus text-input-ref) 250))))
+      ;; A setTimeout of 0 is necessary to ensure the statement is enqueued and will get executed ASAP.
+      (js/setTimeout #(input-focus text-input-ref) 0))))
 
 (defn reply-message-wrapper-old [reply]
   [rn/view {:style {:padding-horizontal 15
@@ -155,8 +156,6 @@
 
 (defn reply-message-wrapper [reply]
   [rn/view {:style {:padding-horizontal 15
-                    :border-top-width 1
-                    :border-top-color (:ui-01 @quo.colors/theme)
                     :padding-vertical 8}}
    [reply-message reply true]])
 
@@ -168,10 +167,9 @@
         (when reply
           [reply-message-wrapper-old reply])))))
 
-(defn reply-message-auto-focus-wrapper [text-input-ref]
+(defn reply-message-auto-focus-wrapper [text-input-ref _]
   (let [had-reply (atom nil)]
-    (fn []
-      (let [reply @(re-frame/subscribe [:chats/reply-message])]
-        (focus-input-on-reply reply had-reply text-input-ref)
-        (when reply
-          [reply-message-wrapper reply])))))
+    (fn [_ reply]
+      (focus-input-on-reply reply had-reply text-input-ref)
+      (when reply
+        [reply-message-wrapper reply]))))
