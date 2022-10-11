@@ -27,13 +27,11 @@
     "@walletconnect/client": "^2.0.0-beta.23",
     "@walletconnect/client-legacy": "npm:@walletconnect/client@^1.7.1",
     "bignumber.js": "git+https://github.com/status-im/bignumber.js.git#refs/tags/v4.0.2-status",
-    "buffer": "^5.4.2",
     "chance": "^1.1.0",
     "create-react-class": "^15.6.2",
     "emojilib": "^2.4.0",
-    "eth-phishing-detect": "^1.1.13",
+    "eth-phishing-detect": "^1.2.0",
     "functional-red-black-tree": "^1.0.1",
-    "hi-base32": "^0.5.0",
     "i18n-js": "^3.3.0",
     "node-libs-react-native": "^1.2.1",
     "qrcode": "^1.4.1",
@@ -73,7 +71,6 @@
     "react-native-touch-id": "^4.4.1",
     "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#refs/tags/v11.16.0-status",
     "rn-emoji-keyboard": "git+https://github.com/status-im/rn-emoji-keyboard.git#refs/tags/v0.4.3",
-    "tdigest": "^0.1.1",
     "web3-utils": "^1.2.1"
   },
   "devDependencies": {
