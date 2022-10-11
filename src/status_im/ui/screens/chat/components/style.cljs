@@ -143,7 +143,8 @@
    :bottom           bottom
    :background-color (colors/get-color :ui-background)
    :border-top-width 1
-   :border-top-color (colors/get-color :ui-01)})
+   :border-top-color (colors/get-color :ui-01)}
+  :z-index          400)
 
 (defn new-input-bottom-sheet [window-height]
   (merge {:border-top-left-radius  20
@@ -155,7 +156,7 @@
           :height                  window-height
           :flex                    1
           :background-color        (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
-          :z-index                 1000}
+          :z-index                 2}
          (if platform/ios?
            {:shadow-radius  16
             :shadow-opacity 1
@@ -176,7 +177,7 @@
   {:flex-direction     :row
    :padding-horizontal 20
    :elevation          2
-   :z-index            2000
+   :z-index            2
    :position           :absolute
    :background-color   (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
    ;these 3 props play together, we need this magic to hide message text in the safe area
@@ -192,4 +193,4 @@
    :bottom           0
    :height           window-height
    :background-color quo2.colors/neutral-95-opa-70
-   :z-index          500})
+   :z-index          1})

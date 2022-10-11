@@ -131,13 +131,16 @@
            destination])
 
     "mention"
-    (conj acc [react/text-class
-               {:style    {:color (cond
-                                    (= content-type constants/content-type-system-text) colors/black
-                                    :else                                               colors/mention-incoming)}
-                :on-press (when-not (= content-type constants/content-type-system-text)
-                            #(re-frame/dispatch [:chat.ui/show-profile literal]))}
-               [mention-element literal]])
+    (conj acc
+          [react/view {:style {:background-color "rgba(67,96,223,0.1)" :border-radius 6 :padding-horizontal 3}}
+           [react/text-class
+            {:style    {:color (cond
+                                 (= content-type constants/content-type-system-text) colors/black
+                                 :else                                               colors/mention-incoming)
+                        :font-weight (cond (= content-type constants/content-type-system-text) "400" :else "500")}
+             :on-press (when-not (= content-type constants/content-type-system-text)
+                         #(re-frame/dispatch [:chat.ui/show-profile literal]))}
+            [mention-element literal]]])
     "status-tag"
     (conj acc [react/text-class
                {:style {:color                colors/blue
@@ -334,7 +337,7 @@
           content]
          content)
        [link-preview/link-preview-wrapper (:links (:content message)) false false]]]
-   ; delivery status
+     ; delivery status
      [react/view (style/delivery-status)
       [message-delivery-status message]]]))
 
@@ -706,7 +709,7 @@
   [message-content-wrapper message
    [unknown-content-type message]])
 
-(defn chat-message [{:keys [display-photo? pinned pinned-by] :as message}]
+(defn chat-message [{:keys [display-photo? pinned pinned-by mentioned] :as message}]
   (let [reactions @(re-frame/subscribe [:chats/message-reactions (:message-id message) (:chat-id message)])
         own-reactions (reduce (fn [acc {:keys [emoji-id own]}]
                                 (if own (conj acc emoji-id) acc))
@@ -733,7 +736,7 @@
                                                          (into #{} (js->clj own-reactions))
                                                          #(on-emoji-press %))}]))
         on-long-press   (atom nil)]
-    [:<>
+    [react/view   {:style (merge (when mentioned {:background-color "rgba(67,96,223,0.05)" :border-radius 16 :margin-bottom 4}) {:margin-horizontal 8})}
      [->message message {:ref           on-long-press
                          :modal         false
                          :on-long-press on-open-drawer}]

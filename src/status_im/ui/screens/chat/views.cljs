@@ -419,7 +419,7 @@
        :keyboard-should-persist-taps :handled
        :onMomentumScrollBegin        state/start-scrolling
        :onMomentumScrollEnd          state/stop-scrolling
-       ;;TODO https://github.com/facebook/react-native/issues/30034
+        ;;TODO https://github.com/facebook/react-native/issues/30034
        :inverted                     (when platform/ios? true)
        :style                        (when platform/android? {:scaleY -1})})]))
 
@@ -502,7 +502,7 @@
         :onMomentumScrollEnd          state/stop-scrolling
         :scrollEventThrottle          16
         :on-scroll                    on-scroll
-       ;;TODO https://github.com/facebook/react-native/issues/30034
+         ;;TODO https://github.com/facebook/react-native/issues/30034
         :inverted                     (when platform/ios? true)
         :style                        (when platform/android? {:scaleY -1})})]
      (when @show-floating-scroll-down-button
@@ -602,7 +602,7 @@
            [accessory/view {:y               position-y
                             :on-update-inset on-update}
             [invitation-bar chat-id]])
-         [components/autocomplete-mentions text-input-ref max-bottom-space]
+         [components/autocomplete-mentions-old text-input-ref max-bottom-space]
          (when show-input?
            ;; NOTE: this only accepts two children
            [accessory/view {:y               position-y
@@ -651,7 +651,8 @@
                      :show-input?                      show-input?}]
      ;;INPUT COMPONENT
      (when show-input?
-       [components/chat-input-bottom-sheet chat-id])]))
+       [rn/view
+        [components/chat-input-bottom-sheet chat-id] [components/autocomplete-mentions]])]))
 
 (defn chat-old []
   (reagent/create-class

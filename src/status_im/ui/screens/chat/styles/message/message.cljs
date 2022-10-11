@@ -127,7 +127,7 @@
 (defn message-author-userpic []
   (merge
    {:width      (+ 16 photos/default-size)} ;; 16 is for the padding
-   {:padding-left 8
+   {:padding-left 0
     :padding-right      8}))
 
 (def delivery-text
@@ -171,21 +171,8 @@
    :flex-direction :row-reverse})
 
 (defn message-view
-  [{:keys [content-type mentioned pinned]}]
+  [{:keys [content-type]}]
   (merge
-   {:border-radius 10}
-
-   (cond
-     pinned                                             {:background-color colors/pin-background}
-     (= content-type constants/content-type-system-text) nil
-     mentioned                                           {:background-color colors/mentioned-background
-                                                          :border-color colors/mentioned-border
-                                                          :border-width 1}
-     (= content-type constants/content-type-audio)       {:background-color colors/blue
-                                                          :padding-horizontal 12
-                                                          :padding-top 6}
-     :else                                               {:background-color colors/white})
-
    (when (= content-type constants/content-type-emoji)
      {:flex-direction :row})))
 
