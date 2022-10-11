@@ -32,20 +32,20 @@
 
 (defn get-quoted-text-with-mentions [parsed-text]
   (string/join
-   (mapv (fn [{:keys [type literal children]}]
-           (cond
-             (= type "paragraph")
-             (get-quoted-text-with-mentions children)
+    (mapv (fn [{:keys [type literal children]}]
+            (cond
+              (= type "paragraph")
+              (get-quoted-text-with-mentions children)
 
-             (= type "mention")
-             @(re-frame/subscribe [:contacts/contact-name-by-identity literal])
+              (= type "mention")
+              @(re-frame/subscribe [:contacts/contact-name-by-identity literal])
 
-             (seq children)
-             (get-quoted-text-with-mentions children)
+              (seq children)
+              (get-quoted-text-with-mentions children)
 
-             :else
-             literal))
-         parsed-text)))
+              :else
+              literal))
+          parsed-text)))
 
 (defn reply-message [{:keys [from]}]
   (let [contact-name       @(re-frame/subscribe [:contacts/contact-name-by-identity from])
