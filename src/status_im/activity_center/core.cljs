@@ -565,7 +565,10 @@
                    (assoc-in [:activity-center :filter :type] filter-type)
                    (assoc-in [:activity-center :filter :status] filter-status)
                    (assoc-in [:activity-center :notifications filter-type filter-status :loading?] true)
-                   ;; Comment this assoc call and the UI becomes less responsive.
+                   ;; Comment this assoc call and the UI becomes less
+                   ;; responsive. If you use the fake orange rectangles in the
+                   ;; UI you still notice the latency when this line is
+                   ;; commented. This is worrisome news.
                    (assoc-in [:activity-center :notifications filter-type filter-status :data] [])
                    )}
         cofx'

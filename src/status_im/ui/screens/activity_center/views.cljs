@@ -95,16 +95,23 @@
   (tap> {:render-notification (datetime/now->iso8601)})
   [rn/view {:margin-top         (if (= 0 index) 0 4)
             :padding-horizontal 20}
-   [activity-pressable notification
-    [activity-logs/activity-log
-     (merge {:context   (activity-context notification)
-             :icon      (activity-icon notification)
-             :message   (activity-message notification)
-             :status    (activity-status notification)
-             :timestamp (datetime/timestamp->relative (:timestamp notification))
-             :title     (activity-title notification)
-             :unread?   (not (:read notification))}
-            (activity-buttons notification))]]])
+   ;; Use this fake notification rectangle to see a massive rendering
+   ;; performance difference.
+   (if true
+     [rn/view {:style {:width            100
+                       :height           100
+                       :background-color :orange
+                       :padding-vertical 10}}]
+     [activity-pressable notification
+      [activity-logs/activity-log
+       (merge {:context   (activity-context notification)
+               :icon      (activity-icon notification)
+               :message   (activity-message notification)
+               :status    (activity-status notification)
+               :timestamp (datetime/timestamp->relative (:timestamp notification))
+               :title     (activity-title notification)
+               :unread?   (not (:read notification))}
+              (activity-buttons notification))]])])
 
 (defn filter-selector-read-toggle
   []
