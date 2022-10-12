@@ -240,3 +240,9 @@
 
 (defn to-ms [sec]
   (* 1000 sec))
+
+(defn now->iso8601 []
+  (unparse {:format-str "HH:mm:ss.SSS"}
+           (-> (timestamp)
+               (from-long)
+               (plus time-zone-offset))))

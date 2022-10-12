@@ -92,6 +92,7 @@
 
 (defn render-notification
   [notification index]
+  (tap> {:render-notification (datetime/now->iso8601)})
   [rn/view {:margin-top         (if (= 0 index) 0 4)
             :padding-horizontal 20}
    [activity-pressable notification
@@ -107,15 +108,18 @@
 
 (defn filter-selector-read-toggle
   []
+  (tap> {:filter-selector-read-toggle (datetime/now->iso8601)})
   (let [unread-filter-enabled? (<sub [:activity-center/filter-status-unread-enabled?])]
     ;; TODO: Replace the button by a Filter Selector component once available for use.
     [button/button {:icon     true
                     :type     (if unread-filter-enabled? :primary :outline)
                     :size     32
-                    :on-press #(>evt [:activity-center.notifications/fetch-first-page
-                                      {:filter-status (if unread-filter-enabled?
-                                                        :read
-                                                        :unread)}])}
+                    :on-press #(do
+                                 (tap> {:filter-selector-read-toggle-ON-PRESS (datetime/now->iso8601)})
+                                 (>evt [:activity-center.notifications/fetch-first-page
+                                        {:filter-status (if unread-filter-enabled?
+                                                          :read
+                                                          :unread)}]))}
      :main-icons2/unread]))
 
 ;; TODO(2022-10-07): The empty state is still under design analysis, so we
@@ -140,6 +144,7 @@
 
 (defn tabs
   []
+  (tap> {:tabs (datetime/now->iso8601)})
   (let [filter-type (<sub [:activity-center/filter-type])]
     [tabs/scrollable-tabs {:size                32
                            :style               {:padding-left 20}
@@ -169,6 +174,7 @@
 
 (defn header
   []
+  (tap> {:header (datetime/now->iso8601)})
   (let [screen-padding 20]
     ;; TODO: Remove temporary (and old) background color when the screen and
     ;; header are properly blurred.
@@ -201,6 +207,7 @@
    {:component-did-mount #(>evt [:activity-center.notifications/fetch-first-page])
     :reagent-render
     (fn []
+      (tap> {:activity-center (datetime/now->iso8601)})
       (let [notifications (<sub [:activity-center/filtered-notifications])]
         [rn/flat-list {:content-container-style {:flex-grow 1}
                        :data                    notifications

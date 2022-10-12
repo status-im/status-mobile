@@ -181,4 +181,4 @@
 ;; TODO: Remove this (highly) temporary flag once the new Activity Center is
 ;; usable enough to replace the old one **in the new UI**.
 (def new-activity-center-enabled?
-  (atom false))
+  (atom true))

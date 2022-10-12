@@ -3,6 +3,7 @@
             [status-im.utils.datetime :as datetime]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.constants :as constants]
+            [status-im.utils.datetime :as utils.datetime]
             [clojure.string :as string]))
 
 (re-frame/reg-sub
@@ -29,13 +30,18 @@
  :<- [:activity-center/filter-status]
  :<- [:activity-center/notifications]
  (fn [[filter-type filter-status notifications]]
+   (tap> {:SUB-filtered-notifications (utils.datetime/now->iso8601)})
    (get-in notifications [filter-type filter-status :data])))
 
 (re-frame/reg-sub
  :activity-center/filter-status-unread-enabled?
  :<- [:activity-center/filter-status]
  (fn [filter-status]
-   (= :unread filter-status)))
+   (= :unread filter-status))
+ ;; (fn [db]
+ ;;   (tap> {:SUB-filter-status-unread-enabled? (utils.datetime/now->iso8601)})
+ ;;   (= :read (:activity-center-notifications-filter-status db)))
+ )
 
 (defn- group-notifications-by-date
   [notifications]

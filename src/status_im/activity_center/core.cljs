@@ -4,6 +4,7 @@
             [status-im.data-store.activities :as data-store.activities]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
+            [status-im.utils.datetime :as utils.datetime]
             [taoensso.timbre :as log]))
 
 ;;;; Notification reconciliation
@@ -76,6 +77,7 @@
 (fx/defn notifications-fetch-first-page
   {:events [:activity-center.notifications/fetch-first-page]}
   [{:keys [db] :as cofx} {:keys [filter-type filter-status]}]
+  (tap> {:EVT-fetch-first-page (utils.datetime/now->iso8601)})
   (let [filter-type   (or filter-type
                           (get-in db [:activity-center :filter :type]
                                   (defaults :filter-type)))
@@ -97,6 +99,7 @@
   (let [{:keys [type status]} (get-in db [:activity-center :filter])
         {:keys [cursor]}      (get-in db [:activity-center :notifications type status])]
     (when (valid-cursor? cursor)
+      (tap> {:EVT-fetch-next-page (utils.datetime/now->iso8601)})
       (notifications-fetch cofx {:cursor        cursor
                                  :filter-type   type
                                  :filter-status status
@@ -109,6 +112,7 @@
    filter-status
    reset-data?
    {:keys [cursor notifications]}]
+  (tap> {:EVT-fetch-success (utils.datetime/now->iso8601)})
   (let [processed (map data-store.activities/<-rpc notifications)]
     {:db (-> db
              (assoc-in [:activity-center :notifications filter-type filter-status :cursor] cursor)
@@ -123,3 +127,31 @@
   [{:keys [db]} filter-type filter-status error]
   (log/warn "Failed to load Activity Center notifications" error)
   {:db (update-in db [:activity-center :notifications filter-type filter-status] dissoc :loading?)})
+
+(fx/defn notifications-quick-toggle
+  {:events [:activity-center.notifications/quick-toggle]}
+  [{:keys [db]}]
+  {:db (assoc db :activity-center-notifications-filter-status
+              (if (= :read (:activity-center-notifications-filter-status db))
+                :unread
+                :read))})
+
+(comment
+  (fx/defn notifications-quick-toggle
+    {:events [:activity-center.notifications/quick-toggle]}
+    [{:keys [db]}]
+    {:db (assoc-in db [:activity-center :filter :status]
+                   (if (= :read (get-in db [:activity-center :filter :status]))
+                     :unread
+                     :read))})
+
+  (re-frame/reg-event-db
+   :dev/reset-activity-center
+   (fn [db]
+     (-> db
+         (assoc-in [:activity-center]
+                   {:filter        {:status :read
+                                    :type   0}
+                    :notifications {}}))))
+
+  (re-frame/dispatch [:dev/reset-activity-center]))
