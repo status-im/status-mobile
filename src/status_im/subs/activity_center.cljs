@@ -25,6 +25,14 @@
    (get-in activity-center [:filter :type] constants/activity-center-notification-type-no-type)))
 
 (re-frame/reg-sub
+ :activity-center/loading?
+ :<- [:activity-center/filter-type]
+ :<- [:activity-center/filter-status]
+ :<- [:activity-center/notifications]
+ (fn [[filter-type filter-status notifications]]
+   (get-in notifications [filter-type filter-status :loading?])))
+
+(re-frame/reg-sub
  :activity-center/filtered-notifications
  :<- [:activity-center/filter-type]
  :<- [:activity-center/filter-status]

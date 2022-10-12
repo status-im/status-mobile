@@ -201,6 +201,17 @@
                 :padding-right screen-padding}
        [filter-selector-read-toggle]]]]))
 
+(defn loading-indicator
+  []
+  (tap> {:loading-indicator (datetime/now->iso8601)})
+  (when (<sub [:activity-center/loading?])
+    [rn/view {:background-color :orange
+              :position         :absolute
+              :top              0
+              :left             0
+              :width            100
+              :height           50}]))
+
 (defn activity-center
   []
   (reagent/create-class
@@ -209,11 +220,14 @@
     (fn []
       (tap> {:activity-center (datetime/now->iso8601)})
       (let [notifications (<sub [:activity-center/filtered-notifications])]
-        [rn/flat-list {:content-container-style {:flex-grow 1}
-                       :data                    notifications
-                       :empty-component         [empty-tab]
-                       :header                  [header]
-                       :key-fn                  :id
-                       :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
-                       :render-fn               render-notification
-                       :sticky-header-indices   [0]}]))}))
+        [:<>
+         [loading-indicator]
+         [rn/flat-list {:content-container-style {:flex-grow 1}
+                        :data                    notifications
+                        :empty-component         [empty-tab]
+                        :header                  [header]
+                        :key-fn                  :id
+                        ;; Commented to simplify analysis.
+                        ;; :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
+                        :render-fn               render-notification
+                        :sticky-header-indices   [0]}]]))}))
