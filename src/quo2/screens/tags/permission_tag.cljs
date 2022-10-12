@@ -145,6 +145,7 @@
         [rn/view {:flex 1}
          [preview/customizer state descriptor]]
         [rn/view {:padding-vertical 60
+                  :align-self       :center
                   :justify-content  :center}
          (when @state
            (for [{:keys [tokens]} community-tokens]
