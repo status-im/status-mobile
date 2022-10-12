@@ -86,6 +86,7 @@
         :disabled (nil? @selected-unpin)
         :theme (if (nil? @selected-unpin) :disabled :negative)}
        (i18n/label :t/unpin)]]]))
+<<<<<<< HEAD
 
 (defn message-render-fn []
   [react/text-class "asdf"]
