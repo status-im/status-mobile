@@ -76,8 +76,9 @@
   (merge {:flex-direction :row}))
 
 (defn pin-indicator-container []
-  {:margin-top      8
+  {:margin-top  4
    :margin-left 68
+   :top 4
    :justify-content :center
    :align-self   :flex-start
    :align-items  :flex-start})

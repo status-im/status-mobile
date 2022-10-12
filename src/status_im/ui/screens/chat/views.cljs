@@ -471,7 +471,6 @@
          mutual-contact-requests-enabled?
          one-to-one?
          (not contact-added?))]
-    ;(println "mmm" messages)
     [:<>
      ;;do not use anonymous functions for handlers
      [list/flat-list
@@ -627,7 +626,7 @@
             [bottom-sheet @active-panel]])]))))
 
 (defn chat-render []
-  (let [{:keys [chat-id show-input? group-chat admins] :as chat}
+  (let [{:keys [chat-id show-input? group-chat admins community-id] :as chat}
         ;;we want to react only on these fields, do not use full chat map here
         @(re-frame/subscribe [:chats/current-chat-chat-view])
         mutual-contact-requests-enabled? @(re-frame/subscribe [:mutual-contact-requests/enabled?])]
@@ -647,7 +646,7 @@
        (if group-chat
          [invitation-requests chat-id admins]
          (when-not mutual-contact-requests-enabled? [add-contact-bar chat-id])))
-     [pinned-message/pinned-banner chat-id]
+     [message/pinned-banner chat-id community-id]
      ;;MESSAGES LIST
      [messages-view {:chat                             chat
                      :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
