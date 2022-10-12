@@ -235,15 +235,15 @@
 
 (def pin-icon-height 15)
 
-(defn pin-icon []
-  [icons/icon :main-icons/pin16 {:color          (:text-04 @colors/theme)
+(defn pin-icon [color]
+  [icons/icon :main-icons/pin16 {:color            color
                                  :height           pin-icon-height
                                  :width            pin-icon-width}])
 
 (defn pinned-by-indicator [pinned-by]
   [react/view {:style (style/pin-indicator)
                :accessibility-label :pinned-by}
-   [pin-icon]
+   [pin-icon quo2.colors/primary-50]
    [quo/text {:size   :small
               :color  :main
               :style  (style/pin-author-text)}
@@ -497,11 +497,11 @@
      [react/view {:style {:width             photos.style/default-size
                           :height            photos.style/default-size
                           :margin-horizontal 8
-                          :border-radius     photos.style/default-size
-                          :justify-content   :center
-                          :align-items       :center
-                          :background-color  quo2.colors/primary-50-opa-10}}
-      [pin-icon]]
+                          :border-radius photos.style/default-size
+                          :justify-content :center
+                          :align-items :center
+                          :background-color quo2.colors/primary-50-opa-10}}
+      [pin-icon quo2.colors/primary-50]]
      [react/view
       [react/view {:style {:flex-direction :row :align-items :center}}
        [react/touchable-opacity {:style    style/message-author-touchable

@@ -28,6 +28,7 @@
             [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.screens.chat.components.accessory :as accessory]
             [status-im.ui.screens.chat.components.input :as components]
+            [status-im.ui.screens.chat.message.pinned-message :as pinned-message]
             [status-im.ui.screens.chat.message.datemark-old :as message-datemark-old]
             [status-im.ui.screens.chat.message.datemark :as message-datemark]
             [status-im.ui.components.toolbar :as toolbar]
@@ -317,7 +318,7 @@
                :edit-enabled edit-enabled)
         space-keeper]))])
 
-(defn render-fn [{:keys [outgoing type] :as message}
+(defn message-render-fn [{:keys [outgoing type] :as message}
                  idx
                  _
                  {:keys [group-chat public? community? current-public-key
@@ -470,6 +471,7 @@
          mutual-contact-requests-enabled?
          one-to-one?
          (not contact-added?))]
+    ;(println "mmm" messages)
     [:<>
      ;;do not use anonymous functions for handlers
      [list/flat-list
@@ -489,7 +491,7 @@
                                                         :show-input?     show-input?
                                                         :edit-enabled    true
                                                         :in-pinned-view? false})
-        :render-fn                    render-fn
+        :render-fn                    message-render-fn
         :on-viewable-items-changed    on-viewable-items-changed
         :on-end-reached               list-on-end-reached
         :on-scroll-to-index-failed    identity              ;;don't remove this
@@ -645,6 +647,7 @@
        (if group-chat
          [invitation-requests chat-id admins]
          (when-not mutual-contact-requests-enabled? [add-contact-bar chat-id])))
+     [pinned-message/pinned-banner chat-id]
      ;;MESSAGES LIST
      [messages-view {:chat                             chat
                      :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
