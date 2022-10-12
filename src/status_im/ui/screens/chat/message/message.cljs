@@ -12,6 +12,8 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.fast-image :as fast-image]
+            [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as quo2.colors]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.bottom-sheets.context-drawer :as message-context-drawer]
@@ -132,12 +134,10 @@
 
     "mention"
     (conj acc
-          [react/view {:style {:background-color "rgba(67,96,223,0.1)" :border-radius 6 :padding-horizontal 3}}
+          [react/view {:style {:background-color quo2.colors/primary-50-opa-10 :border-radius 6 :padding-horizontal 3}}
            [react/text-class
-            {:style    {:color (cond
-                                 (= content-type constants/content-type-system-text) colors/black
-                                 :else                                               colors/mention-incoming)
-                        :font-weight (cond (= content-type constants/content-type-system-text) "400" :else "500")}
+            {:style    {:color (if (= content-type constants/content-type-system-text) colors/black (:text-04 @colors/theme))
+                        :font-weight (if (= content-type constants/content-type-system-text) "400" "500")}
              :on-press (when-not (= content-type constants/content-type-system-text)
                          #(re-frame/dispatch [:chat.ui/show-profile literal]))}
             [mention-element literal]]])
@@ -736,7 +736,7 @@
                                                          (into #{} (js->clj own-reactions))
                                                          #(on-emoji-press %))}]))
         on-long-press   (atom nil)]
-    [react/view   {:style (merge (when mentioned {:background-color "rgba(67,96,223,0.05)" :border-radius 16 :margin-bottom 4}) {:margin-horizontal 8})}
+    [react/view   {:style (merge (when mentioned {:background-color quo2.colors/primary-50-opa-5 :border-radius 16 :margin-bottom 4}) {:margin-horizontal 8})}
      [->message message {:ref           on-long-press
                          :modal         false
                          :on-long-press on-open-drawer}]

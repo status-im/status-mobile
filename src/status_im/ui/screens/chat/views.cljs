@@ -651,8 +651,7 @@
                      :show-input?                      show-input?}]
      ;;INPUT COMPONENT
      (when show-input?
-       [rn/view
-        [components/chat-input-bottom-sheet chat-id] [components/autocomplete-mentions]])]))
+       [components/chat-input-bottom-sheet chat-id])]))
 
 (defn chat-old []
   (reagent/create-class

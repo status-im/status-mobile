@@ -388,11 +388,10 @@
             :render-data               text-input-ref
             :render-fn                 mention-item}]]]))))
 
-(defn autocomplete-mentions []
+(defn autocomplete-mentions [suggestions]
   [:f>
    (fn []
-     (let [suggestions @(re-frame/subscribe [:chat/mention-suggestions])
-           animation (reanimated/use-shared-value 0)]
+     (let [animation (reanimated/use-shared-value 0)]
        (quo.react/effect! #(do
                              (reanimated/set-shared-value animation (reanimated/with-timing (if (seq suggestions) 0 200)))))
        [reanimated/view {:style (reanimated/apply-animations-to-style
@@ -400,7 +399,7 @@
         [list/flat-list
          {:keyboardShouldPersistTaps :always
           :data                      suggestions
-          :key-fn                    #(str %2)
+          :key-fn                    first
           :render-fn                 mention-item
           :content-container-style    {:padding-bottom 12}}]]))])
 
@@ -496,10 +495,14 @@
         text-height (* num-lines 22)
         mentions-height (min 132 (+ 16 (* 46 (- (count suggestions) 1))))
         should-translate (if (< (- max-height text-height) mentions-height) true false)
-        min-value (if-not reply 132 170)
+        min-value (if-not reply mentions-height (+ mentions-height 44))
         ; translate value when mentions list appear while at bottom of expanded input sheet
         mentions-translate-value (if should-translate (min min-value (- mentions-height (- max-height text-height))) mentions-height)]
     (when (or (< y max-y) should-translate) mentions-translate-value)))
+
+(defn get-y-value [context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply]
+  (let [y (calculate-y context keyboard-shown min-y max-y added-value)]
+    y (+ y (when (seq suggestions) (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)))))
 
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height bg-opacity]
   (-> (gesture/gesture-pan)
@@ -597,8 +600,7 @@
                   max-height (- max-y 56 (:bottom insets))  ; 56 - top-bar height
                   added-value (if (and (not (seq suggestions)) reply) 38 0) ; increased height of input box needed when reply
                   min-y (+ min-y (when reply 38))
-                  y (calculate-y context keyboard-shown min-y max-y added-value)
-                  y (+ y (when (seq suggestions) (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)))
+                  y (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply)
                   translate-y (reanimated/use-shared-value 0)
                   shared-height (reanimated/use-shared-value min-y)
                   bg-opacity (reanimated/use-shared-value 0)
@@ -649,4 +651,5 @@
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
                                          {:opacity bg-opacity}
-                                         (styles/new-bottom-sheet-background window-height))}]]))])))])
+                                         (styles/new-bottom-sheet-background window-height))}]
+               [autocomplete-mentions suggestions]]))])))])
