@@ -182,3 +182,5 @@
 ;; usable enough to replace the old one **in the new UI**.
 (def new-activity-center-enabled?
   (atom false))
+
+(def delete-message-for-me-undo-time-limit-ms 4000)

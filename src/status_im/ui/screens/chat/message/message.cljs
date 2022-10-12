@@ -1,34 +1,35 @@
 (ns status-im.ui.screens.chat.message.message
-  (:require [re-frame.core :as re-frame]
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.chat.models.delete-message-for-me]
+            [status-im.chat.models.images :as images]
+            [status-im.chat.models.pin-message :as models.pin-message]
+            [status-im.chat.models.reactions :as models.reactions]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.fast-image :as fast-image]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.bottom-sheets.context-drawer :as message-context-drawer]
+            [status-im.ui.screens.chat.components.reply :as components.reply]
+            [status-im.ui.screens.chat.image.preview.views :as preview]
             [status-im.ui.screens.chat.message.audio :as message.audio]
-            [status-im.chat.models.reactions :as models.reactions]
             [status-im.ui.screens.chat.message.command :as message.command]
+            [status-im.ui.screens.chat.message.gap :as message.gap]
+            [status-im.ui.screens.chat.message.link-preview :as link-preview]
+            [status-im.ui.screens.chat.message.reactions :as reactions]
+            [status-im.ui.screens.chat.message.reactions-row :as reaction-row]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.sheets :as sheets]
-            [status-im.ui.screens.chat.message.gap :as message.gap]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
-            [status-im.utils.security :as security]
-            [status-im.ui.screens.chat.message.reactions :as reactions]
-            [status-im.ui.screens.chat.image.preview.views :as preview]
-            [quo.core :as quo]
-            [status-im.utils.config :as config]
-            [reagent.core :as reagent]
-            [status-im.ui.screens.chat.components.reply :as components.reply]
-            [status-im.ui.screens.chat.message.link-preview :as link-preview]
             [status-im.ui.screens.communities.icon :as communities.icon]
-            [status-im.ui.components.animation :as animation]
-            [status-im.chat.models.images :as images]
-            [status-im.chat.models.pin-message :as models.pin-message]
-            [status-im.ui.components.fast-image :as fast-image]
-            [status-im.ui.screens.chat.bottom-sheets.context-drawer :as message-context-drawer]
-            [status-im.ui.screens.chat.message.reactions-row :as reaction-row])
+            [status-im.utils.config :as config]
+            [status-im.utils.security :as security])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn message-timestamp-anim
@@ -294,7 +295,8 @@
   "Author, userpic and delivery wrapper"
   [{:keys [last-in-group?
            identicon
-           from in-popover? timestamp-str]
+           from in-popover? timestamp-str
+           deleted-for-me?]
     :as   message} content {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
     [react/view {:style               (style/message-wrapper message)
@@ -320,12 +322,17 @@
           [react/text
            {:style               (merge
                                   {:padding-left 5
-                                   :margin-top 2}
+                                   :margin-top   2}
                                   (style/message-timestamp-text))
             :accessibility-label :message-timestamp}
            timestamp-str]])
-     ;;MESSAGE CONTENT
-       content
+       ;; MESSAGE CONTENT
+       ;; TODO(yqrashawn): wait for system message component to display deleted for me UI
+       (if deleted-for-me?
+         [react/view {:style {:border-width 2
+                              :border-color :red}}
+          content]
+         content)
        [link-preview/link-preview-wrapper (:links (:content message)) false false]]]
    ; delivery status
      [react/view (style/delivery-status)
@@ -436,6 +443,13 @@
         :label    (i18n/label  (if pinned :t/unpin-from-chat :t/pin-to-chat))
         :icon     :main-icons/pin-context20
         :id       (if pinned :unpin :pin)}])
+    [{:type     :danger
+      :on-press #(re-frame/dispatch
+                  [:chat.ui/delete-message-for-me message
+                   config/delete-message-for-me-undo-time-limit-ms])
+      :label    (i18n/label :t/delete-for-me)
+      :icon     :main-icons/delete-context20
+      :id       :delete-for-me}]
     (when (and outgoing config/delete-message-enabled?)
       [{:type     :danger
         :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
@@ -581,6 +595,13 @@
                                    :id       :share
                                    :icon     :main-icons/share-context20
                                    :label    (i18n/label :t/share-image)}]
+                                 [{:type     :danger
+                                   :on-press #(re-frame/dispatch
+                                               [:chat.ui/delete-message-for-me message
+                                                config/delete-message-for-me-undo-time-limit-ms])
+                                   :label    (i18n/label :t/delete-for-me)
+                                   :icon     :main-icons/delete-context20
+                                   :id       :delete-for-me}]
                                  (when (and outgoing config/delete-message-enabled?)
                                    [{:type     :danger
                                      :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
@@ -611,6 +632,13 @@
                                                   :label    (i18n/label  (if pinned :t/unpin-from-chat :t/pin-to-chat))
                                                   :icon     :main-icons/pin-context20
                                                   :id       (if pinned :unpin :pin)}
+                                                 {:type     :danger
+                                                  :on-press #(re-frame/dispatch
+                                                              [:chat.ui/delete-message-for-me message
+                                                               config/delete-message-for-me-undo-time-limit-ms])
+                                                  :label    (i18n/label :t/delete-for-me)
+                                                  :icon     :main-icons/delete-context20
+                                                  :id       :delete-for-me}
                                                  (when (and outgoing config/delete-message-enabled?)
                                                    {:type     :danger
                                                     :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
