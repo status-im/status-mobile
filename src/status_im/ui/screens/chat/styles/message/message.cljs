@@ -3,7 +3,8 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as photos]
-            [quo2.foundations.colors :as quo2.colors]))
+            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.typography :as typography]))
 
 (defn style-message-text
   []
@@ -93,9 +94,9 @@
    :margin-top     1})
 
 (defn pin-author-text []
-  {:color (:text-04 @colors/theme)
-   :font-weight "500"
-   :bottom 2})
+  (merge typography/font-medium
+         {:color quo2.colors/primary-50
+          :bottom 2}))
 
 (defn pinned-by-text []
   {:margin-left 5})
