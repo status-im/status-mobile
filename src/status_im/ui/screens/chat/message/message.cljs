@@ -12,7 +12,6 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.fast-image :as fast-image]
-            [quo.design-system.colors :as colors]
             [quo2.foundations.colors :as quo2.colors]
             [quo2.foundations.typography :as typography]
             [status-im.ui.components.icons.icons :as icons]
