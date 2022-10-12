@@ -138,7 +138,7 @@
           [react/view {:style {:background-color quo2.colors/primary-50-opa-10 :border-radius 6 :padding-horizontal 3}}
            [react/text-class
             {:style    (merge {:color (if (= content-type constants/content-type-system-text) colors/black (:text-04 @colors/theme))}
-                         (if (= content-type constants/content-type-system-text) typography/font-regular typography/font-medium))
+                              (if (= content-type constants/content-type-system-text) typography/font-regular typography/font-medium))
              :on-press (when-not (= content-type constants/content-type-system-text)
                          #(re-frame/dispatch [:chat.ui/show-profile literal]))}
             [mention-element literal]]])
