@@ -12,9 +12,6 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.fast-image :as fast-image]
-            [status-im.utils.handlers :refer [>evt]]
-            [quo2.foundations.colors :as quo2.colors]
-            [quo2.foundations.typography :as typography]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.bottom-sheets.context-drawer :as message-context-drawer]
@@ -30,18 +27,13 @@
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
-            [status-im.utils.security :as security]
-            [status-im.ui.screens.chat.message.reactions :as reactions]
-            [status-im.ui.screens.chat.image.preview.views :as preview]
             [status-im.ui.screens.chat.styles.photos :as photos.style]
-            [quo.core :as quo]
-            [status-im.utils.config :as config]
-            [reagent.core :as reagent]
-            [status-im.ui.screens.chat.components.reply :as components.reply]
-            [status-im.ui.screens.chat.message.link-preview :as link-preview]
             [status-im.ui.screens.communities.icon :as communities.icon]
+            [status-im.utils.handlers :refer [>evt]]
             [status-im.utils.config :as config]
-            [status-im.utils.security :as security])
+            [status-im.utils.security :as security]
+            [quo2.foundations.typography :as typography]
+            [quo2.foundations.colors :as quo2.colors])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn message-timestamp-anim
@@ -504,7 +496,7 @@
                           :border-radius photos.style/default-size
                           :justify-content :center
                           :align-items :center
-                          :background-color "rgba(67,96,223,0.05)"}}
+                          :background-color quo2.colors/primary-50-opa-10}}
       [pin-icon]]
      [react/view
       [react/view {:style {:flex-direction :row :align-items :center}}
@@ -764,15 +756,16 @@
         on-open-drawer  (fn [actions]
                           (re-frame/dispatch [:bottom-sheet/show-sheet
                                               {:content (message-context-drawer/message-options
-                                                         actions
-                                                         (into #{} (js->clj own-reactions))
-                                                         #(on-emoji-press %))}]))
+                                                          actions
+                                                          (into #{} (js->clj own-reactions))
+                                                          #(on-emoji-press %))}]))
         on-long-press   (atom nil)]
-[react/view   {:style (merge (when mentioned {:background-color quo2.colors/primary-50-opa-5 :border-radius 16 :margin-bottom 4}) {:margin-horizontal 8})}
-  [->message message {:ref           on-long-press
+    [react/view   {:style (merge (when (or mentioned pinned) {:background-color quo2.colors/primary-50-opa-5 :border-radius 16 :margin-bottom 4}) {:margin-horizontal 8})}
+     (when pinned
+       [react/view {:style (style/pin-indicator-container)}
+        [pinned-by-indicator pinned-by]])
+     [->message message {:ref           on-long-press
                          :modal         false
                          :on-long-press on-open-drawer}]
      [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press] ;; TODO: pass on-open-drawer function
- (when pinned
-   [react/view {:style (style/pin-indicator-container)}
-    [pinned-by-indicator pinned-by]])]))
+     ]))

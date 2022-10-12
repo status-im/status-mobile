@@ -92,7 +92,6 @@
               (when pinned
                 (protocol/send-chat-messages [{:chat-id      (pin-message :chat-id)
                                                :content-type constants/content-type-pin
-                                               :text "This is a pin!"
                                                :response-to (pin-message :message-id)
                                                :ens-name preferred-name}])))))
 

@@ -115,10 +115,10 @@
 
 (defn quoted-message [pin?]
   (merge {:flex-direction :row
-          :align-items :center}
+          :align-items :center
+          :width "45%"}
          (when-not pin? {:position :absolute
                          :left 34
-                         :right 54
                          :top 3})))
 
 (defn contact-request-content []
