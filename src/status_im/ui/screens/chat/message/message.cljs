@@ -34,6 +34,7 @@
             [status-im.utils.security :as security]
             [quo2.foundations.typography :as typography]
             [quo2.foundations.colors :as quo2.colors])
+
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn message-timestamp-anim
@@ -490,13 +491,13 @@
 (defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str] :as message} {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
     [react/view {:style (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
-     [react/view {:style {:width photos.style/default-size
-                          :height photos.style/default-size
+     [react/view {:style {:width             photos.style/default-size
+                          :height            photos.style/default-size
                           :margin-horizontal 8
-                          :border-radius photos.style/default-size
-                          :justify-content :center
-                          :align-items :center
-                          :background-color quo2.colors/primary-50-opa-10}}
+                          :border-radius     photos.style/default-size
+                          :justify-content   :center
+                          :align-items       :center
+                          :background-color  quo2.colors/primary-50-opa-10}}
       [pin-icon]]
      [react/view
       [react/view {:style {:flex-direction :row :align-items :center}}
