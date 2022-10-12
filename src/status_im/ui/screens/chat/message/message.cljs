@@ -14,6 +14,7 @@
             [status-im.ui.components.fast-image :as fast-image]
             [quo.design-system.colors :as colors]
             [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.typography :as typography]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.bottom-sheets.context-drawer :as message-context-drawer]
@@ -136,8 +137,8 @@
     (conj acc
           [react/view {:style {:background-color quo2.colors/primary-50-opa-10 :border-radius 6 :padding-horizontal 3}}
            [react/text-class
-            {:style    {:color (if (= content-type constants/content-type-system-text) colors/black (:text-04 @colors/theme))
-                        :font-weight (if (= content-type constants/content-type-system-text) "400" "500")}
+            {:style    (merge {:color (if (= content-type constants/content-type-system-text) colors/black (:text-04 @colors/theme))}
+                         (if (= content-type constants/content-type-system-text) typography/font-regular typography/font-medium))
              :on-press (when-not (= content-type constants/content-type-system-text)
                          #(re-frame/dispatch [:chat.ui/show-profile literal]))}
             [mention-element literal]]])
