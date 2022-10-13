@@ -34,6 +34,7 @@
             [quo2.screens.switcher.switcher-cards :as switcher-cards]
             [quo2.screens.navigation.top-nav :as top-nav]
             [quo2.screens.navigation.bottom-nav-tab :as bottom-nav-tab]
+            [quo2.screens.navigation.floating-shell-button :as floating-shell-button]
             [quo2.screens.tabs.account-selector :as account-selector]
             [quo2.screens.tabs.segmented-tab :as segmented]
             [quo2.screens.tabs.tabs :as tabs]
@@ -114,7 +115,10 @@
                  :component top-nav/preview-top-nav}
                 {:name      :page-nav
                  :insets    {:top false}
-                 :component page-nav/preview-page-nav}]
+                 :component page-nav/preview-page-nav}
+                {:name      :floating-shell-button
+                 :insets    {:top false}
+                 :component floating-shell-button/preview-floating-shell-button}]
    :notifications [{:name      :activity-logs
                     :insets    {:top false}
                     :component activity-logs/preview-activity-logs}]
