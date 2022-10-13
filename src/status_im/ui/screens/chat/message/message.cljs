@@ -99,6 +99,9 @@
   [react/view {:style (when-not pin? (style/quoted-message-container))}
    [components.reply/reply-message reply false pin?]])
 
+(defn system-text? [content-type]
+  (= content-type constants/content-type-system-text))
+
 (defn render-inline [message-text content-type acc {:keys [type literal destination]}]
   (case type
     ""
@@ -139,9 +142,9 @@
     (conj acc
           [react/view {:style {:background-color quo2.colors/primary-50-opa-10 :border-radius 6 :padding-horizontal 3}}
            [react/text-class
-            {:style    (merge {:color (if (= content-type constants/content-type-system-text) colors/black quo2.colors/primary-50)}
-                              (if (= content-type constants/content-type-system-text) typography/font-regular typography/font-medium))
-             :on-press (when-not (= content-type constants/content-type-system-text)
+            {:style    (merge {:color (if (system-text? content-type) colors/black quo2.colors/primary-50)}
+                              (if (system-text? content-type) typography/font-regular typography/font-medium))
+             :on-press (when-not (system-text? content-type)
                          #(>evt [:chat.ui/show-profile literal]))}
             [mention-element literal]]])
     "status-tag"
