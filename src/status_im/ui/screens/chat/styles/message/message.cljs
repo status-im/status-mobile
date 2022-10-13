@@ -152,10 +152,6 @@
    :flex-direction :row-reverse})
 
 (defn message-view
-<<<<<<< HEAD
-  [{:keys [content-type]}]
-  (merge
-=======
   [{:keys [content-type mentioned]}]
   (merge
    {:border-radius 10}
@@ -168,7 +164,6 @@
                                                           :padding-horizontal 12
                                                           :padding-top 6})
 
->>>>>>> 348a97211... feat: pinned messages new ui
    (when (= content-type constants/content-type-emoji)
      {:flex-direction :row})))
 

@@ -760,9 +760,9 @@
         on-open-drawer  (fn [actions]
                           (re-frame/dispatch [:bottom-sheet/show-sheet
                                               {:content (message-context-drawer/message-options
-                                                          actions
-                                                          (into #{} (js->clj own-reactions))
-                                                          #(on-emoji-press %))}]))
+                                                         actions
+                                                         (into #{} (js->clj own-reactions))
+                                                         #(on-emoji-press %))}]))
         on-long-press   (atom nil)]
     [react/view   {:style (merge (when (or mentioned pinned) {:background-color quo2.colors/primary-50-opa-5 :border-radius 16 :margin-bottom 4}) {:margin-horizontal 8})}
      (when pinned
