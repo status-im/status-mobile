@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.activity-center.views
   (:require [quo.components.animated.pressable :as animation]
-            [quo.design-system.colors :as quo.colors]
             [quo.react-native :as rn]
             [quo2.components.buttons.button :as button]
             [quo2.components.markdown.text :as text]
@@ -41,16 +40,21 @@
           contact     (<sub [:contacts/contact-by-identity (:from message)])
           sender-name (or (get-in contact [:names :nickname])
                           (get-in contact [:names :three-words-name]))]
-      [[context-tags/user-avatar-tag
-        {:color          :purple
-         :override-theme :dark
-         :size           :small
-         :style          {:background-color colors/white-opa-10}
-         :text-style     {:color colors/white}}
-        sender-name
-        (multiaccounts/displayed-photo contact)]
-       [rn/text {:style {:color colors/white}}
-        (i18n/label :t/contact-request-sent)]])
+      [[rn/view
+        {:style {:flex-direction :row
+                 :flex 1
+                 :align-items :center}}
+        [context-tags/user-avatar-tag
+         {:color          :purple
+          :override-theme :dark
+          :size           :small
+          :style          {:background-color colors/white-opa-10}
+          :text-style     {:color colors/white}}
+         sender-name
+         (multiaccounts/displayed-photo contact)]
+        [rn/view {:style {:width 4}}]
+        [rn/text {:style {:color colors/white}}
+         (i18n/label :t/contact-request-sent)]]])
     nil))
 
 (defn activity-message
@@ -75,6 +79,7 @@
                 :on-press #(>evt [:contact-requests.ui/decline-request id])}
      :button-2 {:label    (i18n/label :t/accept)
                 :type     :success
+                :override-background-color colors/success-60
                 :on-press #(>evt [:contact-requests.ui/accept-request id])}}
     nil))
 
@@ -86,7 +91,9 @@
     ;; `:contact.ui/send-message-pressed` instead of
     ;; `:chat.ui/navigate-to-chat`, otherwise the chat screen looks completely
     ;; broken if it has never been opened before for the accepted contact.
-    [animation/pressable {:on-press #(>evt [:contact.ui/send-message-pressed {:public-key (:author notification)}])}
+    [animation/pressable {:on-press (fn []
+                                      (>evt [:hide-popover])
+                                      (>evt [:contact.ui/send-message-pressed {:public-key (:author notification)}]))}
      activity]
     activity))
 
@@ -170,20 +177,19 @@
 (defn header
   []
   (let [screen-padding 20]
-    ;; TODO: Remove temporary (and old) background color when the screen and
-    ;; header are properly blurred.
-    [rn/view {:background-color (:ui-background @quo.colors/theme)}
+    [rn/view
      [button/button {:icon     true
                      :type     :grey
                      :size     32
                      :style    {:margin-vertical 12
                                 :margin-left     screen-padding}
-                     :on-press #(>evt [:navigate-back])}
+                     :on-press #(>evt [:hide-popover])}
       :main-icons2/close]
      [text/text {:size   :heading-1
                  :weight :semi-bold
                  :style  {:padding-horizontal screen-padding
-                          :padding-vertical   12}}
+                          :padding-vertical   12
+                          :color              colors/white}}
       (i18n/label :t/notifications)]
      [rn/view {:flex-direction   :row
                :padding-vertical 12}
@@ -201,12 +207,17 @@
    {:component-did-mount #(>evt [:activity-center.notifications/fetch-first-page])
     :reagent-render
     (fn []
-      (let [notifications (<sub [:activity-center/filtered-notifications])]
-        [rn/flat-list {:content-container-style {:flex-grow 1}
-                       :data                    notifications
-                       :empty-component         [empty-tab]
-                       :header                  [header]
-                       :key-fn                  :id
-                       :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
-                       :render-fn               render-notification
-                       :sticky-header-indices   [0]}]))}))
+      (let [notifications (<sub [:activity-center/filtered-notifications])
+            window-height (<sub [:dimensions/window-height])
+            window-width  (<sub [:dimensions/window-width])]
+        [rn/view {:style {:background-color :transparent
+                          :height           window-height
+                          :width            window-width}}
+         [rn/flat-list {:content-container-style {:flex-grow 1}
+                        :data                    notifications
+                        :empty-component         [empty-tab]
+                        :header                  [header]
+                        :key-fn                  :id
+                        :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
+                        :render-fn               render-notification
+                        :sticky-header-indices   [0]}]]))}))

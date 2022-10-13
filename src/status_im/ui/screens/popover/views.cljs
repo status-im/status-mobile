@@ -19,7 +19,8 @@
             [status-im.ui.screens.keycard.views :as keycard.views]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
             [status-im.ui.screens.chat.message.pinned-message :as pinned-message]
-            [status-im.ui.screens.signing.sheets :as signing-sheets]))
+            [status-im.ui.screens.signing.sheets :as signing-sheets]
+            [status-im.ui.screens.activity-center.views :as activity-center]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -95,8 +96,9 @@
       :reagent-render
       (fn []
         (when @current-popover
-          (let [{:keys [view style]} @current-popover]
-            [react/view {:position :absolute :top 0 :bottom 0 :left 0 :right 0}
+          (let [{:keys [view style blur-view? blur-view-props]} @current-popover
+                comp (if blur-view? react/blur-view react/view)]
+            [comp (merge  {:style {:position :absolute :top 0 :bottom 0 :left 0 :right 0}} blur-view-props)
              (when platform/ios?
                [react/animated-view
                 {:style {:flex 1 :background-color colors/black-persist :opacity alpha-value}}])
@@ -109,7 +111,7 @@
               [react/touchable-highlight
                {:style    {:flex 1 :align-items :center :justify-content :center}
                 :on-press request-close}
-               [react/view (merge {:background-color colors/white
+               [react/view (merge {:background-color (if blur-view? :transparent colors/white)
                                    :border-radius    16
                                    :margin           32
                                    :shadow-offset    {:width 0 :height 2}
@@ -172,6 +174,9 @@
 
                    (= :fees-warning view)
                    [signing-sheets/fees-warning]
+
+                   (= :activity-center view)
+                   [activity-center/activity-center]
 
                    :else
                    [view])]]]]])))})))

@@ -1,5 +1,6 @@
 (ns status-im.ui.components.topnav
   (:require [quo2.components.buttons.button :as quo2.button]
+            [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
@@ -40,7 +41,11 @@
                           :on-press #(do
                                        (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
                                        (if config/new-activity-center-enabled?
-                                         (re-frame/dispatch [:navigate-to :activity-center])
+                                         (re-frame/dispatch [:show-popover {:view            :activity-center
+                                                                            :blur-view?      true
+                                                                            :blur-view-props {:blurAmount 20
+                                                                                              :overlay-color  colors/neutral-80-opa-80
+                                                                                              :blurType :dark}}])
                                          (re-frame/dispatch [:navigate-to :notifications-center])))}
       :main-icons2/notifications]
      (when (pos? notif-count)
