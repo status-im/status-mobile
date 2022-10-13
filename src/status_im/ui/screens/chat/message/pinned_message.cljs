@@ -2,14 +2,22 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [quo.design-system.colors :as colors]
-            [status-im.ui.components.react :as react]
             [quo.core :as quo]
+            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.typography :as typography]
             [reagent.core :as reagent]
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.ui.components.list.views :as list]
             [status-im.utils.handlers :refer [<sub]]
+<<<<<<< HEAD
             [status-im.ui.screens.chat.message.message :as message]))
             [status-im.ui.screens.chat.message.message-old :as message-old] ))
+=======
+            [status-im.ui.screens.chat.message.message-old :as message-old]
+            [quo.react-native :as rn]
+            [status-im.switcher.constants :as constants]
+            [quo2.components.icon :as icons]))
+>>>>>>> 409149f87... feat: unpin messages
 
 (def selected-unpin (reagent/atom nil))
 
@@ -17,9 +25,9 @@
                      _
                      _
                      {:keys [group-chat public? current-public-key space-keeper]}]
-  [react/touchable-without-feedback {:style {:width "100%"}
+  [rn/touchable-without-feedback {:style {:width "100%"}
                                      :on-press #(reset! selected-unpin message-id)}
-   [react/view {:style {:flex-direction  :row
+   [rn/view {:style {:flex-direction  :row
                         :align-items     :center
                         :justify-content :space-between
                         :flex            1
@@ -36,7 +44,7 @@
             :last-in-group? false
             :in-popover? true)
      space-keeper]
-    [react/view {:style {:position    :absolute
+    [rn/view {:style {:position    :absolute
                          :right       18
                          :padding-top 4}}
      [quo/radio {:value (= @selected-unpin message-id)}]]]])
@@ -59,7 +67,9 @@
       :content-container-style      {:padding-bottom 10
                                      :padding-top 10}}]))
 
+
 (defn pin-limit-popover []
+<<<<<<< HEAD
   (let [{:keys [message]} (<sub [:popover/popover])]
     [react/view {:style {:flex-shrink 1}}
      [react/view {:style {:height 60
@@ -151,3 +161,76 @@
                         :align-items :center
                         :background-color quo2.colors/neutral-80-opa-5}}
     [react/text-class {:style (merge typography/label typography/font-medium)} pins-count]]])))
+=======
+  (let [{:keys [width]} (constants/dimensions)]
+  [rn/view {:style {:width (* width 0.95)
+                    :background-color quo2.colors/neutral-80-opa-70
+                    :flex-direction :row
+                    :border-radius 16
+                    :padding 12}}
+   [rn/view {:style {:background-color quo2.colors/neutral-80-opa-20
+                     :width 36
+                     :height 36
+                     :border-radius 18
+                     :justify-content :center
+                     :align-items :center}}
+    [rn/view {:style {:width 18
+                      :height 18
+                      :border-radius 9
+                      :border-color quo2.colors/danger-50-opa-40
+                      :border-width 1
+                      :justify-content :center
+                      :align-items :center}}
+     [rn/text {:style {:color quo2.colors/danger-50}} "!"]]
+    ]
+   [rn/view {:style {:margin-left 8}}
+   [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold {:color "#ffffff"})} (i18n/label :t/cannot-pin-title)]
+   [rn/text {:style (merge typography/paragraph-2 typography/font-regular {:color "#ffffff"})} (i18n/label :t/cannot-pin-desc)]
+    [rn/view {:style {:background-color quo2.colors/primary-60
+                      :border-radius 8
+                      :justify-content :center
+                      :align-items :center
+                      :padding-horizontal 8
+                      :padding-vertical 4
+                      :align-self :flex-start
+                      :margin-top 10}}
+     [rn/text {:style (merge typography/paragraph-2 typography/font-medium  {:color "#ffffff"})} (i18n/label :t/view-pinned-messages)]]]
+   [rn/touchable-opacity {:active-opacity 1
+                          :on-press #(re-frame/dispatch [:hide-popover])
+                           :style {:position :absolute
+                                   :top 16
+                                   :right 16}}
+   [icons/icon :main-icons/close {:color "#ffffff"
+                                  :height 8
+                                  :width 8}]]]
+  ))
+
+;(defn pin-limit-popover []
+;  (let [{:keys [message]} (<sub [:popover/popover])]
+;    [rn/view {:style {:flex-shrink 1}}
+;     [rn/view {:style {:height 60
+;                          :justify-content :center}}
+;      [rn/text {:style {:padding-horizontal 40
+;                           :text-align :center}}
+;       (i18n/label :t/pin-limit-reached)]]
+;     [pinned-messages-limit-list (message :chat-id)]
+;     [rn/view {:flex-direction :row :padding-horizontal 16 :height 60 :justify-content :space-between :align-items :center}
+;      [quo/button
+;       {:on-press #(do
+;                     (reset! selected-unpin nil)
+;                     (re-frame/dispatch [:hide-popover]))
+;        :type :secondary}
+;       (i18n/label :t/cancel)]
+;      [quo/button
+;       {:on-press #(do
+;                     (re-frame/dispatch [::models.pin-message/send-pin-message {:chat-id    (message :chat-id)
+;                                                                                :message-id @selected-unpin
+;                                                                                :pinned    false}])
+;                     (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned true)])
+;                     (re-frame/dispatch [:hide-popover])
+;                     (reset! selected-unpin nil))
+;        :type :secondary
+;        :disabled (nil? @selected-unpin)
+;        :theme (if (nil? @selected-unpin) :disabled :negative)}
+;       (i18n/label :t/unpin)]]]))
+>>>>>>> 409149f87... feat: unpin messages
