@@ -6,9 +6,10 @@
             [quo.platform :as platform]
             [quo.components.text :as text]
             [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as quo2.colors]
             [status-im.ui.screens.chat.components.style :as styles]
             [status-im.utils.fx :as fx]
-            [status-im.utils.handlers :refer [<sub]]
+            [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.ui.screens.chat.components.reply :as reply]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.chat.constants :as chat.constants]
@@ -331,47 +332,46 @@
                                   [idx item])
                                 @(re-frame/subscribe [:chat/input-with-mentions]))]
          ^{:key (str idx "_" type "_" text)}
-         [rn/text (when (= type :mention) {:style {:color "#0DA4C9"}})
-          text])
+         [rn/text (when (= type :mention) {:style {:color quo2.colors/primary-50}}) text])
        (get @input-texts chat-id))]))
 
 (defn mention-item
   [[public-key {:keys [alias name nickname] :as user}] _ _ text-input-ref]
   (let [ens-name? (not= alias name)]
-    [list-item/list-item
-     (cond-> {:icon              [photos/member-photo public-key]
-              :size              :small
-              :text-size         :small
-              :title
-              [text/text
-               {:weight          :medium
-                :ellipsize-mode  :tail
-                :number-of-lines 1
-                :size            :small}
-               (if nickname
-                 nickname
-                 name)
-               (when nickname
-                 [text/text
-                  {:weight         :regular
-                   :color          :secondary
-                   :ellipsize-mode :tail
-                   :size           :small}
-                  " "
-                  (when ens-name?
-                    "@")
-                  name])]
-              :title-text-weight :medium
-              :on-press
-              (fn []
-                (re-frame/dispatch [:chat.ui/select-mention text-input-ref user]))}
+    [rn/touchable-opacity
+     {:on-press #(re-frame/dispatch [:chat.ui/select-mention text-input-ref user])}
 
-       ens-name?
-       (assoc :subtitle alias))]))
+     [list-item/list-item
+      (cond-> {:icon              [photos/member-photo public-key]
+               :size              :small
+               :text-size         :small
+               :title
+               [text/text
+                {:weight          :medium
+                 :ellipsize-mode  :tail
+                 :number-of-lines 1
+                 :size            :small}
+                (if nickname
+                  nickname
+                  name)
+                (when nickname
+                  [text/text
+                   {:weight         :regular
+                    :color          :secondary
+                    :ellipsize-mode :tail
+                    :size           :small}
+                   " "
+                   (when ens-name?
+                     "@")
+                   name])]
+               :title-text-weight :medium}
+
+        ens-name?
+        (assoc :subtitle alias))]]))
 
 (def chat-toolbar-height (reagent/atom nil))
 
-(defn autocomplete-mentions [text-input-ref bottom]
+(defn autocomplete-mentions-old [text-input-ref bottom]
   (let [suggestions @(re-frame/subscribe [:chat/mention-suggestions])]
     (when (seq suggestions)
       (let [height (+ 16 (* 52 (min 4.5 (count suggestions))))]
@@ -388,6 +388,22 @@
             :key-fn                    first
             :render-data               text-input-ref
             :render-fn                 mention-item}]]]))))
+
+(defn autocomplete-mentions [suggestions]
+  [:f>
+   (fn []
+     (let [animation (reanimated/use-shared-value 0)]
+       (quo.react/effect! #(do
+                             (reanimated/set-shared-value animation (reanimated/with-timing (if (seq suggestions) 0 200)))))
+       [reanimated/view {:style (reanimated/apply-animations-to-style
+                                 {:transform [{:translateY animation}]}
+                                 {:bottom 0 :position :absolute :z-index 5 :max-height 180})}
+        [list/flat-list
+         {:keyboardShouldPersistTaps :always
+          :data                      suggestions
+          :key-fn                    first
+          :render-fn                 mention-item
+          :content-container-style    {:padding-bottom 12}}]]))])
 
 (defn on-chat-toolbar-layout [^js ev]
   (reset! chat-toolbar-height (-> ev .-nativeEvent .-layout .-height)))
@@ -474,6 +490,21 @@
     (do
       (swap! context assoc :state :min)
       min-y)))
+
+(defn calculate-y-with-mentions [y max-y max-height chat-id suggestions reply]
+  (let [input-text (:input-text (get (<sub [:chat/inputs]) chat-id))
+        num-lines (count (string/split input-text "\n"))
+        text-height (* num-lines 22)
+        mentions-height (min 132 (+ 16 (* 46 (- (count suggestions) 1))))
+        should-translate (if (< (- max-height text-height) mentions-height) true false)
+        min-value (if-not reply mentions-height (+ mentions-height 44))
+        ; translate value when mentions list appear while at bottom of expanded input sheet
+        mentions-translate-value (if should-translate (min min-value (- mentions-height (- max-height text-height))) mentions-height)]
+    (when (or (< y max-y) should-translate) mentions-translate-value)))
+
+(defn get-y-value [context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply]
+  (let [y (calculate-y context keyboard-shown min-y max-y added-value)]
+    y (+ y (when (seq suggestions) (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)))))
 
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height bg-opacity]
   (-> (gesture/gesture-pan)
@@ -564,18 +595,17 @@
          [:f>
           (fn []
             (let [reply (<sub [:chats/reply-message])
+                  suggestions (<sub [:chat/mention-suggestions])
                   {window-height :height} (rn/use-window-dimensions)
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
-
                   max-y (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - default height
                   max-height (- max-y 56 (:bottom insets))  ; 56 - top-bar height
-                  added-value (if reply 38 0) ; increased height of input box needed when reply
-                  min-y (+ min-y added-value)
-                  y (calculate-y context keyboard-shown min-y max-y added-value)
+                  added-value (if (and (not (seq suggestions)) reply) 38 0) ; increased height of input box needed when reply
+                  min-y (+ min-y (when reply 38))
+                  y (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply)
                   translate-y (reanimated/use-shared-value 0)
                   shared-height (reanimated/use-shared-value min-y)
                   bg-opacity (reanimated/use-shared-value 0)
-
                   input-content-change (get-input-content-change context translate-y shared-height max-height
                                                                  bg-opacity keyboard-shown min-y max-y)
                   bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
@@ -607,19 +637,21 @@
                                :refs                   refs
                                :set-active-panel       #()}]]]]
                ;CONTROLS
-               [rn/view {:style (styles/new-bottom-sheet-controls insets)}
-                [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/image]
-                [rn/view {:width 12}]
-                [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/reaction]
-                [rn/view {:flex 1}]
-                ;;SEND button
-                [rn/view {:ref send-ref :style (when-not (seq (get @input-texts chat-id)) {:width 0 :right -100})}
-                 [quo2.button/button {:icon     true :size 32 :accessibility-label :send-message-button
-                                      :on-press #(do (swap! context assoc :clear true)
-                                                     (clear-input chat-id refs)
-                                                     (re-frame/dispatch [:chat.ui/send-current-message]))}
-                  :main-icons2/arrow-up]]]
+               (when-not (seq suggestions)
+                 [rn/view {:style (styles/new-bottom-sheet-controls insets)}
+                  [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/image]
+                  [rn/view {:width 12}]
+                  [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/reaction]
+                  [rn/view {:flex 1}]
+                  ;;SEND button
+                  [rn/view {:ref send-ref :style (when-not (seq (get @input-texts chat-id)) {:width 0 :right -100})}
+                   [quo2.button/button {:icon     true :size 32 :accessibility-label :send-message-button
+                                        :on-press #(do (swap! context assoc :clear true)
+                                                       (clear-input chat-id refs)
+                                                       (>evt [:chat.ui/send-current-message]))}
+                    :main-icons2/arrow-up]]])
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
                                          {:opacity bg-opacity}
-                                         (styles/new-bottom-sheet-background window-height))}]]))])))])
+                                         (styles/new-bottom-sheet-background window-height))}]
+               [autocomplete-mentions suggestions]]))])))])

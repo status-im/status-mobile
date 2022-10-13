@@ -12,6 +12,9 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.fast-image :as fast-image]
+            [status-im.utils.handlers :refer [>evt]]
+            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.typography :as typography]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.bottom-sheets.context-drawer :as message-context-drawer]
@@ -131,13 +134,14 @@
            destination])
 
     "mention"
-    (conj acc [react/text-class
-               {:style    {:color (cond
-                                    (= content-type constants/content-type-system-text) colors/black
-                                    :else                                               colors/mention-incoming)}
-                :on-press (when-not (= content-type constants/content-type-system-text)
-                            #(re-frame/dispatch [:chat.ui/show-profile literal]))}
-               [mention-element literal]])
+    (conj acc
+          [react/view {:style {:background-color quo2.colors/primary-50-opa-10 :border-radius 6 :padding-horizontal 3}}
+           [react/text-class
+            {:style    (merge {:color (if (= content-type constants/content-type-system-text) colors/black (:text-04 @colors/theme))}
+                              (if (= content-type constants/content-type-system-text) typography/font-regular typography/font-medium))
+             :on-press (when-not (= content-type constants/content-type-system-text)
+                         #(>evt [:chat.ui/show-profile literal]))}
+            [mention-element literal]]])
     "status-tag"
     (conj acc [react/text-class
                {:style {:color                colors/blue
@@ -334,7 +338,7 @@
           content]
          content)
        [link-preview/link-preview-wrapper (:links (:content message)) false false]]]
-   ; delivery status
+     ; delivery status
      [react/view (style/delivery-status)
       [message-delivery-status message]]]))
 
@@ -706,7 +710,7 @@
   [message-content-wrapper message
    [unknown-content-type message]])
 
-(defn chat-message [{:keys [display-photo? pinned pinned-by] :as message}]
+(defn chat-message [{:keys [display-photo? pinned pinned-by mentioned] :as message}]
   (let [reactions @(re-frame/subscribe [:chats/message-reactions (:message-id message) (:chat-id message)])
         own-reactions (reduce (fn [acc {:keys [emoji-id own]}]
                                 (if own (conj acc emoji-id) acc))
@@ -733,7 +737,7 @@
                                                          (into #{} (js->clj own-reactions))
                                                          #(on-emoji-press %))}]))
         on-long-press   (atom nil)]
-    [:<>
+    [react/view   {:style (merge (when mentioned {:background-color quo2.colors/primary-50-opa-5 :border-radius 16 :margin-bottom 4}) {:margin-horizontal 8})}
      [->message message {:ref           on-long-press
                          :modal         false
                          :on-long-press on-open-drawer}]
