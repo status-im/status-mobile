@@ -99,3 +99,11 @@
   {:events [::load-pin-messages]}
   [{:keys [db] :as cofx} chat-id]
   (load-more-pin-messages cofx chat-id true))
+
+(fx/defn show-pin-limit-modal
+  {:events [::show-pin-limit-modal]}
+  [{:keys [db] :as cofx} chat-id]
+  (println "succesfully dispatch an action")
+  (fx/merge
+  {:db (assoc-in db [:pin-modal chat-id] true)}))
+

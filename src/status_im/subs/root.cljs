@@ -112,6 +112,7 @@
 (reg-root-key-sub :messages/pagination-info :pagination-info)
 (reg-root-key-sub :messages/pin-message-lists :pin-message-lists)
 (reg-root-key-sub :messages/pin-messages :pin-messages)
+(reg-root-key-sub :messages/pin-modal :pin-modal)
 
 ;;browser
 (reg-root-key-sub :browsers :browser/browsers)

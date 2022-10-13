@@ -428,9 +428,11 @@
     (if (and (not pinned) (> (count pinned-messages) 2))
       (do
         (js/setTimeout (fn [] (re-frame/dispatch [:dismiss-keyboard])) 500)
-        (re-frame/dispatch [:show-popover {:view             :pin-limit
-                                           :message          message
-                                           :prevent-closing? true}]))
+        (re-frame/dispatch [::models.pin-message/show-pin-limit-modal])
+        ;(re-frame/dispatch [:show-popover {:view             :pin-limit
+        ;                                   :message          message
+        ;                                   :prevent-closing? true}])
+        )
       (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
 (defn on-long-press-fn [on-long-press {:keys [pinned message-pin-enabled outgoing edit-enabled show-input?] :as message} content]
@@ -721,6 +723,7 @@
   [message-content-wrapper message
    [unknown-content-type message]])
 
+<<<<<<< HEAD
 (defn chat-message [{:keys [outgoing display-photo? pinned pinned-by] :as message} space-keeper]
   [:<>
    [reactions/with-reaction-picker
@@ -743,3 +746,157 @@
    (when pinned
      [react/view {:style (style/pin-indicator-container outgoing)}
       [pinned-by-indicator outgoing display-photo? pinned-by]])])
+=======
+(defn popover [chat-id]
+  (let [pin-modal (<sub [:chats/pin-modal])]
+    (println "PINMODALX" pin-modal)
+  [react/view]))
+
+(defn chat-message [{:keys [pinned pinned-by mentioned in-pinned-view? last-in-group? chat-id] :as message}]
+  (let [pin-modal (<sub [:chats/pin-modal])
+        reactions @(re-frame/subscribe [:chats/message-reactions (:message-id message) (:chat-id message)])
+        own-reactions (reduce (fn [acc {:keys [emoji-id own]}]
+                                (if own (conj acc emoji-id) acc))
+                              [] reactions)
+        send-emoji      (fn [{:keys [emoji-id]}]
+                          (re-frame/dispatch [::models.reactions/send-emoji-reaction
+                                              {:message-id (:message-id message)
+                                               :emoji-id   emoji-id}]))
+        retract-emoji   (fn [{:keys [emoji-id emoji-reaction-id]}]
+                          (re-frame/dispatch [::models.reactions/send-emoji-reaction-retraction
+                                              {:message-id        (:message-id message)
+                                               :emoji-id          emoji-id
+                                               :emoji-reaction-id emoji-reaction-id}]))
+        on-emoji-press  (fn [emoji-id]
+                          (let [active ((set own-reactions) emoji-id)]
+                            (if active
+                              (retract-emoji {:emoji-id          emoji-id
+                                              :emoji-reaction-id (reactions/extract-id reactions emoji-id)})
+                              (send-emoji {:emoji-id emoji-id}))))
+        on-open-drawer  (fn [actions]
+                          (re-frame/dispatch [:bottom-sheet/show-sheet
+                                              {:content (message-context-drawer/message-options
+                                                         actions
+                                                         (into #{} (js->clj own-reactions))
+                                                         #(on-emoji-press %))}]))
+        on-long-press   (atom nil)]
+    (println "asdfasdf" pin-modal)
+    [react/view
+     {:style (merge (when (and (not in-pinned-view?) (or mentioned pinned)) {:background-color quo2.colors/primary-50-opa-5 :border-radius 16 :margin-bottom 4}) (when (or mentioned pinned last-in-group?) {:margin-top 8}) {:margin-horizontal 8})}
+     (when pinned
+       [react/view {:style (style/pin-indicator-container)}
+        [pinned-by-indicator pinned-by]])
+     [->message message {:ref           on-long-press
+                         :modal         false
+                         :on-long-press on-open-drawer}]
+     [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press] [popover chat-id] ;; TODO: pass on-open-drawer function
+     ]))
+
+(defn message-render-fn
+  [{:keys [outgoing] :as message}
+   _
+   {:keys [group-chat public? community? current-public-key show-input? message-pin-enabled edit-enabled]}]
+  [chat-message
+   (assoc message
+          :incoming-group (and group-chat (not outgoing))
+          :group-chat group-chat
+          :public? public?
+          :community? community?
+          :current-public-key current-public-key
+          :show-input? show-input?
+          :message-pin-enabled message-pin-enabled
+          :in-pinned-view? true
+          :edit-enabled edit-enabled)])
+
+(def list-key-fn #(or (:message-id %) (:value %)))
+
+(defn pinned-messages-list [chat-id]
+  (let [pinned-messages (vec (vals (<sub [:chats/pinned chat-id])))
+        current-chat (<sub [:chats/current-chat])
+        community (<sub [:communities/community (:community-id current-chat)])]
+    [react/view
+     [react/text-class {:style (merge typography/heading-1 typography/font-semi-bold {:margin-horizontal 20})} (i18n/label :t/pinned-messages)]
+     (when community
+       [react/view {:style {:flex-direction :row
+                            :background-color quo2.colors/neutral-10
+                            :border-radius 20
+                            :align-items :center
+                            :align-self :flex-start
+                            :margin-horizontal 20
+                            :padding 4
+                            :margin-top 8}}
+        [chat-icon.screen/chat-icon-view-toolbar chat-id (:group-chat current-chat) (:chat-name current-chat) (:color current-chat) (:emoji current-chat) 22]
+        [react/text-class {:style {:margin-left 6 :margin-right 4}} (:name community)]
+        [icons/icon
+         :main-icons/chevron-right
+         {:color  quo2.colors/neutral-50
+          :width  12
+          :height 12}]
+        [react/text-class {:style {:margin-left 4 :margin-right 8}} (str "# " (:chat-name current-chat))]])
+     [list/flat-list
+      {:data      pinned-messages
+       :render-fn message-render-fn
+       :key-fn    list-key-fn
+       :separator [react/view {:background-color quo2.colors/neutral-10 :height 1 :margin-top 8}]}]]))
+
+(defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]
+  (let [response-to (:response-to (:content message))]
+    [react/touchable-opacity-class {:on-press (fn []
+                                                (re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                    {:content #(pinned-messages-list chat-id)}]))
+                                    :active-opacity 1
+                                    :style (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
+     [react/view {:style {:width photos.style/default-size
+                          :height photos.style/default-size
+                          :margin-horizontal 8
+                          :border-radius photos.style/default-size
+                          :justify-content :center
+                          :align-items :center
+                          :background-color quo2.colors/primary-50-opa-10}}
+      [pin-icon quo2.colors/primary-50]]
+     [react/view
+      [react/view {:style {:flex-direction :row :align-items :center}}
+       [react/touchable-opacity {:style    style/message-author-touchable
+                                 :disabled in-popover?
+                                 :on-press #(do (when modal (close-modal))
+                                                (re-frame/dispatch [:chat.ui/show-profile from]))}
+        [message-author-name from {:modal modal}]]
+       [react/text {:style {:font-size 13}} (str " " (i18n/label :pinned-a-message))]
+       [react/text
+        {:style               (merge
+                               {:padding-left 5
+                                :margin-top 2}
+                               (style/message-timestamp-text))
+         :accessibility-label :message-timestamp}
+        timestamp-str]]
+      [quoted-message response-to (:quoted-message message) true]]]))
+
+(defn pinned-banner [chat-id]
+  (let [pinned-messages (<sub [:chats/pinned chat-id])
+        latest-pin-text (get-in (last (vals pinned-messages)) [:content :text])
+        pins-count (count (seq pinned-messages))]
+    (when (> pins-count 0)
+      [react/touchable-opacity-class
+       {:style {:height 50
+                :background-color quo2.colors/primary-50-opa-20
+                :flex-direction :row
+                :align-items :center
+                :padding-horizontal 20
+                :padding-vertical 10}
+        :active-opacity 1
+        :on-press (fn []
+                    (re-frame/dispatch [:bottom-sheet/show-sheet
+                                        {:content #(pinned-messages-list chat-id)}]))}
+       [pin-icon "#000000"]
+       [react/text-class {:number-of-lines 1
+                          :style (merge typography/paragraph-2 {:margin-left 10 :margin-right 50})} latest-pin-text]
+       [react/view {:style {:position :absolute
+                            :right 22
+                            :height 20
+                            :width 20
+                            :border-radius 8
+                            :justify-content :center
+                            :align-items :center
+                            :background-color quo2.colors/neutral-80-opa-5}}
+        [react/text-class {:style (merge typography/label typography/font-medium)} pins-count]]])))
+>>>>>>> b64e3a30b... unpin messages
