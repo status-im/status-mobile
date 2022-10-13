@@ -396,7 +396,8 @@
        (quo.react/effect! #(do
                              (reanimated/set-shared-value animation (reanimated/with-timing (if (seq suggestions) 0 200)))))
        [reanimated/view {:style (reanimated/apply-animations-to-style
-                                 {:transform [{:translateY animation}]} {:bottom 0 :position :absolute :z-index 5 :max-height 180})}
+                                 {:transform [{:translateY animation}]}
+                                 {:bottom 0 :position :absolute :z-index 5 :max-height 180})}
         [list/flat-list
          {:keyboardShouldPersistTaps :always
           :data                      suggestions
