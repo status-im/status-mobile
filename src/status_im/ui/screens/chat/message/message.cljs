@@ -509,7 +509,7 @@
                                  :on-press #(do (when modal (close-modal))
                                                 (re-frame/dispatch [:chat.ui/show-profile from]))}
         [message-author-name from {:modal modal}]]
-       [react/text {:style {:font-size 13}} " pinned a message"]
+       [react/text {:style {:font-size 13}} (str " " (i18n/label :pinned-a-message))]
        [react/text
         {:style               (merge
                                {:padding-left 5
