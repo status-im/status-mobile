@@ -27,7 +27,7 @@
                   :type  :text}])
 
 (defn cool-preview []
-  (let [state (reagent/atom {:count 5 :type :jump-to})]
+  (let [state (reagent/atom {:count "5" :type :jump-to})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
