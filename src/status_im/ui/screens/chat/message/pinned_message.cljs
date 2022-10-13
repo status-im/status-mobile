@@ -9,6 +9,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.ui.screens.chat.message.message :as message]))
+            [status-im.ui.screens.chat.message.message-old :as message-old] ))
 
 (def selected-unpin (reagent/atom nil))
 
@@ -86,7 +87,6 @@
         :disabled (nil? @selected-unpin)
         :theme (if (nil? @selected-unpin) :disabled :negative)}
        (i18n/label :t/unpin)]]]))
-<<<<<<< HEAD
 
 (defn message-render-fn []
   [react/text-class "asdf"]
