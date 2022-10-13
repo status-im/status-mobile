@@ -81,15 +81,16 @@
        [icons/icon :main-icons/close-circle {:container-style (styles/close-button)
                                              :color (:icon-02 @quo.colors/theme)}]]]]))
 
-(defn reply-message [{:keys [from identicon content-type contentType parsed-text content]} in-chat-input?]
+; This component is also used for quoted pinned message as the UI is very similar
+(defn reply-message [{:keys [from identicon content-type contentType parsed-text content]} in-chat-input? pin?]
   (let [contact-name       @(re-frame/subscribe [:contacts/contact-name-by-identity from])
         current-public-key @(re-frame/subscribe [:multiaccount/public-key])
         content-type       (or content-type contentType)]
-    [rn/view {:style {:flex-direction :row :height 24}}
-     [rn/view {:style (styles/reply-content)}
-      [icons/icon :main-icons/connector {:color (theme-colors quo2.colors/neutral-40 quo2.colors/neutral-60)
-                                         :container-style {:position :absolute :left 10 :bottom -4 :width 16 :height 16}}]
-      [rn/view {:style {:position :absolute :left 34 :top 3 :flex-direction :row :align-items :center :width "45%"}}
+    [rn/view {:style {:flex-direction :row :height (when-not pin? 24)}}
+     [rn/view {:style (styles/reply-content pin?)}
+      (when-not pin? [icons/icon :main-icons/connector {:color (theme-colors quo2.colors/neutral-40 quo2.colors/neutral-60)
+                                                        :container-style {:position :absolute :left 10 :bottom -4 :width 16 :height 16}}])
+      [rn/view {:style (styles/quoted-message pin?)}
        [photos/member-photo from identicon 16]
        [quo2.text/text {:weight          :semi-bold
                         :size            :paragraph-2
@@ -125,7 +126,7 @@
 (defn send-image [images]
   [rn/view {:style (styles/reply-container-image)}
    [rn/scroll-view {:horizontal true
-                    :style      (styles/reply-content)}
+                    :style      (styles/reply-content false)}
     (for [{:keys [uri]} (vals images)]
       ^{:key uri}
       [rn/image {:source {:uri uri}

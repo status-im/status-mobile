@@ -31,7 +31,7 @@
 
 (defn edit-message []
   [rn/view {:style {:flex-direction :row :height 24}}
-   [rn/view {:style (styles/reply-content)}
+   [rn/view {:style (styles/reply-content false)}
     [icons/icon :main-icons/edit-connector {:color (theme-colors quo2.colors/neutral-40 quo2.colors/neutral-60)
                                             :container-style {:position :absolute :left 10 :bottom -4 :width 16 :height 16}}]
     [rn/view {:style {:position :absolute :left 36 :right 54 :top 3 :flex-direction :row :align-items :center}}
