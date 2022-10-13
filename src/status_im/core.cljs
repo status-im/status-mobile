@@ -5,7 +5,6 @@
             [re-frame.core :as re-frame]
             [re-frame.interop :as interop]
             [reagent.impl.batching :as batching]
-            [status-im.async-storage.core :as async-storage]
             status-im.events
             [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
@@ -39,8 +38,6 @@
   (re-frame/dispatch-sync [:init/app-started])
 
   (utils.universal-links/initialize)
-
-  (async-storage/get-item :new-ui-enabled? #(reset! config/new-ui-enabled? %))
 
   ;;DEV
   (snoopy/subscribe!)

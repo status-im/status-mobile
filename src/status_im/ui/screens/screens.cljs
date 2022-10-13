@@ -226,7 +226,7 @@
                             :hardwareBackButton {:dismissModalOnPress false
                                                  :popStackOnPress     false}
                             :topBar             {:visible false}}
-            :component     chat/chat-old}
+            :component     chat/chat}
 
                                         ;Pinned messages
            {:name      :chat-pinned-messages
@@ -905,9 +905,9 @@
             quo.preview/screens)
           (when config/quo-preview-enabled?
             quo.preview/main-screens)
-          (when (or config/quo-preview-enabled? @config/new-ui-enabled?)
+          (when config/quo-preview-enabled?
             quo2.preview/screens)
-          (when @config/new-ui-enabled?
+          (when config/new-ui-enabled?
             navigation2.screens/screen-overwrites)
           (when config/quo-preview-enabled?
             quo2.preview/main-screens)))

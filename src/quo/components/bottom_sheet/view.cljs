@@ -8,8 +8,7 @@
             [quo.components.safe-area :as safe-area]
             [quo.components.bottom-sheet.style :as styles]
             [quo.gesture-handler :as gesture-handler]
-            [quo.design-system.colors :as colors]
-            [status-im.utils.config :as config]))
+            [quo.design-system.colors :as colors]))
 
 (def opacity-coeff 0.8)
 (def close-duration 150)
@@ -102,8 +101,7 @@
                               {:inputRange  [(animated/multiply open-snap-point opacity-coeff) 0]
                                :outputRange [1 0]
                                :extrapolate (:clamp animated/extrapolate)})))
-                          [])
-        new-ui?           @config/new-ui-enabled?]
+                          [])]
     (animated/code!
      (fn []
        (animated/cond* (animated/and* (animated/eq master-state (:end gesture-handler/states))
@@ -187,7 +185,7 @@
                                      (when platform/ios?
                                        {:opacity          opacity
                                         :background-color (:backdrop @colors/theme)}))}]]
-      [animated/view {:style (merge (styles/content-container window-height new-ui?)
+      [animated/view {:style (merge (styles/content-container window-height)
                                     {:transform [{:translateY (if (= sheet-height max-height)
                                                                 (animated/add translate-y keyboard-height-android-delta)
                                                                 translate-y)}

@@ -59,7 +59,7 @@
   (reagent.core/reactify-component
    (fn []
      (let [{:keys [component insets]} (get
-                                       (if (or js/goog.DEBUG @config/new-ui-enabled?)
+                                       (if js/goog.DEBUG
                                          (get-screens)
                                          screens)
                                        (keyword key))]

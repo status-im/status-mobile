@@ -1,6 +1,5 @@
 (ns quo.components.bottom-sheet.style
   (:require [quo.design-system.colors :as colors]
-            [quo2.foundations.colors :as quo2.colors]
             [quo.design-system.spacing :as spacing]))
 
 (def border-radius 16)
@@ -25,12 +24,8 @@
    :bottom           0})
 
 (defn content-container
-  [window-height new-ui?]
-  {:background-color       (if new-ui?
-                             (quo2.colors/theme-colors
-                              quo2.colors/white
-                              quo2.colors/neutral-90)
-                             (:ui-background @colors/theme))
+  [window-height]
+  {:background-color        (:ui-background @colors/theme)
    :border-top-left-radius  border-radius
    :border-top-right-radius border-radius
    :height                  (* window-height 2)})
