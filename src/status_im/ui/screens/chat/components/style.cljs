@@ -143,8 +143,8 @@
    :bottom           bottom
    :background-color (colors/get-color :ui-background)
    :border-top-width 1
-   :border-top-color (colors/get-color :ui-01)}
-  :z-index          3)
+   :border-top-color (colors/get-color :ui-01)
+   :z-index          3})
 
 (defn new-input-bottom-sheet [window-height]
   (merge {:border-top-left-radius  20

@@ -12,6 +12,7 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.fast-image :as fast-image]
+            [status-im.utils.handlers :refer [>evt]]
             [quo2.foundations.colors :as quo2.colors]
             [quo2.foundations.typography :as typography]
             [status-im.ui.components.icons.icons :as icons]
@@ -139,7 +140,7 @@
             {:style    (merge {:color (if (= content-type constants/content-type-system-text) colors/black (:text-04 @colors/theme))}
                               (if (= content-type constants/content-type-system-text) typography/font-regular typography/font-medium))
              :on-press (when-not (= content-type constants/content-type-system-text)
-                         #(re-frame/dispatch [:chat.ui/show-profile literal]))}
+                         #(>evt [:chat.ui/show-profile literal]))}
             [mention-element literal]]])
     "status-tag"
     (conj acc [react/text-class

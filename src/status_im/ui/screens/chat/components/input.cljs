@@ -6,9 +6,10 @@
             [quo.platform :as platform]
             [quo.components.text :as text]
             [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as quo2.colors]
             [status-im.ui.screens.chat.components.style :as styles]
             [status-im.utils.fx :as fx]
-            [status-im.utils.handlers :refer [<sub]]
+            [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.ui.screens.chat.components.reply :as reply]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.chat.constants :as chat.constants]
@@ -331,7 +332,7 @@
                                   [idx item])
                                 @(re-frame/subscribe [:chat/input-with-mentions]))]
          ^{:key (str idx "_" type "_" text)}
-         [rn/text (when (= type :mention) {:style {:color (:text-04 @colors/theme)}}) text])
+         [rn/text (when (= type :mention) {:style {:color quo2.colors/primary-50}}) text])
        (get @input-texts chat-id))]))
 
 (defn mention-item
@@ -646,7 +647,7 @@
                    [quo2.button/button {:icon     true :size 32 :accessibility-label :send-message-button
                                         :on-press #(do (swap! context assoc :clear true)
                                                        (clear-input chat-id refs)
-                                                       (re-frame/dispatch [:chat.ui/send-current-message]))}
+                                                       (>evt [:chat.ui/send-current-message]))}
                     :main-icons2/arrow-up]]])
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
