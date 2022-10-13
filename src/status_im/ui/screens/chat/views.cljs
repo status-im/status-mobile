@@ -28,7 +28,6 @@
             [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.screens.chat.components.accessory :as accessory]
             [status-im.ui.screens.chat.components.input :as components]
-            [status-im.ui.screens.chat.message.pinned-message :as pinned-message]
             [status-im.ui.screens.chat.message.datemark-old :as message-datemark-old]
             [status-im.ui.screens.chat.message.datemark :as message-datemark]
             [status-im.ui.components.toolbar :as toolbar]
@@ -319,10 +318,10 @@
         space-keeper]))])
 
 (defn message-render-fn [{:keys [outgoing type] :as message}
-                 idx
-                 _
-                 {:keys [group-chat public? community? current-public-key
-                         chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
+                         idx
+                         _
+                         {:keys [group-chat public? community? current-public-key
+                                 chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
   [react/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
      [message-datemark/chat-datemark (:value message)]
@@ -626,7 +625,7 @@
             [bottom-sheet @active-panel]])]))))
 
 (defn chat-render []
-  (let [{:keys [chat-id show-input? group-chat admins community-id] :as chat}
+  (let [{:keys [chat-id show-input? group-chat admins] :as chat}
         ;;we want to react only on these fields, do not use full chat map here
         @(re-frame/subscribe [:chats/current-chat-chat-view])
         mutual-contact-requests-enabled? @(re-frame/subscribe [:mutual-contact-requests/enabled?])]
@@ -646,7 +645,7 @@
        (if group-chat
          [invitation-requests chat-id admins]
          (when-not mutual-contact-requests-enabled? [add-contact-bar chat-id])))
-     [message/pinned-banner chat-id community-id]
+     [message/pinned-banner chat-id]
      ;;MESSAGES LIST
      [messages-view {:chat                             chat
                      :mutual-contact-requests-enabled? mutual-contact-requests-enabled?

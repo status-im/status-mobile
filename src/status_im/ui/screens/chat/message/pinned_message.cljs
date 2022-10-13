@@ -2,18 +2,13 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [quo.design-system.colors :as colors]
-            [quo2.foundations.colors :as quo2.colors]
-            [quo2.foundations.typography :as typography]
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
             [reagent.core :as reagent]
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.ui.components.list.views :as list]
             [status-im.utils.handlers :refer [<sub]]
-            [status-im.ui.screens.chat.message.message-old :as message-old]
-            [status-im.ui.screens.chat.message.message :as message]
-            [status-im.ui.screens.chat.message.datemark :as message-datemark]
-            [status-im.utils.platform :as platform]))
+            [status-im.ui.screens.chat.message.message-old :as message-old]))
 
 (def selected-unpin (reagent/atom nil))
 

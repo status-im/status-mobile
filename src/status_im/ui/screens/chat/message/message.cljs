@@ -417,7 +417,7 @@
                                            :prevent-closing? true}]))
       (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
-(defn on-long-press-fn [on-long-press {:keys [pinned message-pin-enabled outgoing edit-enabled show-input?] :as message} content]
+(defn on-long-press-fn [on-long-press {:keys [pinned message-pin-enabled outgoing edit-enabled show-input? community?] :as message} content]
   (on-long-press
    (concat
     (when (and outgoing edit-enabled)
@@ -442,7 +442,7 @@
     (when message-pin-enabled
       [{:type     :main
         :on-press #(pin-message message)
-        :label    (i18n/label  (if pinned :t/unpin-from-chat :t/pin-to-chat))
+        :label    (i18n/label  (if pinned (if community? :t/unpin-from-channel :t/unpin-from-chat) (if community? :t/pin-to-channel :t/pin-to-chat)))
         :icon     :main-icons/pin-context20
         :id       (if pinned :unpin :pin)}])
     [{:type     :danger
@@ -774,35 +774,50 @@
 
 (defn message-render-fn
   [{:keys [outgoing] :as message}
-   idx
    _
    {:keys [group-chat public? community? current-public-key show-input? message-pin-enabled edit-enabled]}]
-     [chat-message
-      (assoc message
-        :incoming-group (and group-chat (not outgoing))
-        :group-chat group-chat
-        :public? public?
-        :community? community?
-        :current-public-key current-public-key
-        :show-input? show-input?
-        :message-pin-enabled message-pin-enabled
-        :in-pinned-view? true
-        :edit-enabled edit-enabled)])
+  [chat-message
+   (assoc message
+          :incoming-group (and group-chat (not outgoing))
+          :group-chat group-chat
+          :public? public?
+          :community? community?
+          :current-public-key current-public-key
+          :show-input? show-input?
+          :message-pin-enabled message-pin-enabled
+          :in-pinned-view? true
+          :edit-enabled edit-enabled)])
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 
 (defn pinned-messages-list [chat-id]
-  (let [pinned-messages (vec (vals (<sub [:chats/pinned chat-id])))]
+  (let [pinned-messages (vec (vals (<sub [:chats/pinned chat-id])))
+        current-chat (<sub [:chats/current-chat])
+        community (<sub [:communities/community (:community-id current-chat)])]
     [react/view
-     [react/text-class {:style (merge typography/heading-1 typography/font-semi-bold {:padding-horizontal 20})} (i18n/label :t/pinned-messages)]
+     [react/text-class {:style (merge typography/heading-1 typography/font-semi-bold {:margin-horizontal 20})} (i18n/label :t/pinned-messages)]
+     (when community
+       [react/view {:style {:flex-direction :row
+                            :background-color quo2.colors/neutral-10
+                            :border-radius 20
+                            :align-items :center
+                            :align-self :flex-start
+                            :margin-horizontal 20
+                            :padding 4
+                            :margin-top 8}}
+        [chat-icon.screen/chat-icon-view-toolbar chat-id (:group-chat current-chat) (:chat-name current-chat) (:color current-chat) (:emoji current-chat) 22]
+        [react/text-class {:style {:margin-left 6 :margin-right 4}} (:name community)]
+        [icons/icon
+         :main-icons/chevron-right
+         {:color  quo2.colors/neutral-50
+          :width  12
+          :height 12}]
+        [react/text-class {:style {:margin-left 4 :margin-right 8}} (str "# " (:chat-name current-chat))]])
      [list/flat-list
       {:data      pinned-messages
        :render-fn message-render-fn
        :key-fn    list-key-fn
-       :separator [react/view {:background-color quo2.colors/neutral-10 :height 1 :margin-top 8}]}
-      ]
-     ]
-    ))
+       :separator [react/view {:background-color quo2.colors/neutral-10 :height 1 :margin-top 8}]}]]))
 
 (defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
@@ -826,23 +841,20 @@
                                  :on-press #(do (when modal (close-modal))
                                                 (re-frame/dispatch [:chat.ui/show-profile from]))}
         [message-author-name from {:modal modal}]]
-       [react/text {:style {:font-size 13}} " pinned a message"]
+       [react/text {:style {:font-size 13}} (str " " (i18n/label :pinned-a-message))]
        [react/text
         {:style               (merge
-                                {:padding-left 5
-                                 :margin-top 2}
-                                (style/message-timestamp-text))
+                               {:padding-left 5
+                                :margin-top 2}
+                               (style/message-timestamp-text))
          :accessibility-label :message-timestamp}
         timestamp-str]]
       [quoted-message response-to (:quoted-message message) true]]]))
 
-(defn pinned-banner [chat-id community-id]
+(defn pinned-banner [chat-id]
   (let [pinned-messages (<sub [:chats/pinned chat-id])
         latest-pin-text (get-in (last (vals pinned-messages)) [:content :text])
-        pins-count (count (seq pinned-messages))
-        community (<sub [:communities/community community-id])
-        current-chat (<sub [:chats/current-chat])]
-    (println "THE COMMM" community current-chat (:name community) (:chat-name current-chat))
+        pins-count (count (seq pinned-messages))]
     (when (> pins-count 0)
       [react/touchable-opacity-class
        {:style {:height 50
