@@ -33,6 +33,7 @@
 >>>>>>> 94dc15395... show pinned messages
             [status-im.ui.screens.chat.message.datemark :as message-datemark]
             [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.screens.chat.message.pinned-message :as pinned-message]
             [quo.core :as quo]
             [clojure.string :as string]
             [status-im.constants :as constants]
@@ -529,6 +530,7 @@
                      :border-bottom false
                      :new-ui? true}]
      [connectivity/loading-indicator]
+     [pinned-message/pin-limit-popover chat-id message/pinned-messages-list]
      (when chat-id
        (if group-chat
          [invitation-requests chat-id admins]

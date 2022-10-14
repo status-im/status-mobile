@@ -428,7 +428,7 @@
     (if (and (not pinned) (> (count pinned-messages) 2))
       (do
         (js/setTimeout (fn [] (re-frame/dispatch [:dismiss-keyboard])) 500)
-        (re-frame/dispatch [::models.pin-message/show-pin-limit-modal])
+        (re-frame/dispatch [::models.pin-message/show-pin-limit-modal chat-id])
         ;(re-frame/dispatch [:show-popover {:view             :pin-limit
         ;                                   :message          message
         ;                                   :prevent-closing? true}])
@@ -724,6 +724,7 @@
    [unknown-content-type message]])
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 (defn chat-message [{:keys [outgoing display-photo? pinned pinned-by] :as message} space-keeper]
   [:<>
    [reactions/with-reaction-picker
@@ -755,6 +756,10 @@
 (defn chat-message [{:keys [pinned pinned-by mentioned in-pinned-view? last-in-group? chat-id] :as message}]
   (let [pin-modal (<sub [:chats/pin-modal])
         reactions @(re-frame/subscribe [:chats/message-reactions (:message-id message) (:chat-id message)])
+=======
+(defn chat-message [{:keys [pinned pinned-by mentioned in-pinned-view? last-in-group?] :as message}]
+  (let [reactions @(re-frame/subscribe [:chats/message-reactions (:message-id message) (:chat-id message)])
+>>>>>>> 3524c2971... feat: unpin messages new ui
         own-reactions (reduce (fn [acc {:keys [emoji-id own]}]
                                 (if own (conj acc emoji-id) acc))
                               [] reactions)
@@ -780,7 +785,6 @@
                                                          (into #{} (js->clj own-reactions))
                                                          #(on-emoji-press %))}]))
         on-long-press   (atom nil)]
-    (println "asdfasdf" pin-modal)
     [react/view
      {:style (merge (when (and (not in-pinned-view?) (or mentioned pinned)) {:background-color quo2.colors/primary-50-opa-5 :border-radius 16 :margin-bottom 4}) (when (or mentioned pinned last-in-group?) {:margin-top 8}) {:margin-horizontal 8})}
      (when pinned
@@ -789,13 +793,13 @@
      [->message message {:ref           on-long-press
                          :modal         false
                          :on-long-press on-open-drawer}]
-     [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press] [popover chat-id] ;; TODO: pass on-open-drawer function
+     [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press] ;; TODO: pass on-open-drawer function
      ]))
 
 (defn message-render-fn
   [{:keys [outgoing] :as message}
    _
-   {:keys [group-chat public? community? current-public-key show-input? message-pin-enabled edit-enabled]}]
+   {:keys [group-chat public? community? current-public-key]}]
   [chat-message
    (assoc message
           :incoming-group (and group-chat (not outgoing))
@@ -803,10 +807,10 @@
           :public? public?
           :community? community?
           :current-public-key current-public-key
-          :show-input? show-input?
-          :message-pin-enabled message-pin-enabled
+          :show-input? true
+          :message-pin-enabled true
           :in-pinned-view? true
-          :edit-enabled edit-enabled)])
+          :edit-enabled true)])
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 
@@ -839,11 +843,18 @@
        :key-fn    list-key-fn
        :separator [react/view {:background-color quo2.colors/neutral-10 :height 1 :margin-top 8}]}]]))
 
-(defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]
-  (let [response-to (:response-to (:content message))]
+(defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str chat-id outgoing] :as message} {:keys [modal close-modal on-long-press]}]
+  (let [response-to (:response-to (:content message))
+        on-long-press (fn [] (on-long-press [(when outgoing
+                                               {:type     :danger
+                                                :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
+                                                :label    (i18n/label :t/delete-for-everyone)
+                                                :icon     :main-icons/delete-context20
+                                                :id       :delete})]))]
     [react/touchable-opacity-class {:on-press (fn []
                                                 (re-frame/dispatch [:bottom-sheet/show-sheet
                                                                     {:content #(pinned-messages-list chat-id)}]))
+                                    :on-long-press on-long-press
                                     :active-opacity 1
                                     :style (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
      [react/view {:style {:width photos.style/default-size

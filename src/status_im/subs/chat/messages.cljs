@@ -28,11 +28,10 @@
     (sort-by :pinned-at <))))
 
 (re-frame/reg-sub
-  :chats/pin-modal
-  :<- [:messages/pin-modal]
-  (fn [pin-modal [_ chat-id]]
-    (println "WTFFF")
-    (get pin-modal [chat-id])))
+ :chats/pin-modal
+ :<- [:messages/pin-modal]
+ (fn [pin-modal [_ chat-id]]
+   (get-in pin-modal [chat-id])))
 
 (re-frame/reg-sub
  :chats/message-reactions

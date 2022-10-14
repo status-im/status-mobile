@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.chat.message.styles
   (:require [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.photos :as photos]))
+            [status-im.ui.screens.chat.styles.photos :as photos]
+            [quo2.foundations.colors :as quo2.colors]))
 
 (defn picker-wrapper-style [{:keys [display-photo? outgoing timeline]}]
   (merge {:flex-direction :row
@@ -169,3 +170,39 @@
   {:margin-horizontal 12
    :margin-top        2
    :margin-bottom     10})
+
+(defn pin-popover [width]
+  {:position :absolute
+   :width (- width 16)
+   :left 8
+   :background-color quo2.colors/neutral-80-opa-90
+   :flex-direction :row
+   :border-radius 16
+   :padding 12})
+
+(defn pin-alert-container []
+  {:background-color quo2.colors/neutral-80-opa-20
+   :width            36
+   :height           36
+   :border-radius    18
+   :justify-content  :center
+   :align-items      :center})
+
+(defn pin-alert-circle []
+  {:width 18
+   :height 18
+   :border-radius 9
+   :border-color quo2.colors/danger-50-opa-40
+   :border-width 1
+   :justify-content :center
+   :align-items :center})
+
+(defn view-pinned-messages []
+  {:background-color quo2.colors/primary-60
+   :border-radius 8
+   :justify-content :center
+   :align-items :center
+   :padding-horizontal 8
+   :padding-vertical 4
+   :align-self :flex-start
+   :margin-top 10})
