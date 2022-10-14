@@ -11,17 +11,21 @@
   (let [db      {:messages {cid {mid {:id mid}}}}
         message {:message-id mid :chat-id cid}]
     (testing "delete for me"
-      (let [expected {:db {:messages {"chat-id" {"message-id"
-                                                 {:id "message-id"
-                                                  :deleted-for-me? true
-                                                  :deleted-for-me-undoable-till
-                                                  (+ (datetime/timestamp)
-                                                     1000)}}}}
-                      :utils/dispatch-later
-                      [{:dispatch [:chat.ui/delete-message-for-me-and-sync
-                                   {:chat-id "chat-id" :message-id "message-id"}]
-                        :ms       1000}]}]
-        (is (= (delete-message-for-me/delete {:db db} message 1000) expected))))
+      (let [expected  {:db {:messages {"chat-id" {"message-id"
+                                                  {:id              "message-id"
+                                                   :deleted-for-me? true}}}}
+                       :utils/dispatch-later
+                       [{:dispatch [:chat.ui/delete-message-for-me-and-sync
+                                    {:chat-id "chat-id" :message-id "message-id"}]
+                         :ms       1000}]}
+            result    (delete-message-for-me/delete {:db db} message 1000)
+            timestamp (+ (datetime/timestamp) 1000)]
+        (is (= (update-in result [:db :messages "chat-id" "message-id"] dissoc :deleted-for-me-undoable-till)
+               expected))
+        (is (-> (get-in result [:db :messages "chat-id" "message-id" :deleted-for-me-undoable-till])
+                (- timestamp)
+                js/Math.abs
+                (< 10)))))
     (testing "should return nil if message in db"
       (is (= (delete-message-for-me/delete {:db {:messages []}} message 1000)
              nil)))))
@@ -30,39 +34,37 @@
   (let [db      {:messages {cid {mid {:id mid}}}}
         message {:message-id mid :chat-id cid}]
     (testing "undo delete for me in time"
-      (let [db       (update-in db
-                                [:messages cid mid]
-                                assoc
-                                :deleted-for-me? true
-                                :deleted-for-me-undoable-till
-                                (+ (datetime/timestamp) 1000))
+      (let [db (update-in db
+                          [:messages cid mid]
+                          assoc
+                          :deleted-for-me? true
+                          :deleted-for-me-undoable-till
+                          (+ (datetime/timestamp) 1000))
 
             expected {:db {:messages {"chat-id" {"message-id"
                                                  {:id "message-id"}}}}}]
         (is (= (delete-message-for-me/undo {:db db} message) expected))))
     (testing "remain deleted for me when undo delete for me late"
-      (let [db       (update-in db
-                                [:messages cid mid]
-                                assoc
-                                :deleted-for-me? true
-                                :deleted-for-me-undoable-till
-                                (- (datetime/timestamp) 1000))
+      (let [db (update-in db
+                          [:messages cid mid]
+                          assoc
+                          :deleted-for-me? true
+                          :deleted-for-me-undoable-till (- (datetime/timestamp) 1000))
 
-            expected {:db {:messages {"chat-id" {"message-id" {:id "message-id"
-                                                               :deleted-for-me?
-                                                               true}}}}}]
+            expected {:db {:messages {"chat-id" {"message-id"
+                                                 {:id              "message-id"
+                                                  :deleted-for-me? true}}}}}]
         (is (= (delete-message-for-me/undo {:db db} message) expected))))
     (testing "remain deleted for me when undo delete for me late"
-      (let [db       (update-in db
-                                [:messages cid mid]
-                                assoc
-                                :deleted-for-me? true
-                                :deleted-for-me-undoable-till
-                                (- (datetime/timestamp) 1000))
+      (let [db (update-in db
+                          [:messages cid mid]
+                          assoc
+                          :deleted-for-me? true
+                          :deleted-for-me-undoable-till (- (datetime/timestamp) 1000))
 
-            expected {:db {:messages {"chat-id" {"message-id" {:id "message-id"
-                                                               :deleted-for-me?
-                                                               true}}}}}]
+            expected {:db {:messages {"chat-id" {"message-id"
+                                                 {:id              "message-id"
+                                                  :deleted-for-me? true}}}}}]
         (is (= (delete-message-for-me/undo {:db db} message) expected))))
     (testing "should return nil if message in db"
       (is (= (delete-message-for-me/undo {:db {:messages []}} message)
