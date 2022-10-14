@@ -29,11 +29,13 @@
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.ui.screens.chat.styles.photos :as photos.style]
             [status-im.ui.screens.communities.icon :as communities.icon]
-            [status-im.utils.handlers :refer [>evt]]
+            [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.utils.config :as config]
             [status-im.utils.security :as security]
             [quo2.foundations.typography :as typography]
-            [quo2.foundations.colors :as quo2.colors])
+            [quo2.foundations.colors :as quo2.colors]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn message-timestamp-anim
