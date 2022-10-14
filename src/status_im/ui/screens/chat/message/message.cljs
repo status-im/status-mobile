@@ -489,7 +489,6 @@
    [collapsible-text-message message on-long-press modal ref]
    reaction-picker])
 
-
 (defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str] :as message} {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
     [react/view {:style (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
