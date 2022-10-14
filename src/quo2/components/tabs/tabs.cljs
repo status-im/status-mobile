@@ -73,7 +73,9 @@
                  on-scroll
                  scroll-event-throttle
                  scroll-on-press?
-                 size]
+                 size
+                 blur?
+                 override-theme]
           :or   {fade-end-percentage   fade-end-percentage
                  fade-end?             false
                  scroll-event-throttle 64
@@ -127,16 +129,18 @@
                                                             [rn/view {:style {:margin-right  (if (= size default-tab-size) 12 8)
                                                                               :padding-right (when (= index (dec (count data)))
                                                                                                (get-in props [:style :padding-left]))}}
-                                                             [tab/tab {:id       id
-                                                                       :size     size
-                                                                       :active   (= id @active-tab-id)
-                                                                       :on-press (fn [id]
-                                                                                   (reset! active-tab-id id)
-                                                                                   (when scroll-on-press?
-                                                                                     (.scrollToIndex @flat-list-ref
-                                                                                                     #js {:animated     true
-                                                                                                          :index        index
-                                                                                                          :viewPosition 0.5}))
-                                                                                   (when on-change
-                                                                                     (on-change id)))}
+                                                             [tab/tab {:id             id
+                                                                       :size           size
+                                                                       :override-theme override-theme
+                                                                       :blur?           blur?
+                                                                       :active          (= id @active-tab-id)
+                                                                       :on-press        (fn [id]
+                                                                                          (reset! active-tab-id id)
+                                                                                          (when scroll-on-press?
+                                                                                            (.scrollToIndex @flat-list-ref
+                                                                                                            #js {:animated     true
+                                                                                                                 :index        index
+                                                                                                                 :viewPosition 0.5}))
+                                                                                          (when on-change
+                                                                                            (on-change id)))}
                                                               label]])})])))))

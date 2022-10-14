@@ -48,15 +48,18 @@
       (trim-public-key public-key)]]))
 
 (defn context-tag [params photo name]
-  [base-tag (assoc-in params [:style :padding-left] 3)
-   [rn/image {:style {:width 20
-                      :border-radius 10
-                      :background-color :white
-                      :height 20}
-              :source photo}]
-   [text/text {:weight :medium
-               :size :paragraph-2}
-    (str " " name)]])
+  (let [text-style (params :text-style)]
+    [base-tag (assoc-in params [:style :padding-left] 3)
+     [rn/image {:style {:width 20
+                        :border-radius 10
+                        :background-color :white
+                        :height 20}
+                :source photo}]
+     [text/text
+      (merge {:weight :medium
+              :size :paragraph-2}
+             {:style text-style})
+      (str " " name)]]))
 
 (defn user-avatar-tag []
   (fn [params username photo]

@@ -116,13 +116,14 @@
   []
   (let [unread-filter-enabled? (<sub [:activity-center/filter-status-unread-enabled?])]
     ;; TODO: Replace the button by a Filter Selector component once available for use.
-    [button/button {:icon     true
-                    :type     (if unread-filter-enabled? :primary :outline)
-                    :size     32
-                    :on-press #(>evt [:activity-center.notifications/fetch-first-page
-                                      {:filter-status (if unread-filter-enabled?
-                                                        :read
-                                                        :unread)}])}
+    [button/button {:icon             true
+                    :type             (if unread-filter-enabled? :primary :blur-bg-outline)
+                    :size             32
+                    :override-theme   :dark
+                    :on-press         #(>evt [:activity-center.notifications/fetch-first-page
+                                              {:filter-status (if unread-filter-enabled?
+                                                                :read
+                                                                :unread)}])}
      :main-icons2/unread]))
 
 ;; TODO(2022-10-07): The empty state is still under design analysis, so we
@@ -149,6 +150,8 @@
   []
   (let [filter-type (<sub [:activity-center/filter-type])]
     [tabs/scrollable-tabs {:size                32
+                           :blur?               true
+                           :override-theme      :dark
                            :style               {:padding-left 20}
                            :fade-end-percentage 0.79
                            :scroll-on-press?    true
@@ -179,10 +182,11 @@
   (let [screen-padding 20]
     [rn/view
      [button/button {:icon     true
-                     :type     :grey
+                     :type     :blur-bg
                      :size     32
-                     :style    {:margin-vertical 12
-                                :margin-left     screen-padding}
+                     :override-theme :dark
+                     :style    {:margin-vertical  12
+                                :margin-left      screen-padding}
                      :on-press #(>evt [:hide-popover])}
       :main-icons2/close]
      [text/text {:size   :heading-1
