@@ -429,9 +429,6 @@
       (do
         (js/setTimeout (fn [] (re-frame/dispatch [:dismiss-keyboard])) 500)
         (re-frame/dispatch [::models.pin-message/show-pin-limit-modal chat-id])
-        ;(re-frame/dispatch [:show-popover {:view             :pin-limit
-        ;                                   :message          message
-        ;                                   :prevent-closing? true}])
         )
       (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
@@ -819,10 +816,10 @@
         current-chat (<sub [:chats/current-chat])
         community (<sub [:communities/community (:community-id current-chat)])]
     [react/view
-     [react/text-class {:style (merge typography/heading-1 typography/font-semi-bold {:margin-horizontal 20})} (i18n/label :t/pinned-messages)]
+     [react/text-class {:style (merge typography/heading-1 typography/font-semi-bold {:margin-horizontal 20 :color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)})} (i18n/label :t/pinned-messages)]
      (when community
        [react/view {:style {:flex-direction :row
-                            :background-color quo2.colors/neutral-10
+                            :background-color (quo2.colors/theme-colors quo2.colors/neutral-10 quo2.colors/neutral-80)
                             :border-radius 20
                             :align-items :center
                             :align-self :flex-start
@@ -830,18 +827,18 @@
                             :padding 4
                             :margin-top 8}}
         [chat-icon.screen/chat-icon-view-toolbar chat-id (:group-chat current-chat) (:chat-name current-chat) (:color current-chat) (:emoji current-chat) 22]
-        [react/text-class {:style {:margin-left 6 :margin-right 4}} (:name community)]
+        [react/text-class {:style {:margin-left 6 :margin-right 4 :color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}} (:name community)]
         [icons/icon
          :main-icons/chevron-right
-         {:color  quo2.colors/neutral-50
+         {:color  (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)
           :width  12
           :height 12}]
-        [react/text-class {:style {:margin-left 4 :margin-right 8}} (str "# " (:chat-name current-chat))]])
+        [react/text-class {:style {:margin-left 4 :margin-right 8 :color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}} (str "# " (:chat-name current-chat))]])
      [list/flat-list
       {:data      pinned-messages
        :render-fn message-render-fn
        :key-fn    list-key-fn
-       :separator [react/view {:background-color quo2.colors/neutral-10 :height 1 :margin-top 8}]}]]))
+       :separator [react/view {:background-color (quo2.colors/theme-colors quo2.colors/neutral-10 quo2.colors/neutral-80) :height 1 :margin-top 8}]}]]))
 
 (defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str chat-id outgoing] :as message} {:keys [modal close-modal on-long-press]}]
   (let [response-to (:response-to (:content message))
@@ -898,9 +895,9 @@
         :on-press (fn []
                     (re-frame/dispatch [:bottom-sheet/show-sheet
                                         {:content #(pinned-messages-list chat-id)}]))}
-       [pin-icon "#000000"]
+       [pin-icon (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)]
        [react/text-class {:number-of-lines 1
-                          :style (merge typography/paragraph-2 {:margin-left 10 :margin-right 50})} latest-pin-text]
+                          :style (merge typography/paragraph-2 {:margin-left 10 :margin-right 50 :color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)})} latest-pin-text]
        [react/view {:style {:position :absolute
                             :right 22
                             :height 20
@@ -909,5 +906,9 @@
                             :justify-content :center
                             :align-items :center
                             :background-color quo2.colors/neutral-80-opa-5}}
+<<<<<<< HEAD
         [react/text-class {:style (merge typography/label typography/font-medium)} pins-count]]])))
 >>>>>>> b64e3a30b... unpin messages
+=======
+        [react/text-class {:style (merge typography/label typography/font-medium {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)})} pins-count]]])))
+>>>>>>> 6bfbaf005... unpin messages

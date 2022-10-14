@@ -175,13 +175,13 @@
   {:position :absolute
    :width (- width 16)
    :left 8
-   :background-color quo2.colors/neutral-80-opa-90
+   :background-color (quo2.colors/theme-colors quo2.colors/neutral-80-opa-90 quo2.colors/white-opa-90)
    :flex-direction :row
    :border-radius 16
    :padding 12})
 
 (defn pin-alert-container []
-  {:background-color quo2.colors/neutral-80-opa-20
+  {:background-color (quo2.colors/theme-colors quo2.colors/neutral-80-opa-20 quo2.colors/white-opa-40)
    :width            36
    :height           36
    :border-radius    18

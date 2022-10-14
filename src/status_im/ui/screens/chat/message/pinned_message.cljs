@@ -264,8 +264,8 @@
          [rn/view {:style (style/pin-alert-circle)}
           [rn/text {:style {:color quo2.colors/danger-50}} "!"]]]
         [rn/view {:style {:margin-left 8}}
-         [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold {:color "#ffffff"})} (i18n/label :t/cannot-pin-title)]
-         [rn/text {:style (merge typography/paragraph-2 typography/font-regular {:color "#ffffff"})} (i18n/label :t/cannot-pin-desc)]
+         [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold {:color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-100)})} (i18n/label :t/cannot-pin-title)]
+         [rn/text {:style (merge typography/paragraph-2 typography/font-regular {:color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-100)})} (i18n/label :t/cannot-pin-desc)]
          [rn/touchable-opacity
           {:active-opacity 1
            :on-press (fn []
@@ -273,13 +273,13 @@
                        (re-frame/dispatch [:bottom-sheet/show-sheet
                                            {:content #(pinned-messages-list chat-id)}]))
            :style (style/view-pinned-messages)}
-          [rn/text {:style (merge typography/paragraph-2 typography/font-medium  {:color "#ffffff"})} (i18n/label :t/view-pinned-messages)]]]
+          [rn/text {:style (merge typography/paragraph-2 typography/font-medium  {:color quo2.colors/white})} (i18n/label :t/view-pinned-messages)]]]
         [rn/touchable-opacity {:active-opacity 1
                                :on-press #(re-frame/dispatch [::models.pin-message/hide-pin-limit-modal chat-id])
                                :style {:position :absolute
                                        :top 16
                                        :right 16}}
-         [icons/icon :main-icons/close {:color "#ffffff"
+         [icons/icon :main-icons/close {:color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-100)
                                         :height 8
                                         :width 8}]]]))])
 >>>>>>> 3524c2971... feat: unpin messages new ui
