@@ -218,16 +218,23 @@
   as arguments and returns new fx. Always clear all validation messages."
   {:events [:chat.ui.input/set-chat-input-text]}
   [{:keys [db] :as cofx} text chat-id]
-  (let [text-with-mentions (mentions/->input-field text)
-        contacts (:contacts db)
-        hydrated-mentions (map (fn [[t mention :as e]]
-                                 (if (= t :mention)
-                                   [:mention (str "@" (multiaccounts/displayed-name
-                                                       (or (get contacts mention)
-                                                           {:public-key mention})))]
-                                   e)) text-with-mentions)
-        info (mentions/->info hydrated-mentions)]
-    {:set-input-text [chat-id text]
+  (let [text-with-mentions   (mentions/->input-field text)
+        all-contacts         (:contacts/contacts db)
+        chat                 (get-in db [:chats chat-id])
+        current-multiaccount (:multiaccount db)
+        mentionable-users    (mentions/get-mentionable-users
+                              chat all-contacts current-multiaccount nil)
+        hydrated-mentions    (map
+                              (fn [[t mention :as e]]
+                                (if (= t :mention)
+                                  (let [mention (multiaccounts/displayed-name
+                                                 (get mentionable-users mention))]
+                                    [:mention (if (string/starts-with? mention "@")
+                                                mention (str "@" mention))])
+                                  e)) text-with-mentions)
+        info                 (mentions/->info hydrated-mentions)
+        new-text             (string/join (map second hydrated-mentions))]
+    {:set-input-text [chat-id new-text]
      :db
      (-> db
          (assoc-in [:chats/cursor chat-id] (:mention-end info))
