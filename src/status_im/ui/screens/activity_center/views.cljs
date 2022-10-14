@@ -40,21 +40,16 @@
           contact     (<sub [:contacts/contact-by-identity (:from message)])
           sender-name (or (get-in contact [:names :nickname])
                           (get-in contact [:names :three-words-name]))]
-      [[rn/view
-        {:style {:flex-direction :row
-                 :flex 1
-                 :align-items :center}}
-        [context-tags/user-avatar-tag
-         {:color          :purple
-          :override-theme :dark
-          :size           :small
-          :style          {:background-color colors/white-opa-10}
-          :text-style     {:color colors/white}}
-         sender-name
-         (multiaccounts/displayed-photo contact)]
-        [rn/view {:style {:width 4}}]
-        [rn/text {:style {:color colors/white}}
-         (i18n/label :t/contact-request-sent)]]])
+      [[context-tags/user-avatar-tag
+        {:color          :purple
+         :override-theme :dark
+         :size           :small
+         :style          {:background-color colors/white-opa-10}
+         :text-style     {:color colors/white}}
+        sender-name
+        (multiaccounts/displayed-photo contact)]
+       [rn/text {:style {:color colors/white}}
+        (i18n/label :t/contact-request-sent)]])
     nil))
 
 (defn activity-message
