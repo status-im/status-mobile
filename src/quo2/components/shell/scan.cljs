@@ -1,12 +1,15 @@
 (ns quo2.components.shell.scan
-  (:require [quo2.foundations.colors :as colors]
-            [quo.react :as react]
-            [reagent.core :as reagent]
+  (:require [quo.react :as react]
             [quo.react-native :as rn]
             [quo2.components.icon :as icons]
-            [status-im.ui.components.react :as rn-comps]
+            [quo2.foundations.colors :as colors]
             [quo2.reanimated :as reanimated]
-            [status-im.utils.dimensions :as dimensions]))
+            [reagent.core :as reagent]
+            [status-im.ui.components.react :as rn-comps :refer [open-blur-overlay]]
+            [status-im.ui.screens.qr-scanner.views :refer [camera
+                                                           on-barcode-read topbar]]
+            [status-im.utils.dimensions :as dimensions]
+            [status-im.utils.handlers :refer [<sub]]))
 
 (defn corner [outside-border]
   (let [{:keys [width height]} (dimensions/window)]
@@ -77,8 +80,7 @@
                         {:style {:width            2000
                                  :height           2000
                                  :top              -1000
-                                 :left             -1000
-                                 :background-color "rgba(0,0,0,0.4)"}}
+                                 :left             -1000}}
                          @finished-animation? (assoc :holes [{:x            1000
                                                               :y            1000
                                                               :width        @hole-dimensions
@@ -113,16 +115,48 @@
                                                        :easing1 0)
            (js/setTimeout #(updateHoleWidth width) 300)
            []))
-        [rn/image-background {:resize-mode :cover
-                              :source {:uri "https://www.theagilityeffect.com/app/uploads/2019/09/00_VINCI-ICONOGRAPHIE_GettyImages-1065377816-1280x680.jpg"}
-                              :style {:justify-content  :center
-                                      :align-items      :center
-                                      :z-index          -1
-                                      :elevation        -1
-                                      :height           "100%"
-                                      :width            "100%"}}
-         [rn-comps/blur-view {:flex               1
-                              :style              {:width "100%" :height "100%"}
-                              :blur-amount        16
-                              :overlay-color      :transparent}]
-         [viewfinder finished-animation? hole-dimensions size flashlight-on?]]]))])
+        
+        [rn-comps/blur-overlay {:blurStyle    "light"
+                                :radius       14
+                                :brightness   -200
+                                :customStyles {:align-items :center :justify-content :center :width "100%" :height "100%"}
+                                :children     (reagent/as-element [viewfinder finished-animation? hole-dimensions size flashlight-on?])}]]))])
+
+(defn qr-test []
+  (let [read-once?             (reagent/atom false)
+        camera-flashlight      (<sub [:wallet.send/camera-flashlight])
+        opts                   (<sub [:get-screen-params])
+        camera-ref             (reagent/atom nil)
+        _ (js/setTimeout #(open-blur-overlay) 5000)]
+    ;; [rn/view {:style {:z-index          1000
+    ;;                   :elevation        1000}}
+    ;;  [topbar camera-flashlight opts]
+    ;;  [rn/view {:flex 1}
+    ;;   [rn-comps/with-activity-indicator
+    ;;    {}
+    ;;    [camera
+    ;;     {:ref            #(reset! camera-ref %)
+    ;;      :style          {:flex 1}
+    ;;      :camera-options {:zoomMode :off}
+    ;;      :scan-barcode   true
+    ;;      :on-read-code   #(when-not @read-once?
+    ;;                         (reset! read-once? true)
+    ;;                         (on-barcode-read opts %))}]]
+
+    ;;    [preview]]] 
+    ;; [rn/view {:style {:z-index          1000
+    ;;                   :elevation        1000}}
+    [:<>
+     [topbar camera-flashlight opts]
+     [:<>
+      [rn-comps/with-activity-indicator
+       {}
+       [camera
+        {:ref            #(reset! camera-ref %)
+         :style          {:flex 1}
+         :camera-options {:zoomMode :off}
+         :scan-barcode   true
+         :on-read-code   #(when-not @read-once?
+                            (reset! read-once? true)
+                            (on-barcode-read opts %))}]]
+      [preview]]]))

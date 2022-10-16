@@ -6,4 +6,4 @@
 (defn preview-scan []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)
             :flex             1}
-   [scan/preview]])
+   [scan/qr-test]])

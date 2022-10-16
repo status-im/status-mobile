@@ -7971,6 +7971,13 @@ react-native-blob-util@^0.13.18:
     base-64 "0.1.0"
     glob "^7.1.6"
 
+react-native-blur-overlay@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/react-native-blur-overlay/-/react-native-blur-overlay-1.0.7.tgz#43bcf57efae731fef7a77eafa7b95b9050a9f5fa"
+  integrity sha512-2RuyMoy1ZZzY+3Li2wBwAfn6Z46oNG7/zgVCTF77v2/ttmKzEJivUpcNvysYE1vzrwIdnuz4GZu9kC4FQ4qyEg==
+  dependencies:
+    tiny-emitter "^2.0.2"
+
 react-native-camera-kit@^8.0.4:
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/react-native-camera-kit/-/react-native-camera-kit-8.0.4.tgz#8e350b37a205054ceb140a8babe1d032acdcdbd5"
@@ -9481,6 +9488,11 @@ timers-browserify@^2.0.4:
   integrity sha512-60aV6sgJ5YEbzUdn9c8kYGIqOubPoUdqQCul3SBAsRCZ40s6Y5cMcrW4dt3/k/EsbLVJNl9n6Vz3fTc+k2GeKQ==
   dependencies:
     setimmediate "^1.0.4"
+
+tiny-emitter@^2.0.2:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/tiny-emitter/-/tiny-emitter-2.1.0.tgz#1d1a56edfc51c43e863cbb5382a72330e3555423"
+  integrity sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==
 
 tmp@^0.0.33:
   version "0.0.33"

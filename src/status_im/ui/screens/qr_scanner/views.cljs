@@ -18,7 +18,7 @@
   (when-let [data (-> event .-nativeEvent .-codeStringValue)]
     (string/trim data)))
 
-(defn- topbar [_ {:keys [title] :as opts}]
+(defn topbar [_ {:keys [title] :as opts}]
   [topbar/topbar
    {:background      colors/black-persist
     :use-insets      true

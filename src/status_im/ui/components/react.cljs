@@ -15,7 +15,8 @@
             ["@react-native-community/masked-view" :default MaskedView]
             ["react-native-navigation" :refer (Navigation)]
             ["react-native-fast-image" :as FastImage]
-            ["@react-native-community/blur" :as blur])
+            ["@react-native-community/blur" :as blur]
+            ["react-native-blur-overlay" :default BlurOverlay :as RN-Blur-overlay])
   (:require-macros [status-im.utils.views :as views]))
 
 (def native-modules (.-NativeModules react-native))
@@ -44,6 +45,8 @@
 (def masked-view (reagent/adapt-react-class MaskedView))
 
 (def blur-view (reagent/adapt-react-class (.-BlurView blur)))
+(def blur-overlay (reagent/adapt-react-class BlurOverlay))
+(def open-blur-overlay (.-openOverlay RN-Blur-overlay))
 
 (defn valid-source? [source]
   (or (not (map? source))
