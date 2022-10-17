@@ -1,6 +1,5 @@
 (ns status-im.ui.components.topnav
   (:require [quo2.components.buttons.button :as quo2.button]
-            [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
