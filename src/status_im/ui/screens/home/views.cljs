@@ -260,9 +260,8 @@
                                          (re-frame/dispatch [:show-popover {:view                        :activity-center
                                                                             :disable-touchable-overlay?  true
                                                                             :blur-view?                  true
-                                                                            :blur-view-props             {:blurAmount 20
-                                                                                                          :overlay-color  quo2.colors/neutral-80-opa-80
-                                                                                                          :blurType :dark}}])
+                                                                            :blur-view-props             {:blur-amount 20
+                                                                                                          :blur-type :dark}}])
                                          (re-frame/dispatch [:navigate-to :notifications-center])))}
       [icons/icon :main-icons/notification2 {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]]
      (when (pos? notif-count)

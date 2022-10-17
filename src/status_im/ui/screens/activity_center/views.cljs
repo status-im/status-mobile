@@ -12,7 +12,8 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.handlers :refer [<sub >evt]]))
+            [status-im.utils.handlers :refer [<sub >evt]]
+            [quo.components.safe-area :as safe-area]))
 
 (defn activity-title
   [{:keys [type]}]
@@ -72,10 +73,10 @@
     {:button-1 {:label    (i18n/label :t/decline)
                 :type     :danger
                 :on-press #(>evt [:contact-requests.ui/decline-request id])}
-     :button-2 {:label    (i18n/label :t/accept)
-                :type     :success
+     :button-2 {:label                     (i18n/label :t/accept)
+                :type                      :success
                 :override-background-color colors/success-60
-                :on-press #(>evt [:contact-requests.ui/accept-request id])}}
+                :on-press                  #(>evt [:contact-requests.ui/accept-request id])}}
     nil))
 
 (defn activity-pressable
@@ -176,13 +177,13 @@
   []
   (let [screen-padding 20]
     [rn/view
-     [button/button {:icon     true
-                     :type     :blur-bg
-                     :size     32
+     [button/button {:icon           true
+                     :type           :blur-bg
+                     :size           32
                      :override-theme :dark
-                     :style    {:margin-vertical  12
-                                :margin-left      screen-padding}
-                     :on-press #(>evt [:hide-popover])}
+                     :style          {:margin-vertical  12
+                                      :margin-left      screen-padding}
+                     :on-press       #(>evt [:hide-popover])}
       :main-icons2/close]
      [text/text {:size   :heading-1
                  :weight :semi-bold
@@ -207,16 +208,14 @@
     :reagent-render
     (fn []
       (let [notifications (<sub [:activity-center/filtered-notifications])
-            window-height (<sub [:dimensions/window-height])
             window-width  (<sub [:dimensions/window-width])]
-        [rn/view {:style {:background-color :transparent
-                          :height           window-height
-                          :width            window-width}}
-         [rn/flat-list {:content-container-style {:flex-grow 1}
-                        :data                    notifications
-                        :empty-component         [empty-tab]
-                        :header                  [header]
-                        :key-fn                  :id
-                        :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
-                        :render-fn               render-notification
-                        :sticky-header-indices   [0]}]]))}))
+        [safe-area/view {:style {:flex 1}}
+         [rn/view {:style {:width window-width
+                           :flex  1}}
+          [header]
+          [rn/flat-list {:content-container-style {:flex-grow 1}
+                         :data                    notifications
+                         :empty-component         [empty-tab]
+                         :key-fn                  :id
+                         :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
+                         :render-fn               render-notification}]]]))}))
