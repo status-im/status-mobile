@@ -18,6 +18,7 @@
             [quo2.screens.community.community-card-view :as community-card]
             [quo2.screens.dividers.divider-label :as divider-label]
             [quo2.screens.dividers.new-messages :as new-messages]
+            [quo2.screens.drawers.action-drawers :as drawers]
             [quo2.screens.dropdowns.dropdown :as dropdown]
             [quo2.screens.info.info-message :as info-message]
             [quo2.screens.info.information-box :as information-box]
@@ -83,6 +84,9 @@
               {:name      :new-messages
                :insets    {:top false}
                :component new-messages/preview-new-messages}]
+   :drawers [{:name      :action-drawers
+              :insets    {:top false}
+              :component drawers/preview-action-drawers}]
    :dropdowns [{:name      :dropdown
                 :insets    {:top false}
                 :component dropdown/preview-dropdown}]

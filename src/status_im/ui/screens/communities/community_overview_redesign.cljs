@@ -74,8 +74,7 @@
    {:style
     {:flex 1
      :border-radius   20}}
-   [react/view (styles/community-cover-container  148)
-
+   [react/view (styles/community-cover-container 148)
     [react/image
      {:source      cover
       :style  {:position :relative
