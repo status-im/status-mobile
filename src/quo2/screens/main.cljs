@@ -48,6 +48,7 @@
             [quo2.screens.wallet.network-breakdown :as network-breakdown]
             [quo2.screens.wallet.network-amount :as network-amount]
             [quo2.screens.navigation.page-nav :as page-nav]
+            [quo2.screens.avatars.account-avatar :as account-avatar]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -65,7 +66,10 @@
              :component wallet-user-avatar/preview-wallet-user-avatar}
             {:name      :channel-avatar
              :insets    {:top false}
-             :component channel-avatar/preview-channel-avatar}]
+             :component channel-avatar/preview-channel-avatar}
+            {:name      :account-avatar
+             :insets    {:top false}
+             :component account-avatar/preview-account-avatar}]
    :buttons [{:name      :button
               :insets    {:top false}
               :component button/preview-button}
