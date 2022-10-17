@@ -515,11 +515,14 @@
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount))
-              ;; if it's a first account, the ToS will be accepted at welcome carousel
-              ;; if not a first account, the ToS might have been accepted by other account logins
-              (if (or first-account? tos-accepted?)
-                (navigation/init-root :onboarding-notification)
-                (navigation/init-root :tos)))))
+
+              (if config/new-ui-enabled?
+                (navigation/init-root :home-stack)
+                ;; if it's a first account, the ToS will be accepted at welcome carousel
+                ;; if not a first account, the ToS might have been accepted by other account logins
+                (if (or first-account? tos-accepted?)
+                  (navigation/init-root :onboarding-notification)
+                  (navigation/init-root :tos))))))
 
 (defn- keycard-setup? [cofx]
   (boolean (get-in cofx [:db :keycard :flow])))
