@@ -257,11 +257,12 @@
                           :on-press #(do
                                        (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
                                        (if config/new-activity-center-enabled?
-                                         (re-frame/dispatch [:show-popover {:view            :activity-center
-                                                                            :blur-view?      true
-                                                                            :blur-view-props {:blurAmount 20
-                                                                                              :overlay-color  quo2.colors/neutral-80-opa-80
-                                                                                              :blurType :dark}}])
+                                         (re-frame/dispatch [:show-popover {:view                        :activity-center
+                                                                            :disable-touchable-overlay?  true
+                                                                            :blur-view?                  true
+                                                                            :blur-view-props             {:blurAmount 20
+                                                                                                          :overlay-color  quo2.colors/neutral-80-opa-80
+                                                                                                          :blurType :dark}}])
                                          (re-frame/dispatch [:navigate-to :notifications-center])))}
       [icons/icon :main-icons/notification2 {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]]
      (when (pos? notif-count)

@@ -41,11 +41,12 @@
                           :on-press #(do
                                        (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
                                        (if config/new-activity-center-enabled?
-                                         (re-frame/dispatch [:show-popover {:view            :activity-center
-                                                                            :blur-view?      true
-                                                                            :blur-view-props {:blurAmount 20
-                                                                                              :overlay-color  colors/neutral-80-opa-80
-                                                                                              :blurType :dark}}])
+                                         (re-frame/dispatch [:show-popover {:view                        :activity-center
+                                                                            :disable-touchable-overlay?  true
+                                                                            :blur-view?                  true
+                                                                            :blur-view-props             {:blurAmount 20
+                                                                                                          :overlay-color  colors/neutral-80-opa-80
+                                                                                                          :blurType :dark}}])
                                          (re-frame/dispatch [:navigate-to :notifications-center])))}
       :main-icons2/notifications]
      (when (pos? notif-count)
