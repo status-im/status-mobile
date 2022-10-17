@@ -39,7 +39,7 @@
                           :accessibility-label :notifications-button
                           :on-press #(do
                                        (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
-                                       (if (and @config/new-ui-enabled? @config/new-activity-center-enabled?)
+                                       (if config/new-activity-center-enabled?
                                          (re-frame/dispatch [:navigate-to :activity-center])
                                          (re-frame/dispatch [:navigate-to :notifications-center])))}
       :main-icons2/notifications]

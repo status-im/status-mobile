@@ -72,7 +72,7 @@
       (do
         (js-delete response-js "activityCenterNotifications")
         (fx/merge cofx
-                  (if (and @config/new-ui-enabled? @config/new-activity-center-enabled?)
+                  (if config/new-activity-center-enabled?
                     (->> activity-notifications
                          types/js->clj
                          (map data-store.activities/<-rpc)

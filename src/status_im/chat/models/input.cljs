@@ -281,12 +281,13 @@
   {:events [:contacts/send-contact-request]}
   [{:keys [db] :as cofx} public-key message]
   (fx/merge cofx
-            {:chat.ui/clear-inputs nil
-             ::json-rpc/call       [{:method "wakuext_sendContactRequest"
-                                     :js-response true
-                                     :params [{:id public-key :message message}]
-                                     :on-error #(log/warn "failed to send a contact request" %)
-                                     :on-success #(re-frame/dispatch [:transport/message-sent %])}]}
+            {:chat.ui/clear-inputs     nil
+             :chat.ui/clear-inputs-old nil
+             ::json-rpc/call           [{:method "wakuext_sendContactRequest"
+                                         :js-response true
+                                         :params [{:id public-key :message message}]
+                                         :on-error #(log/warn "failed to send a contact request" %)
+                                         :on-success #(re-frame/dispatch [:transport/message-sent %])}]}
             (mentions/clear-mentions)
             (mentions/clear-cursor)
             (clean-input (:current-chat-id db))

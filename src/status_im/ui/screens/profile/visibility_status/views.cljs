@@ -11,7 +11,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.visibility-status.styles :as styles]
             [status-im.ui.screens.profile.visibility-status.utils :as utils]
-            [status-im.utils.config :as config]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.utils.platform :as platform]))
 
@@ -34,7 +33,7 @@
    @button-ref
    (fn  [_ _ _ _ _ py]
      (dispatch-popover
-      (if (and platform/android? @config/new-ui-enabled?)
+      (if (and platform/android? true)
         (- py (:status-bar-height @rn/navigation-const))
         py)))))
 
@@ -42,7 +41,7 @@
   (let [automatic?                      (= status-type
                                            constants/visibility-status-automatic)
         [border-width margin-left size] (if automatic? [1 -10 12] [0 6 10])
-        new-ui?                         @config/new-ui-enabled?]
+        new-ui?                         true]
     [:<>
      (when automatic?
        [rn/view {:style (styles/visibility-status-profile-dot

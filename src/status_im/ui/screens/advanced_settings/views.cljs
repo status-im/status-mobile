@@ -14,7 +14,6 @@
                                           wakuv2-flag
                                           current-fleet
                                           webview-debug
-                                          new-ui-enabled?
                                           mutual-contact-requests-enabled?]}]
   (keep
    identity
@@ -116,14 +115,7 @@
      #(re-frame/dispatch
        [:multiaccounts.ui/switch-mutual-contact-requests-enabled (not mutual-contact-requests-enabled?)])
      :accessory               :switch
-     :active                  mutual-contact-requests-enabled?}
-    {:size                    :small
-     :title                   (i18n/label :t/new-ui)
-     :accessibility-label     :new-ui-toggle
-     :container-margin-bottom 8
-     :on-press                #(re-frame/dispatch [:toggle-new-ui])
-     :accessory               :switch
-     :active                  new-ui-enabled?}]))
+     :active                  mutual-contact-requests-enabled?}]))
 
 (defn- flat-list-data [options]
   (normal-mode-settings-data options))
@@ -154,7 +146,6 @@
                    :wakuv2-flag                      wakuv2-flag
                    :waku-bloom-filter-mode           waku-bloom-filter-mode
                    :webview-debug                    webview-debug
-                   :new-ui-enabled?                  @config/new-ui-enabled?
                    :mutual-contact-requests-enabled? mutual-contact-requests-enabled?})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))

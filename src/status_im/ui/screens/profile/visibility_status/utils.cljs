@@ -5,7 +5,6 @@
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.profile.visibility-status.styles :as styles]
-            [status-im.utils.config :as config]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.handlers :refer [<sub]]))
 
@@ -75,9 +74,7 @@
       status-type)))
 
 (defn icon-dot-color [{:keys [status-type] :or {status-type constants/visibility-status-inactive}}]
-  (if @config/new-ui-enabled?
-    (:color (get visibility-status-type-data status-type))
-    (:color (get visibility-status-type-data-old status-type))))
+  (:color (get visibility-status-type-data status-type)))
 
 (defn my-icon? [public-key]
   (or (string/blank? public-key)
@@ -91,27 +88,17 @@
 
 (defn icon-dot-accessibility-label
   [dot-color]
-  (if @config/new-ui-enabled?
-    (if (= dot-color quo2.colors/success-50)
-      :online-profile-photo-dot
-      :offline-profile-photo-dot)
-    (if (= dot-color colors/color-online)
-      :online-profile-photo-dot
-      :offline-profile-photo-dot)))
+  (if (= dot-color quo2.colors/success-50)
+    :online-profile-photo-dot
+    :offline-profile-photo-dot))
 
 (defn icon-dot-margin
-  [size identicon?]
-  (if @config/new-ui-enabled?
-    -2
-    (if identicon?
-      (/ size 6)
-      (/ size 7))))
+  [_ _]
+  -2)
 
 (defn icon-dot-size
   [container-size]
-  (if @config/new-ui-enabled?
-    (/ container-size 2.4)
-    (/ container-size 4)))
+  (/ container-size 2.4))
 
 (defn icon-visibility-status-dot
   [public-key container-size identicon?]
@@ -120,7 +107,7 @@
         size                     (icon-dot-size container-size)
         margin                   (icon-dot-margin size identicon?)
         dot-color                (icon-dot-color visibility-status-update)
-        new-ui?                  @config/new-ui-enabled?]
+        new-ui?                  true]
     (merge (styles/visibility-status-dot {:color   dot-color
                                           :size    size
                                           :new-ui? new-ui?})
