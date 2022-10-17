@@ -232,19 +232,15 @@
     ;; We append empty spaces to the name as a workaround to make one-line and multi-line label components show correctly
     (str " " (if (= pinned-by (user-contact :public-key)) (i18n/label :t/You) (first contact-names)))))
 
-(def pin-icon-width 10)
-
-(def pin-icon-height 15)
-
-(defn pin-icon [color]
+(defn pin-icon [color size]
   [icons/icon :main-icons/pin16 {:color            color
-                                 :height           pin-icon-height
-                                 :width            pin-icon-width}])
+                                 :height           size
+                                 :width            size}])
 
 (defn pinned-by-indicator [pinned-by]
   [react/view {:style (style/pin-indicator)
                :accessibility-label :pinned-by}
-   [pin-icon quo2.colors/primary-50]
+   [pin-icon quo2.colors/primary-50 16]
    [quo/text {:size   :small
               :color  :main
               :style  (style/pin-author-text)}
@@ -499,7 +495,7 @@
                           :justify-content :center
                           :align-items :center
                           :background-color quo2.colors/primary-50-opa-10}}
-      [pin-icon quo2.colors/primary-50]]
+      [pin-icon quo2.colors/primary-50 16]]
      [react/view
       [react/view {:style {:flex-direction :row :align-items :center}}
        [react/touchable-opacity {:style    style/message-author-touchable
@@ -834,7 +830,7 @@
                           :justify-content :center
                           :align-items :center
                           :background-color quo2.colors/primary-50-opa-10}}
-      [pin-icon quo2.colors/primary-50]]
+      [pin-icon quo2.colors/primary-50 16]]
      [react/view
       [react/view {:style {:flex-direction :row :align-items :center}}
        [react/touchable-opacity {:style    style/message-author-touchable
@@ -868,7 +864,7 @@
         :on-press (fn []
                     (re-frame/dispatch [:bottom-sheet/show-sheet
                                         {:content #(pinned-messages-list chat-id)}]))}
-       [pin-icon (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)]
+       [pin-icon (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white) 20]
        [react/text-class {:number-of-lines 1
                           :style (merge typography/paragraph-2 {:margin-left 10 :margin-right 50 :color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)})} latest-pin-text]
        [react/view {:style {:position :absolute
