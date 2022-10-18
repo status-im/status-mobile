@@ -136,10 +136,10 @@
         mutual-contact-requests-enabled? @(re-frame/subscribe [:mutual-contact-requests/enabled?])
         contact-names @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])]
     [chat-intro (assoc opts
-                       :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
-                       :contact-name (first contact-names)
-                       :contact-request-state (or (:contact-request-state contact)
-                                                  constants/contact-request-state-none))]))
+                  :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
+                  :contact-name (first contact-names)
+                  :contact-request-state (or (:contact-request-state contact)
+                                             constants/contact-request-state-none))]))
 
 (defn chat-intro-header-container
   [{:keys [group-chat invitation-admin
@@ -256,7 +256,7 @@
 (defn get-set-active-panel [active-panel]
   (fn [panel]
     (rn/configure-next
-     (:ease-opacity-200 rn/custom-animations))
+      (:ease-opacity-200 rn/custom-animations))
     (reset! active-panel panel)
     (reagent/flush)
     (when panel
@@ -290,14 +290,14 @@
        ; message content
        [message/chat-message
         (assoc message
-               :incoming-group (and group-chat (not outgoing))
-               :group-chat group-chat
-               :public? public?
-               :community? community?
-               :current-public-key current-public-key
-               :show-input? show-input?
-               :message-pin-enabled message-pin-enabled
-               :edit-enabled edit-enabled)
+          :incoming-group (and group-chat (not outgoing))
+          :group-chat group-chat
+          :public? public?
+          :community? community?
+          :current-public-key current-public-key
+          :show-input? show-input?
+          :message-pin-enabled message-pin-enabled
+          :edit-enabled edit-enabled)
         space-keeper]))])
 
 (def list-key-fn #(or (:message-id %) (:value %)))
@@ -346,43 +346,43 @@
         contact-added? (when one-to-one? @(re-frame/subscribe [:contacts/contact-added? chat-id]))
         should-send-contact-request?
         (and
-         mutual-contact-requests-enabled?
-         one-to-one?
-         (not contact-added?))]
+          mutual-contact-requests-enabled?
+          one-to-one?
+          (not contact-added?))]
 
     ;;do not use anonymous functions for handlers
     [list/flat-list
      (merge
-      pan-responder
-      {:key-fn                       list-key-fn
-       :ref                          list-ref
-       :header                       [list-header chat]
-       :footer                       [list-footer chat]
-       :data                         (when-not should-send-contact-request?
-                                       messages)
-       :render-data                  (get-render-data {:group-chat      group-chat
-                                                       :chat-id         chat-id
-                                                       :public?         public?
-                                                       :community-id    community-id
-                                                       :admins          admins
-                                                       :space-keeper    space-keeper
-                                                       :show-input?     show-input?
-                                                       :edit-enabled    true
-                                                       :in-pinned-view? false})
-       :render-fn                    render-fn
-       :on-viewable-items-changed    on-viewable-items-changed
-       :on-end-reached               list-on-end-reached
-       :on-scroll-to-index-failed    identity              ;;don't remove this
-       :content-container-style      {:padding-top (+ bottom-space 16)
-                                      :padding-bottom 16}
-       :scroll-indicator-insets      {:top bottom-space}    ;;ios only
-       :keyboard-dismiss-mode        :interactive
-       :keyboard-should-persist-taps :handled
-       :onMomentumScrollBegin        state/start-scrolling
-       :onMomentumScrollEnd          state/stop-scrolling
+       pan-responder
+       {:key-fn                       list-key-fn
+        :ref                          list-ref
+        :header                       [list-header chat]
+        :footer                       [list-footer chat]
+        :data                         (when-not should-send-contact-request?
+                                        messages)
+        :render-data                  (get-render-data {:group-chat      group-chat
+                                                        :chat-id         chat-id
+                                                        :public?         public?
+                                                        :community-id    community-id
+                                                        :admins          admins
+                                                        :space-keeper    space-keeper
+                                                        :show-input?     show-input?
+                                                        :edit-enabled    true
+                                                        :in-pinned-view? false})
+        :render-fn                    render-fn
+        :on-viewable-items-changed    on-viewable-items-changed
+        :on-end-reached               list-on-end-reached
+        :on-scroll-to-index-failed    identity              ;;don't remove this
+        :content-container-style      {:padding-top (+ bottom-space 16)
+                                       :padding-bottom 16}
+        :scroll-indicator-insets      {:top bottom-space}    ;;ios only
+        :keyboard-dismiss-mode        :interactive
+        :keyboard-should-persist-taps :handled
+        :onMomentumScrollBegin        state/start-scrolling
+        :onMomentumScrollEnd          state/stop-scrolling
         ;;TODO https://github.com/facebook/react-native/issues/30034
-       :inverted                     (when platform/ios? true)
-       :style                        (when platform/android? {:scaleY -1})})]))
+        :inverted                     (when platform/ios? true)
+        :style                        (when platform/android? {:scaleY -1})})]))
 
 (defn navigate-back-handler []
   (when (and (not @navigation.state/curr-modal) (= (get @re-frame.db/app-db :view-id) :chat))
@@ -477,8 +477,8 @@
 
 (defn chat []
   (reagent/create-class
-   {:component-did-mount (fn []
-                           (react/hw-back-remove-listener navigate-back-handler)
-                           (react/hw-back-add-listener navigate-back-handler))
-    :component-will-unmount (fn [] (react/hw-back-remove-listener navigate-back-handler))
-    :reagent-render chat-render}))
+    {:component-did-mount (fn []
+                            (react/hw-back-remove-listener navigate-back-handler)
+                            (react/hw-back-add-listener navigate-back-handler))
+     :component-will-unmount (fn [] (react/hw-back-remove-listener navigate-back-handler))
+     :reagent-render chat-render}))
