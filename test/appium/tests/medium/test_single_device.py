@@ -565,6 +565,7 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(sender['passphrase'])
         wallet = sign_in.wallet_button.click()
+        wallet.scan_tokens()
         wallet.wait_balance_is_changed()
         wallet.accounts_status_account.click()
 
@@ -635,7 +636,69 @@ class TestChatManagement(SingleDeviceTestCase):
                 if not wallet.element_by_text_part(expected_params[key]).is_element_displayed():
                     self.errors.append("Custom tx param %s is not shown on tx history screen" % key)
 
-        wallet.just_fyi("Check below fee popup on mainnet")
+        wallet.wallet_button.double_click()
+
+        wallet.just_fyi("Check below fee popup on Goerli")
+
+        wallet.accounts_status_account.click()
+        send_transaction = wallet.send_transaction_button.click_until_presence_of_element(send_transaction.amount_edit_box)
+        send_transaction.amount_edit_box.set_value(0)
+        send_transaction.set_recipient_address(ens_user_message_sender['ens'])
+        send_transaction.next_button.click()
+        wallet.element_by_translation_id("network-fee").click()
+        send_transaction.gas_limit_input.clear()
+        send_transaction.gas_limit_input.set_value(default_limit)
+        send_transaction.per_gas_price_limit_input.clear()
+        send_transaction.per_gas_price_limit_input.click()
+        send_transaction.per_gas_price_limit_input.send_keys('0.00000000000001')
+        if not wallet.element_by_translation_id("below-base-fee").is_element_displayed(10):
+            self.errors.append("Fee is below error is not shown")
+        send_transaction.save_fee_button.scroll_and_click()
+        if not wallet.element_by_translation_id("change-tip").is_element_displayed():
+            self.errors.append("Popup about changing fee error is not shown")
+        wallet.element_by_translation_id("continue-anyway").click()
+        if not send_transaction.element_by_text_part('0.000000 ETH').is_element_displayed():
+            self.driver.fail("Custom fee is not applied!")
+        self.errors.verify_no_errors()
+
+        wallet.just_fyi("Check can change tip to higher value and sign transaction")
+        wallet.element_by_translation_id("network-fee").click()
+        send_transaction.gas_limit_input.clear()
+        send_transaction.gas_limit_input.set_value(default_limit)
+        send_transaction.per_gas_price_limit_input.clear()
+        send_transaction.per_gas_price_limit_input.click()
+        send_transaction.per_gas_price_limit_input.send_keys('0.00000000000001')
+        send_transaction.save_fee_button.scroll_and_click()
+        wallet.element_by_translation_id("change-tip").click()
+        send_transaction.per_gas_price_limit_input.clear()
+        send_transaction.per_gas_price_limit_input.click()
+        send_transaction.per_gas_price_limit_input.send_keys(default_price)
+        if wallet.element_by_translation_id("below-base-fee").is_element_displayed(10):
+            self.errors.append("Fee is below error is shown after fee correction")
+        send_transaction.save_fee_button.scroll_and_click()
+        if wallet.element_by_translation_id("change-tip").is_element_displayed():
+            self.errors.append("Popup about changing fee error is shown after fee correction")
+        send_transaction.sign_transaction()
+        self.errors.verify_no_errors()
+
+        wallet.just_fyi('Check gas limit price is calculated in case of signing contract address')
+        wallet.send_transaction_button.click_until_presence_of_element(send_transaction.amount_edit_box)
+        send_transaction.amount_edit_box.set_value(0)
+        send_transaction.chose_recipient_button.click()
+        send_transaction.enter_recipient_address_input.set_value('0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6')
+        send_transaction.element_by_translation_id("warning-sending-to-contract-descr").wait_for_visibility_of_element()
+        send_transaction.ok_button.click()
+        send_transaction.enter_recipient_address_input.click()
+        send_transaction.done_button.click_until_absense_of_element(send_transaction.done_button)
+        send_transaction.next_button.click()
+        wallet.element_by_translation_id("network-fee").click()
+        gas_value = send_transaction.gas_limit_input.text
+        if gas_value is default_price:
+            self.errors.append('Gas limit price remains default for contract addresses')
+        send_transaction.save_fee_button.scroll_and_click()
+        send_transaction.cancel_button.click()
+
+        wallet.just_fyi("Check not enough balance to cover trans fee error on Mainnet")
         profile = wallet.profile_button.click()
         profile.switch_network()
         sign_in.wallet_button.click()
@@ -650,22 +713,6 @@ class TestChatManagement(SingleDeviceTestCase):
             self.errors.append("Tx is likely to fail is not shown!")
         if send_transaction.network_fee_button.is_element_displayed():
             self.errors.append("Still can set tx fee when balance is not enough")
-
-        #  TODO: should be moved to another test after 8f52b9b63ccd9a52b7fe37ab4f89a2e7b6721fcd
-        # send_transaction = wallet.get_send_transaction_view()
-        # send_transaction.gas_limit_input.clear()
-        # send_transaction.gas_limit_input.set_value(default_limit)
-        # send_transaction.per_gas_price_limit_input.clear()
-        # send_transaction.per_gas_price_limit_input.click()
-        # send_transaction.per_gas_price_limit_input.send_keys('1')
-        # if not wallet.element_by_translation_id("below-base-fee").is_element_displayed(10):
-        #     self.errors.append("Fee is below error is not shown")
-        # send_transaction.save_fee_button.scroll_and_click()
-        # if not wallet.element_by_translation_id("change-tip").is_element_displayed():
-        #     self.errors.append("Popup about changing fee error is not shown")
-        # wallet.element_by_translation_id("continue-anyway").click()
-        # if not send_transaction.element_by_text_part('0.000021 ETH').is_element_displayed():
-        #     self.driver.fail("Custom fee is not applied!")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702360)
