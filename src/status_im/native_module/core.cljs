@@ -1,7 +1,7 @@
 (ns status-im.native-module.core
   (:require [re-frame.core :as re-frame]
             [status-im.utils.db :as utils.db]
-            [status-im.ui.components.react :as react]
+            [status-im.utils.react-native :as react-native-utils]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
@@ -98,7 +98,7 @@
   (.logout ^js (status)))
 
 (defonce listener
-  (.addListener ^js react/device-event-emitter "gethEvent"
+  (.addListener ^js react-native-utils/device-event-emitter "gethEvent"
                 #(re-frame/dispatch [:signals/signal-received (.-jsonEvent ^js %)])))
 
 (defn multiaccount-load-account
@@ -417,6 +417,38 @@
   [num]
   (log/debug "[native-module] number-to-hex")
   (.numberToHex ^js (status) (str num)))
+
+(defn sha3
+  [str]
+  (log/debug "[native-module] sha3")
+  (.sha3 ^js (status) str))
+
+(defn utf8-to-hex
+  [str]
+  (log/debug "[native-module] utf8-to-hex")
+  (.utf8ToHex ^js (status) str))
+
+(defn hex-to-utf8
+  [str]
+  (log/debug "[native-module] hex-to-utf8")
+  (.hexToUtf8 ^js (status) str))
+
+(defn check-address-checksum
+  [address]
+  (log/debug "[native-module] check-address-checksum")
+  (let [result (.checkAddressChecksum ^js (status) address)]
+    (types/json->clj result)))
+
+(defn address?
+  [address]
+  (log/debug "[native-module] address?")
+  (let [result (.isAddress ^js (status) address)]
+    (types/json->clj result)))
+
+(defn to-checksum-address
+  [address]
+  (log/debug "[native-module] to-checksum-address")
+  (.toChecksumAddress ^js (status) address))
 
 (defn identicon-async
   "Generate a icon based on a string, asynchronously"

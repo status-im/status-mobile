@@ -855,6 +855,30 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(numberToHex:(NSString *)numString) {
   return StatusgoNumberToHex(numString);
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(sha3:(NSString *)str) {
+  return StatusgoSha3(str);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(utf8ToHex:(NSString *)str) {
+  return StatusgoUtf8ToHex(str);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(hexToUtf8:(NSString *)str) {
+  return StatusgoHexToUtf8(str);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(checkAddressChecksum:(NSString *)address) {
+  return StatusgoCheckAddressChecksum(address);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isAddress:(NSString *)address) {
+  return StatusgoIsAddress(address);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(toChecksumAddress:(NSString *)address) {
+  return StatusgoToChecksumAddress(address);
+}
+
 RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG

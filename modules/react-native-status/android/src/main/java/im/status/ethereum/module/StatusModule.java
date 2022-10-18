@@ -1436,6 +1436,36 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         return Statusgo.numberToHex(numString);
     }
 
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String sha3(final String str) {
+        return Statusgo.sha3(str);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String utf8ToHex(final String str) {
+        return Statusgo.utf8ToHex(str);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String hexToUtf8(final String str) {
+        return Statusgo.hexToUtf8(str);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String checkAddressChecksum(final String address) {
+        return Statusgo.checkAddressChecksum(address);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String isAddress(final String address) {
+        return Statusgo.isAddress(address);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String toChecksumAddress(final String address) {
+        return Statusgo.toChecksumAddress(address);
+    }
+
     @ReactMethod
     public void identiconAsync(final String seed, final Callback callback) {
         Log.d(TAG, "identiconAsync");
