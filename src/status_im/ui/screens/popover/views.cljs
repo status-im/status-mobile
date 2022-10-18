@@ -97,9 +97,9 @@
       (fn []
         (when @current-popover
           (let [{:keys [view style disable-touchable-overlay? blur-view? blur-view-props]} @current-popover
-                comp (if blur-view? react/blur-view react/view)
-                overlay-comp (if disable-touchable-overlay? react/view react/touchable-highlight)]
-            [comp (merge  {:style {:position :absolute :top 0 :bottom 0 :left 0 :right 0}} blur-view-props)
+                component (if blur-view? react/blur-view react/view)
+                overlay-component (if disable-touchable-overlay? react/view react/touchable-highlight)]
+            [component (merge  {:style {:position :absolute :top 0 :bottom 0 :left 0 :right 0}} blur-view-props)
              (when platform/ios?
                [react/animated-view
                 {:style {:flex 1 :background-color colors/black-persist :opacity alpha-value}}])
@@ -109,7 +109,7 @@
                                     :left      0
                                     :right     0
                                     :transform [{:translateY bottom-anim-value}]}}
-              [overlay-comp
+              [overlay-component
                {:style    {:flex 1 :align-items :center :justify-content :center}
                 :on-press request-close}
                [react/view (merge {:background-color (if blur-view? :transparent colors/white)
