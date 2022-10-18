@@ -8,7 +8,15 @@
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.ui.components.list.views :as list]
             [status-im.utils.handlers :refer [<sub]]
+<<<<<<< HEAD
             [status-im.ui.screens.chat.message.message :as message]))
+=======
+<<<<<<< HEAD
+            [status-im.ui.screens.chat.message.message-old :as message]))
+=======
+            [status-im.ui.screens.chat.message.message-old :as message-old]))
+>>>>>>> 2d3427718... show pinned messages
+>>>>>>> 20a82dd41... rebase
 
 (def selected-unpin (reagent/atom nil))
 

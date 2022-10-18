@@ -48,7 +48,7 @@
          id
          true
          display-name
-         (or color (rand-nth colors/chat-colors))])]
+         (or color (rand-nth colors/chat-colors)) nil 36])]
      [rn/view {:style {:flex 1 :justify-content :center}}
       [quo/text {:number-of-lines     1
                  :accessibility-label :community-name-text}
