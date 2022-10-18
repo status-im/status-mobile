@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.activity-center.views
   (:require [quo.components.animated.pressable :as animation]
-            [quo.design-system.colors :as quo.colors]
             [quo.react-native :as rn]
             [quo2.components.buttons.button :as button]
             [quo2.components.markdown.text :as text]
@@ -13,7 +12,8 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.handlers :refer [<sub >evt]]))
+            [status-im.utils.handlers :refer [<sub >evt]]
+            [quo.components.safe-area :as safe-area]))
 
 (defn activity-title
   [{:keys [type]}]
@@ -73,9 +73,10 @@
     {:button-1 {:label    (i18n/label :t/decline)
                 :type     :danger
                 :on-press #(>evt [:contact-requests.ui/decline-request id])}
-     :button-2 {:label    (i18n/label :t/accept)
-                :type     :success
-                :on-press #(>evt [:contact-requests.ui/accept-request id])}}
+     :button-2 {:label                     (i18n/label :t/accept)
+                :type                      :success
+                :override-background-color colors/success-60
+                :on-press                  #(>evt [:contact-requests.ui/accept-request id])}}
     nil))
 
 (defn activity-pressable
@@ -86,7 +87,9 @@
     ;; `:contact.ui/send-message-pressed` instead of
     ;; `:chat.ui/navigate-to-chat`, otherwise the chat screen looks completely
     ;; broken if it has never been opened before for the accepted contact.
-    [animation/pressable {:on-press #(>evt [:contact.ui/send-message-pressed {:public-key (:author notification)}])}
+    [animation/pressable {:on-press (fn []
+                                      (>evt [:hide-popover])
+                                      (>evt [:contact.ui/send-message-pressed {:public-key (:author notification)}]))}
      activity]
     activity))
 
@@ -109,13 +112,14 @@
   []
   (let [unread-filter-enabled? (<sub [:activity-center/filter-status-unread-enabled?])]
     ;; TODO: Replace the button by a Filter Selector component once available for use.
-    [button/button {:icon     true
-                    :type     (if unread-filter-enabled? :primary :outline)
-                    :size     32
-                    :on-press #(>evt [:activity-center.notifications/fetch-first-page
-                                      {:filter-status (if unread-filter-enabled?
-                                                        :read
-                                                        :unread)}])}
+    [button/button {:icon             true
+                    :type             (if unread-filter-enabled? :primary :blur-bg-outline)
+                    :size             32
+                    :override-theme   :dark
+                    :on-press         #(>evt [:activity-center.notifications/fetch-first-page
+                                              {:filter-status (if unread-filter-enabled?
+                                                                :read
+                                                                :unread)}])}
      :main-icons2/unread]))
 
 ;; TODO(2022-10-07): The empty state is still under design analysis, so we
@@ -142,6 +146,8 @@
   []
   (let [filter-type (<sub [:activity-center/filter-type])]
     [tabs/scrollable-tabs {:size                32
+                           :blur?               true
+                           :override-theme      :dark
                            :style               {:padding-left 20}
                            :fade-end-percentage 0.79
                            :scroll-on-press?    true
@@ -170,20 +176,20 @@
 (defn header
   []
   (let [screen-padding 20]
-    ;; TODO: Remove temporary (and old) background color when the screen and
-    ;; header are properly blurred.
-    [rn/view {:background-color (:ui-background @quo.colors/theme)}
-     [button/button {:icon     true
-                     :type     :grey
-                     :size     32
-                     :style    {:margin-vertical 12
-                                :margin-left     screen-padding}
-                     :on-press #(>evt [:navigate-back])}
+    [rn/view
+     [button/button {:icon           true
+                     :type           :blur-bg
+                     :size           32
+                     :override-theme :dark
+                     :style          {:margin-vertical  12
+                                      :margin-left      screen-padding}
+                     :on-press       #(>evt [:hide-popover])}
       :main-icons2/close]
      [text/text {:size   :heading-1
                  :weight :semi-bold
                  :style  {:padding-horizontal screen-padding
-                          :padding-vertical   12}}
+                          :padding-vertical   12
+                          :color              colors/white}}
       (i18n/label :t/notifications)]
      [rn/view {:flex-direction   :row
                :padding-vertical 12}
@@ -201,12 +207,15 @@
    {:component-did-mount #(>evt [:activity-center.notifications/fetch-first-page])
     :reagent-render
     (fn []
-      (let [notifications (<sub [:activity-center/filtered-notifications])]
-        [rn/flat-list {:content-container-style {:flex-grow 1}
-                       :data                    notifications
-                       :empty-component         [empty-tab]
-                       :header                  [header]
-                       :key-fn                  :id
-                       :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
-                       :render-fn               render-notification
-                       :sticky-header-indices   [0]}]))}))
+      (let [notifications (<sub [:activity-center/filtered-notifications])
+            window-width  (<sub [:dimensions/window-width])]
+        [safe-area/view {:style {:flex 1}}
+         [rn/view {:style {:width window-width
+                           :flex  1}}
+          [header]
+          [rn/flat-list {:content-container-style {:flex-grow 1}
+                         :data                    notifications
+                         :empty-component         [empty-tab]
+                         :key-fn                  :id
+                         :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
+                         :render-fn               render-notification}]]]))}))
