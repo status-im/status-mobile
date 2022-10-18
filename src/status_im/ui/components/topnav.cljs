@@ -44,7 +44,7 @@
                                                                             :disable-touchable-overlay?  true
                                                                             :blur-view?                  true
                                                                             :blur-view-props             {:blur-amount 20
-                                                                                                          :blur-type :dark}}])
+                                                                                                          :blur-type   :dark}}])
                                          (re-frame/dispatch [:navigate-to :notifications-center])))}
       :main-icons2/notifications]
      (when (pos? notif-count)
