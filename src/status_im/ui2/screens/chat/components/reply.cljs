@@ -48,6 +48,7 @@
   (let [contact-name       (<sub [:contacts/contact-name-by-identity from])
         current-public-key (<sub [:multiaccount/public-key])
         content-type       (or content-type contentType)]
+    (println "PINX" pin?)
     [rn/view {:style {:flex-direction :row :height (when-not pin? 24)}}
      [rn/view {:style (styles/reply-content pin?)}
       (when-not pin?
