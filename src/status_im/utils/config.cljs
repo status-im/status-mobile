@@ -161,7 +161,7 @@
 (def wallet-connect-project-id "87815d72a81d739d2a7ce15c2cfdefb3")
 
 ;;TODO for development only should be removed in status 2.0
-(def new-ui-enabled? true)
+(def new-ui-enabled? false)
 
 ;; TODO: Remove this (highly) temporary flag once the new Activity Center is
 ;; usable enough to replace the old one **in the new UI**.
