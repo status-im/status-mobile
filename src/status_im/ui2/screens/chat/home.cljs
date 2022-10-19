@@ -8,7 +8,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
-            [status-im.ui2.screens.chat.components.chat-item :refer [chat-list-item]]
+            [status-im.ui.screens.home.views.inner-item :refer [home-list-item]]
             [quo.design-system.colors :as colors]
             [quo.core :as quo]
             [quo.platform :as platform]
@@ -113,7 +113,7 @@
                                      (re-frame/dispatch [:search/home-filter-changed nil]))}])])))
 
 (defn render-fn [{:keys [chat-id] :as home-item}]
-  [chat-list-item
+  [home-list-item
    home-item
    {:on-press      (fn []
                      (re-frame/dispatch [:dismiss-keyboard])
@@ -148,7 +148,7 @@
                  (multiaccounts/displayed-photo row)]}]))
 
 (defn chat-list-key-fn [item]
-  (or (:chat-id item) (:public-key item) "unknown"))
+  (or (:chat-id item) (:public-key item)))
 
 (defn get-item-layout [_ index]
   #js {:length 64 :offset (* 64 index) :index index})
