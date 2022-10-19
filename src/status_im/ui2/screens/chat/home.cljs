@@ -160,9 +160,6 @@
     (filter #(-> % :group-chat (= true)) items)
     items))
 
-(defn update-data [data first-char contacts x]
-  (assoc data first-char {:title first-char :data [(nth contacts x)]}))
-
 (defn prepare-contacts [contacts]
   (let [data (atom {})]
     (doseq [i (range (count contacts))]
@@ -278,7 +275,8 @@
        :chat-icon              chat-icon.styles/chat-icon-chat-list}]]))
 
 (defn home []
-  [rn/keyboard-avoiding-view {:style {:flex 1 :background-color (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}
+  [rn/keyboard-avoiding-view {:style {:flex 1
+                                      :background-color (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}
                               :ignore-offset true}
    [topbar/topbar {:navigation      :none
                    :use-insets true

@@ -11,6 +11,7 @@
             [status-im.utils.core :as utils]
             [status-im.utils.datetime :as time]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
+            [status-im.utils.handlers :refer [<sub >evt]]
             [quo2.components.markdown.text :as quo2.text]
             [quo2.foundations.colors :as quo2.colors]
             [quo.react-native :as rn]))
@@ -42,7 +43,7 @@
                   children)
 
                  "mention"
-                 {:components [rn/text @(re-frame/subscribe [:contacts/contact-name-by-identity literal])]
+                 {:components [rn/text (<sub [:contacts/contact-name-by-identity literal])]
                   :length     4} ;; we can't predict name length so take the smallest possible
 
                  "status-tag"
@@ -106,7 +107,7 @@
 
      (content-type-community-invite? content-type community-id)
      (let [{:keys [name]}
-           @(re-frame/subscribe [:communities/community community-id])]
+           (<sub [:communities/community community-id])]
        [preview-label :t/community-message-preview {:community-name name}]))])
 
 (def memo-timestamp
@@ -166,7 +167,7 @@
      ;; This looks a bit odd, but I would like only to subscribe
      ;; if it's a one-to-one. If wrapped in a component styling
      ;; won't be applied correctly.
-     (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))])
+     (first (<sub [:contacts/contact-two-names-by-identity chat-id])))])
 
 (defn chat-list-item [home-item opts]
   (let [{:keys [chat-id chat-name color group-chat muted emoji highlight edit? public? unviewed-messages-count last-message]} home-item
