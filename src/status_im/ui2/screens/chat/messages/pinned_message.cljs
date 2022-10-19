@@ -1,4 +1,4 @@
-(ns status-im.ui2.screens.chat.messages.pinned_message
+(ns status-im.ui2.screens.chat.messages.pinned-message
   (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [quo.design-system.colors :as colors]
@@ -73,17 +73,17 @@
        {:on-press #(do
                      (reset! selected-unpin nil)
                      (re-frame/dispatch [:hide-popover]))
-        :type :secondary}
+        :type     :secondary}
        (i18n/label :t/cancel)]
       [quo/button
        {:on-press #(do
                      (re-frame/dispatch [::models.pin-message/send-pin-message {:chat-id    (message :chat-id)
                                                                                 :message-id @selected-unpin
-                                                                                :pinned    false}])
+                                                                                :pinned     false}])
                      (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned true)])
                      (re-frame/dispatch [:hide-popover])
                      (reset! selected-unpin nil))
-        :type :secondary
+        :type     :secondary
         :disabled (nil? @selected-unpin)
-        :theme (if (nil? @selected-unpin) :disabled :negative)}
+        :theme    (if (nil? @selected-unpin) :disabled :negative)}
        (i18n/label :t/unpin)]]]))
