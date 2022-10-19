@@ -16,210 +16,208 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(1)
         self.sign_in = SignInView(self.drivers[0])
         self.password = basic_user['special_chars_password']
-        #
-        # self.home = self.sign_in.create_user(password=self.password)
-        # self.public_chat_name = self.home.get_random_chat_name()
-        # self.chat = self.home.join_public_chat(self.public_chat_name)
-        # self.profile = self.home.profile_button.click()
-        # self.username = self.profile.default_username_text.text
+        self.home = self.sign_in.create_user(password=self.password)
+        self.public_chat_name = self.home.get_random_chat_name()
+        self.chat = self.home.join_public_chat(self.public_chat_name)
+        self.profile = self.home.profile_button.click()
+        self.username = self.profile.default_username_text.text
 
     @marks.testrail_id(700742)
     def test_onboarding_home_initial_popup(self):
         self.home.home_button.double_click()
-    #     texts = ["chat-and-transact", "invite-friends"]
-    #     for text in texts:
-    #         if not self.home.element_by_translation_id(text).is_element_displayed():
-    #             self.errors.append("'%s' text is not shown" % self.get_translation_by_key(text))
-    #     if self.home.element_by_text(texts[0]).is_element_displayed():
-    #         self.errors.append("'%s' text is shown, but welcome view was closed" % texts[0])
-    #     self.home.relogin(password=self.password)
-    #     if self.home.element_by_text(texts[0]).is_element_displayed():
-    #         self.errors.append("'%s' text is shown after relogin, but welcome view was closed" % texts[0])
-    #     self.errors.verify_no_errors()
-    #
-    # @marks.testrail_id(700743)
-    # def test_onboarding_share_contact_address(self):
-    #     self.profile = self.home.profile_button.click()
-    #
-    #     self.home.just_fyi("Copying contact code")
-    #     self.profile.share_my_profile_button.click()
-    #     public_key = self.profile.public_key_text.text
-    #     self.profile.public_key_text.long_press_element()
-    #     self.profile.copy_text()
-    #
-    #     self.home.just_fyi("Sharing contact code via messenger")
-    #     self.profile.share_button.click()
-    #     self.profile.share_via_messenger()
-    #     if not self.profile.element_by_text_part(public_key).is_element_displayed():
-    #         self.errors.append("Can't share public key")
-    #     self.profile.click_system_back_button_until_element_is_shown()
-    #
-    #     self.home.just_fyi("Check that can paste contact code in chat message input")
-    #     self.profile.home_button.double_click()
-    #     chat = self.home.add_contact(transaction_senders['M']['public_key'])
-    #     chat.chat_message_input.click()
-    #     chat.paste_text()
-    #     input_text = chat.chat_message_input.text
-    #     if input_text not in public_key or len(input_text) < 1:
-    #         self.errors.append('Public key was not copied')
-    #     chat.chat_message_input.clear()
-    #     self.errors.verify_no_errors()
-    #
-    # @marks.testrail_id(700744)
-    # def test_onboarding_share_wallet_address(self):
-    #     self.home.just_fyi("Copying wallet address")
-    #     wallet = self.home.wallet_button.click()
-    #     wallet.accounts_status_account.click()
-    #     request = wallet.receive_transaction_button.click()
-    #     address = wallet.address_text.text
-    #     request.share_button.click()
-    #     request.element_by_translation_id("sharing-copy-to-clipboard").click()
-    #
-    #     self.home.just_fyi("Sharing wallet address via messenger")
-    #     request.share_button.click()
-    #     wallet.share_via_messenger()
-    #     if not wallet.element_by_text_part(address).is_element_displayed():
-    #         self.errors.append("Can't share address")
-    #     wallet.click_system_back_button_until_element_is_shown()
-    #
-    #     self.home.just_fyi("Check that can paste wallet address in chat message input")
-    #     wallet.home_button.click()
-    #     if not self.chat.chat_message_input.is_element_displayed():
-    #         self.home.get_chat('#%s' % self.public_chat_name).click()
-    #     self.chat.chat_message_input.click()
-    #     self.chat.paste_text()
-    #     if self.chat.chat_message_input.text != address:
-    #         self.errors.append('Wallet address was not copied')
-    #     self.chat.chat_message_input.clear()
-    #     self.errors.verify_no_errors()
-    #
-    # @marks.testrail_id(700745)
-    # def test_onboarding_backup_seed_phrase_restore_same_login_logcat(self):
-    #     self.home.just_fyi("Check that badge on profile about back up seed phrase is presented")
-    #     if self.home.profile_button.counter.text != '1':
-    #         self.errors.append('Profile button counter is not shown')
-    #
-    #     self.home.just_fyi("Back up seed phrase and check logcat")
-    #     profile = self.home.profile_button.click()
-    #     profile.privacy_and_security_button.click()
-    #     profile.backup_recovery_phrase_button.click()
-    #     profile.ok_continue_button.click()
-    #     recovery_phrase = profile.get_recovery_phrase()
-    #     profile.next_button.click()
-    #     word_number = profile.recovery_phrase_word_number.number
-    #     profile.recovery_phrase_word_input.set_value(recovery_phrase[word_number])
-    #     profile.next_button.click()
-    #     word_number_1 = profile.recovery_phrase_word_number.number
-    #     profile.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
-    #     profile.done_button.click()
-    #     profile.yes_button.click()
-    #     profile.ok_got_it_button.click()
-    #     if self.home.profile_button.counter.is_element_displayed():
-    #         self.errors.append('Profile button counter is shown after recovery phrase backup')
-    #     values_in_logcat = profile.find_values_in_logcat(passphrase1=recovery_phrase[word_number],
-    #                                                      passphrase2=recovery_phrase[word_number_1])
-    #     if len(values_in_logcat) == 2:
-    #         self.errors.append(values_in_logcat)
-    #     profile.profile_button.double_click()
-    #
-    #     self.home.just_fyi(
-    #         "Try to restore same account from seed phrase (should be possible only to unlock existing account)")
-    #     self.profile.logout()
-    #     self.sign_in.navigate_up_button.click()
-    #     self.sign_in.access_key_button.click()
-    #     self.sign_in.enter_seed_phrase_button.click()
-    #     self.sign_in.seedphrase_input.click()
-    #     self.sign_in.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
-    #     self.sign_in.next_button.click()
-    #     self.sign_in.element_by_translation_id(translation_id="unlock", uppercase=True).click()
-    #     self.sign_in.password_input.set_value(self.password)
-    #     self.sign_in.sign_in_button.click()
-    #     self.home.plus_button.wait_and_click()
-    #     if not self.home.start_new_chat_button.is_element_displayed():
-    #         self.errors.append("Can't proceed using account after it's re-recover twice.")
-    #     self.home.click_system_back_button()
-    #     self.errors.verify_no_errors()
-    #
-    # @marks.testrail_id(700746)
-    # def test_onboarding_cant_sign_in_with_invalid_password_logcat(self):
-    #     self.home.profile_button.double_click()
-    #     self.profile.logout()
-    #
-    #     self.sign_in.just_fyi('Check that cannot login with incorrect password, and can login with valid data')
-    #     if self.sign_in.ok_button.is_element_displayed():
-    #         self.sign_in.ok_button.click()
-    #     self.sign_in.multi_account_on_login_button.click()
-    #     self.sign_in.password_input.set_value(common_password)
-    #     self.sign_in.sign_in_button.click()
-    #     self.sign_in.element_by_translation_id("wrong-password").wait_for_visibility_of_element(20)
-    #     if not self.sign_in.element_by_text(self.username).is_element_displayed():
-    #         self.errors.append('Username is not shown while login')
-    #     self.sign_in.password_input.set_value(self.password)
-    #     self.sign_in.sign_in_button.click()
-    #     if not self.sign_in.home_button.is_element_displayed(10):
-    #         self.errors.append('User is not logged in')
-    #     values_in_logcat = self.sign_in.find_values_in_logcat(password=self.password)
-    #     if values_in_logcat:
-    #         self.errors.append(values_in_logcat)
-    #     self.errors.verify_no_errors()
+        texts = ["chat-and-transact", "invite-friends"]
+        for text in texts:
+            if not self.home.element_by_translation_id(text).is_element_displayed():
+                self.errors.append("'%s' text is not shown" % self.get_translation_by_key(text))
+        if self.home.element_by_text(texts[0]).is_element_displayed():
+            self.errors.append("'%s' text is shown, but welcome view was closed" % texts[0])
+        self.home.relogin(password=self.password)
+        if self.home.element_by_text(texts[0]).is_element_displayed():
+            self.errors.append("'%s' text is shown after relogin, but welcome view was closed" % texts[0])
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(700743)
+    def test_onboarding_share_contact_address(self):
+        self.profile = self.home.profile_button.click()
+
+        self.home.just_fyi("Copying contact code")
+        self.profile.share_my_profile_button.click()
+        public_key = self.profile.public_key_text.text
+        self.profile.public_key_text.long_press_element()
+        self.profile.copy_text()
+
+        self.home.just_fyi("Sharing contact code via messenger")
+        self.profile.share_button.click()
+        self.profile.share_via_messenger()
+        if not self.profile.element_by_text_part(public_key).is_element_displayed():
+            self.errors.append("Can't share public key")
+        self.profile.click_system_back_button_until_element_is_shown()
+
+        self.home.just_fyi("Check that can paste contact code in chat message input")
+        self.profile.home_button.double_click()
+        chat = self.home.add_contact(transaction_senders['M']['public_key'])
+        chat.chat_message_input.click()
+        chat.paste_text()
+        input_text = chat.chat_message_input.text
+        if input_text not in public_key or len(input_text) < 1:
+            self.errors.append('Public key was not copied')
+        chat.chat_message_input.clear()
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(700744)
+    def test_onboarding_share_wallet_address(self):
+        self.home.just_fyi("Copying wallet address")
+        wallet = self.home.wallet_button.click()
+        wallet.accounts_status_account.click()
+        request = wallet.receive_transaction_button.click()
+        address = wallet.address_text.text
+        request.share_button.click()
+        request.element_by_translation_id("sharing-copy-to-clipboard").click()
+
+        self.home.just_fyi("Sharing wallet address via messenger")
+        request.share_button.click()
+        wallet.share_via_messenger()
+        if not wallet.element_by_text_part(address).is_element_displayed():
+            self.errors.append("Can't share address")
+        wallet.click_system_back_button_until_element_is_shown()
+
+        self.home.just_fyi("Check that can paste wallet address in chat message input")
+        wallet.home_button.click()
+        if not self.chat.chat_message_input.is_element_displayed():
+            self.home.get_chat('#%s' % self.public_chat_name).click()
+        self.chat.chat_message_input.click()
+        self.chat.paste_text()
+        if self.chat.chat_message_input.text != address:
+            self.errors.append('Wallet address was not copied')
+        self.chat.chat_message_input.clear()
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(700745)
+    def test_onboarding_backup_seed_phrase_restore_same_login_logcat(self):
+        self.home.just_fyi("Check that badge on profile about back up seed phrase is presented")
+        if self.home.profile_button.counter.text != '1':
+            self.errors.append('Profile button counter is not shown')
+
+        self.home.just_fyi("Back up seed phrase and check logcat")
+        profile = self.home.profile_button.click()
+        profile.privacy_and_security_button.click()
+        profile.backup_recovery_phrase_button.click()
+        profile.ok_continue_button.click()
+        recovery_phrase = profile.get_recovery_phrase()
+        profile.next_button.click()
+        word_number = profile.recovery_phrase_word_number.number
+        profile.recovery_phrase_word_input.set_value(recovery_phrase[word_number])
+        profile.next_button.click()
+        word_number_1 = profile.recovery_phrase_word_number.number
+        profile.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
+        profile.done_button.click()
+        profile.yes_button.click()
+        profile.ok_got_it_button.click()
+        if self.home.profile_button.counter.is_element_displayed():
+            self.errors.append('Profile button counter is shown after recovery phrase backup')
+        values_in_logcat = profile.find_values_in_logcat(passphrase1=recovery_phrase[word_number],
+                                                         passphrase2=recovery_phrase[word_number_1])
+        if len(values_in_logcat) == 2:
+            self.errors.append(values_in_logcat)
+        profile.profile_button.double_click()
+
+        self.home.just_fyi(
+            "Try to restore same account from seed phrase (should be possible only to unlock existing account)")
+        self.profile.logout()
+        self.sign_in.navigate_up_button.click()
+        self.sign_in.access_key_button.click()
+        self.sign_in.enter_seed_phrase_button.click()
+        self.sign_in.seedphrase_input.click()
+        self.sign_in.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
+        self.sign_in.next_button.click()
+        self.sign_in.element_by_translation_id(translation_id="unlock", uppercase=True).click()
+        self.sign_in.password_input.set_value(self.password)
+        self.sign_in.sign_in_button.click()
+        self.home.plus_button.wait_and_click()
+        if not self.home.start_new_chat_button.is_element_displayed():
+            self.errors.append("Can't proceed using account after it's re-recover twice.")
+        self.home.click_system_back_button()
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(700746)
+    def test_onboarding_cant_sign_in_with_invalid_password_logcat(self):
+        self.home.profile_button.double_click()
+        self.profile.logout()
+
+        self.sign_in.just_fyi('Check that cannot login with incorrect password, and can login with valid data')
+        if self.sign_in.ok_button.is_element_displayed():
+            self.sign_in.ok_button.click()
+        self.sign_in.multi_account_on_login_button.click()
+        self.sign_in.password_input.set_value(common_password)
+        self.sign_in.sign_in_button.click()
+        self.sign_in.element_by_translation_id("wrong-password").wait_for_visibility_of_element(20)
+        if not self.sign_in.element_by_text(self.username).is_element_displayed():
+            self.errors.append('Username is not shown while login')
+        self.sign_in.password_input.set_value(self.password)
+        self.sign_in.sign_in_button.click()
+        if not self.sign_in.home_button.is_element_displayed(10):
+            self.errors.append('User is not logged in')
+        values_in_logcat = self.sign_in.find_values_in_logcat(password=self.password)
+        if values_in_logcat:
+            self.errors.append(values_in_logcat)
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(700747)
     def test_onboarding_add_new_multiaccount_username_by_position_pass_validation(self):
-        # self.home.profile_button.double_click()
-        # self.profile.logout()
-        self.drivers[0].info("This is test")
-        # self.sign_in.just_fyi('Create another multiaccount')
-        # if self.sign_in.ok_button.is_element_displayed():
-        #     self.sign_in.ok_button.click()
-        # self.sign_in.navigate_up_button.click()
-        # self.sign_in.your_keys_more_icon.click()
-        # self.sign_in.generate_new_key_button.click()
-        # from views.sign_in_view import MultiAccountButton
-        # account_button = self.sign_in.get_multiaccount_by_position(position=random.randint(1, 4),
-        #                                                            element_class=MultiAccountButton)
-        # username = account_button.username.text
-        # account_button.click()
-        # self.sign_in.next_button.click()
-        # self.sign_in.next_button.click()
-        #
-        # self.sign_in.just_fyi('Check password validation')
-        # cases = ['password is not confirmed', 'password is too short', "passwords don't match"]
-        # error = "Can create multiaccount when"
-        #
-        # self.sign_in.just_fyi('Checking case when %s' % cases[0])
-        # self.sign_in.create_password_input.send_keys('123456')
-        # self.sign_in.next_button.click()
-        # if self.sign_in.maybe_later_button.is_element_displayed(10):
-        #     self.driver.fail('%s  %s' % (error, cases[0]))
-        #
-        # self.sign_in.just_fyi('Checking case when %s' % cases[1])
-        # self.sign_in.create_password_input.send_keys('123456')
-        # [field.send_keys('123456') for field in
-        #  (self.sign_in.create_password_input, self.sign_in.confirm_your_password_input)]
-        # self.sign_in.confirm_your_password_input.delete_last_symbols(1)
-        # self.sign_in.create_password_input.delete_last_symbols(1)
-        # self.sign_in.next_button.click()
-        # if self.sign_in.maybe_later_button.is_element_displayed(10):
-        #     self.driver.fail('%s  %s' % (error, cases[1]))
-        #
-        # self.sign_in.just_fyi("Checking case %s" % cases[2])
-        # self.sign_in.create_password_input.send_keys('1234565')
-        # self.sign_in.confirm_your_password_input.send_keys('1234567')
-        # if not self.sign_in.element_by_translation_id("password_error1").is_element_displayed():
-        #     self.errors.append("'%s' is not shown" % self.sign_in.get_translation_by_key("password_error1"))
-        # self.sign_in.create_password_input.set_value(common_password)
-        # self.sign_in.confirm_your_password_input.set_value(common_password)
-        #
-        # self.sign_in.next_button.click()
-        # [element.wait_and_click(10) for element in (self.sign_in.maybe_later_button, self.sign_in.lets_go_button)]
-        # self.home.cross_icon_inside_welcome_screen_button.wait_and_click(10)
-        # if not self.home.element_by_translation_id("welcome-blank-message").is_element_displayed():
-        #     self.errors.append("'%s' text is not shown after welcome view was closed" %
-        #                        self.home.get_translation_by_key("welcome-blank-message"))
-        # self.home.profile_button.click()
-        # shown_username = self.profile.default_username_text.text
-        # if shown_username != username:
-        #     self.errors.append("Default username '%s' doesn't match '%s'" % (shown_username, username))
+        self.home.profile_button.double_click()
+        self.profile.logout()
+        self.sign_in.just_fyi('Create another multiaccount')
+        if self.sign_in.ok_button.is_element_displayed():
+            self.sign_in.ok_button.click()
+        self.sign_in.navigate_up_button.click()
+        self.sign_in.your_keys_more_icon.click()
+        self.sign_in.generate_new_key_button.click()
+        from views.sign_in_view import MultiAccountButton
+        account_button = self.sign_in.get_multiaccount_by_position(position=random.randint(1, 4),
+                                                                   element_class=MultiAccountButton)
+        username = account_button.username.text
+        account_button.click()
+        self.sign_in.next_button.click()
+        self.sign_in.next_button.click()
+
+        self.sign_in.just_fyi('Check password validation')
+        cases = ['password is not confirmed', 'password is too short', "passwords don't match"]
+        error = "Can create multiaccount when"
+
+        self.sign_in.just_fyi('Checking case when %s' % cases[0])
+        self.sign_in.create_password_input.send_keys('123456')
+        self.sign_in.next_button.click()
+        if self.sign_in.maybe_later_button.is_element_displayed(10):
+            self.driver.fail('%s  %s' % (error, cases[0]))
+
+        self.sign_in.just_fyi('Checking case when %s' % cases[1])
+        self.sign_in.create_password_input.send_keys('123456')
+        [field.send_keys('123456') for field in
+         (self.sign_in.create_password_input, self.sign_in.confirm_your_password_input)]
+        self.sign_in.confirm_your_password_input.delete_last_symbols(1)
+        self.sign_in.create_password_input.delete_last_symbols(1)
+        self.sign_in.next_button.click()
+        if self.sign_in.maybe_later_button.is_element_displayed(10):
+            self.driver.fail('%s  %s' % (error, cases[1]))
+
+        self.sign_in.just_fyi("Checking case %s" % cases[2])
+        self.sign_in.create_password_input.send_keys('1234565')
+        self.sign_in.confirm_your_password_input.send_keys('1234567')
+        if not self.sign_in.element_by_translation_id("password_error1").is_element_displayed():
+            self.errors.append("'%s' is not shown" % self.sign_in.get_translation_by_key("password_error1"))
+        self.sign_in.create_password_input.set_value(common_password)
+        self.sign_in.confirm_your_password_input.set_value(common_password)
+
+        self.sign_in.next_button.click()
+        [element.wait_and_click(10) for element in (self.sign_in.maybe_later_button, self.sign_in.lets_go_button)]
+        self.home.cross_icon_inside_welcome_screen_button.wait_and_click(10)
+        if not self.home.element_by_translation_id("welcome-blank-message").is_element_displayed():
+            self.errors.append("'%s' text is not shown after welcome view was closed" %
+                               self.home.get_translation_by_key("welcome-blank-message"))
+        self.home.profile_button.click()
+        shown_username = self.profile.default_username_text.text
+        if shown_username != username:
+            self.errors.append("Default username '%s' doesn't match '%s'" % (shown_username, username))
         self.errors.verify_no_errors()
 
 

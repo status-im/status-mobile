@@ -2,6 +2,7 @@ from os import environ
 import json
 import requests
 from io import BytesIO
+from time import sleep
 
 from sauceclient import SauceClient, SauceException
 
@@ -41,19 +42,13 @@ def upload_from_url(apk_path = str()):
     apk_name = apk_path.split("/")[-1]
     file = BytesIO(response.content)
     del response
-    requests.post('https://eu-central-1.saucelabs.com/rest/v1/storage/'
-                  + sauce_username + '/' + apk_name + '?overwrite=true',
-                  auth=(sauce_username, sauce_access_key),
-                  data=file,
-                  headers={'Content-Type': 'application/octet-stream'})
-
-    # for _ in range(3):
-    #     try:
-    #         requests.post('http://saucelabs.com/rest/v1/storage/'
-    #                       + sauce_username + '/' + test_suite_data.apk_name + '?overwrite=true',
-    #                       auth=(sauce_username, sauce_access_key),
-    #                       data=file,
-    #                       headers={'Content-Type': 'application/octet-stream'})
-    #         break
-    #     except ConnectionError:
-    #         time.sleep(10)
+    for _ in range(3):
+        try:
+            requests.post('https://eu-central-1.saucelabs.com/rest/v1/storage/'
+                          + sauce_username + '/' + apk_name + '?overwrite=true',
+                          auth=(sauce_username, sauce_access_key),
+                          data=file,
+                          headers={'Content-Type': 'application/octet-stream'})
+            break
+        except ConnectionError:
+            sleep(10)

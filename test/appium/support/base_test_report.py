@@ -118,7 +118,7 @@ class BaseTestReport:
         for _ in range(10):
             try:
                 scr_number = sauce.jobs.get_job_assets(job_id)['screenshots'][-1]
-                return 'https://assets.saucelabs.com/jobs/%s/%s?auth=%s' % (job_id, scr_number, token)
+                return 'https://assets.eu-central-1.saucelabs.com/jobs/%s/%s?auth=%s' % (job_id, scr_number, token)
             except SauceException:
                 time.sleep(3)
 

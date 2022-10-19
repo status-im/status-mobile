@@ -178,20 +178,6 @@ def pytest_configure(config):
                 if not is_uploaded():
                     if 'http' in config.getoption('apk'):
                         tests.cloudbase_test_api.upload_from_url(config.getoption('apk'))
-                        # response = requests.get(config.getoption('apk'), stream=True)
-                        # response.raise_for_status()
-                        # file = BytesIO(response.content)
-                        # del response
-                        # for _ in range(3):
-                        #     try:
-                        #         requests.post('http://saucelabs.com/rest/v1/storage/'
-                        #                       + sauce_username + '/' + test_suite_data.apk_name + '?overwrite=true',
-                        #                       auth=(sauce_username, sauce_access_key),
-                        #                       data=file,
-                        #                       headers={'Content-Type': 'application/octet-stream'})
-                        #         break
-                        #     except ConnectionError:
-                        #         time.sleep(10)
                     else:
                         tests.cloudbase_test_api.sauce.storage.upload_file(config.getoption('apk'))
 
