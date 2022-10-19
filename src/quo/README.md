@@ -1,7 +1,7 @@
 # Status Quo Components
-All components in **Quo** should be independent of the app state. They should be _pure_ 
-and _easy to reason about_. Avoiding the app state is also required to make the library 
-independent and easy to be pulled off as a separate repository when needed. 
+All components in **Quo** should be independent of the app state. They should be _pure_
+and _easy to reason about_. Avoiding the app state is also required to make the library
+independent and easy to be pulled off as a separate repository when needed.
 To avoid high coupling and direct use of internal styling, the components should be
 exported via namespace `quo.core` and used by the Status app only from there. This will
 allow a more flexible way to update components without possible breakages into the
@@ -28,8 +28,8 @@ use style override.
 
 # Code style
 Ensure that your changes match the style of the rest of the code.
-This library uses Clojure Community code style [The Clojure Style Guide](https://github.com/bbatsov/clojure-style-guide)
-To ensure consistency run [clj-kondo linter](https://github.com/borkdude/clj-kondo)
+This library uses Clojure Community code style [The Clojure Style Guide](https://github.com/bbatsov/clojure-style-guide).
+To ensure consistency, run `make lint`, which uses the [clj-kondo linter](https://github.com/borkdude/clj-kondo).
 
 # Best practices
 

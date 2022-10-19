@@ -1,5 +1,5 @@
 (ns quo.animated
-  (:refer-clojure :exclude [set delay divide])
+  (:refer-clojure :exclude [abs set delay divide])
   (:require [reagent.core :as reagent]
             [quo.react-native :as rn]
             [quo.gesture-handler :as gh]

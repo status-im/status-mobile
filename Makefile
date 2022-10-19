@@ -287,7 +287,7 @@ endif
 
 lint: export TARGET := clojure
 lint: ##@test Run code style checks
-	yarn clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
+	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
 	TARGETS=$$(git diff --diff-filter=d --cached --name-only src && echo src) && \
 	clojure -Scp "$$CLASS_PATH" -m cljfmt.main check --indents indentation.edn $$TARGETS
 
