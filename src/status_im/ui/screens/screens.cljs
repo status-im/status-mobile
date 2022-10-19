@@ -58,7 +58,8 @@
             [status-im.ui.screens.glossary.view :as glossary]
             [status-im.ui.screens.group.views :as group-chat]
             [status-im.ui.screens.help-center.views :as help-center]
-            [status-im.ui.screens.home.views :as home]
+            [status-im.ui.screens.home.views :as old-chat.home]
+            [status-im.ui2.screens.chat.home :as chat.home]
             [status-im.ui.screens.keycard.authentication-method.views :as keycard.authentication]
             [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
             [status-im.ui.screens.keycard.pairing.views :as keycard.pairing]
@@ -218,7 +219,7 @@
 
                                         ;Home
            {:name      :home
-            :component home/home-old}
+            :component (if  config/new-ui-enabled? chat.home/home old-chat.home/home-old)}
 
                                         ;Chat
            {:name          :chat
