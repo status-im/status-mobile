@@ -148,7 +148,7 @@
                  (multiaccounts/displayed-photo row)]}]))
 
 (defn chat-list-key-fn [item]
-  (or (:chat-id item) (:public-key item)))
+  (or (:chat-id item) (:public-key item) "unknown"))
 
 (defn get-item-layout [_ index]
   #js {:length 64 :offset (* 64 index) :index index})
