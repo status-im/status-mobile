@@ -44,10 +44,10 @@ stdenv.mkDerivation {
     "configurePhase" "buildPhase" "installPhase"
   ];
 
-  # For optional INFURA_TOKEN variable
+  # For optional POKT_TOKEN variable
   secretsPhase = if (secretsFile != "") then ''
     source "${secretsFile}"
-    ${lib.checkEnvVarSet "INFURA_TOKEN"}
+    ${lib.checkEnvVarSet "POKT_TOKEN"}
   '' else ''
     echo "No secrets provided!"
   '';

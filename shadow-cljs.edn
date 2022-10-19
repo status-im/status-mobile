@@ -48,7 +48,7 @@
                             :build-notify status-im.reloader/build-notify
                             :preloads [re-frisk-remote.preload]}
                  :closure-defines
-                 {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
+                 {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
                   status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
                  :compiler-options {:output-feature-set :es5
                                     :closure-defines
@@ -63,7 +63,7 @@
                     :chats status-im.chat.default-chats/default-chats}
            :release
            {:closure-defines
-            {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
+            {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
              status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
                      :compiler-options {:output-feature-set :es6
                                         ;;disable for android build as there
@@ -87,7 +87,7 @@
            ;; set :ui-driven to true to let shadow-cljs inject node-repl
            :ui-driven        true
            :closure-defines
-           {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
+           {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
             status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
            :compiler-options {;; needed because we override require and it
                               ;; messes with source-map which reports callstack
