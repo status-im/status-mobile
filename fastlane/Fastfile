@@ -57,7 +57,7 @@ def upload_to_saucelabs(file)
   username = ENV['SAUCE_USERNAME']
   unique_name = ENV['SAUCE_LABS_NAME']
 
-  url = "https://saucelabs.com/rest/v1/storage/#{username}/#{unique_name}?overwrite=true"
+  url = "https://eu-central-1.saucelabs.com/rest/v1/storage/#{username}/#{unique_name}?overwrite=true"
 
   upload_result = retry_curl_upload(url, file, "#{username}:#{key}")
 

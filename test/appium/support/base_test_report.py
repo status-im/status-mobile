@@ -102,7 +102,7 @@ class BaseTestReport:
 
     def get_sauce_job_url(self, job_id, first_command=0):
         token = self.get_sauce_token(job_id)
-        url = 'https://saucelabs.com/jobs/%s?auth=%s' % (job_id, token)
+        url = 'https://eu-central-1.saucelabs.com/jobs/%s?auth=%s' % (job_id, token)
         if first_command > 0:
             url += "#%s" % first_command
         return url
