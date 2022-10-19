@@ -1811,10 +1811,14 @@
     "replies": "Replies",
     "identity-verification": "Identity verification",
     "membership": "Membership",
+<<<<<<< HEAD
     "jump-to": "Jump to",
 <<<<<<< HEAD
     "blank-messages-text": "Your messages will be here",
     "groups": "Groups"
 =======
 >>>>>>> b3446651f... rebase
+=======
+    "jump-to": "Jump to"
+>>>>>>> 76481f3dc... fix test
 }
