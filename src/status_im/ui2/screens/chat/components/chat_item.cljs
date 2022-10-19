@@ -1,6 +1,5 @@
 (ns status-im.ui2.screens.chat.components.chat-item
   (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.badge :as badge]
@@ -11,7 +10,7 @@
             [status-im.utils.core :as utils]
             [status-im.utils.datetime :as time]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.utils.handlers :refer [<sub]]
             [quo2.components.markdown.text :as quo2.text]
             [quo2.foundations.colors :as quo2.colors]
             [quo.react-native :as rn]))
