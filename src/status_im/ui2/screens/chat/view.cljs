@@ -50,8 +50,8 @@
         ;;we want to react only on these fields, do not use full chat map here
         (<sub [:chats/current-chat-chat-view])
         mutual-contact-requests-enabled? (<sub [:mutual-contact-requests/enabled?])]
-    [react/keyboard-avoiding-view-new {:style         {:flex 1}
-                                       :ignore-offset false}
+    [rn/keyboard-avoiding-view {:style         {:flex 1}
+                                :ignore-offset false}
      ;;TODO It is better to not use topbar component because of performance
      [topbar/topbar {:navigation      :none
                      :left-component  [rn/view {:flex-direction :row :margin-left 16}

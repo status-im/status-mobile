@@ -6,19 +6,19 @@
             [status-im.ui.components.badge :as badge]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.core :as utils]
             [status-im.utils.datetime :as time]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
             [quo2.components.markdown.text :as quo2.text]
-            [quo2.foundations.colors :as quo2.colors]))
+            [quo2.foundations.colors :as quo2.colors]
+            [quo.react-native :as rn]))
 
 (defn preview-label [label-key label-fn]
-  [react/text {:style               styles/last-message-text
-               :accessibility-label :no-messages-text
-               :number-of-lines     1}
+  [rn/text {:style               styles/last-message-text
+            :accessibility-label :no-messages-text
+            :number-of-lines     1}
    (i18n/label label-key label-fn)])
 
 (def max-subheader-length 100)
@@ -37,12 +37,12 @@
                     (if (>= length max-subheader-length)
                       (reduced acc-paragraph)
                       (add-parsed-to-subheader acc-paragraph parsed-child)))
-                  {:components [react/text-class]
+                  {:components [rn/text]
                    :length     0}
                   children)
 
                  "mention"
-                 {:components [react/text-class @(re-frame/subscribe [:contacts/contact-name-by-identity literal])]
+                 {:components [rn/text @(re-frame/subscribe [:contacts/contact-name-by-identity literal])]
                   :length     4} ;; we can't predict name length so take the smallest possible
 
                  "status-tag"
@@ -64,10 +64,10 @@
            (if (>= length max-subheader-length)
              (reduced acc-text)
              (add-parsed-to-subheader acc-text new-text-chunk)))
-         {:components [react/text-class {:style               styles/last-message-text
-                                         :number-of-lines     1
-                                         :ellipsize-mode      :tail
-                                         :accessibility-label :chat-message-text}]
+         {:components [rn/text {:style               styles/last-message-text
+                                :number-of-lines     1
+                                :ellipsize-mode      :tail
+                                :accessibility-label :chat-message-text}]
           :length     0}
          parsed-text)]
     (:components result)))
@@ -77,7 +77,7 @@
        (not (string/blank? community-id))))
 
 (defn message-content-text [{:keys [content content-type community-id]}]
-  [react/view
+  [rn/view
    (cond
      (not (and content content-type))
      [preview-label :t/no-messages]
@@ -88,10 +88,10 @@
               (= constants/content-type-command content-type))
           (not (string/blank? (:text content))))
      (if (string/blank? (:parsed-text content))
-       [react/text-class {:style               styles/last-message-text
-                          :number-of-lines     1
-                          :ellipsize-mode      :tail
-                          :accessibility-label :chat-message-text}
+       [rn/text {:style               styles/last-message-text
+                 :number-of-lines     1
+                 :ellipsize-mode      :tail
+                 :accessibility-label :chat-message-text}
         (:text content)]
        [render-subheader (:parsed-text content)])
 
@@ -118,11 +118,11 @@
                                   unviewed-messages-count
                                   public?]}]
   (when (pos? unviewed-messages-count)
-    [react/view {:position :absolute :right 16}
+    [rn/view {:position :absolute :right 16}
      (cond
        (and public? (not (pos? unviewed-mentions-count)))
-       [react/view {:style               styles/public-unread
-                    :accessibility-label :unviewed-messages-public}]
+       [rn/view {:style                  styles/public-unread
+                 :accessibility-label :unviewed-messages-public}]
 
        (and public? (pos? unviewed-mentions-count))
        [badge/message-counter unviewed-mentions-count]
@@ -171,10 +171,10 @@
 (defn chat-list-item [home-item opts]
   (let [{:keys [chat-id chat-name color group-chat muted emoji highlight edit? public? unviewed-messages-count last-message]} home-item
         background-color (when highlight (colors/get-color :interactive-02))]
-    [react/touchable-opacity (merge {:style {:height 64 :background-color background-color}} opts)
+    [rn/touchable-opacity (merge {:style {:height 64 :background-color background-color}} opts)
      [:<>
       (when (pos? unviewed-messages-count)
-        [react/view {:position :absolute :top 2 :left 8 :right 8 :bottom 2 :border-radius 16 :background-color quo2.colors/primary-50-opa-5}])
+        [rn/view {:position :absolute :top 2 :left 8 :right 8 :bottom 2 :border-radius 16 :background-color quo2.colors/primary-50-opa-5}])
       [chat-icon.screen/emoji-chat-icon-view chat-id group-chat chat-name emoji
        {:container              (assoc chat-icon.styles/container-chat-list
                                        :top 12 :left 20 :position :absolute)
@@ -186,9 +186,9 @@
                                   (chat-icon.styles/emoji-chat-icon-text 40))}]
       [chat-item-title chat-id muted group-chat chat-name edit?]
       (when-not edit?
-        [react/view {:height "100%" :justify-content :center}
+        [rn/view {:height "100%" :justify-content :center}
          [unviewed-indicator home-item]])
-      [react/view {:position :absolute :left 72 :top 32 :right 80}
+      [rn/view {:position :absolute :left 72 :top 32 :right 80}
        (if public?
          [quo2.text/text {:color           :secondary
                           :number-of-lines 1
@@ -196,26 +196,4 @@
                           :weight :medium
                           :style {:color (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}}
           (i18n/label :t/public)]
-         [message-content-text (select-keys last-message [:content :content-type :community-id])]
-         ;(if group-chat
-         ;  [react/view {:flex-direction :row
-         ;               :flex           1
-         ;               :padding-right  16
-         ;               :align-items    :center}
-         ;   [icons/icon :main-icons/tiny-group2
-         ;    {:width           16
-         ;     :height          16
-         ;     :no-color        true
-         ;     :container-style {:width        16
-         ;                       :height       16
-         ;                       :margin-right 4}}]
-         ;   [quo2.text/text {:weight :medium
-         ;                    :style {:color (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}}
-         ;    (i18n/label :t/members-count {:count (count contacts)})]]
-         ;  [quo2.text/text {:monospace true
-         ;                   :weight :medium
-         ;                   :style {:color (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}
-         ;                   :number-of-lines 1
-         ;                   :ellipsize-mode  :middle}
-         ;   (utils.utils/get-shortened-address chat-id)])
-         )]]]))
+         [message-content-text (select-keys last-message [:content :content-type :community-id])])]]]))
