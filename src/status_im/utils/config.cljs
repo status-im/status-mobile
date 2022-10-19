@@ -18,12 +18,16 @@
 ;; NOTE(oskarth): Feature flag deprecation lifecycles. We want to make sure
 ;; flags stay up to date and are removed once behavior introduced is stable.
 
-(goog-define INFURA_TOKEN "800c641949d64d768a5070a1b0511938")
+(goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
 (goog-define OPENSEA_API_KEY "")
 
-(def mainnet-rpc-url (str "https://mainnet.infura.io/v3/" INFURA_TOKEN))
-(def testnet-rpc-url (str "https://ropsten.infura.io/v3/" INFURA_TOKEN))
-(def goerli-rpc-url  (str "https://goerli.infura.io/v3/" INFURA_TOKEN))
+(def mainnet-rpc-url
+  (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
+
+(def testnet-rpc-url
+  (str "https://ropsten.infura.io/v3/" POKT_TOKEN))
+(def goerli-rpc-url
+  (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
 (def opensea-api-key OPENSEA_API_KEY)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
@@ -128,7 +132,7 @@
     :config              {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
                           :DataDir        "/ethereum/rinkeby_rpc"
                           :UpstreamConfig {:Enabled true
-                                           :URL     (str "https://rinkeby.infura.io/v3/" INFURA_TOKEN)}}}
+                                           :URL     (str "https://rinkeby.infura.io/v3/" POKT_TOKEN)}}}
    {:id                  "goerli_rpc",
     :chain-explorer-link "https://goerli.etherscan.io/address/",
     :name                "Goerli with upstream RPC",

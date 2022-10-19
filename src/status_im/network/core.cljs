@@ -93,21 +93,16 @@
   (if-let [config (get-in db [:networks/networks network-id :config])]
     (if-let [upstream-url (get-in config [:UpstreamConfig :URL])]
       {:http-post {:url        upstream-url
-                   :data       (types/clj->json [{:jsonrpc "2.0"
-                                                  :method  "web3_clientVersion"
-                                                  :id      1}
-                                                 {:jsonrpc "2.0"
-                                                  :method  "net_version"
-                                                  :id      2}])
+                   :data       (types/clj->json {:jsonrpc "2.0"
+                                                 :method  "net_version"
+                                                 :id      2})
                    :opts       {:headers {"Content-Type" "application/json"}}
                    :on-success (fn [{:keys [response-body]}]
-                                 (let [responses           (http/parse-payload response-body)
-                                       client-version      (:result (first responses))
+                                 (let [response            (http/parse-payload response-body)
                                        expected-network-id (:NetworkId config)
-                                       rpc-network-id      (when-let [res (:result (second responses))]
+                                       rpc-network-id      (when-let [res (:result response)]
                                                              (js/parseInt res))]
-                                   (if (and client-version network-id
-                                            (= expected-network-id rpc-network-id))
+                                   (if (and network-id (= expected-network-id rpc-network-id))
                                      (re-frame/dispatch [::connect-success network-id])
                                      (re-frame/dispatch [::connect-failure (if (not= expected-network-id rpc-network-id)
                                                                              (i18n/label :t/network-invalid-network-id)

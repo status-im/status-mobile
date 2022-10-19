@@ -11,7 +11,7 @@
 let
   inherit (lib) toLower optionalString stringLength getConfig makeLibraryPath elem;
 
-  # Pass secretsFile for INFURA_TOKEN to jsbundle build
+  # Pass secretsFile for POKT_TOKEN to jsbundle build
   builtJsBundle = jsbundle { inherit secretsFile; };
 
   buildType = getConfig "build-type" "release";
