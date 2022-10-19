@@ -114,7 +114,7 @@ class BaseTestReport:
 
     def get_sauce_final_screenshot_url(self, job_id):
         token = self.get_sauce_token(job_id)
-        from tests.conftest import sauce
+        from tests.cloudbase_test_api import sauce
         for _ in range(10):
             try:
                 scr_number = sauce.jobs.get_job_assets(job_id)['screenshots'][-1]
