@@ -2,7 +2,6 @@
   (:require [quo2.reanimated :as reanimated]
             [status-im.utils.platform :as platform]
             [status-im.switcher.switcher :as switcher]
-            ;[status-im.ui.screens.home.views :as home]
             [status-im.ui2.screens.chat.home :as chat.home]
             [status-im.switcher.constants :as constants]
             [status-im.switcher.bottom-tabs :as bottom-tabs]
