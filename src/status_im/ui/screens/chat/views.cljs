@@ -136,10 +136,10 @@
         mutual-contact-requests-enabled? @(re-frame/subscribe [:mutual-contact-requests/enabled?])
         contact-names @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])]
     [chat-intro (assoc opts
-                  :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
-                  :contact-name (first contact-names)
-                  :contact-request-state (or (:contact-request-state contact)
-                                             constants/contact-request-state-none))]))
+                       :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
+                       :contact-name (first contact-names)
+                       :contact-request-state (or (:contact-request-state contact)
+                                                  constants/contact-request-state-none))]))
 
 (defn chat-intro-header-container
   [{:keys [group-chat invitation-admin
@@ -256,7 +256,7 @@
 (defn get-set-active-panel [active-panel]
   (fn [panel]
     (rn/configure-next
-      (:ease-opacity-200 rn/custom-animations))
+     (:ease-opacity-200 rn/custom-animations))
     (reset! active-panel panel)
     (reagent/flush)
     (when panel
@@ -290,14 +290,14 @@
        ; message content
        [message/chat-message
         (assoc message
-          :incoming-group (and group-chat (not outgoing))
-          :group-chat group-chat
-          :public? public?
-          :community? community?
-          :current-public-key current-public-key
-          :show-input? show-input?
-          :message-pin-enabled message-pin-enabled
-          :edit-enabled edit-enabled)
+               :incoming-group (and group-chat (not outgoing))
+               :group-chat group-chat
+               :public? public?
+               :community? community?
+               :current-public-key current-public-key
+               :show-input? show-input?
+               :message-pin-enabled message-pin-enabled
+               :edit-enabled edit-enabled)
         space-keeper]))])
 
 (def list-key-fn #(or (:message-id %) (:value %)))
@@ -346,9 +346,9 @@
         contact-added? (when one-to-one? @(re-frame/subscribe [:contacts/contact-added? chat-id]))
         should-send-contact-request?
         (and
-          mutual-contact-requests-enabled?
-          one-to-one?
-          (not contact-added?))]
+         mutual-contact-requests-enabled?
+         one-to-one?
+         (not contact-added?))]
 
     ;;do not use anonymous functions for handlers
     [list/flat-list

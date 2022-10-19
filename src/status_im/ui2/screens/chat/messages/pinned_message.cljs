@@ -8,36 +8,37 @@
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.ui.components.list.views :as list]
             [status-im.utils.handlers :refer [<sub]]
-            [status-im.ui.screens.chat.message.message :as message]))
+            [status-im.ui.screens.chat.message.message :as message]
+            [quo.react-native :as rn]))
 
 (def selected-unpin (reagent/atom nil))
 
-(defn render-pin-fn [{:keys [message-id outgoing] :as message}
+(defn render-pin-fn [{:keys [message-id] :as message}
                      _
                      _
                      {:keys [group-chat public? current-public-key space-keeper]}]
   [react/touchable-without-feedback {:style {:width "100%"}
                                      :on-press #(reset! selected-unpin message-id)}
-   [react/view {:style {:flex-direction  :row
-                        :align-items     :center
-                        :justify-content :space-between
-                        :flex            1
-                        :padding-right   20}}
+   [rn/view {:style {:flex-direction     :row
+                     :align-items     :center
+                     :justify-content :space-between
+                     :flex            1
+                     :padding-right   20}}
     [message/chat-message
      (assoc message
-       :group-chat group-chat
-       :public? public?
-       :current-public-key current-public-key
-       :show-input? false
-       :pinned false
-       :display-username? true
-       :display-photo? true
-       :last-in-group? true
-       :in-popover? false)
+            :group-chat group-chat
+            :public? public?
+            :current-public-key current-public-key
+            :show-input? false
+            :pinned false
+            :display-username? true
+            :display-photo? true
+            :last-in-group? true
+            :in-popover? false)
      space-keeper]
-    [react/view {:style {:position    :absolute
-                         :right       18
-                         :padding-top 4}}
+    [rn/view {:style {:position       :absolute
+                      :right       18
+                      :padding-top 4}}
      [quo/radio {:value (= @selected-unpin message-id)}]]]])
 
 (def list-key-fn #(or (:message-id %) (:value %)))
@@ -60,14 +61,14 @@
 
 (defn pin-limit-popover []
   (let [{:keys [message]} (<sub [:popover/popover])]
-    [react/view {:style {:flex-shrink 1}}
-     [react/view {:style {:height 60
-                          :justify-content :center}}
-      [react/text {:style {:padding-horizontal 40
-                           :text-align :center}}
+    [rn/view {:style {:flex-shrink 1}}
+     [rn/view {:style {:height             60
+                       :justify-content :center}}
+      [rn/text {:style {:padding-horizontal 40
+                        :text-align      :center}}
        (i18n/label :t/pin-limit-reached)]]
      [pinned-messages-limit-list (message :chat-id)]
-     [react/view {:flex-direction :row :padding-horizontal 16 :height 60 :justify-content :space-between :align-items :center}
+     [rn/view {:flex-direction :row :padding-horizontal 16 :height 60 :justify-content :space-between :align-items :center}
       [quo/button
        {:on-press #(do
                      (reset! selected-unpin nil)

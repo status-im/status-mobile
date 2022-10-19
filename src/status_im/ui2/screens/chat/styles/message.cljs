@@ -108,9 +108,9 @@
 
 (defn message-author-userpic []
   (merge
-    {:width      (+ 16 photos/default-size)} ;; 16 is for the padding
-    {:padding-left 0
-     :padding-right      8}))
+   {:width      (+ 16 photos/default-size)} ;; 16 is for the padding
+   {:padding-left 0
+    :padding-right      8}))
 
 (def delivery-text
   {:color       colors/gray
@@ -124,9 +124,9 @@
 
 (def not-sent-text
   (assoc delivery-text
-    :color colors/red
-    :text-align :right
-    :padding-top 4))
+         :color colors/red
+         :text-align :right
+         :padding-top 4))
 
 (def not-sent-icon
   {:padding-top  3
@@ -155,18 +155,18 @@
 (defn message-view
   [{:keys [content-type mentioned]}]
   (merge
-    {:border-radius 10}
-    (cond
-      (= content-type constants/content-type-system-text) nil
-      mentioned                                           {:background-color colors/mentioned-background
-                                                           :border-color colors/mentioned-border
-                                                           :border-width 1}
-      (= content-type constants/content-type-audio)       {:background-color colors/blue
-                                                           :padding-horizontal 12
-                                                           :padding-top 6})
+   {:border-radius 10}
+   (cond
+     (= content-type constants/content-type-system-text) nil
+     mentioned                                           {:background-color colors/mentioned-background
+                                                          :border-color colors/mentioned-border
+                                                          :border-width 1}
+     (= content-type constants/content-type-audio)       {:background-color colors/blue
+                                                          :padding-horizontal 12
+                                                          :padding-top 6})
 
-    (when (= content-type constants/content-type-emoji)
-      {:flex-direction :row})))
+   (when (= content-type constants/content-type-emoji)
+     {:flex-direction :row})))
 
 (defn message-view-content []
   {:padding-bottom 6
@@ -199,12 +199,12 @@
 
 (defn quoted-message-author [chosen?]
   (assoc (message-author-name chosen?)
-    :padding-bottom  6
-    :padding-top     0
-    :padding-left    0
-    :line-height     18
-    :font-weight    "500"
-    :color           colors/gray))
+         :padding-bottom  6
+         :padding-top     0
+         :padding-left    0
+         :line-height     18
+         :font-weight    "500"
+         :color           colors/gray))
 
 (defn quoted-message-text []
   {:font-size 14
@@ -237,10 +237,10 @@
 
 (defn text-style [content-type in-popover?]
   (merge
-    (when in-popover? {:number-of-lines 2})
-    (cond
-      (= content-type constants/content-type-system-text) (system-text-style)
-      :else (default-text-style))))
+   (when in-popover? {:number-of-lines 2})
+   (cond
+     (= content-type constants/content-type-system-text) (system-text-style)
+     :else (default-text-style))))
 
 (defn emph-text-style []
   (update (default-text-style) :style
