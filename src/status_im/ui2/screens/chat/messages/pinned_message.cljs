@@ -30,10 +30,10 @@
        :current-public-key current-public-key
        :show-input? false
        :pinned false
-       :display-username? (not outgoing)
-       :display-photo? false
-       :last-in-group? false
-       :in-popover? true)
+       :display-username? true
+       :display-photo? true
+       :last-in-group? true
+       :in-popover? false)
      space-keeper]
     [react/view {:style {:position    :absolute
                          :right       18
