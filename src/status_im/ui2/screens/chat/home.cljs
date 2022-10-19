@@ -112,10 +112,23 @@
                                      (re-frame/dispatch [:set :public-group-topic nil])
                                      (re-frame/dispatch [:search/home-filter-changed nil]))}])])))
 
+(defn render-fn [{:keys [chat-id] :as home-item}]
+  [chat-list-item
+   home-item
+   {:on-press      (fn []
+                     (re-frame/dispatch [:dismiss-keyboard])
+                     (if platform/android?
+                       (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
+                       (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
+                     (re-frame/dispatch [:search/home-filter-changed nil])
+                     (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
+    :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                        {:content (fn []
+                                                    [sheets/actions home-item])}])}])
+
 (defn- render-contact [{:keys [public-key] :as row}]
   (let [[first-name second-name] (multiaccounts/contact-two-names row true)
         row (assoc row :chat-id public-key)]
-
     [quo/list-item
      {:title    first-name
       :subtitle second-name
@@ -132,20 +145,6 @@
                                                       [sheets/actions row])}])
       :icon     [chat-icon/contact-icon-contacts-tab
                  (multiaccounts/displayed-photo row)]}]))
-
-(defn render-fn [{:keys [chat-id] :as home-item}]
-  [chat-list-item
-   home-item
-   {:on-press      (fn []
-                     (re-frame/dispatch [:dismiss-keyboard])
-                     (if platform/android?
-                       (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
-                       (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
-                     (re-frame/dispatch [:search/home-filter-changed nil])
-                     (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
-    :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                        {:content (fn []
-                                                    [sheets/actions home-item])}])}])
 
 (defn chat-list-key-fn [item]
   (or (:chat-id item) (:public-key item)))
