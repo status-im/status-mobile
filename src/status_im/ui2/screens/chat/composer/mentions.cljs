@@ -11,7 +11,7 @@
 (defn mention-item
   [[public-key {:keys [alias name nickname] :as user}] _ _ text-input-ref]
   (let [ens-name? (not= alias name)]
-    [rn/touchable-opacity {:on-press #(>evt [:chat.ui/select-mention text-input-ref user]) :style {:border-width 1 :border-color :red}}
+    [rn/touchable-opacity {:on-press #(>evt [:chat.ui/select-mention text-input-ref user])}
      ;;TODO quo2 item should be used
      [list-item/list-item
       (cond-> {:icon              [photos/member-photo public-key]
