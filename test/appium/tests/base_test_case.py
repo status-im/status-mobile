@@ -30,7 +30,7 @@ sauce_username = environ.get('SAUCE_USERNAME')
 
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
 
-executor_sauce_lab = 'http://%s:%s@ondemand.saucelabs.com:80/wd/hub' % (sauce_username, sauce_access_key)
+executor_sauce_lab = 'https://%s:%s@ondemand.eu-central-1.saucelabs.com:443/wd/hub' % (sauce_username, sauce_access_key)
 
 executor_local = 'http://localhost:4723/wd/hub'
 
