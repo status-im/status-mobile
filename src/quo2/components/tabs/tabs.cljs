@@ -10,7 +10,7 @@
 (def default-tab-size 32)
 
 (defn tabs [{:keys [default-active on-change style]}]
-  (let [active-id (reagent/atom default-active)]
+  (let [active-tab-id (reagent/atom default-active)]
   (fn [{:keys [data size] :or {size default-tab-size}}]
       [rn/view (merge {:flex-direction :row} style)
        (doall
@@ -20,9 +20,9 @@
            [tab/tab
             {:id       id
              :size     size
-             :active   (= id @active-id)
-             :on-press (fn [^js id]
-                         (reset! active-id id)
+             :active   (= id @active-tab-id)
+             :on-press (fn []
+                         (reset! active-tab-id id)
                          (when on-change
                            (on-change id)))}
             label]]))])))
