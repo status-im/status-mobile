@@ -8,15 +8,7 @@
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.ui.components.list.views :as list]
             [status-im.utils.handlers :refer [<sub]]
-<<<<<<< HEAD
             [status-im.ui.screens.chat.message.message :as message]))
-=======
-<<<<<<< HEAD
-            [status-im.ui.screens.chat.message.message-old :as message]))
-=======
-            [status-im.ui.screens.chat.message.message-old :as message-old]))
->>>>>>> 2d3427718... show pinned messages
->>>>>>> 20a82dd41... rebase
 
 (def selected-unpin (reagent/atom nil))
 
@@ -33,15 +25,15 @@
                         :padding-right   20}}
     [message/chat-message
      (assoc message
-            :group-chat group-chat
-            :public? public?
-            :current-public-key current-public-key
-            :show-input? false
-            :pinned false
-            :display-username? (not outgoing)
-            :display-photo? false
-            :last-in-group? false
-            :in-popover? true)
+       :group-chat group-chat
+       :public? public?
+       :current-public-key current-public-key
+       :show-input? false
+       :pinned false
+       :display-username? (not outgoing)
+       :display-photo? false
+       :last-in-group? false
+       :in-popover? true)
      space-keeper]
     [react/view {:style {:position    :absolute
                          :right       18
