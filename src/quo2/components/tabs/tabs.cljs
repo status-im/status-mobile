@@ -9,23 +9,22 @@
 
 (def default-tab-size 32)
 
-(defn tabs [{:keys [default-active on-change]}]
-  (let [active-tab-id (reagent/atom default-active)]
-    (fn [{:keys [data size] :or {size default-tab-size}}]
-      (let [active-id @active-tab-id]
-        [rn/view {:flex-direction :row}
-         (for [{:keys [label id]} data]
-           ^{:key id}
-           [rn/view {:style {:margin-right (if (= size default-tab-size) 12 8)}}
-            [tab/tab
-             {:id       id
-              :size     size
-              :active   (= id active-id)
-              :on-press (fn [^js press-event id]
-                          (reset! active-tab-id id)
-                          (when on-change
-                            (on-change press-event id)))}
-             label]])]))))
+(defn tabs [{:keys [default-active on-change style]}]
+  (fn [{:keys [data size] :or {size default-tab-size}}]
+    (let [active-id @default-active]
+      [rn/view (merge {:flex-direction :row} style)
+       (for [{:keys [label id]} data]
+         ^{:key id}
+         [rn/view {:style {:margin-right (if (= size default-tab-size) 12 8)}}
+          [tab/tab
+           {:id       id
+            :size     size
+            :active   (= id active-id)
+            :on-press (fn [^js press-event id]
+                        (reset! default-active id)
+                        (when on-change
+                          (on-change press-event id)))}
+           label]])])))
 
 (defn- calculate-fade-end-percentage
   [{:keys [offset-x content-width layout-width max-fade-percentage]}]

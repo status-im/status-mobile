@@ -114,11 +114,11 @@
        sticker
        (if replied-message
          [fast-image/fast-image {:style  {:margin 4 :width 56 :height 56}
-                                        ;; Get sticker url of the message replied to
+                                 ;; Get sticker url of the message replied to
                                  :source {:uri (((replied-message :content) :sticker) :url)}}]
-                ;; Let the user know if the message was deleted
+         ;; Let the user know if the message was deleted
          [react/text {:style (style/quoted-message-text (and outgoing (not pinned)))}
-                 ;; This hardcorded text can be modified to come from the parsed-text. Also, translations can be added.
+          ;; This hardcorded text can be modified to come from the parsed-text. Also, translations can be added.
           "This message was deleted!"])
        :else [react/text {:style           (style/quoted-message-text (and outgoing (not pinned)))
                           :number-of-lines 5}
@@ -213,13 +213,13 @@
         message-status [react/text {:style (style/message-status-placeholder)}
                         (str (if (and outgoing (not in-popover?)) "        " "  ") (when (and (not in-popover?) edited-at) edited-at-text))]
         last-element (peek elements)]
-           ;; Using `nth` here as slightly faster than `first`, roughly 30%
-           ;; It's worth considering pure js structures for this code path as
-           ;; it's perfomance critical
+    ;; Using `nth` here as slightly faster than `first`, roughly 30%
+    ;; It's worth considering pure js structures for this code path as
+    ;; it's perfomance critical
     (if (= react/text-class (nth last-element 0))
-             ;; Append message status to last text
+      ;; Append message status to last text
       (conj (pop elements) (conj last-element message-status))
-             ;; Append message status to new block
+      ;; Append message status to new block
       (conj elements message-status))))
 
 (defn unknown-content-type
@@ -250,7 +250,7 @@
 (defn pin-author-name [pinned-by]
   (let [user-contact @(re-frame/subscribe [:multiaccount/contact])
         contact-names @(re-frame/subscribe [:contacts/contact-two-names-by-identity pinned-by])]
-           ;; We append empty spaces to the name as a workaround to make one-line and multi-line label components show correctly
+    ;; We append empty spaces to the name as a workaround to make one-line and multi-line label components show correctly
     (str "                   " (if (= pinned-by (user-contact :public-key)) (i18n/label :t/You) (first contact-names)))))
 
 (def pin-icon-width 9)
@@ -346,10 +346,10 @@
                                  :on-press #(do (when modal (close-modal))
                                                 (re-frame/dispatch [:chat.ui/show-profile from]))}
         [message-author-name from {:modal modal}]])
-         ;;MESSAGE CONTENT
+     ;;MESSAGE CONTENT
      content
      [link-preview/link-preview-wrapper (:links (:content message)) outgoing false]]]
-       ; delivery status
+   ; delivery status
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
 
@@ -361,7 +361,7 @@
     (let [width (.-width (.-nativeEvent evt))
           height (.-height (.-nativeEvent evt))]
       (if (< width height)
-                 ;; if width less than the height we reduce width proportionally to height
+        ;; if width less than the height we reduce width proportionally to height
         (let [k (/ height image-max-height)]
           (when (not= (/ width k) (first @dimensions))
             (reset! dimensions {:width (/ width k) :height image-max-height :loaded true})))
@@ -540,7 +540,7 @@
     (fn [{:keys [content current-public-key outgoing edit-enabled public? pinned in-popover? message-pin-enabled content-type edited-at] :as message}
          {:keys [on-long-press modal]
           :as   reaction-picker}]
-                    ;; Makes sure to render a text-messsage and not an emoji-message if it has been edited with text
+      ;; Makes sure to render a text-messsage and not an emoji-message if it has been edited with text
       (if (= content-type constants/content-type-text)
         [message-content-wrapper message
          [collapsible-text-message message on-long-press modal] reaction-picker]

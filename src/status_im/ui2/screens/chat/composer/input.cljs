@@ -11,6 +11,7 @@
             [status-im.ui2.screens.chat.composer.style :as style]
             [re-frame.core :as re-frame]
             [status-im.chat.models.mentions :as mentions]
+            [quo2.foundations.colors :as quo2.colors]
             [quo.react]))
 
 (defonce input-texts (atom {}))
@@ -173,6 +174,6 @@
                                   [idx item])
                                 (<sub [:chat/input-with-mentions]))]
          ^{:key (str idx "_" type "_" text)}
-         [rn/text (when (= type :mention) {:style {:color "#0DA4C9"}})
+         [rn/text (when (= type :mention) {:style {:color quo2.colors/primary-50}})
           text])
        (get @input-texts chat-id))]))

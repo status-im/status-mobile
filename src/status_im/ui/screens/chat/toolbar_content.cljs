@@ -36,7 +36,7 @@
         chat-info]
     [react/view {:style st/toolbar-container}
      [react/view {:margin-right 10}
-      [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color emoji]]
+      [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color emoji 36]]
      [react/view {:style st/chat-name-view}
       (if group-chat
         [react/text {:style               st/chat-name-text

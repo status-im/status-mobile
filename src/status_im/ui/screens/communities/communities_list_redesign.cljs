@@ -80,7 +80,7 @@
     [react/view {:flex 1}
      [quo2.tabs/tabs {:size           32
                       :on-change      #(reset! selected-tab %)
-                      :default-active :all
+                      :default-active selected-tab
                       :data           [{:id    :all
                                         :label (i18n/label :t/all)}
                                        {:id    :open

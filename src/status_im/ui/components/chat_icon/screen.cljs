@@ -74,15 +74,15 @@
                                    :photo-container (:default-chat-icon styles)}])])
 
 (defn chat-icon-view-toolbar
-  [chat-id group-chat name color emoji]
+  [chat-id group-chat name color emoji size]
   [emoji-chat-icon-view chat-id group-chat name emoji
-   {:container              styles/container-chat-toolbar
-    :size                   36
-    :chat-icon              styles/chat-icon-chat-toolbar
-    :default-chat-icon      (styles/default-chat-icon-chat-toolbar color)
+   {:container              (styles/container-chat-toolbar size)
+    :size                   size
+    :chat-icon              (styles/chat-icon-chat-toolbar size)
+    :default-chat-icon      (styles/default-chat-icon-chat-toolbar color size)
     :default-chat-icon-text (if (string/blank? emoji)
-                              (styles/default-chat-icon-text 36)
-                              (styles/emoji-chat-icon-text 36))}])
+                              (styles/default-chat-icon-text size)
+                              (styles/emoji-chat-icon-text size))}])
 
 (defn chat-icon-view-chat-list
   [chat-id group-chat name color]

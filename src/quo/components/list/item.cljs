@@ -196,7 +196,7 @@
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label accessory-style
            haptic-feedback haptic-type error animated animated-accessory? title-text-weight container-style
-           active-background-enabled]
+           active-background-enabled background-color]
     :or   {subtitle-max-lines        1
            theme                     :main
            haptic-feedback           true
@@ -217,9 +217,12 @@
                           rn/view
                           animated animated/pressable
                           :else    gh/touchable-highlight)]
-    [rn/view {:background-color (if (and (= accessory :radio) active)
-                                  active-background
-                                  passive-background)}
+    [rn/view {:background-color (cond (not= background-color nil)
+                                      background-color
+                                      (and (= accessory :radio) active)
+                                      active-background
+                                      :else
+                                      passive-background)}
      [component
       (merge {:type                :list-item
               :disabled            disabled

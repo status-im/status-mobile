@@ -1798,7 +1798,9 @@
     "kicked": "Kicked",
     "delete-for-everyone": "Delete for everyone",
     "pin-to-chat": "Pin to the chat",
+    "pin-to-channel": "Pin to the channel",
     "unpin-from-chat": "Unpin from the chat",
+    "unpin-from-channel": "Unpin from the channel",
     "copy-text": "Copy text",
     "edit-message": "Edit message",
     "save-image-library": "Save image to library",
@@ -1809,5 +1811,7 @@
     "replies": "Replies",
     "identity-verification": "Identity verification",
     "membership": "Membership",
-    "jump-to": "Jump to"
+    "jump-to": "Jump to",
+    "blank-messages-text": "Your messages will be here",
+    "groups": "Groups"
 }
