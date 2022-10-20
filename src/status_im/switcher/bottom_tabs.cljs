@@ -6,7 +6,7 @@
             [status-im.switcher.styles :as styles]
             [status-im.switcher.constants :as constants]
             [status-im.switcher.animation :as animation]
-            [status-im.ui.components.icons.icons :as icons]))
+            [quo2.components.icon :as icons]))
 
 (def selected-stack-id (atom :communities-stack))
 
@@ -55,11 +55,11 @@
 
 (defn tabs [shared-values icons-only?]
   [rn/view {:style (styles/bottom-tabs icons-only?)}
-   [bottom-tab :main-icons/redesign-communities24 :communities-stack icons-only? shared-values]
-   [bottom-tab :main-icons/redesign-messages24 :chats-stack icons-only? shared-values]
+   [bottom-tab :main-icons2/communities :communities-stack icons-only? shared-values]
+   [bottom-tab :main-icons2/messages :chats-stack icons-only? shared-values]
    [rn/view {:width 50}]
-   [bottom-tab :main-icons/redesign-wallet24 :wallet-stack icons-only? shared-values]
-   [bottom-tab :main-icons/redesign-browser24 :browser-stack icons-only? shared-values]])
+   [bottom-tab :main-icons2/wallet :wallet-stack icons-only? shared-values]
+   [bottom-tab :main-icons2/browser :browser-stack icons-only? shared-values]])
 
 (defn bottom-tabs [shared-values]
   [:<>
