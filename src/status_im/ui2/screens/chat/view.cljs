@@ -12,7 +12,8 @@
             [status-im.ui2.screens.chat.messages.view :as messages]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.ui.components.icons.icons :as icons]
-            [re-frame.db]))
+            [re-frame.db]
+            [status-im.ui2.screens.chat.messages.message :as message]))
 
 (defn topbar-content []
   (let [window-width (<sub [:dimensions/window-width])
@@ -67,6 +68,7 @@
          (if group-chat
            [invitation-requests chat-id admins]
            (when-not mutual-contact-requests-enabled? [add-contact-bar chat-id])))
+     [message/pinned-banner chat-id]
      ;;MESSAGES LIST
      [messages/messages-view
       {:chat                             chat
