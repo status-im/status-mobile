@@ -1,14 +1,13 @@
 (ns quo2.components.messages.system-message
-  (:require [status-im.i18n.i18n :as i18n]
-            [quo.react-native :as rn]
-            [status-im.utils.core :as utils]
+  (:require [quo.react-native :as rn]
             [quo.theme :as theme]
-            [quo2.components.buttons.button :as button]
-            [quo2.components.markdown.text :as text]
-            [quo2.reanimated :as ra]
-            [quo2.foundations.colors :as colors]
+            [quo2.components.avatars.icon-avatar :as icon-avatar]
             [quo2.components.avatars.user-avatar :as user-avatar]
-            [quo2.components.avatars.icon-avatar :as icon-avatar]))
+            [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]
+            [quo2.reanimated :as ra]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.utils.core :as utils]))
 
 (def themes-landed {:pinned  colors/primary-50-opa-5
                     :added   colors/primary-50-opa-5
@@ -55,7 +54,7 @@
 
 (defmulti sm-render :type)
 
-(defmethod sm-render :deleted [{:keys [state action timestamp-str]}]
+(defmethod sm-render :deleted [{:keys [label timestamp-str]}]
   [rn/view {:align-items     :center
             :justify-content :space-between
             :flex            1
@@ -64,15 +63,12 @@
              :flex-direction :row}
     [sm-icon {:icon    :main-icons/delete16
               :color   :danger
-              :opacity (if (= state :landed) 0 5)}]
+              :opacity 5}]
     [text/text {:size  :paragraph-2
                 :style {:color        (get-color :text)
                         :margin-right 5}}
-     (i18n/label (if action :message-deleted-for-you :message-deleted))]
-    (when (nil? action) [sm-timestamp timestamp-str])]
-   (when action [button/button {:size   24
-                                :before :main-icons/timeout
-                                :type   :grey} (i18n/label :undo)])])
+     (i18n/label (or label :message-deleted))]
+    [sm-timestamp timestamp-str]]])
 
 (defmethod sm-render :added [{:keys [state mentions timestamp-str]}]
   [rn/view {:align-items    :center
@@ -140,15 +136,19 @@
                     :style {:color (get-color :time)}}
          (utils/truncate-str (:info content) 24)])]]]])
 
-(defn system-message [{:keys [type] :as message}]
+(defn system-message
+  [{:keys [type non-pressable? animate-landing?] :as message}]
   [:f>
    (fn []
-     (let [sv-color (ra/use-shared-value (get-color :bg :landed type))]
-       (ra/animate-shared-value-with-delay
-        sv-color (get-color :bg :default type) 0 :linear 1000)
+     (let [sv-color (ra/use-shared-value
+                     (get-color :bg (if animate-landing? :landed :default) type))]
+       (when animate-landing?
+         (ra/animate-shared-value-with-delay
+          sv-color (get-color :bg :default type) 0 :linear 1000))
        [ra/touchable-opacity
-        {:on-press #(ra/set-shared-value
-                     sv-color (get-color :bg :pressed type))
+        {:on-press #(when-not non-pressable?
+                      (ra/set-shared-value
+                       sv-color (get-color :bg :pressed type)))
          :style    (ra/apply-animations-to-style
                     {:background-color sv-color}
                     {:flex-direction     :row

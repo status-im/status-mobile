@@ -1,6 +1,10 @@
 (ns status-im.ui2.screens.chat.messages.message
   (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
+            [quo.react-native :as rn]
+            [quo2.components.messages.system-message :as system-message]
+            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.typography :as typography]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.chat.models.delete-message-for-me]
@@ -11,11 +15,12 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.fast-image :as fast-image]
             [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.bottom-sheets.context-drawer :as message-context-drawer]
-            [status-im.ui2.screens.chat.components.reply :as components.reply]
             [status-im.ui.screens.chat.image.preview.views :as preview]
             [status-im.ui.screens.chat.message.audio :as message.audio]
             [status-im.ui.screens.chat.message.command :as message.command]
@@ -26,17 +31,13 @@
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.screens.chat.styles.message.message :as style]
-            [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.ui.screens.chat.styles.photos :as photos.style]
+            [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.ui.screens.communities.icon :as communities.icon]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.ui2.screens.chat.components.reply :as components.reply]
             [status-im.utils.config :as config]
-            [status-im.utils.security :as security]
-            [quo2.foundations.typography :as typography]
-            [quo2.foundations.colors :as quo2.colors]
-            [status-im.ui.components.list.views :as list]
-            [quo.react-native :as rn]
-            [status-im.ui.components.chat-icon.screen :as chat-icon])
+            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.utils.security :as security])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn message-timestamp-anim
@@ -59,7 +60,7 @@
 
 (defview mention-element [from]
   (letsubs [contact-name [:contacts/contact-name-by-identity from]]
-    contact-name))
+           contact-name))
 
 (def edited-at-text (str " ⌫ " (i18n/label :t/edited)))
 
@@ -255,90 +256,90 @@
 
 (defview message-author-name [from opts]
   (letsubs [contact-with-names [:contacts/contact-by-identity from]]
-    (chat.utils/format-author contact-with-names opts)))
+           (chat.utils/format-author contact-with-names opts)))
 
 (defview message-my-name [opts]
   (letsubs [contact-with-names [:multiaccount/contact]]
-    (chat.utils/format-author contact-with-names opts)))
+           (chat.utils/format-author contact-with-names opts)))
 
 (defview community-content [{:keys [community-id] :as message}]
   (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]
             communities-enabled? [:communities/enabled?]]
-    (when (and communities-enabled? community)
-      [rn/view {:style (assoc (style/message-wrapper message)
-                              :margin-vertical 10
-                              :margin-left 8
-                              :width 271)}
-       (when verified
-         [rn/view (style/community-verified)
-          [rn/text {:style {:font-size 13
-                            :color     colors/blue}} (i18n/label :t/communities-verified)]])
-       [rn/view (style/community-message verified)
-        [rn/view {:width        62
-                  :padding-left 14}
-         (if (= community-id constants/status-community-id)
-           [rn/image {:source (resources/get-image :status-logo)
-                      :style  {:width  40
-                               :height 40}}]
-           [communities.icon/community-icon community])]
-        [rn/view {:padding-right 14 :flex 1}
-         [rn/text {:style {:font-weight "700" :font-size 17}}
-          name]
-         [rn/text description]]]
-       [rn/view (style/community-view-button)
-        [rn/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
-                                                                :community
-                                                                {:community-id (:id community)}])}
-         [rn/text {:style {:text-align :center
-                           :color      colors/blue}} (i18n/label :t/view)]]]])))
+           (when (and communities-enabled? community)
+             [rn/view {:style (assoc (style/message-wrapper message)
+                                     :margin-vertical 10
+                                     :margin-left 8
+                                     :width 271)}
+              (when verified
+                [rn/view (style/community-verified)
+                 [rn/text {:style {:font-size 13
+                                   :color     colors/blue}} (i18n/label :t/communities-verified)]])
+              [rn/view (style/community-message verified)
+               [rn/view {:width        62
+                         :padding-left 14}
+                (if (= community-id constants/status-community-id)
+                  [rn/image {:source (resources/get-image :status-logo)
+                             :style  {:width  40
+                                      :height 40}}]
+                  [communities.icon/community-icon community])]
+               [rn/view {:padding-right 14 :flex 1}
+                [rn/text {:style {:font-weight "700" :font-size 17}}
+                 name]
+                [rn/text description]]]
+              [rn/view (style/community-view-button)
+               [rn/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
+                                                                       :community
+                                                                       {:community-id (:id community)}])}
+                [rn/text {:style {:text-align :center
+                                  :color      colors/blue}} (i18n/label :t/view)]]]])))
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
-  [{:keys [last-in-group?
-           identicon
-           from in-popover? timestamp-str
-           deleted-for-me? pinned]
+  [{:keys [last-in-group? identicon from in-popover? timestamp-str
+           deleted-for-me? deleted-for-me-undoable-till pinned]
     :as   message} content {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
-    [rn/view {:style               (style/message-wrapper message)
-              :pointer-events      :box-none
-              :accessibility-label :chat-item}
-     (when (and (seq response-to) (:quoted-message message))
-       [quoted-message response-to (:quoted-message message)])
-     [rn/view {:style          (style/message-body)
-               :pointer-events :box-none}
-      [rn/view (style/message-author-userpic)
-       (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
-         [rn/touchable-highlight {:on-press #(do (when modal (close-modal))
-                                                 (re-frame/dispatch [:chat.ui/show-profile from]))}
-          [photos/member-photo from identicon]])]
+    (if deleted-for-me?
+      [system-message/system-message
+       {:type             :deleted
+        :label            :message-deleted-for-you
+        :timestamp-str    timestamp-str
+        :non-pressable?   true
+        :animate-landing? (if deleted-for-me-undoable-till true false)}]
+      [rn/view {:style               (style/message-wrapper message)
+                :pointer-events      :box-none
+                :accessibility-label :chat-item}
+       (when (and (seq response-to) (:quoted-message message))
+         [quoted-message response-to (:quoted-message message)])
+       [rn/view {:style          (style/message-body)
+                 :pointer-events :box-none}
+        [rn/view (style/message-author-userpic)
+         (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
+           [rn/touchable-highlight {:on-press #(do (when modal (close-modal))
+                                                   (re-frame/dispatch [:chat.ui/show-profile from]))}
+            [photos/member-photo from identicon]])]
 
-      [rn/view {:style (style/message-author-wrapper)}
-       (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
-         [rn/view {:style {:flex-direction :row :align-items :center}}
-          [rn/touchable-opacity {:style    style/message-author-touchable
-                                 :disabled in-popover?
-                                 :on-press #(do (when modal (close-modal))
-                                                (re-frame/dispatch [:chat.ui/show-profile from]))}
-           [message-author-name from {:modal modal}]]
-          [rn/text
-           {:style               (merge
-                                  {:padding-left 5
-                                   :margin-top   2}
-                                  (style/message-timestamp-text))
-            :accessibility-label :message-timestamp}
-           timestamp-str]])
-       ;; MESSAGE CONTENT
-       ;; TODO(yqrashawn): wait for system message component to display deleted for me UI
-       (if deleted-for-me?
-         [rn/view {:style {:border-width 2
-                           :border-color :red}}
-          content]
-         content)
-       [link-preview/link-preview-wrapper (:links (:content message)) false false]]]
-     ; delivery status
-     [rn/view (style/delivery-status)
-      [message-delivery-status message]]]))
+        [rn/view {:style (style/message-author-wrapper)}
+         (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
+           [rn/view {:style {:flex-direction :row :align-items :center}}
+            [rn/touchable-opacity {:style    style/message-author-touchable
+                                   :disabled in-popover?
+                                   :on-press #(do (when modal (close-modal))
+                                                  (re-frame/dispatch [:chat.ui/show-profile from]))}
+             [message-author-name from {:modal modal}]]
+            [rn/text
+             {:style               (merge
+                                    {:padding-left 5
+                                     :margin-top   2}
+                                    (style/message-timestamp-text))
+              :accessibility-label :message-timestamp}
+             timestamp-str]])
+         ;; MESSAGE CONTENT
+         content
+         [link-preview/link-preview-wrapper (:links (:content message)) false false]]]
+       ;; delivery status
+       [rn/view (style/delivery-status)
+        [message-delivery-status message]]])))
 
 (def image-max-width 260)
 (def image-max-height 192)

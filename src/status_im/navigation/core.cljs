@@ -1,21 +1,22 @@
 (ns status-im.navigation.core
   (:require
    ["react-native" :as rn]
-   [clojure.set :as clojure.set]
    ["react-native-gesture-handler" :refer (gestureHandlerRootHOC)]
    ["react-native-navigation" :refer (Navigation)]
+   [clojure.set :as clojure.set]
    [quo.components.text-input :as quo.text-input]
    [quo.design-system.colors :as quo.colors]
    [re-frame.core :as re-frame]
+   [status-im.multiaccounts.login.core :as login-core]
    [status-im.navigation.roots :as roots]
+   [status-im.navigation.state :as state]
    [status-im.ui.components.icons.icons :as icons]
    [status-im.ui.components.react :as react]
    [status-im.ui.screens.views :as views]
    [status-im.utils.fx :as fx]
    [status-im.utils.platform :as platform]
-   [taoensso.timbre :as log]
-   [status-im.multiaccounts.login.core :as login-core]
-   [status-im.navigation.state :as state]))
+   [taoensso.encore :as enc]
+   [taoensso.timbre :as log]))
 
 (def debug? ^boolean js/goog.DEBUG)
 
@@ -438,4 +439,6 @@
                               :community
 
                               :else
-                              :home))}))
+                              :home))
+     :dispatch-n (enc/conj-when []
+                                (and (= view-id :chat) [:chat.ui/sync-all-deleted-for-me-messages]))}))

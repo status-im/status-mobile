@@ -8,65 +8,47 @@
 (defonce cid "chat-id")
 
 (deftest delete-for-me
-  (let [db      {:messages {cid {mid {:id mid}}}}
-        message {:message-id mid :chat-id cid}]
-    (testing "delete for me"
-      (let [expected  {:db {:messages {"chat-id" {"message-id"
-                                                  {:id              "message-id"
-                                                   :deleted-for-me? true}}}}
-                       :utils/dispatch-later
-                       [{:dispatch [:chat.ui/delete-message-for-me-and-sync
-                                    {:chat-id "chat-id" :message-id "message-id"}]
-                         :ms       1000}]}
-            result    (delete-message-for-me/delete {:db db} message 1000)
-            timestamp (+ (datetime/timestamp) 1000)]
-        (is (= (update-in result [:db :messages "chat-id" "message-id"] dissoc :deleted-for-me-undoable-till)
-               expected))
-        (is (-> (get-in result [:db :messages "chat-id" "message-id" :deleted-for-me-undoable-till])
-                (- timestamp)
-                js/Math.abs
-                (< 10)))))
-    (testing "should return nil if message in db"
-      (is (= (delete-message-for-me/delete {:db {:messages []}} message 1000)
-             nil)))))
+  (with-redefs [datetime/timestamp (constantly 1)]
+    (let [db      {:messages {cid {mid {:id mid :whisper-timestamp 1}}}}
+          message {:message-id mid :chat-id cid}]
+      (testing "delete for me"
+        (let [result-message   (get-in (delete-message-for-me/delete {:db db} message 1000)
+                                       [:db :messages cid mid])]
+          (is (= (:id result-message) mid))
+          (is (true? (:deleted-for-me? result-message)))
+          (is (= (:deleted-for-me-undoable-till result-message) 1001))))
+      (testing "should return nil if message not in db"
+        (is (= (delete-message-for-me/delete {:db {:messages []}} message 1000)
+               nil))))))
 
 (deftest undo-delete-for-me
-  (let [db      {:messages {cid {mid {:id mid}}}}
+  (let [db      {:messages {cid {mid {:id mid :whisper-timestamp 1}}}}
         message {:message-id mid :chat-id cid}]
     (testing "undo delete for me in time"
-      (let [db (update-in db
-                          [:messages cid mid]
-                          assoc
-                          :deleted-for-me? true
-                          :deleted-for-me-undoable-till
-                          (+ (datetime/timestamp) 1000))
+      (let [db             (update-in db
+                                      [:messages cid mid]
+                                      assoc
+                                      :deleted-for-me? true
+                                      :deleted-for-me-undoable-till
+                                      (+ (datetime/timestamp) 1000))
+            result-message (get-in (delete-message-for-me/undo {:db db} message)
+                                   [:db :messages cid mid])]
+        (is (= (:id result-message) mid))
+        (is (nil? (:deleted-for-me? result-message)))
+        (is (nil? (:deleted-for-me-undoable-till result-message)))))
 
-            expected {:db {:messages {"chat-id" {"message-id"
-                                                 {:id "message-id"}}}}}]
-        (is (= (delete-message-for-me/undo {:db db} message) expected))))
     (testing "remain deleted for me when undo delete for me late"
       (let [db (update-in db
                           [:messages cid mid]
                           assoc
                           :deleted-for-me? true
                           :deleted-for-me-undoable-till (- (datetime/timestamp) 1000))
+            result-message (get-in (delete-message-for-me/undo {:db db} message) [:db :messages cid mid])]
+        (is (= (:id result-message) mid))
+        (is (nil? (:deleted-for-me-undoable-till result-message)))
+        (is (true? (:deleted-for-me? result-message)))))
 
-            expected {:db {:messages {"chat-id" {"message-id"
-                                                 {:id              "message-id"
-                                                  :deleted-for-me? true}}}}}]
-        (is (= (delete-message-for-me/undo {:db db} message) expected))))
-    (testing "remain deleted for me when undo delete for me late"
-      (let [db (update-in db
-                          [:messages cid mid]
-                          assoc
-                          :deleted-for-me? true
-                          :deleted-for-me-undoable-till (- (datetime/timestamp) 1000))
-
-            expected {:db {:messages {"chat-id" {"message-id"
-                                                 {:id              "message-id"
-                                                  :deleted-for-me? true}}}}}]
-        (is (= (delete-message-for-me/undo {:db db} message) expected))))
-    (testing "should return nil if message in db"
+    (testing "should return nil if message not in db"
       (is (= (delete-message-for-me/undo {:db {:messages []}} message)
              nil)))))
 
@@ -74,7 +56,7 @@
   (let [db      {:messages {cid {mid {:id mid}}}}
         message {:message-id mid :chat-id cid}]
     (testing "delete for me and sync"
-      (let [expected-db {:messages {"chat-id" {"message-id" {:id "message-id"}}}}
+      (let [expected-db {:messages {cid {mid {:id mid}}}}
             effects     (delete-message-for-me/delete-and-sync {:db db} message)
             result-db   (:db effects)
             rpc-calls   (:status-im.ethereum.json-rpc/call effects)]
@@ -100,7 +82,7 @@
                    second)
                mid))))
     (testing "delete for me and sync, should clean undo timer"
-      (let [expected-db {:messages {"chat-id" {"message-id" {:id "message-id"}}}}
+      (let [expected-db {:messages {cid {mid {:id mid}}}}
             effects     (delete-message-for-me/delete-and-sync
                          {:db (update-in db
                                          [:messages cid mid
@@ -109,7 +91,7 @@
                          message)
             result-db   (:db effects)]
         (is (= result-db expected-db))))
-    (testing "should return nil if message in db"
+    (testing "should return nil if message not in db"
       (is (= (delete-message-for-me/delete-and-sync {:db {:messages []}}
                                                     message)
              nil)))))
