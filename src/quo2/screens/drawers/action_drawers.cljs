@@ -27,7 +27,7 @@
                                   :label      (if (:muted? @state) "Unmute channel" "Mute channel")
                                   :right-icon :main-icons2/chevron-right
                                   :sub-label  (when (:muted? @state) "Muted for 15 min")}
-                                 {:icon       :main-icons2/scanner
+                                 {:icon       :main-icons2/scan
                                   :right-icon :main-icons2/chevron-right
                                   :label      "Fetch messages"}
                                  {:icon  :main-icons2/add-user

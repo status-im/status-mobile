@@ -18,7 +18,7 @@
     :on-press #(re-frame/dispatch [::qr-scanner/scan-code
                                    {:title   (i18n/label :t/add-bootnode)
                                     :handler :bootnodes.callback/qr-code-scanned}])}
-   :main-icons2/scanner])
+   :main-icons2/scan])
 
 (defn qr-code []
   [quo2.button/button

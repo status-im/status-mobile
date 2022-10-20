@@ -94,7 +94,7 @@
        :size     32
        :style    {:margin-right 12}
        :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet :sort-communities {}])}
-      :main-icons2/lightning]
+      :main-icons2/flash]
      [quo2.button/button
       {:icon     true
        :type     :outline

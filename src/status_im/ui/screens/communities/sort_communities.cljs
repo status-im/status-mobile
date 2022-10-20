@@ -39,7 +39,7 @@
     {:theme               (theme/get-theme)
      :title               (i18n/label :t/active-members)
      :accessibility-label :active-members
-     :icon                :main-icons2/lightning
+     :icon                :main-icons2/flash
      :new-ui?             true}]
    [quo/list-item
     {:theme               (theme/get-theme)
