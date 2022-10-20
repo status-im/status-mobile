@@ -21,8 +21,7 @@
 
 ;; Bottom Tabs
 (defn bottom-tab-icon [tab-state]
-  {:width  24
-   :height 24
+  {:size  24
    :color  (get-color tab-state)})
 
 (defn bottom-tabs [icons-only?]

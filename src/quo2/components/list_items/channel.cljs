@@ -53,6 +53,6 @@
                (not muted?)
                (not (pos? (int mentions-count)))
                unread-messages?)
-      [quo2.icons/theme-icon :main-icons2/channel-notification
+      [quo2.icons/icon :main-icons2/channel-notification
        {:size     20
         :no-color true}])]])

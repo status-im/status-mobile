@@ -25,7 +25,6 @@
                border-color
                background-color
                icon
-               theme
                text-color
                label]}]
     (let [paragraph-size (if (= size :small) :paragraph-2 :paragraph-1)]
@@ -40,9 +39,8 @@
                  :flex 1}
         [rn/view {:style {:justify-content :center
                           :align-items :center}}
-         [icon/icon-for-theme
+         [icon/icon
           icon
-          theme
           {:no-color true
            :size 12}]]
         [text/text {:size paragraph-size
