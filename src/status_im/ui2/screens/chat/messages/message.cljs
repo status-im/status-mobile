@@ -89,7 +89,7 @@
   [{:keys [timestamp-str in-popover?]} show-timestamp?]
   (when-not in-popover? ;; We keep track if showing this message in a list in pin-limit-popover
     (let [anim-opacity (animation/create-value 0)]
-      [react/animated-view {:style (style/message-timestamp-wrapper) :opacity anim-opacity}
+      [rn/animated-view {:style (style/message-timestamp-wrapper) :opacity anim-opacity}
        (when @show-timestamp? (message-timestamp-anim anim-opacity show-timestamp?))
        [rn/text
         {:style               (style/message-timestamp-text)
@@ -213,14 +213,14 @@
 
 (defn message-not-sent-text
   [chat-id message-id]
-  [react/touchable-highlight
+  [rn/touchable-highlight
    {:on-press
     (fn []
       (re-frame/dispatch
        [:bottom-sheet/show-sheet
         {:content        (sheets/options chat-id message-id)
          :content-height 200}])
-      (react/dismiss-keyboard!))}
+      (rn/dismiss-keyboard!))}
    [rn/view style/not-sent-view
     [rn/text {:style style/not-sent-text}
      (i18n/label :t/status-not-sent-tap)]
@@ -277,18 +277,18 @@
         [rn/view {:width        62
                   :padding-left 14}
          (if (= community-id constants/status-community-id)
-           [react/image {:source (resources/get-image :status-logo)
-                         :style  {:width  40
-                                  :height 40}}]
+           [rn/image {:source (resources/get-image :status-logo)
+                      :style  {:width  40
+                               :height 40}}]
            [communities.icon/community-icon community])]
         [rn/view {:padding-right 14 :flex 1}
          [rn/text {:style {:font-weight "700" :font-size 17}}
           name]
          [rn/text description]]]
        [rn/view (style/community-view-button)
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
-                                                                   :community
-                                                                   {:community-id (:id community)}])}
+        [rn/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
+                                                                :community
+                                                                {:community-id (:id community)}])}
          [rn/text {:style {:text-align :center
                            :color      colors/blue}} (i18n/label :t/view)]]]])))
 
@@ -309,17 +309,17 @@
                :pointer-events :box-none}
       [rn/view (style/message-author-userpic)
        (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
-         [react/touchable-highlight {:on-press #(do (when modal (close-modal))
-                                                    (re-frame/dispatch [:chat.ui/show-profile from]))}
+         [rn/touchable-highlight {:on-press #(do (when modal (close-modal))
+                                                 (re-frame/dispatch [:chat.ui/show-profile from]))}
           [photos/member-photo from identicon]])]
 
       [rn/view {:style (style/message-author-wrapper)}
        (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
          [rn/view {:style {:flex-direction :row :align-items :center}}
-          [react/touchable-opacity {:style    style/message-author-touchable
-                                    :disabled in-popover?
-                                    :on-press #(do (when modal (close-modal))
-                                                   (re-frame/dispatch [:chat.ui/show-profile from]))}
+          [rn/touchable-opacity {:style    style/message-author-touchable
+                                 :disabled in-popover?
+                                 :on-press #(do (when modal (close-modal))
+                                                (re-frame/dispatch [:chat.ui/show-profile from]))}
            [message-author-name from {:modal modal}]]
           [rn/text
            {:style               (merge
@@ -370,11 +370,11 @@
                                  :visible  @visible
                                  :on-close #(do (reset! visible false)
                                                 (reagent/flush))}]
-         [react/touchable-highlight {:on-press      (fn []
-                                                      (reset! visible true)
-                                                      (react/dismiss-keyboard!))
-                                     :on-long-press @on-long-press
-                                     :disabled      in-popover?}
+         [rn/touchable-highlight {:on-press      (fn []
+                                                   (reset! visible true)
+                                                   (rn/dismiss-keyboard!))
+                                  :on-long-press @on-long-press
+                                  :disabled      in-popover?}
           [rn/view {:style               (style/image-message style-opts)
                     :accessibility-label :image-message}
            (when (or (:error @dimensions) (not (:loaded @dimensions)))
@@ -383,7 +383,7 @@
                      {:flex 1 :align-items :center :justify-content :center :position :absolute})
               (if (:error @dimensions)
                 [icons/icon :main-icons/cancel]
-                [react/activity-indicator {:animating true}])])
+                [rn/activity-indicator {:animating true}])])
            [fast-image/fast-image {:style    (dissoc style-opts :outgoing)
                                    :on-load  (image-set-size dimensions)
                                    :on-error #(swap! dimensions assoc :error true)
@@ -469,7 +469,7 @@
                                   (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
                               (on-long-press-fn on-long-press message content)))]
         (reset! ref on-long-press)
-        [react/touchable-highlight
+        [rn/touchable-highlight
          (when-not modal
            {:delay-long-press 100
             :on-long-press    on-long-press
@@ -526,13 +526,13 @@
                                                           :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))}]))))]
         (reset! ref on-long-press)
         [message-content-wrapper message
-         [react/touchable-highlight (when-not modal
-                                      {:disabled         in-popover?
-                                       :on-press         (fn []
-                                                           (react/dismiss-keyboard!)
-                                                           (reset! show-timestamp? true))
-                                       :delay-long-press 100
-                                       :on-long-press    on-long-press})
+         [rn/touchable-highlight (when-not modal
+                                   {:disabled         in-popover?
+                                    :on-press         (fn []
+                                                        (rn/dismiss-keyboard!)
+                                                        (reset! show-timestamp? true))
+                                    :delay-long-press 100
+                                    :on-long-press    on-long-press})
           [rn/view style/message-view-wrapper
            [message-timestamp message show-timestamp?]
            [rn/view (style/message-view message)
@@ -559,15 +559,15 @@
                              :label    (i18n/label :t/see-sticker-set)}])))]
     (reset! ref on-long-press)
     [message-content-wrapper message
-     [react/touchable-highlight (when-not modal
-                                  {:disabled            in-popover?
-                                   :accessibility-label :sticker-message
-                                   :on-press            (fn [_]
-                                                          (when pack
-                                                            (re-frame/dispatch [:stickers/open-sticker-pack (str pack)]))
-                                                          (react/dismiss-keyboard!))
-                                   :delay-long-press    100
-                                   :on-long-press       on-long-press})
+     [rn/touchable-highlight (when-not modal
+                               {:disabled            in-popover?
+                                :accessibility-label :sticker-message
+                                :on-press            (fn [_]
+                                                       (when pack
+                                                         (re-frame/dispatch [:stickers/open-sticker-pack (str pack)]))
+                                                       (rn/dismiss-keyboard!))
+                                :delay-long-press    100
+                                :on-long-press       on-long-press})
       [fast-image/fast-image {:style  {:margin 10 :width 140 :height 140}
                               :source {:uri (str (-> content :sticker :url) "&download=true")}}]]
      reaction-picker]))
@@ -646,7 +646,7 @@
                                                     :id       :delete})]))]
         (reset! ref on-long-press)
         [message-content-wrapper message
-         [react/touchable-highlight
+         [rn/touchable-highlight
           (when-not modal
             {:on-long-press on-long-press
              :on-press      (fn []
@@ -664,9 +664,9 @@
               :weight :medium
               :color  :secondary}
     (i18n/label :t/contact-request-pending)]
-   [react/activity-indicator {:animating true
-                              :size      :small
-                              :color     colors/gray}]])
+   [rn/activity-indicator {:animating true
+                           :size      :small
+                           :color     colors/gray}]])
 
 (defn contact-request-status-accepted []
   [quo/text {:style  {:color colors/green}
@@ -688,9 +688,9 @@
 (defmethod ->message constants/content-type-contact-request
   [message _]
   [rn/view {:style (style/content-type-contact-request)}
-   [react/image {:source (resources/get-image :hand-wave)
-                 :style  {:width  112
-                          :height 97}}]
+   [rn/image {:source (resources/get-image :hand-wave)
+              :style  {:width  112
+                       :height 97}}]
    [quo/text {:style  {:margin-top 6}
               :weight :bold
               :size   :large}
@@ -800,11 +800,11 @@
 
 (defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
-    [react/touchable-opacity-class {:on-press       (fn []
-                                                      (re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                          {:content #(pinned-messages-list chat-id)}]))
-                                    :active-opacity 1
-                                    :style          (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
+    [rn/touchable-opacity {:on-press       (fn []
+                                             (re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                 {:content #(pinned-messages-list chat-id)}]))
+                           :active-opacity 1
+                           :style          (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
      [rn/view {:style {:width            photos.style/default-size
                        :height           photos.style/default-size
                        :margin-right     16
@@ -815,10 +815,10 @@
       [pin-icon quo2.colors/primary-50 16]]
      [rn/view
       [rn/view {:style {:flex-direction :row :align-items :center}}
-       [react/touchable-opacity {:style    style/message-author-touchable
-                                 :disabled in-popover?
-                                 :on-press #(do (when modal (close-modal))
-                                                (re-frame/dispatch [:chat.ui/show-profile from]))}
+       [rn/touchable-opacity {:style    style/message-author-touchable
+                              :disabled in-popover?
+                              :on-press #(do (when modal (close-modal))
+                                             (re-frame/dispatch [:chat.ui/show-profile from]))}
         [message-author-name from {:modal modal}]]
        [rn/text {:style {:font-size 13}} (str " " (i18n/label :pinned-a-message))]
        [rn/text
@@ -835,7 +835,7 @@
         latest-pin-text (get-in (last (vals pinned-messages)) [:content :text])
         pins-count      (count (seq pinned-messages))]
     (when (> pins-count 0)
-      [react/touchable-opacity-class
+      [rn/touchable-opacity
        {:style          {:height             50
                          :background-color   quo2.colors/primary-50-opa-20
                          :flex-direction     :row
