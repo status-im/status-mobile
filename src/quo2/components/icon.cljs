@@ -1,26 +1,29 @@
 (ns quo2.components.icon
   (:require
-   [quo.theme :as theme]
-   [status-im.ui.components.icons.icons :as icons]))
+   [quo2.components.icons.icons :as icons]
+   [status-im.ui.components.react :as react]
+   [clojure.string :as string]
+   [quo2.foundations.colors :as colors]))
 
-(defn icon
-  ([icon-name] (icon icon-name nil))
-  ([icon-name {:keys [size] :as props}]
+(defn memo-icon-fn
+  ([icon-name] (memo-icon-fn icon-name nil))
+  ([icon-name {:keys [color container-style size
+                      accessibility-label no-color]
+               :or   {accessibility-label :icon}}]
    (let [size (or size 20)]
-     [icons/icon (str (name icon-name) size) (merge props
-                                                    {:width size
-                                                     :height size})])))
-(defn icon-for-theme
-  ([icon-name theme]
-   (icon-for-theme icon-name theme nil))
-  ([icon-name theme props]
-   (let [theme-icon-name (if (= theme :dark)
-                           (str (name icon-name) "-dark")
-                           icon-name)]
-     (icon theme-icon-name props))))
+     ^{:key icon-name}
+     [react/image
+      {:style
+       (merge {:width  size
+               :height size}
 
-(defn theme-icon
-  ([icon-name]
-   (theme-icon icon-name nil))
-  ([icon-name props]
-   (icon-for-theme icon-name (theme/get-theme) props)))
+              (when (not no-color)
+                {:tint-color (if (and (string? color) (not (string/blank? color)))
+                               color
+                               (colors/theme-colors colors/neutral-100 colors/white))})
+
+              container-style)
+       :accessibility-label accessibility-label
+       :source              (icons/icon-source (str (name icon-name) size))}])))
+
+(def icon (memoize memo-icon-fn))
