@@ -11,7 +11,7 @@
 
 (defn tabs [{:keys [default-active on-change style]}]
   (let [active-tab-id (reagent/atom default-active)]
-  (fn [{:keys [data size] :or {size default-tab-size}}]
+    (fn [{:keys [data size] :or {size default-tab-size}}]
       [rn/view (merge {:flex-direction :row} style)
        (doall
         (for [{:keys [label id]} data]
