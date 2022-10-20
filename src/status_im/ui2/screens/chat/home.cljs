@@ -17,6 +17,7 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
+            [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.components.invite.views :as invite]
             [status-im.utils.handlers :refer [<sub >evt]]
@@ -28,6 +29,7 @@
             [quo.react]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
+            [status-im.ui.screens.home.views.inner-item :as inner-item]
             [quo2.components.buttons.button :as quo2.button]
             [quo2.components.tabs.tabs :as quo2.tabs]
             [quo2.components.community.discover-card :as discover-card]
@@ -35,9 +37,18 @@
             [quo2.components.icon :as quo2.icons]
             [quo.components.safe-area :as safe-area]
             [quo2.components.notifications.info-count :refer [info-count]]
+<<<<<<< HEAD
             [status-im.ui2.screens.chat.components.received-cr-item :as received-cr-item]
+=======
+            [quo2.components.list-items.received-cr-item :refer [received-cr-item]]
+<<<<<<< HEAD
+>>>>>>> 0347951b2... feat: messages contact requests
             [status-im.ui2.screens.chat.components.message-home-item.view :refer [messages-home-item]]
             [status-im.ui2.screens.chat.components.contact-item.view :refer [contact-item]]
+=======
+            [quo2.components.list-items.messages-home-item :refer [messages-home-item]]
+            [quo2.components.list-items.contact-item :refer [contact-item]]
+>>>>>>> 3f8d00eac... feat: messages contact requests
             [clojure.string :as str])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -120,6 +131,28 @@
                                      (re-frame/dispatch [:set :public-group-topic nil])
                                      (re-frame/dispatch [:search/home-filter-changed nil]))}])])))
 
+
+(defn- render-contact [{:keys [public-key] :as row}]
+  (let [[first-name second-name] (multiaccounts/contact-two-names row true)
+        row (assoc row :chat-id public-key)]
+
+    [quo/list-item
+     {:title            first-name
+      :subtitle         second-name
+      :background-color colors/neutral-5
+      :on-press         (fn []
+                          (re-frame/dispatch [:dismiss-keyboard])
+                          (if platform/android?
+                            (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 public-key])
+                            (re-frame/dispatch [:chat.ui/navigate-to-chat public-key]))
+                          (re-frame/dispatch [:search/home-filter-changed nil])
+                          (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat public-key]))
+      ;:on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet TODO: new UI yet to be implemented
+      ;                                    {:content (fn []
+      ;                                                [sheets/actions row])}])
+      :icon             [chat-icon/contact-icon-contacts-tab
+                         (multiaccounts/displayed-photo row)]}]))
+
 (defn chat-list-key-fn [item]
   (or (:chat-id item) (:public-key item) (:id item)))
 
@@ -149,7 +182,11 @@
 
 (defn find-contact-requests [notifications]
   (let [received-requests (atom [])
+<<<<<<< HEAD
         has-unread?       (atom false)]
+=======
+        has-unread        (atom false)]
+>>>>>>> 3f8d00eac... feat: messages contact requests
     (doseq [i (range (count notifications))]
       (doseq [j (range (count (:data (nth notifications i))))]
         (when (= 1 (get-in (nth (:data (nth notifications i)) j) [:message :contact-request-state]))
@@ -182,9 +219,9 @@
            :margin-bottom    24}}
          [quo2.icons/icon :main-icons2/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
         [rn/text {:style (merge
-                          typography/heading-1
-                          typography/font-semi-bold
-                          {:color (colors/theme-colors "#000000" "#ffffff")})}
+                           typography/heading-1
+                           typography/font-semi-bold
+                           {:color (colors/theme-colors "#000000" "#ffffff")})}
          (i18n/label :t/pending-requests)]
         [quo2.tabs/tabs
          {:style          {:margin-top 12 :margin-bottom 20}
@@ -198,7 +235,12 @@
         [list/flat-list
          {:key-fn    :first
           :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
+<<<<<<< HEAD
           :render-fn received-cr-item/received-cr-item}]]))])
+=======
+          :render-fn received-cr-item}]]))])
+<<<<<<< HEAD
+>>>>>>> 0347951b2... feat: messages contact requests
 
 (defn get-display-name [{:keys [chat-id message]}]
   (let [name        (first (<sub [:contacts/contact-two-names-by-identity chat-id]))
@@ -214,14 +256,32 @@
     2
     (str (get-display-name (first requests)) " " (i18n/label :t/and) " " (get-display-name (second requests)))
     (str (get-display-name (first requests)) ", " (get-display-name (second requests)) " " (i18n/label :t/and) " " (- (count requests) 2) " " (i18n/label :t/more))))
+=======
+
+(defn get-display-name [{:keys [chat-id message]}]
+  (let [name        (first (<sub [:contacts/contact-two-names-by-identity chat-id]))
+        no-ens-name (str/blank? (get-in message [:content :ens-name]))]
+    (if no-ens-name
+      (first (str/split name " "))
+      name)))
+
+(defn requests-summary [requests]
+  (cond
+    (= (count requests) 1)
+    (get-display-name (first requests))
+    (= (count requests) 2)
+    (str (get-display-name (first requests)) " and " (get-display-name (second requests)))
+    :else
+    (str (get-display-name (first requests)) ", " (get-display-name (second requests)) " and " (- (count requests) 2) " more")))
+>>>>>>> 3f8d00eac... feat: messages contact requests
 
 (defn contact-requests [requests]
   [rn/touchable-opacity
    {:active-opacity 1
     :on-press       #(do
                        (>evt
-                        [:bottom-sheet/show-sheet
-                         {:content (fn [] [contact-requests-sheet])}])
+                         [:bottom-sheet/show-sheet
+                          {:content (fn [] [contact-requests-sheet])}])
                        (>evt [:mark-all-activity-center-notifications-as-read]))
     :style          {:flex-direction     :row
                      :margin             8
@@ -288,23 +348,24 @@
             :render-fn                      contact-item}]]))]))
 
 (views/defview chats-list []
-  (views/letsubs [loading? [:chats/loading?]]
-    [:<>
-     [connectivity/loading-indicator]
-     (if loading?
-       [rn/view {:flex 1 :align-items :center :justify-content :center}
-        [rn/activity-indicator {:animating true}]]
-       [chats])]))
+                          (views/letsubs [loading? [:chats/loading?]]
+                            [:<>
+                             [connectivity/loading-indicator]
+                             (if loading?
+                               [rn/view {:flex 1 :align-items :center :justify-content :center}
+                                [rn/activity-indicator {:animating true}]]
+                               [chats])]))
 
 (views/defview plus-button []
-  (views/letsubs [logging-in? [:multiaccounts/login]]
-    [components.plus-button/plus-button
-     {:on-press            (when-not logging-in?
-                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
-      :loading             logging-in?
-      :accessibility-label :new-chat-button}]))
+                           (views/letsubs [logging-in? [:multiaccounts/login]]
+                             [components.plus-button/plus-button
+                              {:on-press            (when-not logging-in?
+                                                      #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+                               :loading             logging-in?
+                               :accessibility-label :new-chat-button}]))
 
 (views/defview notifications-button []
+<<<<<<< HEAD
   (views/letsubs [notif-count [:activity.center/notifications-count]]
     [rn/view
      [quo2.button/button {:type                :grey
@@ -323,6 +384,26 @@
                  :pointer-events :none}
         [rn/view {:style               styles/counter-public
                   :accessibility-label :notifications-unread-badge}]])]))
+=======
+                                    (views/letsubs [notif-count [:activity.center/notifications-count]]
+                                      [rn/view
+                                       [quo2.button/button {:type                :grey
+                                                            :size                32
+                                                            :width               32
+                                                            :style               {:margin-left 12}
+                                                            :accessibility-label :notifications-button
+                                                            :on-press            #(do
+                                                                                    (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
+                                                                                    (if config/new-activity-center-enabled?
+                                                                                      (re-frame/dispatch [:navigate-to :activity-center])
+                                                                                      (re-frame/dispatch [:navigate-to :notifications-center])))}
+                                        [icons/icon :main-icons/notification2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
+                                       (when (pos? notif-count)
+                                         [rn/view {:style          (merge (styles/counter-public-container) {:top 5 :right 5})
+                                                   :pointer-events :none}
+                                          [rn/view {:style               styles/counter-public
+                                                    :accessibility-label :notifications-unread-badge}]])]))
+>>>>>>> 3f8d00eac... feat: messages contact requests
 
 (defn qr-button []
   [quo2.button/button {:type                :grey
@@ -346,11 +427,11 @@
    [icons/icon :main-icons/scan2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
 (views/defview profile-button []
-  (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]
-    [rn/view
-     [chat-icon/emoji-chat-icon-view public-key false preferred-name emoji
-      {:size      28
-       :chat-icon chat-icon.styles/chat-icon-chat-list}]]))
+                              (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]
+                                [rn/view
+                                 [chat-icon/emoji-chat-icon-view public-key false preferred-name emoji
+                                  {:size      28
+                                   :chat-icon chat-icon.styles/chat-icon-chat-list}]]))
 
 (defn home []
   [:f>

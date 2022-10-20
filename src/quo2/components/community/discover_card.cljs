@@ -28,8 +28,13 @@
                 :ellipsize-mode      :tail
                 :number-of-lines     1
                 :color               (colors/theme-colors
+<<<<<<< HEAD
                                       colors/neutral-50
                                       colors/neutral-40)
+=======
+                                       colors/neutral-50
+                                       colors/neutral-40)
+>>>>>>> c0e3854d3... feat: messages contact requests
                 :weight               :regular
                 :size                 :paragraph-2}
      description]]])
@@ -74,6 +79,7 @@
     [rn/touchable-without-feedback
      {:on-press            on-press
       :accessibility-label accessibility-label}
+<<<<<<< HEAD
      [rn/view (merge (style/community-card 16)
                      {:background-color  (colors/theme-colors
                                           colors/white
@@ -82,6 +88,21 @@
                       :margin-horizontal 20
                       :height          56
                       :padding-right   12})
+=======
+     [react/view (merge (styles/community-card 16)
+                        {:background-color  (colors/theme-colors
+<<<<<<< HEAD
+                                             colors/white
+                                             colors/neutral-90)}
+=======
+                                              colors/white
+                                              colors/neutral-90)}
+>>>>>>> c0e3854d3... feat: messages contact requests
+                        {:flex-direction  :row
+                         :margin-horizontal 20
+                         :height          56
+                         :padding-right   12})
+>>>>>>> 0347951b2... feat: messages contact requests
       [card-title-and-description title description]
       (for [{:keys [id column-images]} on-joined-images]
         ^{:key id}
@@ -90,5 +111,19 @@
                                  :width         32
                                  :height        (if (= id 1) 8 26)
                                  :border-radius 6
+<<<<<<< HEAD
                                  :first-image   "" ; TODO replace with real data
+<<<<<<< HEAD
                                  :last-image    ""}])]])) ; TODO replace with real data
+=======
+                                 :last-image    ""}]) ; TODO replace with real data
+<<<<<<< HEAD
+      ]]))
+=======
+=======
+                                 :first-image   "" ;; TODO replace with real data
+                                 :last-image    ""}]) ;; TODO replace with real data
+>>>>>>> c0e3854d3... feat: messages contact requests
+      ]]))
+>>>>>>> aec9cae20... feat: messages contact requests
+>>>>>>> 0347951b2... feat: messages contact requests

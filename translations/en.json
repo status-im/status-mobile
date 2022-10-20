@@ -1832,14 +1832,32 @@
     "jump-to": "Jump to",
     "blank-messages-text": "Your messages will be here",
     "groups": "Groups",
+<<<<<<< HEAD
     "shell-placeholder-title": "Your apps will run here",
+<<<<<<< HEAD
     "no-pinned-messages-desc": "This chat doesn't have any pinned messages.",
     "no-pinned-messages-community-desc": "This channel doesn't have any pinned messages.",
+=======
+<<<<<<< HEAD
+>>>>>>> 3f8d00eac... feat: messages contact requests
     "shell-placeholder-subtitle": "Open tabs of your communities, messages,\nwallet account and browser windows",
     "invite-friends-to-status": "Invite friends to status",
     "share-invite-link": "Share an invite link",
     "pending-requests": "Pending requests",
     "received": "Received",
     "sent": "Sent",
+<<<<<<< HEAD
     "and": "and"
+=======
+    "no-pinned-messages-desc": "This chat doesn't have any pinned messages.",
+    "no-pinned-messages-community-desc": "This channel doesn't have any pinned messages."
+=======
+    "shell-placeholder-subtitle": "Open tabs of your communities, messages,\nwallet account and browser windows"
+=======
+    "invite-friends-to-status": "Invite friends to status",
+    "share-invite-link": "Share an invite link",
+    "pending-requests": "Pending requests"
+>>>>>>> c42681896... feat: messages contact requests
+>>>>>>> c0e3854d3... feat: messages contact requests
+>>>>>>> 3f8d00eac... feat: messages contact requests
 }
