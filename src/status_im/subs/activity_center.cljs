@@ -29,6 +29,7 @@
  :<- [:activity-center/filter-status]
  :<- [:activity-center/notifications]
  (fn [[filter-type filter-status notifications]]
+   (println "asdfasdf" filter-type filter-status)
    (get-in notifications [filter-type filter-status :data])))
 
 (re-frame/reg-sub
