@@ -137,7 +137,7 @@
          (utils/truncate-str (:info content) 24)])]]]])
 
 (defn system-message
-  [{:keys [type non-pressable? animate-landing?] :as message}]
+  [{:keys [type style non-pressable? animate-landing?] :as message}]
   [:f>
    (fn []
      (let [sv-color (ra/use-shared-value
@@ -151,12 +151,12 @@
                        sv-color (get-color :bg :pressed type)))
          :style    (ra/apply-animations-to-style
                     {:background-color sv-color}
-                    {:flex-direction     :row
-                     :flex               1
-                     :border-radius      16
-                     :padding-vertical   9
-                     :padding-horizontal 11
-                     :width              359
-                     :height             52
-                     :background-color   sv-color})}
+                    (merge
+                     {:flex-direction     :row
+                      :flex               1
+                      :border-radius      16
+                      :padding-vertical   9
+                      :padding-horizontal 11
+                      :background-color   sv-color}
+                     style))}
         [sm-render message]]))])

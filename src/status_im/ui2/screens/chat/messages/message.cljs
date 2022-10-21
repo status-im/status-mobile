@@ -60,7 +60,7 @@
 
 (defview mention-element [from]
   (letsubs [contact-name [:contacts/contact-name-by-identity from]]
-           contact-name))
+    contact-name))
 
 (def edited-at-text (str " ⌫ " (i18n/label :t/edited)))
 
@@ -256,42 +256,42 @@
 
 (defview message-author-name [from opts]
   (letsubs [contact-with-names [:contacts/contact-by-identity from]]
-           (chat.utils/format-author contact-with-names opts)))
+    (chat.utils/format-author contact-with-names opts)))
 
 (defview message-my-name [opts]
   (letsubs [contact-with-names [:multiaccount/contact]]
-           (chat.utils/format-author contact-with-names opts)))
+    (chat.utils/format-author contact-with-names opts)))
 
 (defview community-content [{:keys [community-id] :as message}]
   (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]
-            communities-enabled? [:communities/enabled?]]
-           (when (and communities-enabled? community)
-             [rn/view {:style (assoc (style/message-wrapper message)
-                                     :margin-vertical 10
-                                     :margin-left 8
-                                     :width 271)}
-              (when verified
-                [rn/view (style/community-verified)
-                 [rn/text {:style {:font-size 13
-                                   :color     colors/blue}} (i18n/label :t/communities-verified)]])
-              [rn/view (style/community-message verified)
-               [rn/view {:width        62
-                         :padding-left 14}
-                (if (= community-id constants/status-community-id)
-                  [rn/image {:source (resources/get-image :status-logo)
-                             :style  {:width  40
-                                      :height 40}}]
-                  [communities.icon/community-icon community])]
-               [rn/view {:padding-right 14 :flex 1}
-                [rn/text {:style {:font-weight "700" :font-size 17}}
-                 name]
-                [rn/text description]]]
-              [rn/view (style/community-view-button)
-               [rn/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
-                                                                       :community
-                                                                       {:community-id (:id community)}])}
-                [rn/text {:style {:text-align :center
-                                  :color      colors/blue}} (i18n/label :t/view)]]]])))
+            communities-enabled?                              [:communities/enabled?]]
+    (when (and communities-enabled? community)
+      [rn/view {:style (assoc (style/message-wrapper message)
+                              :margin-vertical 10
+                              :margin-left 8
+                              :width 271)}
+       (when verified
+         [rn/view (style/community-verified)
+          [rn/text {:style {:font-size 13
+                            :color     colors/blue}} (i18n/label :t/communities-verified)]])
+       [rn/view (style/community-message verified)
+        [rn/view {:width        62
+                  :padding-left 14}
+         (if (= community-id constants/status-community-id)
+           [rn/image {:source (resources/get-image :status-logo)
+                      :style  {:width  40
+                               :height 40}}]
+           [communities.icon/community-icon community])]
+        [rn/view {:padding-right 14 :flex 1}
+         [rn/text {:style {:font-weight "700" :font-size 17}}
+          name]
+         [rn/text description]]]
+       [rn/view (style/community-view-button)
+        [rn/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
+                                                                :community
+                                                                {:community-id (:id community)}])}
+         [rn/text {:style {:text-align :center
+                           :color      colors/blue}} (i18n/label :t/view)]]]])))
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
