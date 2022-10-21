@@ -176,7 +176,7 @@
   (let [pressed (reagent/atom false)]
     (fn [{:keys [on-press disabled type size before after above width
                  override-theme override-background-color
-                 on-long-press accessibility-label icon style]
+                 on-long-press accessibility-label icon icon-no-color style]
           :or   {type :primary
                  size 40}}
          children]
@@ -226,8 +226,9 @@
                                       :size            icon-size}]])
           [rn/view
            (cond
-             icon
+             (or icon icon-no-color)
              [quo2.icons/icon children {:color icon-color
+                                        :no-color icon-no-color
                                         :size  icon-size}]
 
              (string? children)

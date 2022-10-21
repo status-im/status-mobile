@@ -20,7 +20,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.bottom-sheets.context-drawer :as message-context-drawer]
+            [status-im.ui2.screens.chat.components.reaction-drawer :as reaction-drawer]
             [status-im.ui.screens.chat.image.preview.views :as preview]
             [status-im.ui.screens.chat.message.audio :as message.audio]
             [status-im.ui.screens.chat.message.command :as message.command]
@@ -425,39 +425,39 @@
       [{:type     :main
         :on-press #(re-frame/dispatch [:chat.ui/edit-message message])
         :label    (i18n/label :t/edit-message)
-        :icon     :main-icons/edit-context20
+        :icon     :main-icons/edit
         :id       :edit}])
     (when show-input?
       [{:type     :main
         :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
         :label    (i18n/label :t/message-reply)
-        :icon     :main-icons/reply-context20
+        :icon     :main-icons2/reply
         :id       :reply}])
     [{:type     :main
       :on-press #(react/copy-to-clipboard
                   (components.reply/get-quoted-text-with-mentions
                    (get content :parsed-text)))
       :label    (i18n/label :t/copy-text)
-      :icon     :main-icons/copy-context20
+      :icon     :main-icons/copy
       :id       :copy}]
     (when message-pin-enabled
       [{:type     :main
         :on-press #(pin-message message)
         :label    (i18n/label (if pinned (if community? :t/unpin-from-channel :t/unpin-from-chat) (if community? :t/pin-to-channel :t/pin-to-chat)))
-        :icon     :main-icons/pin-context20
+        :icon     :main-icons/pin
         :id       (if pinned :unpin :pin)}])
     [{:type     :danger
       :on-press #(re-frame/dispatch
                   [:chat.ui/delete-message-for-me message
                    config/delete-message-for-me-undo-time-limit-ms])
       :label    (i18n/label :t/delete-for-me)
-      :icon     :main-icons/delete-context20
+      :icon     :main-icons/delete
       :id       :delete-for-me}]
     (when (and outgoing config/delete-message-enabled?)
       [{:type     :danger
         :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
         :label    (i18n/label :t/delete-for-everyone)
-        :icon     :main-icons/delete-context20
+        :icon     :main-icons/delete
         :id       :delete-for-all}]))))
 
 (defn collapsible-text-message [_ _]
@@ -728,7 +728,7 @@
                              (send-emoji {:emoji-id emoji-id}))))
         on-open-drawer (fn [actions]
                          (re-frame/dispatch [:bottom-sheet/show-sheet
-                                             {:content (message-context-drawer/message-options
+                                             {:content (reaction-drawer/message-options
                                                         actions
                                                         (into #{} (js->clj own-reactions))
                                                         #(on-emoji-press %))}]))

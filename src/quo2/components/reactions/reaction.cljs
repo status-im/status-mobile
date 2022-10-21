@@ -1,9 +1,9 @@
 (ns quo2.components.reactions.reaction
-  (:require [quo2.components.markdown.text :as quo2-text]
+  (:require [quo2.components.markdown.text :as quo2.text]
             [quo.react-native :as rn]
             [quo.theme :as theme]
             [quo2.foundations.colors :as colors]
-            [status-im.ui.components.icons.icons :as icons]))
+            [quo2.components.icon :as icons]))
 
 (def reaction-styling
   {:flex-direction :row
@@ -24,9 +24,8 @@
                                           :border-color (if dark?
                                                           colors/neutral-70
                                                           colors/neutral-30)})}
-     [icons/icon :main-icons/add-reaction20
-      {:width 20
-       :height 20
+     [icons/icon :main-icons2/add
+      {:size 20
        :color (if dark?
                 colors/white
                 colors/neutral-100)}]]))
@@ -54,9 +53,8 @@
                                            (and (not dark?) (not neutral?)) (assoc :border-color colors/neutral-30
                                                                                    :border-width 1)))}
      [icons/icon emoji {:no-color true
-                        :width 16
-                        :height 16}]
-     [quo2-text/text {:size :paragraph-2
+                        :size     16}]
+     [quo2.text/text {:size :paragraph-2
                       :weight :semi-bold
                       :color text-color
                       :flex-direction :row
@@ -65,4 +63,3 @@
       (if clicks-positive?
         (str " " numeric-value)
         "")]]))
-

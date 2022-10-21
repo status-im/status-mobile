@@ -90,11 +90,3 @@
    :laugh       (js/require "../resources/images/reactions/laugh.png")
    :thumbs-up   (js/require "../resources/images/reactions/thumbs-up.png")
    :thumbs-down (js/require "../resources/images/reactions/thumbs-down.png")})
-
-(def reactions
-  {:love        :main-icons/love16
-   :angry       :main-icons/angry16
-   :sad         :main-icons/sad16
-   :laugh       :main-icons/laugh16
-   :thumbs-up   :main-icons/thumbs-up16
-   :thumbs-down :main-icons/thumbs-down16})

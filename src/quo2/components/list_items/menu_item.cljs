@@ -2,7 +2,7 @@
   (:require [quo.react-native :as rn]
             [quo2.foundations.colors :as colors :refer [theme-colors]]
             [quo2.components.markdown.text :as text]
-            [status-im.ui.components.icons.icons :as icons]))
+            [quo2.components.icon :as icons]))
 
 (defn themes [type]
   (case type
