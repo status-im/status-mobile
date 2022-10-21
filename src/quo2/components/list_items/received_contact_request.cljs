@@ -1,6 +1,7 @@
 (ns quo2.components.list-items.received-contact-request
   (:require [quo.react-native :as rn]
             [quo2.foundations.colors :as colors]
+<<<<<<< HEAD
             [status-im.utils.handlers :refer [<sub >evt]]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.foundations.typography :as typography]
@@ -82,3 +83,16 @@
                                                     :padding-horizontal 8
                                                     :margin-left        8}}
         [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color colors/white})} (i18n/label :t/accept)]]]]]))
+=======
+            [quo2.components.counter.counter :as quo2.counter]
+            [quo2.components.icon :as quo2.icons]
+            [quo2.components.avatars.channel-avatar :as channel-avatar]
+            [quo2.components.markdown.text :as quo2.text]
+            [quo.theme :as theme]))
+
+
+(defn list-item [item]
+  (println "itexs" item)
+  [rn/view
+   [rn/text "SOME ITEM"]])
+>>>>>>> cfa806fc3... contact requests
