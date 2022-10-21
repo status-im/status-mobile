@@ -623,7 +623,7 @@
       (let [on-long-press (fn [] (on-long-press [{:type     :main
                                                   :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
                                                   :label    (i18n/label :t/message-reply)
-                                                  :icon     :main-icons2/reply-context20
+                                                  :icon     :main-icons2/reply
                                                   :id       :reply}
                                                  {:type     :main
                                                   :on-press #(pin-message message)
