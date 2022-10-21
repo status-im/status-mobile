@@ -159,7 +159,10 @@ def getVersionName = { ->
         if (project.hasProperty("releaseVersion")) {
             return project.releaseVersion
         }
-        version = new File('../VERSION').text
+        /* Necessary because Android Studio uses wrong PWD.
+         * Is actually absolute directory path of this file. */
+        def configDir = project.projectDir.toString() 
+        version = new File(configDir + '/../../VERSION').text
         return version.replaceAll("\\s","")
     }
 }
