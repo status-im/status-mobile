@@ -17,7 +17,6 @@
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.fast-image :as fast-image]
-            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui2.screens.chat.components.reaction-drawer :as reaction-drawer]
@@ -37,14 +36,14 @@
             [status-im.ui2.screens.chat.components.reply :as components.reply]
             [status-im.utils.config :as config]
             [status-im.utils.handlers :refer [<sub >evt]]
-            [status-im.utils.security :as security])
-  [status-im.utils.security :as security]
-  [quo2.foundations.typography :as typography]
-  [quo2.foundations.colors :as quo2.colors]
-  [status-im.ui.components.list.views :as list]
-  [quo.react-native :as rn]
-  [status-im.ui.components.chat-icon.screen :as chat-icon]
-  [quo2.components.icon :as icons]
+            [status-im.utils.security :as security]
+            [status-im.utils.security :as security]
+            [quo2.foundations.typography :as typography]
+            [quo2.foundations.colors :as quo2.colors]
+            [status-im.ui.components.list.views :as list]
+            [quo.react-native :as rn]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [quo2.components.icon :as icons])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn message-timestamp-anim
@@ -271,7 +270,7 @@
 
 (defview community-content [{:keys [community-id] :as message}]
   (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]
-            communities-enabled?                              [:communities/enabled?]]
+            communities-enabled? [:communities/enabled?]]
     (when (and communities-enabled? community)
       [rn/view {:style (assoc (style/message-wrapper message)
                               :margin-vertical 10
@@ -765,7 +764,7 @@
           :community? community?
           :current-public-key current-public-key
           :show-input? show-input?
-          :message-pin-enabled message-pin-enabled
+          :message-pin-enabled true
           :in-pinned-view? true
           :pinned true
           :edit-enabled edit-enabled)])
