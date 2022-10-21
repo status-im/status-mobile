@@ -425,7 +425,7 @@
       [{:type     :main
         :on-press #(re-frame/dispatch [:chat.ui/edit-message message])
         :label    (i18n/label :t/edit-message)
-        :icon     :main-icons/edit
+        :icon     :main-icons2/edit
         :id       :edit}])
     (when show-input?
       [{:type     :main
@@ -438,26 +438,26 @@
                   (components.reply/get-quoted-text-with-mentions
                    (get content :parsed-text)))
       :label    (i18n/label :t/copy-text)
-      :icon     :main-icons/copy
+      :icon     :main-icons2/copy
       :id       :copy}]
     (when message-pin-enabled
       [{:type     :main
         :on-press #(pin-message message)
         :label    (i18n/label (if pinned (if community? :t/unpin-from-channel :t/unpin-from-chat) (if community? :t/pin-to-channel :t/pin-to-chat)))
-        :icon     :main-icons/pin
+        :icon     :main-icons2/pin
         :id       (if pinned :unpin :pin)}])
     [{:type     :danger
       :on-press #(re-frame/dispatch
                   [:chat.ui/delete-message-for-me message
                    config/delete-message-for-me-undo-time-limit-ms])
       :label    (i18n/label :t/delete-for-me)
-      :icon     :main-icons/delete
+      :icon     :main-icons2/delete
       :id       :delete-for-me}]
     (when (and outgoing config/delete-message-enabled?)
       [{:type     :danger
         :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
         :label    (i18n/label :t/delete-for-everyone)
-        :icon     :main-icons/delete
+        :icon     :main-icons2/delete
         :id       :delete-for-all}]))))
 
 (defn collapsible-text-message [_ _]
