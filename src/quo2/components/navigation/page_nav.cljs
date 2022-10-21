@@ -26,21 +26,33 @@
                                       20
                                       16)}}
          (if-not (string/blank? color)
-           {:color    color}
+           {:color color}
            {:no-color true})))
 
+(defn render-left-section [{:keys [on-press icon
+                                   icon-color icon-background-color]}
+                           put-middle-section-on-left?]
+  [rn/view {:style (merge
+                    icon-styles
+                    {:background-color icon-background-color
+                     :width            32
+                     :height           32}
+                    (when put-middle-section-on-left? {:margin-right 5}))}
+   [rn/touchable-opacity {:on-press on-press}
+    [icons/icon icon (icon-props icon-color :big)]]])
+
 (defn- mid-section-comp
-  [{:keys [mid-section-description-user-icon horizontal-description? text-secondary-color align-mid? text-color mid-section-icon mid-section-main-text mid-section-type mid-section-description]}]
+  [{:keys [description-user-icon horizontal-description? text-secondary-color align-mid? text-color icon main-text type description]}]
   [rn/view {:style (assoc
                     centrify-style
                     :flex-direction    :row
                     :margin-horizontal 2)}
    (when (or (and (not horizontal-description?)
                   align-mid?
-                  (not= :text-with-description mid-section-type))
-             (and mid-section-description-user-icon
-                  (not mid-section-icon)))
-     [rn/image {:source {:uri mid-section-description-user-icon}
+                  (not= :text-with-description type))
+             (and description-user-icon
+                  (not icon)))
+     [rn/image {:source {:uri description-user-icon}
                 :style  {:width         32
                          :height        32
                          :border-radius 32
@@ -52,21 +64,22 @@
                 :weight :semi-bold
                 :style  {:color       text-color
                          :line-height 21}}
-     mid-section-main-text]
-    (when mid-section-description
+     main-text]
+    (when description
       [text/text {:size   :paragraph-2
                   :weight :medium
                   :style  (cond-> {:padding-right 4
                                    :color         text-secondary-color
                                    :line-height   18}
                             horizontal-description? (assoc :margin-left 4 :margin-top 2))}
-       mid-section-description])]])
+       description])]])
 
-(defn- mid-section
-  [{:keys [horizontal-description? one-icon-align-left? mid-section-type left-align? mid-section-main-text mid-section-right-icon mid-section-main-text-icon-color mid-section-left-icon] :as mid-section-props}]
+(defn- render-mid-section
+  [{:keys [horizontal-description? one-icon-align-left? type left-align?
+           main-text right-icon main-text-icon-color left-icon] :as props}]
   (let [text-color                (if (colors/dark?) colors/neutral-5 colors/neutral-95)
         text-secondary-color      (if (colors/dark?) colors/neutral-40 colors/neutral-50)
-        mid-section-comp-instance [mid-section-comp (assoc mid-section-props :text-secondary-color text-secondary-color)]]
+        component-instance [mid-section-comp (assoc props :text-secondary-color text-secondary-color)]]
     [rn/view {:style (merge
                       (if left-align?
                         align-left
@@ -74,37 +87,37 @@
                       {:flex                1
                        :margin-left         4
                        :text-align-vertical :center})}
-     (case mid-section-type
+     (case type
        :text-only [text/text {:size   :paragraph-1
                               :weight :semi-bold
                               :style  {:color text-color}}
-                   mid-section-main-text]
+                   main-text]
        :text-with-two-icons [rn/view {:style (assoc centrify-style :flex-direction :row)}
-                             [icons/icon mid-section-left-icon
-                              (icon-props mid-section-main-text-icon-color :big)]
+                             [icons/icon left-icon
+                              (icon-props main-text-icon-color :big)]
                              [text/text {:size   :paragraph-1
                                          :weight :semi-bold
                                          :style  {:padding-horizontal 4
                                                   :color              text-color}}
-                              mid-section-main-text]
+                              main-text]
 
-                             [icons/icon mid-section-right-icon
-                              (icon-props mid-section-main-text-icon-color :big)]]
+                             [icons/icon right-icon
+                              (icon-props main-text-icon-color :big)]]
        :text-with-one-icon   [rn/view {:style {:flex-direction :row}}
                               (if one-icon-align-left?
                                 [rn/view {:style {:flex-direction :row
                                                   :align-items    :center}}
                                  (when horizontal-description?
-                                   [icons/icon mid-section-left-icon
-                                    (icon-props mid-section-main-text-icon-color :big)])
-                                 mid-section-comp-instance]
+                                   [icons/icon left-icon
+                                    (icon-props main-text-icon-color :big)])
+                                 component-instance]
                                 [rn/view {:style {:flex-direction :row
                                                   :align-items :center}}
-                                 mid-section-comp-instance
+                                 component-instance
                                  (when horizontal-description?
-                                   [icons/icon mid-section-left-icon
-                                    (icon-props mid-section-main-text-icon-color :big)])])]
-       :text-with-description mid-section-comp-instance)]))
+                                   [icons/icon left-icon
+                                    (icon-props main-text-icon-color :big)])])]
+       :text-with-description component-instance)]))
 
 (defn- right-section-icon
   [{:keys [background-color icon icon-color push-to-the-left?] :or {push-to-the-left? false}}]
@@ -116,19 +129,74 @@
                     :margin-right (if push-to-the-left? 8 0))}
    [icons/icon icon (icon-props icon-color :big)]])
 
+(defn- render-right-section [right-section-buttons]
+  [rn/view {:style (assoc
+                    centrify-style
+                    :flex-direction :row
+                    :flex           1
+                    :justify-content :flex-end)}
+   (let [last-icon-index (-> right-section-buttons count dec)]
+     (map-indexed (fn [index {:keys [icon background-color icon-color on-press]}]
+                    ^{:key index}
+                    [rn/touchable-opacity {:on-press on-press}
+                     [right-section-icon
+                      {:icon             icon
+                       :background-color background-color
+                       :icon-color       icon-color
+                       :push-to-the-left? (not= index last-icon-index)}]])
+                  right-section-buttons))])
+
 (defn page-nav
-  [{:keys [one-icon-align-left? horizontal-description? align-mid? page-nav-color page-nav-background-uri mid-section-type mid-section-icon mid-section-main-text mid-section-left-icon mid-section-right-icon mid-section-description mid-section-description-color mid-section-description-icon mid-section-description-user-icon mid-section-main-text-icon-color left-section-icon left-section-icon-color left-section-icon-background-color right-section-icons]}]
+  "[page-nav opts]
+   opts
+   { :one-icon-align-left?    true/false
+     :horizontal-description? true/false
+     :align-mid?              true/false
+     :page-nav-color          color
+     :page-nav-background-uri image-uri
+     :mid-section 
+     {:type                  one-of :text-only :text-with-two-icons :text-with-one-icon :text-with-description
+      :icon                  icon
+      :main-text             string
+      :left-icon             icon       
+      :right-icon            icon 
+      :description           string
+      :description-color     color
+      :description-icon      icon
+      :description-user-icon icon
+      :main-text-icon-color  color
+     }
+     :left-section 
+     {:on-press              event
+      :icon                  icon 
+      :icon-color            color
+      :icon-background-color color
+     }
+     :right-section-buttons vector of 
+      {:on-press              event
+       :icon                  icon
+       :icon-color            color 
+       :icon-background-color color
+      }
+   }
+  "
+  [{:keys [one-icon-align-left? horizontal-description? align-mid?
+           page-nav-color page-nav-background-uri
+           mid-section
+           left-section
+           right-section-buttons]}]
   (let [{:keys [height width]}      (dimensions/window)
         put-middle-section-on-left? (or align-mid?
-                                        (> (count right-section-icons) 1))
-        mid-section-props {:mid-section-type                 mid-section-type
-                           :horizontal-description?          horizontal-description?
-                           :mid-section-main-text            mid-section-main-text
-                           :one-icon-align-left?             one-icon-align-left?
-                           :mid-section-right-icon           mid-section-right-icon
-                           :mid-section-icon                 mid-section-icon
-                           :mid-section-main-text-icon-color mid-section-main-text-icon-color
-                           :mid-section-left-icon            mid-section-left-icon}]
+                                        (> (count right-section-buttons) 1))
+        mid-section-props
+        {:type                    (:type mid-section)
+         :horizontal-description? horizontal-description?
+         :main-text               (:main-text mid-section)
+         :main-text-icon-color    (:main-text-icon-color mid-section)
+         :one-icon-align-left?    one-icon-align-left?
+         :right-icon              (:right-icon mid-section)
+         :icon                    (:icon mid-section)
+         :left-icon               (:left-icon mid-section)}]
     [rn/view {:style (cond->
                       {:display            :flex
                        :flex-direction     :row
@@ -143,33 +211,15 @@
      [rn/view {:style {:flex           1
                        :flex-direction :row
                        :align-items    :center}}
-      [rn/view {:style (merge
-                        icon-styles
-                        {:background-color left-section-icon-background-color
-                         :width            32
-                         :height           32}
-                        (when put-middle-section-on-left? {:margin-right 5}))}
-       [icons/icon left-section-icon (icon-props left-section-icon-color :big)]]
+      (render-left-section left-section put-middle-section-on-left?)
       (when put-middle-section-on-left?
-        [mid-section (assoc mid-section-props
-                            :left-align?                       true
-                            :mid-section-description           mid-section-description
-                            :mid-section-description-color     mid-section-description-color
-                            :mid-section-description-icon      mid-section-description-icon
-                            :align-mid?                        align-mid?
-                            :mid-section-description-user-icon mid-section-description-user-icon)])]
+        [render-mid-section (assoc mid-section-props
+                                   :left-align?                       true
+                                   :description           (:description mid-section)
+                                   :description-color     (:description-color mid-section)
+                                   :description-icon      (:description-icon mid-section)
+                                   :align-mid?                        align-mid?
+                                   :description-user-icon (:description-user-icon mid-section))])]
      (when-not put-middle-section-on-left?
-       [mid-section mid-section-props])
-     [rn/view {:style (assoc
-                       centrify-style
-                       :flex-direction :row
-                       :flex           1
-                       :justify-content :flex-end)}
-      (let [last-icon-index (- (count right-section-icons) 1)]
-        (map-indexed (fn [index {:keys [icon background-color icon-color]}]
-                       ^{:key index}
-                       [right-section-icon {:icon             icon
-                                            :background-color background-color
-                                            :icon-color       icon-color
-                                            :push-to-the-left? (if (= index last-icon-index) false true)}])
-                     right-section-icons))]]))
+       [render-mid-section mid-section-props])
+     (render-right-section right-section-buttons)]))

@@ -3,7 +3,7 @@
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
+            [quo.react-native :as rn]
             [quo2.components.separator :as separator]
             [quo2.components.markdown.text :as quo2.text]
             [quo2.components.buttons.button :as quo2.button]
@@ -28,7 +28,8 @@
 (def sort-list-by (reagent/atom :name))
 
 (def mock-community-item-data ;; TODO: remove once communities are loaded with this data.
-  {:data {:status :gated
+  {:data {:community-color "#0052FF"
+          :status :gated
           :locked true
           :cover  (resources/get-image :community-cover)
           :tokens [{:id    1
@@ -70,14 +71,14 @@
   #js {:length 64 :offset (* 64 index) :index index})
 
 (defn community-segments []
-  [react/view {:flex               1
-               :margin-bottom      8
-               :padding-horizontal 20}
-   [react/view {:flex-direction :row
-                :padding-top    20
-                :padding-bottom 8
-                :height         60}
-    [react/view {:flex 1}
+  [rn/view {:flex               1
+            :margin-bottom      8
+            :padding-horizontal 20}
+   [rn/view {:flex-direction :row
+             :padding-top    20
+             :padding-bottom 8
+             :height         60}
+    [rn/view {:flex 1}
      [quo2.tabs/tabs {:size           32
                       :on-change      #(reset! selected-tab %)
                       :default-active selected-tab
@@ -87,7 +88,7 @@
                                         :label (i18n/label :t/open)}
                                        {:id    :gated
                                         :label (i18n/label :t/gated)}]}]]
-    [react/view {:flex-direction :row}
+    [rn/view {:flex-direction :row}
      [quo2.button/button
       {:icon     true
        :type     :outline
@@ -141,14 +142,14 @@
 
 (defn featured-communities-section [communities]
   (let [count (reagent/atom {:value (count communities) :type :grey})]
-    [react/view {:flex         1}
-     [react/view {:flex-direction  :row
-                  :height          30
-                  :padding-top     8
-                  :justify-content :space-between
-                  :padding-horizontal 20}
-      [react/view {:flex-direction  :row
-                   :align-items     :center}
+    [rn/view {:flex         1}
+     [rn/view {:flex-direction  :row
+               :height          30
+               :padding-top     8
+               :justify-content :space-between
+               :padding-horizontal 20}
+      [rn/view {:flex-direction  :row
+                :align-items     :center}
        [quo2.text/text {:accessibility-label :featured-communities-title
                         :weight              :semi-bold
                         :size                :paragraph-1
@@ -162,18 +163,18 @@
                                      :color            (quo2.colors/theme-colors
                                                         quo2.colors/neutral-50
                                                         quo2.colors/neutral-40)}]]
-     [react/view {:margin-top     8
-                  :padding-left   20}
+     [rn/view {:margin-top     8
+               :padding-left   20}
       [featured-communities communities]]]))
 
 (defn title-column []
-  [react/view
+  [rn/view
    {:flex-direction     :row
     :align-items        :center
     :height             56
     :padding-vertical   12
     :padding-horizontal 20}
-   [react/view
+   [rn/view
     {:flex           1}
     [quo2.text/text {:accessibility-label :communities-screen-title
                      :margin-right        6
@@ -187,13 +188,13 @@
                  {:id 2 :tag-label (i18n/label :t/lifestyle) :resource (resources/get-image :lifestyle)}
                  {:id 3 :tag-label (i18n/label :t/podcasts) :resource (resources/get-image :podcasts)}
                  {:id 4 :tag-label (i18n/label :t/podcasts) :resource (resources/get-image :podcasts)}]]
-    [react/scroll-view {:horizontal                        true
-                        :height                            48
-                        :shows-horizontal-scroll-indicator false
-                        :scroll-event-throttle             64
-                        :padding-top                       4
-                        :padding-bottom                    12
-                        :padding-horizontal                20}
+    [rn/scroll-view {:horizontal                        true
+                     :height                            48
+                     :shows-horizontal-scroll-indicator false
+                     :scroll-event-throttle             64
+                     :padding-top                       4
+                     :padding-bottom                    12
+                     :padding-horizontal                20}
      [tags/tags {:data          filters
                  :labelled      true
                  :type          :emoji
@@ -208,31 +209,31 @@
 
     [safe-area/consumer
      (fn [insets]
-       [react/view {:style {:flex             1
-                            :padding-top      (:top insets)
-                            :background-color (quo2.colors/theme-colors
-                                               quo2.colors/neutral-5
-                                               quo2.colors/neutral-95)}}
+       [rn/view {:style {:flex             1
+                         :padding-top      (:top insets)
+                         :background-color (quo2.colors/theme-colors
+                                            quo2.colors/neutral-5
+                                            quo2.colors/neutral-95)}}
         [topbar/topbar
          {:navigation      :none
-          :left-component  [react/view {:margin-left 16}
+          :left-component  [rn/view {:margin-left 16}
                             [photos/photo (multiaccounts/displayed-photo multiaccount)
                              {:size 32}]]
-          :right-component [react/view {:flex-direction :row
-                                        :margin-right 16}
+          :right-component [rn/view {:flex-direction :row
+                                     :margin-right 16}
                             [topnav/qr-scanner]
                             [topnav/qr-code]
                             [topnav/notifications-button]]
           :new-ui?         true
           :border-bottom   false}]
         [title-column]
-        [react/scroll-view
+        [rn/scroll-view
          [community-filter-tags]
          [featured-communities-section featured-communities]
          (when communities
            [:<>
-            [react/view {:margin-vertical    4
-                         :padding-horizontal 20}
+            [rn/view {:margin-vertical    4
+                      :padding-horizontal 20}
              [separator/separator]]
             [community-segments]])
          [community-segments-view communities]]])]))

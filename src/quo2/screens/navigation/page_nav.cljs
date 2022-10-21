@@ -44,46 +44,47 @@
   (let [right-icon         {:background-color (if (colors/dark?)
                                                 colors/neutral-80
                                                 colors/neutral-20)
-                            :icon             :main-icons/placeholder
+                            :icon             :main-icons2/placeholder
                             :icon-color       nil}
         base-props         {:horizontal-description?            true
                             :one-icon-align-left?               true
                             :align-mid?                         false
                             :page-nav-color                     :transparent
                             :page-nav-background-uri            ""
-                            :mid-section-type                   :text-with-description
-                            :mid-section-icon                   :main-icons/placeholder
-                            :mid-section-main-text              "Status"
-                            :mid-section-left-icon              :main-icons/placeholder
-                            :mid-section-right-icon             :main-icons/placeholder
-                            :mid-section-description            "SNT"
-                            :mid-section-description-color      "black"
-                            :mid-section-description-icon       :main-icons/placeholder
-                            :mid-section-description-user-icon  "https://i.picsum.photos/id/810/200/300.jpg?hmac=HgwlXd-OaLOAqhGyCiZDUb_75EgUI4u0GtS7nfgxd8s"
-                            :left-section-icon                  :main-icons/unlocked
-                            :left-section-icon-background-color (if (colors/dark?)
-                                                                  colors/neutral-80
-                                                                  colors/neutral-20)}
-        create-variation   #(merge %1 %2)
+                            :mid-section {:type                   :text-with-description
+                                          :icon                   :main-icons2/placeholder
+                                          :main-text              "Status"
+                                          :left-icon              :main-icons2/placeholder
+                                          :right-icon             :main-icons2/placeholder
+                                          :description            "SNT"
+                                          :description-color      "black"
+                                          :description-icon       :main-icons2/placeholder
+                                          :description-user-icon  "https://i.picsum.photos/id/810/200/300.jpg?hmac=HgwlXd-OaLOAqhGyCiZDUb_75EgUI4u0GtS7nfgxd8s"}
+                            :left-section
+                            {:icon                  :main-icons2/unlocked
+                             :icon-background-color (if (colors/dark?)
+                                                      colors/neutral-80
+                                                      colors/neutral-20)}}
+        create-variation   #(merge %1 %2 {:mid-section (merge (:mid-section %1) (:mid-section %2))})
         variations         {:text-only?                base-props
                             :align-left?               (create-variation base-props {:align-mid? true})
                             :one-icon-align-left?      (create-variation base-props {:one-icon-align-left? true
-                                                                                     :mid-section-type     :text-with-one-icon})
+                                                                                     :mid-section {:type     :text-with-one-icon}})
                             :one-icon-align-right?     (create-variation base-props {:one-icon-align-left? false
-                                                                                     :mid-section-type     :text-with-one-icon})
-                            :two-icons?                (create-variation base-props {:mid-section-type :text-with-two-icons})
+                                                                                     :mid-section {:type     :text-with-one-icon}})
+                            :two-icons?                (create-variation base-props {:mid-section {:type     :text-with-two-icons}})
                             :user-icon?                (create-variation base-props {:align-mid?              true
                                                                                      :horizontal-description? false
-                                                                                     :mid-section-type        :text-with-one-icon})
+                                                                                     :mid-section {:type     :text-with-one-icon}})
                             :empty?                    (create-variation base-props {:mid-section-main-text   ""
                                                                                      :mid-section-description ""})
                             :align-left-with-icon?     (create-variation base-props {:align-mid?       true
-                                                                                     :mid-section-type :text-with-one-icon})
+                                                                                     :mid-section {:type     :text-with-one-icon}})
                             :align-left-top-down-text? (create-variation base-props {:align-mid?              true
                                                                                      :horizontal-description? false
-                                                                                     :mid-section-type        :text-with-description})}
+                                                                                     :mid-section {:type     :text-with-description}})}
         state              (reagent/atom (-> (get variations (:selected-variation @selected-variation))
-                                             (assoc :right-section-icons (repeat (:number-of-right-icons @selected-variation) right-icon))))]
+                                             (assoc :right-section-buttons (repeat (:number-of-right-icons @selected-variation) right-icon))))]
     (fn []
       [rn/view {:margin-bottom 50
                 :padding       16}

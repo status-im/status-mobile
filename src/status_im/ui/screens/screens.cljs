@@ -332,7 +332,7 @@
             :options   {:topBar {:title {:text (i18n/label :t/membership-title)}}}
             :component membership/membership}
            {:name      :community-overview
-            :options   {:topBar {:visible true}} ;; to do, replace with new top bar style
+            :options   {:topBar {:visible false}}
             :component community-overview/overview}
            ;;BROWSER
 
