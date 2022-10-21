@@ -34,17 +34,10 @@
 (defn toolbar-content-view-inner [chat-info]
   (let [{:keys [group-chat invitation-admin color chat-id contacts chat-type chat-name public? emoji]}
         chat-info]
-<<<<<<< HEAD
     [rn/view {:style st/toolbar-container}
      [rn/view {:margin-right 10}
       [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color emoji 36]]
      [rn/view {:style st/chat-name-view}
-=======
-    [react/view {:style st/toolbar-container}
-     [react/view {:margin-right 10}
-      [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color emoji 36]]
-     [react/view {:style st/chat-name-view}
->>>>>>> 94dc15395... show pinned messages
       (if group-chat
         [rn/text {:style                  st/chat-name-text
                   :number-of-lines     1

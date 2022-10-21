@@ -27,13 +27,8 @@
             [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.screens.chat.components.accessory :as accessory]
             [status-im.ui.screens.chat.components.input :as components]
-<<<<<<< HEAD
-=======
-            [status-im.ui.screens.chat.message.datemark-old :as message-datemark-old]
->>>>>>> 94dc15395... show pinned messages
             [status-im.ui.screens.chat.message.datemark :as message-datemark]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.screens.chat.message.pinned-message :as pinned-message]
             [quo.core :as quo]
             [clojure.string :as string]
             [status-im.constants :as constants]
@@ -282,42 +277,11 @@
     [react/view {:style (when platform/android? {:scaleY -1})}
      [chat.group/group-chat-footer chat-id invitation-admin]]))
 
-<<<<<<< HEAD
 (defn render-fn [{:keys [outgoing type] :as message}
                  idx
                  _
                  {:keys [group-chat public? community? current-public-key space-keeper
                          chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
-=======
-(defn render-fn-old [{:keys [outgoing type] :as message}
-                     idx
-                     _
-                     {:keys [group-chat public? community? current-public-key space-keeper
-                             chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
-  [react/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
-   (if (= type :datemark)
-     [message-datemark-old/chat-datemark (:value message)]
-     (if (= type :gap)
-       [gap/gap message idx messages-list-ref false chat-id]
-       ; message content
-       [message-old/chat-message
-        (assoc message
-               :incoming-group (and group-chat (not outgoing))
-               :group-chat group-chat
-               :public? public?
-               :community? community?
-               :current-public-key current-public-key
-               :show-input? show-input?
-               :message-pin-enabled message-pin-enabled
-               :edit-enabled edit-enabled)
-        space-keeper]))])
-
-(defn message-render-fn [{:keys [outgoing type] :as message}
-                         idx
-                         _
-                         {:keys [group-chat public? community? current-public-key
-                                 chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
->>>>>>> 94dc15395... show pinned messages
   [react/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
      [message-datemark/chat-datemark (:value message)]
@@ -511,48 +475,6 @@
              [contact-request/contact-request-message-auto-focus-wrapper text-input-ref]]
             [bottom-sheet @active-panel]])]))))
 
-<<<<<<< HEAD
-=======
-(defn chat-render []
-  (let [{:keys [chat-id show-input? group-chat admins] :as chat}
-        ;;we want to react only on these fields, do not use full chat map here
-        @(re-frame/subscribe [:chats/current-chat-chat-view])
-        mutual-contact-requests-enabled? @(re-frame/subscribe [:mutual-contact-requests/enabled?])]
-    [react/keyboard-avoiding-view-new {:style {:flex 1}
-                                       :ignore-offset false}
-     ;; It is better to not use topbar component because of performance
-     [topbar/topbar {:navigation :none
-                     :left-component [react/view {:flex-direction :row :margin-left 16}
-                                      [back-button]]
-                     :title-component [topbar-content]
-                     :right-component [react/view {:flex-direction :row :margin-right 16}
-                                       [search-button]]
-                     :border-bottom false
-                     :new-ui? true}]
-     [connectivity/loading-indicator]
-     [pinned-message/pin-limit-popover chat-id message/pinned-messages-list]
-     (when chat-id
-       (if group-chat
-         [invitation-requests chat-id admins]
-         (when-not mutual-contact-requests-enabled? [add-contact-bar chat-id])))
-     [message/pinned-banner chat-id]
-     ;;MESSAGES LIST
-     [messages-view {:chat                             chat
-                     :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
-                     :show-input?                      show-input?}]
-     ;;INPUT COMPONENT
-     (when show-input?
-       [components/chat-input-bottom-sheet chat-id])]))
-
-(defn chat-old []
-  (reagent/create-class
-   {:component-did-mount (fn []
-                           (react/hw-back-remove-listener navigate-back-handler)
-                           (react/hw-back-add-listener navigate-back-handler))
-    :component-will-unmount (fn [] (react/hw-back-remove-listener navigate-back-handler))
-    :reagent-render chat-render-old}))
-
->>>>>>> 94dc15395... show pinned messages
 (defn chat []
   (reagent/create-class
     {:component-did-mount (fn []
