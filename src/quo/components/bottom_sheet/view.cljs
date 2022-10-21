@@ -44,7 +44,7 @@
                                                      (+ 50 keyboard-height-android-delta) ;; TODO : remove 50 when react-native-navigation v8 will be implemented https://github.com/wix/react-native-navigation/issues/7225
                                                      0))
         min-height                (+ (* styles/vertical-padding 2) (:bottom safe-area))
-        max-height                (- window-height (:top safe-area) styles/margin-top)
+        max-height                (- window-height (:top safe-area))
         visible                   (react/state false)
 
         master-translation-y (animated/use-value 0)
