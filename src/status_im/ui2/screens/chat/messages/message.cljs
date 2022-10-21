@@ -37,12 +37,6 @@
             [status-im.utils.config :as config]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.utils.security :as security]
-            [status-im.utils.security :as security]
-            [quo2.foundations.typography :as typography]
-            [quo2.foundations.colors :as quo2.colors]
-            [status-im.ui.components.list.views :as list]
-            [quo.react-native :as rn]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [quo2.components.icon :as icons])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -755,7 +749,7 @@
 (defn message-render-fn
   [{:keys [outgoing] :as message}
    _
-   {:keys [group-chat public? community? current-public-key show-input? message-pin-enabled edit-enabled]}]
+   {:keys [group-chat public? community? current-public-key show-input? edit-enabled]}]
   [chat-message
    (assoc message
           :incoming-group (and group-chat (not outgoing))
