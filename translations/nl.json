@@ -1283,8 +1283,6 @@
     "restore-defaults": "Standaardwaarden herstellen",
     "retry": "Opnieuw proberen",
     "revoke-access": "Toegang intrekken",
-    "rinkeby-network": "Rinkeby testnetwerk",
-    "ropsten-network": "Ropsten testnetwerk",
     "rpc-url": "RPC-URL",
     "rpc-usage-copy": "Kopiëren",
     "rpc-usage-filter": "Filtermethoden",

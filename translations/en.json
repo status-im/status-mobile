@@ -1114,8 +1114,6 @@
     "reset-card-description": "This operation will reset card to initial state. It will erase all card data including private keys. Operation is not reversible.",
     "retry": "Retry",
     "revoke-access": "Revoke access",
-    "rinkeby-network": "Rinkeby test network",
-    "ropsten-network": "Ropsten test network",
     "rpc-url": "RPC URL",
     "save": "Save",
     "save-password": "Save password",

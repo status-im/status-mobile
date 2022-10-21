@@ -84,12 +84,8 @@
    :signed-up?                           true
    :name                                 "name"
    :last-request                         nil
-   :wallet/visible-tokens                {:testnet #{:STT
-                                                     :HND}
-                                          :mainnet #{:SNT}
+   :wallet/visible-tokens                {:mainnet #{:SNT}
                                           :goerli  #{:STT}
-                                          :rinkeby #{:MOKSHA
-                                                     :KDO}
                                           :xdai    #{}}
    :preview-privacy? true
    :fleet        :eth.prod

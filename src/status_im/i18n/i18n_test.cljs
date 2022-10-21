@@ -766,8 +766,6 @@
     :reset-card-description
     :retry
     :revoke-access
-    :rinkeby-network
-    :ropsten-network
     :rpc-url
     :save
     :save-password

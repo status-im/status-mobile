@@ -1357,8 +1357,6 @@
     "restore-defaults": "Przywróć domyślne",
     "retry": "Ponów próbę",
     "revoke-access": "Odwołaj dostęp",
-    "rinkeby-network": "Sieć testowa Rinkeby",
-    "ropsten-network": "Sieć testowa Ropsten",
     "rpc-url": "URL RPC",
     "rpc-usage-copy": "Skopiuj do schowka",
     "rpc-usage-filter": "Metody filtrowania",

@@ -25,8 +25,6 @@
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 (def chains
   {:mainnet     {:id 1 :name "Mainnet"}
-   :testnet     {:id 3 :name "Ropsten"}
-   :rinkeby     {:id 4 :name "Rinkeby"}
    :xdai        {:id 100 :name "xDai"}
    :goerli      {:id 5 :name "Goerli"}
    :bsc         {:id   BSC-mainnet-chain-id
@@ -51,9 +49,7 @@
     :STT))
 
 (defn testnet? [id]
-  (contains? #{(chain-keyword->chain-id :testnet)
-               (chain-keyword->chain-id :rinkeby)
-               (chain-keyword->chain-id :goerli)
+  (contains? #{(chain-keyword->chain-id :goerli)
                (chain-keyword->chain-id :bsc-testnet)} id))
 
 (defn sidechain? [id]

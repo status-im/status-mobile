@@ -686,8 +686,6 @@
     "reset-card-description": "此操作将卡片重置为初始状态。它将清除所有数据，包括私钥。操作不可逆。",
     "retry": "重试",
     "revoke-access": "撤消访问权限",
-    "rinkeby-network": "Rinkeby 测试网络",
-    "ropsten-network": "Ropsten 测试网络",
     "rpc-url": "RPC 链接",
     "save": "保存",
     "save-password": "保存密码直到注销",

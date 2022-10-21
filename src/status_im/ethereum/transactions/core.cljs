@@ -16,16 +16,12 @@
 
 (def etherscan-supported?
   #{(ethereum/chain-keyword->chain-id :mainnet)
-    (ethereum/chain-keyword->chain-id :testnet)
-    (ethereum/chain-keyword->chain-id :goerli)
-    (ethereum/chain-keyword->chain-id :rinkeby)})
+    (ethereum/chain-keyword->chain-id :goerli)})
 
 (def binance-mainnet-chain-id (ethereum/chain-keyword->chain-id :bsc))
 (def binance-testnet-chain-id (ethereum/chain-keyword->chain-id :bsc-testnet))
 
-(def network->subdomain {3 "ropsten"
-                         4 "rinkeby"
-                         5 "goerli"})
+(def network->subdomain {5 "goerli"})
 
 (defn get-transaction-details-url [chain-id hash]
   {:pre [(number? chain-id) (string? hash)]

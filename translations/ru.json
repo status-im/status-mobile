@@ -1415,8 +1415,6 @@
     "restore-defaults": "Восстановить настройки по умолчанию",
     "retry": "Повторить",
     "revoke-access": "Отменить доступ",
-    "rinkeby-network": "Тестовая сеть Rinkeby",
-    "ropsten-network": "Тестовая сеть Ropsten",
     "rpc-url": "URL-адрес RPC",
     "rpc-usage-copy": "Копировать",
     "rpc-usage-filter": "Методы фильтрации",

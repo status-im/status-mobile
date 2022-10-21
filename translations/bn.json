@@ -1344,8 +1344,6 @@
     "restore-defaults": "ডিফল্টগুলি পুনর্বহাল করুন",
     "retry": "পুনরায় চেষ্টা করা",
     "revoke-access": "প্রবেশ বাতিল করুন",
-    "rinkeby-network": "Rinkeby পরীক্ষা নেটওয়ার্ক",
-    "ropsten-network": "Ropsten পরীক্ষা নেটওয়ার্ক",
     "rpc-url": "আরপিসি ইউআরএল",
     "rpc-usage-copy": "অনুলিপি",
     "rpc-usage-filter": "ফিল্টার পদ্ধতি",

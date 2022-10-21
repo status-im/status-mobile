@@ -1104,8 +1104,6 @@
     "restore-defaults": "Pulihkan Default",
     "retry": "Mencoba kembali",
     "revoke-access": "Mencabut akses",
-    "rinkeby-network": "Jaringan pengujian Rinkeby",
-    "ropsten-network": "Jaringan uji Ropsten",
     "rpc-url": "URL RPC",
     "rpc-usage-copy": "Salinan",
     "rpc-usage-get-stats": "Menyegarkan",

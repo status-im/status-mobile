@@ -21,13 +21,8 @@
 (goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
 (goog-define OPENSEA_API_KEY "")
 
-(def mainnet-rpc-url
-  (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
-
-(def testnet-rpc-url
-  (str "https://ropsten.infura.io/v3/" POKT_TOKEN))
-(def goerli-rpc-url
-  (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
+(def mainnet-rpc-url (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
+(def goerli-rpc-url  (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
 (def opensea-api-key OPENSEA_API_KEY)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
@@ -119,21 +114,7 @@
                                            :URL     "https://bsc-dataseed.binance.org"}}}])
 
 (def testnet-networks
-  [{:id                  "testnet_rpc",
-    :chain-explorer-link "https://ropsten.etherscan.io/address/",
-    :name                "Ropsten with upstream RPC",
-    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
-                          :DataDir        "/ethereum/testnet_rpc"
-                          :UpstreamConfig {:Enabled true
-                                           :URL     testnet-rpc-url}}}
-   {:id                  "rinkeby_rpc",
-    :chain-explorer-link "https://rinkeby.etherscan.io/address/",
-    :name                "Rinkeby with upstream RPC",
-    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
-                          :DataDir        "/ethereum/rinkeby_rpc"
-                          :UpstreamConfig {:Enabled true
-                                           :URL     (str "https://rinkeby.infura.io/v3/" POKT_TOKEN)}}}
-   {:id                  "goerli_rpc",
+  [{:id                  "goerli_rpc",
     :chain-explorer-link "https://goerli.etherscan.io/address/",
     :name                "Goerli with upstream RPC",
     :config              {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)

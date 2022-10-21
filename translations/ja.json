@@ -1359,8 +1359,6 @@
     "restore-defaults": "デフォルトに戻す",
     "retry": "再試行",
     "revoke-access": "アクセス権を取り消す",
-    "rinkeby-network": "Rinkebyテストネット",
-    "ropsten-network": "Ropstenテストネット",
     "rpc-url": "RPCのURL",
     "rpc-usage-copy": "コピー",
     "rpc-usage-filter": "フィルター方法",

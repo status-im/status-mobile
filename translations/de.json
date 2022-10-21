@@ -1330,8 +1330,6 @@
     "restore-defaults": "Standardeinstellungen wiederherstellen",
     "retry": "Wiederholen",
     "revoke-access": "Zugangsberechtigung widerrufen",
-    "rinkeby-network": "Rinkeby-Testnetzwerk",
-    "ropsten-network": "Ropsten-Testnetzwerk",
     "rpc-url": "RPC-URL",
     "rpc-usage-copy": "Kopieren",
     "rpc-usage-filter": "Filtermethoden",

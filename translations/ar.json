@@ -1400,8 +1400,6 @@
     "restore-defaults": "استعادة الضبط الافتراضي",
     "retry": "إعادة المحاولة",
     "revoke-access": "إلغاء الوصول",
-    "rinkeby-network": "Rinkeby اختبار الشبكة",
-    "ropsten-network": "اختبار شبكة Ropsten ",
     "rpc-url": "RPC URL",
     "rpc-usage-copy": "نسخ",
     "rpc-usage-filter": "أساليب التصفية",
