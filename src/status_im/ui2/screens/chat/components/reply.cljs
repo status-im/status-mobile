@@ -1,5 +1,5 @@
 (ns status-im.ui2.screens.chat.components.reply
-  (:require [quo2.foundations.colors :as quo2.colors]
+  (:require [quo2.foundations.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
             [quo.react-native :as rn]
             [status-im.constants :as constants]
@@ -54,7 +54,7 @@
      [rn/view {:style (styles/reply-content pin?)}
       (when-not pin?
         ;;TODO quo2 icon should be used
-        [icons/icon :main-icons/connector {:color           (quo2.colors/theme-colors quo2.colors/neutral-40 quo2.colors/neutral-60)
+        [icons/icon :main-icons/connector {:color           (colors/theme-colors colors/neutral-40 colors/neutral-60)
                                            :container-style {:position :absolute :left 10 :bottom -4 :width 16 :height 16}}])
       [rn/view {:style (styles/quoted-message pin?)}
        [photos/member-photo from identicon 16]
@@ -73,7 +73,7 @@
                                                 (when (or (= constants/content-type-image content-type)
                                                           (= constants/content-type-sticker content-type)
                                                           (= constants/content-type-audio content-type))
-                                                  {:color (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}))}
+                                                  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}))}
         (case (or content-type contentType)
           constants/content-type-image "Image"
           constants/content-type-sticker "Sticker"
@@ -88,4 +88,4 @@
         ;;TODO quo2 icon should be used
         [icons/icon :main-icons/close {:width  16
                                        :height 16
-                                       :color  (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/neutral-40)}]])]))
+                                       :color  (colors/theme-colors colors/neutral-100 colors/neutral-40)}]])]))

@@ -6,7 +6,7 @@
             [status-im.utils.debounce :as debounce]
             [quo.react-native :as rn]
             [quo2.components.buttons.button :as quo2.button]
-            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.navigation.state :as navigation.state]
             [status-im.ui2.screens.chat.messages.view :as messages]
@@ -32,14 +32,14 @@
                        :width               32
                        :accessibility-label "back-button"
                        :on-press            #(>evt [:navigate-back])}
-   [icons/icon :main-icons/arrow-left {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]])
+   [icons/icon :main-icons/arrow-left {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
 (defn search-button []
   [quo2.button/button {:type                :grey
                        :size                32
                        :width               32
                        :accessibility-label "search-button"}
-   [icons/icon :main-icons/search {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]])
+   [icons/icon :main-icons/search {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
 (defn navigate-back-handler []
   (when (and (not @navigation.state/curr-modal) (= (get @re-frame.db/app-db :view-id) :chat))

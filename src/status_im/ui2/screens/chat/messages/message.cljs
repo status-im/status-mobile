@@ -1,9 +1,9 @@
 (ns status-im.ui2.screens.chat.messages.message
   (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+            [quo.design-system.colors :as quo.colors]
             [quo.react-native :as rn]
             [quo2.components.messages.system-message :as system-message]
-            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
@@ -82,7 +82,7 @@
                      :tiny-icons/tiny-pending)
         {:width               16
          :height              12
-         :color               (if pinned colors/gray colors/white)
+         :color               (if pinned quo.colors/gray quo.colors/white)
          :accessibility-label (name outgoing-status)}])
      (when edited-at [rn/text {:style (style/message-status-text)} edited-at-text])]))
 
@@ -132,7 +132,7 @@
     (conj acc
           [rn/text
            {:style
-            {:color                colors/blue
+            {:color                quo.colors/blue
              :text-decoration-line :underline}
             :on-press
             #(when (and (security/safe-link? destination)
@@ -143,16 +143,16 @@
 
     "mention"
     (conj acc
-          [rn/view {:style {:background-color quo2.colors/primary-50-opa-10 :border-radius 6 :padding-horizontal 3}}
+          [rn/view {:style {:background-color colors/primary-50-opa-10 :border-radius 6 :padding-horizontal 3}}
            [rn/text
-            {:style    (merge {:color (if (system-text? content-type) colors/black quo2.colors/primary-50)}
+            {:style    (merge {:color (if (system-text? content-type) quo.colors/black colors/primary-50)}
                               (if (system-text? content-type) typography/font-regular typography/font-medium))
              :on-press (when-not (system-text? content-type)
                          #(>evt [:chat.ui/show-profile literal]))}
             [mention-element literal]]])
     "status-tag"
     (conj acc [rn/text
-               {:style {:color                colors/blue
+               {:style {:color                quo.colors/blue
                         :text-decoration-line :underline}
                 :on-press
                 #(re-frame/dispatch
@@ -207,7 +207,7 @@
   [{:keys [content-type content] :as message}]
   [rn/view (style/message-view message)
    [rn/text
-    {:style {:color colors/white-persist}}
+    {:style {:color quo.colors/white-persist}}
     (if (seq (:text content))
       (:text content)
       (str "Unhandled content-type " content-type))]])
@@ -226,7 +226,7 @@
     [rn/text {:style style/not-sent-text}
      (i18n/label :t/status-not-sent-tap)]
     [rn/view style/not-sent-icon
-     [icons/icon :main-icons2/warning {:color colors/red}]]]])
+     [icons/icon :main-icons2/warning {:color quo.colors/red}]]]])
 
 (defn pin-author-name [pinned-by]
   (let [user-contact  @(re-frame/subscribe [:multiaccount/contact])
@@ -242,7 +242,7 @@
 (defn pinned-by-indicator [pinned-by]
   [rn/view {:style               (style/pin-indicator)
             :accessibility-label :pinned-by}
-   [pin-icon quo2.colors/primary-50 16]
+   [pin-icon colors/primary-50 16]
    [quo/text {:size  :small
               :color :main
               :style (style/pin-author-text)}
@@ -273,7 +273,7 @@
        (when verified
          [rn/view (style/community-verified)
           [rn/text {:style {:font-size 13
-                            :color     colors/blue}} (i18n/label :t/communities-verified)]])
+                            :color     quo.colors/blue}} (i18n/label :t/communities-verified)]])
        [rn/view (style/community-message verified)
         [rn/view {:width        62
                   :padding-left 14}
@@ -291,7 +291,7 @@
                                                               :community
                                                               {:community-id (:id community)}])}
          [rn/text {:style {:text-align :center
-                           :color      colors/blue}} (i18n/label :t/view)]]]])))
+                           :color      quo.colors/blue}} (i18n/label :t/view)]]]])))
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
@@ -665,15 +665,15 @@
     (i18n/label :t/contact-request-pending)]
    [rn/activity-indicator {:animating true
                            :size      :small
-                           :color     colors/gray}]])
+                           :color     quo.colors/gray}]])
 
 (defn contact-request-status-accepted []
-  [quo/text {:style  {:color colors/green}
+  [quo/text {:style  {:color quo.colors/green}
              :weight :medium}
    (i18n/label :t/contact-request-accepted)])
 
 (defn contact-request-status-declined []
-  [quo/text {:style  {:color colors/red}
+  [quo/text {:style  {:color quo.colors/red}
              :weight :medium}
    (i18n/label :t/contact-request-declined)])
 
@@ -732,7 +732,7 @@
                                                         #(on-emoji-press %))}]))
         on-long-press  (atom nil)]
     [rn/view
-     {:style (merge (when (and (not in-pinned-view?) (or mentioned pinned)) {:background-color quo2.colors/primary-50-opa-5
+     {:style (merge (when (and (not in-pinned-view?) (or mentioned pinned)) {:background-color colors/primary-50-opa-5
                                                                              :border-radius    16
                                                                              :margin-bottom    4})
                     (when (or mentioned pinned last-in-group?) {:margin-top 8})
@@ -771,11 +771,11 @@
         community       (<sub [:communities/community (:community-id current-chat)])]
     [rn/view
      [rn/text {:style (merge typography/heading-1 typography/font-semi-bold {:margin-horizontal 20
-                                                                             :color             (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)})}
+                                                                             :color             (colors/theme-colors colors/neutral-100 colors/white)})}
       (i18n/label :t/pinned-messages)]
      (when community
        [rn/view {:style {:flex-direction    :row
-                         :background-color  (quo2.colors/theme-colors quo2.colors/neutral-10 quo2.colors/neutral-80)
+                         :background-color  (colors/theme-colors colors/neutral-10 colors/neutral-80)
                          :border-radius     20
                          :align-items       :center
                          :align-self        :flex-start
@@ -783,20 +783,20 @@
                          :padding           4
                          :margin-top        8}}
         [chat-icon/chat-icon-view-toolbar chat-id (:group-chat current-chat) (:chat-name current-chat) (:color current-chat) (:emoji current-chat) 22]
-        [rn/text {:style {:margin-left 6 :margin-right 4 :color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}} (:name community)]
+        [rn/text {:style {:margin-left 6 :margin-right 4 :color (colors/theme-colors colors/neutral-100 colors/white)}} (:name community)]
         [icons/icon
          :main-icons2/chevron-right
-         {:color  (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)
+         {:color  (colors/theme-colors colors/neutral-50 colors/neutral-40)
           :width  12
           :height 12}]
         [rn/text {:style {:margin-left  4
                           :margin-right 8
-                          :color        (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}} (str "# " (:chat-name current-chat))]])
+                          :color        (colors/theme-colors colors/neutral-100 colors/white)}} (str "# " (:chat-name current-chat))]])
      [list/flat-list
       {:data      pinned-messages
        :render-fn message-render-fn
        :key-fn    list-key-fn
-       :separator [rn/view {:background-color (quo2.colors/theme-colors quo2.colors/neutral-10 quo2.colors/neutral-80) :height 1 :margin-top 8}]}]]))
+       :separator [rn/view {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80) :height 1 :margin-top 8}]}]]))
 
 (defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
@@ -811,8 +811,8 @@
                        :border-radius    photos.style/default-size
                        :justify-content  :center
                        :align-items      :center
-                       :background-color quo2.colors/primary-50-opa-10}}
-      [pin-icon quo2.colors/primary-50 16]]
+                       :background-color colors/primary-50-opa-10}}
+      [pin-icon colors/primary-50 16]]
      [rn/view
       [rn/view {:style {:flex-direction :row :align-items :center}}
        [rn/touchable-opacity {:style    style/message-author-touchable
@@ -837,7 +837,7 @@
     (when (> pins-count 0)
       [rn/touchable-opacity
        {:style          {:height             50
-                         :background-color   quo2.colors/primary-50-opa-20
+                         :background-color   colors/primary-50-opa-20
                          :flex-direction     :row
                          :align-items        :center
                          :padding-horizontal 20
@@ -846,11 +846,11 @@
         :on-press       (fn []
                           (re-frame/dispatch [:bottom-sheet/show-sheet
                                               {:content #(pinned-messages-list chat-id)}]))}
-       [pin-icon (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white) 20]
+       [pin-icon (colors/theme-colors colors/neutral-100 colors/white) 20]
        [rn/text {:number-of-lines 1
                  :style           (merge typography/paragraph-2 {:margin-left  10
                                                                  :margin-right 50
-                                                                 :color        (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)})} latest-pin-text]
+                                                                 :color        (colors/theme-colors colors/neutral-100 colors/white)})} latest-pin-text]
        [rn/view {:style {:position         :absolute
                          :right            22
                          :height           20
@@ -858,6 +858,6 @@
                          :border-radius    8
                          :justify-content  :center
                          :align-items      :center
-                         :background-color quo2.colors/neutral-80-opa-5}}
-        [rn/text {:style (merge typography/label typography/font-medium {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)})} pins-count]]])))
+                         :background-color colors/neutral-80-opa-5}}
+        [rn/text {:style (merge typography/label typography/font-medium {:color (colors/theme-colors colors/neutral-100 colors/white)})} pins-count]]])))
 

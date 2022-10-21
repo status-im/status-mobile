@@ -4,7 +4,7 @@
             [quo2.reanimated :as reanimated]
             [quo.react-native :as rn]
             [quo2.foundations.typography :as typography]
-            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.colors :as colors]
             [status-im.switcher.constants :as constants]
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.utils.handlers :refer [<sub >evt]]
@@ -27,10 +27,10 @@
                                  (style/pin-popover width))}
         [rn/view {:style (style/pin-alert-container)}
          [rn/view {:style (style/pin-alert-circle)}
-          [rn/text {:style {:color quo2.colors/danger-50}} "!"]]]
+          [rn/text {:style {:color colors/danger-50}} "!"]]]
         [rn/view {:style {:margin-left 8}}
-         [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold {:color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-100)})} (i18n/label :t/cannot-pin-title)]
-         [rn/text {:style (merge typography/paragraph-2 typography/font-regular {:color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-100)})} (i18n/label :t/cannot-pin-desc)]
+         [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold {:color (colors/theme-colors colors/white colors/neutral-100)})} (i18n/label :t/cannot-pin-title)]
+         [rn/text {:style (merge typography/paragraph-2 typography/font-regular {:color (colors/theme-colors colors/white colors/neutral-100)})} (i18n/label :t/cannot-pin-desc)]
          [rn/touchable-opacity
           {:active-opacity 1
            :on-press (fn []
@@ -38,12 +38,12 @@
                        (>evt [:bottom-sheet/show-sheet
                               {:content #(pinned-messages-list chat-id)}]))
            :style (style/view-pinned-messages)}
-          [rn/text {:style (merge typography/paragraph-2 typography/font-medium {:color quo2.colors/white})} (i18n/label :t/view-pinned-messages)]]]
+          [rn/text {:style (merge typography/paragraph-2 typography/font-medium {:color colors/white})} (i18n/label :t/view-pinned-messages)]]]
         [rn/touchable-opacity {:active-opacity 1
                                :on-press       #(>evt [::models.pin-message/hide-pin-limit-modal chat-id])
                                :style          {:position :absolute
                                                 :top 16
                                                 :right 16}}
-         [icons/icon :main-icons2/close {:color  (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-100)
+         [icons/icon :main-icons2/close {:color  (colors/theme-colors colors/white colors/neutral-100)
                                          :height 8
                                          :width  8}]]]))])
