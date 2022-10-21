@@ -1,13 +1,13 @@
 (ns status-im.ui2.screens.chat.messages.pinned-message
-  (:require [re-frame.core :as re-frame]
-            [status-im.i18n.i18n :as i18n]
+  (:require [status-im.i18n.i18n :as i18n]
             [quo.react :as react]
             [quo2.reanimated :as reanimated]
             [quo.react-native :as rn]
             [quo2.foundations.typography :as typography]
             [quo2.foundations.colors :as quo2.colors]
             [status-im.switcher.constants :as constants]
-            [status-im.utils.handlers :refer [<sub]]
+            [status-im.chat.models.pin-message :as models.pin-message]
+            [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.ui2.screens.chat.messages.style :as style]
             [quo2.components.icon :as icons]))
 
@@ -19,6 +19,7 @@
            show-pin-limit-modal? (<sub [:chats/pin-modal chat-id])
            opacity-animation (reanimated/use-shared-value 0)
            z-index-animation (reanimated/use-shared-value -1)]
+       (println "show" show-pin-limit-modal? chat-id)
        (react/effect! #(do
                          (reanimated/set-shared-value opacity-animation (reanimated/with-timing (if show-pin-limit-modal? 1 0)))
                          (reanimated/set-shared-value z-index-animation (reanimated/with-timing (if show-pin-limit-modal? 10 -1)))))
@@ -35,13 +36,13 @@
          [rn/touchable-opacity
           {:active-opacity 1
            :on-press (fn []
-                       (re-frame/dispatch [::models.pin-message/hide-pin-limit-modal chat-id])
-                       (re-frame/dispatch [:bottom-sheet/show-sheet
+                       (>evt [::models.pin-message/hide-pin-limit-modal chat-id])
+                       (>evt [:bottom-sheet/show-sheet
                                            {:content #(pinned-messages-list chat-id)}]))
            :style (style/view-pinned-messages)}
           [rn/text {:style (merge typography/paragraph-2 typography/font-medium {:color quo2.colors/white})} (i18n/label :t/view-pinned-messages)]]]
         [rn/touchable-opacity {:active-opacity 1
-                               :on-press       #(re-frame/dispatch [::models.pin-message/hide-pin-limit-modal chat-id])
+                               :on-press       #(>evt [::models.pin-message/hide-pin-limit-modal chat-id])
                                :style          {:position :absolute
                                        :top 16
                                        :right 16}}

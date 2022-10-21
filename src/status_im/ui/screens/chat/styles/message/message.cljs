@@ -156,15 +156,6 @@
   [{:keys [content-type mentioned]}]
   (merge
     {:border-radius 10}
-    (cond
-      (= content-type constants/content-type-system-text) nil
-      mentioned                                           {:background-color colors/mentioned-background
-                                                           :border-color colors/mentioned-border
-                                                           :border-width 1}
-      (= content-type constants/content-type-audio)       {:background-color colors/blue
-                                                           :padding-horizontal 12
-                                                           :padding-top 6})
-
     (when (= content-type constants/content-type-emoji)
       {:flex-direction :row})))
 

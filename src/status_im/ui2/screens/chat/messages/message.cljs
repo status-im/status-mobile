@@ -38,6 +38,13 @@
             [status-im.utils.config :as config]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.utils.security :as security])
+            [status-im.utils.security :as security]
+            [quo2.foundations.typography :as typography]
+            [quo2.foundations.colors :as quo2.colors]
+            [status-im.ui.components.list.views :as list]
+            [quo.react-native :as rn]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [quo2.components.icon :as icons]
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn message-timestamp-anim
@@ -214,7 +221,7 @@
 
 (defn message-not-sent-text
   [chat-id message-id]
-  [rn/touchable-highlight
+  [rn/touchable-opacity
    {:on-press
     (fn []
       (re-frame/dispatch
@@ -226,7 +233,7 @@
     [rn/text {:style style/not-sent-text}
      (i18n/label :t/status-not-sent-tap)]
     [rn/view style/not-sent-icon
-     [icons/icon :main-icons/warning {:color colors/red}]]]])
+     [icons/icon :main-icons2/warning {:color colors/red}]]]])
 
 (defn pin-author-name [pinned-by]
   (let [user-contact  @(re-frame/subscribe [:multiaccount/contact])
@@ -235,7 +242,7 @@
     (str " " (if (= pinned-by (user-contact :public-key)) (i18n/label :t/You) (first contact-names)))))
 
 (defn pin-icon [color size]
-  [icons/icon :main-icons/pin16 {:color  color
+  [icons/icon :main-icons2/pin {:color  color
                                  :height size
                                  :width  size}])
 
@@ -287,7 +294,7 @@
           name]
          [rn/text description]]]
        [rn/view (style/community-view-button)
-        [rn/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
+        [rn/touchable-opacity {:on-press #(re-frame/dispatch [:navigate-to
                                                                 :community
                                                                 {:community-id (:id community)}])}
          [rn/text {:style {:text-align :center
@@ -371,7 +378,7 @@
                                  :visible  @visible
                                  :on-close #(do (reset! visible false)
                                                 (reagent/flush))}]
-         [rn/touchable-highlight {:on-press      (fn []
+         [rn/touchable-opacity {:on-press      (fn []
                                                    (reset! visible true)
                                                    (rn/dismiss-keyboard!))
                                   :on-long-press @on-long-press
@@ -383,7 +390,7 @@
               (merge (dissoc style-opts :opacity)
                      {:flex 1 :align-items :center :justify-content :center :position :absolute})
               (if (:error @dimensions)
-                [icons/icon :main-icons/cancel]
+                [icons/icon :main-icons2/cancel]
                 [rn/activity-indicator {:animating true}])])
            [fast-image/fast-image {:style    (dissoc style-opts :outgoing)
                                    :on-load  (image-set-size dimensions)
@@ -413,9 +420,7 @@
     (if (and (not pinned) (> (count pinned-messages) 2))
       (do
         (js/setTimeout (fn [] (re-frame/dispatch [:dismiss-keyboard])) 500)
-        (re-frame/dispatch [:show-popover {:view             :pin-limit
-                                           :message          message
-                                           :prevent-closing? true}]))
+        (re-frame/dispatch [::models.pin-message/show-pin-limit-modal chat-id]))
       (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
 (defn on-long-press-fn [on-long-press {:keys [pinned message-pin-enabled outgoing edit-enabled show-input? community?] :as message} content]
@@ -470,7 +475,7 @@
                                   (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
                               (on-long-press-fn on-long-press message content)))]
         (reset! ref on-long-press)
-        [rn/touchable-highlight
+        [rn/touchable-opacity
          (when-not modal
            {:delay-long-press 100
             :on-long-press    on-long-press
@@ -513,21 +518,21 @@
                               [{:type     :main
                                 :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
                                 :id       :reply
-                                :icon     :main-icons/reply-context20
+                                :icon     :main-icons2/reply-context20
                                 :label    (i18n/label :t/message-reply)}
                                {:type     :main
                                 :on-press #(react/copy-to-clipboard (get content :text))
                                 :id       :copy
-                                :icon     :main-icons/copy-context20
+                                :icon     :main-icons2/copy-context20
                                 :label    (i18n/label :t/copy-text)}]
                               (when message-pin-enabled [{:type     :main
                                                           :on-press #(pin-message message)
                                                           :id       :pin
-                                                          :icon     :main-icons/pin-context20
+                                                          :icon     :main-icons2/pin-context20
                                                           :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))}]))))]
         (reset! ref on-long-press)
         [message-content-wrapper message
-         [rn/touchable-highlight (when-not modal
+         [rn/touchable-opacity (when-not modal
                                    {:disabled         in-popover?
                                     :on-press         (fn []
                                                         (rn/dismiss-keyboard!)
@@ -554,13 +559,13 @@
                         (on-long-press
                          (when-not outgoing
                            [{:type     :main
-                             :icon     :main-icons/stickers-context20
+                             :icon     :main-icons2/stickers-context20
                              :on-press #(when pack
                                           (re-frame/dispatch [:chat.ui/show-profile from]))
                              :label    (i18n/label :t/see-sticker-set)}])))]
     (reset! ref on-long-press)
     [message-content-wrapper message
-     [rn/touchable-highlight (when-not modal
+     [rn/touchable-opacity (when-not modal
                                {:disabled            in-popover?
                                 :accessibility-label :sticker-message
                                 :on-press            (fn [_]
@@ -582,31 +587,31 @@
                          (concat [{:type     :main
                                    :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
                                    :id       :reply
-                                   :icon     :main-icons/reply-context20
+                                   :icon     :main-icons2/reply-context20
                                    :label    (i18n/label :t/message-reply)}
                                   {:type     :main
                                    :on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
                                    :id       :save
-                                   :icon     :main-icons/save-context20
+                                   :icon     :main-icons2/save-context20
                                    :label    (i18n/label :t/save-image-library)}
                                   {:type     :main
                                    :on-press #(images/download-image-http
                                                (get-in message [:content :image]) preview/share)
                                    :id       :share
-                                   :icon     :main-icons/share-context20
+                                   :icon     :main-icons2/share-context20
                                    :label    (i18n/label :t/share-image)}]
                                  [{:type     :danger
                                    :on-press #(re-frame/dispatch
                                                [:chat.ui/delete-message-for-me message
                                                 config/delete-message-for-me-undo-time-limit-ms])
                                    :label    (i18n/label :t/delete-for-me)
-                                   :icon     :main-icons/delete-context20
+                                   :icon     :main-icons2/delete-context20
                                    :id       :delete-for-me}]
                                  (when (and outgoing config/delete-message-enabled?)
                                    [{:type     :danger
                                      :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
                                      :label    (i18n/label :t/delete-for-everyone)
-                                     :icon     :main-icons/delete-context20
+                                     :icon     :main-icons2/delete-context20
                                      :id       :delete}]))))]
     (reset! ref on-long-press)
     [message-content-wrapper message
@@ -625,29 +630,29 @@
       (let [on-long-press (fn [] (on-long-press [{:type     :main
                                                   :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
                                                   :label    (i18n/label :t/message-reply)
-                                                  :icon     :main-icons/reply-context20
+                                                  :icon     :main-icons2/reply-context20
                                                   :id       :reply}
                                                  {:type     :main
                                                   :on-press #(pin-message message)
                                                   :label    (i18n/label (if pinned :t/unpin-from-chat :t/pin-to-chat))
-                                                  :icon     :main-icons/pin-context20
+                                                  :icon     :main-icons2/pin-context20
                                                   :id       (if pinned :unpin :pin)}
                                                  {:type     :danger
                                                   :on-press #(re-frame/dispatch
                                                               [:chat.ui/delete-message-for-me message
                                                                config/delete-message-for-me-undo-time-limit-ms])
                                                   :label    (i18n/label :t/delete-for-me)
-                                                  :icon     :main-icons/delete-context20
+                                                  :icon     :main-icons2/delete-context20
                                                   :id       :delete-for-me}
                                                  (when (and outgoing config/delete-message-enabled?)
                                                    {:type     :danger
                                                     :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
                                                     :label    (i18n/label :t/delete-for-everyone)
-                                                    :icon     :main-icons/delete-context20
+                                                    :icon     :main-icons2/delete-context20
                                                     :id       :delete})]))]
         (reset! ref on-long-press)
         [message-content-wrapper message
-         [rn/touchable-highlight
+         [rn/touchable-opacity
           (when-not modal
             {:on-long-press on-long-press
              :on-press      (fn []
@@ -739,6 +744,7 @@
                                                                              :margin-bottom    4})
                     (when (or mentioned pinned last-in-group?) {:margin-top 8})
                     {:margin-horizontal 8})}
+
      (when pinned
        [rn/view {:style (style/pin-indicator-container)}
         [pinned-by-indicator pinned-by]])
@@ -786,7 +792,7 @@
         [chat-icon/chat-icon-view-toolbar chat-id (:group-chat current-chat) (:chat-name current-chat) (:color current-chat) (:emoji current-chat) 22]
         [rn/text {:style {:margin-left 6 :margin-right 4 :color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}} (:name community)]
         [icons/icon
-         :main-icons/chevron-right
+         :main-icons2/chevron-right
          {:color  (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)
           :width  12
           :height 12}]
@@ -861,3 +867,4 @@
                          :align-items      :center
                          :background-color quo2.colors/neutral-80-opa-5}}
         [rn/text {:style (merge typography/label typography/font-medium {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)})} pins-count]]])))
+

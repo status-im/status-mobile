@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.chat.message.styles
   (:require [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.photos :as photos]
-            [quo2.foundations.colors :as quo2.colors]))
+            [status-im.ui.screens.chat.styles.photos :as photos]))
 
 (defn picker-wrapper-style [{:keys [display-photo? outgoing timeline]}]
   (merge {:flex-direction :row

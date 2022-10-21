@@ -12,6 +12,7 @@
             [status-im.ui2.screens.chat.messages.view :as messages]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui2.screens.chat.messages.pinned-message :as pinned-message]
             [re-frame.db]
             [status-im.ui2.screens.chat.messages.message :as message]))
 
@@ -68,6 +69,7 @@
          (if group-chat
            [invitation-requests chat-id admins]
            (when-not mutual-contact-requests-enabled? [add-contact-bar chat-id])))
+     [pinned-message/pin-limit-popover chat-id message/pinned-messages-list]
      [message/pinned-banner chat-id]
      ;;MESSAGES LIST
      [messages/messages-view
