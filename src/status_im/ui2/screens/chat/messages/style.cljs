@@ -1,8 +1,6 @@
 (ns status-im.ui2.screens.chat.messages.style
   (:require [quo2.foundations.colors :as colors]))
 
-
-
 (defn pin-popover [width]
   {:position :absolute
    :width (- width 16)

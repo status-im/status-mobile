@@ -38,13 +38,13 @@
             [status-im.utils.config :as config]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.utils.security :as security])
-            [status-im.utils.security :as security]
-            [quo2.foundations.typography :as typography]
-            [quo2.foundations.colors :as quo2.colors]
-            [status-im.ui.components.list.views :as list]
-            [quo.react-native :as rn]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [quo2.components.icon :as icons]
+  [status-im.utils.security :as security]
+  [quo2.foundations.typography :as typography]
+  [quo2.foundations.colors :as quo2.colors]
+  [status-im.ui.components.list.views :as list]
+  [quo.react-native :as rn]
+  [status-im.ui.components.chat-icon.screen :as chat-icon]
+  [quo2.components.icon :as icons]
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn message-timestamp-anim
@@ -243,8 +243,8 @@
 
 (defn pin-icon [color size]
   [icons/icon :main-icons2/pin {:color  color
-                                 :height size
-                                 :width  size}])
+                                :height size
+                                :width  size}])
 
 (defn pinned-by-indicator [pinned-by]
   [rn/view {:style               (style/pin-indicator)
@@ -295,8 +295,8 @@
          [rn/text description]]]
        [rn/view (style/community-view-button)
         [rn/touchable-opacity {:on-press #(re-frame/dispatch [:navigate-to
-                                                                :community
-                                                                {:community-id (:id community)}])}
+                                                              :community
+                                                              {:community-id (:id community)}])}
          [rn/text {:style {:text-align :center
                            :color      colors/blue}} (i18n/label :t/view)]]]])))
 
@@ -379,10 +379,10 @@
                                  :on-close #(do (reset! visible false)
                                                 (reagent/flush))}]
          [rn/touchable-opacity {:on-press      (fn []
-                                                   (reset! visible true)
-                                                   (rn/dismiss-keyboard!))
-                                  :on-long-press @on-long-press
-                                  :disabled      in-popover?}
+                                                 (reset! visible true)
+                                                 (rn/dismiss-keyboard!))
+                                :on-long-press @on-long-press
+                                :disabled      in-popover?}
           [rn/view {:style               (style/image-message style-opts)
                     :accessibility-label :image-message}
            (when (or (:error @dimensions) (not (:loaded @dimensions)))
@@ -533,12 +533,12 @@
         (reset! ref on-long-press)
         [message-content-wrapper message
          [rn/touchable-opacity (when-not modal
-                                   {:disabled         in-popover?
-                                    :on-press         (fn []
-                                                        (rn/dismiss-keyboard!)
-                                                        (reset! show-timestamp? true))
-                                    :delay-long-press 100
-                                    :on-long-press    on-long-press})
+                                 {:disabled         in-popover?
+                                  :on-press         (fn []
+                                                      (rn/dismiss-keyboard!)
+                                                      (reset! show-timestamp? true))
+                                  :delay-long-press 100
+                                  :on-long-press    on-long-press})
           [rn/view style/message-view-wrapper
            [message-timestamp message show-timestamp?]
            [rn/view (style/message-view message)
@@ -566,14 +566,14 @@
     (reset! ref on-long-press)
     [message-content-wrapper message
      [rn/touchable-opacity (when-not modal
-                               {:disabled            in-popover?
-                                :accessibility-label :sticker-message
-                                :on-press            (fn [_]
-                                                       (when pack
-                                                         (re-frame/dispatch [:stickers/open-sticker-pack (str pack)]))
-                                                       (rn/dismiss-keyboard!))
-                                :delay-long-press    100
-                                :on-long-press       on-long-press})
+                             {:disabled            in-popover?
+                              :accessibility-label :sticker-message
+                              :on-press            (fn [_]
+                                                     (when pack
+                                                       (re-frame/dispatch [:stickers/open-sticker-pack (str pack)]))
+                                                     (rn/dismiss-keyboard!))
+                              :delay-long-press    100
+                              :on-long-press       on-long-press})
       [fast-image/fast-image {:style  {:margin 10 :width 140 :height 140}
                               :source {:uri (str (-> content :sticker :url) "&download=true")}}]]
      reaction-picker]))
