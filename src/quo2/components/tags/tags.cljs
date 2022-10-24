@@ -6,24 +6,24 @@
 (defn tags
   [{:keys [default-active on-change]}]
   (let [active-tab-id (reagent/atom default-active)]
-    (fn [{:keys [data size type labelled disabled blurred icon-color] :or {size 32}}]
+    (fn [{:keys [data size type labelled? disabled? blurred? icon-color] :or {size 32}}]
       (let [active-id @active-tab-id]
-        [rn/view {:flex-direction :row}
-         (for [{:keys [tag-label id resource]} data]
+        [rn/view {:style {:flex-direction :row}}
+         (for [{:keys [label id resource]} data]
            ^{:key id}
-           [rn/view {:margin-right 8}
+           [rn/view {:style {:margin-right 8}}
             [tag/tag
-             (merge {:id         id
-                     :size       size
-                     :type       type
-                     :label      (if labelled tag-label (when (= type :label) tag-label))
-                     :active     (= id active-id)
-                     :disabled   disabled
-                     :blurred    blurred
-                     :icon-color icon-color
-                     :labelled   (if (= type :label) true labelled)
-                     :resource   (if (= type :icon)
-                                   :i/placeholder
-                                   resource)
-                     :on-press   #(do (reset! active-tab-id %)
-                                      (when on-change (on-change %)))})]])]))))
+             (merge {:id            id
+                     :size          size
+                     :type          type
+                     :label         (if labelled? label (when (= type :label) label))
+                     :active        (= id active-id)
+                     :disabled?     disabled?
+                     :blurred?      blurred?
+                     :icon-color    icon-color
+                     :labelled?      (if (= type :label) true labelled?)
+                     :resource      (if (= type :icon)
+                                      :i/placeholder
+                                      resource)
+                     :on-press      #(do (reset! active-tab-id %)
+                                         (when on-change (on-change %)))})]])]))))
