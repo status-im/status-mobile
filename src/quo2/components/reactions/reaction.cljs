@@ -16,14 +16,16 @@
 (defn open-reactions-menu
   [{:keys [on-press]}]
   (let [dark? (theme/dark?)]
-    [rn/touchable-opacity {:on-press on-press
-                           :style (merge reaction-styling
+    [rn/touchable-opacity
+     {:on-press               on-press
+      :accessibility-label :emoji-reaction-add
+      :style                      (merge reaction-styling
                                          {:padding-horizontal 9
-                                          :border-width 1
-                                          :margin-top 5
-                                          :border-color (if dark?
-                                                          colors/neutral-70
-                                                          colors/neutral-30)})}
+                                          :border-width           1
+                                          :margin-top              5
+                                          :border-color           (if dark?
+                                                                    colors/neutral-70
+                                                                    colors/neutral-30)})}
      [icons/icon :main-icons2/add
       {:size 20
        :color (if dark?
@@ -32,26 +34,30 @@
 
 (defn reaction
   "Add your emoji as a param here"
-  [{:keys [emoji clicks neutral? on-press]}]
+  [{:keys [emoji clicks neutral? on-press accessibility-label]}]
   (let [dark? (theme/dark?)
         text-color (if dark? colors/white
                        colors/neutral-100)
         numeric-value (int clicks)
         clicks-positive? (pos? numeric-value)]
-    [rn/touchable-opacity {:on-press on-press
-                           :style (merge reaction-styling
-                                         (cond-> {:background-color
-                                                  (if dark?
-                                                    (if neutral?
-                                                      colors/neutral-70
-                                                      :transparent)
-                                                    (if neutral?
-                                                      colors/neutral-30
-                                                      :transparent))}
-                                           (and dark? (not neutral?)) (assoc :border-color colors/neutral-70
-                                                                             :border-width 1)
-                                           (and (not dark?) (not neutral?)) (assoc :border-color colors/neutral-30
-                                                                                   :border-width 1)))}
+    [rn/touchable-opacity
+     {:on-press            on-press
+      :accessibility-label accessibility-label
+      :style               (merge reaction-styling
+                                  (cond-> {:background-color
+                                           (if dark?
+                                             (if neutral?
+                                               colors/neutral-70
+                                               :transparent)
+                                             (if neutral?
+                                               colors/neutral-30
+                                               :transparent))}
+                                    (and dark? (not neutral?))
+                                    (assoc :border-color colors/neutral-70
+                                           :border-width 1)
+                                    (and (not dark?) (not neutral?))
+                                    (assoc :border-color colors/neutral-30
+                                           :border-width 1)))}
      [icons/icon emoji {:no-color true
                         :size     16}]
      [quo2.text/text {:size :paragraph-2

@@ -2,66 +2,58 @@
   (:require [quo.react-native :as rn]
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
-            [quo2.reanimated :as reanimated]
             [status-im.switcher.styles :as styles]
+            [status-im.utils.platform :as platform]
             [status-im.switcher.constants :as constants]
             [status-im.switcher.animation :as animation]
-            [quo2.components.icon :as icons]))
-
-(def selected-stack-id (atom :communities-stack))
+            [quo2.components.navigation.bottom-nav-tab :as bottom-nav-tab]))
 
 ;; Reagent atoms used for lazily loading home screen tabs
-(def load-communities-tab? (reagent/atom true))
+(def load-communities-tab? (reagent/atom false))
 (def load-chats-tab? (reagent/atom false))
 (def load-wallet-tab? (reagent/atom false))
 (def load-browser-tab? (reagent/atom false))
 
+(defn load-selected-stack [stack-id]
+  (case stack-id
+    :communities-stack (reset! load-communities-tab? true)
+    :chats-stack       (reset! load-chats-tab? true)
+    :wallet-stack      (reset! load-wallet-tab? true)
+    :browser-stack     (reset! load-browser-tab? true)
+    ""))
+
 (re-frame/reg-fx
  :new-ui/reset-bottom-tabs
  (fn []
-   (reset! selected-stack-id :communities-stack)
-   (reset! load-communities-tab? true)
-   (reset! load-chats-tab? false)
-   (reset! load-wallet-tab? false)
-   (reset! load-browser-tab? false)))
+   (let [selected-stack-id @animation/selected-stack-id]
+     (reset! load-communities-tab? (= selected-stack-id :communities-stack))
+     (reset! load-chats-tab? (= selected-stack-id :chats-stack))
+     (reset! load-wallet-tab? (= selected-stack-id :wallet-stack))
+     (reset! load-browser-tab? (= selected-stack-id :browser-stack)))))
 
 (defn bottom-tab-on-press [shared-values stack-id]
-  (when-not (= stack-id @selected-stack-id)
-    (reset! selected-stack-id stack-id)
-    (animation/bottom-tab-on-press shared-values stack-id)
-    (case stack-id
-      :communities-stack (reset! load-communities-tab? true)
-      :chats-stack       (reset! load-chats-tab? true)
-      :wallet-stack      (reset! load-wallet-tab? true)
-      :browser-stack     (reset! load-browser-tab? true))))
+  (when-not (= stack-id @animation/selected-stack-id)
+    (let [stack-load-delay (cond
+                             @animation/home-stack-open? 0
+                             platform/android?           250
+                             :else                       300)]
+      (animation/change-tab shared-values stack-id)
+      (js/setTimeout #(load-selected-stack stack-id) stack-load-delay))))
 
-;; TODO(parvesh) - reimplement tab with counter, once design is complete
-(defn bottom-tab [icon stack-id icons-only? shared-values]
-  [:f>
-   (fn []
-     (let [bottom-tab-original-style {:padding 16}]
-       (if icons-only?
-         [rn/touchable-opacity {:active-opacity 1
-                                :style          bottom-tab-original-style
-                                :on-press       #(bottom-tab-on-press shared-values stack-id)}
-          [reanimated/view {:style (reanimated/apply-animations-to-style
-                                    {:opacity (get
-                                               shared-values
-                                               (get constants/tabs-opacity-keywords stack-id))}
-                                    {})}
-           [icons/icon icon (styles/bottom-tab-icon :bottom-tabs-selected-tab)]]]
-         [rn/view {:style bottom-tab-original-style}
-          [icons/icon icon (styles/bottom-tab-icon :bottom-tabs-non-selected-tab)]])))])
-
-(defn tabs [shared-values icons-only?]
-  [rn/view {:style (styles/bottom-tabs icons-only?)}
-   [bottom-tab :main-icons2/communities :communities-stack icons-only? shared-values]
-   [bottom-tab :main-icons2/messages :chats-stack icons-only? shared-values]
-   [rn/view {:width 50}]
-   [bottom-tab :main-icons2/wallet :wallet-stack icons-only? shared-values]
-   [bottom-tab :main-icons2/browser :browser-stack icons-only? shared-values]])
+(defn bottom-tab [icon stack-id shared-values]
+  [bottom-nav-tab/bottom-nav-tab
+   {:icon                icon
+    :icon-color-anim     (get
+                          shared-values
+                          (get constants/tabs-icon-color-keywords stack-id))
+    :on-press            #(bottom-tab-on-press shared-values stack-id)
+    :accessibility-label (str (name stack-id) "-tab")}])
 
 (defn bottom-tabs [shared-values]
-  [:<>
-   [tabs shared-values false]
-   [tabs shared-values true]])
+  (load-selected-stack @animation/selected-stack-id)
+  [rn/view {:style (styles/bottom-tabs-container false)}
+   [rn/view {:style (styles/bottom-tabs)}
+    [bottom-tab :main-icons2/communities :communities-stack shared-values]
+    [bottom-tab :main-icons2/messages :chats-stack shared-values]
+    [bottom-tab :main-icons2/wallet :wallet-stack shared-values]
+    [bottom-tab :main-icons2/browser :browser-stack  shared-values]]])
