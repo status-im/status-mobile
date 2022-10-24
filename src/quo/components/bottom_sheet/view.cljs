@@ -202,17 +202,15 @@
                                                     :wait-for master-ref
                                                     :enabled  (and (not disable-drag?)
                                                                    (not= sheet-height max-height))})
-        [animated/view {:height sheet-height}
-         [animated/scroll-view {:bounces        false
-                                :flex           1
-                                :scroll-enabled (= sheet-height max-height)}
-          [animated/view {:style     {:padding-top    styles/vertical-padding
-                                      :padding-bottom (+ styles/vertical-padding
-                                                         (if (and platform/ios? keyboard-shown)
-                                                           keyboard-height
-                                                           (:bottom safe-area)))}
-                          :on-layout #(reset! height (.-nativeEvent.layout.height ^js %))}
-           (into [:<>]
-                 (react/get-children children))]]]]]])))
+        [animated/view {:height sheet-height
+                        :flex           1}
+         [animated/view {:style     {:padding-top    styles/vertical-padding
+                                     :padding-bottom (+ styles/vertical-padding
+                                                        (if (and platform/ios? keyboard-shown)
+                                                          keyboard-height
+                                                          (:bottom safe-area)))}
+                         :on-layout #(reset! height (.-nativeEvent.layout.height ^js %))}
+          (into [:<>]
+                (react/get-children children))]]]]])))
 
 (def bottom-sheet (reagent/adapt-react-class (react/memo bottom-sheet-hooks)))

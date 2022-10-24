@@ -28,8 +28,8 @@
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
             [quo.react-native :as rn]
+            [quo.react]
             [quo2.foundations.colors :as colors]
-            [quo2.foundations.colors :refer [theme-colors]]
             [quo2.foundations.typography :as typography]
             [quo2.components.buttons.button :as quo2.button]
             [quo2.components.tabs.tabs :as quo2.tabs]
@@ -179,34 +179,44 @@
   [rn/view {:style {:border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :padding-horizontal 20 :margin-top 8}}
    [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color colors/neutral-50})} title]])
 
+(defn find-contact-requests [notifications]
+  (let [received (atom [])]
+    (doseq [i (range (count notifications))]
+      (doseq [j (range (count (:data (nth notifications i))))]
+        (when (= 1 (get-in (nth (:data (nth notifications i)) j) [:message :contact-request-state]))
+          (swap! received conj (nth (:data (nth notifications i)) j)))))
+    @received))
+
 (def selected-requests-tab (reagent/atom :received))
 
-(defn contacts-requests-sheet [requests]
+(defn contact-requests-sheet []
   [:f>
    (fn []
      (let [{window-height :height} (rn/use-window-dimensions)
-           safe-area (safe-area/use-safe-area)]
+           safe-area         (safe-area/use-safe-area)
+           notifications     (<sub [:activity.center/notifications-grouped-by-date])
+           received-requests (find-contact-requests notifications)
+           sent-requests     []]
        [rn/view {:style {:margin-left 20
                          :height      (- window-height (:top safe-area))}}
         [rn/touchable-opacity
          {:on-press #(>evt [:bottom-sheet/hide])
           :style
-          {:background-color (theme-colors colors/neutral-10 colors/neutral-80)
+          {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
            :width            32
            :height           32
            :border-radius    10
            :justify-content  :center
            :align-items      :center
-           :margin-bottom    24
-           }}
-         [quo2.icons/icon :main-icons2/close {:color (theme-colors "#000000" "#ffffff")}]]
+           :margin-bottom    24}}
+         [quo2.icons/icon :main-icons2/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
         [rn/text {:style (merge
-                           typography/heading-1
-                           typography/font-semi-bold
-                           {:color (theme-colors "#000000" "#ffffff")})}
+                          typography/heading-1
+                          typography/font-semi-bold
+                          {:color (colors/theme-colors "#000000" "#ffffff")})}
          (i18n/label :t/pending-requests)]
         [quo2.tabs/tabs
-         {:style          {:margin-top 12}
+         {:style          {:margin-top 12 :margin-bottom 20}
           :size           32
           :on-change      #(reset! selected-requests-tab %)
           :default-active :received
@@ -215,17 +225,16 @@
                            {:id    :sent
                             :label (i18n/label :t/sent)}]}]
         [list/flat-list
-         {:key-fn                       :first
-          :data                         requests
-          :render-fn                    received-contact-request/list-item}]
-        ]))])
+         {:key-fn    :first
+          :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
+          :render-fn received-contact-request/list-item}]]))])
 
-(defn contact-requests [requests count]
+(defn contact-requests [count]
   [rn/touchable-opacity
    {:active-opacity 1
     :on-press       #(>evt
-                       [:bottom-sheet/show-sheet
-                        {:content (fn [] [contacts-requests-sheet requests])}])
+                      [:bottom-sheet/show-sheet
+                       {:content (fn [] [contact-requests-sheet])}])
     :style          {:flex-direction     :row
                      :margin             8
                      :padding-horizontal 12
@@ -237,28 +246,19 @@
                      :height          32
                      :border-radius   16
                      :border-width    1
-                     :border-color    (theme-colors colors/neutral-20 colors/neutral-80)}}
-    [quo2.icons/icon :main-icons2/pending-user {:color (theme-colors colors/neutral-50 colors/neutral-40)}]]
+                     :border-color    (colors/theme-colors colors/neutral-20 colors/neutral-80)}}
+    [quo2.icons/icon :main-icons2/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
    [rn/view {:style {:margin-left 8}}
     [rn/text {:style
-              (merge typography/paragraph-1 typography/font-semi-bold {:color (theme-colors "#000000" "#ffffff")})} (i18n/label :t/pending-requests)]
-    [rn/text {:style (merge typography/paragraph-2 typography/font-regular {:color (theme-colors colors/neutral-50 colors/neutral-40)})} "Alice, Pedro and 3 others"]]
+              (merge typography/paragraph-1 typography/font-semi-bold {:color (colors/theme-colors "#000000" "#ffffff")})} (i18n/label :t/pending-requests)]
+    [rn/text {:style (merge typography/paragraph-2 typography/font-regular {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})} "Alice, Pedro and 3 others"]]
    [rn/view {:style {:width            16
                      :height           16
                      :position         :absolute
                      :right            22
                      :border-radius    6
-                     :background-color (theme-colors colors/primary-50 colors/primary-60)}}
-    [rn/text {:style (merge typography/font-medium typography/label {:color "#ffffff" :text-align :center})} count]]
-   ])
-
-(defn find-contact-requests [notifications]
-  (let [data (atom [])]
-    (doseq [i (range (count notifications))]
-      (doseq [j (range (count (:data (nth notifications i))))]
-        (when (= 1 (get-in (nth (:data (nth notifications i)) j) [:message :contact-request-state]))
-          (swap! data conj (nth (:data (nth notifications i)) j)))))
-    @data))
+                     :background-color (colors/theme-colors colors/primary-50 colors/primary-60)}}
+    [rn/text {:style (merge typography/font-medium typography/label {:color "#ffffff" :text-align :center})} count]]])
 
 (defn chats []
   (let [{:keys [items search-filter]} (<sub [:home-items])
@@ -266,7 +266,7 @@
         items              (prepare-items current-active-tab items)
         contacts           (<sub [:contacts/active])
         contacts           (prepare-contacts contacts)
-        notifications      @(re-frame/subscribe [:activity.center/notifications-grouped-by-date])
+        notifications      (<sub [:activity.center/notifications-grouped-by-date])
         requests           (find-contact-requests notifications)]
     [rn/view {:style {:flex 1}}
      [discover-card/discover-card {:title       (i18n/label :t/invite-friends-to-status)
@@ -295,52 +295,51 @@
            :keyboard-should-persist-taps :always
            :data                         items
            :render-fn                    render-fn}]
-         [rn/view (when (> (count requests) 1)
-                    [contact-requests requests (count requests)])
+         [rn/view {:style {:flex 1}} (when (> (count requests) 0)
+                                       [contact-requests (count requests)])
           [list/section-list
            {:key-fn                         :title
             :sticky-section-headers-enabled false
             :sections                       contacts
             :render-section-header-fn       contacts-section-header
-            :render-fn                      render-contact}]]
-         ))]))
+            :render-fn                      render-contact}]]))]))
 
 (views/defview chats-list []
-                          (views/letsubs [loading? [:chats/loading?]]
-                            [:<>
-                             [connectivity/loading-indicator]
-                             (if loading?
-                               [rn/view {:flex 1 :align-items :center :justify-content :center}
-                                [rn/activity-indicator {:animating true}]]
-                               [chats])]))
+  (views/letsubs [loading? [:chats/loading?]]
+    [:<>
+     [connectivity/loading-indicator]
+     (if loading?
+       [rn/view {:flex 1 :align-items :center :justify-content :center}
+        [rn/activity-indicator {:animating true}]]
+       [chats])]))
 
 (views/defview plus-button []
-                           (views/letsubs [logging-in? [:multiaccounts/login]]
-                             [components.plus-button/plus-button
-                              {:on-press            (when-not logging-in?
-                                                      #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
-                               :loading             logging-in?
-                               :accessibility-label :new-chat-button}]))
+  (views/letsubs [logging-in? [:multiaccounts/login]]
+    [components.plus-button/plus-button
+     {:on-press            (when-not logging-in?
+                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+      :loading             logging-in?
+      :accessibility-label :new-chat-button}]))
 
 (views/defview notifications-button []
-                                    (views/letsubs [notif-count [:activity.center/notifications-count]]
-                                      [rn/view
-                                       [quo2.button/button {:type                :grey
-                                                            :size                32
-                                                            :width               32
-                                                            :style               {:margin-left 12}
-                                                            :accessibility-label :notifications-button
-                                                            :on-press            #(do
-                                                                                    (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
-                                                                                    (if config/new-activity-center-enabled?
-                                                                                      (re-frame/dispatch [:navigate-to :activity-center])
-                                                                                      (re-frame/dispatch [:navigate-to :notifications-center])))}
-                                        [icons/icon :main-icons/notification2 {:color (theme-colors colors/neutral-100 colors/white)}]]
-                                       (when (pos? notif-count)
-                                         [rn/view {:style          (merge (styles/counter-public-container) {:top 5 :right 5})
-                                                   :pointer-events :none}
-                                          [rn/view {:style               styles/counter-public
-                                                    :accessibility-label :notifications-unread-badge}]])]))
+  (views/letsubs [notif-count [:activity.center/notifications-count]]
+    [rn/view
+     [quo2.button/button {:type                :grey
+                          :size                32
+                          :width               32
+                          :style               {:margin-left 12}
+                          :accessibility-label :notifications-button
+                          :on-press            #(do
+                                                  (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
+                                                  (if config/new-activity-center-enabled?
+                                                    (re-frame/dispatch [:navigate-to :activity-center])
+                                                    (re-frame/dispatch [:navigate-to :notifications-center])))}
+      [icons/icon :main-icons/notification2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
+     (when (pos? notif-count)
+       [rn/view {:style          (merge (styles/counter-public-container) {:top 5 :right 5})
+                 :pointer-events :none}
+        [rn/view {:style               styles/counter-public
+                  :accessibility-label :notifications-unread-badge}]])]))
 
 (defn qr-button []
   [quo2.button/button {:type                :grey
@@ -351,7 +350,7 @@
                        :on-press            #(do
                                                (re-frame/dispatch [::qr-scanner/scan-code
                                                                    {:handler ::qr-scanner/on-scan-success}]))}
-   [icons/icon :main-icons/qr2 {:color (theme-colors colors/neutral-100 colors/white)}]])
+   [icons/icon :main-icons/qr2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
 (defn scan-button []
   [quo2.button/button {:type                :grey
@@ -361,25 +360,25 @@
                        :on-press            #(do
                                                (re-frame/dispatch [::qr-scanner/scan-code
                                                                    {:handler ::qr-scanner/on-scan-success}]))}
-   [icons/icon :main-icons/scan2 {:color (theme-colors colors/neutral-100 colors/white)}]])
+   [icons/icon :main-icons/scan2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
 (views/defview profile-button []
-                              (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]
-                                [rn/view
-                                 [chat-icon/emoji-chat-icon-view public-key false preferred-name emoji
-                                  {:size      28
-                                   :chat-icon chat-icon.styles/chat-icon-chat-list}]]))
+  (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]
+    [rn/view
+     [chat-icon/emoji-chat-icon-view public-key false preferred-name emoji
+      {:size      28
+       :chat-icon chat-icon.styles/chat-icon-chat-list}]]))
 
 (defn home []
   [:f>
    (fn []
      (quo.react/effect! #(re-frame/dispatch [:get-activity-center-notifications]))
      [rn/keyboard-avoiding-view {:style         {:flex             1
-                                                 :background-color (theme-colors colors/neutral-5 colors/neutral-95)}
+                                                 :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
                                  :ignore-offset true}
       [topbar/topbar {:navigation      :none
                       :use-insets      true
-                      :background      (theme-colors colors/neutral-5 colors/neutral-95)
+                      :background      (colors/theme-colors colors/neutral-5 colors/neutral-95)
                       :left-component  [rn/view {:flex-direction :row :margin-left 20}
                                         [profile-button]]
                       :right-component [rn/view {:flex-direction :row :margin-right 20}

@@ -28,8 +28,8 @@
                 :ellipsize-mode      :tail
                 :number-of-lines     1
                 :color               (colors/theme-colors
-                                       colors/neutral-50
-                                       colors/neutral-40)
+                                      colors/neutral-50
+                                      colors/neutral-40)
                 :weight               :regular
                 :size                 :paragraph-2}
      description]]])
@@ -75,8 +75,8 @@
      {:on-press on-press}
      [react/view (merge (styles/community-card 16)
                         {:background-color  (colors/theme-colors
-                                              colors/white
-                                              colors/neutral-90)}
+                                             colors/white
+                                             colors/neutral-90)}
                         {:flex-direction  :row
                          :margin-horizontal 20
                          :height          56
