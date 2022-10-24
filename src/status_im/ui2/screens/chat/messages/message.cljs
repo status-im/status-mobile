@@ -254,13 +254,13 @@
              (= outgoing-status :not-sent))
     [message-not-sent-text chat-id message-id]))
 
-(defview message-author-name [from opts]
+(defview message-author-name [from opts max-length]
   (letsubs [contact-with-names [:contacts/contact-by-identity from]]
-    (chat.utils/format-author contact-with-names opts)))
+    (chat.utils/format-author contact-with-names opts max-length)))
 
 (defview message-my-name [opts]
   (letsubs [contact-with-names [:multiaccount/contact]]
-    (chat.utils/format-author contact-with-names opts)))
+    (chat.utils/format-author contact-with-names opts nil)))
 
 (defview community-content [{:keys [community-id] :as message}]
   (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]
@@ -445,15 +445,19 @@
         :icon     :main-icons2/pin
         :id       (if pinned :unpin :pin)}])
     [{:type     :danger
-      :on-press #(re-frame/dispatch
-                  [:chat.ui/delete-message-for-me message
-                   config/delete-message-for-me-undo-time-limit-ms])
+      :on-press (fn []
+                  (when pinned (pin-message message))
+                  (re-frame/dispatch
+                   [:chat.ui/delete-message-for-me message
+                    config/delete-message-for-me-undo-time-limit-ms]))
       :label    (i18n/label :t/delete-for-me)
       :icon     :main-icons2/delete
       :id       :delete-for-me}]
     (when (and outgoing config/delete-message-enabled?)
       [{:type     :danger
-        :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
+        :on-press (fn []
+                    (when pinned (pin-message message))
+                    (re-frame/dispatch [:chat.ui/soft-delete-message message]))
         :label    (i18n/label :t/delete-for-everyone)
         :icon     :main-icons2/delete
         :id       :delete-for-all}]))))
@@ -769,7 +773,7 @@
   (let [pinned-messages (vec (vals (<sub [:chats/pinned chat-id])))
         current-chat    (<sub [:chats/current-chat])
         community       (<sub [:communities/community (:community-id current-chat)])]
-    [rn/view
+    [rn/view {:accessibility-label :pinned-messages-list}
      [rn/text {:style (merge typography/heading-1 typography/font-semi-bold {:margin-horizontal 20
                                                                              :color             (colors/theme-colors colors/neutral-100 colors/white)})}
       (i18n/label :t/pinned-messages)]
@@ -792,11 +796,24 @@
         [rn/text {:style {:margin-left  4
                           :margin-right 8
                           :color        (colors/theme-colors colors/neutral-100 colors/white)}} (str "# " (:chat-name current-chat))]])
-     [list/flat-list
-      {:data      pinned-messages
-       :render-fn message-render-fn
-       :key-fn    list-key-fn
-       :separator [rn/view {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80) :height 1 :margin-top 8}]}]]))
+     (if (> (count pinned-messages) 0)
+       [list/flat-list
+        {:data      pinned-messages
+         :render-fn message-render-fn
+         :key-fn    list-key-fn
+         :separator [rn/view {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80) :height 1 :margin-top 8}]}]
+       [rn/view {:style {:justify-content :center
+                         :align-items     :center
+                         :flex            1
+                         :margin-top      20}}
+        [rn/view {:style {:width           120
+                          :height          120
+                          :justify-content :center
+                          :align-items     :center
+                          :border-width    1}} [icons/icon :main-icons2/placeholder]]
+        [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold {:margin-top 20})} (i18n/label :t/no-pinned-messages)]
+        [rn/text {:style (merge typography/paragraph-2 typography/font-regular)}
+         (i18n/label (if community :t/no-pinned-messages-community-desc :t/no-pinned-messages-desc))]])]))
 
 (defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
@@ -805,13 +822,14 @@
                                                                  {:content #(pinned-messages-list chat-id)}]))
                            :active-opacity 1
                            :style          (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
-     [rn/view {:style {:width            photos.style/default-size
-                       :height           photos.style/default-size
-                       :margin-right     16
-                       :border-radius    photos.style/default-size
-                       :justify-content  :center
-                       :align-items      :center
-                       :background-color colors/primary-50-opa-10}}
+     [rn/view {:style               {:width            photos.style/default-size
+                                     :height           photos.style/default-size
+                                     :margin-right     16
+                                     :border-radius    photos.style/default-size
+                                     :justify-content  :center
+                                     :align-items      :center
+                                     :background-color colors/primary-50-opa-10}
+               :accessibility-label :content-type-pin-icon}
       [pin-icon colors/primary-50 16]]
      [rn/view
       [rn/view {:style {:flex-direction :row :align-items :center}}
@@ -819,8 +837,8 @@
                               :disabled in-popover?
                               :on-press #(do (when modal (close-modal))
                                              (re-frame/dispatch [:chat.ui/show-profile from]))}
-        [message-author-name from {:modal modal}]]
-       [rn/text {:style {:font-size 13}} (str " " (i18n/label :pinned-a-message))]
+        [message-author-name from {:modal modal} 25]]
+       [rn/text {:style {:font-size 13}} (str " " (i18n/label :t/pinned-a-message))]
        [rn/text
         {:style               (merge
                                {:padding-left 5
@@ -836,28 +854,30 @@
         pins-count      (count (seq pinned-messages))]
     (when (> pins-count 0)
       [rn/touchable-opacity
-       {:style          {:height             50
-                         :background-color   colors/primary-50-opa-20
-                         :flex-direction     :row
-                         :align-items        :center
-                         :padding-horizontal 20
-                         :padding-vertical   10}
-        :active-opacity 1
-        :on-press       (fn []
-                          (re-frame/dispatch [:bottom-sheet/show-sheet
-                                              {:content #(pinned-messages-list chat-id)}]))}
+       {:accessibility-label :pinned-banner
+        :style               {:height             50
+                              :background-color   colors/primary-50-opa-20
+                              :flex-direction     :row
+                              :align-items        :center
+                              :padding-horizontal 20
+                              :padding-vertical   10}
+        :active-opacity      1
+        :on-press            (fn []
+                               (re-frame/dispatch [:bottom-sheet/show-sheet
+                                                   {:content #(pinned-messages-list chat-id)}]))}
        [pin-icon (colors/theme-colors colors/neutral-100 colors/white) 20]
        [rn/text {:number-of-lines 1
                  :style           (merge typography/paragraph-2 {:margin-left  10
                                                                  :margin-right 50
                                                                  :color        (colors/theme-colors colors/neutral-100 colors/white)})} latest-pin-text]
-       [rn/view {:style {:position         :absolute
-                         :right            22
-                         :height           20
-                         :width            20
-                         :border-radius    8
-                         :justify-content  :center
-                         :align-items      :center
-                         :background-color colors/neutral-80-opa-5}}
+       [rn/view {:accessibility-label :pins-count
+                 :style               {:position         :absolute
+                                       :right            22
+                                       :height           20
+                                       :width            20
+                                       :border-radius    8
+                                       :justify-content  :center
+                                       :align-items      :center
+                                       :background-color colors/neutral-80-opa-5}}
         [rn/text {:style (merge typography/label typography/font-medium {:color (colors/theme-colors colors/neutral-100 colors/white)})} pins-count]]])))
 

@@ -1,244 +1,404 @@
-(ns status-im.multiaccounts.core
+(ns status-im.ui2.screens.chat.home
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.stateofus :as stateofus]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.bottom-sheet.core :as bottom-sheet]
-            [status-im.native-module.core :as native-module]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]
-            [status-im.utils.theme :as utils.theme]
-            [status-im.theme.core :as theme]
-            [status-im.utils.utils :as utils]
+            [reagent.core :as reagent]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.connectivity.view :as connectivity]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.home.styles :as styles]
+            [status-im.ui.screens.home.views.inner-item :refer [home-list-item]]
+            [quo.design-system.colors :as quo.colors]
+            [quo.core :as quo]
             [quo.platform :as platform]
-            [taoensso.timbre :as log]
-            [clojure.string :as string]))
+            [status-im.add-new.core :as new-chat]
+            [status-im.ui.components.search-input.view :as search-input]
+            [status-im.add-new.db :as db]
+            [status-im.utils.debounce :as debounce]
+            [status-im.utils.utils :as utils]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.plus-button :as components.plus-button]
+            [status-im.ui.screens.chat.sheets :as sheets]
+            [status-im.ui.components.tabbar.core :as tabbar]
+            [status-im.ui.components.invite.views :as invite]
+            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.utils.config :as config]
+            [quo2.components.markdown.text :as quo2.text]
+            [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
+            [quo.react-native :as rn]
+            [quo.react]
+            [quo2.foundations.colors :as colors]
+            [quo2.foundations.typography :as typography]
+            [quo2.components.buttons.button :as quo2.button]
+            [quo2.components.tabs.tabs :as quo2.tabs]
+            [quo2.components.community.discover-card :as discover-card]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [quo2.components.icon :as quo2.icons]
+            [quo.components.safe-area :as safe-area]
+            [quo2.components.list-items.received-contact-request :as received-contact-request])
+  (:require-macros [status-im.utils.views :as views]))
 
-;; validate that the given mnemonic was generated from Status Dictionary
-(re-frame/reg-fx
- ::validate-mnemonic
- (fn [[passphrase callback]]
-   (native-module/validate-mnemonic passphrase callback)))
+(defn home-tooltip-view []
+  [rn/view (styles/chat-tooltip)
+   [rn/view {:style {:width       66 :position :absolute :top -6 :background-color quo.colors/white
+                     :align-items :center}}
+    [rn/image {:source (resources/get-image :empty-chats-header)
+               :style  {:width 50 :height 50}}]]
+   [rn/touchable-highlight
+    {:style               {:position :absolute :right 0 :top 0
+                           :width    44 :height 44 :align-items :center :justify-content :center}
+     :on-press            #(re-frame/dispatch [:multiaccounts.ui/hide-home-tooltip])
+     :accessibility-label :hide-home-button}
+    [icons/icon :main-icons/close-circle {:color quo.colors/gray}]]
+   [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]
+   [rn/view {:align-items   :center
+             :margin-top    8
+             :margin-bottom 12}
+    [invite/button]]])
 
-(defn contact-names
-  "Returns map of all existing names for contact"
-  [{:keys [name preferred-name alias public-key ens-verified nickname]}]
-  (let [ens-name (or preferred-name
-                     name)]
-    (cond-> {:nickname         nickname
-             :three-words-name (or alias (gfycat/generate-gfy public-key))}
-      ;; Preferred name is our own otherwise we make sure it's verified
-      (or preferred-name (and ens-verified name))
-      (assoc :ens-name (str "@" (or (stateofus/username ens-name) ens-name))))))
+(defn welcome-blank-chats []
+  [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
+   [icons/icon :main-icons/placeholder20 {:width 120 :height 120}]
+   [rn/text {:style (merge typography/font-semi-bold typography/paragraph-1)} (i18n/label :t/no-messages)]
+   [rn/text {:style (merge typography/font-regular typography/paragraph-2)} (i18n/label :t/blank-messages-text)]])
 
-(defn contact-two-names
-  "Returns vector of two names in next order nickname, ens name, three word name, public key"
-  [{:keys [names public-key] :as contact} public-key?]
-  (let [{:keys [nickname ens-name three-words-name]} (or names (contact-names contact))
-        short-public-key (when public-key? (utils/get-shortened-address public-key))]
-    (cond (not (string/blank? nickname))
-          [nickname (or ens-name three-words-name short-public-key)]
-          (not (string/blank? ens-name))
-          [ens-name (or three-words-name short-public-key)]
-          (not (string/blank? three-words-name))
-          [three-words-name short-public-key]
-          :else
-          (when public-key?
-            [short-public-key short-public-key]))))
+(defn welcome-blank-page []
+  [rn/view {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :center}}
+   [react/i18n-text {:style styles/welcome-blank-text :key :welcome-blank-message}]])
 
-(defn contact-with-names
-  "Returns contact with :names map "
-  [contact]
-  (assoc contact :names (contact-names contact)))
+(defonce search-active? (reagent/atom false))
 
-(defn displayed-name
-  "Use preferred name, name or alias in that order"
-  [{:keys [name preferred-name alias public-key ens-verified]}]
-  (let [ens-name (or preferred-name
-                     name)]
-    ;; Preferred name is our own otherwise we make sure it's verified
-    (if (or preferred-name (and ens-verified name))
-      (let [username (stateofus/username ens-name)]
-        (str "@" (or username ens-name)))
-      (or alias (gfycat/generate-gfy public-key)))))
+(defn search-input-wrapper [search-filter chats-empty]
+  [rn/view {:padding-horizontal 16
+            :padding-vertical   10}
+   [search-input/search-input
+    {:search-active? search-active?
+     :search-filter  search-filter
+     :on-cancel      #(re-frame/dispatch [:search/home-filter-changed nil])
+     :on-blur        (fn []
+                       (when chats-empty
+                         (re-frame/dispatch [:search/home-filter-changed nil]))
+                       (re-frame/dispatch [::new-chat/clear-new-identity]))
+     :on-focus       (fn [search-filter]
+                       (when-not search-filter
+                         (re-frame/dispatch [:search/home-filter-changed ""])
+                         (re-frame/dispatch [::new-chat/clear-new-identity])))
+     :on-change      (fn [text]
+                       (re-frame/dispatch [:search/home-filter-changed text])
+                       (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
+                       (debounce/debounce-and-dispatch [:new-chat/set-new-identity text] 300))}]])
 
-(defn contact-by-identity [contacts identity]
-  (or (get contacts identity)
-      (contact-with-names {:public-key identity})))
+(defn start-suggestion [search-value]
+  (let [{:keys [state ens-name public-key]}
+        @(re-frame/subscribe [:contacts/new-identity])
+        valid-private? (= state :valid)
+        valid-public?  (db/valid-topic? search-value)]
+    (when (or valid-public? valid-private?)
+      [rn/view
+       [quo/list-header (i18n/label :t/search-no-chat-found)]
+       (when valid-private?
+         [quo/list-item {:theme    :accent
+                         :icon     :main-icons/private-chat
+                         :title    (or ens-name (utils/get-shortened-address public-key))
+                         :subtitle (i18n/label :t/join-new-private-chat)
+                         :on-press (fn []
+                                     (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false] 3000)
+                                     (re-frame/dispatch [:search/home-filter-changed nil]))}])
+       (when valid-public?
+         [quo/list-item {:theme    :accent
+                         :icon     :main-icons/public-chat
+                         :title    (str "#" search-value)
+                         :subtitle (i18n/label :t/join-new-public-chat)
+                         :on-press (fn []
+                                     (re-frame/dispatch [:chat.ui/start-public-chat search-value])
+                                     (re-frame/dispatch [:set :public-group-topic nil])
+                                     (re-frame/dispatch [:search/home-filter-changed nil]))}])])))
 
-(defn contact-two-names-by-identity [contact current-multiaccount identity]
-  (let [me? (= (:public-key current-multiaccount) identity)]
-    (if me?
-      [(or (:preferred-name current-multiaccount)
-           (gfycat/generate-gfy identity))]
-      (contact-two-names contact false))))
+(defn render-fn [{:keys [chat-id] :as home-item}]
+  [home-list-item
+   home-item
+   {:on-press      (fn []
+                     (re-frame/dispatch [:dismiss-keyboard])
+                     (if platform/android?
+                       (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
+                       (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
+                     (re-frame/dispatch [:search/home-filter-changed nil])
+                     (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
+    :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                        {:content (fn []
+                                                    [sheets/actions home-item])}])}])
 
-(def photo-quality-thumbnail :thumbnail)
-(def photo-quality-large :large)
+(defn- render-contact [{:keys [public-key] :as row}]
+  (let [[first-name second-name] (multiaccounts/contact-two-names row true)
+        row (assoc row :chat-id public-key)]
 
-(defn displayed-photo
-  "If a photo, a image or an images array is set use it, otherwise fallback on identicon or generate"
-  [{:keys [images identicon public-key]}]
-  (cond
-    (pos? (count images))
-    (:uri (or (photo-quality-thumbnail images)
-              (photo-quality-large images)
-              (first images)))
+    [quo/list-item
+     {:title            first-name
+      :subtitle         second-name
+      :background-color colors/neutral-5
+      :on-press         (fn []
+                          (re-frame/dispatch [:dismiss-keyboard])
+                          (if platform/android?
+                            (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 public-key])
+                            (re-frame/dispatch [:chat.ui/navigate-to-chat public-key]))
+                          (re-frame/dispatch [:search/home-filter-changed nil])
+                          (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat public-key]))
+      ;:on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet TODO: new UI yet to be implemented
+      ;                                    {:content (fn []
+      ;                                                [sheets/actions row])}])
+      :icon             [chat-icon/contact-icon-contacts-tab
+                         (multiaccounts/displayed-photo row)]}]))
 
-    (not (string/blank? identicon))
-    identicon
+(defn chat-list-key-fn [item]
+  (or (:chat-id item) (:public-key item) (:id item)))
 
-    :else
-    (identicon/identicon public-key)))
+(defn get-item-layout [_ index]
+  #js {:length 64 :offset (* 64 index) :index index})
 
-(re-frame/reg-fx
- ::webview-debug-changed
- (fn [value]
-   (when platform/android?
-     (native-module/toggle-webview-debug value))))
+(def selected-tab (reagent/atom :recent))
 
-(re-frame/reg-fx
- ::blank-preview-flag-changed
- (fn [flag]
-   (native-module/set-blank-preview-flag flag)))
+(defn prepare-items [current-active-tab items]
+  (if (= current-active-tab :groups)
+    (filter #(-> % :group-chat (= true)) items)
+    items))
 
-(fx/defn confirm-wallet-set-up
-  {:events [:multiaccounts.ui/wallet-set-up-confirmed]}
-  [cofx]
-  (multiaccounts.update/multiaccount-update cofx
-                                            :wallet-set-up-passed? true {}))
+(defn prepare-contacts [contacts]
+  (let [data (atom {})]
+    (doseq [i (range (count contacts))]
+      (let [first-char (get (:alias (nth contacts i)) 0)]
+        (if-not (contains? @data first-char)
+          (swap! data #(assoc % first-char {:title first-char :data [(nth contacts i)]}))
+          (swap! data #(assoc-in % [first-char :data] (conj (:data (get @data first-char)) (nth contacts i)))))))
+    (swap! data #(sort @data))
+    (vals @data)))
 
-(fx/defn confirm-home-tooltip
-  {:events [:multiaccounts.ui/hide-home-tooltip]}
-  [cofx]
-  (multiaccounts.update/multiaccount-update cofx
-                                            :hide-home-tooltip? true {}))
+(defn contacts-section-header [{:keys [title]}]
+  [rn/view {:style {:border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :padding-horizontal 20 :margin-top 8}}
+   [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color colors/neutral-50})} title]])
 
-(fx/defn switch-webview-debug
-  {:events [:multiaccounts.ui/switch-webview-debug]}
-  [{:keys [db] :as cofx} value]
-  (fx/merge cofx
-            {::webview-debug-changed value}
-            (multiaccounts.update/multiaccount-update
-             :webview-debug (boolean value)
-             {})))
+(defn find-contact-requests [notifications]
+  (let [received-requests (atom [])
+        has-unread (atom false)]
+    (doseq [i (range (count notifications))]
+      (doseq [j (range (count (:data (nth notifications i))))]
+        (when (= 1 (get-in (nth (:data (nth notifications i)) j) [:message :contact-request-state]))
+          (swap! received-requests conj (nth (:data (nth notifications i)) j)))
+        (when (= false (get-in (nth (:data (nth notifications i)) j) [:read]))
+          (reset! has-unread true))))
+    {:received-requests @received-requests :has-unread @has-unread}))
 
-(fx/defn switch-preview-privacy-mode
-  {:events [:multiaccounts.ui/preview-privacy-mode-switched]}
-  [{:keys [db] :as cofx} private?]
-  (fx/merge cofx
-            {::blank-preview-flag-changed private?}
-            (multiaccounts.update/multiaccount-update
-             :preview-privacy? (boolean private?)
-             {})))
+(def selected-requests-tab (reagent/atom :received))
 
-(fx/defn switch-webview-permission-requests?
-  {:events [:multiaccounts.ui/webview-permission-requests-switched]}
-  [cofx enabled?]
-  (multiaccounts.update/multiaccount-update
-   cofx
-   :webview-allow-permission-requests? (boolean enabled?)
-   {}))
+(defn contact-requests-sheet []
+  [:f>
+   (fn []
+     (let [{window-height :height} (rn/use-window-dimensions)
+           safe-area         (safe-area/use-safe-area)
+           notifications     (<sub [:activity.center/notifications-grouped-by-date])
+           {received-requests :received-requests} (find-contact-requests notifications)
+           sent-requests     []]
+       [rn/view {:style {:margin-left 20
+                         :height      (- window-height (:top safe-area))}}
+        [rn/touchable-opacity
+         {:on-press #(>evt [:bottom-sheet/hide])
+          :style
+          {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
+           :width            32
+           :height           32
+           :border-radius    10
+           :justify-content  :center
+           :align-items      :center
+           :margin-bottom    24}}
+         [quo2.icons/icon :main-icons2/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
+        [rn/text {:style (merge
+                           typography/heading-1
+                           typography/font-semi-bold
+                           {:color (colors/theme-colors "#000000" "#ffffff")})}
+         (i18n/label :t/pending-requests)]
+        [quo2.tabs/tabs
+         {:style          {:margin-top 12 :margin-bottom 20}
+          :size           32
+          :on-change      #(reset! selected-requests-tab %)
+          :default-active :received
+          :data           [{:id    :received
+                            :label (i18n/label :t/received)}
+                           {:id    :sent
+                            :label (i18n/label :t/sent)}]}]
+        [list/flat-list
+         {:key-fn    :first
+          :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
+          :render-fn received-contact-request/list-item}]]))])
 
-(fx/defn switch-default-sync-period
-  {:events [:multiaccounts.ui/default-sync-period-switched]}
-  [cofx value]
-  (multiaccounts.update/multiaccount-update
-   cofx
-   :default-sync-period value
-   {}))
+(defn contact-requests [count]
+  [rn/touchable-opacity
+   {:active-opacity 1
+    :on-press       #(do
+                       (>evt
+                         [:bottom-sheet/show-sheet
+                          {:content (fn [] [contact-requests-sheet])}])
+                       (>evt [:mark-all-activity-center-notifications-as-read]))
+    :style          {:flex-direction     :row
+                     :margin             8
+                     :padding-horizontal 12
+                     :padding-vertical   8
+                     :align-items        :center}}
+   [rn/view {:style {:justify-content :center
+                     :align-items     :center
+                     :width           32
+                     :height          32
+                     :border-radius   16
+                     :border-width    1
+                     :border-color    (colors/theme-colors colors/neutral-20 colors/neutral-80)}}
+    [quo2.icons/icon :main-icons2/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
+   [rn/view {:style {:margin-left 8}}
+    [rn/text {:style
+              (merge typography/paragraph-1 typography/font-semi-bold {:color (colors/theme-colors "#000000" "#ffffff")})} (i18n/label :t/pending-requests)]
+    [rn/text {:style (merge typography/paragraph-2 typography/font-regular {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})} "Alice, Pedro and 3 others"]]
+   [rn/view {:style {:width            16
+                     :height           16
+                     :position         :absolute
+                     :right            22
+                     :border-radius    6
+                     :background-color (colors/theme-colors colors/primary-50 colors/primary-60)}}
+    [rn/text {:style (merge typography/font-medium typography/label {:color "#ffffff" :text-align :center})} count]]])
 
-(fx/defn switch-preview-privacy-mode-flag
-  [{:keys [db]}]
-  (let [private? (get-in db [:multiaccount :preview-privacy?])]
-    {::blank-preview-flag-changed private?}))
+(defn chats []
+  (let [{:keys [items search-filter]} (<sub [:home-items])
+        current-active-tab @selected-tab
+        items              (prepare-items current-active-tab items)
+        contacts           (<sub [:contacts/active])
+        contacts           (prepare-contacts contacts)
+        notifications      (<sub [:activity.center/notifications-grouped-by-date])
+        {requests :received-requests new-info :has-unread} (find-contact-requests notifications)]
+    [rn/view {:style {:flex 1}}
+     [discover-card/discover-card {:title       (i18n/label :t/invite-friends-to-status)
+                                   :description (i18n/label :t/share-invite-link)}]
+     [quo2.tabs/tabs {:style          {:margin-left   20
+                                       :margin-bottom 20
+                                       :margin-top    24}
+                      :size           32
+                      :on-change      #(reset! selected-tab %)
+                      :default-active selected-tab
+                      :data           [{:id    :recent
+                                        :label (i18n/label :t/recent)}
+                                       {:id    :groups
+                                        :label (i18n/label :t/groups)}
+                                       {:id    :contacts
+                                        :label (i18n/label :t/contacts)
+                                        :new-info new-info}]}]
+     (if (and (empty? items)
+              (empty? search-filter)
+              (not @search-active?))
+       [welcome-blank-chats]
+       (if (not= current-active-tab :contacts)
+         [list/flat-list
+          {:key-fn                       chat-list-key-fn
+           :getItemLayout                get-item-layout
+           :on-end-reached               #(re-frame/dispatch [:chat.ui/show-more-chats])
+           :keyboard-should-persist-taps :always
+           :data                         items
+           :render-fn                    render-fn}]
+         [rn/view {:style {:flex 1}} (when (> (count requests) 0)
+                                       [contact-requests (count requests)])
+          [list/section-list
+           {:key-fn                         :title
+            :sticky-section-headers-enabled false
+            :sections                       contacts
+            :render-section-header-fn       contacts-section-header
+            :render-fn                      render-contact}]]))]))
 
-(re-frame/reg-fx
- ::switch-theme
- (fn [theme-id]
-   (let [theme (if (or (= 2 theme-id) (and (= 0 theme-id) (utils.theme/is-dark-mode)))
-                 :dark
-                 :light)]
-     (theme/change-theme theme))))
+(views/defview chats-list []
+                          (views/letsubs [loading? [:chats/loading?]]
+                            [:<>
+                             [connectivity/loading-indicator]
+                             (if loading?
+                               [rn/view {:flex 1 :align-items :center :justify-content :center}
+                                [rn/activity-indicator {:animating true}]]
+                               [chats])]))
 
-(fx/defn switch-appearance
-  {:events [:multiaccounts.ui/appearance-switched]}
-  [cofx theme]
-  (fx/merge cofx
-            {::switch-theme theme}
-            (multiaccounts.update/multiaccount-update :appearance theme {})))
+(views/defview plus-button []
+                           (views/letsubs [logging-in? [:multiaccounts/login]]
+                             [components.plus-button/plus-button
+                              {:on-press            (when-not logging-in?
+                                                      #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+                               :loading             logging-in?
+                               :accessibility-label :new-chat-button}]))
 
-(fx/defn switch-profile-picture-show-to
-  {:events [:multiaccounts.ui/profile-picture-show-to-switched]}
-  [cofx id]
-  (fx/merge cofx
-            {::json-rpc/call [{:method "wakuext_changeIdentityImageShowTo"
-                               :params [id]
-                               :on-success #(log/debug "picture settings changed successfully")}]}
-            (multiaccounts.update/optimistic :profile-pictures-show-to id)))
+(views/defview notifications-button []
+                                    (views/letsubs [notif-count [:activity.center/notifications-count]]
+                                      [rn/view
+                                       [quo2.button/button {:type                :grey
+                                                            :size                32
+                                                            :width               32
+                                                            :style               {:margin-left 12}
+                                                            :accessibility-label :notifications-button
+                                                            :on-press            #(do
+                                                                                    (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
+                                                                                    (if config/new-activity-center-enabled?
+                                                                                      (re-frame/dispatch [:navigate-to :activity-center])
+                                                                                      (re-frame/dispatch [:navigate-to :notifications-center])))}
+                                        [icons/icon :main-icons/notification2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
+                                       (when (pos? notif-count)
+                                         [rn/view {:style          (merge (styles/counter-public-container) {:top 5 :right 5})
+                                                   :pointer-events :none}
+                                          [rn/view {:style               styles/counter-public
+                                                    :accessibility-label :notifications-unread-badge}]])]))
 
-(fx/defn switch-appearance-profile
-  {:events [:multiaccounts.ui/appearance-profile-switched]}
-  [cofx id]
-  (multiaccounts.update/multiaccount-update cofx :profile-pictures-visibility id {}))
+(defn qr-button []
+  [quo2.button/button {:type                :grey
+                       :accessibility-label "qr-button"
+                       :size                32
+                       :width               32
+                       :style               {:margin-left 12}
+                       :on-press            #(do
+                                               (re-frame/dispatch [::qr-scanner/scan-code
+                                                                   {:handler ::qr-scanner/on-scan-success}]))}
+   [icons/icon :main-icons/qr2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
-(defn clean-path [path]
-  (if path
-    (string/replace-first path #"file://" "")
-    (log/warn "[native-module] Empty path was provided")))
+(defn scan-button []
+  [quo2.button/button {:type                :grey
+                       :size                32
+                       :width               32
+                       :accessibility-label "scan-button"
+                       :on-press            #(do
+                                               (re-frame/dispatch [::qr-scanner/scan-code
+                                                                   {:handler ::qr-scanner/on-scan-success}]))}
+   [icons/icon :main-icons/scan2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
-(fx/defn save-profile-picture
-  {:events [::save-profile-picture]}
-  [cofx path ax ay bx by]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
-    (fx/merge cofx
-              {::json-rpc/call [{:method     "multiaccounts_storeIdentityImage"
-                                 :params     [key-uid (clean-path path) ax ay bx by]
-                                 ;; NOTE: In case of an error we can show a toast error
-                                 :on-success #(re-frame/dispatch [::update-local-picture %])}]}
-              (multiaccounts.update/optimistic :images [{:url  path
-                                                         :type (name photo-quality-large)}])
-              (bottom-sheet/hide-bottom-sheet))))
+(views/defview profile-button []
+                              (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]
+                                [rn/view
+                                 [chat-icon/emoji-chat-icon-view public-key false preferred-name emoji
+                                  {:size      28
+                                   :chat-icon chat-icon.styles/chat-icon-chat-list}]]))
 
-(fx/defn save-profile-picture-from-url
-  {:events [::save-profile-picture-from-url]}
-  [cofx url]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
-    (fx/merge cofx
-              {::json-rpc/call [{:method     "multiaccounts_storeIdentityImageFromURL"
-                                 :params     [key-uid url]
-                                 :on-error   #(log/error "::save-profile-picture-from-url error" %)
-                                 :on-success #(re-frame/dispatch [::update-local-picture %])}]}
-              (bottom-sheet/hide-bottom-sheet))))
-
-(comment
-  (re-frame/dispatch [::save-profile-picture-from-url "https://lh3.googleusercontent.com/XuKjNm3HydsaxbPkbpGs9YyCKhn5QQk5oDC8XF2jzmPyYXeZofxFtfUDZuQ3EVmacS_BlBKzbX2ypm37YNX3n1fDJA3WndeFcPsp7Z0=w600"]))
-
-(fx/defn delete-profile-picture
-  {:events [::delete-profile-picture]}
-  [cofx name]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
-    (fx/merge cofx
-              {::json-rpc/call [{:method     "multiaccounts_deleteIdentityImage"
-                                 :params     [key-uid]
-                                 ;; NOTE: In case of an error we could fallback to previous image in UI with a toast error
-                                 :on-success #(log/info "[multiaccount] Delete profile image" %)}]}
-              (multiaccounts.update/optimistic :images nil)
-              (bottom-sheet/hide-bottom-sheet))))
-
-(fx/defn get-profile-picture
-  [cofx]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
-    {::json-rpc/call [{:method     "multiaccounts_getIdentityImages"
-                       :params     [key-uid]
-                       :on-success #(re-frame/dispatch [::update-local-picture %])}]}))
-
-(fx/defn store-profile-picture
-  {:events [::update-local-picture]}
-  [cofx pics]
-  (multiaccounts.update/optimistic cofx :images pics))
-
-(comment
-  ;; Test seed for Dim Venerated Yaffle, it's not here by mistake, this is just a test account
-  (native-module/validate-mnemonic "rocket mixed rebel affair umbrella legal resemble scene virus park deposit cargo" prn))
+(defn home []
+  [:f>
+   (fn []
+     (quo.react/effect! #(re-frame/dispatch [:get-activity-center-notifications]))
+     [rn/keyboard-avoiding-view {:style         {:flex             1
+                                                 :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
+                                 :ignore-offset true}
+      [topbar/topbar {:navigation      :none
+                      :use-insets      true
+                      :background      (colors/theme-colors colors/neutral-5 colors/neutral-95)
+                      :left-component  [rn/view {:flex-direction :row :margin-left 20}
+                                        [profile-button]]
+                      :right-component [rn/view {:flex-direction :row :margin-right 20}
+                                        [scan-button]
+                                        [qr-button]
+                                        [notifications-button]]
+                      :border-bottom   false}]
+      [rn/view {:flex-direction    :row
+                :justify-content   :space-between
+                :align-items       :center
+                :margin-horizontal 20
+                :margin-top        15
+                :margin-bottom     20}
+       [quo2.text/text {:size :heading-1 :weight :semi-bold} (i18n/label :t/messages)]
+       [plus-button]]
+      [chats-list]
+      [tabbar/tabs-counts-subscriptions]])])

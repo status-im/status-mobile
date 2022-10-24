@@ -146,9 +146,15 @@
                             (re-frame/dispatch [:chat.ui/navigate-to-chat public-key]))
                           (re-frame/dispatch [:search/home-filter-changed nil])
                           (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat public-key]))
+<<<<<<< HEAD
       ;:on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet TODO: new UI yet to be implemented
       ;                                    {:content (fn []
       ;                                                [sheets/actions row])}])
+=======
+      :on-long-press    #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                             {:content (fn []
+                                                         [sheets/actions row])}])
+>>>>>>> 21eedd7fb... QA fixes
       :icon             [chat-icon/contact-icon-contacts-tab
                          (multiaccounts/displayed-photo row)]}]))
 
@@ -270,6 +276,7 @@
         current-active-tab @selected-tab
         items              (prepare-items current-active-tab items)
         contacts           (<sub [:contacts/active])
+<<<<<<< HEAD
         contacts           (prepare-contacts contacts)
         notifications      (<sub [:activity.center/notifications-grouped-by-date])
         {requests :received-requests new-info :has-unread} (find-contact-requests notifications)]
@@ -280,6 +287,11 @@
                                        :margin-bottom 20
                                        :margin-top    24}
                       :size           32
+=======
+        contacts           (prepare-contacts contacts)]
+    [rn/view {:style {:flex 1}}
+     [quo2.tabs/tabs {:style          {:margin-left 20 :margin-bottom 20} :size 32
+>>>>>>> 21eedd7fb... QA fixes
                       :on-change      #(reset! selected-tab %)
                       :default-active selected-tab
                       :data           [{:id    :recent
@@ -320,6 +332,7 @@
                                [chats])]))
 
 (views/defview plus-button []
+<<<<<<< HEAD
                            (views/letsubs [logging-in? [:multiaccounts/login]]
                              [components.plus-button/plus-button
                               {:on-press            (when-not logging-in?
@@ -346,6 +359,34 @@
                                                    :pointer-events :none}
                                           [rn/view {:style               styles/counter-public
                                                     :accessibility-label :notifications-unread-badge}]])]))
+=======
+  (views/letsubs [logging-in? [:multiaccounts/login]]
+    [components.plus-button/plus-button
+     {:on-press            (when-not logging-in?
+                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+      :loading             logging-in?
+      :accessibility-label :new-chat-button}]))
+
+(views/defview notifications-button []
+  (views/letsubs [notif-count [:activity.center/notifications-count]]
+    [rn/view
+     [quo2.button/button {:type                :grey
+                          :size                32
+                          :width               32
+                          :style               {:margin-left 12}
+                          :accessibility-label :notifications-button
+                          :on-press            #(do
+                                                  (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
+                                                  (if config/new-activity-center-enabled?
+                                                    (re-frame/dispatch [:navigate-to :activity-center])
+                                                    (re-frame/dispatch [:navigate-to :notifications-center])))}
+      [icons/icon :main-icons/notification2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
+     (when (pos? notif-count)
+       [rn/view {:style          (merge (styles/counter-public-container) {:top 5 :right 5})
+                 :pointer-events :none}
+        [rn/view {:style               styles/counter-public
+                  :accessibility-label :notifications-unread-badge}]])]))
+>>>>>>> 21eedd7fb... QA fixes
 
 (defn qr-button []
   [quo2.button/button {:type                :grey
@@ -369,6 +410,7 @@
    [icons/icon :main-icons/scan2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
 (views/defview profile-button []
+<<<<<<< HEAD
                               (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]
                                 [rn/view
                                  [chat-icon/emoji-chat-icon-view public-key false preferred-name emoji
@@ -402,3 +444,36 @@
        [plus-button]]
       [chats-list]
       [tabbar/tabs-counts-subscriptions]])])
+=======
+  (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]
+    [rn/view
+     [chat-icon/emoji-chat-icon-view public-key false preferred-name emoji
+      {:size      28
+       :chat-icon chat-icon.styles/chat-icon-chat-list}]]))
+
+(defn home []
+  [rn/keyboard-avoiding-view {:style         {:flex             1
+                                              :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
+                              :ignore-offset true}
+   [topbar/topbar {:navigation      :none
+                   :use-insets      true
+                   :background      (colors/theme-colors colors/neutral-5 colors/neutral-95)
+                   :left-component  [rn/view {:flex-direction :row :margin-left 20}
+                                     [profile-button]]
+                   :right-component [rn/view {:flex-direction :row :margin-right 20}
+                                     [scan-button]
+                                     [qr-button]
+                                     [notifications-button]]
+                   :border-bottom   false}]
+   [rn/view {:flex-direction    :row
+             :justify-content   :space-between
+             :align-items       :center
+             :margin-horizontal 20
+             :margin-top        15
+             :margin-bottom     8}
+    [quo2.text/text {:size :heading-1 :weight :semi-bold} (i18n/label :t/messages)]
+    [plus-button]]
+   [chats-list]
+   [tabbar/tabs-counts-subscriptions]])
+
+>>>>>>> 21eedd7fb... QA fixes

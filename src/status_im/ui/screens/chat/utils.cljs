@@ -32,17 +32,17 @@
         first-name]))))
 
 (defn format-author
-  ([contact] (format-author contact nil))
-  ([{:keys [names] :as contact} {:keys [modal profile? you?]}]
+  ([contact] (format-author contact nil nil))
+  ([{:keys [names] :as contact} {:keys [modal profile? you?]} max-length]
    (let [{:keys [nickname ens-name]} names
          [first-name second-name] (multiaccounts/contact-two-names contact false)]
      (if (or nickname ens-name)
        [react/nested-text {:number-of-lines 2
-                           :style           {:color       (if modal colors/white-persist colors/black)
-                                             :font-size   (if profile? 15 13)
-                                             :line-height (if profile? 22 18)
+                           :style           {:color          (if modal colors/white-persist colors/black)
+                                             :font-size      (if profile? 15 13)
+                                             :line-height    (if profile? 22 18)
                                              :letter-spacing -0.2
-                                             :font-weight "600"}}
+                                             :font-weight    "600"}}
         (subs first-name 0 81)
         (when you?
           [{:style {:color colors/black-light :font-weight "500" :font-size 13}}
@@ -50,12 +50,15 @@
         (when nickname
           [{:style {:color colors/black-light :font-weight "500"}}
            (str " " (subs second-name 0 81))])]
-       [react/text {:style {:color       (if modal colors/white-persist colors/black)
-                            :font-size   (if profile? 15 13)
-                            :line-height (if profile? 22 18)
-                            :font-weight "600"
-                            :letter-spacing -0.2}}
-        first-name]))))
+       [react/text {:style           {:color          (if modal colors/white-persist colors/black)
+                                      :font-size      (if profile? 15 13)
+                                      :line-height    (if profile? 22 18)
+                                      :font-weight    "600"
+                                      :letter-spacing -0.2}
+                    :number-of-lines 1}
+        (if (and max-length (> (count first-name) max-length))
+          (str (subs first-name 0 max-length) "...")
+          first-name)]))))
 
 (defn format-reply-author [from username current-public-key style outgoing]
   (let [contact-name (str reply-symbol username)]
@@ -63,7 +66,7 @@
              [react/text {:style (style true)}
               (str reply-symbol (i18n/label :t/You))])
         (if (or (= (aget contact-name 0) "@")
-               ;; in case of replies
+                ;; in case of replies
                 (= (aget contact-name 1) "@"))
           (let [trimmed-name (subs contact-name 0 81)]
             [react/text {:number-of-lines 2
