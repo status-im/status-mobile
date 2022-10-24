@@ -31,6 +31,9 @@
   "ns"              [:arg1-body
                      {:list   {:respect-nl? false}
                       :vector {:respect-nl? false}}]
+  "->"              [:noarg1-body
+                     {:list               {:constant-pair? false :force-nl? false}
+                      :next-inner-restore [[:list :constant-pair?]]}]
   "set!"            "reset!"
   "assoc-when"      "assoc"
   "assoc-some"      "assoc"
