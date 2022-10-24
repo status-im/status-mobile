@@ -187,7 +187,7 @@
         :set-support-multiple-windows               false
         :render-error                               web-view-error
         :on-navigation-state-change                 #(do
-                                                       (re-frame/dispatch [:set-in [:ens/registration :state] :searching])
+                                                       (re-frame/dispatch [:set-in [:domain/registration :state] :searching])
                                                        (debounce/debounce-and-dispatch
                                                         [:browser/navigation-state-changed % error?]
                                                         500))

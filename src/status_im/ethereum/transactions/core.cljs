@@ -1,7 +1,7 @@
 (ns status-im.ethereum.transactions.core
   (:require [cljs.spec.alpha :as spec]
             [re-frame.core :as re-frame]
-            [status-im.ens.core :as ens]
+            [status-im.domain.core :as domain]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.eip55 :as eip55]
@@ -286,7 +286,7 @@
                          (and
                           (or (= state :dismissed) (= state :submitted))
                           (contains? set-of-transactions-hash hash)))
-                       (get db :ens/registrations))
+                       (get db :domain/registrations))
         fxs (map (fn [[hash {:keys [username custom-domain?]}]]
                    (let [transfer (first (filter (fn [transfer] (let [transfer-hash (get transfer :hash)] (= transfer-hash hash))) transfers))
                          type (get transfer :type)
@@ -294,10 +294,10 @@
                      (cond
                        (= transaction-success true)
                        (fx/merge cofx
-                                 (ens/clear-ens-registration hash)
-                                 (ens/save-username custom-domain? username false))
+                                 (domain/clear-ens-registration hash)
+                                 (domain/save-username custom-domain? username false))
                        (= type :failed)
-                       (ens/update-ens-tx-state :failure username custom-domain? hash)
+                       (domain/update-ens-tx-state :failure username custom-domain? hash)
                        :else
                        nil)))
                  registrations)]

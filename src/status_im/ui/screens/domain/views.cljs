@@ -1,10 +1,10 @@
-(ns status-im.ui.screens.ens.views
+(ns status-im.ui.screens.domain.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.constants :as constants]
-            [status-im.ens.core :as ens]
+            [status-im.domain.core :as domain]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.ens :as ethereum.ens]
+            [status-im.ethereum.domain :as ethereum.domain]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
@@ -106,7 +106,7 @@
 
     (:available :connected :connected-with-different-key :owned)
     [react/touchable-highlight
-     {:on-press #(debounce/dispatch-and-chill [::ens/input-submitted] 3000)}
+     {:on-press #(debounce/dispatch-and-chill [::domain/input-submitted] 3000)}
      [icon-wrapper colors/blue
       [icons/icon :main-icons/arrow-right {:color colors/white-persist}]]]
 
@@ -191,9 +191,9 @@
        [react/text-input
         {:ref                    #(reset! input-ref %)
          :on-change-text         #(do
-                                    (re-frame/dispatch [:set-in [:ens/registration :state] :searching])
-                                    (debounce/debounce-and-dispatch [::ens/set-username-candidate %] 600))
-         :on-submit-editing      #(re-frame/dispatch [::ens/input-submitted])
+                                    (re-frame/dispatch [:set-in [:domain/registration :state] :searching])
+                                    (debounce/debounce-and-dispatch [::domain/set-username-candidate %] 600))
+         :on-submit-editing      #(re-frame/dispatch [::domain/input-submitted])
          :auto-capitalize        :none
          :auto-complete-type     "off"
          :auto-focus             true
@@ -209,7 +209,7 @@
 
 (views/defview search []
   (views/letsubs [{:keys [state custom-domain? username]}
-                  [:ens/search-screen]]
+                  [:domain/search-screen]]
     [react/keyboard-avoiding-view {:flex 1}
      [react/scroll-view {:style {:flex 1}
                          ;;NOTE required so that switching custom-domain
@@ -238,7 +238,7 @@
                               :typography :main-medium}}
           (domain-label custom-domain?)]
          [react/view {:flex 1 :min-width 24}]
-         [react/touchable-highlight {:on-press #(re-frame/dispatch [::ens/switch-domain-type])}
+         [react/touchable-highlight {:on-press #(re-frame/dispatch [::domain/switch-domain-type])}
           [react/text {:style {:color colors/blue
                                :font-size 12
                                :typography :main-medium}
@@ -276,7 +276,7 @@
       :subtitle (utils/get-shortened-checksum-address (:address account))
       :chevron  true
       :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                     {:content (fn [] [sheets/accounts-list :from ::ens/change-address])}])}]))
+                                     {:content (fn [] [sheets/accounts-list :from ::domain/change-address])}])}]))
 
 (defn- registration
   [checked contract address public-key]
@@ -294,7 +294,7 @@
     (fn []
       (let [{:keys [username address custom-domain? public-key
                     chain amount-label sufficient-funds?]}
-            @(re-frame/subscribe [:ens/checkout-screen])]
+            @(re-frame/subscribe [:domain/checkout-screen])]
         [react/keyboard-avoiding-view {:flex 1}
          [react/scroll-view {:style {:flex 1}}
           [react/view {:style {:flex            1
@@ -334,7 +334,7 @@
            :right        [react/view {:padding-horizontal 8}
                           [quo/button
                            {:disabled (or (not @checked?) (not sufficient-funds?))
-                            :on-press #(debounce/dispatch-and-chill [::ens/register-name-pressed address] 2000)}
+                            :on-press #(debounce/dispatch-and-chill [::domain/register-name-pressed address] 2000)}
                            (if sufficient-funds?
                              (i18n/label :t/ens-register)
                              (i18n/label :t/not-enough-snt))]]}]]))))
@@ -392,7 +392,7 @@
     nil))
 
 (views/defview confirmation []
-  (views/letsubs [{:keys [state username]} [:ens/confirmation-screen]]
+  (views/letsubs [{:keys [state username]} [:domain/confirmation-screen]]
     [react/keyboard-avoiding-view {:flex 1}
      [react/view {:style {:flex 1
                           :align-items :center
@@ -411,11 +411,11 @@
        [final-state-details state username]]
       (if (= state :registration-failed)
         [react/view
-         [quo/button {:on-press #(re-frame/dispatch [::ens/retry-pressed])}
+         [quo/button {:on-press #(re-frame/dispatch [::domain/retry-pressed])}
           (i18n/label :t/retry)]
-         [quo/button {:on-press    #(re-frame/dispatch [::ens/cancel-pressed])}
+         [quo/button {:on-press    #(re-frame/dispatch [::domain/cancel-pressed])}
           (i18n/label :t/cancel)]]
-        [quo/button {:on-press #(re-frame/dispatch [::ens/got-it-pressed])}
+        [quo/button {:on-press #(re-frame/dispatch [::domain/got-it-pressed])}
          (i18n/label :t/ens-got-it)])]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -464,7 +464,7 @@
       [term-point
        (i18n/label :t/ens-terms-point-10)]
       [react/view {:style {:align-items :center :margin-top 16 :margin-bottom 8}}
-       [link {:on-press #(.openURL ^js react/linking (etherscan-url (:mainnet ethereum.ens/ens-registries)))}
+       [link {:on-press #(.openURL ^js react/linking (etherscan-url (:mainnet ethereum.domain/ens-registries)))}
         (i18n/label :t/etherscan-lookup)]]]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -510,7 +510,7 @@
                                         ;:subtext       (i18n/label :t/ens-remove-hints)
                           :icon     :main-icons/close
                           :theme    :negative
-                          :on-press #(re-frame/dispatch [::ens/remove-username name])}])
+                          :on-press #(re-frame/dispatch [::domain/remove-username name])}])
         (when (and (not custom-domain?) (not pending?))
           [react/view {:style {:margin-top 18}}
            [quo/list-item {:title    (i18n/label :t/ens-release-username)
@@ -580,7 +580,7 @@
        (i18n/label :t/ens-powered-by)]]
      [toolbar/toolbar
       {:show-border? true
-       :right        [quo/button {:on-press #(re-frame/dispatch [::ens/get-started-pressed])
+       :right        [quo/button {:on-press #(re-frame/dispatch [::domain/get-started-pressed])
                                   :type     :secondary
                                   :after    :main-icons/next}
                       (i18n/label :t/get-started)]}]]))
@@ -607,7 +607,7 @@
       (str "\n@" preferred-name)]]]
    [react/view {:style {:flex 1 :margin-top 8}}
     (for [name names]
-      (let [action             #(do (re-frame/dispatch [::ens/save-preferred-name name])
+      (let [action             #(do (re-frame/dispatch [::domain/save-preferred-name name])
                                     (re-frame/dispatch [:bottom-sheet/hide]))
             stateofus-username (stateofus/username name)
             s                  (or stateofus-username name)]
@@ -651,7 +651,7 @@
      [quo/list-item
       {:title    (i18n/label :t/ens-add-username)
        :theme    :accent
-       :on-press #(re-frame/dispatch [::ens/add-username-pressed])
+       :on-press #(re-frame/dispatch [::domain/add-username-pressed])
        :icon     :main-icons/add}]]
     [react/view {:style {:margin-top 22 :margin-bottom 8}}
      [react/text {:style {:color colors/gray :margin-horizontal 16}}
@@ -663,7 +663,7 @@
         (for [name names]
           ^{:key name}
           [name-item {:name   name
-                      :action #(re-frame/dispatch [::ens/navigate-to-name name])}])]
+                      :action #(re-frame/dispatch [::domain/navigate-to-name name])}])]
        [react/text {:style {:color             colors/gray :font-size 15
                             :margin-horizontal 16}}
         (i18n/label :t/ens-no-usernames)])]

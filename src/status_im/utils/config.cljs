@@ -2,7 +2,7 @@
   (:require ["react-native-config" :default react-native-config]
             [clojure.string :as string]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.ens :as ens]))
+            [status-im.ethereum.domain :as domain]))
 
 (def config
   (memoize
@@ -70,7 +70,7 @@
 (def verify-ens-url (if (= :mainnet (ethereum/chain-id->chain-keyword verify-ens-chain-id))
                       mainnet-rpc-url
                       goerli-rpc-url))
-(def verify-ens-contract-address (get-config :VERIFY_ENS_CONTRACT_ADDRESS ((ethereum/chain-id->chain-keyword verify-ens-chain-id) ens/ens-registries)))
+(def verify-ens-contract-address (get-config :VERIFY_ENS_CONTRACT_ADDRESS ((ethereum/chain-id->chain-keyword verify-ens-chain-id) domain/ens-registries)))
 
 (def default-multiaccount
   {:preview-privacy?      blank-preview?

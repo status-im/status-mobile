@@ -4,7 +4,7 @@
             [status-im.browser.permissions :as browser.permissions]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.domain :as domain]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
@@ -82,7 +82,7 @@
   (when (not error?)
     (let [current-url (get-current-url (get-current-browser db))
           host (http/url-host current-url)]
-      (if (and (not resolved-url) (ens/is-valid-eth-name? host))
+      (if (and (not resolved-url) (domain/is-valid-eth-name? host))
         {:db                            (update db :browser/options assoc :resolving? true)
          :browser/resolve-ens-contenthash {:chain-id (ethereum/chain-id db)
                                            :ens-name host
@@ -469,7 +469,7 @@
 (re-frame/reg-fx
  :browser/resolve-ens-contenthash
  (fn [{:keys [chain-id ens-name cb]}]
-   (ens/resource-url chain-id ens-name cb)))
+   (domain/resource-url chain-id ens-name cb)))
 
 (re-frame/reg-fx
  :browser/send-to-bridge

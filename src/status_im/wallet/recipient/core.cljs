@@ -4,7 +4,7 @@
             [clojure.string :as string]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
-            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.domain :as domain]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.random :as random]
             [status-im.ethereum.eip55 :as eip55]
@@ -19,7 +19,7 @@
 (re-frame/reg-fx
  ::resolve-address
  (fn [{:keys [chain-id ens-name cb]}]
-   (ens/address chain-id ens-name cb)))
+   (domain/address chain-id ens-name cb)))
 
 (re-frame/reg-fx
  :wallet.recipient/address-paste
@@ -56,11 +56,11 @@
             {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})
              :db (assoc-in db [:wallet/recipient :searching] false)}))
         (and (not (string/blank? recipient)) (not (string/starts-with? recipient "0x"))
-             (ens/valid-eth-name-prefix? recipient))
+             (domain/valid-eth-name-prefix? recipient))
         (let [ens-name (if (= (.indexOf ^js recipient ".") -1)
                          (stateofus/subdomain recipient)
                          recipient)]
-          (if (ens/is-valid-eth-name? ens-name)
+          (if (domain/is-valid-domain-name? ens-name)
             (do
               (reset! resolve-last-id (random/id))
               {::resolve-address

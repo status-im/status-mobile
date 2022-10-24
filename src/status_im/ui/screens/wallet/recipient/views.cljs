@@ -220,7 +220,7 @@
        [react/view {:padding-horizontal 16}
         [react/view {:flex-direction :row :justify-content :space-between
                      :align-items    :center :height 40 :margin-vertical 8}
-         [quo/text (i18n/label :t/address-or-ens-name)]]
+         [quo/text (i18n/label :t/address-or-domain-name)]]
         [quo/text-input
          {:multiline           true
           :default-value       resolved-address
@@ -259,7 +259,7 @@
           [react/view {:padding-horizontal 16 :margin-bottom 16}
            [react/view {:flex-direction :row :justify-content :space-between
                         :align-items    :center :height 40 :margin-vertical 8}
-            [quo/text (i18n/label :t/address-or-ens-name)]
+            [quo/text (i18n/label :t/address-or-domain-name)]
             [quo/button {:type     :secondary
                          :on-press #(re-frame/dispatch [:wallet.recipient/address-paste-pressed])}
              (i18n/label :t/paste)]]

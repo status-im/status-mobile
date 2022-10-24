@@ -21,7 +21,7 @@
             [taoensso.timbre :as log]
             [status-im.wallet.prices :as prices]
             [status-im.utils.hex :as hex]
-            [status-im.ens.core :as ens.core]
+            [status-im.domain.core :as domain.core]
             [status-im.utils.mobile-sync :as utils.mobile-sync]
             [status-im.multiaccounts.key-storage.core :as key-storage]
             [status-im.ethereum.stateofus :as stateofus]))
@@ -248,7 +248,7 @@
                "name?" name?)
     (cond-> {:db (assoc-in db [:add-account :address] account)}
       name?
-      (assoc ::ens.core/resolve-address
+      (assoc ::domain.core/resolve-address
              [(ethereum/chain-id db)
               (stateofus/ens-name-parse account)
               #(re-frame/dispatch

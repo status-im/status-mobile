@@ -1,17 +1,19 @@
-(ns status-im.ens.core
+(ns status-im.domain.core
   (:refer-clojure :exclude [name])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.domain :as domain]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.navigation :as navigation]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             [status-im.utils.random :as random]
-            [status-im.bottom-sheet.core :as bottom-sheet]))
+            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.ethereum.uns :as uns]
+            [status-im.async-storage.core :as async-storage]))
 
 (defn fullname [custom-domain? username]
   (if custom-domain?
@@ -21,29 +23,34 @@
 (re-frame/reg-fx
  ::resolve-address
  (fn [[chain-id name cb]]
-   (ens/address chain-id name cb)))
+   (domain/address chain-id name cb)))
 
 (re-frame/reg-fx
  ::resolve-owner
  (fn [[chain-id name cb]]
-   (ens/owner chain-id name cb)))
+   (domain/owner chain-id name cb)))
 
 (re-frame/reg-fx
  ::resolve-pubkey
  (fn [[chain-id name cb]]
-   (ens/pubkey chain-id name cb)))
+   (domain/pubkey chain-id name cb)))
 
 (re-frame/reg-fx
  ::get-expiration-time
  (fn [[chain-id name cb]]
-   (ens/expire-at chain-id name cb)))
+   (domain/expire-at chain-id name cb)))
+
+(re-frame/reg-fx
+ ::get-uns-tlds
+ (fn [[cb]]
+   (uns/resolve-tlds cb)))
 
 (fx/defn update-ens-tx-state
   {:events [:update-ens-tx-state]}
   [{:keys [db]} new-state username custom-domain? tx-hash]
-  {:db (assoc-in db [:ens/registrations tx-hash] {:state          new-state
-                                                  :username       username
-                                                  :custom-domain? custom-domain?})})
+  {:db (assoc-in db [:domain/registrations tx-hash] {:state          new-state
+                                                     :username       username
+                                                     :custom-domain? custom-domain?})})
 
 (fx/defn redirect-to-ens-summary
   {:events [::redirect-to-ens-summary]}
@@ -65,16 +72,16 @@
 (fx/defn clear-ens-registration
   {:events [:clear-ens-registration]}
   [{:keys [db]} tx-hash]
-  {:db (update db :ens/registrations dissoc tx-hash)})
+  {:db (update db :domain/registrations dissoc tx-hash)})
 
 (fx/defn set-state
   {:events [::name-resolved]}
   [{:keys [db]} username state address]
   (when (= username
-           (get-in db [:ens/registration :username]))
+           (get-in db [:domain/registration :username]))
     {:db (-> db
-             (assoc-in [:ens/registration :state] state)
-             (assoc-in [:ens/registration :address] address))}))
+             (assoc-in [:domain/registration :state] state)
+             (assoc-in [:domain/registration :address] address))}))
 
 (fx/defn save-username
   {:events [::save-username]}
@@ -94,12 +101,12 @@
 (fx/defn set-pub-key
   {:events [::set-pub-key]}
   [{:keys [db]}]
-  (let [{:keys [username address custom-domain?]} (:ens/registration db)
+  (let [{:keys [username address custom-domain?]} (:domain/registration db)
         address (or address (ethereum/default-address db))
         {:keys [public-key]} (:multiaccount db)
         chain-id (ethereum/chain-id db)
         username (fullname custom-domain? username)]
-    (ens/set-pub-key-prepare-tx
+    (domain/set-pub-key-prepare-tx
      chain-id address username public-key
      #(re-frame/dispatch [:signing.ui/sign
                           {:tx-obj    %
@@ -109,7 +116,7 @@
 (fx/defn on-input-submitted
   {:events [::input-submitted]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [state username custom-domain?]} (:ens/registration db)]
+  (let [{:keys [state username custom-domain?]} (:domain/registration db)]
     (case state
       (:available :owned)
       (navigation/navigate-to-cofx cofx :ens-checkout {})
@@ -126,13 +133,13 @@
     (cond
 
       ;; No address for a stateofus subdomain: it can be registered
-      (and (= response ens/default-address) (not custom-domain?))
+      (and (= response domain/default-address) (not custom-domain?))
       (re-frame/dispatch [::name-resolved username :available])
 
       ;; if we get an address back, we try to get the public key associated
       ;; with the username as well
       (get addresses (eip55/address->checksum response))
-      (ens/pubkey
+      (domain/pubkey
        chain-id
        (fullname custom-domain? username)
        #(re-frame/dispatch [::name-resolved username
@@ -157,10 +164,10 @@
   {:events [::register-name-pressed]}
   [{:keys [db]} address]
   (let [{:keys [username]}
-        (:ens/registration db)
+        (:domain/registration db)
         {:keys [public-key]} (:multiaccount db)
         chain-id (ethereum/chain-id db)]
-    (ens/register-prepare-tx
+    (domain/register-prepare-tx
      chain-id address username public-key
      #(re-frame/dispatch [:signing.ui/sign
                           {:tx-obj    %
@@ -168,7 +175,7 @@
                            :on-error  [::on-registration-failure]}]))))
 
 (defn- valid-custom-domain? [username]
-  (and (ens/is-valid-eth-name? username)
+  (and (domain/is-valid-eth-name? username)
        (stateofus/lower-case? username)))
 
 (defn- valid-username? [custom-domain? username]
@@ -192,12 +199,12 @@
 (fx/defn set-username-candidate
   {:events [::set-username-candidate]}
   [{:keys [db]} username]
-  (let [{:keys [custom-domain?]} (:ens/registration db)
+  (let [{:keys [custom-domain?]} (:domain/registration db)
         usernames (into #{} (get-in db [:multiaccount :usernames]))
         state (state custom-domain? username usernames)]
     (reset! resolve-last-id (random/id))
     (merge
-     {:db (update db :ens/registration assoc
+     {:db (update db :domain/registration assoc
                   :username username
                   :state state)}
      (when (= state :searching)
@@ -216,7 +223,7 @@
   [{:keys [db] :as cofx} _]
   (fx/merge cofx
             ;; clear registration data
-            {:db (dissoc db :ens/registration)}
+            {:db (dissoc db :domain/registration)}
             ;; we reset navigation so that navigate back doesn't return
             ;; into the registration flow
             (navigation/set-stack-root :profile-stack [:my-profile
@@ -227,14 +234,14 @@
   [{:keys [db] :as cofx} _]
   (fx/merge cofx
             {:db (-> db
-                     (update :ens/registration dissoc :username :state)
-                     (update-in [:ens/registration :custom-domain?] not))}))
+                     (update :domain/registration dissoc :username :state)
+                     (update-in [:domain/registration :custom-domain?] not))}))
 
 (fx/defn change-address
   {:events [::change-address]}
   [{:keys [db] :as cofx} _ {:keys [address]}]
   (fx/merge cofx
-            {:db (assoc-in db [:ens/registration :address] address)}
+            {:db (assoc-in db [:domain/registration :address] address)}
             (bottom-sheet/hide-bottom-sheet)))
 
 (fx/defn save-preferred-name
@@ -254,20 +261,20 @@
 (fx/defn store-name-address
   {:events [::address-resolved]}
   [{:keys [db]} username address]
-  {:db (assoc-in db [:ens/names username :address] address)})
+  {:db (assoc-in db [:domain/names username :address] address)})
 
 (fx/defn store-name-public-key
   {:events [::public-key-resolved]}
   [{:keys [db]} username public-key]
-  {:db (assoc-in db [:ens/names username :public-key] public-key)})
+  {:db (assoc-in db [:domain/names username :public-key] public-key)})
 
 (fx/defn store-expiration-date
   {:events [::get-expiration-time-success]}
   [{:keys [now db]} username timestamp]
   {:db (-> db
-           (assoc-in [:ens/names username :expiration-date]
+           (assoc-in [:domain/names username :expiration-date]
                      (datetime/timestamp->year-month-day-date timestamp))
-           (assoc-in [:ens/names username :releasable?] (<= timestamp now)))})
+           (assoc-in [:domain/names username :releasable?] (<= timestamp now)))})
 
 (fx/defn navigate-to-name
   {:events [::navigate-to-name]}
@@ -290,7 +297,7 @@
   {:events [::add-username-pressed ::get-started-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            (set-username-candidate (get-in db [:ens/registration :username] ""))
+            (set-username-candidate (get-in db [:domain/registration :username] ""))
             (navigation/navigate-to-cofx :ens-search {})))
 
 (fx/defn remove-username
@@ -307,3 +314,8 @@
                 (multiaccounts.update/multiaccount-update
                  :preferred-name (first new-names) {}))
               (navigation/navigate-back))))
+
+(fx/defn initialize-uns-tlds
+  [_]
+  {::get-uns-tlds
+   [#(async-storage/set-item! :uns-tlds %)]})

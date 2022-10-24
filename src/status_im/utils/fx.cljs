@@ -14,7 +14,7 @@
   #{:filters/load-filters
     :pairing/set-installation-metadata
     :dispatch-n
-    :status-im.ens.core/verify-names
+    :status-im.domain.core/verify-names
     :shh/send-direct-message
     :shh/remove-filter
     :transport/confirm-messages-processed

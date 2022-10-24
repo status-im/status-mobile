@@ -7,7 +7,7 @@
             [status-im.chat.models :as chat.models]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip681 :as eip681]
-            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.domain :as domain]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.utils.db :as utils.db]
             [status-im.utils.http :as http]
@@ -66,7 +66,7 @@
 (defn match-contact-async
   [chain {:keys [user-id ens-name]} callback]
   (let [valid-key (and (spec/valid? :global/public-key user-id)
-                       (not= user-id ens/default-key))]
+                       (not= user-id domain/default-key))]
     (cond
       valid-key
       (callback {:type       :contact
@@ -78,7 +78,7 @@
       (let [chain-id   (ethereum/chain-keyword->chain-id chain)
             ens-name   (stateofus/ens-name-parse user-id)
             on-success #(match-contact-async chain {:user-id % :ens-name ens-name} callback)]
-        (ens/pubkey chain-id ens-name on-success))
+        (domain/pubkey chain-id ens-name on-success))
 
       :else
       (callback {:type  :contact
@@ -150,7 +150,7 @@
     (let [{:keys [paths ens-names]}
           (reduce (fn [acc path]
                     (let [address (get-in message path)]
-                      (if (ens/is-valid-eth-name? address)
+                      (if (domain/is-valid-eth-name? address)
                         (-> acc
                             (update :paths conj path)
                             (update :ens-names conj address))

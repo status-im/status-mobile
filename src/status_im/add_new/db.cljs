@@ -1,5 +1,5 @@
 (ns status-im.add-new.db
-  (:require [status-im.ethereum.ens :as ens]
+  (:require [status-im.ethereum.domain :as domain]
             [cljs.spec.alpha :as spec]))
 
 (defn own-public-key?
@@ -9,7 +9,7 @@
 (defn validate-pub-key [db public-key]
   (cond
     (or (not (spec/valid? :global/public-key public-key))
-        (= public-key ens/default-key))
+        (= public-key domain/default-key))
     :invalid
     (own-public-key? db public-key)
     :yourself))

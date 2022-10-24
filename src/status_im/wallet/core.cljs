@@ -17,7 +17,7 @@
             [status-im.wallet.db :as wallet.db]
             [clojure.string :as string]
             [status-im.contact.db :as contact.db]
-            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.domain :as domain]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.wallet.prices :as prices]
@@ -465,7 +465,7 @@
 (re-frame/reg-fx
  ::resolve-address
  (fn [{:keys [chain-id ens-name cb]}]
-   (ens/address chain-id ens-name cb)))
+   (domain/address chain-id ens-name cb)))
 
 (fx/defn on-recipient-address-resolved
   {:events [::recipient-address-resolved]}

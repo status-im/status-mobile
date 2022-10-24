@@ -53,7 +53,7 @@
             [status-im.ui.screens.wallet.swap.views :as wallet.swap]
             [status-im.ui.screens.status.views :as status.views]
             [status-im.ui.screens.profile.user.views :as profile.user]
-            [status-im.ui.screens.ens.views :as ens]
+            [status-im.ui.screens.domain.views :as domain]
             [status-im.ui.screens.fleet-settings.views :as fleet-settings]
             [status-im.ui.screens.glossary.view :as glossary]
             [status-im.ui.screens.group.views :as group-chat]
@@ -445,23 +445,23 @@
             :component contacts-list/contacts-list}
            {:name      :ens-main
             :options   {:topBar {:title {:text (i18n/label :t/ens-usernames)}}}
-            :component ens/main}
+            :component domain/main}
            {:name      :ens-search
             :options   {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
-            :component ens/search}
+            :component domain/search}
            {:name      :ens-checkout
             :options   {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
-            :component ens/checkout}
+            :component domain/checkout}
            {:name      :ens-confirmation
             :options   {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
-            :component ens/confirmation}
+            :component domain/confirmation}
            {:name      :ens-terms
             :options   {:topBar {:title {:text (i18n/label :t/ens-terms-registration)}}}
-            :component ens/terms}
+            :component domain/terms}
            {:name      :ens-name-details
             ;;TODO dynamic title
             :options   {:topBar {:visible false}}
-            :component ens/name-details}
+            :component domain/name-details}
            {:name      :blocked-users-list
             :options   {:topBar {:title {:text (i18n/label :t/blocked-users)}}}
             :component contacts-list/blocked-users-list}

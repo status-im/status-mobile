@@ -16,7 +16,7 @@
             [reagent.core :as reagent]
             [quo.react-native :as rn]
             [clojure.string :as string]
-            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.domain :as domain]
             [quo.platform :as platform]
             [status-im.utils.identicon :as identicon]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
@@ -91,7 +91,7 @@
 (defn is-valid-username? [username]
   (let [is-chat-key? (and (is-public-key? username)
                           (= (count username) 132))
-        is-ens? (ens/valid-eth-name-prefix? username)]
+        is-ens? (domain/valid-eth-name-prefix? username)]
     (or is-chat-key? is-ens?)))
 
 (defn translate-anim [translate-y-value translate-y-anim-value]

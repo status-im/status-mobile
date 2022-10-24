@@ -4,7 +4,7 @@
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip681 :as eip681]
-            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.domain :as domain]
             [status-im.i18n.i18n :as i18n]
             [status-im.navigation :as navigation]
             [status-im.qr-scanner.core :as qr-scaner]
@@ -44,7 +44,7 @@
         (clj->js (mapv (fn [ens-name]
                          (js/Promise.
                           (fn [resolve _]
-                            (ens/address chain-id ens-name resolve))))
+                            (domain/address chain-id ens-name resolve))))
                        ens-names)))
        (.then callback)
        (.catch (fn [error]

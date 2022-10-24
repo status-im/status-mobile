@@ -1,7 +1,7 @@
 (ns status-im.ethereum.stateofus
   (:require [clojure.string :as string]
             [status-im.utils.config :as config]
-            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.domain :as domain]
             [status-im.ethereum.core :as ethereum]))
 
 (def domain "stateofus.eth")
@@ -37,7 +37,7 @@
 (defn get-registrar [chain callback]
   (if-let [contract (get @registrars-cache chain)]
     (callback contract)
-    (ens/owner
+    (domain/owner
      (ethereum/chain-keyword->chain-id chain)
      domain
      (fn [addr]
@@ -60,6 +60,6 @@
 (defn ens-name-parse [contact-identity]
   (when (string? contact-identity)
     (string/lower-case
-     (if (ens/is-valid-eth-name? contact-identity)
+     (if (domain/is-valid-eth-name? contact-identity)
        contact-identity
        (subdomain contact-identity)))))

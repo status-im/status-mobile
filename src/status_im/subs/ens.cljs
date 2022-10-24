@@ -1,6 +1,6 @@
 (ns status-im.subs.ens
   (:require [re-frame.core :as re-frame]
-            [status-im.ens.core :as ens]
+            [status-im.domain.core :as domain]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.money :as money]
             [clojure.string :as string]))
@@ -12,14 +12,14 @@
    (:usernames multiaccount)))
 
 (re-frame/reg-sub
- :ens/preferred-name
+ :domain/preferred-name
  :<- [:multiaccount]
  (fn [multiaccount]
    (:preferred-name multiaccount)))
 
 (re-frame/reg-sub
- :ens/search-screen
- :<- [:ens/registration]
+ :domain/search-screen
+ :<- [:domain/registration]
  (fn [{:keys [custom-domain? username state]}]
    {:state          state
     :username       username
@@ -27,15 +27,15 @@
 
 (defn- ens-amount-label
   [chain-id]
-  (str (ens/registration-cost chain-id)
+  (str (domain/registration-cost chain-id)
        (case chain-id
          3 " STT"
          1 " SNT"
          "")))
 
 (re-frame/reg-sub
- :ens/checkout-screen
- :<- [:ens/registration]
+ :domain/checkout-screen
+ :<- [:domain/registration]
  :<- [:chain-keyword]
  :<- [:multiaccount/default-account]
  :<- [:multiaccount/public-key]
@@ -56,8 +56,8 @@
                           (get balance (ethereum/chain-keyword->snt-symbol chain)))})))
 
 (re-frame/reg-sub
- :ens/confirmation-screen
- :<- [:ens/registration]
+ :domain/confirmation-screen
+ :<- [:domain/registration]
  (fn [{:keys [username state]}]
    {:state          state
     :username       username}))
@@ -65,7 +65,7 @@
 (re-frame/reg-sub
  :ens.name/screen
  :<- [:get-screen-params :ens-name-details]
- :<- [:ens/names]
+ :<- [:domain/names]
  (fn [[name ens]]
    (let [{:keys [address public-key expiration-date releasable?]} (get ens name)
          pending? (nil? address)]
@@ -83,8 +83,8 @@
  :ens.main/screen
  :<- [:multiaccount/usernames]
  :<- [:multiaccount]
- :<- [:ens/preferred-name]
- :<- [:ens/registrations]
+ :<- [:domain/preferred-name]
+ :<- [:domain/registrations]
  (fn [[names multiaccount preferred-name registrations]]
    {:names             names
     :multiaccount      multiaccount

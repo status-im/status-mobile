@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.domain :as domain]
             [status-im.add-new.db :as db]
             [status-im.utils.random :as random]
             [status-im.utils.utils :as utils]
@@ -19,7 +19,7 @@
  :resolve-public-key
  (fn [{:keys [chain-id contact-identity cb]}]
    (let [ens-name (stateofus/ens-name-parse contact-identity)]
-     (ens/pubkey chain-id ens-name cb))))
+     (domain/pubkey chain-id ens-name cb))))
 
 ;;NOTE we want to handle only last resolve
 (def resolve-last-id (atom nil))
@@ -35,7 +35,7 @@
               is-public-key? (and (string? new-identity)
                                   (utils.db/valid-public-key? new-identity))
               is-ens? (and (not is-public-key?)
-                           (ens/valid-eth-name-prefix? new-identity))
+                           (domain/valid-eth-name-prefix? new-identity))
               error (db/validate-pub-key db new-identity)]
           (reset! resolve-last-id nil)
           (merge {:db (assoc db

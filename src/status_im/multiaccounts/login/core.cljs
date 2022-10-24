@@ -42,7 +42,8 @@
             [status-im.ethereum.tokens :as tokens]
             [clojure.string :as string]
             [status-im.utils.wallet-connect :as wallet-connect]
-            [status-im.node.core :as node]))
+            [status-im.node.core :as node]
+            [status-im.domain.core :as domain]))
 
 (re-frame/reg-fx
  ::initialize-communities-enabled
@@ -164,6 +165,7 @@
    (when (ethereum/binance-chain? db)
      (wallet/request-current-block-update))
    (prices/update-prices)
+   (domain/initialize-uns-tlds)
    (wallet-connect-legacy/get-connector-session-from-db)))
 
 (fx/defn login
