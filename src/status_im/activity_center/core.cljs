@@ -43,6 +43,32 @@
     {:db (update-in db [:activity-center :notifications]
                     update-notifications new-notifications)}))
 
+;;;; Contact verification
+
+(fx/defn contact-verification-decline
+  {:events [:activity-center.contact-verification/decline]}
+  [_ contact-verification-id]
+  {::json-rpc/call [{:method     "wakuext_declineContactVerificationRequest"
+                     :params     [contact-verification-id]
+                     :on-success #(re-frame/dispatch [:activity-center.contact-verification/decline-success %])
+                     :on-error   #(re-frame/dispatch [:activity-center.contact-verification/decline-error contact-verification-id %])}]})
+
+(fx/defn contact-verification-decline-success
+  {:events [:activity-center.contact-verification/decline-success]}
+  [cofx response]
+  (->> response
+       :activityCenterNotifications
+       (map data-store.activities/<-rpc)
+       (notifications-reconcile cofx)))
+
+(fx/defn contact-verification-decline-error
+  {:events [:activity-center.contact-verification/decline-error]}
+  [_ contact-verification-id error]
+  (log/warn "Failed to decline contact verification"
+            {:contact-verification-id contact-verification-id
+             :error                   error})
+  nil)
+
 ;;;; Notifications fetching and pagination
 
 (def defaults

@@ -22,6 +22,13 @@
 (def ^:const contact-request-state-received 3)
 (def ^:const contact-request-state-dismissed 4)
 
+(def ^:const contact-verification-state-unknown 0)
+(def ^:const contact-verification-state-pending 1)
+(def ^:const contact-verification-state-accepted 2)
+(def ^:const contact-verification-state-declined 3)
+(def ^:const contact-verification-state-cancelled 4)
+(def ^:const contact-verification-state-trusted 5)
+
 (def ^:const emoji-reaction-love 1)
 (def ^:const emoji-reaction-thumbs-up  2)
 (def ^:const emoji-reaction-thumbs-down  3)
@@ -183,11 +190,15 @@
 (def ^:const activity-center-notification-type-mention 3)
 (def ^:const activity-center-notification-type-reply 4)
 (def ^:const activity-center-notification-type-contact-request 5)
+(def ^:const activity-center-notification-type-contact-verification 6)
+
+;; TODO: Remove this constant once the old Notification Center code is removed.
+;; Its value clashes with the new constant `activity-center-notification-type-contact-verification`
+;; used in status-go.
 (def ^:const activity-center-notification-type-contact-request-retracted 6)
 
 ;; TODO: Replace with correct enum values once status-go implements them.
 (def ^:const activity-center-notification-type-admin 66610)
-(def ^:const activity-center-notification-type-identity-verification 66611)
 (def ^:const activity-center-notification-type-tx 66612)
 (def ^:const activity-center-notification-type-membership 66613)
 (def ^:const activity-center-notification-type-system 66614)

@@ -15,98 +15,114 @@
             [status-im.utils.handlers :refer [<sub >evt]]
             [quo.components.safe-area :as safe-area]))
 
-(defn activity-title
-  [{:keys [type]}]
-  (case type
-    constants/activity-center-notification-type-contact-request
-    (i18n/label :t/contact-request)
+;;;; Misc
 
-    constants/activity-center-notification-type-one-to-one-chat
-    "Dummy 1:1 chat title"
+(defn sender-name
+  [contact]
+  (or (get-in contact [:names :nickname])
+      (get-in contact [:names :three-words-name])))
 
-    "Dummy default title"))
+(defmulti notification-component :type)
 
-(defn activity-icon
-  [{:keys [type]}]
-  (case type
-    constants/activity-center-notification-type-contact-request
-    :main-icons2/add-user
-    :main-icons2/placeholder))
+;;;; Contact request notifications
 
-(defn activity-context
-  [{:keys [message last-message type]}]
-  (case type
-    constants/activity-center-notification-type-contact-request
-    (let [message     (or message last-message)
-          contact     (<sub [:contacts/contact-by-identity (:from message)])
-          sender-name (or (get-in contact [:names :nickname])
-                          (get-in contact [:names :three-words-name]))]
-      [[context-tags/user-avatar-tag
-        {:color          :purple
-         :override-theme :dark
-         :size           :small
-         :style          {:background-color colors/white-opa-10}
-         :text-style     {:color colors/white}}
-        sender-name
-        (multiaccounts/displayed-photo contact)]
-       [rn/text {:style {:color colors/white}}
-        (i18n/label :t/contact-request-sent)]])
-    nil))
+(defmethod notification-component constants/activity-center-notification-type-contact-request
+  [{:keys [id] :as notification}]
+  (let [message   (or (:message notification) (:last-message notification))
+        contact   (<sub [:contacts/contact-by-identity (:author notification)])
+        pressable (case (:contact-request-state message)
+                    constants/contact-request-message-state-accepted
+                    ;; NOTE [2022-09-21]: We need to dispatch to
+                    ;; `:contact.ui/send-message-pressed` instead of
+                    ;; `:chat.ui/navigate-to-chat`, otherwise the chat screen looks completely
+                    ;; broken if it has never been opened before for the accepted contact.
+                    [animation/pressable {:on-press (fn []
+                                                      (>evt [:hide-popover])
+                                                      (>evt [:contact.ui/send-message-pressed {:public-key (:author notification)}]))}]
+                    [:<>])]
+    (conj pressable
+          [activity-logs/activity-log
+           (merge {:title     (i18n/label :t/contact-request)
+                   :icon      :main-icons2/add-user
+                   :timestamp (datetime/timestamp->relative (:timestamp notification))
+                   :unread?   (not (:read notification))
+                   :context   [[context-tags/user-avatar-tag
+                                {:color          :purple
+                                 :override-theme :dark
+                                 :size           :small
+                                 :style          {:background-color colors/white-opa-10}
+                                 :text-style     {:color colors/white}}
+                                (sender-name contact)
+                                (multiaccounts/displayed-photo contact)]
+                               [rn/text {:style {:color colors/white}}
+                                (i18n/label :t/contact-request-sent)]]
+                   :message   {:body (get-in message [:content :text])}
+                   :status    (case (:contact-request-state message)
+                                constants/contact-request-message-state-accepted
+                                {:type :positive :label (i18n/label :t/accepted)}
+                                constants/contact-request-message-state-declined
+                                {:type :negative :label (i18n/label :t/declined)}
+                                nil)}
+                  (case (:contact-request-state message)
+                    constants/contact-request-state-mutual
+                    {:button-1 {:label    (i18n/label :t/decline)
+                                :type     :danger
+                                :on-press #(>evt [:contact-requests.ui/decline-request id])}
+                     :button-2 {:label                     (i18n/label :t/accept)
+                                :type                      :success
+                                :override-background-color colors/success-60
+                                :on-press                  #(>evt [:contact-requests.ui/accept-request id])}}
+                    nil))])))
 
-(defn activity-message
-  [{:keys [message last-message]}]
-  {:body (get-in (or message last-message) [:content :text])})
+;;;; Contact verification notifications
 
-(defn activity-status
-  [notification]
-  (case (get-in notification [:message :contact-request-state])
-    constants/contact-request-message-state-accepted
-    {:type :positive :label (i18n/label :t/accepted)}
-    constants/contact-request-message-state-declined
-    {:type :negative :label (i18n/label :t/declined)}
-    nil))
+(defmethod notification-component constants/activity-center-notification-type-contact-verification
+  [{:keys [id contact-verification-status] :as notification}]
+  (let [message (or (:message notification) (:last-notification notification))
+        contact (<sub [:contacts/contact-by-identity (:author notification)])]
+    [activity-logs/activity-log
+     (merge {:title     (i18n/label :t/identity-verification-request)
+             :icon      :main-icons2/friend
+             :timestamp (datetime/timestamp->relative (:timestamp notification))
+             :unread?   (not (:read notification))
+             :context   [[context-tags/user-avatar-tag
+                          {:color          :purple
+                           :override-theme :dark
+                           :size           :small
+                           :style          {:background-color colors/white-opa-10}
+                           :text-style     {:color colors/white}}
+                          (sender-name contact)
+                          (multiaccounts/displayed-photo contact)]
+                         [rn/text {:style {:color colors/white}}
+                          (str (i18n/label :t/identity-verification-request-sent)
+                               ":")]]
+             :message   (case contact-verification-status
+                          (constants/contact-verification-state-pending
+                           constants/contact-verification-state-declined)
+                          {:body (get-in message [:content :text])}
+                          nil)
+             :status    (case contact-verification-status
+                          constants/contact-verification-state-declined
+                          {:type :negative :label (i18n/label :t/declined)}
+                          nil)}
+            (case contact-verification-status
+              constants/contact-verification-state-pending
+              {:button-1 {:label    (i18n/label :t/decline)
+                          :type     :danger
+                          :on-press #(>evt [:activity-center.contact-verification/decline id])}
+               :button-2 {:label    (i18n/label :t/accept)
+                          :type     :primary
+                          ;; TODO: The acceptance flow will be implemented in follow-up PRs.
+                          :on-press identity}}
+              nil))]))
 
-(defn activity-buttons
-  [{:keys [id type]}]
-  (case type
-    constants/activity-center-notification-type-contact-request
-    {:button-1 {:label    (i18n/label :t/decline)
-                :type     :danger
-                :on-press #(>evt [:contact-requests.ui/decline-request id])}
-     :button-2 {:label                     (i18n/label :t/accept)
-                :type                      :success
-                :override-background-color colors/success-60
-                :on-press                  #(>evt [:contact-requests.ui/accept-request id])}}
-    nil))
-
-(defn activity-pressable
-  [notification activity]
-  (case (get-in notification [:message :contact-request-state])
-    constants/contact-request-message-state-accepted
-    ;; NOTE [2022-09-21]: We need to dispatch to
-    ;; `:contact.ui/send-message-pressed` instead of
-    ;; `:chat.ui/navigate-to-chat`, otherwise the chat screen looks completely
-    ;; broken if it has never been opened before for the accepted contact.
-    [animation/pressable {:on-press (fn []
-                                      (>evt [:hide-popover])
-                                      (>evt [:contact.ui/send-message-pressed {:public-key (:author notification)}]))}
-     activity]
-    activity))
+;;;; Type-independent components
 
 (defn render-notification
   [notification index]
   [rn/view {:margin-top         (if (= 0 index) 0 4)
             :padding-horizontal 20}
-   [activity-pressable notification
-    [activity-logs/activity-log
-     (merge {:context   (activity-context notification)
-             :icon      (activity-icon notification)
-             :message   (activity-message notification)
-             :status    (activity-status notification)
-             :timestamp (datetime/timestamp->relative (:timestamp notification))
-             :title     (activity-title notification)
-             :unread?   (not (:read notification))}
-            (activity-buttons notification))]]])
+   [notification-component notification]])
 
 (defn filter-selector-read-toggle
   []
@@ -164,7 +180,7 @@
                                                   :label (i18n/label :t/replies)}
                                                  {:id    constants/activity-center-notification-type-contact-request
                                                   :label (i18n/label :t/contact-requests)}
-                                                 {:id    constants/activity-center-notification-type-identity-verification
+                                                 {:id    constants/activity-center-notification-type-contact-verification
                                                   :label (i18n/label :t/identity-verification)}
                                                  {:id    constants/activity-center-notification-type-tx
                                                   :label (i18n/label :t/transactions)}

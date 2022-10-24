@@ -11,15 +11,18 @@
   (h/register-helper-events)
   (rf/dispatch [:init/app-started]))
 
-(defn remove-color-key
-  "Remove `:color` key from notifications because they have random values that we
-  can't assert against."
-  [grouped-notifications {:keys [type status]}]
-  (update-in grouped-notifications
-             [type status :data]
-             (fn [old _]
-               (map #(dissoc % :color) old))
-             nil))
+;;;; Contact verification
+
+(deftest contact-verification-decline-test
+  (rf-test/run-test-sync
+   (setup)
+   (let [spy-queue               (atom [])
+         contact-verification-id 24]
+     (h/spy-fx spy-queue ::json-rpc/call)
+
+     (rf/dispatch [:activity-center.contact-verification/decline contact-verification-id]))))
+
+;;;; Notification reconciliation
 
 (deftest notifications-reconcile-test
   (testing "does nothing when there are no new notifications"
@@ -213,6 +216,18 @@
                                  :type      c/activity-center-notification-type-one-to-one-chat
                                  :timestamp 50}]}}}
             (get-in (h/db) [:activity-center :notifications]))))))
+
+;;;; Notifications fetching and pagination
+
+(defn remove-color-key
+  "Remove `:color` key from notifications because they have random values that we
+  can't assert against."
+  [grouped-notifications {:keys [type status]}]
+  (update-in grouped-notifications
+             [type status :data]
+             (fn [old _]
+               (map #(dissoc % :color) old))
+             nil))
 
 (deftest notifications-fetch-test
   (testing "fetches first page"
