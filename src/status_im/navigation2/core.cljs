@@ -13,8 +13,10 @@
                   :wallet      2
                   :browser     3})
 
-;; (defonce set-navigation-default-options
-;;   (.setDefaultOptions Navigation (clj->js {:options {:topBar {:visible false}}})))
+(defn change-root-status-bar-style [style]
+  (.mergeOptions Navigation
+                 "shell-stack"
+                 (clj->js {:statusBar {:style style}})))
 
 ;; TODO (parvesh) - improve open-modal and close-modal
 (defn open-modal [comp]
@@ -55,7 +57,7 @@
   (let [{:keys [options]} (get views/screens comp)]
     (reset! nav2-utils/container-stack-view-id comp)
     (.push Navigation
-           (name :home-stack)
+           "shell-stack"
            (clj->js {:stack {:id       comp
                              :children [{:component {:id      comp
                                                      :name    comp
@@ -79,3 +81,5 @@
 (re-frame/reg-fx :navigate-to-fx-nav2 navigate)
 
 (re-frame/reg-fx :navigate-from-switcher-fx navigate-from-switcher)
+
+(re-frame/reg-fx :change-root-status-bar-style-fx change-root-status-bar-style)

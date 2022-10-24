@@ -1,33 +1,36 @@
 (ns status-im.switcher.home-stack
   (:require [quo2.reanimated :as reanimated]
-            [status-im.utils.platform :as platform]
-            [status-im.switcher.switcher :as switcher]
-            [status-im.ui2.screens.chat.home :as chat.home]
+            [status-im.switcher.styles :as styles]
+            [status-im.switcher.animation :as animation]
             [status-im.switcher.constants :as constants]
+            [status-im.ui2.screens.chat.home :as chat.home]
             [status-im.switcher.bottom-tabs :as bottom-tabs]
             [status-im.ui.screens.profile.user.views :as profile.user]
-            [status-im.ui.screens.communities.communities-list-redesign :as communities]
-            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]))
+            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
+            [quo2.components.navigation.floating-shell-button :as floating-shell-button]
+            [status-im.ui.screens.communities.communities-list-redesign :as communities]))
 
 (defn load-stack? [stack-id]
   (case stack-id
     :communities-stack @bottom-tabs/load-communities-tab?
-    :chats-stack @bottom-tabs/load-chats-tab?
-    :browser-stack @bottom-tabs/load-browser-tab?
-    :wallet-stack @bottom-tabs/load-wallet-tab?))
+    :chats-stack       @bottom-tabs/load-chats-tab?
+    :browser-stack     @bottom-tabs/load-browser-tab?
+    :wallet-stack      @bottom-tabs/load-wallet-tab?))
 
 (defn stack-view [stack-id shared-values]
   (when (load-stack? stack-id)
     [:f>
      (fn []
-       [reanimated/view {:style (reanimated/apply-animations-to-style
-                                 {:opacity        (get shared-values (get constants/stacks-opacity-keywords stack-id))
-                                  :pointer-events (get shared-values (get constants/stacks-pointer-keywords stack-id))}
-                                 {:top              0
-                                  :bottom           (if platform/ios? 79 54)
-                                  :left             0
-                                  :right            0
-                                  :position         :absolute})}
+       [reanimated/view
+        {:style (reanimated/apply-animations-to-style
+                 {:opacity        (get shared-values (get constants/stacks-opacity-keywords stack-id))
+                  :pointer-events (get shared-values (get constants/stacks-pointer-keywords stack-id))}
+                 {:position :absolute
+                  :top                 0
+                  :bottom              0
+                  :left                0
+                  :right               0
+                  :accessibility-label stack-id})}
         (case stack-id
           :communities-stack [communities/communities-list]
           :chats-stack       [chat.home/home]
@@ -35,29 +38,22 @@
           :browser-stack     [profile.user/my-profile])])]))
 
 (defn home-stack [shared-values]
-  [:<>
-   [stack-view :communities-stack shared-values]
-   [stack-view :chats-stack shared-values]
-   [stack-view :browser-stack shared-values]
-   [stack-view :wallet-stack shared-values]])
-
-(defn home []
   [:f>
    (fn []
-     (let [selected-stack-id @bottom-tabs/selected-stack-id
-           shared-values     (reduce (fn [acc id]
-                                       (let [selected-tab?         (= id selected-stack-id)
-                                             tab-opacity-keyword   (get constants/tabs-opacity-keywords id)
-                                             stack-opacity-keyword (get constants/stacks-opacity-keywords id)
-                                             stack-pointer-keyword (get constants/stacks-pointer-keywords id)]
-                                         (assoc
-                                          acc
-                                          tab-opacity-keyword   (reanimated/use-shared-value (if selected-tab? 1 0))
-                                          stack-opacity-keyword (reanimated/use-shared-value (if selected-tab? 1 0))
-                                          stack-pointer-keyword (reanimated/use-shared-value (if selected-tab? "auto" "none")))))
-                                     {}
-                                     constants/stacks-ids)]
-       [:<>
-        [home-stack shared-values]
-        [bottom-tabs/bottom-tabs shared-values]
-        [switcher/switcher :home-stack]]))])
+     (let [home-stack-original-style (styles/home-stack)
+           home-stack-animated-style (reanimated/apply-animations-to-style
+                                      {:top            (:home-stack-top shared-values)
+                                       :left           (:home-stack-left shared-values)
+                                       :opacity        (:home-stack-opacity shared-values)
+                                       :pointer-events (:home-stack-pointer shared-values)
+                                       :transform      [{:scale (:home-stack-scale shared-values)}]}
+                                      home-stack-original-style)]
+       [reanimated/view {:style home-stack-animated-style}
+        [stack-view :communities-stack shared-values]
+        [stack-view :chats-stack shared-values]
+        [stack-view :browser-stack shared-values]
+        [stack-view :wallet-stack shared-values]
+        [floating-shell-button/floating-shell-button
+         {:jump-to {:on-press #(animation/close-home-stack shared-values)}}
+         {:position :absolute
+          :bottom   12}]]))])

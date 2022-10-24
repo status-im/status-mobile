@@ -45,7 +45,6 @@
 ;;Blur
 (def neutral-5-opa-70  (alpha neutral-5 0.7))
 (def neutral-90-opa-70 (alpha neutral-90 0.7))
-(def neutral-95-opa-70 (alpha neutral-95 0.7))
 
 ;;80 with transparency
 (def neutral-80-opa-5  (alpha neutral-80 0.05))
@@ -59,6 +58,20 @@
 (def neutral-80-opa-80 (alpha neutral-80 0.8))
 (def neutral-80-opa-90 (alpha neutral-80 0.9))
 (def neutral-80-opa-95 (alpha neutral-80 0.95))
+
+;;95 with transparency
+(def neutral-95-opa-60 (alpha neutral-95 0.6))
+(def neutral-95-opa-70 (alpha neutral-95 0.7))
+(def neutral-95-opa-80 (alpha neutral-95 0.8))
+(def neutral-95-opa-90 (alpha neutral-95 0.9))
+(def neutral-95-opa-95 (alpha neutral-95 0.95))
+
+;;100 with transparency
+(def neutral-100-opa-60 (alpha neutral-100 0.6))
+(def neutral-100-opa-70 (alpha neutral-100 0.7))
+(def neutral-100-opa-80 (alpha neutral-100 0.8))
+(def neutral-100-opa-90 (alpha neutral-100 0.9))
+(def neutral-100-opa-95 (alpha neutral-100 0.95))
 
 ;;;;White
 

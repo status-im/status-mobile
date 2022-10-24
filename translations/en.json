@@ -1822,5 +1822,7 @@
     "membership": "Membership",
     "jump-to": "Jump to",
     "blank-messages-text": "Your messages will be here",
-    "groups": "Groups"
+    "groups": "Groups",
+    "shell-placeholder-title": "Your apps will run here",
+    "shell-placeholder-subtitle": "Open tabs of your communities, messages,\nwallet account and browser windows"
 }
