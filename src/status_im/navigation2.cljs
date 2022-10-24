@@ -3,14 +3,14 @@
             [status-im.reloader :as reloader]
             [status-im.utils.datetime :as datetime]))
 
-(def parent-stack (atom :home-stack))
+(def parent-stack (atom :shell-stack))
 
 (fx/defn reload-new-ui
   {:events [:reload-new-ui]}
   [_]
   (reloader/reload)
   {:new-ui/reset-bottom-tabs nil
-   :dispatch                 [:init-root :home-stack]})
+   :dispatch                 [:init-root :shell-stack]})
 
 (fx/defn init-root-nav2
   {:events [:init-root-nav2]}
@@ -27,7 +27,7 @@
   [_ modal]
   {:close-modal-fx-nav2 modal})
 
-(defn navigate-from-home-stack [go-to-view-id id db]
+(defn navigate-from-shell-stack [go-to-view-id id db]
   (reset! parent-stack go-to-view-id)
   {:navigate-to-fx-nav2 [go-to-view-id id]
    :db (assoc-in db [:navigation2/navigation2-stacks id] {:type  go-to-view-id
@@ -49,8 +49,12 @@
     (if from-switcher?
       (navigate-from-switcher go-to-view-id id db from-home?)
       (if from-home?
-        (navigate-from-home-stack go-to-view-id id db)
+        (navigate-from-shell-stack go-to-view-id id db)
         ;; TODO(parvesh) - new stacks created from other screens should be stacked on current stack, instead of creating new entry
-        (navigate-from-home-stack go-to-view-id id db)))))
+        (navigate-from-shell-stack go-to-view-id id db)))))
 
+(fx/defn change-root-status-bar-style
+  {:events [:change-root-status-bar-style]}
+  [_ style]
+  {:change-root-status-bar-style-fx style})
 

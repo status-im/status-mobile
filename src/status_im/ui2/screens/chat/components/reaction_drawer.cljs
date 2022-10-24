@@ -30,7 +30,7 @@
                                  :type                :grey
                                  :icon                true
                                  :icon-no-color       true
-                                 :accessibility-label :reply-cancel-button
+                                 :accessibility-label (str "emoji-picker-" id)
                                  :on-press            #(do
                                                          (send-emoji id)
                                                          (re-frame/dispatch [:bottom-sheet/hide]))}

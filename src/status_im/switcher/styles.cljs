@@ -1,89 +1,35 @@
 (ns status-im.switcher.styles
-  (:require [quo.theme :as theme]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.foundations.colors :as colors]
             [status-im.utils.platform :as platform]
             [status-im.switcher.constants :as constants]))
 
-(def themes
-  {:light {:bottom-tabs-bg-color           colors/neutral-80
-           :bottom-tabs-on-scroll-bg-color colors/neutral-80-opa-80
-           :bottom-tabs-non-selected-tab   colors/neutral-50
-           :bottom-tabs-selected-tab       colors/white
-           :switcher-close-button-bg-color colors/white}
-   :dark  {:bottom-tabs-bg-color           colors/neutral-80
-           :bottom-tabs-on-scroll-bg-color colors/neutral-80-opa-80
-           :bottom-tabs-non-selected-tab   colors/neutral-50
-           :bottom-tabs-selected-tab       colors/white
-           :switcher-close-button-bg-color colors/white}})
-
-(defn get-color [key]
-  (get-in themes [(theme/get-theme) key]))
-
 ;; Bottom Tabs
-(defn bottom-tab-icon [tab-state]
-  {:size  24
-   :color  (get-color tab-state)})
+(defn bottom-tabs-container [pass-through?]
+  {:background-color    (if pass-through? colors/neutral-100-opa-70 colors/neutral-100)
+   :flex                1
+   :align-items         :center
+   :flex-direction      :column
+   :height              (constants/bottom-tabs-container-height)
+   :position            :absolute
+   :bottom              -1
+   :right               0
+   :left                0
+   :accessibility-label :bottom-tabs-container})
 
-(defn bottom-tabs [icons-only?]
-  {:background-color   (if icons-only? nil (get-color :bottom-tabs-bg-color))
-   :flex-direction     :row
-   :flex               1
-   :justify-content    :space-between
-   :height             (constants/bottom-tabs-height)
-   :position           :absolute
-   :bottom             -1
-   :right              0
-   :left               0
-   :padding-horizontal 16})
+(defn bottom-tabs []
+  {:flex-direction      :row
+   :position            :absolute
+   :bottom              (if platform/android? 8 34)
+   :flex                1
+   :accessibility-label :bottom-tabs})
 
-;; Switcher
-(defn switcher-button []
-  {:width      constants/switcher-button-size
-   :height     constants/switcher-button-size
-   :z-index    2})
-
-(defn merge-switcher-button-common-styles [style]
-  (merge
-   {:width           constants/switcher-button-size
-    :height          constants/switcher-button-size
-    :border-radius   constants/switcher-button-radius
-    :position        :absolute
-    :z-index         2
-    :align-items     :center
-    :align-self      :center
-    :justify-content :center}
-   style))
-
-(defn switcher-button-touchable [view-id]
-  (merge-switcher-button-common-styles
-   {:bottom (constants/switcher-bottom-position view-id)}))
-
-(defn switcher-close-button []
-  (merge-switcher-button-common-styles
-   {:backgroundColor (get-color :switcher-close-button-bg-color)}))
-
-(defn switcher-screen []
-  (cond-> (merge-switcher-button-common-styles
-           {:background-color colors/neutral-80-opa-80
-            :z-index          1
-            :overflow         :hidden})
-    platform/android? (dissoc :background-color)
-    true              (dissoc :justify-content)))
-
-(defn switcher-blur-background []
+;; Home Stack
+(defn home-stack []
   (let [{:keys [width height]} (constants/dimensions)]
-    {:style         {:width  width
-                     :height (+ height constants/switcher-container-height-padding)}
-     :blur-amount   17
-     :overlay-color colors/neutral-80-opa-80}))
-
-(defn switcher-screen-container []
-  (let [{:keys [width height]} (constants/dimensions)]
-    {:width            width
-     :height           (+ height constants/switcher-container-height-padding)
-     :align-items      :center
-     :position         :absolute}))
-
-(defn switcher-switch-screen []
-  {:margin-top  40
-   :align-items :center})
+    {:border-bottom-left-radius  20
+     :border-bottom-right-radius 20
+     :background-color           (colors/theme-colors colors/neutral-5 colors/neutral-95)
+     :overflow                   :hidden
+     :position                   :absolute
+     :width                      width
+     :height                     (- height (constants/bottom-tabs-container-height))}))

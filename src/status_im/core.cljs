@@ -18,6 +18,8 @@
             [status-im.utils.logging.core :as utils.logs]
             [status-im.utils.platform :as platform]
             [status-im.utils.snoopy :as snoopy]
+            [status-im.switcher.animation :as animation]
+            [status-im.async-storage.core :as async-storage]
             [status-im.utils.universal-links.core :as utils.universal-links]))
 
 (set! interop/next-tick js/setTimeout)
@@ -38,6 +40,9 @@
   (re-frame/dispatch-sync [:init/app-started])
 
   (utils.universal-links/initialize)
+
+  ;; TODO(parvesh) - Remove while moving functionality to status-go
+  (async-storage/get-item :selected-stack-id #(animation/selected-stack-id-loaded %))
 
   ;;DEV
   (snoopy/subscribe!)

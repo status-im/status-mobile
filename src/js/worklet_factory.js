@@ -1,4 +1,4 @@
-import { useDerivedValue } from 'react-native-reanimated';
+import { useDerivedValue, withTiming, withSequence, withDelay, Easing } from 'react-native-reanimated';
 
 // Generic Worklets
 
@@ -32,38 +32,99 @@ export function applyAnimationsToStyle(animations, style) {
 
 // Switcher Worklets
 
-export function switcherCloseButtonOpacity (switcherButtonOpacity) {  
+export function stackOpacity (stackId, selectedStackId) {
   return useDerivedValue(
     function () {
       'worklet'
-      return 1 - switcherButtonOpacity.value;
+      return selectedStackId.value == stackId ? 1 : 0;
     }
   );
 }
 
-export function switcherScreenRadius (switcherScreenSize) {
+export function stackPointer (stackId, selectedStackId) {
   return useDerivedValue(
     function () {
       'worklet'
-      return switcherScreenSize.value/2;
+      return selectedStackId.value == stackId ? "auto" : "none";
     }
   );
 }
 
-export function switcherScreenBottomPosition (switcherScreenRadius, switcherPressedRadius, initalPosition) {
+export function bottomTabIconColor (stackId, selectedStackId, passThrough, selectedTabColor, defaultColor, passThroughColor) {
   return useDerivedValue(
     function () {
       'worklet'
-      return initalPosition + switcherPressedRadius - switcherScreenRadius.value;
+      if (selectedStackId.value == stackId){
+	return selectedTabColor;
+      }
+      else if (passThrough.value){
+	return passThroughColor;
+      }
+      else {
+	return defaultColor;
+      }
     }
   );
 }
 
-export function switcherContainerBottomPosition (switcherScreenBottom, heightOffset) {
+
+// Home Stack
+
+const defaultDurationAndEasing = {
+  duration: 300,
+  easing: Easing.bezier(0, 0, 1, 1),
+}
+
+export function homeStackOpacity (homeStackOpen) {
   return useDerivedValue(
     function () {
       'worklet'
-      return - (switcherScreenBottom.value + heightOffset);
+      return withTiming(homeStackOpen.value ? 1 : 0, defaultDurationAndEasing);
+    }
+  );
+}
+
+export function homeStackTop (homeStackOpen, top) {
+  return useDerivedValue(
+    function () {
+      'worklet'
+      return withTiming(homeStackOpen.value ? 0 : top, defaultDurationAndEasing);
+    }
+  );
+}
+
+export function homeStackLeft (selectedStackId, animateHomeStackLeft, homeStackOpen, left) {
+  return useDerivedValue(
+    function () {
+      'worklet'
+      if (animateHomeStackLeft.value) {
+	var leftValue = left[selectedStackId.value];
+	if (homeStackOpen.value) {
+	  return withSequence(withTiming(leftValue, {duration: 0}), withTiming(0, defaultDurationAndEasing))
+	} else {
+	  return withTiming(leftValue, defaultDurationAndEasing);
+	}
+      } else {
+	return 0;
+      }
+    }
+  );
+}
+
+export function homeStackPointer (homeStackOpen) {
+  return useDerivedValue(
+    function () {
+      'worklet'
+      return homeStackOpen.value ? "auto" : "none";
+    }
+  );
+}
+
+export function homeStackScale (homeStackOpen, minimizeScale) {
+  return useDerivedValue(
+    function () {
+      'worklet'
+      return withTiming(homeStackOpen.value ? 1 : minimizeScale, defaultDurationAndEasing);
     }
   );
 }

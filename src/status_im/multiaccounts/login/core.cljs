@@ -468,7 +468,7 @@
   "Decides which root should be initialised depending on user and app state"
   [db]
   (if (get db :tos/accepted?)
-    (re-frame/dispatch [:init-root (if config/new-ui-enabled? :home-stack :chat-stack)])
+    (re-frame/dispatch [:init-root (if config/new-ui-enabled? :shell-stack :chat-stack)])
     (re-frame/dispatch [:init-root :tos])))
 
 (fx/defn login-only-events
@@ -517,7 +517,7 @@
               (logging/set-log-level (:log-level multiaccount))
 
               (if config/new-ui-enabled?
-                (navigation/init-root :home-stack)
+                (navigation/init-root :shell-stack)
                 ;; if it's a first account, the ToS will be accepted at welcome carousel
                 ;; if not a first account, the ToS might have been accepted by other account logins
                 (if (or first-account? tos-accepted?)

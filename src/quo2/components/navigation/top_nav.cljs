@@ -44,8 +44,7 @@
            open-scanner show-qr open-activity-center style avatar counter-label]}]
   (let [button-common-props (get-button-common-props type)]
     [rn/view {:style (merge
-                      {:height 56
-                       :flex   1}
+                      {:height 56}
                       style)}
    ;; Left Section
      [rn/touchable-without-feedback {:on-press open-profile}

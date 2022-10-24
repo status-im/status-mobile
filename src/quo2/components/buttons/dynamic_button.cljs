@@ -62,9 +62,10 @@
   (let [pressed? (reagent/atom false)]
     (fn [{:keys [type on-press count customization-color style]}]
       [rn/touchable-without-feedback
-       {:on-press-in      #(reset! pressed? true)
-        :on-press-out     #(reset! pressed? false)
-        :on-press         on-press}
+       {:on-press-in         #(reset! pressed? true)
+        :on-press-out        #(reset! pressed? false)
+        :on-press            on-press
+        :accessibility-label type}
        [rn/view {:style (merge
                          {:flex-direction   :row
                           :height           24
