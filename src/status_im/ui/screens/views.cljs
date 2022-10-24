@@ -1,29 +1,32 @@
 (ns status-im.ui.screens.views
-  (:require [status-im.ui.components.react :as react]
-            [reagent.core :as reagent]
-            [status-im.reloader :as reloader]
-            [status-im.ui.screens.screens :as screens]
-            [oops.core :refer [oget]]
-            [status-im.ui.screens.popover.views :as popover]
-            [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
-            [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
-            [status-im.ui.screens.signing.views :as signing]
-            [status-im.ui.screens.wallet.send.views :as wallet.send.views]
-            [re-frame.core :as re-frame]
-            [quo.design-system.colors :as colors]
-            [status-im.utils.config :as config]
-            [status-im.keycard.test-menu :as keycard.test-menu]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]))
+  (:require
+   [status-im.ui.components.react                              :as react]
+   [reagent.core                                               :as reagent]
+   [status-im.reloader                                         :as reloader]
+   [status-im.ui.screens.screens                               :as screens]
+   [oops.core                                                  :refer [oget]]
+   [status-im.ui.screens.popover.views                         :as popover]
+   [status-im.ui.screens.profile.visibility-status.views       :as visibility-status-views]
+   [status-im.ui.screens.bottom-sheets.views                   :as bottom-sheets]
+   [status-im.ui.screens.signing.views                         :as signing]
+   [status-im.ui.screens.wallet.send.views                     :as wallet.send.views]
+   [re-frame.core                                              :as re-frame]
+   [quo.design-system.colors                                   :as colors]
+   [status-im.utils.config                                     :as config]
+   [status-im.keycard.test-menu                                :as keycard.test-menu]
+   [status-im.utils.platform                                   :as platform]
+   [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]))
 
-(defn get-screens []
+(defn get-screens
+  []
   (reduce
    (fn [acc screen]
      (assoc acc (:name screen) screen))
    {}
    (screens/screens)))
 
-;;we need this for hot reload (for some reason it doesn't reload, so we have to call get-screens if debug true)
+;;we need this for hot reload (for some reason it doesn't reload, so we have to call get-screens if debug
+;;true)
 (def screens (get-screens))
 
 (def components
@@ -33,9 +36,10 @@
    {}
    (concat screens/components)))
 
-(defn wrapped-screen-style [{:keys [insets style]} insets-obj]
+(defn wrapped-screen-style
+  [{:keys [insets style]} insets-obj]
   (merge
-   {:flex 1
+   {:flex             1
     :background-color colors/white}
    (when platform/android?
      {:border-bottom-width 1
@@ -50,12 +54,21 @@
                       (get style :padding-top)
                       (get style :padding-vertical))})))
 
-(defn inactive []
+(defn inactive
+  []
   (when @(re-frame/subscribe [:hide-screen?])
-    [react/view {:position :absolute :flex 1 :top 0 :bottom 0 :left 0 :right 0 :background-color colors/white
-                 :z-index 999999999999999999}]))
+    [react/view
+     {:position         :absolute
+      :flex             1
+      :top              0
+      :bottom           0
+      :left             0
+      :right            0
+      :background-color colors/white
+      :z-index          999999999999999999}]))
 
-(defn screen [key]
+(defn screen
+  [key]
   (reagent.core/reactify-component
    (fn []
      (let [{:keys [component insets]} (get
@@ -68,15 +81,17 @@
         [react/safe-area-consumer
          (fn [safe-insets]
            (reagent/as-element
-            [react/view {:style (wrapped-screen-style
-                                 {:insets insets}
-                                 safe-insets)}
+            [react/view
+             {:style (wrapped-screen-style
+                      {:insets insets}
+                      safe-insets)}
              [inactive]
              [component]]))]
         (when js/goog.DEBUG
           [reloader/reload-view])]))))
 
-(defn component [comp]
+(defn component
+  [comp]
   (reagent/reactify-component
    (fn []
      [react/view {:width 500 :height 44}

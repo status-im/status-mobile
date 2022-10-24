@@ -1,9 +1,10 @@
 (ns status-im.subs.communities
-  (:require [re-frame.core :as re-frame]
-            [clojure.string :as string]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-            [status-im.constants :as constants]))
+  (:require
+   [re-frame.core                                        :as re-frame]
+   [clojure.string                                       :as string]
+   [status-im.multiaccounts.core                         :as multiaccounts]
+   [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+   [status-im.constants                                  :as constants]))
 
 (re-frame/reg-sub
  :communities
@@ -52,16 +53,18 @@
 (re-frame/reg-sub
  :communities/sorted-community-members
  (fn [[_ community-id]]
-   (let [contacts (re-frame/subscribe [:contacts/contacts])
+   (let [contacts     (re-frame/subscribe [:contacts/contacts])
          multiaccount (re-frame/subscribe [:multiaccount])
-         members (re-frame/subscribe [:communities/community-members community-id])]
+         members      (re-frame/subscribe [:communities/community-members community-id])]
      [contacts multiaccount members]))
  (fn [[contacts multiaccount members] _]
    (let [names (reduce (fn [acc identity]
-                         (let [me? (= (:public-key multiaccount) identity)
+                         (let [me?     (= (:public-key multiaccount) identity)
                                contact (when-not me?
                                          (multiaccounts/contact-by-identity contacts identity))
-                               name (first (multiaccounts/contact-two-names-by-identity contact multiaccount identity))]
+                               name    (first (multiaccounts/contact-two-names-by-identity contact
+                                                                                           multiaccount
+                                                                                           identity))]
                            (assoc acc identity name)))
                        {}
                        (keys members))]
@@ -77,7 +80,8 @@
  (fn [[communities-enabled? search-filter communities]]
    (filterv
     (fn [{:keys [name featured id]}]
-      (and (or featured (= name "Status"))                  ;; TO DO: remove once featured communities exist
+      (and (or featured (= name "Status"))                  ;; TO DO: remove once featured communities
+                                                            ;; exist
            (or communities-enabled?
                (= id constants/status-community-id))
            (or (empty? search-filter)
@@ -130,7 +134,8 @@
  (fn [[chats]]
    (reduce (fn [acc {:keys [unviewed-mentions-count unviewed-messages-count]}]
              {:unviewed-messages-count (+ (:unviewed-messages-count acc) (or unviewed-messages-count 0))
-              :unviewed-mentions-count (+ (:unviewed-mentions-count acc) (or unviewed-mentions-count 0))})
+              :unviewed-mentions-count (+ (:unviewed-mentions-count acc)
+                                          (or unviewed-mentions-count 0))})
            {:unviewed-messages-count 0
             :unviewed-mentions-count 0}
            chats)))

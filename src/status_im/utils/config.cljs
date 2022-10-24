@@ -1,8 +1,9 @@
 (ns status-im.utils.config
-  (:require ["react-native-config" :default react-native-config]
-            [clojure.string :as string]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.ens :as ens]))
+  (:require
+   ["react-native-config"   :default react-native-config]
+   [clojure.string          :as string]
+   [status-im.ethereum.core :as ethereum]
+   [status-im.ethereum.ens  :as ens]))
 
 (def config
   (memoize
@@ -22,7 +23,7 @@
 (goog-define OPENSEA_API_KEY "")
 
 (def mainnet-rpc-url (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
-(def goerli-rpc-url  (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
+(def goerli-rpc-url (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
 (def opensea-api-key OPENSEA_API_KEY)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
@@ -62,72 +63,77 @@
 (def enable-remove-profile-picture? false)
 
 (def verify-transaction-chain-id (js/parseInt (get-config :VERIFY_TRANSACTION_CHAIN_ID "1")))
-(def verify-transaction-url (if (= :mainnet (ethereum/chain-id->chain-keyword verify-transaction-chain-id))
-                              mainnet-rpc-url
-                              goerli-rpc-url))
+(def verify-transaction-url
+  (if (= :mainnet (ethereum/chain-id->chain-keyword verify-transaction-chain-id))
+    mainnet-rpc-url
+    goerli-rpc-url))
 
 (def verify-ens-chain-id (js/parseInt (get-config :VERIFY_ENS_CHAIN_ID "1")))
-(def verify-ens-url (if (= :mainnet (ethereum/chain-id->chain-keyword verify-ens-chain-id))
-                      mainnet-rpc-url
-                      goerli-rpc-url))
-(def verify-ens-contract-address (get-config :VERIFY_ENS_CONTRACT_ADDRESS ((ethereum/chain-id->chain-keyword verify-ens-chain-id) ens/ens-registries)))
+(def verify-ens-url
+  (if (= :mainnet (ethereum/chain-id->chain-keyword verify-ens-chain-id))
+    mainnet-rpc-url
+    goerli-rpc-url))
+(def verify-ens-contract-address
+  (get-config :VERIFY_ENS_CONTRACT_ADDRESS
+              ((ethereum/chain-id->chain-keyword verify-ens-chain-id) ens/ens-registries)))
 
 (def default-multiaccount
-  {:preview-privacy?      blank-preview?
-   :wallet/visible-tokens {:mainnet #{:SNT}}
-   :currency :usd
-   :appearance 0
-   :profile-pictures-show-to 1
-   :profile-pictures-visibility 1
-   :log-level log-level
+  {:preview-privacy?                   blank-preview?
+   :wallet/visible-tokens              {:mainnet #{:SNT}}
+   :currency                           :usd
+   :appearance                         0
+   :profile-pictures-show-to           1
+   :profile-pictures-visibility        1
+   :log-level                          log-level
    :webview-allow-permission-requests? false
    :opensea-enabled?                   false
    :link-previews-enabled-sites        #{}
    :link-preview-request-enabled       true})
 
-(defn default-visible-tokens [chain]
+(defn default-visible-tokens
+  [chain]
   (get-in default-multiaccount [:wallet/visible-tokens chain]))
 
 (def mainnet-networks
-  [{:id                  "mainnet_rpc",
-    :chain-explorer-link "https://etherscan.io/address/",
-    :name                "Mainnet with upstream RPC",
+  [{:id                  "mainnet_rpc"
+    :chain-explorer-link "https://etherscan.io/address/"
+    :name                "Mainnet with upstream RPC"
     :config              {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
                           :DataDir        "/ethereum/mainnet_rpc"
                           :UpstreamConfig {:Enabled true
                                            :URL     mainnet-rpc-url}}}])
 
 (def sidechain-networks
-  [{:id                  "xdai_rpc",
-    :name                "xDai Chain",
-    :chain-explorer-link "https://blockscout.com/xdai/mainnet/address/",
+  [{:id                  "xdai_rpc"
+    :name                "xDai Chain"
+    :chain-explorer-link "https://blockscout.com/xdai/mainnet/address/"
     :config              {:NetworkId      (ethereum/chain-keyword->chain-id :xdai)
                           :DataDir        "/ethereum/xdai_rpc"
                           :UpstreamConfig {:Enabled true
                                            :URL     "https://gnosischain-rpc.gateway.pokt.network"}}}
-   {:id                  "bsc_rpc",
-    :chain-explorer-link "https://bscscan.com/address/",
-    :name                "BSC Network",
+   {:id                  "bsc_rpc"
+    :chain-explorer-link "https://bscscan.com/address/"
+    :name                "BSC Network"
     :config              {:NetworkId      (ethereum/chain-keyword->chain-id :bsc)
                           :DataDir        "/ethereum/bsc_rpc"
                           :UpstreamConfig {:Enabled true
                                            :URL     "https://bsc-dataseed.binance.org"}}}])
 
 (def testnet-networks
-  [{:id                  "goerli_rpc",
-    :chain-explorer-link "https://goerli.etherscan.io/address/",
-    :name                "Goerli with upstream RPC",
+  [{:id                  "goerli_rpc"
+    :chain-explorer-link "https://goerli.etherscan.io/address/"
+    :name                "Goerli with upstream RPC"
     :config              {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
                           :DataDir        "/ethereum/goerli_rpc"
                           :UpstreamConfig {:Enabled true
                                            :URL     goerli-rpc-url}}}
-   {:id                  "bsc_testnet_rpc",
-    :chain-explorer-link "https://testnet.bscscan.com/address/",
-    :name                "BSC testnet",
+   {:id                  "bsc_testnet_rpc"
+    :chain-explorer-link "https://testnet.bscscan.com/address/"
+    :name                "BSC testnet"
     :config              {:NetworkId      (ethereum/chain-keyword->chain-id :bsc-testnet)
                           :DataDir        "/ethereum/bsc_testnet_rpc"
                           :UpstreamConfig {:Enabled true
-                                           :URL     "https://data-seed-prebsc-1-s1.binance.org:8545/"}}}])
+                                           :URL "https://data-seed-prebsc-1-s1.binance.org:8545/"}}}])
 
 (def default-networks
   (concat testnet-networks mainnet-networks sidechain-networks))
@@ -138,10 +144,12 @@
                [id network])
              default-networks)))
 
-(def default-wallet-connect-metadata {:name "Status Wallet"
-                                      :description "Status is a secure messaging app, crypto wallet, and Web3 browser built with state of the art technology."
-                                      :url "#"
-                                      :icons ["https://statusnetwork.com/img/press-kit-status-logo.svg"]})
+(def default-wallet-connect-metadata
+  {:name "Status Wallet"
+   :description
+   "Status is a secure messaging app, crypto wallet, and Web3 browser built with state of the art technology."
+   :url "#"
+   :icons ["https://statusnetwork.com/img/press-kit-status-logo.svg"]})
 
 (def wallet-connect-project-id "87815d72a81d739d2a7ce15c2cfdefb3")
 
