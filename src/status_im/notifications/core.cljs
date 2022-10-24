@@ -226,13 +226,13 @@
                  "wakuext_enableSendingNotifications"
                  "wakuext_disableSendingNotifications")]
     (fx/merge cofx
-              {::json-rpc/call [{:method method
-                                 :params []
+              {::json-rpc/call [{:method     method
+                                 :params     []
                                  :on-success
                                  #(log/info "[push-notifications] switch-send-notifications successful"
                                             %)
-                                 :on-error #(re-frame/dispatch [::push-notifications-send-update-error
-                                                                enabled? %])}]}
+                                 :on-error   #(re-frame/dispatch [::push-notifications-send-update-error
+                                                                  enabled? %])}]}
 
               (multiaccounts.update/optimistic :send-push-notifications? (boolean enabled?)))))
 
@@ -245,15 +245,15 @@
   {:events [::add-server]}
   [{:keys [db] :as cofx} public-key]
   (fx/merge cofx
-            {::json-rpc/call [{:method "wakuext_addPushNotificationsServer"
-                               :params [public-key]
+            {::json-rpc/call [{:method     "wakuext_addPushNotificationsServer"
+                               :params     [public-key]
                                :on-success
                                #(do
                                   (log/info "[push-notifications] switch-send-notifications successful"
                                             %)
                                   (re-frame/dispatch [::fetch-servers]))
-                               :on-error #(re-frame/dispatch [::push-notifications-add-server-error
-                                                              public-key %])}]}))
+                               :on-error   #(re-frame/dispatch [::push-notifications-add-server-error
+                                                                public-key %])}]}))
 
 (fx/defn handle-servers-fetched
   {:events [::servers-fetched]}

@@ -25,7 +25,8 @@
    {}
    (screens/screens)))
 
-;;we need this for hot reload (for some reason it doesn't reload, so we have to call get-screens if debug
+;;we need this for hot reload (for some reason it doesn't reload, so we have to call get-screens if
+;;debug
 ;;true)
 (def screens (get-screens))
 

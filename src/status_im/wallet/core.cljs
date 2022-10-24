@@ -714,10 +714,10 @@
                       old-timeout
                       (set-timeout db))]
     {:db                          (-> db
-                                      (assoc :wallet-service/restart-timeout timeout
-                                             :wallet-service/custom-interval (get-next-custom-interval
-                                                                              db)
-                                             :wallet/was-started? true
+                                      (assoc :wallet-service/restart-timeout    timeout
+                                             :wallet-service/custom-interval    (get-next-custom-interval
+                                                                                 db)
+                                             :wallet/was-started?               true
                                              :wallet/on-recent-history-fetching
                                              on-recent-history-fetching))
      ::check-recent-history       addresses

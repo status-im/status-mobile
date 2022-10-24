@@ -286,27 +286,30 @@
         contact-request   @(re-frame/subscribe [:chats/sending-contact-request])]
 
     [rn/text-input
-     {:style (styles/text-input contact-request)
-      :ref (:text-input-ref refs)
+     {:style                    (styles/text-input contact-request)
+      :ref                      (:text-input-ref refs)
       :max-font-size-multiplier 1
-      :accessibility-label :chat-message-input
-      :text-align-vertical :center
-      :multiline true
-      :editable (not cooldown-enabled?)
-      :blur-on-submit false
-      :auto-focus false
-      :on-focus #(set-active-panel nil)
-      :max-length chat.constants/max-text-size
-      :placeholder-text-color (:text-02 @colors/theme)
-      :placeholder (if cooldown-enabled?
-                     (i18n/label :cooldown/text-input-disabled)
-                     (i18n/label :t/type-a-message))
-      :underline-color-android :transparent
-      :auto-capitalize :sentences
-      :on-selection-change (partial on-selection-change timeout-id last-text-change mentionable-users)
+      :accessibility-label      :chat-message-input
+      :text-align-vertical      :center
+      :multiline                true
+      :editable                 (not cooldown-enabled?)
+      :blur-on-submit           false
+      :auto-focus               false
+      :on-focus                 #(set-active-panel nil)
+      :max-length               chat.constants/max-text-size
+      :placeholder-text-color   (:text-02 @colors/theme)
+      :placeholder              (if cooldown-enabled?
+                                  (i18n/label :cooldown/text-input-disabled)
+                                  (i18n/label :t/type-a-message))
+      :underline-color-android  :transparent
+      :auto-capitalize          :sentences
+      :on-selection-change      (partial on-selection-change
+                                         timeout-id
+                                         last-text-change
+                                         mentionable-users)
       :on-change
       (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
-      :on-text-input (partial on-text-input mentionable-users chat-id)}
+      :on-text-input            (partial on-text-input mentionable-users chat-id)}
      (if mentions-enabled
        (for [[idx [type text]] (map-indexed
                                 (fn [idx item]

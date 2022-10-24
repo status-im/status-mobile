@@ -32,18 +32,18 @@
                                     :data   [{:id   "0x1"
                                               :read true
                                               :type c/activity-center-notification-type-one-to-one-chat}
-                                             {:id "0x2"
+                                             {:id   "0x2"
                                               :read true
                                               :type
                                               c/activity-center-notification-type-one-to-one-chat}]}
                            :unread {:cursor ""
-                                    :data   [{:id "0x3"
+                                    :data   [{:id   "0x3"
                                               :read false
                                               :type
                                               c/activity-center-notification-type-one-to-one-chat}]}}
                           c/activity-center-notification-type-private-group-chat
                           {:unread {:cursor ""
-                                    :data [{:id "0x4"
+                                    :data [{:id   "0x4"
                                             :read false
                                             :type
                                             c/activity-center-notification-type-private-group-chat}]}}}]

@@ -217,9 +217,9 @@
           {:padding-horizontal 32
            :margin-top         64}
           [fast-image/fast-image
-           {:style {:width      140
-                    :height     140
-                    :align-self :center}
+           {:style  {:width      140
+                     :height     140
+                     :align-self :center}
             :source
             {:uri
              "https://bafybeieayj76s4vjlw5uwdvnakosy46rqyioqsp2ygl6sedivemhkxrbwi.ipfs.cf-ipfs.com"}}]

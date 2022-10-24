@@ -12,20 +12,24 @@
    [status-im.react-native.resources              :as resources]))
 
 (def community-data
-  {:id constants/status-community-id
-   :name "Status"
+  {:id             constants/status-community-id
+   :name           "Status"
    :description
    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
-   :status :gated
-   :section :popular
-   :permissions true
-   :cover (resources/get-image :community-cover)
+   :status         :gated
+   :section        :popular
+   :permissions    true
+   :cover          (resources/get-image :community-cover)
    :community-icon (resources/get-image :status-logo)
-   :color (rand-nth quo.colors/chat-colors)
-   :tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]
-   :tags [{:id 1 :tag-label (i18n/label :t/music) :resource (resources/get-image :music)}
-          {:id 2 :tag-label (i18n/label :t/lifestyle) :resource (resources/get-image :lifestyle)}
-          {:id 3 :tag-label (i18n/label :t/podcasts) :resource (resources/get-image :podcasts)}]})
+   :color          (rand-nth quo.colors/chat-colors)
+   :tokens         [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]
+   :tags           [{:id 1 :tag-label (i18n/label :t/music) :resource (resources/get-image :music)}
+                    {:id        2
+                     :tag-label (i18n/label :t/lifestyle)
+                     :resource  (resources/get-image :lifestyle)}
+                    {:id        3
+                     :tag-label (i18n/label :t/podcasts)
+                     :resource  (resources/get-image :podcasts)}]})
 
 (def descriptor
   [{:label   "Community views"

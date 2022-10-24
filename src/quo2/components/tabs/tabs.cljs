@@ -120,10 +120,12 @@
             :key-fn                            (comp str :id)
             :on-scroll                         (fn [^js e]
                                                  (when fade-end?
-                                                   (let [offset-x (oget e "nativeEvent.contentOffset.x")
-                                                         content-width (oget
-                                                                        e
-                                                                        "nativeEvent.contentSize.width")
+                                                   (let [offset-x       (oget
+                                                                         e
+                                                                         "nativeEvent.contentOffset.x")
+                                                         content-width  (oget
+                                                                         e
+                                                                         "nativeEvent.contentSize.width")
                                                          layout-width
                                                          (oget e "nativeEvent.layoutMeasurement.width")
                                                          new-percentage

@@ -80,8 +80,8 @@
  (fn [[communities-enabled? search-filter communities]]
    (filterv
     (fn [{:keys [name featured id]}]
-      (and (or featured (= name "Status"))                  ;; TO DO: remove once featured communities
-                                                            ;; exist
+      (and (or featured (= name "Status")) ;; TO DO: remove once featured communities
+                                           ;; exist
            (or communities-enabled?
                (= id constants/status-community-id))
            (or (empty? search-filter)
