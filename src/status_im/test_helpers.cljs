@@ -6,9 +6,10 @@
   prefer to use it for more general purpose concepts, such as the re-frame event
   layer."
   (:require [re-frame.core :as rf]
-            [re-frame.registrar :as rf-registrar]
+            [re-frame.db :as rf-db]
             [re-frame.events :as rf-events]
-            [re-frame.db :as rf-db]))
+            [re-frame.registrar :as rf-registrar]
+            [taoensso.timbre :as log]))
 
 (defn db
   "A simple wrapper to get the latest value from the app db."
@@ -85,3 +86,17 @@
              (original-on-error (on-error fx-map))
              (and original-on-success on-success)
              (original-on-success (on-success fx-map)))))))
+
+(defn using-log-test-appender
+  "Rebinds `taoensso.timbre/*config*` to use a custom test appender that persists
+  all `taoensso.timbre/log` call arguments. `f` is called with the atom
+  reference so that tests can de-reference it and verify log messages and their
+  respective levels."
+  [f]
+  (let [logs (atom [])]
+    (binding [log/*config* (assoc-in log/*config*
+                                     [:appenders :test]
+                                     {:enabled? true
+                                      :fn       (fn [{:keys [vargs level]}]
+                                                  (swap! logs conj {:args vargs :level level}))})]
+      (f logs))))

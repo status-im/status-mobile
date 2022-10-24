@@ -11,16 +11,103 @@
   (h/register-helper-events)
   (rf/dispatch [:init/app-started]))
 
+(defn remove-color-key
+  "Remove `:color` key from notifications because they have random values that are
+  inconvenient to assert against."
+  [grouped-notifications {:keys [type status]}]
+  (update-in grouped-notifications
+             [type status :data]
+             (fn [old _]
+               (map #(dissoc % :color) old))
+             nil))
+
 ;;;; Contact verification
 
 (deftest contact-verification-decline-test
-  (rf-test/run-test-sync
-   (setup)
-   (let [spy-queue               (atom [])
-         contact-verification-id 24]
-     (h/spy-fx spy-queue ::json-rpc/call)
+  (testing "successfully declines and reconciles returned notification"
+    (rf-test/run-test-sync
+     (setup)
+     (let [spy-queue               (atom [])
+           contact-verification-id 24
+           expected-notification   {:accepted                    false
+                                    :author                      "0x04d03f"
+                                    :chat-id                     "0x04d03f"
+                                    :contact-verification-status 3
+                                    :dismissed                   false
+                                    :id                          24
+                                    :last-message                nil
+                                    :message                     {:command-parameters nil
+                                                                  :content            {:chat-id     nil
+                                                                                       :ens-name    nil
+                                                                                       :image       nil
+                                                                                       :line-count  nil
+                                                                                       :links       nil
+                                                                                       :parsed-text nil
+                                                                                       :response-to nil
+                                                                                       :rtl?        nil
+                                                                                       :sticker     nil
+                                                                                       :text        nil}
+                                                                  :outgoing           false
+                                                                  :outgoing-status    nil
+                                                                  :quoted-message     nil}
+                                    :name                        "0x04d03f"
+                                    :read                        true
+                                    :reply-message               nil
+                                    :timestamp                   1666647286000
+                                    :type                        6}]
+       (h/stub-fx-with-callbacks
+        ::json-rpc/call
+        :on-success (constantly {:activityCenterNotifications
+                                 [{:accepted                  false
+                                   :author                    "0x04d03f"
+                                   :chatId                    "0x04d03f"
+                                   :contactVerificationStatus 3
+                                   :dismissed                 false
+                                   :id                        contact-verification-id
+                                   :message                   {}
+                                   :name                      "0x04d03f"
+                                   :read                      true
+                                   :timestamp                 1666647286000
+                                   :type                      c/activity-center-notification-type-contact-verification}]}))
 
-     (rf/dispatch [:activity-center.contact-verification/decline contact-verification-id]))))
+       (h/spy-fx spy-queue ::json-rpc/call)
+
+       (rf/dispatch [:activity-center.contact-verification/decline contact-verification-id])
+
+       (is (= {:method "wakuext_declineContactVerificationRequest"
+               :params [contact-verification-id]}
+              (-> @spy-queue
+                  (get-in [0 :args 0])
+                  (select-keys [:method :params]))))
+
+       (is (= {c/activity-center-notification-type-no-type
+               {:read   {:data [expected-notification]}
+                :unread {:data []}}
+               c/activity-center-notification-type-contact-verification
+               {:read   {:data [expected-notification]}
+                :unread {:data []}}}
+              (-> (h/db)
+                  (get-in [:activity-center :notifications])
+                  (remove-color-key {:type   c/activity-center-notification-type-no-type
+                                     :status :read})
+                  (remove-color-key {:type   c/activity-center-notification-type-contact-verification
+                                     :status :read})))))))
+
+  (testing "logs failure"
+    (rf-test/run-test-sync
+     (setup)
+     (let [contact-verification-id 666]
+       (h/using-log-test-appender
+        (fn [logs]
+          (h/stub-fx-with-callbacks ::json-rpc/call :on-error (constantly :fake-error))
+
+          (rf/dispatch [:activity-center.contact-verification/decline contact-verification-id])
+
+          (is (= {:args  ["Failed to decline contact verification"
+                          {:contact-verification-id contact-verification-id
+                           :error                   :fake-error}]
+                  :level :warn}
+                 (last @logs)))))))))
 
 ;;;; Notification reconciliation
 
@@ -265,16 +352,6 @@
             (get-in (h/db) [:activity-center :notifications]))))))
 
 ;;;; Notifications fetching and pagination
-
-(defn remove-color-key
-  "Remove `:color` key from notifications because they have random values that we
-  can't assert against."
-  [grouped-notifications {:keys [type status]}]
-  (update-in grouped-notifications
-             [type status :data]
-             (fn [old _]
-               (map #(dissoc % :color) old))
-             nil))
 
 (deftest notifications-fetch-test
   (testing "fetches first page"

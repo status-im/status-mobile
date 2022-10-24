@@ -1,6 +1,6 @@
 (ns status-im.activity-center.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
+  (:require [re-frame.core :as rf]
+            [status-im.constants :as c]
             [status-im.data-store.activities :as data-store.activities]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
@@ -29,12 +29,12 @@
               (as-> acc $
                 (update-in $ [type :read :data] remove-notification)
                 (update-in $ [type :unread :data] remove-notification)
-                (update-in $ [constants/activity-center-notification-type-no-type :read :data] remove-notification)
-                (update-in $ [constants/activity-center-notification-type-no-type :unread :data] remove-notification)
+                (update-in $ [c/activity-center-notification-type-no-type :read :data] remove-notification)
+                (update-in $ [c/activity-center-notification-type-no-type :unread :data] remove-notification)
                 (if (or (:dismissed notification) (:accepted notification))
                   $
                   (-> $ (update-in [type filter-status :data] insert-and-sort)
-                      (update-in [constants/activity-center-notification-type-no-type filter-status :data] insert-and-sort))))))
+                      (update-in [c/activity-center-notification-type-no-type filter-status :data] insert-and-sort))))))
           db-notifications
           new-notifications))
 
@@ -52,8 +52,8 @@
   [_ contact-verification-id]
   {::json-rpc/call [{:method     "wakuext_declineContactVerificationRequest"
                      :params     [contact-verification-id]
-                     :on-success #(re-frame/dispatch [:activity-center.contact-verification/decline-success %])
-                     :on-error   #(re-frame/dispatch [:activity-center.contact-verification/decline-error contact-verification-id %])}]})
+                     :on-success #(rf/dispatch [:activity-center.contact-verification/decline-success %])
+                     :on-error   #(rf/dispatch [:activity-center.contact-verification/decline-error contact-verification-id %])}]})
 
 (fx/defn contact-verification-decline-success
   {:events [:activity-center.contact-verification/decline-success]}
@@ -75,7 +75,7 @@
 
 (def defaults
   {:filter-status          :unread
-   :filter-type            constants/activity-center-notification-type-no-type
+   :filter-type            c/activity-center-notification-type-no-type
    :notifications-per-page 10})
 
 (def start-or-end-cursor
@@ -98,8 +98,8 @@
     {:db             (assoc-in db [:activity-center :notifications filter-type filter-status :loading?] true)
      ::json-rpc/call [{:method     (filter-status->rpc-method filter-status)
                        :params     [cursor (defaults :notifications-per-page) filter-type]
-                       :on-success #(re-frame/dispatch [:activity-center.notifications/fetch-success filter-type filter-status reset-data? %])
-                       :on-error   #(re-frame/dispatch [:activity-center.notifications/fetch-error filter-type filter-status %])}]}))
+                       :on-success #(rf/dispatch [:activity-center.notifications/fetch-success filter-type filter-status reset-data? %])
+                       :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error filter-type filter-status %])}]}))
 
 (fx/defn notifications-fetch-first-page
   {:events [:activity-center.notifications/fetch-first-page]}
