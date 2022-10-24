@@ -18,21 +18,23 @@
   ~excessively~ big, this implementation will probably need to be revisited."
   [db-notifications new-notifications]
   (reduce (fn [acc {:keys [id type read] :as notification}]
-            (let [filter-status (if read :read :unread)]
-              (cond-> (-> acc
-                          (update-in [type :read :data]
-                                     (fn [data]
-                                       (remove #(= id (:id %)) data)))
-                          (update-in [type :unread :data]
-                                     (fn [data]
-                                       (remove #(= id (:id %)) data))))
-                (not (or (:dismissed notification) (:accepted notification)))
-                (update-in [type filter-status :data]
-                           (fn [data]
-                             (->> notification
-                                  (conj data)
-                                  (sort-by (juxt :timestamp :id))
-                                  reverse))))))
+            (let [filter-status       (if read :read :unread)
+                  remove-notification (fn [data]
+                                        (remove #(= id (:id %)) data))
+                  insert-and-sort     (fn [data]
+                                        (->> notification
+                                             (conj data)
+                                             (sort-by (juxt :timestamp :id))
+                                             reverse))]
+              (as-> acc $
+                (update-in $ [type :read :data] remove-notification)
+                (update-in $ [type :unread :data] remove-notification)
+                (update-in $ [constants/activity-center-notification-type-no-type :read :data] remove-notification)
+                (update-in $ [constants/activity-center-notification-type-no-type :unread :data] remove-notification)
+                (if (or (:dismissed notification) (:accepted notification))
+                  $
+                  (-> $ (update-in [type filter-status :data] insert-and-sort)
+                      (update-in [constants/activity-center-notification-type-no-type filter-status :data] insert-and-sort))))))
           db-notifications
           new-notifications))
 

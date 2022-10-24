@@ -83,7 +83,11 @@
                      :type     c/activity-center-notification-type-private-group-chat
                      :accepted true}]])
 
-     (is (= {c/activity-center-notification-type-one-to-one-chat
+     (is (= {c/activity-center-notification-type-no-type
+             {:read   {:data []}
+              :unread {:data []}}
+
+             c/activity-center-notification-type-one-to-one-chat
              {:read   {:cursor ""
                        :data   [{:id   "0x2"
                                  :read true
@@ -102,7 +106,19 @@
     (rf-test/run-test-sync
      (setup)
      (rf/dispatch [:test/assoc-in [:activity-center :notifications]
-                   {c/activity-center-notification-type-one-to-one-chat
+                   {c/activity-center-notification-type-no-type
+                    {:read   {:cursor ""
+                              :data   [{:id   "0x1"
+                                        :read true
+                                        :type c/activity-center-notification-type-one-to-one-chat}]}
+                     :unread {:cursor ""
+                              :data   [{:id   "0x4"
+                                        :read false
+                                        :type c/activity-center-notification-type-private-group-chat}
+                                       {:id   "0x6"
+                                        :read false
+                                        :type c/activity-center-notification-type-private-group-chat}]}}
+                    c/activity-center-notification-type-one-to-one-chat
                     {:read {:cursor ""
                             :data   [{:id   "0x1"
                                       :read true
@@ -129,7 +145,21 @@
                      :read false
                      :type c/activity-center-notification-type-private-group-chat}]])
 
-     (is (= {c/activity-center-notification-type-one-to-one-chat
+     (is (= {c/activity-center-notification-type-no-type
+             {:read   {:cursor ""
+                       :data   [{:id           "0x1"
+                                 :read         true
+                                 :type         c/activity-center-notification-type-one-to-one-chat
+                                 :last-message {}}]}
+              :unread {:cursor ""
+                       :data   [{:id   "0x6"
+                                 :read false
+                                 :type c/activity-center-notification-type-private-group-chat}
+                                {:id     "0x4"
+                                 :read   false
+                                 :type   c/activity-center-notification-type-private-group-chat
+                                 :author "0xabc"}]}}
+             c/activity-center-notification-type-one-to-one-chat
              {:read   {:cursor ""
                        :data   [{:id           "0x1"
                                  :read         true
@@ -163,7 +193,13 @@
                      :read false
                      :type c/activity-center-notification-type-one-to-one-chat}]])
 
-     (is (= {c/activity-center-notification-type-one-to-one-chat
+     (is (= {c/activity-center-notification-type-no-type
+             {:read   {:data []}
+              :unread {:data [{:id   "0x1"
+                               :read false
+                               :type c/activity-center-notification-type-one-to-one-chat}]}}
+
+             c/activity-center-notification-type-one-to-one-chat
              {:read   {:cursor ""
                        :data   []}
               :unread {:data [{:id   "0x1"
@@ -190,7 +226,18 @@
                    [{:id "0x1" :read true :type c/activity-center-notification-type-one-to-one-chat :timestamp 1 :last-message {}}
                     {:id "0x4" :read false :type c/activity-center-notification-type-one-to-one-chat :timestamp 100 :last-message {}}]])
 
-     (is (= {c/activity-center-notification-type-one-to-one-chat
+     (is (= {c/activity-center-notification-type-no-type
+             {:read   {:data   [{:id           "0x1"
+                                 :read         true
+                                 :type         c/activity-center-notification-type-one-to-one-chat
+                                 :timestamp    1
+                                 :last-message {}}]}
+              :unread {:data   [{:id           "0x4"
+                                 :read         false
+                                 :type         c/activity-center-notification-type-one-to-one-chat
+                                 :timestamp    100
+                                 :last-message {}}]}}
+             c/activity-center-notification-type-one-to-one-chat
              {:read   {:cursor ""
                        :data   [{:id        "0x2"
                                  :read      true
