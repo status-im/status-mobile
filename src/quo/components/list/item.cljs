@@ -4,13 +4,13 @@
             [quo.haptic :as haptic]
             [quo.gesture-handler :as gh]
             [quo.design-system.spacing :as spacing]
-            [quo.design-system.colors :as colors]
+            [quo.design-system.colors :as quo.colors]
             [clojure.string :as string]
             [quo.components.controls.view :as controls]
             [quo.components.tooltip :as tooltip]
             [quo2.components.markdown.text :as text]
             [status-im.ui.components.icons.icons :as icons]
-            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.colors :as colors]
             [quo2.components.icon :as quo2.icons]
             [quo.components.animated.pressable :as animated]))
 
@@ -23,31 +23,31 @@
 
 (defn themes [theme]
   (case theme
-    :main {:icon-color         (:icon-04 @colors/theme)
-           :icon-bg-color      (:interactive-02 @colors/theme)
-           :active-background  (:interactive-02 @colors/theme)
-           :passive-background (:ui-background @colors/theme)
-           :text-color         (:text-01 @colors/theme)}
-    :accent {:icon-color         (:icon-04 @colors/theme)
-             :icon-bg-color      (:interactive-02 @colors/theme)
-             :active-background  (:interactive-02 @colors/theme)
-             :passive-background (:ui-background @colors/theme)
-             :text-color         (:text-04 @colors/theme)}
-    :negative {:icon-color         (:negative-01 @colors/theme)
-               :icon-bg-color      (:negative-02 @colors/theme)
-               :active-background  (:negative-02 @colors/theme)
-               :passive-background (:ui-background @colors/theme)
-               :text-color         (:negative-01 @colors/theme)}
-    :positive {:icon-color         (:positive-01 @colors/theme)
-               :icon-bg-color      (:positive-02 @colors/theme)
-               :active-background  (:positive-02 @colors/theme)
-               :passive-background (:ui-background @colors/theme)
-               :text-color         (:positive-01 @colors/theme)}
-    :disabled {:icon-color         (:icon-02 @colors/theme)
-               :icon-bg-color      (:ui-01 @colors/theme)
-               :active-background  (:ui-01 @colors/theme)
-               :passive-background (:ui-background @colors/theme)
-               :text-color         (:text-02 @colors/theme)}))
+    :main {:icon-color         (:icon-04 @quo.colors/theme)
+           :icon-bg-color      (:interactive-02 @quo.colors/theme)
+           :active-background  (:interactive-02 @quo.colors/theme)
+           :passive-background (:ui-background @quo.colors/theme)
+           :text-color         (:text-01 @quo.colors/theme)}
+    :accent {:icon-color         (:icon-04 @quo.colors/theme)
+             :icon-bg-color      (:interactive-02 @quo.colors/theme)
+             :active-background  (:interactive-02 @quo.colors/theme)
+             :passive-background (:ui-background @quo.colors/theme)
+             :text-color         (:text-04 @quo.colors/theme)}
+    :negative {:icon-color         (:negative-01 @quo.colors/theme)
+               :icon-bg-color      (:negative-02 @quo.colors/theme)
+               :active-background  (:negative-02 @quo.colors/theme)
+               :passive-background (:ui-background @quo.colors/theme)
+               :text-color         (:negative-01 @quo.colors/theme)}
+    :positive {:icon-color         (:positive-01 @quo.colors/theme)
+               :icon-bg-color      (:positive-02 @quo.colors/theme)
+               :active-background  (:positive-02 @quo.colors/theme)
+               :passive-background (:ui-background @quo.colors/theme)
+               :text-color         (:positive-01 @quo.colors/theme)}
+    :disabled {:icon-color         (:icon-02 @quo.colors/theme)
+               :icon-bg-color      (:ui-01 @quo.colors/theme)
+               :active-background  (:ui-01 @quo.colors/theme)
+               :passive-background (:ui-background @quo.colors/theme)
+               :text-color         (:text-02 @quo.colors/theme)}))
 
 (defn size->icon-size [size]
   (case size
@@ -120,7 +120,7 @@
                      :weight          :regular
                      :color           :secondary
                      :ellipsize-mode  :tail
-                     :secondary-color quo2.colors/neutral-50
+                     :secondary-color colors/neutral-50
                      :number-of-lines subtitle-max-lines
                      :size            text-size}
           subtitle]
@@ -128,7 +128,7 @@
                      :weight          :regular
                      :color           :secondary
                      :ellipsize-mode  :middle
-                     :secondary-color quo2.colors/neutral-50
+                     :secondary-color colors/neutral-50
                      :number-of-lines subtitle-max-lines
                      :size            text-size}
           "•"]
@@ -136,7 +136,7 @@
                      :weight          :regular
                      :color           :secondary
                      :ellipsize-mode  :middle
-                     :secondary-color quo2.colors/neutral-50
+                     :secondary-color colors/neutral-50
                      :number-of-lines subtitle-max-lines
                      :size            text-size}
           subtitle-secondary]]
@@ -144,7 +144,7 @@
           [text/text {:weight          :regular
                       :color           :secondary
                       :ellipsize-mode  :tail
-                      :secondary-color quo2.colors/neutral-50
+                      :secondary-color colors/neutral-50
                       :number-of-lines subtitle-max-lines
                       :size            text-size}
            subtitle]
@@ -203,7 +203,7 @@
                                                         :align-items     :center
                                                         :justify-content :center}
                                       :resize-mode     :center
-                                      :color           (:icon-02 @colors/theme)})])]))
+                                      :color           (:icon-02 @quo.colors/theme)})])]))
 
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon icon-container-style
