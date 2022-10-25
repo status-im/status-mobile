@@ -110,10 +110,15 @@
                                  :height        (if (= id 1) 8 26)
                                  :border-radius 6
 <<<<<<< HEAD
+<<<<<<< HEAD
                                  :first-image   "" ; TODO replace with real data
                                  :last-image    ""}]) ; TODO replace with real data
 =======
                                  :first-image   "" ;; TODO replace with real data
                                  :last-image    ""}]) ;; TODO replace with real data
 >>>>>>> c0e3854d3... feat: messages contact requests
+=======
+                                 :first-image   "" ; TODO replace with real data
+                                 :last-image    ""}]) ; TODO replace with real data
+>>>>>>> 44c8c1017... refactor
       ]]))
