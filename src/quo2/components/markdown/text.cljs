@@ -25,7 +25,7 @@
          (if (:color style)
            style
            (assoc style :color (or secondary-color
-                                   (if (= (theme/get-theme) :dark) colors/white colors/neutral-100))))))
+                                   (colors/theme-colors colors/neutral-100 colors/white))))))
 
 (defn text []
   (let [this  (reagent/current-component)
