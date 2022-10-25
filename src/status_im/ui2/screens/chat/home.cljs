@@ -180,12 +180,15 @@
    [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color colors/neutral-50})} title]])
 
 (defn find-contact-requests [notifications]
-  (let [received (atom [])]
+  (let [received-requests (atom [])
+        has-unread (atom false)]
     (doseq [i (range (count notifications))]
       (doseq [j (range (count (:data (nth notifications i))))]
         (when (= 1 (get-in (nth (:data (nth notifications i)) j) [:message :contact-request-state]))
-          (swap! received conj (nth (:data (nth notifications i)) j)))))
-    @received))
+          (swap! received-requests conj (nth (:data (nth notifications i)) j)))
+        (when (= false (get-in (nth (:data (nth notifications i)) j) [:read]))
+          (reset! has-unread true))))
+    {:received-requests @received-requests :has-unread @has-unread}))
 
 (def selected-requests-tab (reagent/atom :received))
 
@@ -195,7 +198,7 @@
      (let [{window-height :height} (rn/use-window-dimensions)
            safe-area         (safe-area/use-safe-area)
            notifications     (<sub [:activity.center/notifications-grouped-by-date])
-           received-requests (find-contact-requests notifications)
+           {received-requests :received-requests} (find-contact-requests notifications)
            sent-requests     []]
        [rn/view {:style {:margin-left 20
                          :height      (- window-height (:top safe-area))}}
@@ -232,9 +235,11 @@
 (defn contact-requests [count]
   [rn/touchable-opacity
    {:active-opacity 1
-    :on-press       #(>evt
-                      [:bottom-sheet/show-sheet
-                       {:content (fn [] [contact-requests-sheet])}])
+    :on-press       #(do
+                       (>evt
+                        [:bottom-sheet/show-sheet
+                         {:content (fn [] [contact-requests-sheet])}])
+                       (>evt [:mark-all-activity-center-notifications-as-read]))
     :style          {:flex-direction     :row
                      :margin             8
                      :padding-horizontal 12
@@ -267,7 +272,7 @@
         contacts           (<sub [:contacts/active])
         contacts           (prepare-contacts contacts)
         notifications      (<sub [:activity.center/notifications-grouped-by-date])
-        requests           (find-contact-requests notifications)]
+        {requests :received-requests new-info :has-unread} (find-contact-requests notifications)]
     [rn/view {:style {:flex 1}}
      [discover-card/discover-card {:title       (i18n/label :t/invite-friends-to-status)
                                    :description (i18n/label :t/share-invite-link)}]
@@ -282,7 +287,8 @@
                                        {:id    :groups
                                         :label (i18n/label :t/groups)}
                                        {:id    :contacts
-                                        :label (i18n/label :t/contacts)}]}]
+                                        :label (i18n/label :t/contacts)
+                                        :new-info new-info}]}]
      (if (and (empty? items)
               (empty? search-filter)
               (not @search-active?))

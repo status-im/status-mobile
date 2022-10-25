@@ -5,7 +5,9 @@
             [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
             [status-im.utils.core :as utils]
-            [status-im.utils.number :as number-utils]))
+            [status-im.utils.number :as number-utils]
+            [quo2.foundations.colors :as colors]
+            [quo2.components.notifications.notification-dot :refer [notification-dot]]))
 
 (def default-tab-size 32)
 
@@ -14,9 +16,21 @@
     (fn [{:keys [data size] :or {size default-tab-size}}]
       [rn/view (merge {:flex-direction :row} style)
        (doall
-        (for [{:keys [label id]} data]
+        (for [{:keys [label id new-info]} data]
           ^{:key id}
           [rn/view {:style {:margin-right (if (= size default-tab-size) 12 8)}}
+           (when new-info
+             [rn/view {:position         :absolute
+                       :z-index          1
+                       :right            -2
+                       :top              -2
+                       :width            10
+                       :height           10
+                       :border-radius    5
+                       :justify-content  :center
+                       :align-items      :center
+                       :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
+              [notification-dot]])
            [tab/tab
             {:id       id
              :size     size
@@ -132,15 +146,15 @@
                                                              [tab/tab {:id             id
                                                                        :size           size
                                                                        :override-theme override-theme
-                                                                       :blur?           blur?
-                                                                       :active          (= id @active-tab-id)
-                                                                       :on-press        (fn [id]
-                                                                                          (reset! active-tab-id id)
-                                                                                          (when scroll-on-press?
-                                                                                            (.scrollToIndex @flat-list-ref
-                                                                                                            #js {:animated     true
-                                                                                                                 :index        index
-                                                                                                                 :viewPosition 0.5}))
-                                                                                          (when on-change
-                                                                                            (on-change id)))}
+                                                                       :blur?          blur?
+                                                                       :active         (= id @active-tab-id)
+                                                                       :on-press       (fn [id]
+                                                                                         (reset! active-tab-id id)
+                                                                                         (when scroll-on-press?
+                                                                                           (.scrollToIndex @flat-list-ref
+                                                                                                           #js {:animated     true
+                                                                                                                :index        index
+                                                                                                                :viewPosition 0.5}))
+                                                                                         (when on-change
+                                                                                           (on-change id)))}
                                                               label]])})])))))

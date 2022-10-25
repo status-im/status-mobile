@@ -7,22 +7,27 @@
             [clojure.string :as str]
             [status-im.utils.utils :as utils.utils]
             [status-im.utils.datetime :as time]
-            [status-im.i18n.i18n :as i18n]))
+            [status-im.i18n.i18n :as i18n]
+            [quo2.components.notifications.notification-dot :refer [notification-dot]]))
 
 (defn get-display-name [chat-id no-ens-name no-nickname]
   (let [name (first (<sub [:contacts/contact-two-names-by-identity chat-id]))]
     (if (and no-ens-name no-nickname)
-      (str (first (str/split name " ")) " " (second (str/split name " ")))
+      (let [[word1 word2] (str/split name " ")]
+        (str word1 " " word2))
       name)))
 
-(defn list-item [{:keys [chat-id image contact message timestamp]}]
-  (let [no-ens-name  (str/blank? (:ens-name (:content message)))
-        no-nickname  (if (= (:nickname (:names contact)) nil) true false)
+(defn list-item [{:keys [chat-id image contact message timestamp read]}]
+  (let [no-ens-name  (str/blank? (get-in message [:content :ens-name]))
+        no-nickname  (nil? (get-in contact [:names :nickname]))
         display-name (get-display-name chat-id no-ens-name no-nickname)]
     [rn/view {:style {:flex-direction :row
                       :padding-top    8
                       :margin-top     4
-                      :padding-bottom 12}}
+                      :padding-bottom 12
+                      :flex           1}}
+     (when-not read
+       [notification-dot {:right 32 :top 16}])
      [user-avatar/user-avatar {:full-name         display-name
                                :status-indicator? true
                                :online?           true
@@ -32,7 +37,7 @@
      [rn/view {:style {:margin-horizontal 8}}
       [rn/view {:style {:flex-direction :row}}
        [rn/text {:style (merge typography/font-semi-bold typography/paragraph-1
-                               {:color        (colors/theme-colors "#000000" "#ffffff")
+                               {:color        (colors/theme-colors :black :white)
                                 :margin-right 8})} display-name]
        (when no-ens-name [rn/text {:style (merge typography/font-regular typography/label
                                                  {:color      (colors/theme-colors colors/neutral-50 colors/neutral-40)
@@ -50,7 +55,7 @@
                         :border-color       (colors/theme-colors colors/neutral-20 colors/neutral-70)}}
        [rn/text {:style (merge typography/font-regular
                                typography/paragraph-1
-                               {:color (colors/theme-colors "000000" "#ffffff")})}
+                               {:color (colors/theme-colors :black :white)})}
         (:text (:content message))]]
       [rn/view {:style {:margin-top     12
                         :flex-direction :row}}
@@ -64,7 +69,7 @@
                                                     :border-radius      8
                                                     :padding-vertical   4
                                                     :padding-horizontal 8}}
-        [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color "#ffffff"})} (i18n/label :t/decline)]]
+        [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color :white})} (i18n/label :t/decline)]]
        [rn/touchable-opacity {:accessibility-label :accept-cr
                               :on-press            #(>evt [:contact-requests.ui/accept-request (:message-id message)])
                               :active-opacity      1
@@ -76,4 +81,4 @@
                                                     :padding-vertical   4
                                                     :padding-horizontal 8
                                                     :margin-left        8}}
-        [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color "#ffffff"})} (i18n/label :t/accept)]]]]]))
+        [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color :white})} (i18n/label :t/accept)]]]]]))

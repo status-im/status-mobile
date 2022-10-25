@@ -89,6 +89,6 @@
                                  :width         32
                                  :height        (if (= id 1) 8 26)
                                  :border-radius 6
-                                 :first-image   "" ;; TODO replace with real data
-                                 :last-image    ""}]) ;; TODO replace with real data
+                                 :first-image   "" ; TODO replace with real data
+                                 :last-image    ""}]) ; TODO replace with real data
       ]]))
