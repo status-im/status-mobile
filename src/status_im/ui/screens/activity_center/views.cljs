@@ -68,7 +68,7 @@
                     {:button-1 {:label    (i18n/label :t/decline)
                                 :type     :danger
                                 :on-press #(>evt [:contact-requests.ui/decline-request id])}
-                     :button-2 {:label                     (i18n/label :t/reply)
+                     :button-2 {:label                     (i18n/label :t/message-reply)
                                 :type                      :success
                                 :override-background-color colors/success-60
                                 :on-press                  #(>evt [:contact-requests.ui/accept-request id])}}
