@@ -39,7 +39,7 @@
           [rn/view {:style
                     {:height 20
                      :width 20}}
-           [icons/icon :main-icons2/check
+           [icons/icon :main-icons2/check-small
             {:size 20
              :color (colors/theme-colors
                      (colors/alpha colors/neutral-100 (if disabled? 0.3 1))
@@ -53,8 +53,8 @@
        [rn/view
         {:style  (merge
                   container-style
-                  {:height 21
-                   :width 21})}
+                  {:height 20
+                   :width 20})}
         [rn/view
          {:style {:flex             1
                   :border-radius    6
@@ -72,9 +72,9 @@
            [rn/view {:style
                      {:height 20
                       :width 20}}
-            [icons/icon :main-icons2/check
+            [icons/icon :main-icons2/check-small
              {:size 20
-              :color (colors/alpha colors/white (if disabled? 0.3 1))}]])]]])))
+              :color colors/white}]])]]])))
 
 (defn radio [{:keys [default-checked?]}]
   (let [checked? (reagent/atom (or default-checked? false))]
