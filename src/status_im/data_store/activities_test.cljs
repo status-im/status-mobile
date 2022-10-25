@@ -4,11 +4,17 @@
             [status-im.constants :as constants]
             [status-im.data-store.activities :as store]))
 
+(def chat-id
+  "0x04c66155")
+
+(def chat-name
+  "0x04c661")
+
 (def raw-notification
-  {:chatId                    "0x04c66155"
+  {:chatId                    chat-id
    :contactVerificationStatus constants/contact-verification-state-pending
    :lastMessage               {}
-   :name                      "0x04c661"
+   :name                      chat-name
    :replyMessage              {}})
 
 (deftest <-rpc-test
@@ -16,8 +22,8 @@
     (is (contains? (set colors/chat-colors) (:color (store/<-rpc raw-notification)))))
 
   (testing "renames keys"
-    (is (= {:name                        "0x04c661"
-            :chat-id                     "0x04c66155"
+    (is (= {:name                        chat-name
+            :chat-id                     chat-id
             :contact-verification-status constants/contact-verification-state-pending}
            (-> raw-notification
                store/<-rpc
@@ -58,36 +64,36 @@
                (select-keys [:last-message :message :reply-message])))))
 
   (testing "augments notification based on its type"
-    (is (= {:chat-name "0x04c661"
+    (is (= {:chat-name chat-name
             :chat-type constants/private-group-chat-type
-            :name      "0x04c661"}
+            :name      chat-name}
            (-> raw-notification
                (assoc :type constants/activity-center-notification-type-reply)
                store/<-rpc
                (select-keys [:name :chat-type :chat-name :public? :group-chat]))))
 
-    (is (= {:chat-name "0x04c661"
+    (is (= {:chat-name chat-name
             :chat-type constants/private-group-chat-type
-            :name      "0x04c661"}
+            :name      chat-name}
            (-> raw-notification
                (assoc :type constants/activity-center-notification-type-mention)
                store/<-rpc
                (select-keys [:name :chat-type :chat-name :public? :group-chat]))))
 
-    (is (= {:chat-name  "0x04c661"
+    (is (= {:chat-name  chat-name
             :chat-type  constants/private-group-chat-type
             :group-chat true
-            :name       "0x04c661"
+            :name       chat-name
             :public?    false}
            (-> raw-notification
                (assoc :type constants/activity-center-notification-type-private-group-chat)
                store/<-rpc
                (select-keys [:name :chat-type :chat-name :public? :group-chat]))))
 
-    (is (= {:chat-name  "0x04c661"
+    (is (= {:chat-name  chat-name
             :chat-type  constants/one-to-one-chat-type
             :group-chat false
-            :name       "0x04c661"
+            :name       chat-name
             :public?    false}
            (-> raw-notification
                (assoc :type constants/activity-center-notification-type-one-to-one-chat)
