@@ -1482,6 +1482,7 @@
     "add-nickname": "Add a nickname (optional)",
     "nickname-description": "Nicknames help you identify others in Status.\nOnly you can see the nicknames you’ve added",
     "accept": "Accept",
+    "reply": "Reply",
     "group-invite": "Group invite",
     "group-invite-link": "Group invite link",
     "pending-invitations": "Pending membership requests",
