@@ -401,13 +401,6 @@
   [message]
   [message.gap/gap message])
 
-(defmethod ->message constants/content-type-system-text [{:keys [content] :as message}]
-  [rn/view {:accessibility-label :chat-item}
-   [rn/view (style/system-message-body message)
-    [rn/view (style/message-view message)
-     [rn/view (style/message-view-content)
-      [render-parsed-text message (:parsed-text content)]]]]])
-
 (defn pin-message [{:keys [chat-id pinned] :as message}]
   (let [pinned-messages @(re-frame/subscribe [:chats/pinned chat-id])]
     (if (and (not pinned) (> (count pinned-messages) 2))
@@ -815,7 +808,7 @@
         [rn/text {:style (merge typography/paragraph-2 typography/font-regular)}
          (i18n/label (if community :t/no-pinned-messages-community-desc :t/no-pinned-messages-desc))]])]))
 
-(defmethod ->message constants/content-type-pin [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]
+(defn pin-system-message [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
     [rn/touchable-opacity {:on-press       (fn []
                                              (re-frame/dispatch [:bottom-sheet/show-sheet
@@ -837,7 +830,7 @@
                               :disabled in-popover?
                               :on-press #(do (when modal (close-modal))
                                              (re-frame/dispatch [:chat.ui/show-profile from]))}
-        [message-author-name from {:modal modal} 25]]
+        [message-author-name from {:modal modal} 20]]
        [rn/text {:style {:font-size 13}} (str " " (i18n/label :t/pinned-a-message))]
        [rn/text
         {:style               (merge
@@ -847,6 +840,15 @@
          :accessibility-label :message-timestamp}
         timestamp-str]]
       [quoted-message response-to (:quoted-message message) true]]]))
+
+(defmethod ->message constants/content-type-system-text [{:keys [content quoted-message] :as message}]
+  (if quoted-message
+    [pin-system-message message]
+    [rn/view {:accessibility-label :chat-item}
+     [rn/view (style/system-message-body message)
+      [rn/view (style/message-view message)
+       [rn/view (style/message-view-content)
+        [render-parsed-text message (:parsed-text content)]]]]]))
 
 (defn pinned-banner [chat-id]
   (let [pinned-messages (<sub [:chats/pinned chat-id])

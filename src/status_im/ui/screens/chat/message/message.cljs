@@ -543,7 +543,6 @@
         [message-content-wrapper message
          [collapsible-text-message message on-long-press modal] reaction-picker]
         (let [response-to (:response-to content)]
-          (println "outgoing" outgoing edit-enabled)
           [message-content-wrapper message
            [react/touchable-highlight (when-not modal
                                         {:disabled      in-popover?

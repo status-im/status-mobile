@@ -91,7 +91,8 @@
                                                          :pinned     (pin-message :pinned)})
               (when pinned
                 (protocol/send-chat-messages [{:chat-id      (pin-message :chat-id)
-                                               :content-type constants/content-type-pin
+                                               :content-type constants/content-type-system-text
+                                               :text "pinned a message"
                                                :response-to (pin-message :message-id)
                                                :ens-name preferred-name}])))))
 
