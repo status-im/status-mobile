@@ -177,7 +177,7 @@
        :title               (i18n/label :t/delete-message)
        :icon                :main-icons/delete
        :accessibility-label :delete-transaccent-button
-       :on-press            #(hide-sheet-and-dispatch [:chat.ui/delete-message chat-id message-id])}]]))
+       :on-press            #(hide-sheet-and-dispatch [:chat.ui/delete-message-not-used-any-more chat-id message-id])}]]))
 
 (defn image-long-press [{:keys [content identicon from outgoing cant-be-replied] :as message} hide]
   (let [contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity from])]

@@ -143,5 +143,8 @@
 
 (def wallet-connect-project-id "87815d72a81d739d2a7ce15c2cfdefb3")
 
+(def delete-message-undo-time-limit-ms 4000)
+(def delete-message-for-me-undo-time-limit-ms 4000)
+
 ;;TODO for development only should be removed in status 2.0
 (def new-ui-enabled? true)

@@ -183,7 +183,7 @@
 
 (fx/defn delete-message
   "Deletes chat message, rebuild message-list"
-  {:events [:chat.ui/delete-message]}
+  {:events [:chat.ui/delete-message-not-used-any-more]}
   [{:keys [db] :as cofx} chat-id message-id]
   (fx/merge cofx
             {:db            (update-in db [:messages chat-id] dissoc message-id)}
@@ -208,10 +208,7 @@
                                                                           [message-id]
                                                                           #(re-frame/dispatch [:chat/decrease-unviewed-count chat-id %3])))) removed-messages)
         remove-messages-fx (fn [{:keys [db]}]
-                             {:db (reduce (fn [acc current]
-                                            (update-in acc [:messages (:chatId current)] dissoc (:messageId current)))
-                                          db removed-messages)
-                              :dispatch-n [[:get-activity-center-notifications]
+                             {:dispatch-n [[:get-activity-center-notifications]
                                            [:get-activity-center-notifications-count]]})]
     (apply fx/merge cofx (conj mark-as-seen-fx remove-messages-fx))))
 

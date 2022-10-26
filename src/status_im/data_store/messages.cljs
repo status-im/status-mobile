@@ -32,6 +32,7 @@
                                 :quotedMessage :quoted-message
                                 :outgoingStatus :outgoing-status
                                 :audioDurationMs :audio-duration-ms
+                                :deleted :deleted?
                                 :deletedForMe :deleted-for-me?
                                 :new :new?})
 
