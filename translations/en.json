@@ -1810,6 +1810,9 @@
     "pin-to-channel": "Pin to the channel",
     "unpin-from-chat": "Unpin from the chat",
     "unpin-from-channel": "Unpin from the channel",
+    "cannot-pin-title": "You can't pin this message!",
+    "cannot-pin-desc": "You can only pin a max of 3 messages.\nUnpin at least one to pin a new one.",
+    "view-pinned-messages": "View pinned messages",
     "copy-text": "Copy text",
     "edit-message": "Edit message",
     "save-image-library": "Save image to library",
@@ -1831,5 +1834,7 @@
     "share-invite-link": "Share an invite link",
     "pending-requests": "Pending requests",
     "received": "Received",
-    "sent": "Sent"
+    "sent": "Sent",
+    "no-pinned-messages-desc": "This chat doesn't have any pinned messages.",
+    "no-pinned-messages-community-desc": "This channel doesn't have any pinned messages."
 }

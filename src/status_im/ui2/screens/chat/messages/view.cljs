@@ -1,7 +1,7 @@
 (ns status-im.ui2.screens.chat.messages.view
   (:require [reagent.core :as reagent]
             [quo.react-native :as rn]
-            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.colors :as colors]
             [status-im.constants :as constants]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.ui.components.list.views :as list]
@@ -36,10 +36,10 @@
                      :align-items      :center
                      :justify-content  :center
                      :border-radius    (/ 24 2)
-                     :background-color (quo2.colors/theme-colors quo2.colors/neutral-80-opa-70 quo2.colors/white-opa-70)}}
+                     :background-color (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70)}}
     ;;TODO icon from quo2 should be used instead!
     [icons/icon
-     :main-icons/arrow-down {:color  (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-100)
+     :main-icons/arrow-down {:color  (colors/theme-colors colors/white colors/neutral-100)
                              :width  12
                              :height 12}]]])
 

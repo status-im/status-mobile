@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [quo2.components.buttons.button :as quo2.button]
-            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.colors :as colors]
             [quo2.components.list-items.menu-item :as quo2.menu-item]
             [quo2.components.separator :as quo2.separator]))
 
@@ -12,7 +12,7 @@
     (let [main-actions (filter #(= (:type %) :main) actions)
           danger-actions (filter #(= (:type %) :danger) actions)
           admin-actions (filter #(= (:type %) :admin) actions)]
-      [rn/view {:flex 1}
+      [rn/view
        [rn/view {:style {:width "100%"
                          :flex-direction :row
                          :justify-content :space-between
@@ -34,7 +34,7 @@
                                  :on-press            #(do
                                                          (send-emoji id)
                                                          (re-frame/dispatch [:bottom-sheet/hide]))}
-                                (when active {:style {:background-color quo2.colors/neutral-10}}))
+                                (when active {:style {:background-color colors/neutral-10}}))
             icon]))]
        [rn/view {:style {:padding-horizontal 8}}
         (for [action main-actions]
