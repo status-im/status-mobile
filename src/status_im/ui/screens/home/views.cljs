@@ -258,6 +258,7 @@
                                        (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
                                        (if config/new-activity-center-enabled?
                                          (re-frame/dispatch [:show-popover {:view                        :activity-center
+                                                                            :style                       {:margin 0}
                                                                             :disable-touchable-overlay?  true
                                                                             :blur-view?                  true
                                                                             :blur-view-props             {:blur-amount 20
