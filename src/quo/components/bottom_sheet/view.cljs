@@ -44,7 +44,7 @@
                                                      (+ 50 keyboard-height-android-delta) ;; TODO : remove 50 when react-native-navigation v8 will be implemented https://github.com/wix/react-native-navigation/issues/7225
                                                      0))
         min-height                (+ (* styles/vertical-padding 2) (:bottom safe-area))
-        max-height                (- window-height (:top safe-area) styles/margin-top)
+        max-height                (- window-height (:top safe-area))
         visible                   (react/state false)
 
         master-translation-y (animated/use-value 0)
@@ -202,17 +202,15 @@
                                                     :wait-for master-ref
                                                     :enabled  (and (not disable-drag?)
                                                                    (not= sheet-height max-height))})
-        [animated/view {:height sheet-height}
-         [animated/scroll-view {:bounces        false
-                                :flex           1
-                                :scroll-enabled (= sheet-height max-height)}
-          [animated/view {:style     {:padding-top    styles/vertical-padding
-                                      :padding-bottom (+ styles/vertical-padding
-                                                         (if (and platform/ios? keyboard-shown)
-                                                           keyboard-height
-                                                           (:bottom safe-area)))}
-                          :on-layout #(reset! height (.-nativeEvent.layout.height ^js %))}
-           (into [:<>]
-                 (react/get-children children))]]]]]])))
+        [animated/view {:height sheet-height
+                        :flex           1}
+         [animated/view {:style     {:padding-top    styles/vertical-padding
+                                     :padding-bottom (+ styles/vertical-padding
+                                                        (if (and platform/ios? keyboard-shown)
+                                                          keyboard-height
+                                                          (:bottom safe-area)))}
+                         :on-layout #(reset! height (.-nativeEvent.layout.height ^js %))}
+          (into [:<>]
+                (react/get-children children))]]]]])))
 
 (def bottom-sheet (reagent/adapt-react-class (react/memo bottom-sheet-hooks)))

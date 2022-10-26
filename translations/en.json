@@ -1775,7 +1775,7 @@
     "new-ui": "New UI",
     "send-contact-request-message": "To start a chat you need to become contacts",
     "contact-request": "Contact request",
-    "contact-requests": "Contact Requests",
+    "contact-requests": "Contact requests",
     "say-hi": "Say hi",
     "opened": "Opened",
     "accepted": "Accepted",
@@ -1824,5 +1824,10 @@
     "blank-messages-text": "Your messages will be here",
     "groups": "Groups",
     "shell-placeholder-title": "Your apps will run here",
-    "shell-placeholder-subtitle": "Open tabs of your communities, messages,\nwallet account and browser windows"
+    "shell-placeholder-subtitle": "Open tabs of your communities, messages,\nwallet account and browser windows",
+    "invite-friends-to-status": "Invite friends to status",
+    "share-invite-link": "Share an invite link",
+    "pending-requests": "Pending requests",
+    "received": "Received",
+    "sent": "Sent"
 }
