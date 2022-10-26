@@ -79,7 +79,27 @@ class HomeButton(TabButton):
             self.click_until_presence_of_element(element)
         return self.navigate()
 
+class CommunitiesTab(TabButton):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="communities-stack-tab")
 
+
+class ChatsTab(TabButton):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="chats-stack-tab")
+
+    def navigate(self):
+        from views.home_view import HomeView
+        return HomeView(self.driver)
+
+
+class WalletTab(TabButton):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="wallet-stack-tab")
+
+class BrowserTab(TabButton):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="browser-stack-tab")
 
 class DappTabButton(TabButton):
     def __init__(self, driver):
@@ -224,12 +244,18 @@ class BaseView(object):
         self.send_message_button = SendMessageButton(self.driver)
         self.send_contact_request_button = Button(self.driver, translation_id="send-request")
 
-        # Tabs
+        # Old UI Tabs
         self.home_button = HomeButton(self.driver)
         self.wallet_button = WalletButton(self.driver)
         self.profile_button = ProfileButton(self.driver)
         self.dapp_tab_button = DappTabButton(self.driver)
         self.status_button = StatusButton(self.driver)
+
+        # New UI Tabs
+        self.communities_tab = CommunitiesTab(self.driver)
+        self.chats_tab = ChatsTab(self.driver)
+        self.browser_tab = BrowserTab(self.driver)
+        self.wallet_tab = WalletTab(self.driver)
 
         self.yes_button = Button(self.driver, xpath="//*[@text='YES' or @text='GOT IT']")
         self.no_button = Button(self.driver, translation_id="no")
@@ -351,7 +377,9 @@ class BaseView(object):
     def click_system_back_button_until_element_is_shown(self, attempts=3, element='home'):
         counter = 0
         if element == 'home':
-            element = self.home_button
+            element = self.chats_tab
+            # Old UI
+            # element = self.home_button
         while not element.is_element_displayed(1) and counter <= attempts:
             self.driver.press_keycode(4)
             try:
@@ -573,7 +601,9 @@ class BaseView(object):
 
     def get_public_key_and_username(self, return_username=False):
         self.driver.info("Get public key and username")
-        profile_view = self.profile_button.click()
+        # profile_view = self.profile_button.click()
+        self.browser_tab.click()  # temp, until profile is on browser tab
+        profile_view = self.get_profile_view()
         default_username = profile_view.default_username_text.text
         profile_view.share_my_profile_button.click()
         profile_view.public_key_text.wait_for_visibility_of_element(20)

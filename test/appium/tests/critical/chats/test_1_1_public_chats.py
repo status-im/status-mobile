@@ -1212,3 +1212,51 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
                 and account.qr_code_image.is_element_displayed()):
             self.errors.append('No self profile pop-up data displayed after My_profile button tap')
         self.errors.verify_no_errors()
+
+
+@pytest.mark.xdist_group(name="one_2")
+@marks.new_ui_critical
+class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
+
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.home_1 = self.device_1.create_user(enable_notifications=True)
+        self.home_2 = self.device_2.create_user(enable_notifications=True)
+        self.home_1.browser_tab.click() #temp, until profile is on browser tab
+        self.profile_1 = self.home_1.get_profile_view()
+        self.default_username_1 = self.profile_1.default_username_text.text
+        self.profile_1.chats_tab.click()
+        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        self.chat_1 = self.home_1.add_contact(self.public_key_2)
+        self.chat_1.send_message('hey')
+        self.home_2.click_system_back_button_until_element_is_shown()
+        self.home_2.chats_tab.click()
+        self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
+
+    @marks.testrail_id(702730)
+    def test_1_1_chat_message_reaction(self):
+        message_from_sender = "Message sender"
+        self.device_1.just_fyi("Sender start 1-1 chat, set emoji and check counter")
+        self.chat_1.send_message(message_from_sender)
+        self.chat_1.set_reaction(message_from_sender)
+
+        message_sender = self.chat_1.chat_element_by_text(message_from_sender)
+        if message_sender.emojis_below_message() != 1:
+            self.errors.append("Counter of reaction is not updated on your own message!")
+
+        self.device_2.just_fyi("Receiver sets own emoji and verifies counter on received message in 1-1 chat")
+        message_receiver = self.chat_2.chat_element_by_text(message_from_sender)
+        if message_receiver.emojis_below_message() != 1:
+            self.errors.append("Counter of reaction is not updated on received message!")
+        self.chat_2.set_reaction(message_from_sender)
+        for counter in message_sender.emojis_below_message(), message_receiver.emojis_below_message():
+            if counter != 2:
+                self.errors.append('Counter is not updated after setting emoji from receiver!')
+
+        self.device_2.just_fyi("Receiver pick the same emoji and verify that counter will decrease for both users")
+        self.chat_2.set_reaction(message_from_sender)
+        for counter in message_sender.emojis_below_message(), message_receiver.emojis_below_message():
+            if counter != 1:
+                self.errors.append('Counter is not decreased after re-tapping  emoji from receiver!')
+        self.errors.verify_no_errors()

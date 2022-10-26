@@ -191,13 +191,18 @@ class SignInView(BaseView):
             self.create_password_input.set_value(password)
             self.confirm_your_password_input.set_value(password)
             self.next_button.click()
-        self.maybe_later_button.wait_for_visibility_of_element(30)
-        if enable_notifications:
-            self.enable_notifications_button.click()
-        else:
-            self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
-        self.lets_go_button.click_until_absense_of_element(self.lets_go_button)
-        self.profile_button.wait_for_visibility_of_element(30)
+
+        # Old UI
+        # self.maybe_later_button.wait_for_visibility_of_element(30)
+        # if enable_notifications:
+        #     self.enable_notifications_button.click()
+        # else:
+        #     self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
+        # self.lets_go_button.click_until_absense_of_element(self.lets_go_button)
+        # self.profile_button.wait_for_visibility_of_element(30)
+
+        self.chats_tab.wait_for_visibility_of_element(30)
+
         self.driver.info("## New multiaccount is created successfully!", device=False)
         return self.get_home_view()
 
