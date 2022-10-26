@@ -12,7 +12,7 @@
     (let [main-actions (filter #(= (:type %) :main) actions)
           danger-actions (filter #(= (:type %) :danger) actions)
           admin-actions (filter #(= (:type %) :admin) actions)]
-      [rn/view {:flex 1}
+      [rn/view
        [rn/view {:style {:width "100%"
                          :flex-direction :row
                          :justify-content :space-between
