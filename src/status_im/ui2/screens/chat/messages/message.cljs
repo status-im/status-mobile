@@ -280,7 +280,6 @@
   [{:keys [last-in-group? identicon from in-popover? timestamp-str
            deleted-for-me? deleted-for-me-undoable-till pinned in-pinned-view?]
     :as   message} content {:keys [modal close-modal]}]
-  (println "modalx" in-pinned-view?)
   (let [response-to (:response-to (:content message))]
     (if deleted-for-me?
       [system-message/system-message
