@@ -278,7 +278,7 @@
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
   [{:keys [last-in-group? identicon from in-popover? timestamp-str
-           deleted-for-me? deleted-for-me-undoable-till pinned in-pinned-view?]
+           deleted-for-me? deleted-for-me-undoable-till pinned]
     :as   message} content {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
     (if deleted-for-me?
