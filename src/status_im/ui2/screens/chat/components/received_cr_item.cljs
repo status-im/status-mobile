@@ -16,7 +16,12 @@
             [status-im.i18n.i18n :as i18n]
             [quo2.components.notifications.notification-dot :refer [notification-dot]]))
 
+<<<<<<< HEAD:src/quo2/components/list_items/received_cr_item.cljs
 (defn received-cr-item [{:keys [chat-id message timestamp read]}]
+=======
+
+(defn received-cr-item [{:keys [chat-id image contact message timestamp read]}]
+>>>>>>> 7f132b433... feat: messages home items:src/quo2/components/list_items/received_contact_request.cljs
   (let [no-ens-name  (str/blank? (get-in message [:content :ens-name]))
         display-name (first (<sub [:contacts/contact-two-names-by-identity chat-id]))]
     [rn/view {:style {:flex-direction :row
