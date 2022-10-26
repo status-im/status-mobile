@@ -428,9 +428,7 @@
     (if (and (not pinned) (> (count pinned-messages) 2))
       (do
         (js/setTimeout (fn [] (re-frame/dispatch [:dismiss-keyboard])) 500)
-        (re-frame/dispatch [:show-popover {:view             :pin-limit
-                                           :message          message
-                                           :prevent-closing? true}]))
+        (re-frame/dispatch [::models.pin-message/show-pin-limit-modal chat-id]))
       (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
 (defn on-long-press-fn [on-long-press {:keys [pinned message-pin-enabled outgoing edit-enabled show-input?] :as message} content]
@@ -540,12 +538,11 @@
     (fn [{:keys [content current-public-key outgoing edit-enabled public? pinned in-popover? message-pin-enabled content-type edited-at] :as message}
          {:keys [on-long-press modal]
           :as   reaction-picker}]
-      ;; Makes sure to render a text-messsage and not an emoji-message if it has been edited with text
+      ;; Makes sure to render a text-message and not an emoji-message if it has been edited with text
       (if (= content-type constants/content-type-text)
         [message-content-wrapper message
          [collapsible-text-message message on-long-press modal] reaction-picker]
         (let [response-to (:response-to content)]
-          (println "outgoing" outgoing edit-enabled)
           [message-content-wrapper message
            [react/touchable-highlight (when-not modal
                                         {:disabled      in-popover?

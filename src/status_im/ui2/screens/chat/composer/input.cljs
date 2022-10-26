@@ -2,7 +2,7 @@
   (:require [quo.react-native :as rn]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.handlers :refer [<sub >evt]]
-            [quo.design-system.colors :as colors]
+            [quo.design-system.colors :as quo.colors]
             [status-im.utils.utils :as utils.utils]
             [status-im.utils.platform :as platform]
             [clojure.string :as string]
@@ -11,7 +11,7 @@
             [status-im.ui2.screens.chat.composer.style :as style]
             [re-frame.core :as re-frame]
             [status-im.chat.models.mentions :as mentions]
-            [quo2.foundations.colors :as quo2.colors]
+            [quo2.foundations.colors :as colors]
             [quo.react]))
 
 (defonce input-texts (atom {}))
@@ -156,7 +156,7 @@
       :auto-focus               false
       :on-focus                 #(set-active-panel nil)
       :max-length               chat.constants/max-text-size
-      :placeholder-text-color   (:text-02 @colors/theme)
+      :placeholder-text-color   (:text-02 @quo.colors/theme)
       :placeholder              (if cooldown-enabled?
                                   (i18n/label :cooldown/text-input-disabled)
                                   (i18n/label :t/type-a-message))
@@ -174,6 +174,6 @@
                                   [idx item])
                                 (<sub [:chat/input-with-mentions]))]
          ^{:key (str idx "_" type "_" text)}
-         [rn/text (when (= type :mention) {:style {:color quo2.colors/primary-50}})
+         [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
           text])
        (get @input-texts chat-id))]))

@@ -1,8 +1,8 @@
 (ns status-im.ui2.screens.chat.composer.style
   (:require [quo2.foundations.typography :as quo2.typography]
-            [quo.design-system.colors :as colors]
+            [quo.design-system.colors :as quo.colors]
             [status-im.utils.platform :as platform]
-            [quo2.foundations.colors :as quo2.colors]))
+            [quo2.foundations.colors :as colors]))
 
 (defn text-input []
   (merge quo2.typography/font-regular
@@ -11,7 +11,7 @@
           :min-height        34
           :margin            0
           :flex-shrink       1
-          :color             (:text-01 @colors/theme)
+          :color             (:text-01 @quo.colors/theme)
           :margin-horizontal 20}
          (if platform/android?
            {:padding-vertical    8
@@ -28,7 +28,7 @@
           :bottom                  (- window-height)
           :height                  window-height
           :flex                    1
-          :background-color        (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
+          :background-color        (colors/theme-colors colors/white colors/neutral-90)
           :z-index                 2}
          (if platform/ios?
            {:shadow-radius  16
@@ -40,7 +40,7 @@
 (defn bottom-sheet-handle []
   {:width            32
    :height           4
-   :background-color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)
+   :background-color (colors/theme-colors colors/neutral-100 colors/white)
    :opacity          0.05
    :border-radius    100
    :align-self       :center
@@ -52,7 +52,7 @@
    :elevation          2
    :z-index            3
    :position           :absolute
-   :background-color   (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
+   :background-color   (colors/theme-colors colors/white colors/neutral-90)
    ;these 3 props play together, we need this magic to hide message text in the safe area
    :padding-top        10
    :padding-bottom     (+ 12 (:bottom insets))
@@ -65,7 +65,7 @@
    :right            0
    :bottom           0
    :height           window-height
-   :background-color quo2.colors/neutral-95-opa-70
+   :background-color colors/neutral-95-opa-70
    :z-index          1})
 
 (defn reply-content [pin?]

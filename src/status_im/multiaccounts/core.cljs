@@ -28,7 +28,7 @@
                      name)]
     (cond-> {:nickname         nickname
              :three-words-name (or alias (gfycat/generate-gfy public-key))}
-      ;; Preferred name is our own otherwise we make sure it's verified
+            ;; Preferred name is our own otherwise we make sure it's verified
       (or preferred-name (and ens-verified name))
       (assoc :ens-name (str "@" (or (stateofus/username ens-name) ens-name))))))
 

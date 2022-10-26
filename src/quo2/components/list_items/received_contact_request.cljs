@@ -37,7 +37,7 @@
      [rn/view {:style {:margin-horizontal 8}}
       [rn/view {:style {:flex-direction :row}}
        [rn/text {:style (merge typography/font-semi-bold typography/paragraph-1
-                               {:color        (colors/theme-colors :black :white)
+                               {:color        (colors/theme-colors colors/neutral-100 colors/white)
                                 :margin-right 8})} display-name]
        (when no-ens-name [rn/text {:style (merge typography/font-regular typography/label
                                                  {:color      (colors/theme-colors colors/neutral-50 colors/neutral-40)
@@ -55,7 +55,7 @@
                         :border-color       (colors/theme-colors colors/neutral-20 colors/neutral-70)}}
        [rn/text {:style (merge typography/font-regular
                                typography/paragraph-1
-                               {:color (colors/theme-colors :black :white)})}
+                               {:color (colors/theme-colors colors/neutral-100 colors/white)})}
         (:text (:content message))]]
       [rn/view {:style {:margin-top     12
                         :flex-direction :row}}
@@ -69,7 +69,7 @@
                                                     :border-radius      8
                                                     :padding-vertical   4
                                                     :padding-horizontal 8}}
-        [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color :white})} (i18n/label :t/decline)]]
+        [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color colors/white})} (i18n/label :t/decline)]]
        [rn/touchable-opacity {:accessibility-label :accept-cr
                               :on-press            #(>evt [:contact-requests.ui/accept-request (:message-id message)])
                               :active-opacity      1
@@ -81,4 +81,4 @@
                                                     :padding-vertical   4
                                                     :padding-horizontal 8
                                                     :margin-left        8}}
-        [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color :white})} (i18n/label :t/accept)]]]]]))
+        [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color colors/white})} (i18n/label :t/accept)]]]]]))

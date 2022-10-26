@@ -91,7 +91,8 @@
                                                          :pinned     (pin-message :pinned)})
               (when pinned
                 (protocol/send-chat-messages [{:chat-id      (pin-message :chat-id)
-                                               :content-type constants/content-type-pin
+                                               :content-type constants/content-type-system-text
+                                               :text "pinned a message"
                                                :response-to (pin-message :message-id)
                                                :ens-name preferred-name}])))))
 
@@ -99,3 +100,16 @@
   {:events [::load-pin-messages]}
   [{:keys [db] :as cofx} chat-id]
   (load-more-pin-messages cofx chat-id true))
+
+(fx/defn show-pin-limit-modal
+  {:events [::show-pin-limit-modal]}
+  [{:keys [db] :as cofx} chat-id]
+  (fx/merge
+   {:db (assoc-in db [:pin-modal chat-id] true)}))
+
+(fx/defn hide-pin-limit-modal
+  {:events [::hide-pin-limit-modal]}
+  [{:keys [db] :as cofx} chat-id]
+  (fx/merge
+   {:db (assoc-in db [:pin-modal chat-id] false)}))
+
