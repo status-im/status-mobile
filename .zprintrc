@@ -39,6 +39,7 @@
   "assoc-some"      "assoc"
   "conj-when"       "conj"
   "conj-some"       "conj"}
+ :remove    {:fn-force-nl #{:noarg1-body}}
  :style-map
  {:no-comma       {:map {:comma? false}}
   :rj-var         {:pair {:justify {:max-variance 1000}}}
