@@ -176,6 +176,11 @@
                                :on-error #(log/error "failed to clear history " chat-id %)}]}
             (clear-history chat-id remove-chat?)))
 
+(fx/defn chat-deactivated
+  {:events [::chat-deactivated]}
+  [_ chat-id]
+  (log/debug "chat deactivated" chat-id))
+
 (fx/defn deactivate-chat
   "Deactivate chat in db, no side effects"
   [{:keys [db now] :as cofx} chat-id]
@@ -185,10 +190,10 @@
               (assoc-in db [:chats chat-id :active] false)
               (update db :chats dissoc chat-id))
             (update :chats-home-list disj chat-id)
-            (assoc-in [:current-chat-id] nil))
+            (assoc :current-chat-id nil))
     ::json-rpc/call [{:method "wakuext_deactivateChat"
                       :params [{:id chat-id}]
-                      :on-success #(log/debug "chat deactivated" chat-id)
+                      :on-success #(re-frame/dispatch [::chat-deactivated chat-id])
                       :on-error #(log/error "failed to create public chat" chat-id %)}]}
    (clear-history chat-id true)))
 
@@ -227,9 +232,7 @@
             {:clear-message-notifications
              [[chat-id] (get-in db [:multiaccount :remote-push-notifications-enabled?])]}
             (deactivate-chat chat-id)
-            (offload-messages chat-id)
-            (when (not (= (:view-id db) :home))
-              (navigation/pop-to-root-tab :chat-stack))))
+            (offload-messages chat-id)))
 
 (fx/defn show-more-chats
   {:events [:chat.ui/show-more-chats]}
@@ -385,6 +388,11 @@
   (log/error "mute chat failed" chat-id error)
   {:db (assoc-in db [:chats chat-id :muted] (not muted?))})
 
+(fx/defn mute-chat-toggled-successfully
+  {:events [::mute-chat-toggled-successfully]}
+  [_ chat-id]
+  (log/debug "muted chat successfully" chat-id))
+
 (fx/defn mute-chat
   {:events [::mute-chat-toggled]}
   [{:keys [db] :as cofx} chat-id muted?]
@@ -393,7 +401,7 @@
      ::json-rpc/call [{:method method
                        :params [chat-id]
                        :on-error #(re-frame/dispatch [::mute-chat-failed chat-id muted? %])
-                       :on-success #(log/debug "muted chat successfully")}]}))
+                       :on-success #(re-frame/dispatch [::mute-chat-toggled-successfully chat-id])}]}))
 
 (fx/defn show-profile
   {:events [:chat.ui/show-profile]}

@@ -8,6 +8,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
+            [status-im.ui2.screens.chat.actions :as actions]
             [status-im.ui.screens.home.views.inner-item :refer [home-list-item]]
             [quo.design-system.colors :as quo.colors]
             [quo.core :as quo]
@@ -19,7 +20,6 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
-            [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.components.invite.views :as invite]
             [status-im.utils.handlers :refer [<sub >evt]]
@@ -117,7 +117,7 @@
                                      (re-frame/dispatch [:set :public-group-topic nil])
                                      (re-frame/dispatch [:search/home-filter-changed nil]))}])])))
 
-(defn render-fn [{:keys [chat-id] :as home-item}]
+(defn render-fn [{:keys [chat-id chat-type] :as home-item}]
   [home-list-item
    home-item
    {:on-press      (fn []
@@ -129,7 +129,9 @@
                      (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
     :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                         {:content (fn []
-                                                    [sheets/actions home-item])}])}])
+                                                    [actions/actions
+                                                     chat-type
+                                                     chat-id])}])}])
 
 (defn- render-contact [{:keys [public-key] :as row}]
   (let [[first-name second-name] (multiaccounts/contact-two-names row true)
