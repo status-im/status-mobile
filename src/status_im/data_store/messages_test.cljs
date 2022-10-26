@@ -20,6 +20,8 @@
                                :response-to "a"
                                :links nil}
                      :whisper-timestamp 1
+                     :contact-verification-state 1
+                     :contact-request-state 2
                      :outgoing-status :sending
                      :command-parameters nil
                      :outgoing true
@@ -35,6 +37,8 @@
                    :whisperTimestamp 1
                    :parsedText "parsed-text"
                    :ensName "ens-name"
+                   :contactVerificationState 1
+                   :contactRequestState 2
                    :localChatId chat-id
                    :from from
                    :text "hta"
