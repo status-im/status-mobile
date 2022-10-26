@@ -135,7 +135,7 @@
                   {window-height :height} (rn/use-window-dimensions)
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
                   max-y (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - default height
-                  max-height (- max-y 56 (:bottom insets))  ; 56 - top-bar height
+                  max-height (Math/abs (- max-y 56 (:bottom insets)))  ; 56 - top-bar height
                   added-value (if (and (not (seq suggestions)) reply) 38 0) ; increased height of input box needed when reply
                   min-y (+ min-y (when reply 38))
                   y (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply)
