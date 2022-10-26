@@ -221,7 +221,7 @@
   []
   [:f>
    (fn []
-     (let [notifications         (<sub [:activity-center/filtered-notifications]) 
+     (let [notifications         (<sub [:activity-center/filtered-notifications])
            window-width          (<sub [:dimensions/window-width])
            {:keys [top bottom]}  (safe-area/use-safe-area)]
        (react/effect! #(>evt [:activity-center.notifications/fetch-first-page]))
