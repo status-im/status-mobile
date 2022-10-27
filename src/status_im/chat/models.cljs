@@ -265,6 +265,7 @@
   [{db :db :as cofx} chat-id from-switcher?]
   (fx/merge cofx
             {:db (assoc db :current-chat-id chat-id)}
+            (offload-messages chat-id)
             (preload-chat-data chat-id)
             (navigation2/navigate-to-nav2 :chat chat-id nil from-switcher?)))
 

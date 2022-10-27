@@ -84,3 +84,10 @@
                      :group-chat true}
            "opened" {}
            "1-1"    {}}})
+
+(deftest navigate-to-chat-nav2
+  (let [chat-id "test_chat"
+        db      {:pagination-info {chat-id {:all-loaded? true}}}]
+    (testing "Pagination info should be reset on navigation"
+      (let [res (chat/navigate-to-chat-nav2 {:db db} chat-id false)]
+        (is (nil? (get-in res [:db :pagination-info chat-id :all-loaded?])))))))
