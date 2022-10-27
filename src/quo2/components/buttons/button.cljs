@@ -44,6 +44,11 @@
                              :background-color     {:default  colors/danger-50
                                                     :pressed  colors/danger-60
                                                     :disabled colors/danger-50}}
+           :positive        {:icon-color       colors/white
+                             :label            {:style {:color colors/white}}
+                             :background-color {:default  colors/success-50
+                                                :pressed  colors/success-60
+                                                :disabled colors/success-50-opa-30}}
            :photo-bg        {:icon-color           colors/neutral-100
                              :icon-secondary-color colors/neutral-80-opa-40
                              :label                {:style    {:color colors/neutral-100}}
@@ -104,6 +109,11 @@
                              :background-color     {:default  colors/danger-60
                                                     :pressed  colors/danger-50
                                                     :disabled colors/danger-60}}
+           :positive        {:icon-color       colors/white
+                             :label            {:style {:color colors/white}}
+                             :background-color {:default  colors/success-60
+                                                :pressed  colors/success-50
+                                                :disabled colors/success-60-opa-30}}
            :photo-bg        {:icon-color           colors/white
                              :icon-secondary-color colors/neutral-30
                              :label                {:style    {:color colors/white}}
