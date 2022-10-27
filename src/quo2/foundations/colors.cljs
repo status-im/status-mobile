@@ -117,6 +117,12 @@
 (def success-50-opa-30 (alpha success-50 0.3))
 (def success-50-opa-40 (alpha success-50 0.4))
 
+(def success-60-opa-5 (alpha success-60 0.05))
+(def success-60-opa-10 (alpha success-60 0.1))
+(def success-60-opa-20 (alpha success-60 0.2))
+(def success-60-opa-30 (alpha success-60 0.3))
+(def success-60-opa-40 (alpha success-60 0.4))
+
 ;;;;Danger
 
 ;;Solid

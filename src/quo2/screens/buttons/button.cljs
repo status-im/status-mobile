@@ -21,7 +21,9 @@
                             {:key   :ghost
                              :value "Ghost"}
                             {:key   :danger
-                             :value "Danger"}]}
+                             :value "Danger"}
+                            {:key   :positive
+                             :value "Positive"}]}
                  {:label   "Size:"
                   :key     :size
                   :type    :select
