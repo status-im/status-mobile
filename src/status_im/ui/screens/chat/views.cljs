@@ -27,8 +27,7 @@
             [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.screens.chat.components.accessory :as accessory]
             [status-im.ui.screens.chat.components.input :as components]
-            [status-im.ui.screens.chat.components.messages-skeleton :as messages-skeleton]
-            [status-im.ui.screens.chat.message.datemark :as message-datemark] 
+            [status-im.ui.screens.chat.message.datemark :as message-datemark]
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
             [clojure.string :as string]
@@ -39,11 +38,6 @@
             [status-im.utils.debounce :as debounce]
             [status-im2.navigation.state :as navigation.state]
             [status-im.react-native.resources :as resources]))
-
-(def messages-view-height (reagent/atom 0))
-
-(defn on-messages-view-layout [^js ev]
-  (reset! messages-view-height (-> ev .-nativeEvent .-layout .-height)))
 
 (defn invitation-requests [chat-id admins]
   (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])
@@ -268,7 +262,7 @@
     (when panel
       (js/setTimeout #(react/dismiss-keyboard!) 100))))
 
-(defn list-footer-old [{:keys [chat-id] :as chat}]
+(defn list-footer [{:keys [chat-id] :as chat}]
   (let [loading-messages? @(re-frame/subscribe [:chats/loading-messages? chat-id])
         no-messages? @(re-frame/subscribe [:chats/chat-no-messages? chat-id])
         all-loaded? @(re-frame/subscribe [:chats/all-loaded? chat-id])]
@@ -276,15 +270,6 @@
      (if (or loading-messages? (not chat-id) (not all-loaded?))
        [react/view {:height 324 :align-items :center :justify-content :center}
         [react/activity-indicator {:animating true}]]
-       [chat-intro-header-container chat no-messages?])]))
-
-(defn list-footer [{:keys [chat-id] :as chat}]
-  (let [loading-messages? @(re-frame/subscribe [:chats/loading-messages? chat-id])
-        no-messages? @(re-frame/subscribe [:chats/chat-no-messages? chat-id])
-        all-loaded? @(re-frame/subscribe [:chats/all-loaded? chat-id])]
-    [react/view {:style (when platform/android? {:scaleY -1})}
-     (if (or loading-messages? (not chat-id) (not all-loaded?))
-       [messages-skeleton/messages-skeleton @messages-view-height]
        [chat-intro-header-container chat no-messages?])]))
 
 (defn list-header [{:keys [chat-id chat-type invitation-admin]}]
@@ -372,7 +357,7 @@
       {:key-fn                       list-key-fn
        :ref                          list-ref
        :header                       [list-header chat]
-       :footer                       [list-footer-old chat]
+       :footer                       [list-footer chat]
        :data                         (when-not should-send-contact-request?
                                        messages)
        :render-data                  (get-render-data {:group-chat      group-chat
