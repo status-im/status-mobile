@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.activity-center.views
   (:require [quo.components.animated.pressable :as animation]
+            [quo.react :as react]
             [quo.react-native :as rn]
             [quo2.components.buttons.button :as button]
             [quo2.components.markdown.text :as text]
@@ -7,7 +8,6 @@
             [quo2.components.tabs.tabs :as tabs]
             [quo2.components.tags.context-tags :as context-tags]
             [quo2.foundations.colors :as colors]
-            [reagent.core :as reagent]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
@@ -197,7 +197,7 @@
                      :type           :blur-bg
                      :size           32
                      :override-theme :dark
-                     :style          {:margin-vertical  12
+                     :style          {:margin-bottom  12
                                       :margin-left      screen-padding}
                      :on-press       #(>evt [:hide-popover])}
       :main-icons2/close]
@@ -219,19 +219,20 @@
 
 (defn activity-center
   []
-  (reagent/create-class
-   {:component-did-mount #(>evt [:activity-center.notifications/fetch-first-page])
-    :reagent-render
-    (fn []
-      (let [notifications (<sub [:activity-center/filtered-notifications])
-            window-width  (<sub [:dimensions/window-width])]
-        [safe-area/view {:style {:flex 1}}
-         [rn/view {:style {:width window-width
-                           :flex  1}}
-          [header]
-          [rn/flat-list {:content-container-style {:flex-grow 1}
-                         :data                    notifications
-                         :empty-component         [empty-tab]
-                         :key-fn                  :id
-                         :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
-                         :render-fn               render-notification}]]]))}))
+  [:f>
+   (fn []
+     (let [notifications         (<sub [:activity-center/filtered-notifications])
+           window-width          (<sub [:dimensions/window-width])
+           {:keys [top bottom]}  (safe-area/use-safe-area)]
+       (react/effect! #(>evt [:activity-center.notifications/fetch-first-page]))
+       [rn/view {:style {:flex           1
+                         :width          window-width
+                         :padding-top    (if (pos? top) (+ top 12) 12)
+                         :padding-bottom bottom}}
+        [header]
+        [rn/flat-list {:content-container-style {:flex-grow 1}
+                       :data                    notifications
+                       :empty-component         [empty-tab]
+                       :key-fn                  :id
+                       :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
+                       :render-fn               render-notification}]]))])
