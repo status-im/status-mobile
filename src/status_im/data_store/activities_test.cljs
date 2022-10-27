@@ -1,6 +1,5 @@
 (ns status-im.data-store.activities-test
   (:require [cljs.test :refer [deftest is testing]]
-            [quo.design-system.colors :as colors]
             [status-im.constants :as constants]
             [status-im.data-store.activities :as store]))
 
@@ -18,16 +17,13 @@
    :replyMessage              {}})
 
 (deftest <-rpc-test
-  (testing "assocs random chat color"
-    (is (contains? (set colors/chat-colors) (:color (store/<-rpc raw-notification)))))
-
   (testing "renames keys"
     (is (= {:name                        chat-name
             :chat-id                     chat-id
             :contact-verification-status constants/contact-verification-state-pending}
            (-> raw-notification
                store/<-rpc
-               (dissoc :color :last-message :message :reply-message)))))
+               (dissoc :last-message :message :reply-message)))))
 
   (testing "transforms messages from RPC response"
     (is (= {:last-message  {:quoted-message     nil

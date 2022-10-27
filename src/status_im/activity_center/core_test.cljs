@@ -11,16 +11,6 @@
   (h/register-helper-events)
   (rf/dispatch [:init/app-started]))
 
-(defn remove-color-key
-  "Remove `:color` key from notifications because they have random values that are
-  inconvenient to assert against."
-  [grouped-notifications {:keys [type status]}]
-  (update-in grouped-notifications
-             [type status :data]
-             (fn [old _]
-               (map #(dissoc % :color) old))
-             nil))
-
 ;;;; Contact verification
 
 (deftest contact-verification-decline-test
@@ -86,12 +76,7 @@
                const/activity-center-notification-type-contact-verification
                {:read   {:data [expected-notification]}
                 :unread {:data []}}}
-              (-> (h/db)
-                  (get-in [:activity-center :notifications])
-                  (remove-color-key {:type   const/activity-center-notification-type-no-type
-                                     :status :read})
-                  (remove-color-key {:type   const/activity-center-notification-type-contact-verification
-                                     :status :read})))))))
+              (get-in (h/db) [:activity-center :notifications]))))))
 
   (testing "logs failure"
     (rf-test/run-test-sync
@@ -387,9 +372,7 @@
                                    :read          false
                                    :reply-message nil
                                    :type          const/activity-center-notification-type-one-to-one-chat}]}}}
-              (remove-color-key (get-in (h/db) [:activity-center :notifications])
-                                {:status :unread
-                                 :type   const/activity-center-notification-type-one-to-one-chat}))))))
+              (get-in (h/db) [:activity-center :notifications]))))))
 
   (testing "does not fetch next page when pagination cursor reached the end"
     (rf-test/run-test-sync
@@ -461,9 +444,7 @@
                                    :read          false
                                    :reply-message nil
                                    :type          const/activity-center-notification-type-mention}]}}}
-              (remove-color-key (get-in (h/db) [:activity-center :notifications])
-                                {:status :unread
-                                 :type   const/activity-center-notification-type-mention}))))))
+              (get-in (h/db) [:activity-center :notifications]))))))
 
   (testing "does not fetch next page while it is still loading"
     (rf-test/run-test-sync
