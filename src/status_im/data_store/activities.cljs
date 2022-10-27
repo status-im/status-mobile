@@ -2,7 +2,8 @@
   (:require [clojure.set :as set]
             [quo.design-system.colors :as colors]
             [status-im.constants :as constants]
-            [status-im.data-store.messages :as messages]))
+            [status-im.data-store.messages :as messages]
+            [status-im.utils.config :as config]))
 
 (defn- rpc->type [{:keys [type name] :as chat}]
   (case type
@@ -33,14 +34,15 @@
     chat))
 
 (defn <-rpc [item]
-  (-> item
-      rpc->type
-      (set/rename-keys {:lastMessage               :last-message
-                        :replyMessage              :reply-message
-                        :chatId                    :chat-id
-                        :contactVerificationStatus :contact-verification-status})
-      (assoc :color (rand-nth colors/chat-colors))
-      (update :last-message #(when % (messages/<-rpc %)))
-      (update :message #(when % (messages/<-rpc %)))
-      (update :reply-message #(when % (messages/<-rpc %)))
-      (dissoc :chatId)))
+  (cond-> (-> item
+              rpc->type
+              (set/rename-keys {:lastMessage               :last-message
+                                :replyMessage              :reply-message
+                                :chatId                    :chat-id
+                                :contactVerificationStatus :contact-verification-status})
+              (update :last-message #(when % (messages/<-rpc %)))
+              (update :message #(when % (messages/<-rpc %)))
+              (update :reply-message #(when % (messages/<-rpc %)))
+              (dissoc :chatId))
+    (not config/new-activity-center-enabled?)
+    (assoc :color (rand-nth colors/chat-colors))))
