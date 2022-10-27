@@ -31,7 +31,9 @@
                        :size                32
                        :width               32
                        :accessibility-label "back-button"
-                       :on-press            #(>evt [:navigate-back])}
+                       :on-press            #(do
+                                               (>evt [:close-chat])
+                                               (>evt [:navigate-back]))}
    [icons/icon :main-icons/arrow-left {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
 (defn search-button []
