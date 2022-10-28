@@ -28,18 +28,8 @@
                 :ellipsize-mode      :tail
                 :number-of-lines     1
                 :color               (colors/theme-colors
-<<<<<<< HEAD
-<<<<<<< HEAD
                                       colors/neutral-50
                                       colors/neutral-40)
-=======
-                                       colors/neutral-50
-                                       colors/neutral-40)
->>>>>>> c0e3854d3... feat: messages contact requests
-=======
-                                      colors/neutral-50
-                                      colors/neutral-40)
->>>>>>> e62e73350... feat: messages contact requests
                 :weight               :regular
                 :size                 :paragraph-2}
      description]]])
@@ -85,18 +75,8 @@
      {:on-press on-press}
      [react/view (merge (styles/community-card 16)
                         {:background-color  (colors/theme-colors
-<<<<<<< HEAD
-<<<<<<< HEAD
                                              colors/white
                                              colors/neutral-90)}
-=======
-                                              colors/white
-                                              colors/neutral-90)}
->>>>>>> c0e3854d3... feat: messages contact requests
-=======
-                                             colors/white
-                                             colors/neutral-90)}
->>>>>>> e62e73350... feat: messages contact requests
                         {:flex-direction  :row
                          :margin-horizontal 20
                          :height          56
@@ -109,16 +89,6 @@
                                  :width         32
                                  :height        (if (= id 1) 8 26)
                                  :border-radius 6
-<<<<<<< HEAD
-<<<<<<< HEAD
                                  :first-image   "" ; TODO replace with real data
                                  :last-image    ""}]) ; TODO replace with real data
-=======
-                                 :first-image   "" ;; TODO replace with real data
-                                 :last-image    ""}]) ;; TODO replace with real data
->>>>>>> c0e3854d3... feat: messages contact requests
-=======
-                                 :first-image   "" ; TODO replace with real data
-                                 :last-image    ""}]) ; TODO replace with real data
->>>>>>> 44c8c1017... refactor
       ]]))

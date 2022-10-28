@@ -1,6 +1,6 @@
 (ns quo2.components.list-items.contact-item
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.utils.handlers :refer [<sub]]
             [quo2.foundations.typography :as typography]
             [quo2.components.icon :as icons]
             [quo2.foundations.colors :as colors]
@@ -8,7 +8,6 @@
             [quo.react-native :as rn]
             [status-im.utils.utils :refer [get-shortened-address]]
             [quo.platform :as platform]))
-
 
 (defn open-chat [chat-id]
   (re-frame/dispatch [:dismiss-keyboard])

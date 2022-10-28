@@ -3,7 +3,6 @@
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]))
 
-
 (defn info-count [count style]
   (when (> count 0)
     [rn/view {:style (merge {:width            16
