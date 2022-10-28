@@ -1576,7 +1576,7 @@
     "master-account": "Master account",
     "back-up": "Back up",
     "key-on-device": "Private key is saved on this device",
-    "whats-trending": "See what`s trending",
+    "whats-trending": "See what's trending",
     "seed-key-uid-mismatch": "Seed doesn't match",
     "seed-key-uid-mismatch-desc-1": "The seed phrase you entered does not match {{multiaccount-name}}",
     "seed-key-uid-mismatch-desc-2": "To manage keys for this account verify your seed phrase and try again.",
