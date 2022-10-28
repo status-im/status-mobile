@@ -405,7 +405,7 @@
         "other": "S"
     },
     "datetime-today": "today",
-    "datetime-yesterday": "yesterday",
+    "datetime-yesterday": "Yesterday",
     "decimals": "Decimals",
     "decline": "Decline",
     "decryption-failed-content": "An error occured decrypting your data. You might need to erase your old data and generate a new account. Tap “Apply” to erase or “Cancel” to try again",

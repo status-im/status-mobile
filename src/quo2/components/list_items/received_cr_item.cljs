@@ -31,7 +31,6 @@
                                :status-indicator? true
                                :online?           true
                                :size              :small
-                               :profile-picture   image
                                :ring?             false}]
      [rn/view {:style {:margin-horizontal 8}}
       [rn/view {:style {:flex-direction :row}}

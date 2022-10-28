@@ -281,7 +281,7 @@
                                        :margin-top    24}
                       :size           32
                       :on-change      #(reset! selected-tab %)
-                      :default-active selected-tab
+                      :default-active @selected-tab
                       :data           [{:id    :recent
                                         :label (i18n/label :t/recent)}
                                        {:id    :groups
