@@ -151,14 +151,11 @@ class ChatElementByText(Text):
         return TimeStampText(self.driver, self.locator)
 
     @property
-    def timestamp_on_tap(self):
-        timestamp_element = Text(self.driver, xpath="//*[@content-desc='message-timestamp']")
-        try:
-            self.sent_status_checkmark.wait_for_element(30)
-            self.sent_status_checkmark.click_until_presence_of_element(timestamp_element)
-            return timestamp_element.text
-        except (NoSuchElementException, TimeoutException):
-            return None
+    def timestamp(self):
+        class TimeStampText(Button):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, xpath="%s//*[@content-desc='message-timestamp']" % parent_locator)
+        return TimeStampText(self.driver, self.locator).text
 
     @property
     def member_photo(self):
@@ -265,6 +262,7 @@ class ChatElementByText(Text):
                     return 0
 
         return int(EmojisNumber(self.driver, self.locator).text)
+
     @property
     def pinned_by_label(self):
         class PinnedByLabelText(Text):

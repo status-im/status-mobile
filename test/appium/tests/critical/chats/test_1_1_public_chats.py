@@ -227,6 +227,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
 
     @marks.testrail_id(6315)
+    # moved
     def test_1_1_chat_message_reaction(self):
         message_from_sender = "Message sender"
         self.device_1.just_fyi("Sender start 1-1 chat, set emoji and check counter")
@@ -378,6 +379,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5315)
+    # moved
     def test_1_1_chat_non_latin_message_to_newly_added_contact_with_profile_picture_on_different_networks(self):
         self.home_1.get_app_from_background()
         self.home_2.get_app_from_background()
@@ -1223,11 +1225,10 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         self.home_1 = self.device_1.create_user(enable_notifications=True)
         self.home_2 = self.device_2.create_user(enable_notifications=True)
-        self.home_1.browser_tab.click() #temp, until profile is on browser tab
         self.profile_1 = self.home_1.get_profile_view()
-        self.default_username_1 = self.profile_1.default_username_text.text
-        self.profile_1.chats_tab.click()
+        self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
         self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
+        self.profile_1.chats_tab.click()
         self.chat_1 = self.home_1.add_contact(self.public_key_2)
         self.chat_1.send_message('hey')
         self.home_2.click_system_back_button_until_element_is_shown()
@@ -1259,4 +1260,57 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         for counter in message_sender.emojis_below_message(), message_receiver.emojis_below_message():
             if counter != 1:
                 self.errors.append('Counter is not decreased after re-tapping  emoji from receiver!')
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702745)
+    def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
+        self.home_1.click_system_back_button_until_element_is_shown()
+        self.home_1.browser_tab.click() #temp, until profile is on browser tab
+        self.profile_1.edit_profile_picture('sauce_logo.png')
+        self.profile_1.chats_tab.click()
+
+        self.chat_2.just_fyi("Send messages with non-latin symbols")
+        messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
+
+        for message in messages:
+            self.chat_2.send_message(message)
+        if not self.chat_1.chat_message_input.is_element_displayed():
+            self.chat_1.click_system_back_button_until_element_is_shown()
+            self.home_1.get_chat(self.default_username_2).click()
+
+        for message in messages:
+            if not self.chat_1.chat_element_by_text(message).is_element_displayed():
+                self.errors.append("Message with test '%s' was not received" % message)
+
+        self.chat_2.just_fyi("Checking updated member photo, timestamp and username on message")
+        timestamp = self.chat_2.chat_element_by_text(messages[0]).timestamp
+        sent_time_variants = self.chat_2.convert_device_time_to_chat_timestamp()
+        if timestamp not in sent_time_variants:
+            self.errors.append('Timestamp on message %s does not correspond expected [%s]' % (timestamp, *sent_time_variants))
+
+        for message in [messages[1], messages[2]]:
+            if self.chat_2.chat_element_by_text(message).member_photo.is_element_displayed():
+                self.errors.append('%s is not stack to 1st(they are sent in less than 5 minutes)!' % message)
+
+        self.chat_1.just_fyi("Sending message while user is still not in contacts")
+        message = 'profile_photo'
+        self.chat_1.send_message(message)
+        self.chat_2.chat_element_by_text(message).wait_for_visibility_of_element(30)
+        if not self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member.png",
+                                                                                                   diff=5):
+            self.errors.append("Image of user in 1-1 chat is updated even when user is not added to contacts!")
+
+        self.chat_1.just_fyi("Users add to contacts each other")
+        [home.click_system_back_button_until_element_is_shown() for home in (self.home_1, self.home_2)]
+        [home.browser_tab.click() for home in (self.home_1, self.home_2)]
+        self.profile_1.add_contact_via_contacts_list(self.public_key_2)
+        self.profile_2 = self.home_2.get_profile_view()
+        self.profile_2.add_contact_via_contacts_list(self.public_key_1)
+
+        self.chat_1.just_fyi("Go back to chat view and checking that profile photo is updated")
+        [home.chats_tab.click() for home in (self.home_1, self.home_2)]
+        if not self.chat_2.chat_message_input.is_element_displayed():
+            self.home_2.get_chat(self.default_username_1).click()
+        if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member.png", diff=5):
+            self.errors.append("Image of user in 1-1 chat is too different from template!")
         self.errors.verify_no_errors()

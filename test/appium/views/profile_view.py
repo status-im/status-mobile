@@ -362,6 +362,17 @@ class ProfileView(BaseView):
         from views.chat_view import ChatView
         return ChatView(self.driver)
 
+    def add_contact_via_contacts_list(self, public_key):
+        self.driver.info("Adding user to Contacts via Profile > Contacts")
+        self.contacts_button.wait_and_click(30)
+        self.add_new_contact_button.wait_and_click()
+        chat = self.get_chat_view()
+        chat.public_key_edit_box.click()
+        chat.public_key_edit_box.send_keys(public_key)
+        chat.confirm_until_presence_of_element(self.add_new_contact_button)
+        self.click_system_back_button_until_element_is_shown()
+
+
     def add_custom_network(self, rpc_url: str, name: str, symbol: str, netwrok_id:str):
         self.driver.info("## Add custom network", device=False)
         self.advanced_button.click()
