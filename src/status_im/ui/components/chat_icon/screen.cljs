@@ -61,7 +61,8 @@
      [photos/photo photo-path {:size size}]
      (when-not community?
        [rn/view {:style                  dot-styles
-                 :accessibility-label dot-accessibility-label}])]))
+                 :accessibility-label dot-accessibility-label}])
+     ]))
 
 (defn emoji-chat-icon-view
   [chat-id group-chat name emoji styles]
@@ -71,7 +72,8 @@
        [default-chat-icon name styles]
        [emoji-chat-icon emoji styles])
      [profile-photo-plus-dot-view {:public-key      chat-id
-                                   :photo-container (:default-chat-icon styles)}])])
+                                   :photo-container (:default-chat-icon styles)}]
+     )])
 
 (defn chat-icon-view-toolbar
   [chat-id group-chat name color emoji size]
