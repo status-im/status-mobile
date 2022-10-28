@@ -20,7 +20,8 @@
                                 :on-load (fn [e]
                                            (when-let [on-load (:on-load props)]
                                              (on-load e))
-                                           (reset! loaded? true))})
+                                           (reset! loaded? true)
+                                           (reset! error? false))})
        (when (or @error? (not @loaded?))
          [placeholder (:style props)
           (if @error?

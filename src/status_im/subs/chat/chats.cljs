@@ -228,10 +228,10 @@
  :<- [:contacts/contacts]
  :<- [:profile/multiaccount]
  :<- [:mediaserver/port]
- (fn [[contacts multiaccount port] [_ id]]
-   (let [contact (or (get contacts id)
-                     (when (= id (:public-key multiaccount))
-                       multiaccount))]
+ (fn [[contacts {:keys [public-key] :as multiaccount} port] [_ id]]
+   (let [contact (or (when (= id public-key)
+                       multiaccount)
+                     (get contacts id))]
      (if (nil? contact)
        (image-server/get-identicons-uri port id)
        (multiaccounts/displayed-photo contact)))))

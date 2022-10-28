@@ -197,8 +197,6 @@
                                  :params     [key-uid (clean-path path) ax ay bx by]
                                  ;; NOTE: In case of an error we can show a toast error
                                  :on-success #(re-frame/dispatch [::update-local-picture %])}]}
-              (multiaccounts.update/optimistic :images [{:url  path
-                                                         :type (name photo-quality-large)}])
               (bottom-sheet/hide-bottom-sheet))))
 
 (fx/defn save-profile-picture-from-url
