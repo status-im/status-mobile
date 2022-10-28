@@ -28,18 +28,8 @@
                 :ellipsize-mode      :tail
                 :number-of-lines     1
                 :color               (colors/theme-colors
-<<<<<<< HEAD
-<<<<<<< HEAD
                                       colors/neutral-50
                                       colors/neutral-40)
-=======
-                                       colors/neutral-50
-                                       colors/neutral-40)
->>>>>>> c0e3854d3... feat: messages contact requests
-=======
-                                      colors/neutral-50
-                                      colors/neutral-40)
->>>>>>> e62e73350... feat: messages contact requests
                 :weight               :regular
                 :size                 :paragraph-2}
      description]]])
@@ -96,18 +86,8 @@
 =======
      [react/view (merge (styles/community-card 16)
                         {:background-color  (colors/theme-colors
-<<<<<<< HEAD
-<<<<<<< HEAD
                                              colors/white
                                              colors/neutral-90)}
-=======
-                                              colors/white
-                                              colors/neutral-90)}
->>>>>>> c0e3854d3... feat: messages contact requests
-=======
-                                             colors/white
-                                             colors/neutral-90)}
->>>>>>> e62e73350... feat: messages contact requests
                         {:flex-direction  :row
                          :margin-horizontal 20
                          :height          56
@@ -123,6 +103,7 @@
                                  :border-radius 6
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                                  :first-image   "" ; TODO replace with real data
 <<<<<<< HEAD
                                  :last-image    ""}])]])) ; TODO replace with real data
@@ -136,9 +117,10 @@
                                  :last-image    ""}]) ;; TODO replace with real data
 >>>>>>> c0e3854d3... feat: messages contact requests
 =======
+=======
+>>>>>>> 0b6722a7b... feat: messages home items
                                  :first-image   "" ; TODO replace with real data
                                  :last-image    ""}]) ; TODO replace with real data
->>>>>>> 44c8c1017... refactor
       ]]))
 >>>>>>> aec9cae20... feat: messages contact requests
 >>>>>>> 0347951b2... feat: messages contact requests

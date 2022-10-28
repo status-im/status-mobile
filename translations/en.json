@@ -1835,6 +1835,7 @@
     "shell-placeholder-title": "Your apps will run here",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "no-pinned-messages-desc": "This chat doesn't have any pinned messages.",
     "no-pinned-messages-community-desc": "This channel doesn't have any pinned messages.",
 =======
@@ -1866,12 +1867,19 @@
 >>>>>>> 3f8d00eac... feat: messages contact requests
 =======
 =======
+=======
+    "no-pinned-messages-desc": "This chat doesn't have any pinned messages.",
+    "no-pinned-messages-community-desc": "This channel doesn't have any pinned messages.",
+>>>>>>> e1dc2c907... feat: messages home items
     "shell-placeholder-subtitle": "Open tabs of your communities, messages,\nwallet account and browser windows",
     "invite-friends-to-status": "Invite friends to status",
     "share-invite-link": "Share an invite link",
     "pending-requests": "Pending requests",
     "received": "Received",
     "sent": "Sent"
+<<<<<<< HEAD
 >>>>>>> cfa806fc3... contact requests
 >>>>>>> 2d3d83283... contact requests
+=======
+>>>>>>> e1dc2c907... feat: messages home items
 }

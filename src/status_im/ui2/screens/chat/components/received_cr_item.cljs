@@ -1,27 +1,25 @@
 (ns status-im.ui2.screens.chat.components.received-cr-item
   (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> e62e73350... feat: messages contact requests
             [status-im.utils.handlers :refer [<sub >evt]]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.foundations.typography :as typography]
             [clojure.string :as str]
             [status-im.utils.utils :as utils.utils]
             [status-im.utils.datetime :as time]
-<<<<<<< HEAD
-<<<<<<< HEAD
             [status-im.i18n.i18n :as i18n]
             [quo2.components.notifications.notification-dot :refer [notification-dot]]))
 
+<<<<<<< HEAD
 <<<<<<< HEAD:src/quo2/components/list_items/received_cr_item.cljs
 (defn received-cr-item [{:keys [chat-id message timestamp read]}]
 =======
 
 (defn received-cr-item [{:keys [chat-id image contact message timestamp read]}]
 >>>>>>> 7f132b433... feat: messages home items:src/quo2/components/list_items/received_contact_request.cljs
+=======
+(defn received-cr-item [{:keys [chat-id message timestamp read]}]
+>>>>>>> e1dc2c907... feat: messages home items
   (let [no-ens-name  (str/blank? (get-in message [:content :ens-name]))
         display-name (first (<sub [:contacts/contact-two-names-by-identity chat-id]))]
     [rn/view {:style {:flex-direction :row
@@ -84,6 +82,7 @@
                                                     :padding-horizontal 8
                                                     :margin-left        8}}
         [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color colors/white})} (i18n/label :t/accept)]]]]]))
+<<<<<<< HEAD
 <<<<<<< HEAD:src/quo2/components/list_items/received_cr_item.cljs
 
 
@@ -101,14 +100,11 @@
             [status-im.i18n.i18n :as i18n]
             [quo2.components.notifications.notification-dot :refer [notification-dot]]))
 >>>>>>> 44c8c1017... refactor
+=======
+>>>>>>> e1dc2c907... feat: messages home items
 
-(defn get-display-name [chat-id no-ens-name no-nickname]
-  (let [name (first (<sub [:contacts/contact-two-names-by-identity chat-id]))]
-    (if (and no-ens-name no-nickname)
-      (let [[word1 word2] (str/split name " ")]
-        (str word1 " " word2))
-      name)))
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 (defn list-item [item]
@@ -199,3 +195,5 @@
         [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color :white})} (i18n/label :t/accept)]]]]]))
 >>>>>>> 44c8c1017... refactor
 >>>>>>> 243fb7076... refactor:src/quo2/components/list_items/received_contact_request.cljs
+=======
+>>>>>>> e1dc2c907... feat: messages home items
