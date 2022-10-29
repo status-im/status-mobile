@@ -204,7 +204,8 @@
      (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))])
 
 (defn home-list-item [home-item opts]
-  (let [{:keys [chat-id chat-name color group-chat muted emoji highlight edit? public? unviewed-messages-count contacts]} home-item
+  (let [{:keys [chat-id chat-name color group-chat muted emoji highlight edit? public? unviewed-messages-count contacts last-message]} home-item
+        last-message-content (get-in last-message [:content :text])
         background-color (when highlight (colors/get-color :interactive-02))]
     [react/touchable-opacity (merge {:style {:height 64 :background-color background-color}} opts)
      [:<>
@@ -230,7 +231,7 @@
                           :ellipsize-mode  :middle
                           :weight :medium
                           :style {:color (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}}
-          (i18n/label :t/public)]
+          (or last-message-content (i18n/label :t/public))]
          (if group-chat
            [react/view {:flex-direction :row
                         :flex           1
@@ -251,7 +252,7 @@
                             :style {:color (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}
                             :number-of-lines 1
                             :ellipsize-mode  :middle}
-            (utils.utils/get-shortened-address chat-id)]))]]]))
+            (or last-message-content (utils.utils/get-shortened-address chat-id))]))]]]))
 
 (defn home-list-item-old [home-item opts]
   (let [{:keys [chat-id chat-name color group-chat public? timestamp last-message muted emoji highlight edit?]} home-item
