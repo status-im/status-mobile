@@ -204,9 +204,9 @@
      (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))])
 
 (defn home-list-item [home-item opts]
-  (let [{:keys [chat-id chat-name color group-chat muted emoji highlight edit? public? unviewed-messages-count contacts users]} home-item
+  (let [{:keys [chat-id chat-name color group-chat muted emoji highlight edit? public? unviewed-messages-count contacts users members]} home-item
         background-color (when highlight (colors/get-color :interactive-02))
-        group-members-public-keys (->> (concat contacts (keys users))
+        group-members-public-keys (->> (concat (keys users) contacts (map #(:id %) members))
                                        (into #{})
                                        (remove nil?))]
     [react/touchable-opacity (merge {:style {:height 64 :background-color background-color}} opts)
