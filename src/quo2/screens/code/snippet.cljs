@@ -44,9 +44,9 @@
         (dissoc :on-success :on-failure :on-request))))")
 
 (def examples {:clojure {:language :clojure
-                         :text clojure-example}
+                         :text     clojure-example}
                :go      {:language :go
-                         :text go-example}})
+                         :text     go-example}})
 
 (def descriptor [{:label   "Language:"
                   :key     :language
@@ -63,25 +63,23 @@
                   :type  :boolean}])
 
 (defn cool-preview []
-  (let [state (reagent/atom {:language :clojure
+  (let [state (reagent/atom {:language  :clojure
                              :max-lines ""
-                             :syntax true})]
+                             :syntax    true})]
     (fn []
-      (let [language (if (:syntax @state)
-                       (:language @state)
-                       :text)
-            text (-> (:language @state) examples :text)
+      (let [language  (if (:syntax @state) (:language @state) :text)
+            text      (-> (:language @state) examples :text)
             max-lines (as-> (:max-lines @state) max-lines
                         (js/parseInt max-lines)
                         (when-not (js/Number.isNaN max-lines)
                           max-lines))]
         [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-         [rn/view {:padding-bottom 150}
+         [rn/view {:style {:padding-bottom 150}}
           [preview/customizer state descriptor]
-          [rn/view {:padding-vertical 60
-                    :padding-horizontal 16}
-           [snippet/snippet {:language language
-                             :max-lines max-lines
+          [rn/view {:style {:padding-vertical   60
+                            :padding-horizontal 16}}
+           [snippet/snippet {:language      language
+                             :max-lines     max-lines
                              :on-copy-press #(js/alert %)}
             text]]]]))))
 
