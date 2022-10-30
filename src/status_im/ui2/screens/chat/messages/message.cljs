@@ -17,6 +17,7 @@
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.chat.models.reactions :as models.reactions]
             [status-im.constants :as constants]
+            [status-im.communities.core :as communities]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
@@ -422,7 +423,16 @@
         (re-frame/dispatch [::models.pin-message/show-pin-limit-modal chat-id]))
       (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
-(defn on-long-press-fn [on-long-press {:keys [pinned message-pin-enabled outgoing edit-enabled show-input? community? can-delete-message-for-everyone?] :as message} content]
+(defn on-long-press-fn [on-long-press {:keys [pinned
+                                              message-pin-enabled
+                                              outgoing
+                                              edit-enabled
+                                              show-input?
+                                              community?
+                                              community-id
+                                              can-manage-users?
+                                              can-delete-message-for-everyone?
+                                              from] :as message} content]
   (on-long-press
    (concat
     (when (and outgoing edit-enabled)
@@ -466,7 +476,18 @@
                                        config/delete-message-undo-time-limit-ms])
         :label    (i18n/label :t/delete-for-everyone)
         :icon     :i/delete
-        :id       :delete-for-all}]))))
+        :id       :delete-for-all}])
+    (when (and community? can-manage-users?)
+      [{:type     :danger
+        :on-press #(>evt [::communities/member-kick community-id from])
+        :label    (i18n/label :t/member-kick)
+        :icon     :i/placeholder
+        :id       :member-kick}
+       {:type     :danger
+        :on-press #(>evt [::communities/member-ban community-id from])
+        :label    (i18n/label :t/member-ban)
+        :icon     :i/placeholder
+        :id       :member-ban}]))))
 
 (defn collapsible-text-message [_ _]
   (let [collapsed?      (reagent/atom false)
@@ -512,7 +533,7 @@
 
 (defmethod ->message constants/content-type-emoji []
   (let [show-timestamp? (reagent/atom false)]
-    (fn [{:keys [content pinned in-popover? message-pin-enabled] :as message}
+    (fn [{:keys [content community? community-id can-manage-users? from pinned in-popover? message-pin-enabled] :as message}
          {:keys [on-long-press modal ref]
           :as   reaction-picker}]
       (let [on-long-press (fn []
@@ -532,7 +553,18 @@
                                                           :on-press #(pin-message message)
                                                           :id       :pin
                                                           :icon     :i/pin
-                                                          :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))}]))))]
+                                                          :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))}])
+                              (when (and community? can-manage-users?)
+                                [{:type     :danger
+                                  :on-press #(>evt [::communities/member-kick community-id from])
+                                  :label    (i18n/label :t/member-kick)
+                                  :icon     :i/placeholder
+                                  :id       :member-kick}
+                                 {:type     :danger
+                                  :on-press #(>evt [::communities/member-ban community-id from])
+                                  :label    (i18n/label :t/member-ban)
+                                  :icon     :i/placeholder
+                                  :id       :member-ban}]))))]
         (reset! ref on-long-press)
         [message-content-wrapper message
          [rn/touchable-opacity (when-not modal
@@ -582,7 +614,7 @@
      reaction-picker]))
 
 (defmethod ->message constants/content-type-image
-  [{:keys [content in-popover? outgoing] :as message}
+  [{:keys [content community? community-id can-manage-users? from in-popover? outgoing] :as message}
    {:keys [on-long-press modal ref]
     :as   reaction-picker}]
   (let [on-long-press (fn []
@@ -616,8 +648,19 @@
                                                                     message
                                                                     config/delete-message-undo-time-limit-ms])
                                      :label    (i18n/label :t/delete-for-everyone)
-                                     :icon     :i/delete
-                                     :id       :delete}]))))]
+                                     :icon     :main-icons2/delete
+                                     :id       :delete}])
+                                 (when (and community? can-manage-users?)
+                                   [{:type     :danger
+                                     :on-press #(>evt [::communities/member-kick community-id from])
+                                     :label    (i18n/label :t/member-kick)
+                                     :icon     :i/placeholder
+                                     :id       :member-kick}
+                                    {:type     :danger
+                                     :on-press #(>evt [::communities/member-ban community-id from])
+                                     :label    (i18n/label :t/member-ban)
+                                     :icon     :i/placeholder
+                                     :id       :member-ban}]))))]
     (reset! ref on-long-press)
     [message-content-wrapper message
      [message-content-image message
@@ -629,7 +672,7 @@
 
 (defmethod ->message constants/content-type-audio []
   (let [show-timestamp? (reagent/atom false)]
-    (fn [{:keys [outgoing pinned] :as message}
+    (fn [{:keys [community? community-id can-manage-users? from outgoing pinned] :as message}
          {:keys [on-long-press modal ref]
           :as   reaction-picker}]
       (let [on-long-press (fn [] (on-long-press [{:type     :main
@@ -656,7 +699,18 @@
                                                                                    config/delete-message-undo-time-limit-ms])
                                                     :label    (i18n/label :t/delete-for-everyone)
                                                     :icon     :i/delete
-                                                    :id       :delete})]))]
+                                                    :id       :delete})
+                                                 (when (and community? can-manage-users?)
+                                                   [{:type     :danger
+                                                     :on-press #(>evt [::communities/member-kick community-id from])
+                                                     :label    (i18n/label :t/member-kick)
+                                                     :icon     :i/placeholder
+                                                     :id       :member-kick}
+                                                    {:type     :danger
+                                                     :on-press #(>evt [::communities/member-ban community-id from])
+                                                     :label    (i18n/label :t/member-ban)
+                                                     :icon     :i/placeholder
+                                                     :id       :member-ban}])]))]
         (reset! ref on-long-press)
         [message-content-wrapper message
          [rn/touchable-opacity

@@ -80,7 +80,7 @@
 (defn render-fn [{:keys [outgoing type] :as message}
                  idx
                  _
-                 {:keys [group-chat public? community? current-public-key
+                 {:keys [group-chat public? community? community-id can-manage-users? current-public-key
                          chat-id show-input? message-pin-enabled edit-enabled in-pinned-view? can-delete-message-for-everyone?]}]
   [rn/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
@@ -94,6 +94,8 @@
                :group-chat group-chat
                :public? public?
                :community? community?
+               :community-id community-id
+               :can-manage-users? can-manage-users?
                :current-public-key current-public-key
                :show-input? show-input?
                :message-pin-enabled message-pin-enabled
@@ -133,16 +135,18 @@
                                      (and group-chat
                                           (or group-admin?
                                               community-admin?))))]
-    {:group-chat                       group-chat
-     :public?                          public?
-     :community?                       (not (nil? community-id))
-     :current-public-key               current-public-key
-     :space-keeper                     space-keeper
-     :chat-id                          chat-id
-     :show-input?                      show-input?
-     :message-pin-enabled              message-pin-enabled
-     :edit-enabled                     edit-enabled
-     :in-pinned-view?                  in-pinned-view?
+    {:group-chat          group-chat
+     :public?             public?
+     :community?          (not (nil? community-id))
+     :community-id        community-id
+     :can-manage-users?   (:can-manage-users? community)
+     :current-public-key  current-public-key
+     :space-keeper        space-keeper
+     :chat-id             chat-id
+     :show-input?         show-input?
+     :message-pin-enabled message-pin-enabled
+     :edit-enabled        edit-enabled
+     :in-pinned-view?     in-pinned-view?
      :can-delete-message-for-everyone? can-delete-message-for-everyone?}))
 
 (defn messages-view [{:keys [chat
