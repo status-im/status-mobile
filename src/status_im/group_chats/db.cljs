@@ -5,7 +5,7 @@
 (defn member?
   [public-key {:keys [members contacts users]}]
   (let [members-list (into #{} (concat (keys users) contacts (map #(:id %) members)))]
-        (contains? members-list public-key)))
+    (contains? members-list public-key)))
 
 (defn invited?
   [my-public-key {:keys [contacts]}]
