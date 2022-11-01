@@ -69,19 +69,15 @@
      ::json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
                        :params      [message-id]
                        :js-response true
-                       :on-error    #(log/error "failed to delete message " %)
-                       :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response
-                                                         %])}]}))
+                       :on-error    #(log/error "failed to delete message " message-id " " %)
+                       :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
 (defn- chats-reducer
   "traverse all messages find not yet synced deleted? messages, generate dispatch vector"
   [acc chat-id messages]
-  (reduce-kv
-   (fn [inner-acc message-id {:keys [deleted? deleted-undoable-till]}]
-     (if (and deleted? deleted-undoable-till)
-       (conj inner-acc [:chat.ui/delete-message-and-send chat-id message-id])
-       inner-acc))
-   acc
-   messages))
+  (->> messages
+       (filter (fn [[_ {:keys [deleted? deleted-undoable-till]}]] (and deleted? deleted-undoable-till)))
+       (map #(vector :chat.ui/delete-message-and-send chat-id (first %)))
+       (concat acc)))
 
 (fx/defn send-all
   "Get all deleted messages that not yet synced with status-go and send them"

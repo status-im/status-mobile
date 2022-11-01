@@ -69,19 +69,16 @@
      ::json-rpc/call [{:method      "wakuext_deleteMessageForMeAndSync"
                        :params      [chat-id message-id]
                        :js-response true
-                       :on-error    #(log/error "failed to delete message for me " %)
-                       :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response
-                                                         %])}]}))
+                       :on-error    #(log/error "failed to delete message for me, message id: " message-id " " %)
+                       :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
+
 (defn- chats-reducer
   "traverse all messages find not yet synced deleted-for-me? messages, generate dispatch vector"
   [acc chat-id messages]
-  (reduce-kv
-   (fn [inner-acc message-id {:keys [deleted-for-me? deleted-for-me-undoable-till]}]
-     (if (and deleted-for-me? deleted-for-me-undoable-till)
-       (conj inner-acc [:chat.ui/delete-message-for-me-and-sync chat-id message-id])
-       inner-acc))
-   acc
-   messages))
+  (->> messages
+       (filter (fn [[_ {:keys [deleted-for-me? deleted-for-me-undoable-till]}]] (and deleted-for-me? deleted-for-me-undoable-till)))
+       (map #(vector :chat.ui/delete-message-for-me-and-sync chat-id (first %)))
+       (concat acc)))
 
 (fx/defn sync-all
   "Get all deleted-for-me messages that not yet synced with status-go and sync them"
