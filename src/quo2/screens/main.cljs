@@ -14,6 +14,7 @@
             [quo2.screens.avatars.wallet-user-avatar :as wallet-user-avatar]
             [quo2.screens.buttons.button :as button]
             [quo2.screens.buttons.dynamic-button :as dynamic-button]
+            [quo2.screens.code.snippet :as code-snippet]
             [quo2.screens.counter.counter :as counter]
             [quo2.screens.community.community-card-view :as community-card]
             [quo2.screens.dividers.divider-label :as divider-label]
@@ -76,6 +77,9 @@
              {:name      :dynamic-button
               :insets    {:top false}
               :component dynamic-button/preview-dynamic-button}]
+   :code [{:name         :snippet
+           :insets       {:top false}
+           :component    code-snippet/preview-code-snippet}]
    :community [{:name      :community-cards
                 :insets    {:top false}
                 :component community-card/preview-community-card}]

@@ -41,6 +41,8 @@
 		65F6941A25780A4F00A45E76 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F6941825780A4F00A45E76 /* Bridge.swift */; };
 		65F6941B25780A4F00A45E76 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F6941825780A4F00A45E76 /* Bridge.swift */; };
 		70ADBB5ECF934DCF8A0E4919 /* Inter-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1426DF592BA248FC81D955CB /* Inter-Regular.otf */; };
+		715D8132290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 715D8131290BE850006F5C88 /* UbuntuMono-Regular.ttf */; };
+		715D8133290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 715D8131290BE850006F5C88 /* UbuntuMono-Regular.ttf */; };
 		74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */; };
 		8391E8E0E93C41A98AAA6631 /* Inter-SemiBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */; };
 		A0093AB50DA85E1D01818CCA /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E88D313E5D854BE6BC81FC1 /* libPods-Status-StatusIm-StatusImTests.a */; };
@@ -121,6 +123,7 @@
 		65F6941725780A4E00A45E76 /* StatusImTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StatusImTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		65F6941825780A4F00A45E76 /* Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bridge.swift; sourceTree = "<group>"; };
 		693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.otf"; path = "../resources/fonts/Inter-SemiBold.otf"; sourceTree = "<group>"; };
+		715D8131290BE850006F5C88 /* UbuntuMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "UbuntuMono-Regular.ttf"; path = "../resources/fonts/UbuntuMono-Regular.ttf"; sourceTree = "<group>"; };
 		74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "launch-image-universal.storyboard"; sourceTree = "<group>"; };
 		7AFBE28450C0239119FBDBA2 /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm-StatusImTests.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests.debug.xcconfig"; sourceTree = "<group>"; };
 		8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
@@ -229,6 +232,7 @@
 				693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */,
 				A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */,
 				9C76AF5A418D4D65A4CAD1D9 /* InterStatus-Regular.otf */,
+				715D8131290BE850006F5C88 /* UbuntuMono-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -475,6 +479,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */,
+				715D8132290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */,
 				B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */,
 				D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */,
 				D99C50E5E18942A39C8DDF61 /* Inter-BoldItalic.otf in Resources */,
@@ -493,6 +498,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AAD2ACA24A3A60E0075D594 /* launch-image-universal.storyboard in Resources */,
+				715D8133290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */,
 				3AAD2ACB24A3A60E0075D594 /* Images.xcassets in Resources */,
 				3AAD2ACC24A3A60E0075D594 /* Inter-Bold.otf in Resources */,
 				3AAD2ACD24A3A60E0075D594 /* Inter-BoldItalic.otf in Resources */,
