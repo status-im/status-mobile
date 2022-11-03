@@ -45,3 +45,5 @@
 (def font-bold {:font-family "Inter-Bold"}) ; 700
 
 (def monospace {:font-family "InterStatus-Regular"})
+
+(def code {:font-family "UbuntuMono-Regular"})

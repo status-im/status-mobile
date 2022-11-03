@@ -12,6 +12,7 @@
            :semi-bold typography/font-semi-bold
            :bold      typography/font-bold
            :monospace typography/monospace
+           :code      typography/code
            :inherit   nil)
          (case (or size :paragraph-1)
            :label       typography/label
