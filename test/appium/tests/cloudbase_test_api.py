@@ -6,6 +6,8 @@ from time import sleep
 
 from sauceclient import SauceClient, SauceException
 
+from tests.conftest import option
+
 try:
     import http.client as http_client
     from urllib.parse import urlencode
@@ -18,7 +20,12 @@ sauce_username = environ.get('SAUCE_USERNAME')
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
 
 sauce = SauceClient(sauce_username, sauce_access_key)
-apibase = 'eu-central-1.saucelabs.com'
+if option.datacenter == 'us-west-1':
+    apibase = 'saucelabs.com'
+elif option.datacenter == 'eu-central-1':
+    apibase = 'eu-central-1.saucelabs.com'
+else:
+    raise NotImplementedError("Unknown SauceLabs datacenter")
 
 
 def request(method, url, body=None, content_type='application/json'):
@@ -34,9 +41,11 @@ def request(method, url, body=None, content_type='application/json'):
             response.status, response.reason), response=response)
     return json.loads(data.decode('utf-8'))
 
+
 sauce.request = request
 
-def upload_from_url(apk_path = str()):
+
+def upload_from_url(apk_path=str()):
     response = requests.get(apk_path, stream=True)
     response.raise_for_status()
     apk_name = apk_path.split("/")[-1]
@@ -44,7 +53,7 @@ def upload_from_url(apk_path = str()):
     del response
     for _ in range(3):
         try:
-            requests.post('https://eu-central-1.saucelabs.com/rest/v1/storage/'
+            requests.post('https://' + apibase + '/rest/v1/storage/'
                           + sauce_username + '/' + apk_name + '?overwrite=true',
                           auth=(sauce_username, sauce_access_key),
                           data=file,

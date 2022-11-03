@@ -328,6 +328,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(695843)
+    # moved without edit
     def test_1_1_chat_text_message_edit_delete_push_disappear(self):
         self.device_2.just_fyi(
             "Device 1 sends text message and edits it in 1-1 chat. Device2 checks edited message is shown")
@@ -1218,7 +1219,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="one_2")
 @marks.new_ui_critical
-class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
+class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
@@ -1227,6 +1228,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.home_2 = self.device_2.create_user(enable_notifications=True)
         self.profile_1 = self.home_1.get_profile_view()
         self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
+        self.profile_1.switch_push_notifications()
         self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
         self.profile_1.chats_tab.click()
         self.chat_1 = self.home_1.add_contact(self.public_key_2)
@@ -1271,13 +1273,10 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
 
         self.chat_2.just_fyi("Send messages with non-latin symbols")
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
-
-        for message in messages:
-            self.chat_2.send_message(message)
+        [self.chat_2.send_message(message) for message in messages]
         if not self.chat_1.chat_message_input.is_element_displayed():
             self.chat_1.click_system_back_button_until_element_is_shown()
             self.home_1.get_chat(self.default_username_2).click()
-
         for message in messages:
             if not self.chat_1.chat_element_by_text(message).is_element_displayed():
                 self.errors.append("Message with test '%s' was not received" % message)
@@ -1287,7 +1286,6 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         sent_time_variants = self.chat_2.convert_device_time_to_chat_timestamp()
         if timestamp not in sent_time_variants:
             self.errors.append('Timestamp on message %s does not correspond expected [%s]' % (timestamp, *sent_time_variants))
-
         for message in [messages[1], messages[2]]:
             if self.chat_2.chat_element_by_text(message).member_photo.is_element_displayed():
                 self.errors.append('%s is not stack to 1st(they are sent in less than 5 minutes)!' % message)
@@ -1313,4 +1311,42 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
             self.home_2.get_chat(self.default_username_1).click()
         if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member.png", diff=5):
             self.errors.append("Image of user in 1-1 chat is too different from template!")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702733)
+    def test_1_1_chat_text_message_delete_push_disappear(self):
+        if not self.chat_1.chat_message_input.is_element_displayed():
+            self.home_1.get_chat(self.default_username_2).click()
+        self.device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
+        message_after_edit_1_1 = 'smth I should edit'
+        self.chat_2.send_message(message_after_edit_1_1)
+        chat_1_element = self.chat_1.chat_element_by_text(message_after_edit_1_1)
+        chat_1_element.long_press_element()
+        for action in ("edit", "delete-for-everyone"):
+            if self.chat_1.element_by_translation_id(action).is_element_displayed():
+                self.errors.append('Option to %s someone else message available!' % action)
+        self.home_1.click_system_back_button()
+
+        self.device_2.just_fyi("Delete message for everyone and check it is not shown in chat preview on home")
+        self.chat_2.delete_message_in_chat(message_after_edit_1_1)
+        for chat in (self.chat_2, self.chat_1):
+            if chat.chat_element_by_text(message_after_edit_1_1).is_element_displayed(30):
+                self.errors.append("Deleted message is shown in chat view for 1-1 chat")
+        self.chat_1.click_system_back_button_until_element_is_shown()
+        if self.home_1.element_by_text(message_after_edit_1_1).is_element_displayed(30):
+            self.errors.append("Deleted message is shown on chat element on home screen")
+
+        self.device_2.just_fyi("Send one more message and check that PN will be deleted with message deletion")
+        message_to_delete = 'DELETE ME'
+        self.home_1.put_app_to_background()
+        self.chat_2.send_message(message_to_delete)
+        self.home_1.open_notification_bar()
+        if not self.home_1.get_pn(message_to_delete):
+            self.errors.append("Push notification doesn't appear")
+        self.chat_2.delete_message_in_chat(message_to_delete)
+        pn_to_disappear = self.home_1.get_pn(message_to_delete)
+        if pn_to_disappear:
+            if not pn_to_disappear.is_element_disappeared(30):
+                self.errors.append("Push notification was not removed after initial message deletion")
+
         self.errors.verify_no_errors()

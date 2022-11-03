@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import logging
 import re
 import subprocess
@@ -6,6 +7,7 @@ import sys
 from abc import ABCMeta, abstractmethod
 from http.client import RemoteDisconnected
 from os import environ
+from re import findall
 
 import pytest
 import requests
@@ -16,21 +18,18 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.wait import WebDriverWait
 
-from tests import transl
-
+from tests.conftest import option
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from tests import test_suite_data, start_threads, appium_container, pytest_config_global
-import base64
-from re import findall
-
-from tests.cloudbase_test_api import sauce
+from tests import transl
+from tests.cloudbase_test_api import sauce, apibase
 
 sauce_username = environ.get('SAUCE_USERNAME')
 
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
 
-executor_sauce_lab = 'https://%s:%s@ondemand.eu-central-1.saucelabs.com:443/wd/hub' % (sauce_username, sauce_access_key)
+executor_sauce_lab = 'https://%s:%s@ondemand.%s:443/wd/hub' % (sauce_username, sauce_access_key, apibase)
 
 executor_local = 'http://localhost:4723/wd/hub'
 
@@ -303,6 +302,7 @@ def create_shared_drivers(quantity):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         capabilities = {'maxDuration': 3600}
+        print('SC Executor: %s' % executor_sauce_lab)
         drivers = loop.run_until_complete(start_threads(quantity,
                                                         Driver,
                                                         drivers,
@@ -397,7 +397,10 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 driver.quit()
             except WebDriverException:
                 pass
-            url = 'https://eu-central-1.saucelabs.com/rest/v1/%s/jobs/%s/assets/%s' % (sauce_username, session_id, "log.json")
+            if option.datacenter == 'eu-central-1':
+                url = 'https://eu-central-1.saucelabs.com/rest/v1/%s/jobs/%s/assets/%s' % (sauce_username, session_id, "log.json")
+            else:
+                url = sauce.jobs.get_job_asset_url(job_id=session_id, filename="log.json")
             WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
             commands = requests_session.get(url).json()
             for command in commands:

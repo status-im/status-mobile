@@ -372,6 +372,11 @@ class ProfileView(BaseView):
         chat.confirm_until_presence_of_element(self.add_new_contact_button)
         self.click_system_back_button_until_element_is_shown()
 
+    def switch_push_notifications(self):
+        self.driver.info("Enabling push notifications via Profile")
+        self.profile_notifications_button.scroll_and_click()
+        self.profile_notifications_toggle_button.click()
+        self.click_system_back_button_until_element_is_shown()
 
     def add_custom_network(self, rpc_url: str, name: str, symbol: str, netwrok_id:str):
         self.driver.info("## Add custom network", device=False)

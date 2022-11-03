@@ -1,31 +1,26 @@
-import time
-
-import requests
-import pytest
 import re
-from _pytest.runner import runtestprotocol
+from dataclasses import dataclass
+from datetime import datetime
 from http.client import RemoteDisconnected
+from os import environ
+
+import pytest
+from _pytest.runner import runtestprotocol
+from sauceclient import SauceClient, SauceException
+
+import tests
 from support.device_stats_db import DeviceStatsDB
 from support.test_rerun import should_rerun_test
 from tests import test_suite_data, appium_container
-from datetime import datetime
-from os import environ
-from io import BytesIO
-from sauceclient import SauceClient, SauceException
-import tests.cloudbase_test_api
-from support.api.network_api import NetworkApi
-from support.github_report import GithubHtmlReport
-from support.testrail_report import TestrailReport
-from tests.users import transaction_senders
-import tests
+# from support.testrail_report import TestrailReport
+#
+# testrail_report = TestrailReport()
 
 sauce_username = environ.get('SAUCE_USERNAME')
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
 github_token = environ.get('GIT_HUB_TOKEN')
 
 sauce = SauceClient(sauce_username, sauce_access_key)
-github_report = GithubHtmlReport()
-testrail_report = TestrailReport()
 
 
 def pytest_addoption(parser):
@@ -41,6 +36,10 @@ def pytest_addoption(parser):
                      action='store',
                      default='sauce',
                      help='Specify environment: local/sauce/api')
+    parser.addoption('--datacenter',
+                     action='store',
+                     default='eu-central-1',
+                     help='For sauce only: us-west-1, eu-central-1')
     parser.addoption('--platform_version',
                      action='store',
                      default='8.0',
@@ -139,18 +138,37 @@ def pytest_addoption(parser):
                      help='Database name for device stats db')
 
 
+@dataclass
+class Option:
+    datacenter: str = None
+
+
+option = Option()
+testrail_report = None
+github_report = None
+
+
 def is_master(config):
     return not hasattr(config, 'workerinput')
 
 
 def is_uploaded():
-    stored_files = tests.cloudbase_test_api.sauce.storage.get_stored_files()
+    from tests.cloudbase_test_api import sauce
+    stored_files = sauce.storage.get_stored_files()
     for i in range(len(stored_files['files'])):
         if stored_files['files'][i]['name'] == test_suite_data.apk_name:
             return True
 
 
 def pytest_configure(config):
+    global option
+    option = config.option
+    from support.testrail_report import TestrailReport
+    global testrail_report
+    testrail_report = TestrailReport()
+    from support.github_report import GithubHtmlReport
+    global github_report
+    github_report = GithubHtmlReport()
     tests.pytest_config_global = vars(config.option)
     config.addinivalue_line("markers", "testrail_id(name): empty")
     if config.getoption('log_steps'):
@@ -176,10 +194,11 @@ def pytest_configure(config):
                                                     description='e2e tests are running')
             if config.getoption('env') == 'sauce':
                 if not is_uploaded():
+                    from tests.cloudbase_test_api import sauce, upload_from_url
                     if 'http' in config.getoption('apk'):
-                        tests.cloudbase_test_api.upload_from_url(config.getoption('apk'))
+                        upload_from_url(config.getoption('apk'))
                     else:
-                        tests.cloudbase_test_api.sauce.storage.upload_file(config.getoption('apk'))
+                        sauce.storage.upload_file(config.getoption('apk'))
 
 
 def pytest_unconfigure(config):
@@ -251,7 +270,8 @@ def pytest_runtest_makereport(item, call):
                                       report.passed)
         if error:
             test_suite_data.current_test.testruns[-1].error = final_error
-            github_report.save_test(test_suite_data.current_test)
+            from support.github_report import GithubHtmlReport
+            GithubHtmlReport().save_test(test_suite_data.current_test)
 
     if report.when == 'call':
         current_test = test_suite_data.current_test
@@ -290,9 +310,10 @@ def pytest_runtest_makereport(item, call):
 
 
 def update_sauce_jobs(test_name, job_ids, passed):
+    from tests.cloudbase_test_api import sauce
     for job_id in job_ids.keys():
         try:
-            tests.cloudbase_test_api.sauce.jobs.update_job(job_id, name=test_name, passed=passed)
+            sauce.jobs.update_job(job_id, name=test_name, passed=passed)
         except (RemoteDisconnected, SauceException):
             pass
 
