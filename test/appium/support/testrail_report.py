@@ -123,6 +123,7 @@ class TestrailReport(BaseTestReport):
 
         test_cases['pr']['critical'] = 50955
         test_cases['pr']['one_to_one_chat'] = 50956
+        test_cases['pr']['deep_links'] = 50967
 
 
         ## Nightly e2e
