@@ -1,0 +1,38 @@
+{
+   "testRunner": "jest",
+   "testRegex": "\\.visual\\.js$",
+
+    "devices": {
+      
+      "simulator": {
+        "type": "ios.simulator",
+        "device": {
+          "type": "iPhone 11 Pro"
+        }
+      }
+    },
+    "apps": {
+      "ios.release": {
+        "name": "StatusIm",
+        "type": "ios.app",
+        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/StatusIm.app",
+        "build": "make release-ios"
+      },
+      "ios.debug": {
+        "name": "StatusIm",
+        "type": "ios.app",
+        "binaryPath": "/Users/erik/Library/Developer/Xcode/DerivedData/StatusIm-dkjkfsbgallhrnchhutvuvbicfsa/Build/Products/Debug-iphonesimulator/StatusIm.app",
+        "build": "make run-ios SIMULATOR='iPhone 11 Pro'"
+      }
+    },
+    "configurations": {
+      "ios.sim.release": {
+        "device": "simulator",
+        "app": "ios.release"
+      },
+      "ios.sim.debug": {
+        "device": "simulator",
+        "app": "ios.debug"
+      }
+    }
+  }
