@@ -228,9 +228,9 @@
            :margin-bottom    24}}
          [quo2.icons/icon :main-icons2/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
         [rn/text {:style (merge
-                           typography/heading-1
-                           typography/font-semi-bold
-                           {:color (colors/theme-colors "#000000" "#ffffff")})}
+                          typography/heading-1
+                          typography/font-semi-bold
+                          {:color (colors/theme-colors "#000000" "#ffffff")})}
          (i18n/label :t/pending-requests)]
         [quo2.tabs/tabs
          {:style          {:margin-top 12 :margin-bottom 20}
@@ -293,8 +293,8 @@
    {:active-opacity 1
     :on-press       #(do
                        (>evt
-                         [:bottom-sheet/show-sheet
-                          {:content (fn [] [contact-requests-sheet])}])
+                        [:bottom-sheet/show-sheet
+                         {:content (fn [] [contact-requests-sheet])}])
                        (>evt [:mark-all-activity-center-notifications-as-read]))
     :style          {:flex-direction     :row
                      :margin             8
@@ -361,28 +361,31 @@
             :render-fn                      contact-item}]]))]))
 
 (views/defview chats-list []
-                          (views/letsubs [loading? [:chats/loading?]]
-                            [:<>
-                             [connectivity/loading-indicator]
-                             (if loading?
-                               [rn/view {:flex 1 :align-items :center :justify-content :center}
-                                [rn/activity-indicator {:animating true}]]
-                               [chats])]))
+  (views/letsubs [loading? [:chats/loading?]]
+    [:<>
+     [connectivity/loading-indicator]
+     (if loading?
+       [rn/view {:flex 1 :align-items :center :justify-content :center}
+        [rn/activity-indicator {:animating true}]]
+       [chats])]))
 
 (views/defview plus-button []
-                           (views/letsubs [logging-in? [:multiaccounts/login]]
-                             [components.plus-button/plus-button
-                              {:on-press            (when-not logging-in?
-                                                      #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
-                               :loading             logging-in?
-                               :accessibility-label :new-chat-button}]))
+  (views/letsubs [logging-in? [:multiaccounts/login]]
+    [components.plus-button/plus-button
+     {:on-press            (when-not logging-in?
+                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+      :loading             logging-in?
+      :accessibility-label :new-chat-button}]))
 
 (views/defview notifications-button []
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e1dc2c907... feat: messages home items
+=======
+>>>>>>> 8e74397a9... lint
   (views/letsubs [notif-count [:activity.center/notifications-count]]
     [rn/view
      [quo2.button/button {:type                :grey
@@ -401,6 +404,7 @@
                  :pointer-events :none}
         [rn/view {:style               styles/counter-public
                   :accessibility-label :notifications-unread-badge}]])]))
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -429,6 +433,8 @@
 >>>>>>> e1dc2c907... feat: messages home items
 =======
 >>>>>>> 5fcc08fd3... refactor
+=======
+>>>>>>> 8e74397a9... lint
 
 (defn qr-button []
   [quo2.button/button {:type                :grey
@@ -452,11 +458,11 @@
    [icons/icon :main-icons/scan2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
 (views/defview profile-button []
-                              (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]
-                                [rn/view
-                                 [chat-icon/emoji-chat-icon-view public-key false preferred-name emoji
-                                  {:size      28
-                                   :chat-icon chat-icon.styles/chat-icon-chat-list}]]))
+  (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]
+    [rn/view
+     [chat-icon/emoji-chat-icon-view public-key false preferred-name emoji
+      {:size      28
+       :chat-icon chat-icon.styles/chat-icon-chat-list}]]))
 
 (defn home []
   [:f>

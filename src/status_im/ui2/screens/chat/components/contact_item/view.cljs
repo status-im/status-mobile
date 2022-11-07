@@ -8,6 +8,7 @@
             [status-im.utils.utils :refer [get-shortened-address]]
             [quo.platform :as platform]
 <<<<<<< HEAD
+<<<<<<< HEAD
             [quo2.components.markdown.text :as text]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
 
@@ -17,6 +18,11 @@
 
 
 >>>>>>> 5fcc08fd3... refactor
+=======
+            [quo2.components.markdown.text :as text]
+            [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
+
+>>>>>>> 8e74397a9... lint
 (defn open-chat [chat-id]
   (>evt [:dismiss-keyboard])
   (if platform/android?
@@ -46,6 +52,7 @@
      [rn/view {:style {:margin-left 8}}
       [rn/view {:style {:flex-direction :row}}
 <<<<<<< HEAD
+<<<<<<< HEAD
        [text/text {:style (merge typography/paragraph-1 typography/font-semi-bold
                                  {:color (colors/theme-colors colors/neutral-100 colors/white)})}
         display-name]
@@ -60,6 +67,10 @@
 =======
        [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold
                                {:color (colors/theme-colors colors/neutral-100 colors/white)})}
+=======
+       [text/text {:style (merge typography/paragraph-1 typography/font-semi-bold
+                                 {:color (colors/theme-colors colors/neutral-100 colors/white)})}
+>>>>>>> 8e74397a9... lint
         display-name]
        (if (:ens-verified item)
          [rn/view {:style {:margin-left 5 :margin-top 4}}
@@ -67,9 +78,15 @@
          (when (:added? item)
            [rn/view {:style {:margin-left 5 :margin-top 4}}
             [icons/icon :main-icons2/contact {:size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
+<<<<<<< HEAD
       [rn/text {:style (merge typography/paragraph-2 typography/font-regular
                               {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})}
 >>>>>>> 5fcc08fd3... refactor
+=======
+      [text/text {:size :typography-1
+                  :weight :semi-bold
+                  :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
+>>>>>>> 8e74397a9... lint
        (get-shortened-address public-key)]]
      [rn/touchable-opacity {:style          {:position :absolute
                                              :right    20}

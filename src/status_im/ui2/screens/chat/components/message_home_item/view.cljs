@@ -11,9 +11,13 @@
             [status-im.ui.screens.chat.sheets :as sheets]
             [quo.platform :as platform]
 <<<<<<< HEAD
+<<<<<<< HEAD
             [quo2.components.markdown.text :as text]
 =======
 >>>>>>> 5fcc08fd3... refactor
+=======
+            [quo2.components.markdown.text :as text]
+>>>>>>> 8e74397a9... lint
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
 
 (def max-subheader-length 50)
@@ -29,6 +33,9 @@
                  "paragraph"
                  (reduce
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8e74397a9... lint
                   (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
                     (if (>= length max-subheader-length)
                       (reduced acc-paragraph)
@@ -36,6 +43,7 @@
                   {:components [rn/text]
                    :length     0}
                   children)
+<<<<<<< HEAD
 =======
                    (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
                      (if (>= length max-subheader-length)
@@ -45,6 +53,8 @@
                     :length     0}
                    children)
 >>>>>>> 5fcc08fd3... refactor
+=======
+>>>>>>> 8e74397a9... lint
 
                  "mention"
                  {:components [rn/text (<sub [:contacts/contact-name-by-identity literal])]
@@ -66,6 +76,9 @@
   (let [result
         (reduce
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8e74397a9... lint
          (fn [{:keys [_ length] :as acc-text} new-text-chunk]
            (if (>= length max-subheader-length)
              (reduced acc-text)
@@ -78,6 +91,7 @@
                                 :accessibility-label :chat-message-text}]
           :length     0}
          parsed-text)]
+<<<<<<< HEAD
     (:components result)))
 
 (defn display-name-view [display-name contact timestamp]
@@ -113,7 +127,23 @@
                                  :accessibility-label :chat-message-text}]
            :length     0}
           parsed-text)]
+=======
+>>>>>>> 8e74397a9... lint
     (:components result)))
+
+(defn display-name-view [display-name contact timestamp]
+  [rn/view {:style {:flex-direction :row}}
+   [text/text {:weight :semi-bold
+               :size   :paragraph-1}
+    display-name]
+   (if (:ens-verified contact)
+     [rn/view {:style {:margin-left 5 :margin-top 4}}
+      [icons/icon :main-icons2/verified {:size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
+     (when (:added? contact)
+       [rn/view {:style {:margin-left 5 :margin-top 4}}
+        [icons/icon :main-icons2/contact {:size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))
+   [text/text {:style (style/timestamp)}
+    (time/to-short-str timestamp)]])
 
 (defn messages-home-item [item]
   (let [{:keys [chat-id color group-chat last-message timestamp name]} item
@@ -143,6 +173,7 @@
 
      [rn/view {:style {:margin-left 8}}
 <<<<<<< HEAD
+<<<<<<< HEAD
       [display-name-view display-name contact timestamp]
       (if (string/blank? (get-in last-message [:content :parsed-text]))
         [text/text {:size  :paragraph-2
@@ -168,9 +199,12 @@
                                 :margin-top  3
                                 :margin-left 8})}
         (time/to-short-str timestamp)]] ; placeholder for community chats to avoid crashing until implemented
+=======
+      [display-name-view display-name contact timestamp]
+>>>>>>> 8e74397a9... lint
       (if (string/blank? (get-in last-message [:content :parsed-text]))
-        [rn/text {:style (merge typography/paragraph-2 typography/font-regular
-                                {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})}
+        [text/text {:size  :paragraph-2
+                    :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
          (get-in last-message [:content :text])]
         [render-subheader (get-in last-message [:content :parsed-text])])]
      (if (> (:unviewed-mentions-count item) 0)
