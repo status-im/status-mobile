@@ -19,9 +19,9 @@
   (>evt [:accept-all-activity-center-notifications-from-chat chat-id]))
 
 (defn contact-item [item]
-  (let [{:keys [public-key]} item
+  (let [{:keys [public-key ens-verified added? images]} item
         display-name (first (<sub [:contacts/contact-two-names-by-identity public-key]))
-        photo-path   (if-not (empty? (:images item)) (<sub [:chats/photo-path public-key]) nil)]
+        photo-path   (if-not (empty? images) (<sub [:chats/photo-path public-key]) nil)]
     [rn/touchable-opacity (merge {:style   (style/container)
                                   :on-press #(open-chat public-key)})
      [user-avatar/user-avatar {:full-name         display-name
@@ -35,10 +35,10 @@
        [text/text {:style (merge typography/paragraph-1 typography/font-semi-bold
                                  {:color (colors/theme-colors colors/neutral-100 colors/white)})}
         display-name]
-       (if (:ens-verified item)
+       (if ens-verified
          [rn/view {:style {:margin-left 5 :margin-top 4}}
           [icons/icon :main-icons2/verified {:no-color true :size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
-         (when (:added? item)
+         (when added?
            [rn/view {:style {:margin-left 5 :margin-top 4}}
             [icons/icon :main-icons2/contact {:no-color true :size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
       [text/text {:size :paragraph-1

@@ -85,7 +85,7 @@
     (time/to-short-str timestamp)]])
 
 (defn messages-home-item [item]
-  (let [{:keys [chat-id color group-chat last-message timestamp name]} item
+  (let [{:keys [chat-id color group-chat last-message timestamp name unviewed-mentions-count unviewed-messages-count]} item
         display-name (if-not group-chat (first (<sub [:contacts/contact-two-names-by-identity chat-id])) name)
         contact      (when-not group-chat (<sub [:contacts/contact-by-address chat-id]))
         photo-path   (when-not (empty? (:images contact)) (<sub [:chats/photo-path chat-id]))]
@@ -116,9 +116,9 @@
                     :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
          (get-in last-message [:content :text])]
         [render-subheader (get-in last-message [:content :parsed-text])])]
-     (if (> (:unviewed-mentions-count item) 0)
-       [info-count (:unviewed-mentions-count item) {:top 16}]
-       (when (> (:unviewed-messages-count item) 0)
+     (if (> unviewed-mentions-count 0)
+       [info-count unviewed-mentions-count {:top 16}]
+       (when (> unviewed-messages-count 0)
          [rn/view {:style (style/count-container)}]))]))
 
 

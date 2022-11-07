@@ -66,7 +66,10 @@
    [rn/text {:style (merge typography/font-regular typography/paragraph-2)} (i18n/label :t/blank-messages-text)]])
 
 (defn welcome-blank-page []
-  [rn/view {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :center}}
+  [rn/view {:style {:flex 1
+                    :flex-direction :row
+                    :align-items :center
+                    :justify-content :center}}
    [react/i18n-text {:style styles/welcome-blank-text :key :welcome-blank-message}]])
 
 (defonce search-active? (reagent/atom false))
@@ -146,14 +149,14 @@
 
 (defn find-contact-requests [notifications]
   (let [received-requests (atom [])
-        has-unread        (atom false)]
+        has-unread?        (atom false)]
     (doseq [i (range (count notifications))]
       (doseq [j (range (count (:data (nth notifications i))))]
         (when (= 1 (get-in (nth (:data (nth notifications i)) j) [:message :contact-request-state]))
           (swap! received-requests conj (nth (:data (nth notifications i)) j)))
         (when (= false (get-in (nth (:data (nth notifications i)) j) [:read]))
-          (reset! has-unread true))))
-    {:received-requests @received-requests :has-unread @has-unread}))
+          (reset! has-unread? true))))
+    {:received-requests @received-requests :has-unread? @has-unread?}))
 
 (def selected-requests-tab (reagent/atom :received))
 
@@ -247,7 +250,7 @@
         contacts           (<sub [:contacts/active])
         contacts           (prepare-contacts contacts)
         notifications      (<sub [:activity.center/notifications-grouped-by-date])
-        {requests :received-requests new-info :has-unread} (find-contact-requests notifications)]
+        {requests :received-requests new-info :has-unread?} (find-contact-requests notifications)]
     [rn/view {:style {:flex 1}}
      [discover-card/discover-card {:title       (i18n/label :t/invite-friends-to-status)
                                    :description (i18n/label :t/share-invite-link)}]
