@@ -3,6 +3,7 @@
             [status-im.utils.datetime :as datetime]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.constants :as constants]
+            [status-im.activity-center.notification-types :as types]
             [clojure.string :as string]))
 
 (re-frame/reg-sub
@@ -21,7 +22,7 @@
  :activity-center/filter-type
  :<- [:activity-center]
  (fn [activity-center]
-   (get-in activity-center [:filter :type] constants/activity-center-notification-type-no-type)))
+   (get-in activity-center [:filter :type] types/no-type)))
 
 (re-frame/reg-sub
  :activity-center/filtered-notifications
@@ -55,17 +56,17 @@
  (fn [[{:keys [notifications]} contacts]]
    (let [supported-notifications
          (filter (fn [{:keys [type last-message message]}]
-                   (or (and (= constants/activity-center-notification-type-one-to-one-chat type)
+                   (or (and (= types/one-to-one-chat type)
                             (not (nil? last-message)))
-                       (and (= constants/activity-center-notification-type-contact-request type)
+                       (and (= types/contact-request type)
                             (not= constants/contact-request-message-state-none
                                   (-> contacts
                                       (multiaccounts/contact-by-identity (:from message))
                                       :contact-request-state)))
-                       (= constants/activity-center-notification-type-contact-request-retracted type)
-                       (= constants/activity-center-notification-type-private-group-chat type)
-                       (= constants/activity-center-notification-type-reply type)
-                       (= constants/activity-center-notification-type-mention type)))
+                       (= types/contact-request-retracted type)
+                       (= types/private-group-chat type)
+                       (= types/reply type)
+                       (= types/mention type)))
                  notifications)]
      (group-notifications-by-date
       (map #(assoc %

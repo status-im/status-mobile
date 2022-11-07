@@ -2,7 +2,7 @@
   (:require [cljs.test :refer [deftest is testing]]
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
-            [status-im.constants :as const]
+            [status-im.activity-center.notification-types :as types]
             [status-im.ethereum.json-rpc :as json-rpc]
             status-im.events
             [status-im.test-helpers :as h]
@@ -46,7 +46,7 @@
                                       :read                        true
                                       :reply-message               nil
                                       :timestamp                   1666647286000
-                                      :type                        const/activity-center-notification-type-contact-verification}]
+                                      :type                        types/contact-verification}]
          (h/stub-fx-with-callbacks
           ::json-rpc/call
           :on-success (constantly {:activityCenterNotifications
@@ -60,7 +60,7 @@
                                      :name                      "0x04d03f"
                                      :read                      true
                                      :timestamp                 1666647286000
-                                     :type                      const/activity-center-notification-type-contact-verification}]}))
+                                     :type                      types/contact-verification}]}))
 
          (h/spy-fx spy-queue ::json-rpc/call)
 
@@ -72,10 +72,10 @@
                     (get-in [0 :args 0])
                     (select-keys [:method :params]))))
 
-         (is (= {const/activity-center-notification-type-no-type
+         (is (= {types/no-type
                  {:read   {:data [expected-notification]}
                   :unread {:data []}}
-                 const/activity-center-notification-type-contact-verification
+                 types/contact-verification
                  {:read   {:data [expected-notification]}
                   :unread {:data []}}}
                 (get-in (h/db) [:activity-center :notifications]))))))
@@ -103,23 +103,23 @@
     (testing "does nothing when there are no new notifications"
       (rf-test/run-test-sync
        (setup)
-       (let [notifications {const/activity-center-notification-type-one-to-one-chat
+       (let [notifications {types/one-to-one-chat
                             {:read   {:cursor ""
                                       :data   [{:id   "0x1"
                                                 :read true
-                                                :type const/activity-center-notification-type-one-to-one-chat}
+                                                :type types/one-to-one-chat}
                                                {:id   "0x2"
                                                 :read true
-                                                :type const/activity-center-notification-type-one-to-one-chat}]}
+                                                :type types/one-to-one-chat}]}
                              :unread {:cursor ""
                                       :data   [{:id   "0x3"
                                                 :read false
-                                                :type const/activity-center-notification-type-one-to-one-chat}]}}
-                            const/activity-center-notification-type-private-group-chat
+                                                :type types/one-to-one-chat}]}}
+                            types/private-group-chat
                             {:unread {:cursor ""
                                       :data   [{:id   "0x4"
                                                 :read false
-                                                :type const/activity-center-notification-type-private-group-chat}]}}}]
+                                                :type types/private-group-chat}]}}}]
          (rf/dispatch [:test/assoc-in [:activity-center :notifications] notifications])
 
          (rf/dispatch [:activity-center.notifications/reconcile nil])
@@ -130,127 +130,127 @@
       (rf-test/run-test-sync
        (setup)
        (rf/dispatch [:test/assoc-in [:activity-center :notifications]
-                     {const/activity-center-notification-type-one-to-one-chat
+                     {types/one-to-one-chat
                       {:read   {:cursor ""
-                                :data   [{:id "0x1" :read true :type const/activity-center-notification-type-one-to-one-chat}
-                                         {:id "0x2" :read true :type const/activity-center-notification-type-one-to-one-chat}]}
+                                :data   [{:id "0x1" :read true :type types/one-to-one-chat}
+                                         {:id "0x2" :read true :type types/one-to-one-chat}]}
                        :unread {:cursor ""
-                                :data   [{:id "0x3" :read false :type const/activity-center-notification-type-one-to-one-chat}]}}
-                      const/activity-center-notification-type-private-group-chat
+                                :data   [{:id "0x3" :read false :type types/one-to-one-chat}]}}
+                      types/private-group-chat
                       {:unread {:cursor ""
-                                :data   [{:id "0x4" :read false :type const/activity-center-notification-type-private-group-chat}
-                                         {:id "0x6" :read false :type const/activity-center-notification-type-private-group-chat}]}}}])
+                                :data   [{:id "0x4" :read false :type types/private-group-chat}
+                                         {:id "0x6" :read false :type types/private-group-chat}]}}}])
 
        (rf/dispatch [:activity-center.notifications/reconcile
                      [{:id        "0x1"
                        :read      true
-                       :type      const/activity-center-notification-type-one-to-one-chat
+                       :type      types/one-to-one-chat
                        :dismissed true}
                       {:id       "0x3"
                        :read     false
-                       :type     const/activity-center-notification-type-one-to-one-chat
+                       :type     types/one-to-one-chat
                        :accepted true}
                       {:id        "0x4"
                        :read      false
-                       :type      const/activity-center-notification-type-private-group-chat
+                       :type      types/private-group-chat
                        :dismissed true}
                       {:id       "0x5"
                        :read     false
-                       :type     const/activity-center-notification-type-private-group-chat
+                       :type     types/private-group-chat
                        :accepted true}]])
 
-       (is (= {const/activity-center-notification-type-no-type
+       (is (= {types/no-type
                {:read   {:data []}
                 :unread {:data []}}
 
-               const/activity-center-notification-type-one-to-one-chat
+               types/one-to-one-chat
                {:read   {:cursor ""
                          :data   [{:id   "0x2"
                                    :read true
-                                   :type const/activity-center-notification-type-one-to-one-chat}]}
+                                   :type types/one-to-one-chat}]}
                 :unread {:cursor ""
                          :data   []}}
-               const/activity-center-notification-type-private-group-chat
+               types/private-group-chat
                {:read   {:data []}
                 :unread {:cursor ""
                          :data   [{:id   "0x6"
                                    :read false
-                                   :type const/activity-center-notification-type-private-group-chat}]}}}
+                                   :type types/private-group-chat}]}}}
               (get-in (h/db) [:activity-center :notifications])))))
 
     (testing "replaces old notifications with newly arrived ones"
       (rf-test/run-test-sync
        (setup)
        (rf/dispatch [:test/assoc-in [:activity-center :notifications]
-                     {const/activity-center-notification-type-no-type
+                     {types/no-type
                       {:read   {:cursor ""
                                 :data   [{:id   "0x1"
                                           :read true
-                                          :type const/activity-center-notification-type-one-to-one-chat}]}
+                                          :type types/one-to-one-chat}]}
                        :unread {:cursor ""
                                 :data   [{:id   "0x4"
                                           :read false
-                                          :type const/activity-center-notification-type-private-group-chat}
+                                          :type types/private-group-chat}
                                          {:id   "0x6"
                                           :read false
-                                          :type const/activity-center-notification-type-private-group-chat}]}}
-                      const/activity-center-notification-type-one-to-one-chat
+                                          :type types/private-group-chat}]}}
+                      types/one-to-one-chat
                       {:read {:cursor ""
                               :data   [{:id   "0x1"
                                         :read true
-                                        :type const/activity-center-notification-type-one-to-one-chat}]}}
-                      const/activity-center-notification-type-private-group-chat
+                                        :type types/one-to-one-chat}]}}
+                      types/private-group-chat
                       {:unread {:cursor ""
                                 :data   [{:id   "0x4"
                                           :read false
-                                          :type const/activity-center-notification-type-private-group-chat}
+                                          :type types/private-group-chat}
                                          {:id   "0x6"
                                           :read false
-                                          :type const/activity-center-notification-type-private-group-chat}]}}}])
+                                          :type types/private-group-chat}]}}}])
 
        (rf/dispatch [:activity-center.notifications/reconcile
                      [{:id           "0x1"
                        :read         true
-                       :type         const/activity-center-notification-type-one-to-one-chat
+                       :type         types/one-to-one-chat
                        :last-message {}}
                       {:id     "0x4"
                        :read   false
-                       :type   const/activity-center-notification-type-private-group-chat
+                       :type   types/private-group-chat
                        :author "0xabc"}
                       {:id   "0x6"
                        :read false
-                       :type const/activity-center-notification-type-private-group-chat}]])
+                       :type types/private-group-chat}]])
 
-       (is (= {const/activity-center-notification-type-no-type
+       (is (= {types/no-type
                {:read   {:cursor ""
                          :data   [{:id           "0x1"
                                    :read         true
-                                   :type         const/activity-center-notification-type-one-to-one-chat
+                                   :type         types/one-to-one-chat
                                    :last-message {}}]}
                 :unread {:cursor ""
                          :data   [{:id   "0x6"
                                    :read false
-                                   :type const/activity-center-notification-type-private-group-chat}
+                                   :type types/private-group-chat}
                                   {:id     "0x4"
                                    :read   false
-                                   :type   const/activity-center-notification-type-private-group-chat
+                                   :type   types/private-group-chat
                                    :author "0xabc"}]}}
-               const/activity-center-notification-type-one-to-one-chat
+               types/one-to-one-chat
                {:read   {:cursor ""
                          :data   [{:id           "0x1"
                                    :read         true
-                                   :type         const/activity-center-notification-type-one-to-one-chat
+                                   :type         types/one-to-one-chat
                                    :last-message {}}]}
                 :unread {:data []}}
-               const/activity-center-notification-type-private-group-chat
+               types/private-group-chat
                {:read   {:data []}
                 :unread {:cursor ""
                          :data   [{:id   "0x6"
                                    :read false
-                                   :type const/activity-center-notification-type-private-group-chat}
+                                   :type types/private-group-chat}
                                   {:id     "0x4"
                                    :read   false
-                                   :type   const/activity-center-notification-type-private-group-chat
+                                   :type   types/private-group-chat
                                    :author "0xabc"}]}}}
               (get-in (h/db) [:activity-center :notifications])))))
 
@@ -258,29 +258,29 @@
       (rf-test/run-test-sync
        (setup)
        (rf/dispatch [:test/assoc-in [:activity-center :notifications]
-                     {const/activity-center-notification-type-one-to-one-chat
+                     {types/one-to-one-chat
                       {:read {:cursor ""
                               :data   [{:id   "0x1"
                                         :read true
-                                        :type const/activity-center-notification-type-one-to-one-chat}]}}}])
+                                        :type types/one-to-one-chat}]}}}])
 
        (rf/dispatch [:activity-center.notifications/reconcile
                      [{:id   "0x1"
                        :read false
-                       :type const/activity-center-notification-type-one-to-one-chat}]])
+                       :type types/one-to-one-chat}]])
 
-       (is (= {const/activity-center-notification-type-no-type
+       (is (= {types/no-type
                {:read   {:data []}
                 :unread {:data [{:id   "0x1"
                                  :read false
-                                 :type const/activity-center-notification-type-one-to-one-chat}]}}
+                                 :type types/one-to-one-chat}]}}
 
-               const/activity-center-notification-type-one-to-one-chat
+               types/one-to-one-chat
                {:read   {:cursor ""
                          :data   []}
                 :unread {:data [{:id   "0x1"
                                  :read false
-                                 :type const/activity-center-notification-type-one-to-one-chat}]}}}
+                                 :type types/one-to-one-chat}]}}}
               (get-in (h/db) [:activity-center :notifications])))))
 
     ;; Sorting by timestamp and ID is compatible with what the backend does when
@@ -289,54 +289,54 @@
       (rf-test/run-test-sync
        (setup)
        (rf/dispatch [:test/assoc-in [:activity-center :notifications]
-                     {const/activity-center-notification-type-one-to-one-chat
+                     {types/one-to-one-chat
                       {:read   {:cursor ""
-                                :data   [{:id "0x1" :read true :type const/activity-center-notification-type-one-to-one-chat :timestamp 1}
-                                         {:id "0x2" :read true :type const/activity-center-notification-type-one-to-one-chat :timestamp 1}]}
+                                :data   [{:id "0x1" :read true :type types/one-to-one-chat :timestamp 1}
+                                         {:id "0x2" :read true :type types/one-to-one-chat :timestamp 1}]}
                        :unread {:cursor ""
-                                :data   [{:id "0x3" :read false :type const/activity-center-notification-type-one-to-one-chat :timestamp 50}
-                                         {:id "0x4" :read false :type const/activity-center-notification-type-one-to-one-chat :timestamp 100}
-                                         {:id "0x5" :read false :type const/activity-center-notification-type-one-to-one-chat :timestamp 100}]}}}])
+                                :data   [{:id "0x3" :read false :type types/one-to-one-chat :timestamp 50}
+                                         {:id "0x4" :read false :type types/one-to-one-chat :timestamp 100}
+                                         {:id "0x5" :read false :type types/one-to-one-chat :timestamp 100}]}}}])
 
        (rf/dispatch [:activity-center.notifications/reconcile
-                     [{:id "0x1" :read true :type const/activity-center-notification-type-one-to-one-chat :timestamp 1 :last-message {}}
-                      {:id "0x4" :read false :type const/activity-center-notification-type-one-to-one-chat :timestamp 100 :last-message {}}]])
+                     [{:id "0x1" :read true :type types/one-to-one-chat :timestamp 1 :last-message {}}
+                      {:id "0x4" :read false :type types/one-to-one-chat :timestamp 100 :last-message {}}]])
 
-       (is (= {const/activity-center-notification-type-no-type
+       (is (= {types/no-type
                {:read   {:data [{:id           "0x1"
                                  :read         true
-                                 :type         const/activity-center-notification-type-one-to-one-chat
+                                 :type         types/one-to-one-chat
                                  :timestamp    1
                                  :last-message {}}]}
                 :unread {:data [{:id           "0x4"
                                  :read         false
-                                 :type         const/activity-center-notification-type-one-to-one-chat
+                                 :type         types/one-to-one-chat
                                  :timestamp    100
                                  :last-message {}}]}}
-               const/activity-center-notification-type-one-to-one-chat
+               types/one-to-one-chat
                {:read   {:cursor ""
                          :data   [{:id        "0x2"
                                    :read      true
-                                   :type      const/activity-center-notification-type-one-to-one-chat
+                                   :type      types/one-to-one-chat
                                    :timestamp 1}
                                   {:id           "0x1"
                                    :read         true
-                                   :type         const/activity-center-notification-type-one-to-one-chat
+                                   :type         types/one-to-one-chat
                                    :timestamp    1
                                    :last-message {}}]}
                 :unread {:cursor ""
                          :data   [{:id        "0x5"
                                    :read      false
-                                   :type      const/activity-center-notification-type-one-to-one-chat
+                                   :type      types/one-to-one-chat
                                    :timestamp 100}
                                   {:id           "0x4"
                                    :read         false
-                                   :type         const/activity-center-notification-type-one-to-one-chat
+                                   :type         types/one-to-one-chat
                                    :timestamp    100
                                    :last-message {}}
                                   {:id        "0x3"
                                    :read      false
-                                   :type      const/activity-center-notification-type-one-to-one-chat
+                                   :type      types/one-to-one-chat
                                    :timestamp 50}]}}}
               (get-in (h/db) [:activity-center :notifications])))))))
 
@@ -352,22 +352,22 @@
           ::json-rpc/call
           :on-success (constantly {:cursor        "10"
                                    :notifications [{:id     "0x1"
-                                                    :type   const/activity-center-notification-type-one-to-one-chat
+                                                    :type   types/one-to-one-chat
                                                     :read   false
                                                     :chatId "0x9"}]}))
          (h/spy-fx spy-queue ::json-rpc/call)
 
          (rf/dispatch [:activity-center.notifications/fetch-first-page
-                       {:filter-type const/activity-center-notification-type-one-to-one-chat}])
+                       {:filter-type types/one-to-one-chat}])
 
          (is (= :unread (get-in (h/db) [:activity-center :filter :status])))
          (is (= "" (get-in @spy-queue [0 :args 0 :params 0]))
              "Should be called with empty cursor when fetching first page")
-         (is (= {const/activity-center-notification-type-one-to-one-chat
+         (is (= {types/one-to-one-chat
                  {:unread {:cursor "10"
                            :data   [{:chat-id       "0x9"
                                      :chat-name     nil
-                                     :chat-type     const/activity-center-notification-type-one-to-one-chat
+                                     :chat-type     types/one-to-one-chat
                                      :group-chat    false
                                      :id            "0x1"
                                      :public?       false
@@ -375,7 +375,7 @@
                                      :message       nil
                                      :read          false
                                      :reply-message nil
-                                     :type          const/activity-center-notification-type-one-to-one-chat}]}}}
+                                     :type          types/one-to-one-chat}]}}}
                 (get-in (h/db) [:activity-center :notifications]))))))
 
     (testing "does not fetch next page when pagination cursor reached the end"
@@ -386,8 +386,8 @@
          (rf/dispatch [:test/assoc-in [:activity-center :filter :status]
                        :unread])
          (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
-                       const/activity-center-notification-type-one-to-one-chat])
-         (rf/dispatch [:test/assoc-in [:activity-center :notifications const/activity-center-notification-type-one-to-one-chat :unread :cursor]
+                       types/one-to-one-chat])
+         (rf/dispatch [:test/assoc-in [:activity-center :notifications types/one-to-one-chat :unread :cursor]
                        ""])
 
          (rf/dispatch [:activity-center.notifications/fetch-next-page])
@@ -405,8 +405,8 @@
          (rf/dispatch [:test/assoc-in [:activity-center :filter :status]
                        :unread])
          (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
-                       const/activity-center-notification-type-one-to-one-chat])
-         (rf/dispatch [:test/assoc-in [:activity-center :notifications const/activity-center-notification-type-one-to-one-chat :unread :cursor]
+                       types/one-to-one-chat])
+         (rf/dispatch [:test/assoc-in [:activity-center :notifications types/one-to-one-chat :unread :cursor]
                        nil])
 
          (rf/dispatch [:activity-center.notifications/fetch-next-page])
@@ -421,15 +421,15 @@
           ::json-rpc/call
           :on-success (constantly {:cursor        ""
                                    :notifications [{:id     "0x1"
-                                                    :type   const/activity-center-notification-type-mention
+                                                    :type   types/mention
                                                     :read   false
                                                     :chatId "0x9"}]}))
          (h/spy-fx spy-queue ::json-rpc/call)
          (rf/dispatch [:test/assoc-in [:activity-center :filter :status]
                        :unread])
          (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
-                       const/activity-center-notification-type-mention])
-         (rf/dispatch [:test/assoc-in [:activity-center :notifications const/activity-center-notification-type-mention :unread :cursor]
+                       types/mention])
+         (rf/dispatch [:test/assoc-in [:activity-center :notifications types/mention :unread :cursor]
                        "10"])
 
          (rf/dispatch [:activity-center.notifications/fetch-next-page])
@@ -437,7 +437,7 @@
          (is (= "wakuext_unreadActivityCenterNotifications" (get-in @spy-queue [0 :args 0 :method])))
          (is (= "10" (get-in @spy-queue [0 :args 0 :params 0]))
              "Should be called with current cursor")
-         (is (= {const/activity-center-notification-type-mention
+         (is (= {types/mention
                  {:unread {:cursor ""
                            :data   [{:chat-id       "0x9"
                                      :chat-name     nil
@@ -447,7 +447,7 @@
                                      :message       nil
                                      :read          false
                                      :reply-message nil
-                                     :type          const/activity-center-notification-type-mention}]}}}
+                                     :type          types/mention}]}}}
                 (get-in (h/db) [:activity-center :notifications]))))))
 
     (testing "does not fetch next page while it is still loading"
@@ -458,10 +458,10 @@
          (rf/dispatch [:test/assoc-in [:activity-center :filter :status]
                        :read])
          (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
-                       const/activity-center-notification-type-one-to-one-chat])
-         (rf/dispatch [:test/assoc-in [:activity-center :notifications const/activity-center-notification-type-one-to-one-chat :read :cursor]
+                       types/one-to-one-chat])
+         (rf/dispatch [:test/assoc-in [:activity-center :notifications types/one-to-one-chat :read :cursor]
                        "10"])
-         (rf/dispatch [:test/assoc-in [:activity-center :notifications const/activity-center-notification-type-one-to-one-chat :read :loading?]
+         (rf/dispatch [:test/assoc-in [:activity-center :notifications types/one-to-one-chat :read :loading?]
                        true])
 
          (rf/dispatch [:activity-center.notifications/fetch-next-page])
@@ -478,15 +478,15 @@
          (rf/dispatch [:test/assoc-in [:activity-center :filter :status]
                        :unread])
          (rf/dispatch [:test/assoc-in [:activity-center :filter :type]
-                       const/activity-center-notification-type-one-to-one-chat])
-         (rf/dispatch [:test/assoc-in [:activity-center :notifications const/activity-center-notification-type-one-to-one-chat :unread :cursor]
+                       types/one-to-one-chat])
+         (rf/dispatch [:test/assoc-in [:activity-center :notifications types/one-to-one-chat :unread :cursor]
                        ""])
 
          (rf/dispatch [:activity-center.notifications/fetch-first-page])
 
-         (is (nil? (get-in (h/db) [:activity-center :notifications const/activity-center-notification-type-one-to-one-chat :unread :loading?])))
+         (is (nil? (get-in (h/db) [:activity-center :notifications types/one-to-one-chat :unread :loading?])))
          (is (= [:activity-center.notifications/fetch-error
-                 const/activity-center-notification-type-one-to-one-chat
+                 types/one-to-one-chat
                  :unread
                  :fake-error]
                 (:args (last @spy-queue)))))))))

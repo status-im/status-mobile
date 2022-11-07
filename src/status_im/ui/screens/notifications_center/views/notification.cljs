@@ -10,6 +10,7 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.constants :as constants]
+            [status-im.activity-center.notification-types :as types]
             [quo.design-system.colors :as colors]
             [status-im.ui.screens.home.views.inner-item :as home-item]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -41,19 +42,19 @@
      [react/touchable-opacity (merge {:style (styles/notification-container read)} opts)
       [react/view {:style {:flex 1}}
        (when (or
-              (= type constants/activity-center-notification-type-contact-request)
-              (= type constants/activity-center-notification-type-contact-request-retracted))
+              (= type types/contact-request)
+              (= type types/contact-request-retracted))
          [react/view {:style {:padding-horizontal 20}}
           [quo/text {:weight :bold}
            (if
-            (= type constants/activity-center-notification-type-contact-request)
+            (= type types/contact-request)
              (i18n/label :t/contact-request)
              (i18n/label :t/removed-from-contacts))]])
        (if (or
-            (= type constants/activity-center-notification-type-mention)
-            (= type constants/activity-center-notification-type-contact-request)
-            (= type constants/activity-center-notification-type-reply))
-         [react/view {:style (styles/photo-container (= type constants/activity-center-notification-type-contact-request))}
+            (= type types/mention)
+            (= type types/contact-request)
+            (= type types/reply))
+         [react/view {:style (styles/photo-container (= type types/contact-request))}
 
           [photos/photo
            (multiaccounts/displayed-photo contact)
@@ -73,10 +74,10 @@
                   :number-of-lines     1
                   :style               (styles/title-text title-text-width)}
         (if (or
-             (= type constants/activity-center-notification-type-mention)
-             (= type constants/activity-center-notification-type-contact-request)
-             (= type constants/activity-center-notification-type-contact-request-retracted)
-             (= type constants/activity-center-notification-type-reply))
+             (= type types/mention)
+             (= type types/contact-request)
+             (= type types/contact-request-retracted)
+             (= type types/reply))
           sender
           [home-item/chat-item-title chat-id muted group-chat chat-name])]
        [react/text {:style               styles/datetime-text
@@ -85,9 +86,9 @@
        ;;TODO (perf) move to event
         (home-item/memo-timestamp timestamp)]
        [react/view {:style styles/notification-message-container}
-        (when-not (= type constants/activity-center-notification-type-contact-request-retracted)
+        (when-not (= type types/contact-request-retracted)
           [home-item/message-content-text (select-keys message [:content :content-type :community-id]) false])
-        (cond (= type constants/activity-center-notification-type-mention)
+        (cond (= type types/mention)
               [react/view {:style styles/group-info-container
                            :accessibility-label :chat-name-container}
                [icons/icon
@@ -112,7 +113,7 @@
                           :size :small}
                 (str (when community-id "#") chat-name)]]
 
-              (= type constants/activity-center-notification-type-reply)
+              (= type types/reply)
               [react/view {:style styles/reply-message-container
                            :accessibility-label :reply-message-container}
                [icons/icon
@@ -122,7 +123,7 @@
                  :height 18
                  :container-style styles/reply-icon}]
                [home-item/message-content-text (select-keys reply-message [:content :content-type :community-id]) false]])]]]
-     (when (= type constants/activity-center-notification-type-contact-request)
+     (when (= type types/contact-request)
        [react/view {:style {:margin-right 20
                             :margin-top 10
                             :align-self :flex-end}}

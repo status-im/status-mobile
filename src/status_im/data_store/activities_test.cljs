@@ -1,6 +1,7 @@
 (ns status-im.data-store.activities-test
   (:require [cljs.test :refer [deftest is testing]]
             [status-im.constants :as constants]
+            [status-im.activity-center.notification-types :as notification-types]
             [status-im.data-store.activities :as store]
             [status-im.utils.config :as config]))
 
@@ -66,7 +67,7 @@
               :chat-type constants/private-group-chat-type
               :name      chat-name}
              (-> raw-notification
-                 (assoc :type constants/activity-center-notification-type-reply)
+                 (assoc :type notification-types/reply)
                  store/<-rpc
                  (select-keys [:name :chat-type :chat-name :public? :group-chat]))))
 
@@ -74,7 +75,7 @@
               :chat-type constants/private-group-chat-type
               :name      chat-name}
              (-> raw-notification
-                 (assoc :type constants/activity-center-notification-type-mention)
+                 (assoc :type notification-types/mention)
                  store/<-rpc
                  (select-keys [:name :chat-type :chat-name :public? :group-chat]))))
 
@@ -84,7 +85,7 @@
               :name       chat-name
               :public?    false}
              (-> raw-notification
-                 (assoc :type constants/activity-center-notification-type-private-group-chat)
+                 (assoc :type notification-types/private-group-chat)
                  store/<-rpc
                  (select-keys [:name :chat-type :chat-name :public? :group-chat]))))
 
@@ -94,6 +95,6 @@
               :name       chat-name
               :public?    false}
              (-> raw-notification
-                 (assoc :type constants/activity-center-notification-type-one-to-one-chat)
+                 (assoc :type notification-types/one-to-one-chat)
                  store/<-rpc
                  (select-keys [:name :chat-type :chat-name :public? :group-chat])))))))

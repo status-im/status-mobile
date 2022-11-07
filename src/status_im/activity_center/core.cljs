@@ -1,6 +1,6 @@
 (ns status-im.activity-center.core
   (:require [re-frame.core :as rf]
-            [status-im.constants :as const]
+            [status-im.activity-center.notification-types :as types]
             [status-im.data-store.activities :as data-store.activities]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
@@ -29,12 +29,12 @@
               (as-> acc $
                 (update-in $ [type :read :data] remove-notification)
                 (update-in $ [type :unread :data] remove-notification)
-                (update-in $ [const/activity-center-notification-type-no-type :read :data] remove-notification)
-                (update-in $ [const/activity-center-notification-type-no-type :unread :data] remove-notification)
+                (update-in $ [types/no-type :read :data] remove-notification)
+                (update-in $ [types/no-type :unread :data] remove-notification)
                 (if (or (:dismissed notification) (:accepted notification))
                   $
                   (-> $ (update-in [type filter-status :data] insert-and-sort)
-                      (update-in [const/activity-center-notification-type-no-type filter-status :data] insert-and-sort))))))
+                      (update-in [types/no-type filter-status :data] insert-and-sort))))))
           db-notifications
           new-notifications))
 
@@ -75,7 +75,7 @@
 
 (def defaults
   {:filter-status          :unread
-   :filter-type            const/activity-center-notification-type-no-type
+   :filter-type            types/no-type
    :notifications-per-page 10})
 
 (def start-or-end-cursor

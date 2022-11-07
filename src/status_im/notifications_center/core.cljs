@@ -1,14 +1,14 @@
 (ns status-im.notifications-center.core
   (:require [status-im.utils.fx :as fx]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.constants :as constants]
+            [status-im.activity-center.notification-types :as types]
             [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
             [status-im.data-store.activities :as data-store.activities]))
 
 (def non-dismissable-notifications
-  #{constants/activity-center-notification-type-contact-request
-    constants/activity-center-notification-type-contact-request-retracted})
+  #{types/contact-request
+    types/contact-request-retracted})
 
 (fx/defn handle-activities [{:keys [db]} activities]
   (let [{:keys [unread-count notifications]}

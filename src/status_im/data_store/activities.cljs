@@ -2,29 +2,30 @@
   (:require [clojure.set :as set]
             [quo.design-system.colors :as colors]
             [status-im.constants :as constants]
+            [status-im.activity-center.notification-types :as notification-types]
             [status-im.data-store.messages :as messages]
             [status-im.utils.config :as config]))
 
 (defn- rpc->type [{:keys [type name] :as chat}]
   (case type
-    constants/activity-center-notification-type-reply
+    notification-types/reply
     (assoc chat
            :chat-name name
            :chat-type constants/private-group-chat-type)
 
-    constants/activity-center-notification-type-mention
+    notification-types/mention
     (assoc chat
            :chat-type constants/private-group-chat-type
            :chat-name name)
 
-    constants/activity-center-notification-type-private-group-chat
+    notification-types/private-group-chat
     (assoc chat
            :chat-type constants/private-group-chat-type
            :chat-name name
            :public? false
            :group-chat true)
 
-    constants/activity-center-notification-type-one-to-one-chat
+    notification-types/one-to-one-chat
     (assoc chat
            :chat-type constants/one-to-one-chat-type
            :chat-name name
