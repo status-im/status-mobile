@@ -441,4 +441,5 @@
                               :else
                               :home))
      :dispatch-n (enc/conj-when []
-                                (and (= view-id :chat) [:chat.ui/sync-all-deleted-for-me-messages]))}))
+                                (and (= view-id :chat) [:chat.ui/sync-all-deleted-for-me-messages])
+                                (and (= view-id :chat) [:chat.ui/send-all-deleted-messages]))}))

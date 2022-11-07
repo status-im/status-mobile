@@ -76,7 +76,8 @@
   [acc chat-id messages]
   (->> messages
        (filter (fn [[_ {:keys [deleted? deleted-undoable-till]}]] (and deleted? deleted-undoable-till)))
-       (map #(vector :chat.ui/delete-message-and-send chat-id (first %)))
+       (map #(vector :chat.ui/delete-message-and-send {:chat-id    chat-id
+                                                       :message-id (first %)}))
        (concat acc)))
 
 (fx/defn send-all
