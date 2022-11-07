@@ -1,10 +1,12 @@
 (ns react-native.core
   (:require [reagent.core :as reagent]
             ["react-native" :as react-native]
+            ["@react-native-community/blur" :as blur]
             [react-native.flat-list :as flat-list]
             [react-native.section-list :as section-list]))
 
 (def app-state ^js (.-AppState ^js react-native))
+(def blur-view (reagent/adapt-react-class (.-BlurView blur)))
 
 (def view (reagent/adapt-react-class (.-View ^js react-native)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js react-native)))
