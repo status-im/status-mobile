@@ -42,6 +42,8 @@ subprojects {
     }
 }
 
+def REACT_NATIVE_VERSION = new File(['node', '--print',"JSON.parse(require('fs').readFileSync(require.resolve('react-native/package.json'), 'utf-8')).version"].execute(null, rootDir).text.trim())
+
 allprojects {
     beforeEvaluate {
         if (System.env.STATUS_GO_ANDROID_LIBDIR == null || System.env.STATUS_GO_ANDROID_LIBDIR == "") {
@@ -62,5 +64,12 @@ allprojects {
         jcenter() // Required for @react-native-community/blur:3.6.1, can be removed after updating to 3.6.1+
         mavenCentral()
         maven { url "https://www.jitpack.io" }
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            // reference https://stackoverflow.com/questions/74345114/error-package-com-facebook-react-bridge-does-not-exist-while-building-react-nat
+            force "com.facebook.react:react-native:" + REACT_NATIVE_VERSION
+        }
     }
 }
