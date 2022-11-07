@@ -34,6 +34,7 @@
                  (reduce
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 8e74397a9... lint
                   (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
@@ -45,6 +46,8 @@
                   children)
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 1e719b3ab... icons fix
                    (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
                      (if (>= length max-subheader-length)
                        (reduced acc-paragraph)
@@ -52,9 +55,12 @@
                    {:components [rn/text]
                     :length     0}
                    children)
+<<<<<<< HEAD
 >>>>>>> 5fcc08fd3... refactor
 =======
 >>>>>>> 8e74397a9... lint
+=======
+>>>>>>> 1e719b3ab... icons fix
 
                  "mention"
                  {:components [rn/text (<sub [:contacts/contact-name-by-identity literal])]
@@ -75,6 +81,7 @@
   [parsed-text]
   (let [result
         (reduce
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -115,6 +122,8 @@
 (defn messages-home-item [item]
   (let [{:keys [chat-id color group-chat last-message timestamp name unviewed-mentions-count unviewed-messages-count]} item
 =======
+=======
+>>>>>>> 1e719b3ab... icons fix
           (fn [{:keys [_ length] :as acc-text} new-text-chunk]
             (if (>= length max-subheader-length)
               (reduced acc-text)
@@ -127,8 +136,11 @@
                                  :accessibility-label :chat-message-text}]
            :length     0}
           parsed-text)]
+<<<<<<< HEAD
 =======
 >>>>>>> 8e74397a9... lint
+=======
+>>>>>>> 1e719b3ab... icons fix
     (:components result)))
 
 (defn display-name-view [display-name contact timestamp]
@@ -138,10 +150,14 @@
     display-name]
    (if (:ens-verified contact)
      [rn/view {:style {:margin-left 5 :margin-top 4}}
-      [icons/icon :main-icons2/verified {:size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
+      [icons/icon :main-icons2/verified {:no-color true
+                                         :size 12
+                                         :color (colors/theme-colors colors/success-50 colors/success-60)}]]
      (when (:added? contact)
        [rn/view {:style {:margin-left 5 :margin-top 4}}
-        [icons/icon :main-icons2/contact {:size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))
+        [icons/icon :main-icons2/contact {:no-color true
+                                          :size 12
+                                          :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))
    [text/text {:style (style/timestamp)}
     (time/to-short-str timestamp)]])
 
