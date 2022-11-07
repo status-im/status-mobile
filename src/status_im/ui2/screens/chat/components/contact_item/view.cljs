@@ -41,8 +41,7 @@
          (when (:added? item)
            [rn/view {:style {:margin-left 5 :margin-top 4}}
             [icons/icon :main-icons2/contact {:size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
-      [text/text {:size :typography-1
-                  :weight :semi-bold
+      [text/text {:size :paragraph-1
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
        (get-shortened-address public-key)]]
      [rn/touchable-opacity {:style          {:position :absolute
