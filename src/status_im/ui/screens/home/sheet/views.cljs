@@ -87,7 +87,7 @@
      :icon                         :main-icons2/add-user
      :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
 
-(def add-new-sheet-view
+(def add-new-sheet
   {:content add-new-sheet-view})
 
 (def add-new
