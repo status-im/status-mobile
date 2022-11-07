@@ -79,12 +79,16 @@
            [rn/view {:style {:margin-left 5 :margin-top 4}}
             [icons/icon :main-icons2/contact {:size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
 <<<<<<< HEAD
+<<<<<<< HEAD
       [rn/text {:style (merge typography/paragraph-2 typography/font-regular
                               {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})}
 >>>>>>> 5fcc08fd3... refactor
 =======
       [text/text {:size :typography-1
                   :weight :semi-bold
+=======
+      [text/text {:size :paragraph-1
+>>>>>>> 6b7e419c9... fix typo
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
 >>>>>>> 8e74397a9... lint
        (get-shortened-address public-key)]]
