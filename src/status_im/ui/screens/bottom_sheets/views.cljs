@@ -28,8 +28,8 @@
           (= view :add-new)
           (merge home.sheet/add-new)
 
-          (= view :add-new2)
-          (merge home.sheet/add-new2)
+          (= view :add-new-sheet-view)
+          (merge home.sheet/add-new-sheet-view)
 
           (= view :keycard.login/more)
           (merge keycard/more-sheet)
