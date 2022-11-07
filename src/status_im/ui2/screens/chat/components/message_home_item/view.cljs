@@ -10,7 +10,10 @@
             [quo.react-native :as rn]
             [status-im.ui.screens.chat.sheets :as sheets]
             [quo.platform :as platform]
+<<<<<<< HEAD
             [quo2.components.markdown.text :as text]
+=======
+>>>>>>> 5fcc08fd3... refactor
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
 
 (def max-subheader-length 50)
@@ -25,6 +28,7 @@
   (let [result (case type
                  "paragraph"
                  (reduce
+<<<<<<< HEAD
                   (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
                     (if (>= length max-subheader-length)
                       (reduced acc-paragraph)
@@ -32,6 +36,15 @@
                   {:components [rn/text]
                    :length     0}
                   children)
+=======
+                   (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
+                     (if (>= length max-subheader-length)
+                       (reduced acc-paragraph)
+                       (add-parsed-to-subheader acc-paragraph parsed-child)))
+                   {:components [rn/text]
+                    :length     0}
+                   children)
+>>>>>>> 5fcc08fd3... refactor
 
                  "mention"
                  {:components [rn/text (<sub [:contacts/contact-name-by-identity literal])]
@@ -52,6 +65,7 @@
   [parsed-text]
   (let [result
         (reduce
+<<<<<<< HEAD
          (fn [{:keys [_ length] :as acc-text} new-text-chunk]
            (if (>= length max-subheader-length)
              (reduced acc-text)
@@ -86,6 +100,24 @@
 
 (defn messages-home-item [item]
   (let [{:keys [chat-id color group-chat last-message timestamp name unviewed-mentions-count unviewed-messages-count]} item
+=======
+          (fn [{:keys [_ length] :as acc-text} new-text-chunk]
+            (if (>= length max-subheader-length)
+              (reduced acc-text)
+              (add-parsed-to-subheader acc-text new-text-chunk)))
+          {:components [rn/text {:style               (merge typography/paragraph-2 typography/font-regular
+                                                             {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)
+                                                              :width "90%"})
+                                 :number-of-lines     1
+                                 :ellipsize-mode      :tail
+                                 :accessibility-label :chat-message-text}]
+           :length     0}
+          parsed-text)]
+    (:components result)))
+
+(defn messages-home-item [item]
+  (let [{:keys [chat-id color group-chat last-message timestamp name]} item
+>>>>>>> 5fcc08fd3... refactor
         display-name (if-not group-chat (first (<sub [:contacts/contact-two-names-by-identity chat-id])) name)
         contact      (when-not group-chat (<sub [:contacts/contact-by-address chat-id]))
         photo-path   (when-not (empty? (:images contact)) (<sub [:chats/photo-path chat-id]))]
@@ -110,6 +142,7 @@
                                  :ring?             false}])
 
      [rn/view {:style {:margin-left 8}}
+<<<<<<< HEAD
       [display-name-view display-name contact timestamp]
       (if (string/blank? (get-in last-message [:content :parsed-text]))
         [text/text {:size  :paragraph-2
@@ -119,6 +152,31 @@
      (if (> unviewed-mentions-count 0)
        [info-count unviewed-mentions-count {:top 16}]
        (when (> unviewed-messages-count 0)
+=======
+      [rn/view {:style {:flex-direction :row}}
+       [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold
+                               {:color (colors/theme-colors colors/neutral-100 colors/white)})}
+        display-name]
+       (if (:ens-verified contact)
+         [rn/view {:style {:margin-left 5 :margin-top 4}}
+          [icons/icon :main-icons2/verified {:size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
+         (when (:added? contact)
+           [rn/view {:style {:margin-left 5 :margin-top 4}}
+            [icons/icon :main-icons2/contact {:size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))
+       [rn/text {:style (merge typography/font-regular typography/label
+                               {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40)
+                                :margin-top  3
+                                :margin-left 8})}
+        (time/to-short-str timestamp)]] ; placeholder for community chats to avoid crashing until implemented
+      (if (string/blank? (get-in last-message [:content :parsed-text]))
+        [rn/text {:style (merge typography/paragraph-2 typography/font-regular
+                                {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})}
+         (get-in last-message [:content :text])]
+        [render-subheader (get-in last-message [:content :parsed-text])])]
+     (if (> (:unviewed-mentions-count item) 0)
+       [info-count (:unviewed-mentions-count item) {:top 16}]
+       (when (> (:unviewed-messages-count item) 0)
+>>>>>>> 5fcc08fd3... refactor
          [rn/view {:style (style/count-container)}]))]))
 
 

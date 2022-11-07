@@ -7,9 +7,16 @@
             [quo.react-native :as rn]
             [status-im.utils.utils :refer [get-shortened-address]]
             [quo.platform :as platform]
+<<<<<<< HEAD
             [quo2.components.markdown.text :as text]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
 
+=======
+            [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
+
+
+
+>>>>>>> 5fcc08fd3... refactor
 (defn open-chat [chat-id]
   (>evt [:dismiss-keyboard])
   (if platform/android?
@@ -19,9 +26,15 @@
   (>evt [:accept-all-activity-center-notifications-from-chat chat-id]))
 
 (defn contact-item [item]
+<<<<<<< HEAD
   (let [{:keys [public-key ens-verified added? images]} item
         display-name (first (<sub [:contacts/contact-two-names-by-identity public-key]))
         photo-path   (if-not (empty? images) (<sub [:chats/photo-path public-key]) nil)]
+=======
+  (let [{:keys [public-key]} item
+        display-name (first (<sub [:contacts/contact-two-names-by-identity public-key]))
+        photo-path   (if-not (empty? (:images item)) (<sub [:chats/photo-path public-key]) nil)]
+>>>>>>> 5fcc08fd3... refactor
     [rn/touchable-opacity (merge {:style   (style/container)
                                   :on-press #(open-chat public-key)})
      [user-avatar/user-avatar {:full-name         display-name
@@ -32,6 +45,7 @@
                                :ring?             false}]
      [rn/view {:style {:margin-left 8}}
       [rn/view {:style {:flex-direction :row}}
+<<<<<<< HEAD
        [text/text {:style (merge typography/paragraph-1 typography/font-semi-bold
                                  {:color (colors/theme-colors colors/neutral-100 colors/white)})}
         display-name]
@@ -43,6 +57,19 @@
             [icons/icon :main-icons2/contact {:no-color true :size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
       [text/text {:size :paragraph-1
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
+=======
+       [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold
+                               {:color (colors/theme-colors colors/neutral-100 colors/white)})}
+        display-name]
+       (if (:ens-verified item)
+         [rn/view {:style {:margin-left 5 :margin-top 4}}
+          [icons/icon :main-icons2/verified {:size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
+         (when (:added? item)
+           [rn/view {:style {:margin-left 5 :margin-top 4}}
+            [icons/icon :main-icons2/contact {:size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
+      [rn/text {:style (merge typography/paragraph-2 typography/font-regular
+                              {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})}
+>>>>>>> 5fcc08fd3... refactor
        (get-shortened-address public-key)]]
      [rn/touchable-opacity {:style          {:position :absolute
                                              :right    20}
