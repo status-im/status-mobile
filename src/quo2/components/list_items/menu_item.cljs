@@ -6,38 +6,50 @@
 
 (defn themes [type]
   (case type
-    :main     {:icon-color (theme-colors colors/neutral-50 colors/neutral-10)
-               :background (theme-colors colors/white colors/neutral-90)
-               :text-color (theme-colors colors/neutral-100 colors/white)}
-    :danger   {:icon-color (theme-colors colors/danger-50 colors/danger-60)
-               :background (theme-colors colors/white colors/neutral-90)
-               :text-color (theme-colors colors/danger-50 colors/danger-60)}))
+    :main {:icon-color (theme-colors colors/neutral-50 colors/neutral-10)
+           :background (theme-colors colors/white colors/neutral-90)
+           :text-color (theme-colors colors/neutral-100 colors/white)}
+    :danger {:icon-color (theme-colors colors/danger-50 colors/danger-60)
+             :background (theme-colors colors/white colors/neutral-90)
+             :text-color (theme-colors colors/danger-50 colors/danger-60)}))
 
 (defn menu-item
-  [{:keys [type title accessibility-label icon on-press]
+  [{:keys [type title description accessibility-label icon on-press arrow?]
     :or   {type :main}}]
   (let [{:keys [icon-color text-color background]} (themes type)]
     [rn/touchable-opacity
      (merge {:accessibility-label accessibility-label
-             :style {:background-color background
-                     :height 48
-                     :flex-direction :row
-                     :align-items :center}}
+             :style               {:background-color background
+                                   :height           48
+                                   :flex-direction   :row
+                                   :align-items      :center}}
             (when on-press
               {:on-press on-press}))
-     [rn/view {:style {:flex-direction :row
-                       :flex-grow      0
-                       :flex-shrink    1
-                       :padding-horizontal  20}}
-      [rn/view {:style {:width            20
-                        :height           20
-                        :align-items      :center
-                        :justify-content  :center
-                        :margin-right     12}}
+     [rn/view {:style {:flex-direction     :row
+                       :flex-grow          0
+                       :flex-shrink        1
+                       :padding-horizontal 20
+                       :align-items :center}}
+      [rn/view {:style {:width           20
+                        :height          20
+                        :align-items     :center
+                        :justify-content :center
+                        :margin-right    12}}
        [icons/icon icon {:color icon-color}]]
-      [text/text {:weight              :medium
-                  :style               {:color text-color}
-                  :ellipsize-mode      :tail
-                  :number-of-lines     1
-                  :size                :paragraph-1}
-       title]]]))
+      [rn/view
+       [text/text {:weight          :medium
+                   :style           {:color text-color}
+                   :ellipsize-mode  :tail
+                   :number-of-lines 1
+                   :size            :paragraph-1}
+        title]
+       (when description
+         [text/text {:style           {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}
+                     :ellipsize-mode  :tail
+                     :number-of-lines 1
+                     :size            :label}
+          description])]]
+     (when arrow?
+       [rn/view {:style {:position :absolute
+                         :right 8}}
+        [icons/icon :main-icons2/chevron-right {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]])]))

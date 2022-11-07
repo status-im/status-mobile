@@ -8,8 +8,9 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo.react-native :as rn]
-            [status-im.ui.screens.chat.sheets :as sheets]
+            [status-im.ui2.screens.chat.components.chat-bottom-sheet.view :refer [chat-bottom-sheet]]
             [quo.platform :as platform]
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             [quo2.components.markdown.text :as text]
@@ -19,6 +20,11 @@
             [quo2.components.markdown.text :as text]
 >>>>>>> 8e74397a9... lint
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
+=======
+            [quo2.components.markdown.text :refer [text]]
+            [status-im.ui2.screens.chat.components.message-home-item.style :as style]
+            [quo2.components.markdown.text :as text]))
+>>>>>>> c69d13225... feat: chat bottom sheet
 
 (def max-subheader-length 50)
 
@@ -32,6 +38,7 @@
   (let [result (case type
                  "paragraph"
                  (reduce
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -52,6 +59,8 @@
 =======
 =======
 >>>>>>> 1e719b3ab... icons fix
+=======
+>>>>>>> c69d13225... feat: chat bottom sheet
                    (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
                      (if (>= length max-subheader-length)
                        (reduced acc-paragraph)
@@ -60,6 +69,7 @@
                     :length     0}
                    children)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 5fcc08fd3... refactor
 =======
 >>>>>>> 8e74397a9... lint
@@ -67,6 +77,8 @@
 >>>>>>> 1e719b3ab... icons fix
 =======
 >>>>>>> 29504b409... lint
+=======
+>>>>>>> c69d13225... feat: chat bottom sheet
 
                  "mention"
                  {:components [rn/text (<sub [:contacts/contact-name-by-identity literal])]
@@ -87,6 +99,7 @@
   [parsed-text]
   (let [result
         (reduce
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -134,6 +147,8 @@
 =======
 =======
 >>>>>>> 1e719b3ab... icons fix
+=======
+>>>>>>> c69d13225... feat: chat bottom sheet
           (fn [{:keys [_ length] :as acc-text} new-text-chunk]
             (if (>= length max-subheader-length)
               (reduced acc-text)
@@ -147,12 +162,15 @@
            :length     0}
           parsed-text)]
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 8e74397a9... lint
 =======
 >>>>>>> 1e719b3ab... icons fix
 =======
 >>>>>>> 29504b409... lint
+=======
+>>>>>>> c69d13225... feat: chat bottom sheet
     (:components result)))
 
 (defn display-name-view [display-name contact timestamp]
@@ -188,7 +206,7 @@
                                                    (>evt [:search/home-filter-changed nil])
                                                    (>evt [:accept-all-activity-center-notifications-from-chat chat-id]))
                                   :on-long-press #(>evt [:bottom-sheet/show-sheet
-                                                         {:content (fn [] [sheets/actions item])}])})
+                                                         {:content (fn [] [chat-bottom-sheet item])}])})
      (if group-chat
        [rn/view {:style (style/group-chat-icon color)}
         [icons/icon :main-icons2/group {:size 16 :color colors/white-opa-70}]]
