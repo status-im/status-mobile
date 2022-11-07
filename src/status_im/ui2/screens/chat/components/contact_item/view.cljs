@@ -37,10 +37,10 @@
         display-name]
        (if (:ens-verified item)
          [rn/view {:style {:margin-left 5 :margin-top 4}}
-          [icons/icon :main-icons2/verified {:size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
+          [icons/icon :main-icons2/verified {:no-color true :size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
          (when (:added? item)
            [rn/view {:style {:margin-left 5 :margin-top 4}}
-            [icons/icon :main-icons2/contact {:size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
+            [icons/icon :main-icons2/contact {:no-color true :size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
       [text/text {:size :paragraph-1
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
        (get-shortened-address public-key)]]
