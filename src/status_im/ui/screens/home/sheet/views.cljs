@@ -59,7 +59,7 @@
    [invite/list-item
     {:accessibility-label :chats-menu-invite-friends-button}]])
 
-(defn add-new-view2 []
+(defn add-new-sheet-view []
   [react/view
    [quo/list-item
     {:theme                        :main
@@ -69,7 +69,7 @@
      :container-padding-horizontal {:padding-horizontal 4}
      :container-padding-vertical   12
      :title-column-style           {:margin-left 2}
-     :icon-color                   (if (theme/dark?) colors/neutral-40 colors/neutral-50)
+     :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label          :start-a-new-chat
      :icon                         :main-icons2/new-message
      :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-chat])}]
@@ -81,14 +81,14 @@
      :container-padding-horizontal {:padding-horizontal 4}
      :container-padding-vertical   12
      :title-column-style           {:margin-left 2}
-     :icon-color                   (if (theme/dark?) colors/neutral-40 colors/neutral-50)
+     :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label          :add-a-contact
      :subtitle                     (i18n/label :t/enter-a-chat-key)
      :icon                         :main-icons2/add-user
      :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
 
-(def add-new2
-  {:content add-new-view2})
+(def add-new-sheet-view
+  {:content add-new-sheet-view})
 
 (def add-new
   {:content add-new-view})
