@@ -35,8 +35,11 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 8e74397a9... lint
+=======
+>>>>>>> 29504b409... lint
                   (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
                     (if (>= length max-subheader-length)
                       (reduced acc-paragraph)
@@ -44,6 +47,7 @@
                   {:components [rn/text]
                    :length     0}
                   children)
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -61,6 +65,8 @@
 >>>>>>> 8e74397a9... lint
 =======
 >>>>>>> 1e719b3ab... icons fix
+=======
+>>>>>>> 29504b409... lint
 
                  "mention"
                  {:components [rn/text (<sub [:contacts/contact-name-by-identity literal])]
@@ -84,8 +90,11 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 8e74397a9... lint
+=======
+>>>>>>> 29504b409... lint
          (fn [{:keys [_ length] :as acc-text} new-text-chunk]
            (if (>= length max-subheader-length)
              (reduced acc-text)
@@ -98,6 +107,7 @@
                                 :accessibility-label :chat-message-text}]
           :length     0}
          parsed-text)]
+<<<<<<< HEAD
 <<<<<<< HEAD
     (:components result)))
 
@@ -141,6 +151,8 @@
 >>>>>>> 8e74397a9... lint
 =======
 >>>>>>> 1e719b3ab... icons fix
+=======
+>>>>>>> 29504b409... lint
     (:components result)))
 
 (defn display-name-view [display-name contact timestamp]
