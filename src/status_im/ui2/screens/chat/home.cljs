@@ -298,11 +298,19 @@
 
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]
-    [components.plus-button/plus-button
-     {:on-press            (when-not logging-in?
-                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
-      :loading             logging-in?
-      :accessibility-label :new-chat-button}]))
+                 [components.plus-button/plus-button
+                  {:on-press            (when-not logging-in?
+                                          #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+                   :loading             logging-in?
+                   :accessibility-label :new-chat-button}]))
+
+(views/defview plus-button-new-messages []
+  (views/letsubs [logging-in? [:multiaccounts/login]]
+                 [components.plus-button/plus-button
+                  {:on-press            (when-not logging-in?
+                                          #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new2 {}]))
+                   :loading             logging-in?
+                   :accessibility-label :new-chat-button}]))
 
 (views/defview notifications-button []
   (views/letsubs [notif-count [:activity.center/notifications-count]]
@@ -353,30 +361,27 @@
        :chat-icon chat-icon.styles/chat-icon-chat-list}]]))
 
 (defn home []
-  [:f>
-   (fn []
-     (quo.react/effect! #(re-frame/dispatch [:get-activity-center-notifications]))
-     [rn/keyboard-avoiding-view {:style         {:flex             1
-                                                 :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
-                                 :ignore-offset true}
-      [topbar/topbar {:navigation      :none
-                      :use-insets      true
-                      :background      (colors/theme-colors colors/neutral-5 colors/neutral-95)
-                      :left-component  [rn/view {:flex-direction :row :margin-left 20}
-                                        [profile-button]]
-                      :right-component [rn/view {:flex-direction :row :margin-right 20}
-                                        [scan-button]
-                                        [qr-button]
-                                        [notifications-button]]
-                      :border-bottom   false}]
-      [rn/view {:flex-direction    :row
-                :justify-content   :space-between
-                :align-items       :center
-                :margin-horizontal 20
-                :margin-top        15
-                :margin-bottom     20}
-       [quo2.text/text {:size :heading-1 :weight :semi-bold} (i18n/label :t/messages)]
-       [plus-button]]
-      [chats-list]
-      [tabbar/tabs-counts-subscriptions]])])
+  [rn/keyboard-avoiding-view {:style {:flex 1
+                                      :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
+                              :ignore-offset true}
+   [topbar/topbar {:navigation      :none
+                   :use-insets true
+                   :background (colors/theme-colors colors/neutral-5 colors/neutral-95)
+                   :left-component [rn/view {:flex-direction :row :margin-left 20}
+                                    [profile-button]]
+                   :right-component [rn/view {:flex-direction :row :margin-right 20}
+                                     [scan-button]
+                                     [qr-button]
+                                     [notifications-button]]
+                   :border-bottom false}]
+   [rn/view {:flex-direction :row
+             :justify-content :space-between
+             :align-items :center
+             :margin-horizontal 20
+             :margin-top 15
+             :margin-bottom 8}
+    [quo2.text/text {:size :heading-1 :weight :semi-bold} (i18n/label :t/messages)]
+    [plus-button-new-messages]]
+   [chats-list]
+   [tabbar/tabs-counts-subscriptions]])
 

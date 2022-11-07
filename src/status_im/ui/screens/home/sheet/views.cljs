@@ -5,7 +5,9 @@
             [quo.core :as quo]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.config :as config]
-            [status-im.ui.components.invite.views :as invite]))
+            [status-im.ui.components.invite.views :as invite]
+            [quo.theme :as theme]
+            [quo2.foundations.colors :as colors]))
 
 (defn hide-sheet-and-dispatch [event]
   (re-frame/dispatch [:bottom-sheet/hide])
@@ -56,6 +58,37 @@
        :on-press            #(hide-sheet-and-dispatch [:navigate-to :communities])}])
    [invite/list-item
     {:accessibility-label :chats-menu-invite-friends-button}]])
+
+(defn add-new-view2 []
+  [react/view
+   [quo/list-item
+    {:theme                        :main
+     :title                        (i18n/label :t/new-chat)
+     :icon-bg-color                :transparent
+     :icon-container-style         {:padding-horizontal 0}
+     :container-padding-horizontal {:padding-horizontal 4}
+     :container-padding-vertical   12
+     :title-column-style           {:margin-left 2}
+     :icon-color                   (if (theme/dark?) colors/neutral-40 colors/neutral-50)
+     :accessibility-label          :start-a-new-chat
+     :icon                         :main-icons2/new-message
+     :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-chat])}]
+   [quo/list-item
+    {:theme                        :main
+     :title                        (i18n/label :t/add-a-contact)
+     :icon-bg-color                :transparent
+     :icon-container-style         {:padding-horizontal 0}
+     :container-padding-horizontal {:padding-horizontal 4}
+     :container-padding-vertical   12
+     :title-column-style           {:margin-left 2}
+     :icon-color                   (if (theme/dark?) colors/neutral-40 colors/neutral-50)
+     :accessibility-label          :add-a-contact
+     :subtitle                     (i18n/label :t/enter-a-chat-key)
+     :icon                         :main-icons2/add-user
+     :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
+
+(def add-new2
+  {:content add-new-view2})
 
 (def add-new
   {:content add-new-view})

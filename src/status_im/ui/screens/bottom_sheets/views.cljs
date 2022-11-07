@@ -27,6 +27,9 @@
           (= view :add-new)
           (merge home.sheet/add-new)
 
+          (= view :add-new2)
+          (merge home.sheet/add-new2)
+
           (= view :keycard.login/more)
           (merge keycard/more-sheet)
 
