@@ -1839,5 +1839,6 @@
     "share-invite-link": "Share an invite link",
     "pending-requests": "Pending requests",
     "received": "Received",
-    "sent": "Sent"
+    "sent": "Sent",
+    "and": "and"
 }
