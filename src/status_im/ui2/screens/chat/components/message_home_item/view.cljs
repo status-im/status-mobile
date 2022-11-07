@@ -10,6 +10,7 @@
             [quo.react-native :as rn]
             [status-im.ui.screens.chat.sheets :as sheets]
             [quo.platform :as platform]
+            [quo2.components.markdown.text :as text]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
 
 (def max-subheader-length 50)
@@ -24,13 +25,13 @@
   (let [result (case type
                  "paragraph"
                  (reduce
-                   (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
-                     (if (>= length max-subheader-length)
-                       (reduced acc-paragraph)
-                       (add-parsed-to-subheader acc-paragraph parsed-child)))
-                   {:components [rn/text]
-                    :length     0}
-                   children)
+                  (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
+                    (if (>= length max-subheader-length)
+                      (reduced acc-paragraph)
+                      (add-parsed-to-subheader acc-paragraph parsed-child)))
+                  {:components [rn/text]
+                   :length     0}
+                  children)
 
                  "mention"
                  {:components [rn/text (<sub [:contacts/contact-name-by-identity literal])]
@@ -51,19 +52,33 @@
   [parsed-text]
   (let [result
         (reduce
-          (fn [{:keys [_ length] :as acc-text} new-text-chunk]
-            (if (>= length max-subheader-length)
-              (reduced acc-text)
-              (add-parsed-to-subheader acc-text new-text-chunk)))
-          {:components [rn/text {:style               (merge typography/paragraph-2 typography/font-regular
-                                                             {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)
-                                                              :width "90%"})
-                                 :number-of-lines     1
-                                 :ellipsize-mode      :tail
-                                 :accessibility-label :chat-message-text}]
-           :length     0}
-          parsed-text)]
+         (fn [{:keys [_ length] :as acc-text} new-text-chunk]
+           (if (>= length max-subheader-length)
+             (reduced acc-text)
+             (add-parsed-to-subheader acc-text new-text-chunk)))
+         {:components [rn/text {:style               (merge typography/paragraph-2 typography/font-regular
+                                                            {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)
+                                                             :width "90%"})
+                                :number-of-lines     1
+                                :ellipsize-mode      :tail
+                                :accessibility-label :chat-message-text}]
+          :length     0}
+         parsed-text)]
     (:components result)))
+
+(defn display-name-view [display-name contact timestamp]
+  [rn/view {:style {:flex-direction :row}}
+   [text/text {:weight :semi-bold
+               :size   :paragraph-1}
+    display-name]
+   (if (:ens-verified contact)
+     [rn/view {:style {:margin-left 5 :margin-top 4}}
+      [icons/icon :main-icons2/verified {:size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
+     (when (:added? contact)
+       [rn/view {:style {:margin-left 5 :margin-top 4}}
+        [icons/icon :main-icons2/contact {:size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))
+   [text/text {:style (style/timestamp)}
+    (time/to-short-str timestamp)]])
 
 (defn messages-home-item [item]
   (let [{:keys [chat-id color group-chat last-message timestamp name]} item
@@ -91,24 +106,10 @@
                                  :ring?             false}])
 
      [rn/view {:style {:margin-left 8}}
-      [rn/view {:style {:flex-direction :row}}
-       [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold
-                               {:color (colors/theme-colors colors/neutral-100 colors/white)})}
-        display-name]
-       (if (:ens-verified contact)
-         [rn/view {:style {:margin-left 5 :margin-top 4}}
-          [icons/icon :main-icons2/verified {:size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
-         (when (:added? contact)
-           [rn/view {:style {:margin-left 5 :margin-top 4}}
-            [icons/icon :main-icons2/contact {:size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))
-       [rn/text {:style (merge typography/font-regular typography/label
-                               {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40)
-                                :margin-top  3
-                                :margin-left 8})}
-        (time/to-short-str timestamp)]] ; placeholder for community chats to avoid crashing until implemented
+      [display-name-view display-name contact timestamp]
       (if (string/blank? (get-in last-message [:content :parsed-text]))
-        [rn/text {:style (merge typography/paragraph-2 typography/font-regular
-                                {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})}
+        [text/text {:size  :paragraph-2
+                    :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
          (get-in last-message [:content :text])]
         [render-subheader (get-in last-message [:content :parsed-text])])]
      (if (> (:unviewed-mentions-count item) 0)

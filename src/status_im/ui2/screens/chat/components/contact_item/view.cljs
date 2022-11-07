@@ -7,9 +7,8 @@
             [quo.react-native :as rn]
             [status-im.utils.utils :refer [get-shortened-address]]
             [quo.platform :as platform]
+            [quo2.components.markdown.text :as text]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
-
-
 
 (defn open-chat [chat-id]
   (>evt [:dismiss-keyboard])
@@ -33,8 +32,8 @@
                                :ring?             false}]
      [rn/view {:style {:margin-left 8}}
       [rn/view {:style {:flex-direction :row}}
-       [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold
-                               {:color (colors/theme-colors colors/neutral-100 colors/white)})}
+       [text/text {:style (merge typography/paragraph-1 typography/font-semi-bold
+                                 {:color (colors/theme-colors colors/neutral-100 colors/white)})}
         display-name]
        (if (:ens-verified item)
          [rn/view {:style {:margin-left 5 :margin-top 4}}
@@ -42,8 +41,9 @@
          (when (:added? item)
            [rn/view {:style {:margin-left 5 :margin-top 4}}
             [icons/icon :main-icons2/contact {:size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
-      [rn/text {:style (merge typography/paragraph-2 typography/font-regular
-                              {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})}
+      [text/text {:size :typography-1
+                  :weight :semi-bold
+                  :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
        (get-shortened-address public-key)]]
      [rn/touchable-opacity {:style          {:position :absolute
                                              :right    20}

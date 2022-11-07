@@ -1,5 +1,6 @@
 (ns status-im.ui2.screens.chat.components.message-home-item.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [quo2.foundations.typography :as typography]))
 
 (defn container []
   {:margin-top         8
@@ -26,3 +27,9 @@
    :right            26
    :top              16
    :background-color (colors/theme-colors colors/neutral-40 colors/neutral-60)})
+
+(defn timestamp []
+  (merge typography/font-regular typography/label
+         {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40)
+          :margin-top  3
+          :margin-left 8}))
