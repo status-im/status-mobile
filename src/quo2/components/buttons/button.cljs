@@ -1,8 +1,8 @@
 (ns quo2.components.buttons.button
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [quo2.components.markdown.text :as text]
-            [quo.theme :as theme]
+            [quo2.theme :as theme]
             [reagent.core :as reagent]
             [quo2.components.icon :as quo2.icons]))
 

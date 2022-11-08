@@ -1,10 +1,10 @@
 (ns quo2.components.avatars.user-avatar
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as icons]
             [clojure.string :refer [upper-case split blank?]]
-            [quo.theme :refer [dark?]]
+            [quo2.theme :refer [dark?]]
             [status-im.ui.components.fast-image :as fast-image]))
 
 (def sizes {:big {:outer 80

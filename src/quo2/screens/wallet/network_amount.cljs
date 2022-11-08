@@ -1,6 +1,6 @@
 (ns quo2.screens.wallet.network-amount
-  (:require [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
+  (:require [quo2.screens.preview :as preview]
+            [react-native.core :as rn]
             [quo2.components.wallet.network-amount :refer [network-amount]]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]))

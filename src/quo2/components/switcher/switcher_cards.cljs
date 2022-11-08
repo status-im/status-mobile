@@ -1,5 +1,5 @@
 (ns quo2.components.switcher.switcher-cards
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [status-im.i18n.i18n :as i18n]
             [quo2.foundations.colors :as colors]
             [quo2.components.markdown.text :as text]

@@ -1,9 +1,9 @@
 (ns quo2.components.tags.context-tags
   (:require [quo2.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
+            [quo2.theme :as quo2.theme]
             [quo2.components.markdown.text :as text]
             [quo2.components.avatars.group-avatar :as group-avatar]
-            [quo.react-native :as rn]))
+            [react-native.core :as rn]))
 
 (defn padding-left-for-type [type]
   (case type
@@ -15,7 +15,7 @@
 
 (defn base-tag [_ _]
   (fn [{:keys [override-theme style]} & children]
-    (let [theme (or override-theme (quo.theme/get-theme))]
+    (let [theme (or override-theme (quo2.theme/get-theme))]
       (into
        [rn/view
         (merge

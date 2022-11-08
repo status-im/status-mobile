@@ -1,6 +1,6 @@
 (ns quo2.components.markdown.text
-  (:require [quo.react-native :as rn]
-            [quo.theme :as theme]
+  (:require [react-native.core :as rn]
+            [quo2.theme :as theme]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
             [reagent.core :as reagent]))

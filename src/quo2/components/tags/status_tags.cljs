@@ -1,6 +1,6 @@
 (ns quo2.components.tags.status-tags
-  (:require [quo.react-native :as rn]
-            [quo.theme :as quo.theme]
+  (:require [react-native.core :as rn]
+            [quo2.theme :as quo2.theme]
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
@@ -91,5 +91,5 @@
                                   nil)]
       [status-component
        size
-       (or override-theme (quo.theme/get-theme))
+       (or override-theme (quo2.theme/get-theme))
        label])))

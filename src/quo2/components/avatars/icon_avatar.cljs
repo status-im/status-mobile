@@ -1,5 +1,5 @@
 (ns quo2.components.avatars.icon-avatar
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]))
 

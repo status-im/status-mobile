@@ -1,9 +1,10 @@
 (ns quo2.screens.dividers.new-messages
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [reagent.core :as reagent]
-            [quo.previews.preview :as preview]
+            [quo2.screens.preview :as preview]
             [quo2.foundations.colors :as colors]
-            [quo2.components.dividers.new-messages :as new-messages]))
+            [quo2.components.dividers.new-messages :as new-messages]
+            [status-im.i18n.i18n :as i18n]))
 
 (def descriptor [{:label   "Label"
                   :key     :label
@@ -36,7 +37,7 @@
                             {:key   :beige
                              :value "Beige"}]}])
 (defn cool-preview []
-  (let [state     (reagent/atom {:label "New messages"
+  (let [state     (reagent/atom {:label (i18n/label :new-messages-header)
                                  :color :primary})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}

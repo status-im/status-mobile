@@ -1,7 +1,7 @@
 (ns quo2.screens.list-items.channel
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [reagent.core :as reagent]
-            [quo.previews.preview :as preview]
+            [quo2.screens.preview :as preview]
             [quo2.foundations.colors :as colors]
             [quo2.components.list-items.channel :as quo2-channel]))
 

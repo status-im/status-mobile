@@ -1,8 +1,8 @@
 (ns quo2.components.messages.gap
   (:require
    [oops.core :refer [oget]]
-   [quo.react-native :as rn]
-   [quo.theme :as theme]
+   [react-native.core :as rn]
+   [quo2.theme :as theme]
    [quo2.components.icon :as icon]
    [quo2.components.markdown.text :as text]
    [quo2.foundations.colors :as colors]

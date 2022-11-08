@@ -1,7 +1,7 @@
 (ns quo2.screens.switcher.switcher-cards
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [reagent.core :as reagent]
-            [quo.previews.preview :as preview]
+            [quo2.screens.preview :as preview]
             [quo2.foundations.colors :as colors]
             [status-im.react-native.resources :as resources]
             [quo2.components.switcher.switcher-cards :as switcher-cards]))

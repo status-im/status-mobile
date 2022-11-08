@@ -1,11 +1,11 @@
 (ns quo2.components.messages.system-message
-  (:require [quo.react-native :as rn]
-            [quo.theme :as theme]
+  (:require [react-native.core :as rn]
+            [react-native.reanimated :as reanimated]
+            [quo2.theme :as theme]
             [quo2.components.avatars.icon-avatar :as icon-avatar]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [quo2.reanimated :as ra]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.core :as utils]))
 
@@ -140,16 +140,16 @@
   [{:keys [type style non-pressable? animate-landing?] :as message}]
   [:f>
    (fn []
-     (let [sv-color (ra/use-shared-value
+     (let [sv-color (reanimated/use-shared-value
                      (get-color :bg (if animate-landing? :landed :default) type))]
        (when animate-landing?
-         (ra/animate-shared-value-with-delay
+         (reanimated/animate-shared-value-with-delay
           sv-color (get-color :bg :default type) 0 :linear 1000))
-       [ra/touchable-opacity
+       [reanimated/touchable-opacity
         {:on-press #(when-not non-pressable?
-                      (ra/set-shared-value
+                      (reanimated/set-shared-value
                        sv-color (get-color :bg :pressed type)))
-         :style    (ra/apply-animations-to-style
+         :style    (reanimated/apply-animations-to-style
                     {:background-color sv-color}
                     (merge
                      {:flex-direction     :row

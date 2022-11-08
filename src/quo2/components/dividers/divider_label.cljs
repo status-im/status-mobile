@@ -1,5 +1,5 @@
 (ns quo2.components.dividers.divider-label
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.components.markdown.text :as markdown.text]
             [status-im.ui.components.icons.icons :as icons]
             [quo2.foundations.colors :as colors]))

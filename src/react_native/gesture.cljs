@@ -1,4 +1,4 @@
-(ns quo2.gesture
+(ns react-native.gesture
   (:require ["react-native-gesture-handler" :refer (GestureDetector Gesture)]
             [reagent.core :as reagent]))
 

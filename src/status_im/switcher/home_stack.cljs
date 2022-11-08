@@ -1,5 +1,5 @@
 (ns status-im.switcher.home-stack
-  (:require [quo2.reanimated :as reanimated]
+  (:require [react-native.reanimated :as reanimated]
             [status-im.switcher.styles :as styles]
             [status-im.switcher.animation :as animation]
             [status-im.switcher.constants :as constants]

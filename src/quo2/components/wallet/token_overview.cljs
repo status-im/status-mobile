@@ -2,7 +2,7 @@
   (:require
    [quo2.foundations.colors :as colors]
    [status-im.i18n.i18n :as i18n]
-   [quo.react-native :as rn]
+   [react-native.core :as rn]
    [clojure.string :as string]
    [status-im.utils.currency :as currencies]
    [status-im.ui.components.icons.icons :as icons]

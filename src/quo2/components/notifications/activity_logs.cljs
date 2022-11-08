@@ -1,5 +1,5 @@
 (ns quo2.components.notifications.activity-logs
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.components.buttons.button :as button]
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]

@@ -1,6 +1,6 @@
 (ns quo2.foundations.colors
   (:require [clojure.string :as string]
-            [quo.theme :as theme]))
+            [quo2.theme :as theme]))
 
 (defn alpha [value opacity]
   (when value

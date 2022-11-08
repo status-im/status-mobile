@@ -1,10 +1,10 @@
 (ns quo2.components.navigation.page-nav
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as icons]
             [status-im.utils.dimensions :as dimensions]
-            [clojure.string :as string]
-            [quo2.components.markdown.text :as text]))
+            [quo2.components.markdown.text :as text]
+            [clojure.string :as string]))
 
 (def ^:private centrify-style
   {:display         :flex

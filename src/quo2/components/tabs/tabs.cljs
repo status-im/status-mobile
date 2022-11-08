@@ -1,6 +1,6 @@
 (ns quo2.components.tabs.tabs
   (:require [oops.core :refer [oget]]
-            [quo.react-native :as rn]
+            [react-native.core :as rn]
             [quo2.components.tabs.tab :as tab]
             [reagent.core :as reagent]
             [status-im.ui.components.react :as react]

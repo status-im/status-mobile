@@ -1,7 +1,7 @@
 (ns quo2.screens.info.info-message
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [reagent.core :as reagent]
-            [quo.previews.preview :as preview]
+            [quo2.screens.preview :as preview]
             [quo2.foundations.colors :as colors]
             [quo2.components.info.info-message :as quo2]))
 

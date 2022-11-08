@@ -1,7 +1,7 @@
 (ns quo2.components.tags.tag
   (:require [quo2.foundations.colors :as colors]
-            [quo.theme :as theme]
-            [quo.react-native :as rn]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.base-tag :as base-tag]))

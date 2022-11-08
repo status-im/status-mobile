@@ -1,6 +1,6 @@
 (ns status-im.switcher.animation
   (:require [re-frame.core :as re-frame]
-            [quo2.reanimated :as reanimated]
+            [react-native.reanimated :as reanimated]
             [quo2.foundations.colors :as colors]
             [status-im.async-storage.core :as async-storage]
             [status-im.switcher.constants :as constants]))

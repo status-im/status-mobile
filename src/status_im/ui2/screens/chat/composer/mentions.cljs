@@ -1,5 +1,5 @@
 (ns status-im.ui2.screens.chat.composer.mentions
-  (:require [quo2.reanimated :as reanimated]
+  (:require [react-native.reanimated :as reanimated]
             [status-im.ui.components.list.views :as list]
             [quo.components.list.item :as list-item]
             [status-im.ui.screens.chat.photos :as photos]

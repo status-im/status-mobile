@@ -1,6 +1,6 @@
 (ns quo2.components.counter.counter
-  (:require [quo.theme :as theme]
-            [quo.react-native :as rn]
+  (:require [quo2.theme :as theme]
+            [react-native.core :as rn]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]))
 

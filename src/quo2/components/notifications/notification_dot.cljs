@@ -1,5 +1,5 @@
 (ns quo2.components.notifications.notification-dot
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]))
 
 (defn notification-dot [style]

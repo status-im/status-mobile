@@ -1,7 +1,7 @@
 (ns quo2.components.selectors.selectors
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
-            [quo.theme :as theme]
+            [quo2.theme :as theme]
             [reagent.core :as reagent]
             [quo2.components.icon :as icons]))
 

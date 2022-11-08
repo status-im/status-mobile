@@ -1,7 +1,6 @@
 (ns quo2.screens.dropdowns.dropdown
-  (:require [quo.components.text :as text]
-            [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
+            [quo2.screens.preview :as preview]
             [quo2.components.dropdowns.dropdown :as quo2]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]))
@@ -64,7 +63,7 @@
         [preview/customizer state descriptor]
         [rn/view {:padding-vertical 60
                   :align-items      :center}
-         [text/text {:color :main} (str "Selected item: " @selected-item)]
+         [rn/text (str "Selected item: " @selected-item)]
          [quo2/dropdown (merge @state {:on-select on-select
                                        :items     items})]]]])))
 

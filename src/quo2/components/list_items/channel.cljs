@@ -1,15 +1,15 @@
 (ns quo2.components.list-items.channel
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [quo2.components.counter.counter :as quo2.counter]
             [quo2.components.icon :as quo2.icons]
             [quo2.components.avatars.channel-avatar :as channel-avatar]
             [quo2.components.markdown.text :as quo2.text]
-            [quo.theme :as theme]))
+            [quo2.theme :as theme]))
 
 (defn list-item [{:keys [name locked? mentions-count unread-messages?
                          muted? is-active-channel? emoji channel-color]
-                  :or {channel-color colors/primary-50}}]
+                  :or   {channel-color colors/primary-50}}]
   [rn/view {:style (merge {:height          48
                            :display         :flex
                            :border-radius   12
@@ -21,21 +21,19 @@
                            :padding-right   12}
                           (when is-active-channel?
                             {:background-color (colors/theme-alpha channel-color 0.05 0.05)}))}
-   [rn/view {:display :flex
-             :flex-direction :row
+   [rn/view {:display         :flex
+             :flex-direction  :row
              :justify-content :flex-start
-             :align-items :center}
+             :align-items     :center}
     [channel-avatar/channel-avatar
      {:big?                   true
-      :locked?            locked?
+      :locked?                locked?
       :emoji-background-color (colors/theme-alpha channel-color 0.1 0.1)
       :emoji                  emoji}]
     [quo2.text/text
-     {:style (merge {:margin-left 12}
-                    (when
-                     (and (not locked?)
-                          muted?)
-                      {:color (if (theme/dark?) colors/neutral-60 colors/neutral-40)}))
+     {:style  (merge {:margin-left 12}
+                     (when (and (not locked?) muted?)
+                       {:color (if (theme/dark?) colors/neutral-60 colors/neutral-40)}))
       :weight :medium :size :paragraph-1} (str "# " name)]]
    [rn/view {:style {:height 20}}
     (when (and (not locked?)

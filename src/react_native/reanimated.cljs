@@ -1,4 +1,4 @@
-(ns quo2.reanimated
+(ns react-native.reanimated
   (:require ["react-native" :as rn]
             [reagent.core :as reagent]
             [clojure.string :as string]

@@ -1,6 +1,6 @@
 (ns quo2.components.wallet.network-amount
   (:require [clojure.string :as string]
-            [quo.react-native :as rn]
+            [react-native.core :as rn]
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]

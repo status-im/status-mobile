@@ -1,7 +1,7 @@
 (ns quo2.components.reactions.reaction
   (:require [quo2.components.markdown.text :as quo2.text]
-            [quo.react-native :as rn]
-            [quo.theme :as theme]
+            [react-native.core :as rn]
+            [quo2.theme :as theme]
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as icons]))
 

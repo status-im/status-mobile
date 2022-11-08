@@ -1,8 +1,8 @@
 (ns quo2.screens.tags.context-tags
   (:require [reagent.core :as reagent]
             [status-im.multiaccounts.core :as multiaccounts]
-            [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
+            [react-native.core :as rn]
+            [quo2.screens.preview :as preview]
             [quo2.foundations.colors :as colors]
             [quo2.components.tags.context-tags :as quo2]))
 

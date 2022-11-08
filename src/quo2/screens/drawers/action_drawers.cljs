@@ -1,6 +1,6 @@
 (ns quo2.screens.drawers.action-drawers
-  (:require [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
+  (:require [quo2.screens.preview :as preview]
+            [react-native.core :as rn]
             [quo2.components.drawers.action-drawers :as quo2]
             [quo2.components.buttons.button :as button]
             [quo2.foundations.colors :as colors]

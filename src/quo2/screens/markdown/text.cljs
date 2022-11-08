@@ -1,7 +1,7 @@
 (ns quo2.screens.markdown.text
   (:require [quo2.foundations.colors :as colors]
-            [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
+            [quo2.screens.preview :as preview]
+            [react-native.core :as rn]
             [quo2.components.markdown.text :as quo2]
             [reagent.core :as reagent]))
 
