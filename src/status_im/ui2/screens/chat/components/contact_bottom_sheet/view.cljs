@@ -53,5 +53,4 @@
      :title               (i18n/label :t/block-user)
      :accessibility-label "block-user"
      :icon                :block
-     :on-press            #(println "TODO: to be implemented, requires design input")}]
-   ])
+     :on-press            #(println "TODO: to be implemented, requires design input")}]])
