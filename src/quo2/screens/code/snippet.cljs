@@ -1,6 +1,6 @@
 (ns quo2.screens.code.snippet
-  (:require [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
+  (:require [quo2.screens.preview :as preview]
+            [react-native.core :as rn]
             [quo2.components.code.snippet :as snippet]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]))

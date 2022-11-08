@@ -1,9 +1,8 @@
 (ns quo2.screens.community.community-card-view
-  (:require [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
+  (:require [react-native.core :as rn]
+            [quo2.screens.preview :as preview]
             [reagent.core :as reagent]
             [status-im.constants :as constants]
-            [quo.design-system.colors :as quo.colors]
             [quo2.foundations.colors :as colors]
             [quo2.components.community.community-list-view :as community-list-view]
             [quo2.components.community.community-card-view :as community-card-view]
@@ -19,7 +18,6 @@
    :permissions    true
    :cover          (resources/get-image :community-cover)
    :community-icon (resources/get-image :status-logo)
-   :color          (rand-nth quo.colors/chat-colors)
    :tokens         [{:id  1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]
    :tags           [{:id 1 :tag-label (i18n/label :t/music) :resource (resources/get-image :music)}
                     {:id 2 :tag-label (i18n/label :t/lifestyle) :resource (resources/get-image :lifestyle)}

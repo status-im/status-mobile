@@ -1,6 +1,7 @@
 (ns quo2.components.navigation.bottom-nav-tab
-  (:require [quo.react-native :as rn]
-            [quo2.reanimated :as reanimated]
+  (:require [react-native.core :as rn]
+            [react-native.reanimated :as reanimated]
+            [react-native.hole-view :as hole-view]
             [quo2.foundations.colors :as colors]
             [quo2.components.icons.icons :as icons]
             [quo2.components.counter.counter :as counter]))
@@ -44,18 +45,18 @@
          :on-press-out        #(toggle-background-color background-color true pass-through?)
          :accessibility-label accessibility-label}
         [reanimated/view {:style background-animated-style}
-         [rn/hole-view {:style {:padding-left 33
-                                :padding-top  8}
-                        :key    new-notifications? ;; Key is required to force removal of holes
-                        :holes  (cond
-                                  (not new-notifications?) ;; No new notifications, remove holes
-                                  []
+         [hole-view/hole-view {:style {:padding-left 33
+                                       :padding-top  8}
+                               :key   new-notifications? ;; Key is required to force removal of holes
+                               :holes (cond
+                                        (not new-notifications?) ;; No new notifications, remove holes
+                                        []
 
-                                  (= notification-indicator :unread-dot)
-                                  [{:x 50 :y 5 :width 10 :height 10 :borderRadius 5}]
+                                        (= notification-indicator :unread-dot)
+                                        [{:x 50 :y 5 :width 10 :height 10 :borderRadius 5}]
 
-                                  :else
-                                  [{:x 47 :y 1 :width 18 :height 18 :borderRadius 7}])}
+                                        :else
+                                        [{:x 47 :y 1 :width 18 :height 18 :borderRadius 7}])}
           [reanimated/image
            {:style icon-animated-style
             :source (icons/icon-source (keyword (str icon 24)))}]]

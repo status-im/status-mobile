@@ -1,7 +1,7 @@
 (ns quo2.screens.avatars.user-avatar
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
-            [quo.previews.preview :as preview]
+            [quo2.screens.preview :as preview]
             [quo2.components.avatars.user-avatar :as quo2]
             [reagent.core :as reagent]
             [status-im.react-native.resources :as resources]))

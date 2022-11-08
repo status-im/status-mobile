@@ -1,7 +1,7 @@
 (ns quo2.screens.wallet.network-breakdown
   (:require [reagent.core :as reagent]
-            [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
+            [react-native.core :as rn]
+            [quo2.screens.preview :as preview]
             [quo2.foundations.colors :as colors]
             [quo2.components.wallet.network-breakdown :as quo2]))
 

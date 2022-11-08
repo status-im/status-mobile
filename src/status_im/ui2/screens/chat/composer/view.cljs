@@ -1,6 +1,6 @@
 (ns status-im.ui2.screens.chat.composer.view
-  (:require [quo2.gesture :as gesture]
-            [quo2.reanimated :as reanimated]
+  (:require [react-native.gesture :as gesture]
+            [react-native.reanimated :as reanimated]
             [re-frame.core :as re-frame]
             [quo.components.safe-area :as safe-area]
             [quo.react-native :as rn]

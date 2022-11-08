@@ -1,7 +1,7 @@
 (ns quo2.screens.list-items.preview-lists
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [reagent.core :as reagent]
-            [quo.previews.preview :as preview]
+            [quo2.screens.preview :as preview]
             [quo2.foundations.colors :as colors]
             [status-im.react-native.resources :as resources]
             [quo2.components.list-items.preview-list :as quo2]))

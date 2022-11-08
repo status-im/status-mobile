@@ -1,6 +1,6 @@
 (ns quo2.screens.selectors.selectors
-  (:require [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
+  (:require [react-native.core :as rn]
+            [quo2.screens.preview :as preview]
             [reagent.core :as reagent]
             [quo2.components.selectors.selectors :as quo2]
             [quo2.components.markdown.text :as text]

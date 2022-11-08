@@ -1,7 +1,7 @@
 (ns quo2.screens.tags.status-tags
   (:require [reagent.core :as reagent]
-            [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
+            [react-native.core :as rn]
+            [quo2.screens.preview :as preview]
             [quo2.foundations.colors :as colors]
             [quo2.components.tags.status-tags :as quo2]))
 

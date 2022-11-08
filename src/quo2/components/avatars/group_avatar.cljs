@@ -1,7 +1,7 @@
 (ns quo2.components.avatars.group-avatar
   (:require [quo2.foundations.colors :as colors]
             [quo2.components.icon :as icon]
-            [quo.react-native :as rn]))
+            [react-native.core :as rn]))
 
 (def sizes
   {:icon {:small 12

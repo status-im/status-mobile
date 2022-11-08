@@ -1,7 +1,7 @@
 (ns quo2.components.tabs.tab
   (:require [quo2.foundations.colors :as colors]
-            [quo.react-native :as rn]
-            [quo.theme :as theme]
+            [react-native.core :as rn]
+            [quo2.theme :as theme]
             [status-im.ui.components.icons.icons :as icons]
             [quo2.components.markdown.text :as text]))
 

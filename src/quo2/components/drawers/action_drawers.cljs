@@ -1,6 +1,6 @@
 (ns quo2.components.drawers.action-drawers
   (:require  [status-im.ui.components.react :as react]
-             [quo.react-native :as rn]
+             [react-native.core :as rn]
              [quo2.components.markdown.text :as text]
              [quo2.components.icon :as icon]
              [quo2.foundations.colors :as colors]))

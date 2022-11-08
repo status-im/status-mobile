@@ -1,8 +1,7 @@
 (ns quo2.screens.avatars.account-avatar
   (:require [reagent.core :as reagent]
-            [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
-            [quo.design-system.colors :as colors]
+            [react-native.core :as rn]
+            [quo2.screens.preview :as preview]
             [quo2.components.avatars.account-avatar :as quo2]))
 
 (def descriptor [{:label   "Icon"
@@ -40,8 +39,7 @@
         [quo2/account-avatar @state]]])))
 
 (defn preview-account-avatar []
-  [rn/view {:background-color (:preview-background @colors/theme)
-            :flex             1}
+  [rn/view {:flex             1}
    [rn/flat-list {:flex                      1
                   :keyboardShouldPersistTaps :always
                   :header                    [cool-preview]

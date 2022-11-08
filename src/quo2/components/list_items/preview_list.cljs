@@ -1,5 +1,6 @@
 (ns quo2.components.list-items.preview-list
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
+            [react-native.hole-view :as hole-view]
             [status-im.i18n.i18n :as i18n]
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as quo2.icons]
@@ -42,13 +43,13 @@
 (defn list-item [index type size item list-size margin-left
                  hole-size hole-radius hole-x hole-y border-radius]
   (let [last-item? (= index (- list-size 1))]
-    [rn/hole-view {:style {:margin-left   (if (= index 0) 0 margin-left)}
-                   :holes (if last-item? []
-                              [{:x             hole-x
-                                :y             hole-y
-                                :width         hole-size
-                                :height        hole-size
-                                :borderRadius  hole-radius}])}
+    [hole-view/hole-view {:style {:margin-left   (if (= index 0) 0 margin-left)}
+                          :holes (if last-item? []
+                                     [{:x             hole-x
+                                       :y             hole-y
+                                       :width         hole-size
+                                       :height        hole-size
+                                       :borderRadius  hole-radius}])}
      [avatar item type size border-radius]]))
 
 (defn get-overflow-color [transparent? transparent-color light-color dark-color override-theme]

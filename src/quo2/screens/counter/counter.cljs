@@ -1,6 +1,6 @@
 (ns quo2.screens.counter.counter
-  (:require [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
+  (:require [react-native.core :as rn]
+            [quo2.screens.preview :as preview]
             [reagent.core :as reagent]
             [quo2.components.counter.counter :as quo2]
             [quo2.foundations.colors :as colors]))

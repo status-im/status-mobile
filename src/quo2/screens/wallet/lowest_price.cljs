@@ -1,7 +1,7 @@
 (ns quo2.screens.wallet.lowest-price
   (:require [quo2.foundations.colors :as colors]
-            [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
+            [react-native.core :as rn]
+            [quo2.screens.preview :as preview]
             [quo2.components.wallet.lowest-price :as quo2]
             [reagent.core :as reagent]))
 

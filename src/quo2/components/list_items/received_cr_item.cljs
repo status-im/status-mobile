@@ -1,5 +1,5 @@
 (ns quo2.components.list-items.received-cr-item
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [status-im.utils.handlers :refer [<sub >evt]]
             [quo2.components.avatars.user-avatar :as user-avatar]

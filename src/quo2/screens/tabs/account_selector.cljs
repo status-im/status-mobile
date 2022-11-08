@@ -1,6 +1,6 @@
 (ns quo2.screens.tabs.account-selector
-  (:require [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
+  (:require [react-native.core :as rn]
+            [quo2.screens.preview :as preview]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
             [quo2.components.tabs.account-selector :as quo2]))

@@ -1,6 +1,6 @@
 (ns quo2.screens.tags.permission-tag
-  (:require [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
+  (:require [react-native.core :as rn]
+            [quo2.screens.preview :as preview]
             [quo2.components.tags.permission-tag :as permission-tag]
             [quo2.foundations.colors :as colors]
             [status-im.react-native.resources :as resources]

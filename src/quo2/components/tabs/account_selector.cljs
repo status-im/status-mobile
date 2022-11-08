@@ -1,7 +1,7 @@
 (ns quo2.components.tabs.account-selector
   (:require
-   [quo.theme :as theme]
-   [quo.react-native :as rn]
+   [quo2.theme :as theme]
+   [react-native.core :as rn]
    [quo2.foundations.colors :as colors]
    [quo2.components.markdown.text :as quo2]))
 

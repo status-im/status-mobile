@@ -1,5 +1,5 @@
 (ns quo2.components.list-items.menu-item
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors :refer [theme-colors]]
             [quo2.components.markdown.text :as text]
             [quo2.components.icon :as icons]))

@@ -1,8 +1,8 @@
 (ns quo2.screens.navigation.bottom-nav-tab
-  (:require [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
+  (:require [react-native.core :as rn]
+            [react-native.reanimated :as reanimated]
+            [quo2.screens.preview :as preview]
             [reagent.core :as reagent]
-            [quo2.reanimated :as reanimated]
             [quo2.components.navigation.bottom-nav-tab :as quo2]
             [quo2.foundations.colors :as colors]))
 

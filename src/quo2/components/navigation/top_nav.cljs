@@ -1,9 +1,10 @@
 (ns quo2.components.navigation.top-nav
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [quo2.components.counter.counter :as counter]
             [quo2.components.buttons.button :as quo2.button]
-            [quo2.components.avatars.user-avatar :as user-avatar]))
+            [quo2.components.avatars.user-avatar :as user-avatar]
+            [react-native.hole-view :as hole-view]))
 
 (defn- get-button-common-props [type]
   (let [default? (= type :default)
@@ -67,16 +68,16 @@
       [base-button :main-icons2/qr-code show-qr :show-qr-button button-common-props]
       [rn/view ;; Keep view instead of "[:<>" to make sure relative
                ;; position is calculated from this view instead of its parent
-       [rn/hole-view {:key    new-notifications? ;; Key is required to force removal of holes
-                      :holes  (cond
-                                (not new-notifications?) ;; No new notifications, remove holes
-                                []
+       [hole-view/hole-view {:key   new-notifications? ;; Key is required to force removal of holes
+                             :holes (cond
+                                      (not new-notifications?) ;; No new notifications, remove holes
+                                      []
 
-                                (= notification-indicator :unread-dot)
-                                [{:x 37 :y -3 :width 10 :height 10 :borderRadius 5}]
+                                      (= notification-indicator :unread-dot)
+                                      [{:x 37 :y -3 :width 10 :height 10 :borderRadius 5}]
 
-                                :else
-                                [{:x 33 :y -7 :width 18 :height 18 :borderRadius 7}])}
+                                      :else
+                                      [{:x 33 :y -7 :width 18 :height 18 :borderRadius 7}])}
         [base-button :main-icons2/activity-center open-activity-center
          :open-activity-center-button button-common-props]]
        (when new-notifications?

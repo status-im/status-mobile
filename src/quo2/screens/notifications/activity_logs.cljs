@@ -1,6 +1,6 @@
 (ns quo2.screens.notifications.activity-logs
-  (:require [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
+  (:require [quo2.screens.preview :as preview]
+            [react-native.core :as rn]
             [quo2.components.markdown.text :as text]
             [quo2.components.notifications.activity-logs :as activity-logs]
             [quo2.components.tags.context-tags :as context-tags]

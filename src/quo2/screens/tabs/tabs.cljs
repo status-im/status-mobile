@@ -1,7 +1,7 @@
 (ns quo2.screens.tabs.tabs
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
-            [quo.previews.preview :as preview]
+            [quo2.screens.preview :as preview]
             [quo2.components.tabs.tabs :as quo2]
             [reagent.core :as reagent]))
 

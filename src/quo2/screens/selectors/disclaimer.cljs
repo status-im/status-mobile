@@ -1,5 +1,5 @@
 (ns quo2.screens.selectors.disclaimer
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [reagent.core :as reagent]
             [quo2.components.buttons.button :as button]
             [quo2.components.selectors.disclaimer :as quo2]

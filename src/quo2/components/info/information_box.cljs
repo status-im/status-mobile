@@ -1,6 +1,6 @@
 (ns quo2.components.info.information-box
-  (:require [quo.theme :as theme]
-            [quo.react-native :as rn]
+  (:require [quo2.theme :as theme]
+            [react-native.core :as rn]
             [clojure.string :as string]
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as quo2.icons]

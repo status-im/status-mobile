@@ -1,5 +1,5 @@
 (ns quo2.components.notifications.info-count
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]))
 

@@ -1,10 +1,8 @@
 (ns quo2.screens.main
-  (:require [quo.components.safe-area :as safe-area]
-            [quo.core :as quo]
-            [quo.design-system.colors :as quo.colors]
+  (:require [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
             [quo2.foundations.colors :as colors]
-            [quo.react-native :as rn]
-            [quo.theme :as theme]
+            [quo2.theme :as theme]
             [quo2.components.markdown.text :as quo2-text]
             [quo2.components.buttons.button :as quo2-button]
             [quo2.screens.avatars.channel-avatar :as channel-avatar]
@@ -187,26 +185,9 @@
 
 (defn theme-switcher []
   [rn/view {:style {:flex-direction   :row
-                    :margin-vertical  8
-                    :border-radius    4
-                    :background-color (:ui-01 @quo.colors/theme)
-                    :border-width     1
-                    :border-color     (:ui-02 @quo.colors/theme)}}
-   [rn/touchable-opacity {:style    {:padding         8
-                                     :flex            1
-                                     :justify-content :center
-                                     :align-items     :center}
-                          :on-press #(theme/set-theme :light)}
-    [quo/text "Set light theme"]]
-   [rn/view {:width            1
-             :margin-vertical  4
-             :background-color (:ui-02 @quo.colors/theme)}]
-   [rn/touchable-opacity {:style    {:padding         8
-                                     :flex            1
-                                     :justify-content :center
-                                     :align-items     :center}
-                          :on-press #(theme/set-theme :dark)}
-    [quo/text "Set dark theme"]]])
+                    :margin-vertical  8}}
+   [quo2-button/button {:on-press #(theme/set-theme :light)} "Set light theme"]
+   [quo2-button/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
 
 (defn main-screen []
   (fn []

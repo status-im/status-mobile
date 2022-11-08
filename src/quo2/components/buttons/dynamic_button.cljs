@@ -1,5 +1,5 @@
 (ns quo2.components.buttons.dynamic-button
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
             [quo2.components.icon :as icon]
