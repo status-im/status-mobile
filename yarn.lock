@@ -8140,10 +8140,10 @@ react-native-touch-id@^4.4.1:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-native@0.63.4:
-  version "0.63.4"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.63.4.tgz#2210fdd404c94a5fa6b423c6de86f8e48810ec36"
-  integrity sha512-I4kM8kYO2mWEYUFITMcpRulcy4/jd+j9T6PbIzR0FuMcz/xwd+JwHoLPa1HmCesvR1RDOw9o4D+OFLwuXXfmGw==
+react-native@0.63.5:
+  version "0.63.5"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.63.5.tgz#2c0d5dca527fb69bb481e89b2c86068f2641b62d"
+  integrity sha512-unjHZOcHek2xxPkBbyqGO//2Z/AriKTwtDzGTT/ujGMRE3odDJk8wKtZregurQ9cpTUtu1Bj5R5bJv3gQIG5zw==
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@react-native-community/cli" "^4.10.0"
