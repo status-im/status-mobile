@@ -125,21 +125,29 @@
     (utils/set-timeout #(>evt [:chat.ui/load-more-messages-for-current-chat])
                        (if platform/low-device? 700 200))))
 
-(defn get-render-data [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled in-pinned-view?]}]
-  (let [current-public-key  (<sub [:multiaccount/public-key])
-        {:keys [can-delete-message-for-everyone?] :as community} (<sub [:communities/community community-id])
-        group-admin?        (get admins current-public-key)
-        community-admin?    (when community (community :admin))
-        message-pin-enabled (and (not public?)
-                                 (or (not group-chat)
-                                     (and group-chat
-                                          (or group-admin?
-                                              community-admin?))))]
+(defn get-render-data [{:keys [group-chat
+                               chat-id
+                               public?
+                               community-id
+                               admins
+                               space-keeper
+                               show-input?
+                               edit-enabled
+                               in-pinned-view?]}]
+  (let [current-public-key                        (<sub [:multiaccount/public-key])
+        {:keys [can-manage-users? can-delete-message-for-everyone?] :as community} (<sub [:communities/community community-id])
+        group-admin?                              (get admins current-public-key)
+        community-admin?                          (when community (community :admin))
+        message-pin-enabled                       (and (not public?)
+                                                       (or (not group-chat)
+                                                           (and group-chat
+                                                                (or group-admin?
+                                                                    community-admin?))))]
     {:group-chat          group-chat
      :public?             public?
      :community?          (not (nil? community-id))
      :community-id        community-id
-     :can-manage-users?   (:can-manage-users? community)
+     :can-manage-users?   can-manage-users?
      :current-public-key  current-public-key
      :space-keeper        space-keeper
      :chat-id             chat-id

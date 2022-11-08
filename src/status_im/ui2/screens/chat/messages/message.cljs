@@ -423,6 +423,10 @@
         (re-frame/dispatch [::models.pin-message/show-pin-limit-modal chat-id]))
       (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
+(defn can-manage-community-member?
+  [{:keys [community? can-manage-users?] :as message}]
+  (and community? can-manage-users?))
+
 (defn on-long-press-fn [on-long-press {:keys [pinned
                                               message-pin-enabled
                                               outgoing
@@ -430,37 +434,39 @@
                                               show-input?
                                               community?
                                               community-id
-                                              can-manage-users?
                                               can-delete-message-for-everyone?
-                                              from] :as message} content]
-  (on-long-press
-   (concat
-    (when (and outgoing edit-enabled)
+                                              from]
+                                       :as   message}
+                        content]
+  (let [can-manage-member? (can-manage-community-member? message)]
+    (on-long-press
+     (concat
+      (when (and outgoing edit-enabled)
+        [{:type     :main
+          :on-press #(re-frame/dispatch [:chat.ui/edit-message message])
+          :label    (i18n/label :t/edit-message)
+          :icon     :i/edit
+          :id       :edit}])
+      (when show-input?
+        [{:type     :main
+          :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+          :label    (i18n/label :t/message-reply)
+          :icon     :i/reply
+          :id       :reply}])
       [{:type     :main
-        :on-press #(re-frame/dispatch [:chat.ui/edit-message message])
-        :label    (i18n/label :t/edit-message)
-        :icon     :i/edit
-        :id       :edit}])
-    (when show-input?
-      [{:type     :main
-        :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-        :label    (i18n/label :t/message-reply)
-        :icon     :i/reply
-        :id       :reply}])
-    [{:type     :main
-      :on-press #(react/copy-to-clipboard
-                  (components.reply/get-quoted-text-with-mentions
-                   (get content :parsed-text)))
-      :label    (i18n/label :t/copy-text)
-      :icon     :i/copy
-      :id       :copy}]
-    (when message-pin-enabled
-      [{:type     :main
-        :on-press #(pin-message message)
-        :label    (i18n/label (if pinned (if community? :t/unpin-from-channel :t/unpin-from-chat) (if community? :t/pin-to-channel :t/pin-to-chat)))
-        :icon     :i/pin
-        :id       (if pinned :unpin :pin)}])
-    (when-not pinned
+        :on-press #(react/copy-to-clipboard
+                    (components.reply/get-quoted-text-with-mentions
+                     (get content :parsed-text)))
+        :label    (i18n/label :t/copy-text)
+        :icon     :i/copy
+        :id       :copy}]
+      (when message-pin-enabled
+        [{:type     :main
+          :on-press #(pin-message message)
+          :label    (i18n/label (if pinned (if community? :t/unpin-from-channel :t/unpin-from-chat) (if community? :t/pin-to-channel :t/pin-to-chat)))
+          :icon     :i/pin
+          :id       (if pinned :unpin :pin)}])
+      (when-not pinned
       [{:type     :danger
         :on-press (fn []
                     (re-frame/dispatch
@@ -469,25 +475,25 @@
         :label    (i18n/label :t/delete-for-me)
         :icon     :i/delete
         :id       :delete-for-me}])
-    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
-      [{:type     :danger
-        :on-press #(re-frame/dispatch [:chat.ui/delete-message
-                                       message
-                                       config/delete-message-undo-time-limit-ms])
-        :label    (i18n/label :t/delete-for-everyone)
-        :icon     :i/delete
-        :id       :delete-for-all}])
-    (when (and community? can-manage-users?)
-      [{:type     :danger
-        :on-press #(>evt [::communities/member-kick community-id from])
-        :label    (i18n/label :t/member-kick)
-        :icon     :i/placeholder
-        :id       :member-kick}
-       {:type     :danger
-        :on-press #(>evt [::communities/member-ban community-id from])
-        :label    (i18n/label :t/member-ban)
-        :icon     :i/placeholder
-        :id       :member-ban}]))))
+      (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
+        [{:type     :danger
+          :on-press (fn []
+                      (when pinned (pin-message message))
+                      (re-frame/dispatch [:chat.ui/soft-delete-message message]))
+          :label    (i18n/label :t/delete-for-everyone)
+          :icon     :i/delete
+          :id       :delete-for-all}])
+      (when can-manage-member?
+        [{:type     :admin
+          :on-press #(>evt [::communities/member-kick community-id from])
+          :label    (i18n/label :t/member-kick)
+          :icon     :i/arrow-left
+          :id       :member-kick}
+         {:type     :admin
+          :on-press #(>evt [::communities/member-ban community-id from])
+          :label    (i18n/label :t/member-ban)
+          :icon     :i/block
+          :id       :member-ban}])))))
 
 (defn collapsible-text-message [_ _]
   (let [collapsed?      (reagent/atom false)
@@ -533,38 +539,47 @@
 
 (defmethod ->message constants/content-type-emoji []
   (let [show-timestamp? (reagent/atom false)]
-    (fn [{:keys [content community? community-id can-manage-users? from pinned in-popover? message-pin-enabled] :as message}
-         {:keys [on-long-press modal ref]
+    (fn [{:keys [content
+                 community-id
+                 from pinned
+                 in-popover?
+                 message-pin-enabled]
+          :as   message}
+         {:keys [on-long-press
+                 modal
+                 ref]
           :as   reaction-picker}]
-      (let [on-long-press (fn []
-                            (on-long-press
-                             (concat
-                              [{:type     :main
-                                :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-                                :id       :reply
-                                :icon     :i/reply
-                                :label    (i18n/label :t/message-reply)}
-                               {:type     :main
-                                :on-press #(react/copy-to-clipboard (get content :text))
-                                :id       :copy
-                                :icon     :i/copy
-                                :label    (i18n/label :t/copy-text)}]
-                              (when message-pin-enabled [{:type     :main
-                                                          :on-press #(pin-message message)
-                                                          :id       :pin
-                                                          :icon     :i/pin
-                                                          :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))}])
-                              (when (and community? can-manage-users?)
-                                [{:type     :danger
-                                  :on-press #(>evt [::communities/member-kick community-id from])
-                                  :label    (i18n/label :t/member-kick)
-                                  :icon     :i/placeholder
-                                  :id       :member-kick}
-                                 {:type     :danger
-                                  :on-press #(>evt [::communities/member-ban community-id from])
-                                  :label    (i18n/label :t/member-ban)
-                                  :icon     :i/placeholder
-                                  :id       :member-ban}]))))]
+      (let [can-manage-member? (can-manage-community-member? message)
+            on-long-press      (fn []
+                                 (on-long-press
+                                  (concat
+                                   [{:type     :main
+                                     :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                     :id       :reply
+                                     :icon     :i/reply
+                                     :label    (i18n/label :t/message-reply)}
+                                    {:type     :main
+                                     :on-press #(react/copy-to-clipboard (get content :text))
+                                     :id       :copy
+                                     :icon     :i/copy
+                                     :label    (i18n/label :t/copy-text)}]
+                                   (when message-pin-enabled
+                                     [{:type     :main
+                                       :on-press #(pin-message message)
+                                       :id       :pin
+                                       :icon     :i/pin
+                                       :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))}])
+                                   (when can-manage-member?
+                                     [{:type     :admin
+                                       :on-press #(>evt [::communities/member-kick community-id from])
+                                       :label    (i18n/label :t/member-kick)
+                                       :icon     :i/arrow-left
+                                       :id       :member-kick}
+                                      {:type     :admin
+                                       :on-press #(>evt [::communities/member-ban community-id from])
+                                       :label    (i18n/label :t/member-ban)
+                                       :icon     :i/block
+                                       :id       :member-ban}]))))]
         (reset! ref on-long-press)
         [message-content-wrapper message
          [rn/touchable-opacity (when-not modal
@@ -614,53 +629,54 @@
      reaction-picker]))
 
 (defmethod ->message constants/content-type-image
-  [{:keys [content community? community-id can-manage-users? from in-popover? outgoing] :as message}
+  [{:keys [content community-id from in-popover? outgoing] :as message}
    {:keys [on-long-press modal ref]
     :as   reaction-picker}]
-  (let [on-long-press (fn []
-                        (on-long-press
-                         (concat [{:type     :main
-                                   :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-                                   :id       :reply
-                                   :icon     :i/reply
-                                   :label    (i18n/label :t/message-reply)}
-                                  {:type     :main
-                                   :on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
-                                   :id       :save
-                                   :icon     :i/save
-                                   :label    (i18n/label :t/save-image-library)}
-                                  {:type     :main
-                                   :on-press #(images/download-image-http
-                                               (get-in message [:content :image]) preview/share)
-                                   :id       :share
-                                   :icon     :i/share
-                                   :label    (i18n/label :t/share-image)}]
-                                 [{:type     :danger
-                                   :on-press #(re-frame/dispatch
-                                               [:chat.ui/delete-message-for-me message
-                                                config/delete-message-undo-time-limit-ms])
-                                   :label    (i18n/label :t/delete-for-me)
-                                   :icon     :i/delete
-                                   :id       :delete-for-me}]
-                                 (when (and outgoing config/delete-message-enabled?)
-                                   [{:type     :danger
-                                     :on-press #(re-frame/dispatch [:chat.ui/delete-message
+  (let [can-manage-member? (can-manage-community-member? message)
+        on-long-press      (fn []
+                             (on-long-press
+                              (concat [{:type     :main
+                                        :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                        :id       :reply
+                                        :icon     :i/reply
+                                        :label    (i18n/label :t/message-reply)}
+                                       {:type     :main
+                                        :on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
+                                        :id       :save
+                                        :icon     :i/save
+                                        :label    (i18n/label :t/save-image-library)}
+                                       {:type     :main
+                                        :on-press #(images/download-image-http
+                                                    (get-in message [:content :image]) preview/share)
+                                        :id       :share
+                                        :icon     :i/share
+                                        :label    (i18n/label :t/share-image)}]
+                                      [{:type     :danger
+                                        :on-press #(re-frame/dispatch
+                                                    [:chat.ui/delete-message-for-me message
+                                                     config/delete-message-undo-time-limit-ms])
+                                        :label    (i18n/label :t/delete-for-me)
+                                        :icon     :i/delete
+                                        :id       :delete-for-me}]
+                                      (when (and outgoing config/delete-message-enabled?)
+                                        [{:type     :danger
+                                          :on-press #(re-frame/dispatch [:chat.ui/delete-message
                                                                     message
                                                                     config/delete-message-undo-time-limit-ms])
-                                     :label    (i18n/label :t/delete-for-everyone)
-                                     :icon     :main-icons2/delete
-                                     :id       :delete}])
-                                 (when (and community? can-manage-users?)
-                                   [{:type     :danger
-                                     :on-press #(>evt [::communities/member-kick community-id from])
-                                     :label    (i18n/label :t/member-kick)
-                                     :icon     :i/placeholder
-                                     :id       :member-kick}
-                                    {:type     :danger
-                                     :on-press #(>evt [::communities/member-ban community-id from])
-                                     :label    (i18n/label :t/member-ban)
-                                     :icon     :i/placeholder
-                                     :id       :member-ban}]))))]
+                                          :label    (i18n/label :t/delete-for-everyone)
+                                          :icon     :i/delete
+                                          :id       :delete}])
+                                      (when can-manage-member?
+                                        [{:type     :admin
+                                          :on-press #(>evt [::communities/member-kick community-id from])
+                                          :label    (i18n/label :t/member-kick)
+                                          :icon     :i/arrow-left
+                                          :id       :member-kick}
+                                         {:type     :admin
+                                          :on-press #(>evt [::communities/member-ban community-id from])
+                                          :label    (i18n/label :t/member-ban)
+                                          :icon     :i/block
+                                          :id       :member-ban}]))))]
     (reset! ref on-long-press)
     [message-content-wrapper message
      [message-content-image message
@@ -672,45 +688,48 @@
 
 (defmethod ->message constants/content-type-audio []
   (let [show-timestamp? (reagent/atom false)]
-    (fn [{:keys [community? community-id can-manage-users? from outgoing pinned] :as message}
+    (fn [{:keys [community-id from outgoing pinned] :as message}
          {:keys [on-long-press modal ref]
           :as   reaction-picker}]
-      (let [on-long-press (fn [] (on-long-press [{:type     :main
-                                                  :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-                                                  :label    (i18n/label :t/message-reply)
-                                                  :icon     :i/reply
-                                                  :id       :reply}
-                                                 {:type     :main
-                                                  :on-press #(pin-message message)
-                                                  :label    (i18n/label (if pinned :t/unpin-from-chat :t/pin-to-chat))
-                                                  :icon     :i/pin
-                                                  :id       (if pinned :unpin :pin)}
-                                                 {:type     :danger
-                                                  :on-press #(re-frame/dispatch
-                                                              [:chat.ui/delete-message-for-me message
-                                                               config/delete-message-for-me-undo-time-limit-ms])
-                                                  :label    (i18n/label :t/delete-for-me)
-                                                  :icon     :i/delete
-                                                  :id       :delete-for-me}
-                                                 (when (and outgoing config/delete-message-enabled?)
-                                                   {:type     :danger
-                                                    :on-press #(re-frame/dispatch [:chat.ui/delete-message
+      (let [can-manage-member? (can-manage-community-member? message)
+            on-long-press      (fn []
+                                 (on-long-press
+                                  (concat [{:type     :main
+                                            :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                            :label    (i18n/label :t/message-reply)
+                                            :icon     :i/reply
+                                            :id       :reply}
+                                           {:type     :main
+                                            :on-press #(pin-message message)
+                                            :label    (i18n/label (if pinned :t/unpin-from-chat :t/pin-to-chat))
+                                            :icon     :i/pin
+                                            :id       (if pinned :unpin :pin)}
+                                           {:type     :danger
+                                            :on-press #(re-frame/dispatch
+                                                        [:chat.ui/delete-message-for-me message
+                                                         config/delete-message-for-me-undo-time-limit-ms])
+                                            :label    (i18n/label :t/delete-for-me)
+                                            :icon     :i/delete
+                                            :id       :delete-for-me}
+                                           (when (and outgoing config/delete-message-enabled?)
+                                             [{:type     :danger
+                                               :on-press #(re-frame/dispatch [:chat.ui/delete-message
                                                                                    message
                                                                                    config/delete-message-undo-time-limit-ms])
-                                                    :label    (i18n/label :t/delete-for-everyone)
-                                                    :icon     :i/delete
-                                                    :id       :delete})
-                                                 (when (and community? can-manage-users?)
-                                                   [{:type     :danger
-                                                     :on-press #(>evt [::communities/member-kick community-id from])
-                                                     :label    (i18n/label :t/member-kick)
-                                                     :icon     :i/placeholder
-                                                     :id       :member-kick}
-                                                    {:type     :danger
-                                                     :on-press #(>evt [::communities/member-ban community-id from])
-                                                     :label    (i18n/label :t/member-ban)
-                                                     :icon     :i/placeholder
-                                                     :id       :member-ban}])]))]
+                                               :label    (i18n/label :t/delete-for-everyone)
+                                               :icon     :i/delete
+                                               :id       :delete}])
+                                           (when can-manage-member?
+                                             [{:type     :admin
+                                               :on-press #(>evt [::communities/member-kick community-id from])
+                                               :label    (i18n/label :t/member-kick)
+                                               :icon     :i/arrow-left
+                                               :id       :member-kick}
+                                              {:type     :admin
+                                               :on-press #(>evt [::communities/member-ban community-id from])
+                                               :label    (i18n/label :t/member-ban)
+                                               :icon     :i/block
+                                               :id       :member-ban}])])))]
         (reset! ref on-long-press)
         [message-content-wrapper message
          [rn/touchable-opacity
