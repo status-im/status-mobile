@@ -193,7 +193,7 @@
         :render-fn                    render-fn
         :on-viewable-items-changed    on-viewable-items-changed
         :on-end-reached               list-on-end-reached
-        :on-scroll-to-index-failed    identity ;;don't remove this
+        :on-scroll-to-index-failed    identity            ;;don't remove this
         :content-container-style      {:padding-top    (+ bottom-space 16)
                                        :padding-bottom 16}
         :scroll-indicator-insets      {:top bottom-space} ;;ios only
