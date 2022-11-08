@@ -14,43 +14,43 @@
    [quo2.menu-item/menu-item
     {:type                :main
      :title               (i18n/label :t/view-profile)
-     :accessibility-label "view-profile"
+     :accessibility-label :view-profile
      :icon                :profile
      :on-press            #(hide-sheet-and-dispatch [:chat.ui/show-profile public-key])}]
    [quo2.menu-item/menu-item
     {:type                :main
      :title               (i18n/label :t/remove-from-contacts)
-     :accessibility-label "remove-from-contacts"
+     :accessibility-label :remove-from-contacts
      :icon                :remove-user
      :on-press            #(hide-sheet-and-dispatch [:contact.ui/remove-contact-pressed contact])}]
    [quo2.menu-item/menu-item
     {:type                :main
      :title               (i18n/label :t/rename)
-     :accessibility-label "rename"
+     :accessibility-label :rename
      :icon                :edit
      :on-press            #(js/alert "TODO: to be implemented, requires design input")}]
    [quo2.menu-item/menu-item
     {:type                :main
      :title               (i18n/label :t/show-qr)
-     :accessibility-label "show-qr"
+     :accessibility-label :show-qr
      :icon                :qr-code
      :on-press            #(js/alert "TODO: to be implemented, requires design input")}]
    [quo2.menu-item/menu-item
     {:type                :main
      :title               (i18n/label :t/share-profile)
-     :accessibility-label "share-profile"
+     :accessibility-label :share-profile
      :icon                :share
      :on-press            #(js/alert "TODO: to be implemented, requires design input")}]
    [action-drawers/divider]
    [quo2.menu-item/menu-item
     {:type                :danger
      :title               (i18n/label :t/mark-untrustworthy)
-     :accessibility-label "mark-untrustworthy"
+     :accessibility-label :mark-untrustworthy
      :icon                :alert
      :on-press            #(js/alert "TODO: to be implemented, probably requires status-go impl. and design input")}]
    [quo2.menu-item/menu-item
     {:type                :danger
      :title               (i18n/label :t/block-user)
-     :accessibility-label "block-user"
+     :accessibility-label :block-user
      :icon                :block
      :on-press            #(js/alert "TODO: to be implemented, requires design input")}]])
