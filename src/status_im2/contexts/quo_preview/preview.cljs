@@ -1,7 +1,8 @@
 (ns status-im2.contexts.quo-preview.preview
   (:require [reagent.core :as reagent]
             [react-native.core :as rn]
-            [quo2.foundations.colors :as colors])
+            [quo2.foundations.colors :as colors]
+            [clojure.string :as string])
   (:require-macros status-im2.contexts.quo-preview.preview))
 
 (def container {:flex-direction   :row
@@ -83,19 +84,24 @@
         "False"]]]]))
 
 (defn customizer-text
-  [{:keys [label key state]}]
+  [{:keys [label key state limit suffix]}]
   (let [state* (reagent/cursor state [key])]
     [rn/view {:style container}
      [label-view state label]
      [rn/view {:style {:flex 0.6}}
-      [rn/text-input {:value          @state*
-                      :show-cancel    false
-                      :style          {:border-radius 4
-                                       :border-width  1
-                                       :border-color  (colors/theme-colors colors/neutral-100 colors/white)}
-                      :on-change-text #(do
-                                         (reset! state* %)
-                                         (reagent/flush))}]]]))
+      [rn/text-input (merge
+                      {:value          @state*
+                       :show-cancel    false
+                       :style          {:border-radius 4
+                                        :border-width  1
+                                        :border-color  (colors/theme-colors colors/neutral-100 colors/white)}
+                       :on-change-text #(do
+                                          (reset! state* (if (and suffix (> (count %) (count @state*)))
+                                                           (str (string/replace % suffix "") suffix)
+                                                           %))
+                                          (reagent/flush))}
+                      (when limit
+                        {:max-length limit}))]]]))
 
 (defn value-for-key
   [id v]

@@ -28,6 +28,7 @@
             [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
             [status-im2.contexts.quo-preview.list-items.channel :as channel]
             [status-im2.contexts.quo-preview.markdown.text :as text]
+            [status-im2.contexts.quo-preview.messages.author :as messages-author]
             [status-im2.contexts.quo-preview.messages.gap :as messages-gap]
             [status-im2.contexts.quo-preview.messages.system-message :as system-message]
             [status-im2.contexts.quo-preview.notifications.activity-logs :as activity-logs]
@@ -129,7 +130,10 @@
                :component messages-gap/preview-messages-gap}
               {:name      :system-messages
                :insets    {:top false}
-               :component system-message/preview-system-message}]
+               :component system-message/preview-system-message}
+              {:name      :author
+               :insets    {:top false}
+               :component messages-author/preview-author}]
    :navigation [{:name      :bottom-nav-tab
                  :insets    {:top false}
                  :component bottom-nav-tab/preview-bottom-nav-tab}
