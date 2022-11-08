@@ -48,8 +48,7 @@
             [quo2.screens.wallet.network-amount :as network-amount]
             [quo2.screens.navigation.page-nav :as page-nav]
             [quo2.screens.avatars.account-avatar :as account-avatar]
-            [re-frame.core :as re-frame]
-            [quo2.components.buttons.button :as quo2.button]))
+            [re-frame.core :as re-frame]))
 
 (def screens-categories
   {:avatar [{:name      :group-avatar
@@ -187,8 +186,8 @@
 (defn theme-switcher []
   [rn/view {:style {:flex-direction   :row
                     :margin-vertical  8}}
-   [quo2.button/button {:on-press #(theme/set-theme :light)} "Set light theme"]
-   [quo2.button/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
+   [quo2-button/button {:on-press #(theme/set-theme :light)} "Set light theme"]
+   [quo2-button/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
 
 (defn main-screen []
   (fn []
