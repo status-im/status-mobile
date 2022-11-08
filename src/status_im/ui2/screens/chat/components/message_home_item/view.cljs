@@ -206,7 +206,7 @@
                                                    (>evt [:search/home-filter-changed nil])
                                                    (>evt [:accept-all-activity-center-notifications-from-chat chat-id]))
                                   :on-long-press #(>evt [:bottom-sheet/show-sheet
-                                                         {:content (fn [] [chat-bottom-sheet item])}])})
+                                                         {:content (fn [] [chat-bottom-sheet item group-chat])}])})
      (if group-chat
        [rn/view {:style (style/group-chat-icon color)}
         [icons/icon :main-icons2/group {:size 16 :color colors/white-opa-70}]]

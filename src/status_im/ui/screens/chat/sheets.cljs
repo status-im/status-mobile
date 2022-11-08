@@ -16,6 +16,7 @@
   (re-frame/dispatch event))
 
 (defn one-to-one-chat-accents [chat-id]
+
   (let [photo        @(re-frame/subscribe [:chats/photo-path chat-id])
         contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity chat-id])]
     [react/view

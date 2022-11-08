@@ -1851,6 +1851,7 @@
     "received": "Received",
     "sent": "Sent",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "and": "and"
 =======
     "no-pinned-messages-desc": "This chat doesn't have any pinned messages.",
@@ -1887,4 +1888,9 @@
     "sent": "Sent",
     "and": "and"
 >>>>>>> 5fcc08fd3... refactor
+=======
+    "and": "and",
+    "group-details": "Group details",
+    "leave-and-delete-group": "Leave and delete group"
+>>>>>>> 1c10d3dda... feat: chat bottom sheet
 }
