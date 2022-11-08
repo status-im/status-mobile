@@ -20,7 +20,11 @@ buildGoPackage {
   # Build the Go library
   buildPhase = ''
     runHook preBuild
-    go build -buildmode=c-archive -o $out/libstatus.a $NIX_BUILD_TOP/main.go
+    go build \
+      -buildmode='c-archive' \
+      -tags='gowaku_skip_migrations' \
+      -o "$out/libstatus.a" \
+      $NIX_BUILD_TOP/main.go
     runHook postBuild
   '';
 }
