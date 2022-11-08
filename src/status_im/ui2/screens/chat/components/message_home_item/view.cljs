@@ -1,6 +1,6 @@
 (ns status-im.ui2.screens.chat.components.message-home-item.view
   (:require [clojure.string :as string]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.utils.re-frame :as rf]
             [status-im.utils.datetime :as time]
             [quo2.foundations.typography :as typography]
             [quo2.components.notifications.info-count :refer [info-count]]
@@ -34,7 +34,7 @@
                   children)
 
                  "mention"
-                 {:components [rn/text (<sub [:contacts/contact-name-by-identity literal])]
+                 {:components [rn/text (rf/sub [:contacts/contact-name-by-identity literal])]
                   :length     4} ;; we can't predict name length so take the smallest possible
 
                  "status-tag"
@@ -86,19 +86,19 @@
 
 (defn messages-home-item [item]
   (let [{:keys [chat-id color group-chat last-message timestamp name unviewed-mentions-count unviewed-messages-count]} item
-        display-name (if-not group-chat (first (<sub [:contacts/contact-two-names-by-identity chat-id])) name)
-        contact      (when-not group-chat (<sub [:contacts/contact-by-address chat-id]))
-        photo-path   (when-not (empty? (:images contact)) (<sub [:chats/photo-path chat-id]))]
+        display-name (if-not group-chat (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])) name)
+        contact      (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
     [rn/touchable-opacity (merge {:style         (style/container)
                                   :on-press      (fn []
-                                                   (>evt [:dismiss-keyboard])
+                                                   (rf/dispatch [:dismiss-keyboard])
                                                    (if platform/android?
-                                                     (>evt [:chat.ui/navigate-to-chat-nav2 chat-id])
-                                                     (>evt [:chat.ui/navigate-to-chat chat-id]))
-                                                   (>evt [:search/home-filter-changed nil])
-                                                   (>evt [:accept-all-activity-center-notifications-from-chat chat-id]))
-                                  :on-long-press #(>evt [:bottom-sheet/show-sheet
-                                                         {:content (fn [] [chat-bottom-sheet item group-chat])}])})
+                                                     (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
+                                                     (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))
+                                                   (rf/dispatch [:search/home-filter-changed nil])
+                                                   (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
+                                  :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                                                {:content (fn [] [chat-bottom-sheet item group-chat])}])})
      (if group-chat
        [rn/view {:style (style/group-chat-icon color)}
         [icons/icon :main-icons2/group {:size 16 :color colors/white-opa-70}]]

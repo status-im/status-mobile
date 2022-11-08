@@ -1,5 +1,5 @@
 (ns status-im.ui2.screens.chat.components.contact-item.view
-  (:require [status-im.utils.handlers :refer [<sub >evt]]
+  (:require [status-im.utils.re-frame :as rf]
             [quo2.foundations.typography :as typography]
             [quo2.components.icon :as icons]
             [quo2.foundations.colors :as colors]
@@ -12,21 +12,21 @@
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
 
 (defn open-chat [chat-id]
-  (>evt [:dismiss-keyboard])
+  (rf/dispatch [:dismiss-keyboard])
   (if platform/android?
-    (>evt [:chat.ui/navigate-to-chat-nav2 chat-id])
-    (>evt [:chat.ui/navigate-to-chat chat-id]))
-  (>evt [:search/home-filter-changed nil])
-  (>evt [:accept-all-activity-center-notifications-from-chat chat-id]))
+    (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
+    (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))
+  (rf/dispatch [:search/home-filter-changed nil])
+  (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
 
 (defn contact-item [item]
   (let [{:keys [public-key ens-verified added? images]} item
-        display-name (first (<sub [:contacts/contact-two-names-by-identity public-key]))
-        photo-path   (if-not (empty? images) (<sub [:chats/photo-path public-key]) nil)]
+        display-name (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
+        photo-path   (if-not (empty? images) (rf/sub [:chats/photo-path public-key]) nil)]
     [rn/touchable-opacity (merge {:style         (style/container)
                                   :on-press      #(open-chat public-key)
-                                  :on-long-press #(>evt [:bottom-sheet/show-sheet
-                                                         {:content (fn [] [contact-bottom-sheet item])}])})
+                                  :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                                                {:content (fn [] [contact-bottom-sheet item])}])})
      [user-avatar/user-avatar {:full-name         display-name
                                :profile-picture   photo-path
                                :status-indicator? true
@@ -50,6 +50,6 @@
      [rn/touchable-opacity {:style          {:position :absolute
                                              :right    20}
                             :active-opacity 1
-                            :on-press       #(>evt [:bottom-sheet/show-sheet
-                                                    {:content (fn [] [contact-bottom-sheet item])}])}
+                            :on-press       #(rf/dispatch [:bottom-sheet/show-sheet
+                                                           {:content (fn [] [contact-bottom-sheet item])}])}
       [icons/icon :main-icons2/options {:size 20 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]]))

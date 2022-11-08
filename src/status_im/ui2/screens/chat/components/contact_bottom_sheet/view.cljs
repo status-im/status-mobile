@@ -1,7 +1,7 @@
 (ns status-im.ui2.screens.chat.components.contact-bottom-sheet.view
   (:require [status-im.i18n.i18n :as i18n]
             [quo.react-native :as rn]
-            [quo2.components.drawers.action-drawers :refer [divider]]
+            [quo2.components.drawers.action-drawers :as action-drawers]
             [quo2.components.list-items.menu-item :as quo2.menu-item]
             [re-frame.core :as rf]))
 
@@ -28,29 +28,29 @@
      :title               (i18n/label :t/rename)
      :accessibility-label "rename"
      :icon                :edit
-     :on-press            #(println "TODO: to be implemented, requires design input")}]
+     :on-press            #(js/alert "TODO: to be implemented, requires design input")}]
    [quo2.menu-item/menu-item
     {:type                :main
      :title               (i18n/label :t/show-qr)
      :accessibility-label "show-qr"
      :icon                :qr-code
-     :on-press            #(println "TODO: to be implemented, requires design input")}]
+     :on-press            #(js/alert "TODO: to be implemented, requires design input")}]
    [quo2.menu-item/menu-item
     {:type                :main
      :title               (i18n/label :t/share-profile)
      :accessibility-label "share-profile"
      :icon                :share
-     :on-press            #(println "TODO: to be implemented, requires design input")}]
-   [divider]
+     :on-press            #(js/alert "TODO: to be implemented, requires design input")}]
+   [action-drawers/divider]
    [quo2.menu-item/menu-item
     {:type                :danger
      :title               (i18n/label :t/mark-untrustworthy)
      :accessibility-label "mark-untrustworthy"
      :icon                :alert
-     :on-press            #(println "TODO: to be implemented, probably requires status-go impl. and design input")}]
+     :on-press            #(js/alert "TODO: to be implemented, probably requires status-go impl. and design input")}]
    [quo2.menu-item/menu-item
     {:type                :danger
      :title               (i18n/label :t/block-user)
      :accessibility-label "block-user"
      :icon                :block
-     :on-press            #(println "TODO: to be implemented, requires design input")}]])
+     :on-press            #(js/alert "TODO: to be implemented, requires design input")}]])

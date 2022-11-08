@@ -1,8 +1,8 @@
 (ns status-im.ui2.screens.chat.components.chat-bottom-sheet.view
   (:require [status-im.i18n.i18n :as i18n]
             [quo.react-native :as rn]
-            [status-im.ui2.screens.chat.messages.message :refer [pinned-messages-list]]
-            [quo2.components.drawers.action-drawers :refer [divider]]
+            [status-im.ui2.screens.chat.messages.message :as message]
+            [quo2.components.drawers.action-drawers :as action-drawers]
             [quo2.components.list-items.menu-item :as quo2.menu-item]
             [re-frame.core :as rf]))
 
@@ -26,7 +26,7 @@
        :icon                :friend
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/show-profile chat-id])}])
 
-   [divider]
+   [action-drawers/divider]
    [quo2.menu-item/menu-item
     {:type                :main
      :title               (i18n/label :t/mark-as-read)
@@ -40,7 +40,7 @@
      :accessibility-label "mute-chat"
      :icon                :muted
      :arrow?              true
-     :on-press            #(println "TODO: mute chat")}] ; TODO: issue https://github.com/status-im/status-mobile/issues/14269
+     :on-press            #(js/alert "TODO: mute chat")}] ; TODO: issue https://github.com/status-im/status-mobile/issues/14269
    [quo2.menu-item/menu-item
     {:type                :main
      :title               (i18n/label :t/notifications)
@@ -48,7 +48,7 @@
      :accessibility-label "notifications"
      :icon                :notifications
      :arrow?              true
-     :on-press            #(println "TODO: chat notifications")}]
+     :on-press            #(js/alert "TODO: chat notifications")}]
    (when group-chat
      [quo2.menu-item/menu-item
       {:type                :main
@@ -58,8 +58,8 @@
        :on-press            (fn []
                               (rf/dispatch [:bottom-sheet/hide])
                               (rf/dispatch [:bottom-sheet/show-sheet
-                                            {:content #(pinned-messages-list chat-id)}]))}])
-   [divider]
+                                            {:content #(message/pinned-messages-list chat-id)}]))}])
+   [action-drawers/divider]
    [quo2.menu-item/menu-item
     {:type                :danger
      :title               (i18n/label :t/clear-history)
