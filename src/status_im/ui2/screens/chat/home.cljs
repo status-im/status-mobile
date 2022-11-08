@@ -8,11 +8,8 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
-            [status-im.ui2.screens.chat.actions :as actions]
-            [status-im.ui.screens.home.views.inner-item :refer [home-list-item]]
             [quo.design-system.colors :as quo.colors]
             [quo.core :as quo]
-            [quo.platform :as platform]
             [status-im.add-new.core :as new-chat]
             [status-im.ui.components.search-input.view :as search-input]
             [status-im.add-new.db :as db]
@@ -34,11 +31,14 @@
             [quo2.components.buttons.button :as quo2.button]
             [quo2.components.tabs.tabs :as quo2.tabs]
             [quo2.components.community.discover-card :as discover-card]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [quo2.components.icon :as quo2.icons]
             [quo.components.safe-area :as safe-area]
-            [quo2.components.list-items.received-contact-request :as received-contact-request])
+            [quo2.components.notifications.info-count :refer [info-count]]
+            [quo2.components.list-items.received-cr-item :refer [received-cr-item]]
+            [status-im.ui2.screens.chat.components.message-home-item.view :refer [messages-home-item]]
+            [status-im.ui2.screens.chat.components.contact-item.view :refer [contact-item]]
+            [clojure.string :as str])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn home-tooltip-view []
@@ -66,7 +66,10 @@
    [rn/text {:style (merge typography/font-regular typography/paragraph-2)} (i18n/label :t/blank-messages-text)]])
 
 (defn welcome-blank-page []
-  [rn/view {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :center}}
+  [rn/view {:style {:flex            1
+                    :flex-direction  :row
+                    :align-items     :center
+                    :justify-content :center}}
    [react/i18n-text {:style styles/welcome-blank-text :key :welcome-blank-message}]])
 
 (defonce search-active? (reagent/atom false))
@@ -117,43 +120,6 @@
                                      (re-frame/dispatch [:set :public-group-topic nil])
                                      (re-frame/dispatch [:search/home-filter-changed nil]))}])])))
 
-(defn render-fn [{:keys [chat-id chat-type] :as home-item}]
-  [home-list-item
-   home-item
-   {:on-press      (fn []
-                     (re-frame/dispatch [:dismiss-keyboard])
-                     (if platform/android?
-                       (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
-                       (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
-                     (re-frame/dispatch [:search/home-filter-changed nil])
-                     (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
-    :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                        {:content (fn []
-                                                    [actions/actions
-                                                     chat-type
-                                                     chat-id])}])}])
-
-(defn- render-contact [{:keys [public-key] :as row}]
-  (let [[first-name second-name] (multiaccounts/contact-two-names row true)
-        row (assoc row :chat-id public-key)]
-
-    [quo/list-item
-     {:title            first-name
-      :subtitle         second-name
-      :background-color colors/neutral-5
-      :on-press         (fn []
-                          (re-frame/dispatch [:dismiss-keyboard])
-                          (if platform/android?
-                            (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 public-key])
-                            (re-frame/dispatch [:chat.ui/navigate-to-chat public-key]))
-                          (re-frame/dispatch [:search/home-filter-changed nil])
-                          (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat public-key]))
-      ;:on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet TODO: new UI yet to be implemented
-      ;                                    {:content (fn []
-      ;                                                [sheets/actions row])}])
-      :icon             [chat-icon/contact-icon-contacts-tab
-                         (multiaccounts/displayed-photo row)]}]))
-
 (defn chat-list-key-fn [item]
   (or (:chat-id item) (:public-key item) (:id item)))
 
@@ -165,7 +131,7 @@
 (defn prepare-items [current-active-tab items]
   (if (= current-active-tab :groups)
     (filter #(-> % :group-chat (= true)) items)
-    items))
+    (filter #(-> % (contains? :chat-id)) items)))
 
 (defn prepare-contacts [contacts]
   (let [data (atom {})]
@@ -183,14 +149,14 @@
 
 (defn find-contact-requests [notifications]
   (let [received-requests (atom [])
-        has-unread (atom false)]
+        has-unread?       (atom false)]
     (doseq [i (range (count notifications))]
       (doseq [j (range (count (:data (nth notifications i))))]
         (when (= 1 (get-in (nth (:data (nth notifications i)) j) [:message :contact-request-state]))
           (swap! received-requests conj (nth (:data (nth notifications i)) j)))
         (when (= false (get-in (nth (:data (nth notifications i)) j) [:read]))
-          (reset! has-unread true))))
-    {:received-requests @received-requests :has-unread @has-unread}))
+          (reset! has-unread? true))))
+    {:received-requests @received-requests :has-unread? @has-unread?}))
 
 (def selected-requests-tab (reagent/atom :received))
 
@@ -198,10 +164,10 @@
   [:f>
    (fn []
      (let [{window-height :height} (rn/use-window-dimensions)
-           safe-area         (safe-area/use-safe-area)
-           notifications     (<sub [:activity.center/notifications-grouped-by-date])
+           safe-area     (safe-area/use-safe-area)
+           notifications (<sub [:activity.center/notifications-grouped-by-date])
            {received-requests :received-requests} (find-contact-requests notifications)
-           sent-requests     []]
+           sent-requests []]
        [rn/view {:style {:margin-left 20
                          :height      (- window-height (:top safe-area))}}
         [rn/touchable-opacity
@@ -232,9 +198,24 @@
         [list/flat-list
          {:key-fn    :first
           :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
-          :render-fn received-contact-request/list-item}]]))])
+          :render-fn received-cr-item}]]))])
 
-(defn contact-requests [count]
+(defn get-display-name [{:keys [chat-id message]}]
+  (let [name        (first (<sub [:contacts/contact-two-names-by-identity chat-id]))
+        no-ens-name (str/blank? (get-in message [:content :ens-name]))]
+    (if no-ens-name
+      (first (str/split name " "))
+      name)))
+
+(defn requests-summary [requests]
+  (case (count requests)
+    1
+    (get-display-name (first requests))
+    2
+    (str (get-display-name (first requests)) " " (i18n/label :t/and) " " (get-display-name (second requests)))
+    (str (get-display-name (first requests)) ", " (get-display-name (second requests)) " " (i18n/label :t/and) " " (- (count requests) 2) " " (i18n/label :t/more))))
+
+(defn contact-requests [requests]
   [rn/touchable-opacity
    {:active-opacity 1
     :on-press       #(do
@@ -258,14 +239,8 @@
    [rn/view {:style {:margin-left 8}}
     [rn/text {:style
               (merge typography/paragraph-1 typography/font-semi-bold {:color (colors/theme-colors "#000000" "#ffffff")})} (i18n/label :t/pending-requests)]
-    [rn/text {:style (merge typography/paragraph-2 typography/font-regular {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})} "Alice, Pedro and 3 others"]]
-   [rn/view {:style {:width            16
-                     :height           16
-                     :position         :absolute
-                     :right            22
-                     :border-radius    6
-                     :background-color (colors/theme-colors colors/primary-50 colors/primary-60)}}
-    [rn/text {:style (merge typography/font-medium typography/label {:color "#ffffff" :text-align :center})} count]]])
+    [rn/text {:style (merge typography/paragraph-2 typography/font-regular {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})} (requests-summary requests)]]
+   [info-count (count requests)]])
 
 (defn chats []
   (let [{:keys [items search-filter]} (<sub [:home-items])
@@ -274,7 +249,7 @@
         contacts           (<sub [:contacts/active])
         contacts           (prepare-contacts contacts)
         notifications      (<sub [:activity.center/notifications-grouped-by-date])
-        {requests :received-requests new-info :has-unread} (find-contact-requests notifications)]
+        {requests :received-requests new-info :has-unread?} (find-contact-requests notifications)]
     [rn/view {:style {:flex 1}}
      [discover-card/discover-card {:title       (i18n/label :t/invite-friends-to-status)
                                    :description (i18n/label :t/share-invite-link)}]
@@ -283,13 +258,13 @@
                                        :margin-top    24}
                       :size           32
                       :on-change      #(reset! selected-tab %)
-                      :default-active selected-tab
+                      :default-active @selected-tab
                       :data           [{:id    :recent
                                         :label (i18n/label :t/recent)}
                                        {:id    :groups
                                         :label (i18n/label :t/groups)}
-                                       {:id    :contacts
-                                        :label (i18n/label :t/contacts)
+                                       {:id       :contacts
+                                        :label    (i18n/label :t/contacts)
                                         :new-info new-info}]}]
      (if (and (empty? items)
               (empty? search-filter)
@@ -302,15 +277,15 @@
            :on-end-reached               #(re-frame/dispatch [:chat.ui/show-more-chats])
            :keyboard-should-persist-taps :always
            :data                         items
-           :render-fn                    render-fn}]
+           :render-fn                    messages-home-item}]
          [rn/view {:style {:flex 1}} (when (> (count requests) 0)
-                                       [contact-requests (count requests)])
+                                       [contact-requests requests])
           [list/section-list
            {:key-fn                         :title
             :sticky-section-headers-enabled false
             :sections                       contacts
             :render-section-header-fn       contacts-section-header
-            :render-fn                      render-contact}]]))]))
+            :render-fn                      contact-item}]]))]))
 
 (views/defview chats-list []
   (views/letsubs [loading? [:chats/loading?]]
@@ -340,12 +315,7 @@
                           :on-press            #(do
                                                   (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
                                                   (if config/new-activity-center-enabled?
-                                                    (re-frame/dispatch [:show-popover {:view                        :activity-center
-                                                                                       :style                       {:margin 0}
-                                                                                       :disable-touchable-overlay?  true
-                                                                                       :blur-view?                  true
-                                                                                       :blur-view-props             {:blur-amount 20
-                                                                                                                     :blur-type   :dark}}])
+                                                    (re-frame/dispatch [:navigate-to :activity-center])
                                                     (re-frame/dispatch [:navigate-to :notifications-center])))}
       [icons/icon :main-icons/notification2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
      (when (pos? notif-count)
@@ -409,3 +379,4 @@
        [plus-button]]
       [chats-list]
       [tabbar/tabs-counts-subscriptions]])])
+

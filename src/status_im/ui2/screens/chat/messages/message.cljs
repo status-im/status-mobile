@@ -868,4 +868,3 @@
                                        :align-items      :center
                                        :background-color colors/neutral-80-opa-5}}
         [rn/text {:style (merge typography/label typography/font-medium {:color (colors/theme-colors colors/neutral-100 colors/white)})} pins-count]]])))
-

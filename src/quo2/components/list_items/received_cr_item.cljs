@@ -1,4 +1,4 @@
-(ns quo2.components.list-items.received-contact-request
+(ns quo2.components.list-items.received-cr-item
   (:require [quo.react-native :as rn]
             [quo2.foundations.colors :as colors]
             [status-im.utils.handlers :refer [<sub >evt]]
@@ -10,17 +10,9 @@
             [status-im.i18n.i18n :as i18n]
             [quo2.components.notifications.notification-dot :refer [notification-dot]]))
 
-(defn get-display-name [chat-id no-ens-name no-nickname]
-  (let [name (first (<sub [:contacts/contact-two-names-by-identity chat-id]))]
-    (if (and no-ens-name no-nickname)
-      (let [[word1 word2] (str/split name " ")]
-        (str word1 " " word2))
-      name)))
-
-(defn list-item [{:keys [chat-id image contact message timestamp read]}]
+(defn received-cr-item [{:keys [chat-id message timestamp read]}]
   (let [no-ens-name  (str/blank? (get-in message [:content :ens-name]))
-        no-nickname  (nil? (get-in contact [:names :nickname]))
-        display-name (get-display-name chat-id no-ens-name no-nickname)]
+        display-name (first (<sub [:contacts/contact-two-names-by-identity chat-id]))]
     [rn/view {:style {:flex-direction :row
                       :padding-top    8
                       :margin-top     4
@@ -32,7 +24,6 @@
                                :status-indicator? true
                                :online?           true
                                :size              :small
-                               :profile-picture   image
                                :ring?             false}]
      [rn/view {:style {:margin-horizontal 8}}
       [rn/view {:style {:flex-direction :row}}
@@ -82,3 +73,5 @@
                                                     :padding-horizontal 8
                                                     :margin-left        8}}
         [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color colors/white})} (i18n/label :t/accept)]]]]]))
+
+

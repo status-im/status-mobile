@@ -158,7 +158,7 @@
     [channel-list-component]]])
 
 (defn overview []
-  (let [community-mock (<sub [:get-screen-params :community-overview]) ;;TODO stop using mock data and only pass community id 
+  (let [community-mock (<sub [:get-screen-params :community-overview]) ;;TODO stop using mock data and only pass community id
         community (<sub [:communities/community (:id community-mock)])]
     [rn/view {:style
               {:height "100%"}}

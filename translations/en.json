@@ -405,7 +405,7 @@
         "other": "S"
     },
     "datetime-today": "today",
-    "datetime-yesterday": "yesterday",
+    "datetime-yesterday": "Yesterday",
     "decimals": "Decimals",
     "decline": "Decline",
     "decryption-failed-content": "An error occured decrypting your data. You might need to erase your old data and generate a new account. Tap “Apply” to erase or “Cancel” to try again",
@@ -1832,12 +1832,13 @@
     "blank-messages-text": "Your messages will be here",
     "groups": "Groups",
     "shell-placeholder-title": "Your apps will run here",
+    "no-pinned-messages-desc": "This chat doesn't have any pinned messages.",
+    "no-pinned-messages-community-desc": "This channel doesn't have any pinned messages.",
     "shell-placeholder-subtitle": "Open tabs of your communities, messages,\nwallet account and browser windows",
     "invite-friends-to-status": "Invite friends to status",
     "share-invite-link": "Share an invite link",
     "pending-requests": "Pending requests",
     "received": "Received",
     "sent": "Sent",
-    "no-pinned-messages-desc": "This chat doesn't have any pinned messages.",
-    "no-pinned-messages-community-desc": "This channel doesn't have any pinned messages."
+    "and": "and"
 }
