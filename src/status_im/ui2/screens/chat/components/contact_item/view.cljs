@@ -10,6 +10,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
             [quo2.components.markdown.text :as text]
+            [status-im.ui2.screens.chat.components.contact-bottom-sheet.view :refer [contact-bottom-sheet]]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
 
 =======
@@ -40,9 +41,16 @@
   (let [{:keys [public-key]} item
         display-name (first (<sub [:contacts/contact-two-names-by-identity public-key]))
         photo-path   (if-not (empty? (:images item)) (<sub [:chats/photo-path public-key]) nil)]
+<<<<<<< HEAD
 >>>>>>> 5fcc08fd3... refactor
     [rn/touchable-opacity (merge {:style   (style/container)
                                   :on-press #(open-chat public-key)})
+=======
+    [rn/touchable-opacity (merge {:style         (style/container)
+                                  :on-press      #(open-chat public-key)
+                                  :on-long-press #(>evt [:bottom-sheet/show-sheet
+                                                         {:content (fn [] [contact-bottom-sheet item])}])})
+>>>>>>> bbbd001ae... contacts bottom sheet ui
      [user-avatar/user-avatar {:full-name         display-name
                                :profile-picture   photo-path
                                :status-indicator? true
@@ -90,14 +98,20 @@
 =======
 =======
             [icons/icon :main-icons2/contact {:no-color true :size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
+<<<<<<< HEAD
 >>>>>>> 1e719b3ab... icons fix
       [text/text {:size :paragraph-1
 >>>>>>> 6b7e419c9... fix typo
+=======
+      [text/text {:size  :paragraph-1
+>>>>>>> bbbd001ae... contacts bottom sheet ui
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
 >>>>>>> 8e74397a9... lint
        (get-shortened-address public-key)]]
      [rn/touchable-opacity {:style          {:position :absolute
                                              :right    20}
-                            :active-opacity 1} ; TODO: on-long-press to be added when contact bottom sheet is implemented
+                            :on-press       #(>evt [:bottom-sheet/show-sheet
+                                                    {:content (fn [] [contact-bottom-sheet item])}])
+                            :active-opacity 1}
       [icons/icon :main-icons2/options {:size 20 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]]))
 

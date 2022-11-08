@@ -88,6 +88,7 @@
     "blank-keycard-text": "You can proceed with your keycard once you've generated your keys and name",
     "blank-keycard-title": "Looks like you’ve tapped \na blank keycard",
     "block": "Block",
+    "block-user": "Block user",
     "unblock": "Unblock",
     "block-contact": "Block this user",
     "block-contact-details": "Blocking will delete this user's previous messages and stop new ones from reaching you",
@@ -1891,6 +1892,12 @@
 =======
     "and": "and",
     "group-details": "Group details",
+<<<<<<< HEAD
     "leave-and-delete-group": "Leave and delete group"
 >>>>>>> 1c10d3dda... feat: chat bottom sheet
+=======
+    "leave-and-delete-group": "Leave and delete group",
+    "rename": "rename",
+    "mark-untrustworthy": "Mark as untrustworthy"
+>>>>>>> bbbd001ae... contacts bottom sheet ui
 }
