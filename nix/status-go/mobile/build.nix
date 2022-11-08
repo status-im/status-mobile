@@ -11,6 +11,9 @@
 
 let
   inherit (lib) concatStringsSep optionalString optional;
+  isIOS = platform == "ios";
+  isAndroid = platform == "android";
+
 in buildGoPackage {
   pname = source.repo;
   version = "${source.cleanVersion}-${source.shortRev}-${platform}";
@@ -20,30 +23,32 @@ in buildGoPackage {
 
   # Sandbox causes Xcode issues on MacOS. Requires sandbox=relaxed.
   # https://github.com/status-im/status-mobile/pull/13912
-  __noChroot = (platform == "ios");
+  __noChroot = isIOS;
 
   extraSrcPaths = [ gomobile ];
   nativeBuildInputs = [ gomobile removeReferencesTo ]
-    ++ optional (platform == "android") openjdk
-    ++ optional (platform == "ios") xcodeWrapper;
+    ++ optional isAndroid openjdk
+    ++ optional isIOS xcodeWrapper;
 
   ldflags = concatStringsSep " " goBuildLdFlags;
 
-  ANDROID_HOME = optionalString (platform == "android") androidPkgs.sdk;
+  ANDROID_HOME = optionalString isAndroid androidPkgs.sdk;
 
   # Ensure XCode is present for iOS, instead of failing at the end of the build.
-  preConfigure = optionalString (platform == "ios") utils.enforceXCodeAvailable;
+  preConfigure = optionalString isIOS utils.enforceXCodeAvailable;
 
   buildPhase = ''
     runHook preBuild
     echo -e "\nBuilding $pname for: ${concatStringsSep "," targets}"
 
+    set -x
     gomobile bind \
       ${concatStringsSep " " goBuildFlags} \
       -ldflags="$ldflags" \
       -target=${concatStringsSep "," targets} \
-      ${optionalString (platform == "android") "-androidapi=${platformVersion}"} \
-      ${optionalString (platform == "ios") "-iosversion=${platformVersion}"} \
+      ${optionalString isAndroid "-androidapi=${platformVersion}" } \
+      ${optionalString isIOS "-iosversion=${platformVersion}" } \
+     -tags='${optionalString isIOS "nowatchdog"} gowaku_skip_migrations' \
       -o ${outputFileName} \
       ${source.goPackagePath}/mobile
 
@@ -58,7 +63,7 @@ in buildGoPackage {
   # Drop govers from disallowedReferences.
   dontRenameImports = true;
   # Replace hardcoded paths to go package in /nix/store.
-  preFixup = optionalString (platform == "ios") ''
+  preFixup = optionalString isIOS ''
     find $out -type f -exec \
       remove-references-to -t $disallowedReferences '{}' + || true
   '';
