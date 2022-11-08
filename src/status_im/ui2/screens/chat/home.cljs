@@ -78,7 +78,7 @@
 
 (defn welcome-blank-chats []
   [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-   [icons/icon :main-icons/placeholder20 {:width 120 :height 120}]
+   [quo2.icons/icon :main-icons2/placeholder {:size 24}]
    [rn/text {:style (merge typography/font-semi-bold typography/paragraph-1)} (i18n/label :t/no-messages)]
    [rn/text {:style (merge typography/font-regular typography/paragraph-2)} (i18n/label :t/blank-messages-text)]])
 
