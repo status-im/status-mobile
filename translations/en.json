@@ -1122,6 +1122,7 @@
     "scan-qr": "Scan QR code",
     "scan-qr-code": "Scan a QR code with a wallet address",
     "search": "Search",
+    "search-discover-communities": "Search communities or categories",
     "secret-keys-confirmation-text": "You will need them to continue to use your Keycard in case you ever lose your phone.",
     "secret-keys-confirmation-title": "Written the codes down?",
     "security": "Security",

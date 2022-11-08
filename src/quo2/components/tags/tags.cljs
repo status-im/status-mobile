@@ -25,5 +25,4 @@
                                       :main-icons2/placeholder
                                       resource)
                      :on-press      #(do (reset! active-tab-id %)
-                                         (when on-change (on-change %)))})
-             tag-label]])]))))
+                                         (when on-change (on-change %)))})]])]))))

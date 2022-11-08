@@ -72,9 +72,9 @@
                           :padding-horizontal 10}
           [tags/tags (merge @state
                             {:default-active 1
-                             :data           [{:id 1 :tag-label "Music" :resource (resources/get-image :music)}
+                             :data           [{:id 1 :tag-label "Music"     :resource (resources/get-image :music)}
                                               {:id 2 :tag-label "Lifestyle" :resource (resources/get-image :lifestyle)}
-                                              {:id 3 :tag-label "Podcasts" :resource (resources/get-image :podcasts)}]})]]]]])))
+                                              {:id 3 :tag-label "Podcasts"  :resource (resources/get-image :podcasts)}]})]]]]])))
 (defn preview-tags []
   [rn/view {:flex             1
             :background-color (colors/theme-colors

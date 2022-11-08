@@ -40,9 +40,10 @@
      [community-stats {:icon       :main-icons2/lightning
                        :count      "112.1K"
                        :icon-color icon-color}]
-     [community-stats {:icon       :main-icons2/placeholder
-                       :count      4
-                       :icon-color icon-color}]]))
+     (when (= type :card-view)
+       [community-stats {:icon       :main-icons2/placeholder
+                         :count      4
+                         :icon-color icon-color}])]))
 
 (defn community-tags [tags]
   [react/view (styles/community-tags-container)
@@ -77,10 +78,10 @@
        :style {:margin-top (if (= size :large) 8 2)}}
       description])])
 
-(defn permission-tag-container [{:keys [locked tokens]}]
+(defn permission-tag-container [{:keys [locked? tokens]}]
   [permission/tag {:background-color (colors/theme-colors
                                       colors/neutral-10
                                       colors/neutral-80)
-                   :locked           locked
+                   :locked?          locked?
                    :tokens           tokens
                    :size             24}])

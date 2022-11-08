@@ -16,7 +16,7 @@
     (fn [{:keys [data size] :or {size default-tab-size}}]
       [rn/view (merge {:flex-direction :row} style)
        (doall
-        (for [{:keys [label id new-info]} data]
+        (for [{:keys [label id new-info accessibility-label]} data]
           ^{:key id}
           [rn/view {:style {:margin-right (if (= size default-tab-size) 12 8)}}
            (when new-info
@@ -32,13 +32,14 @@
                        :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
               [notification-dot]])
            [tab/tab
-            {:id       id
-             :size     size
-             :active   (= id @active-tab-id)
-             :on-press (fn []
-                         (reset! active-tab-id id)
-                         (when on-change
-                           (on-change id)))}
+            {:id                  id
+             :size                size
+             :accessibility-label accessibility-label
+             :active              (= id @active-tab-id)
+             :on-press            (fn []
+                                    (reset! active-tab-id id)
+                                    (when on-change
+                                      (on-change id)))}
             label]]))])))
 
 (defn- calculate-fade-end-percentage

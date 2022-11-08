@@ -1,11 +1,11 @@
-(ns quo2.screens.community.community-card-view
-  (:require [react-native.core :as rn]
-            [quo2.screens.preview :as preview]
+(ns quo2.screens.community.community-list-view
+  (:require [quo.react-native :as rn]
+            [quo.previews.preview :as preview]
             [reagent.core :as reagent]
             [status-im.constants :as constants]
-            [quo2.foundations.colors :as colors]
             [quo.design-system.colors :as quo.colors]
-            [quo2.components.community.community-card-view :as community-card-view]
+            [quo2.foundations.colors :as colors]
+            [quo2.components.community.community-list-view :as community-list-view]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]))
 
@@ -21,20 +21,33 @@
                     {:id 2 :tag-label (i18n/label :t/lifestyle) :resource (resources/get-image :lifestyle)}
                     {:id 3 :tag-label (i18n/label :t/podcasts) :resource (resources/get-image :podcasts)}]})
 
-(def descriptor [{:label   "Status:"
+(def descriptor [{:label   "Notifications:"
+                  :key     :notifications
+                  :type    :select
+                  :options [{:key   :muted
+                             :value "Muted"}
+                            {:key   :unread-mentions-count
+                             :value "Mention counts"}
+                            {:key   :unread-messages-count
+                             :value "Unread messages"}]}
+                 {:label   "Status:"
                   :key     :status
                   :type    :select
                   :options [{:key   :gated
                              :value "Gated"}
                             {:key   :open
                              :value "Open"}]}
-                 {:label "Locked:"
-                  :key   :locked?
-                  :type  :boolean}])
+                 {:label   "Locked:"
+                  :key     :locked?
+                  :type    :boolean}])
 
 (defn cool-preview []
-  (let [state (reagent/atom {:status      :gated
-                             :locked?     true})]
+  (let [notifications  (reagent/atom  (:notifications nil))
+        state          (reagent/atom {:locked?       true
+                                      :notifications nil
+                                      :status        (if notifications
+                                                       :gated
+                                                       :open)})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -43,9 +56,10 @@
          [preview/customizer state descriptor]]
         [rn/view {:padding-vertical 60
                   :justify-content  :center}
-         [community-card-view/community-card-view-item (merge @state community-data)]]]])))
+         [community-list-view/communities-list-view-item (merge @state
+                                                                community-data)]]]])))
 
-(defn preview-community-card []
+(defn preview-community-list-view []
   [rn/view {:background-color (colors/theme-colors colors/neutral-5
                                                    colors/neutral-95)
             :flex             1}

@@ -139,8 +139,10 @@
       {:title name
        :size :large
        :description description}]
-     [community-view/community-stats-column :card-view]
-     [community-view/community-tags tags]
+     [rn/view {:margin-top 12}
+      [community-view/community-stats-column :card-view]]
+     [rn/view {:margin-top 16}
+      [community-view/community-tags tags]]
      [preview-user-list]
      (when (not joined)
        [button/button
