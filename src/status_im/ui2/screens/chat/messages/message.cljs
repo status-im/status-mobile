@@ -424,8 +424,9 @@
       (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
 (defn can-manage-community-member?
-  [{:keys [community? can-manage-users?] :as message}]
-  (and community? can-manage-users?))
+  [{:keys [current-public-key from community? can-manage-users?] :as message}]
+  (and (not= current-public-key from)
+       (and community? can-manage-users?)))
 
 (defn on-long-press-fn [on-long-press {:keys [pinned
                                               message-pin-enabled
