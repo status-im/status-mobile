@@ -156,7 +156,7 @@
                   :margin-left 12}
       [react/text {:style {:font-size 20
                            :font-weight "700"}}
-       (i18n/label :t/get-a-keycard)]
+       (i18n/label :t/active-online)]
       [react/text {:style {:color (colors/alpha colors/text 0.8)}}
        (i18n/label :t/keycard-upsell-subtitle)]]]]
    [react/touchable-highlight
