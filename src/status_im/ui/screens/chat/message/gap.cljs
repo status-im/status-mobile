@@ -21,7 +21,7 @@
                   use-status-nodes? [:mailserver/use-status-nodes?]
                   first-gap?   (= gap-ids #{:first-gap})
                   window-height [:dimensions/window-height]]
-    (when (or (not first-gap?) public? community?) 
+    (when (or (not first-gap?) public? community?)
       [react/view {:style (when-not in-progress? style/gap-container)}
        [react/touchable-highlight
         {:on-press (when (and (not in-progress?) use-status-nodes? connected?)
