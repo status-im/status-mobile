@@ -259,7 +259,7 @@ android {
     }
     buildTypes {
         debug {
-            applicationIdSuffix ".debug"
+            applicationIdSuffix ".pr"
             debuggable          true
             versionNameSuffix   "-SNAPSHOT"
             resValue "string", "build_config_package", "im.status.ethereum"
@@ -278,6 +278,7 @@ android {
             matchingFallbacks = ["release"]
             // necessary to make react-native-config's code generation work
             resValue "string", "build_config_package", "im.status.ethereum"
+            signingConfig signingConfigs.debug
         }
     }
     // applicationVariants are e.g. debug, release
