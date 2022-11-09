@@ -69,10 +69,11 @@
                   :height                    height
                   :background-color          colors/neutral-10}])])
 
-(defn discover-card [{:keys [title description on-press]}]
+(defn discover-card [{:keys [title description on-press accessibility-label]}]
   (let [on-joined-images     (get images   :images)]
     [react/touchable-without-feedback
-     {:on-press on-press}
+     {:on-press            on-press
+      :accessibility-label accessibility-label}
      [react/view (merge (styles/community-card 16)
                         {:background-color  (colors/theme-colors
                                              colors/white

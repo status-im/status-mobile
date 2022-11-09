@@ -15,6 +15,8 @@
             [quo2.screens.code.snippet :as code-snippet]
             [quo2.screens.counter.counter :as counter]
             [quo2.screens.community.community-card-view :as community-card]
+            [quo2.screens.community.discover-card :as discover-card]
+            [quo2.screens.community.community-list-view :as community-list-view]
             [quo2.screens.dividers.divider-label :as divider-label]
             [quo2.screens.dividers.new-messages :as new-messages]
             [quo2.screens.drawers.action-drawers :as drawers]
@@ -78,9 +80,15 @@
    :code [{:name         :snippet
            :insets       {:top false}
            :component    code-snippet/preview-code-snippet}]
-   :community [{:name      :community-cards
+   :community [{:name      :community-card-view
                 :insets    {:top false}
-                :component community-card/preview-community-card}]
+                :component community-card/preview-community-card}
+               {:name      :community-list-view
+                :insets    {:top false}
+                :component community-list-view/preview-community-list-view}
+               {:name      :discover-card
+                :insets    {:top false}
+                :component discover-card/preview-discoverd-card}]
    :counter [{:name      :counter
               :insets    {:top false}
               :component counter/preview-counter}]

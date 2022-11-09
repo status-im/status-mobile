@@ -28,16 +28,26 @@
    :margin-right   16})
 
 (defn card-stats-container []
-  {:flex-direction :row
-   :margin-top 12})
+  {:flex-direction :row})
 
 (defn list-stats-container []
   {:flex-direction :row
    :align-items    :center})
 
 (defn community-tags-container  []
-  {:flex-direction :row
-   :margin-top 16})
+  {:flex-direction :row})
+
+(defn card-stats-position []
+  {:position       :absolute
+   :top            116
+   :right          12
+   :left           12})
+
+(defn community-tags-position  []
+  {:position       :absolute
+   :top            154
+   :right          12
+   :left           12})
 
 (defn card-view-content-container [padding-horizontal]
   {:flex               1

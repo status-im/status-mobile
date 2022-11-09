@@ -40,6 +40,8 @@
          [community-view/community-title
           {:title name
            :description description}]
-         [community-view/community-stats-column :card-view]
-         [community-view/community-tags tags]]]]]]))
+         [react/view {:style (styles/card-stats-position)}
+          [community-view/community-stats-column :card-view]]
+         [react/view {:style (styles/community-tags-position)}
+          [community-view/community-tags tags]]]]]]]))
 

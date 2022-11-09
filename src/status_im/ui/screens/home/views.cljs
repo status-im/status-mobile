@@ -60,21 +60,24 @@
   [react/view {:padding-horizontal 16
                :padding-vertical   10}
    [search-input/search-input
-    {:search-active? search-active?
-     :search-filter  search-filter
-     :on-cancel      #(re-frame/dispatch [:search/home-filter-changed nil])
-     :on-blur        (fn []
-                       (when chats-empty
-                         (re-frame/dispatch [:search/home-filter-changed nil]))
-                       (re-frame/dispatch [::new-chat/clear-new-identity]))
-     :on-focus       (fn [search-filter]
-                       (when-not search-filter
-                         (re-frame/dispatch [:search/home-filter-changed ""])
-                         (re-frame/dispatch [::new-chat/clear-new-identity])))
-     :on-change      (fn [text]
-                       (re-frame/dispatch [:search/home-filter-changed text])
-                       (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
-                       (debounce/debounce-and-dispatch [:new-chat/set-new-identity text] 300))}]])
+    {:search-active?   search-active?
+     :placeholder      (i18n/label :t/search)
+     :border-radius    10
+     :search-filter    search-filter
+     :before           true
+     :on-cancel        #(re-frame/dispatch [:search/home-filter-changed nil])
+     :on-blur          (fn []
+                         (when chats-empty
+                           (re-frame/dispatch [:search/home-filter-changed nil]))
+                         (re-frame/dispatch [::new-chat/clear-new-identity]))
+     :on-focus         (fn [search-filter]
+                         (when-not search-filter
+                           (re-frame/dispatch [:search/home-filter-changed ""])
+                           (re-frame/dispatch [::new-chat/clear-new-identity])))
+     :on-change        (fn [text]
+                         (re-frame/dispatch [:search/home-filter-changed text])
+                         (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
+                         (debounce/debounce-and-dispatch [:new-chat/set-new-identity text] 300))}]])
 
 (defn search-input-wrapper-old [search-filter chats-empty]
   [react/view {:padding-horizontal 16
