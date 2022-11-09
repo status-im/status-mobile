@@ -29,7 +29,7 @@
                        :flex-grow          0
                        :flex-shrink        1
                        :padding-horizontal 20
-                       :align-items :center}}
+                       :align-items        :center}}
       [rn/view {:style {:width           20
                         :height          20
                         :align-items     :center
@@ -51,5 +51,5 @@
           description])]]
      (when arrow?
        [rn/view {:style {:position :absolute
-                         :right 8}}
+                         :right    8}}
         [icons/icon :main-icons2/chevron-right {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]])]))

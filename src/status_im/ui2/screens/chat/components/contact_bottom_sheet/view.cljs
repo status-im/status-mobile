@@ -3,7 +3,7 @@
             [quo.react-native :as rn]
             [quo2.components.drawers.action-drawers :as action-drawers]
             [quo2.components.list-items.menu-item :as quo2.menu-item]
-            [re-frame.core :as rf]))
+            [status-im.utils.re-frame :as rf]))
 
 (defn hide-sheet-and-dispatch [event]
   (rf/dispatch [:bottom-sheet/hide])

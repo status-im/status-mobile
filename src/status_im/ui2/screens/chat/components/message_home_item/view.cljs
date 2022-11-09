@@ -8,7 +8,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo.react-native :as rn]
-            [status-im.ui2.screens.chat.components.chat-bottom-sheet.view :refer [chat-bottom-sheet]]
+            [status-im.ui2.screens.chat.components.chat-bottom-sheet.view :as chat-bottom-sheet]
             [quo.platform :as platform]
             [quo2.components.markdown.text :as text]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
@@ -98,7 +98,7 @@
                                                    (rf/dispatch [:search/home-filter-changed nil])
                                                    (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
                                   :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                {:content (fn [] [chat-bottom-sheet item group-chat])}])})
+                                                                {:content (fn [] [chat-bottom-sheet/chat-bottom-sheet item group-chat])}])})
      (if group-chat
        [rn/view {:style (style/group-chat-icon color)}
         [icons/icon :main-icons2/group {:size 16 :color colors/white-opa-70}]]
