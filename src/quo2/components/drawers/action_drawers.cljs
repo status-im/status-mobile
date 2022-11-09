@@ -1,6 +1,5 @@
 (ns quo2.components.drawers.action-drawers
-  (:require  [status-im.ui.components.react :as react]
-             [react-native.core :as rn]
+  (:require  [react-native.core :as rn]
              [quo2.components.markdown.text :as text]
              [quo2.components.icon :as icon]
              [quo2.foundations.colors :as colors]))
@@ -17,20 +16,20 @@
                       danger?
                       on-press]}]
   [rn/touchable-opacity {:on-press on-press}
-   [react/view {:style
-                {:height            (if sub-label 56 47)
-                 :margin-horizontal 20
-                 :flex-direction    :row}}
-    [react/view {:style
-                 {:height        20
-                  :margin-top    :auto
-                  :margin-bottom :auto
-                  :margin-right  12
-                  :width         20}}
+   [rn/view {:style
+             {:height            (if sub-label 56 47)
+              :margin-horizontal 20
+              :flex-direction    :row}}
+    [rn/view {:style
+              {:height        20
+               :margin-top    :auto
+               :margin-bottom :auto
+               :margin-right  12
+               :width         20}}
      [icon/icon icon
       {:color (get-icon-color danger?)
        :size 20}]]
-    [react/view
+    [rn/view
      {:style
       {:flex            1
        :justify-content :center}}
@@ -48,11 +47,11 @@
                  (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
         sub-label])]
     (when right-icon
-      [react/view {:style
-                   {:height        20
-                    :margin-top    :auto
-                    :margin-bottom :auto
-                    :width 20}}
+      [rn/view {:style
+                {:height        20
+                 :margin-top    :auto
+                 :margin-bottom :auto
+                 :width 20}}
        [icon/icon right-icon
         {:color (get-icon-color danger?)
          :size 20}]])]])

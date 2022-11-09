@@ -1,12 +1,10 @@
 (ns quo2.components.wallet.token-overview
   (:require
    [quo2.foundations.colors :as colors]
-   [status-im.i18n.i18n :as i18n]
    [react-native.core :as rn]
    [clojure.string :as string]
-   [status-im.utils.currency :as currencies]
-   [status-im.ui.components.icons.icons :as icons]
-   [quo2.components.markdown.text :as text]))
+   [quo2.components.markdown.text :as text]
+   [quo2.components.icon :as icons]))
 
 (def container-style {:display :flex :width "100%" :padding-left 20 :padding-right 20 :padding-top 12 :padding-bottom 12})
 
@@ -42,15 +40,15 @@
     }"
   []
   (fn
-    [{:keys [currency price  percentage-change] :or {currency :usd price "0.00" percentage-change "0.0"}}]
+    [{:keys [currency price percentage-change label] :or {price "0.00" percentage-change "0.0"}}]
     (let [direction (get-direction percentage-change)]
       [rn/view {:style container-style}
        [text/text  {:number-of-lines 1
-                    :size  :paragraph-2} (i18n/label :token-price)]
+                    :size  :paragraph-2} label]
        [text/text  {:style {:margin-top 4}
                     :weight :semi-bold
                     :number-of-lines 1
-                    :size  :heading-2} (str (get-in currencies/currencies [currency :symbol]) price)]
+                    :size  :heading-2} (str currency price)]
 
        [rn/view {:style {:display :flex :flex-direction :row :margin-top 6 :align-items :center}}
         (when (not (zero? direction)) [icons/icon (if (>= direction 0) :main-icons2/price-increase12 :main-icons2/price-decrease12)
@@ -76,7 +74,7 @@
     :percentage-change :string
     }"
   []
-  (fn [{:keys [token token-img-src currency account-balance price percentage-change] :or {currency :usd account-balance "0.00" price "0.00" percentage-change "0.0"}}]
+  (fn [{:keys [token token-img-src currency account-balance price percentage-change] :or {account-balance "0.00" price "0.00" percentage-change "0.0"}}]
     (let [direction (get-direction percentage-change)]
       [rn/view {:style container-style}
        [text/text  {:weight :regular
@@ -85,20 +83,19 @@
        [rn/view {:style {:display :flex :flex-direction :row :flex 1 :justify-content :space-between}}
         [text/text  {:number-of-lines 1
                      :weight :semi-bold
-                     :size  :heading-1} (str (get-in currencies/currencies [currency :symbol]) account-balance)]
+                     :size  :heading-1} (str currency account-balance)]
         [rn/image {:source token-img-src
                    :style {:height 32
                            :width 32}}]]
        [rn/view {:style {:display :flex :flex-direction :row :margin-top 6 :align-items :center}}
-        (when (not (zero? direction)) [icons/icon (if (pos? direction) :main-icons2/price-increase12 :main-icons2/price-decrease12)
+        (when (not (zero? direction)) [icons/icon (if (pos? direction) :main-icons2/price-increase :main-icons2/price-decrease)
                                        {:no-color true
-                                        :width 12
-                                        :height 12
+                                        :size 12
                                         :container-style {:margin-right 4}}])
         [text/text  {:number-of-lines 1
                      :weight :medium
                      :size  :paragraph-2
-                     :style {:color  (price-color direction)}} (str (get-in currencies/currencies [currency :symbol]) price)]
+                     :style {:color  (price-color direction)}} (str currency price)]
         [divider direction]
         [text/text {:number-of-lines 1
                     :weight :medium

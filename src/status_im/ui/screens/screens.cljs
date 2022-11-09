@@ -119,11 +119,10 @@
             [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
             [status-im.ui.screens.wallet.recipient.views :as recipient]
             [status-im.ui.screens.wallet.send.views :as wallet.send]
-            [quo2.screens.main :as quo2.preview]
+            [status-im.ui2.screens.quo2-preview.main :as quo2.preview]
             [status-im.utils.config :as config]
             [status-im.ui.screens.wallet.manage-connections.views :as manage-all-connections]
             [status-im.navigation2.screens :as navigation2.screens]))
-            ;[quo2.foundations.colors :as quo2.colors]))
 
 (def components
   [])

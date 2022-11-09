@@ -29,6 +29,7 @@
                     :align-items :center
                     :margin-top 20}}
    [preview-list/preview-list {:type :user
+                               :more-than-99-label (i18n/label :counter-99-plus)
                                :user user-list :list-size 4 :size 24}]
    [text/text {:accessibility-label :communities-screen-title
                :style {:margin-left 8}

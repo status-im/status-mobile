@@ -1,17 +1,19 @@
 (ns quo2.components.switcher.switcher-cards
   (:require [react-native.core :as rn]
-            [status-im.i18n.i18n :as i18n]
+            [react-native.fast-image :as fast-image]
             [quo2.foundations.colors :as colors]
             [quo2.components.markdown.text :as text]
             [quo2.components.buttons.button :as button]
             [quo2.components.switcher.styles :as styles]
             [quo2.components.counter.counter :as counter]
             [quo2.components.tags.status-tags :as status-tags]
-            [status-im.ui.components.fast-image :as fast-image]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.avatars.group-avatar :as group-avatar]
             [quo2.components.list-items.preview-list :as preview-list]
-            [quo2.components.avatars.channel-avatar :as channel-avatar]))
+            [quo2.components.avatars.channel-avatar :as channel-avatar]
+            [status-im.i18n.i18n :as i18n]))
+
+;;TODO move outside quo or find a way how to move i18n outside
 
 ;; Supporting Components
 
@@ -19,9 +21,10 @@
   [rn/view {:style (styles/content-container new-notifications?)}
    (case content-type
      :text [text/text (styles/last-message-text-props) data]
-     :photo [preview-list/preview-list {:type           :photo
-                                        :size           24
-                                        :override-theme :dark} data]
+     :photo [preview-list/preview-list {:type               :photo
+                                        :more-than-99-label (i18n/label :counter-99-plus)
+                                        :size               24
+                                        :override-theme     :dark} data]
      :sticker [fast-image/fast-image {:source (:source data)
                                       :style  (styles/sticker)}]
      :gif [fast-image/fast-image {:source (:source data)
@@ -35,6 +38,7 @@
      :community-info (case (:type data)
                        :pending      [status-tags/status-tag
                                       {:status         :pending
+                                       :label          (i18n/label :t/pending)
                                        :size           :small
                                        :override-theme :dark}]
                        :kicked      [status-tags/status-tag
@@ -75,15 +79,15 @@
 
 (defn subtitle [{:keys [content-type data]}]
   (case content-type
-    :text           (i18n/label :t/message)
-    :photo          (i18n/label :t/n-photos {:count (count data)})
-    :sticker        (i18n/label :t/sticker)
-    :gif            (i18n/label :t/gif)
-    :audio          (i18n/label :t/audio-message)
-    :community      (i18n/label :t/link-to-community)
-    :link           (i18n/label :t/external-link)
-    :code           (i18n/label :t/code-snippet)
-    :channel        (i18n/label :t/community-channel)
+    :text (i18n/label :t/message)
+    :photo (i18n/label :t/n-photos {:count (count data)})
+    :sticker (i18n/label :t/sticker)
+    :gif (i18n/label :t/gif)
+    :audio (i18n/label :t/audio-message)
+    :community (i18n/label :t/link-to-community)
+    :link (i18n/label :t/external-link)
+    :code (i18n/label :t/code-snippet)
+    :channel (i18n/label :t/community-channel)
     :community-info (i18n/label :t/community)))
 
 ;; Screens Card

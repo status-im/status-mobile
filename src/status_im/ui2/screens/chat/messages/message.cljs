@@ -284,7 +284,10 @@
     (if deleted-for-me?
       [system-message/system-message
        {:type             :deleted
-        :label            :message-deleted-for-you
+        :label            (i18n/label :message-deleted-for-you)
+        :labels           {:pinned-a-message (i18n/label :pinned-a-message)
+                           :message-deleted  (i18n/label :message-deleted)
+                           :added            (i18n/label :added)}
         :timestamp-str    timestamp-str
         :non-pressable?   true
         :animate-landing? (if deleted-for-me-undoable-till true false)}]

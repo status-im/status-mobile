@@ -15,6 +15,8 @@
 
 (def flat-list flat-list/flat-list)
 
+(def activity-indicator (reagent/adapt-react-class (.-ActivityIndicator ^js react-native)))
+
 (def modal (reagent/adapt-react-class (.-Modal ^js react-native)))
 
 (def keyboard ^js (.-Keyboard ^js react-native))

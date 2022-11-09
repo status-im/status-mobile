@@ -5,7 +5,7 @@
             [quo2.components.wallet.network-amount :refer [network-amount]]))
 
 (defn network-breakdown
-  [{:keys [top-value network-conversions]}]
+  [{:keys [top-value network-conversions labels]}]
   [rn/view {:style {:background-color   (colors/theme-colors
                                          colors/white
                                          colors/neutral-95)
@@ -41,5 +41,6 @@
           [network-amount {:show-right-border? (not= idx last-item-idx)
                            :icon               icon
                            :network-name       network
-                           :eth-value          conversion}]])
+                           :eth-value          conversion
+                           :labels             labels}]])
        network-conversions))]])
