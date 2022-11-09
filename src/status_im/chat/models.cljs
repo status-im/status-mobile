@@ -257,8 +257,11 @@
             (close-chat)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
-              {:db (assoc db :current-chat-id chat-id)})
-            (preload-chat-data chat-id)
+              {:db (assoc db :current-chat-id chat-id)
+              ;;  TODO: Remove dispatch later and uncomment line 263 when tester has done testing
+               :dispatch-later [{:ms 5000
+                                 :dispatch [:chat.ui/preload-chat-data chat-id]}]})
+            ;; (preload-chat-data chat-id)
             #(when (group-chat? cofx chat-id)
                (loading/load-chat % chat-id))))
 
@@ -267,9 +270,12 @@
   {:events [:chat.ui/navigate-to-chat-nav2]}
   [{db :db :as cofx} chat-id from-switcher?]
   (fx/merge cofx
-            {:db (assoc db :current-chat-id chat-id)}
+            {:db (assoc db :current-chat-id chat-id)
+             ;;  TODO: Remove dispatch later  and uncomment line 277 when tester has done testing
+             :dispatch-later [{:ms 5000
+                               :dispatch [:chat.ui/preload-chat-data chat-id]}]}
             (offload-messages chat-id)
-            (preload-chat-data chat-id)
+            ;; (preload-chat-data chat-id)
             (navigation/navigate-to-nav2 :chat chat-id nil from-switcher?)))
 
 (fx/defn handle-clear-history-response
