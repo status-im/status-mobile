@@ -101,16 +101,13 @@
                                  :width         32
                                  :height        (if (= id 1) 8 26)
                                  :border-radius 6
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                                  :first-image   "" ; TODO replace with real data
 <<<<<<< HEAD
                                  :last-image    ""}])]])) ; TODO replace with real data
 =======
                                  :last-image    ""}]) ; TODO replace with real data
-<<<<<<< HEAD
       ]]))
+<<<<<<< HEAD
 =======
 =======
                                  :first-image   "" ;; TODO replace with real data
@@ -124,3 +121,5 @@
       ]]))
 >>>>>>> aec9cae20... feat: messages contact requests
 >>>>>>> 0347951b2... feat: messages contact requests
+=======
+>>>>>>> d0af42c62... rebase
