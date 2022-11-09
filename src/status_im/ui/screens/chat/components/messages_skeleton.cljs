@@ -2,7 +2,7 @@
   (:require [status-im.ui.components.react :as react]
             [quo.react-native :as rn]
             [reagent.core :as reagent]
-            [quo2.reanimated :as reanimated]
+            [react-native.reanimated :as reanimated]
             [quo2.foundations.colors :as colors]))
 
 (def message-skeleton-height 54)
