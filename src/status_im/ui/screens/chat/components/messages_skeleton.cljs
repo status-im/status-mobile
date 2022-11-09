@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.chat.components.messages-skeleton
   (:require [status-im.ui.components.react :as react]
-            [quo.react-native :as rn]
+            [react-native.core :as rn]
             [reagent.core :as reagent]
             [react-native.reanimated :as reanimated]
             [quo2.foundations.colors :as colors]))
