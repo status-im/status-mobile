@@ -594,14 +594,15 @@
 
            ;;MODALS
 
-                                        ;[Chat] New Chat
+           ;; [Chat] New Chat
            {:name      :new-chat
             :on-focus  [::new-chat.events/new-chat-focus]
             ;;TODO accessories
             :options   {:topBar {:visible false}}
-            :component new-chat/new-chat}
+            :component new-chat/new-chat
+            }
 
-                                        ;[Chat] New Public chat
+           ;; [Chat] New Public chat
            {:name      :new-public-chat
             :insets    {:bottom true}
             :options   {:topBar {:title {:text (i18n/label :t/new-public-group-chat)}}}
