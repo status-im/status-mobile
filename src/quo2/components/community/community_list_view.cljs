@@ -5,12 +5,12 @@
    [quo2.foundations.colors :as colors]
    [quo2.components.counter.counter :as counter]
    [quo2.components.icon :as icons]
-   [quo2.components.community.styles :as styles]
+   [quo2.components.community.style :as style]
    [react-native.core :as rn]))
 
 (defn communities-list-view-item [props {:keys [name locked? status notifications
                                                 tokens background-color]}]
-  [rn/view {:style (merge (styles/community-card 16)
+  [rn/view {:style (merge (style/community-card 16)
                           {:margin-bottom     12
                            :margin-horizontal 20})}
    [rn/touchable-highlight (merge {:style {:height        56

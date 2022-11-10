@@ -1,7 +1,7 @@
 (ns quo2.components.community.discover-card
   (:require [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [quo2.components.community.styles :as styles]
+            [quo2.components.community.style :as style]
             [react-native.core :as rn]))
 
 ;; Discover card placeholders images.
@@ -74,7 +74,7 @@
     [rn/touchable-without-feedback
      {:on-press            on-press
       :accessibility-label accessibility-label}
-     [rn/view (merge (styles/community-card 16)
+     [rn/view (merge (style/community-card 16)
                      {:background-color  (colors/theme-colors
                                           colors/white
                                           colors/neutral-90)}

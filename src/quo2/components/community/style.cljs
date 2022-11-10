@@ -1,4 +1,4 @@
-(ns quo2.components.community.styles
+(ns quo2.components.community.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def category-item

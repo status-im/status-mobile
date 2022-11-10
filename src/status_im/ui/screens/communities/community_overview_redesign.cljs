@@ -8,7 +8,7 @@
              [quo2.components.dividers.divider-label :as divider-label]
              [quo2.components.community.community-view :as community-view]
              [quo2.components.tags.status-tags :as status-tags]
-             [quo2.components.community.styles :as styles]
+             [quo2.components.community.style :as styles]
              [quo2.foundations.colors :as colors]
              [quo2.components.navigation.page-nav :as page-nav]
              [status-im.ui.screens.communities.request-to-join-bottom-sheet-redesign :as request-to-join]

@@ -5,11 +5,11 @@
    [quo2.foundations.colors :as colors]
    [quo2.components.tags.permission-tag :as permission]
    [quo2.components.tags.tag :as tag]
-   [quo2.components.community.styles :as styles]
+   [quo2.components.community.style :as style]
    [react-native.core :as rn]))
 
 (defn community-stats [{:keys [icon members-count icon-color]}]
-  [rn/view (styles/stats-count-container)
+  [rn/view (style/stats-count-container)
    [rn/view {:margin-right 4}
     [icons/icon icon {:container-style {:align-items     :center
                                         :justify-content :center}
@@ -23,8 +23,8 @@
 (defn community-stats-column [type]
   (let [icon-color (colors/theme-colors colors/neutral-50 colors/neutral-40)]
     [rn/view (if (= type :card-view)
-               (styles/card-stats-container)
-               (styles/list-stats-container))
+               (style/card-stats-container)
+               (style/list-stats-container))
      [community-stats {:icon       :main-icons2/group
                        :members-count "629.2K" ;;TODO here should be formatted value, use money/format-members from outside this component
                        :icon-color icon-color}]
@@ -37,7 +37,7 @@
                          :icon-color icon-color}])]))
 
 (defn community-tags [tags]
-  [rn/view (styles/community-tags-container)
+  [rn/view (style/community-tags-container)
    (for [{:keys [id tag-label resource]} tags]
      ^{:key id}
      [rn/view {:margin-right 8}
@@ -50,7 +50,7 @@
         :resource resource}]])])
 
 (defn community-title [{:keys [title description size] :or {size :small}}]
-  [rn/view (styles/community-title-description-container (if (= size :large) 56 32))
+  [rn/view (style/community-title-description-container (if (= size :large) 56 32))
    (when title
      [text/text
       {:accessibility-label :chat-name-text
