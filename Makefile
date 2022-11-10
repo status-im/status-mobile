@@ -48,7 +48,7 @@ export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-mobile
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
 export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE
 
-# Useful for Andoird release builds
+# Useful for Android release builds
 TMP_BUILD_NUMBER := $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)
 
 # MacOS root is read-only, read nix/README.md for details
@@ -312,6 +312,16 @@ test: ##@test Run tests once in NodeJS
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js target/test/test.js
+
+
+run-visual-test-ios: export TARGET := clojure
+run-visual-test-ios: XCODE_DERIVED_DATA := $(HOME)/Library/Developer/Xcode/DerivedData
+run-visual-test-ios: APPLICATION_NAME := $(shell ls $(XCODE_DERIVED_DATA) | grep -E '\bStatusIm-')
+run-visual-test-ios: export TEST_BINARY_PATH := $(XCODE_DERIVED_DATA)/$(APPLICATION_NAME)/Build/Products/Debug-iphonesimulator/StatusIm.app
+run-visual-test-ios: ##@test Run tests once in NodeJS
+	yarn install
+	detox build --configuration ios.sim.debug && \
+	detox test --configuration ios.sim.debug 
 
 #--------------
 # Other

@@ -10,11 +10,7 @@
     "app:compile:android": "shadow-cljs compile android",
     "app:watch": "shadow-cljs watch android",
     "app:packager": "react-native start --host 0.0.0.0 --port 8081",
-    "app:android": "react-native run-android",
-    "detox": "detox build --configuration ios.sim.debug",
-    "visual-test": "detox test --configuration ios.sim.debug --config e2e/config.json",
-    "help": "detox test -- --help"
-
+    "app:android": "react-native run-android"
   },
   "resolutions": {
     "react-devtools-core": "^4.26.0"

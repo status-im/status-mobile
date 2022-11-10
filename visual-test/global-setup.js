@@ -27,8 +27,8 @@ function downloadTestButlerAPK() {
 }
 
 function resolveSelectedConfiguration() {
-  const { configurations } = require('../.detoxrc.json');
-  const configName = process.env.DETOX_CONFIGURATION;
+  const { configurations } = require('../.detoxrc');
+  const configName = process.env.DETOX_CONFIGURATION; 
   return configurations[configName];
 }
 

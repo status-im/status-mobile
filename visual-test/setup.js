@@ -16,7 +16,7 @@ expect.extend({
   async toMatchImageSnapshot(screenName) {
     const platform = await device.getPlatform();
     const deviceName = await device.name.split(' ').slice(1).join ('') ;
-    const deviceType = 'iPhone 11 Pro' //JSON.parse(deviceName).type.replace(',','');
+    const deviceType = 'iPhone 11 Pro' ;
 
     const SNAPSHOTS_DIR = `__image_snapshots__/${platform}/${deviceType}`;
 

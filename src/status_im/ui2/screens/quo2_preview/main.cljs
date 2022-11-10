@@ -227,7 +227,8 @@
                  (for [{:keys [name]} (val category)]
                    ^{:key name}
                    [quo2-button/button
-                    {:style {:margin-vertical 8}
+                    {:test-ID (str "quo2-" name)
+                     :style {:margin-vertical 8}
                      :on-press #(re-frame/dispatch [:navigate-to name])}
                     (clojure.core/name name)])]) (sort screens-categories))]])]))
 

@@ -175,3 +175,6 @@ test/appium/tests/users.py
 ##node bindings
 /bin/
 /lib/
+
+## visual tests
+/artifacts

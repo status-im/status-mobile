@@ -44,7 +44,8 @@
            (i18n/label :intro-wizard-title-alt4)]
           [rn/view
            [rn/view {:style {:padding 16}}
-            [quo/text-input {:secure-text-entry   true
+            [quo/text-input {:test-ID :password-placeholder
+                             :secure-text-entry   true
                              :auto-capitalize     :none
                              :auto-focus          true
                              :show-cancel         false
@@ -56,7 +57,8 @@
                                                      (some-> ^js @confirm-ref .focus))}]]
            [rn/view {:style {:padding 16
                              :opacity (if-not valid-password 0.33 1)}}
-            [quo/text-input {:secure-text-entry   true
+            [quo/text-input {:test-ID :confirm-password-placeholder
+                             :secure-text-entry   true
                              :get-ref             #(reset! confirm-ref %)
                              :auto-capitalize     :none
                              :show-cancel         false
