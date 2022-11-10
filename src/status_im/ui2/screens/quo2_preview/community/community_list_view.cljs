@@ -56,8 +56,8 @@
          [preview/customizer state descriptor]]
         [rn/view {:padding-vertical 60
                   :justify-content  :center}
-         [community-list-view/communities-list-view-item (merge @state
-                                                                community-data)]]]])))
+         [community-list-view/communities-list-view-item {} (merge @state
+                                                                   community-data)]]]])))
 
 (defn preview-community-list-view []
   [rn/view {:background-color (colors/theme-colors colors/neutral-5

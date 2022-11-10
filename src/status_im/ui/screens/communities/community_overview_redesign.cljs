@@ -8,15 +8,15 @@
              [quo2.components.dividers.divider-label :as divider-label]
              [quo2.components.community.community-view :as community-view]
              [quo2.components.tags.status-tags :as status-tags]
+             [quo2.components.community.styles :as styles]
+             [quo2.foundations.colors :as colors]
+             [quo2.components.navigation.page-nav :as page-nav]
              [status-im.ui.screens.communities.request-to-join-bottom-sheet-redesign :as request-to-join]
              [status-im.ui.screens.communities.community-options-bottom-sheet :as options-menu]
              [status-im.ui.components.list.views :as list]
              [status-im.utils.handlers :refer [<sub >evt]]
-             [status-im.ui.screens.communities.styles :as styles]
-             [quo2.foundations.colors :as colors]
-             [quo2.components.navigation.page-nav :as page-nav]
              [status-im.ui.screens.communities.icon :as communities.icon]))
-
+(def a 1)
 ;; Mocked list items
 (def user-list
   [{:full-name "Alicia K"}
