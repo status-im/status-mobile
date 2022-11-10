@@ -6,6 +6,14 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
+;;;; Misc
+
+(fx/defn process-notification-failure
+  {:events [:activity-center/process-notification-failure]}
+  [_ notification-id action error]
+  (log/warn (str "Failed to " action)
+            {:notification-id notification-id :error error}))
+
 ;;;; Notification reconciliation
 
 (defn- update-notifications
@@ -45,38 +53,69 @@
     {:db (update-in db [:activity-center :notifications]
                     update-notifications new-notifications)}))
 
-;;;; Contact verification
-
-(fx/defn contact-verification-decline
-  {:events [:activity-center.contact-verification/decline]}
-  [_ contact-verification-id]
-  {::json-rpc/call [{:method     "wakuext_declineContactVerificationRequest"
-                     :params     [contact-verification-id]
-                     :on-success #(rf/dispatch [:activity-center.contact-verification/decline-success %])
-                     :on-error   #(rf/dispatch [:activity-center.contact-verification/decline-error contact-verification-id %])}]})
-
-(fx/defn contact-verification-decline-success
-  {:events [:activity-center.contact-verification/decline-success]}
+(fx/defn notifications-reconcile-from-response
+  {:events [:activity-center/reconcile-notifications-from-response]}
   [cofx response]
   (->> response
        :activityCenterNotifications
        (map data-store.activities/<-rpc)
        (notifications-reconcile cofx)))
 
-(fx/defn contact-verification-decline-error
-  {:events [:activity-center.contact-verification/decline-error]}
-  [_ contact-verification-id error]
-  (log/warn "Failed to decline contact verification"
-            {:contact-verification-id contact-verification-id
-             :error                   error})
-  nil)
+;;;; Contact verification
+
+(fx/defn contact-verification-decline
+  {:events [:activity-center.contact-verification/decline]}
+  [_ notification-id]
+  {::json-rpc/call [{:method     "wakuext_declineContactVerificationRequest"
+                     :params     [notification-id]
+                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response %])
+                     :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                                notification-id
+                                                :contact-verification/decline
+                                                %])}]})
+
+(fx/defn contact-verification-reply
+  {:events [:activity-center.contact-verification/reply]}
+  [_ notification-id reply]
+  {::json-rpc/call [{:method     "wakuext_acceptContactVerificationRequest"
+                     :params     [notification-id reply]
+                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response %])
+                     :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                                notification-id
+                                                :contact-verification/reply
+                                                %])}]})
+
+(fx/defn contact-verification-mark-as-trusted
+  {:events [:activity-center.contact-verification/mark-as-trusted]}
+  [_ notification-id]
+  {::json-rpc/call [{:method     "wakuext_verifiedTrusted"
+                     :params     [{:id notification-id}]
+                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response %])
+                     :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                                notification-id
+                                                :contact-verification/mark-as-trusted
+                                                %])}]})
+
+(fx/defn contact-verification-mark-as-untrustworthy
+  {:events [:activity-center.contact-verification/mark-as-untrustworthy]}
+  [_ notification-id]
+  {::json-rpc/call [{:method     "wakuext_verifiedUntrustworthy"
+                     :params     [{:id notification-id}]
+                     :on-success #(rf/dispatch [:activity-center/reconcile-notifications-from-response %])
+                     :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                                notification-id
+                                                :contact-verification/mark-as-untrustworthy
+                                                %])}]})
 
 ;;;; Notifications fetching and pagination
 
 (def defaults
   {:filter-status          :unread
    :filter-type            types/no-type
-   :notifications-per-page 10})
+   ;; Choose the maximum number of notifications that *usually/safely* fit on
+   ;; most screens, so that the UI doesn't have to needlessly render
+   ;; notifications.
+   :notifications-per-page 8})
 
 (def start-or-end-cursor
   "")
@@ -92,9 +131,9 @@
 
 (defn status [filter-status]
   (case filter-status
-    :read status-read
+    :read   status-read
     :unread status-unread
-    :all status-all
+    :all    status-all
     99))
 
 (fx/defn notifications-fetch

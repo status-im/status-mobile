@@ -13,7 +13,7 @@
 
 (def raw-notification
   {:chatId                    chat-id
-   :contactVerificationStatus constants/contact-verification-state-pending
+   :contactVerificationStatus constants/contact-verification-status-pending
    :lastMessage               {}
    :name                      chat-name
    :replyMessage              {}})
@@ -23,7 +23,7 @@
     (testing "renames keys"
       (is (= {:name                        chat-name
               :chat-id                     chat-id
-              :contact-verification-status constants/contact-verification-state-pending}
+              :contact-verification-status constants/contact-verification-status-pending}
              (-> raw-notification
                  store/<-rpc
                  (dissoc :last-message :message :reply-message)))))
