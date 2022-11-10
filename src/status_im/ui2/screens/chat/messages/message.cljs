@@ -27,7 +27,6 @@
             [status-im.ui.screens.chat.message.link-preview :as link-preview]
             [status-im.ui.screens.chat.message.reactions :as reactions]
             [status-im.ui.screens.chat.message.reactions-row :as reaction-row]
-            [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.styles.photos :as photos.style]
@@ -35,10 +34,14 @@
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.ui2.screens.chat.components.reply :as components.reply]
             [status-im.utils.config :as config]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.utils.re-frame :as rf]
             [status-im.utils.security :as security]
             [quo2.components.icon :as icons]
-            [status-im.utils.datetime :as time])
+            [status-im.utils.datetime :as time]
+            [status-im.ui2.screens.chat.components.message-home-item.view :as message-home-item]
+            [quo2.components.avatars.user-avatar :as user-avatar]
+            [quo2.components.markdown.text :as text]
+            [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
@@ -130,7 +133,7 @@
             {:style    (merge {:color (if (system-text? content-type) quo.colors/black colors/primary-50)}
                               (if (system-text? content-type) typography/font-regular typography/font-medium))
              :on-press (when-not (system-text? content-type)
-                         #(>evt [:chat.ui/show-profile literal]))}
+                         #(rf/dispatch [:chat.ui/show-profile literal]))}
             [mention-element literal]]])
     "status-tag"
     (conj acc [rn/text
@@ -236,6 +239,7 @@
              (= outgoing-status :not-sent))
     [message-not-sent-text chat-id message-id]))
 
+;; TODO (Omar): a reminder to clean these defviews
 (defview message-author-name [from opts max-length]
   (letsubs [contact-with-names [:contacts/contact-by-identity from]]
     (chat.utils/format-author contact-with-names opts max-length)))
@@ -275,12 +279,30 @@
          [rn/text {:style {:text-align :center
                            :color      quo.colors/blue}} (i18n/label :t/view)]]]])))
 
+(defn display-name-view [display-name contact timestamp show-key?]
+  [rn/view {:style {:flex-direction :row}}
+   [text/text {:weight          :semi-bold
+               :size            :paragraph-2
+               :number-of-lines 1
+               :style           {:width "45%"}}
+    display-name]
+   [message-home-item/verified-or-contact-icon contact]
+   (when show-key?
+     [text/text {:size  :label
+                 :style {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40)
+                         :margin-left 8
+                         :margin-top  2}}
+      (str (utils/get-shortened-address (:public-key contact)) " • " (time/to-short-str timestamp))])])
+
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
-  [{:keys [last-in-group? identicon from in-popover? timestamp-str
-           deleted-for-me? deleted-for-me-undoable-till pinned]
-    :as   message} content {:keys [modal close-modal]}]
-  (let [response-to (:response-to (:content message))]
+  [{:keys [last-in-group? timestamp-str timestamp
+           deleted-for-me? deleted-for-me-undoable-till pinned from]
+    :as   message} content]
+  (let [response-to  (:response-to (:content message))
+        display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
+        contact      (rf/sub [:contacts/contact-by-address from])
+        photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))]
     (if deleted-for-me?
       [system-message/system-message
        {:type             :deleted
@@ -298,30 +320,17 @@
          [quoted-message response-to (:quoted-message message)])
        [rn/view {:style          (style/message-body)
                  :pointer-events :box-none}
-        [rn/view (style/message-author-userpic)
+        [rn/view {:style {:width 40}}
          (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
-           [rn/touchable-opacity {:active-opacity 1
-                                  :on-press       #(do (when modal (close-modal))
-                                                       (>evt [:bottom-sheet/hide])
-                                                       (re-frame/dispatch [:chat.ui/show-profile from]))}
-            [photos/member-photo from identicon]])]
-
+           [user-avatar/user-avatar {:full-name         display-name
+                                     :profile-picture   photo-path
+                                     :status-indicator? true
+                                     :online?           true
+                                     :size              :small
+                                     :ring?             false}])]
         [rn/view {:style (style/message-author-wrapper)}
          (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
-           [rn/view {:style {:flex-direction :row :align-items :center}}
-            [rn/touchable-opacity {:style    style/message-author-touchable
-                                   :disabled in-popover?
-                                   :on-press #(do (when modal (close-modal))
-                                                  (>evt [:bottom-sheet/hide])
-                                                  (re-frame/dispatch [:chat.ui/show-profile from]))}
-             [message-author-name from {:modal modal}]]
-            [rn/text
-             {:style               (merge
-                                    {:padding-left 5
-                                     :margin-top   2}
-                                    (style/message-timestamp-text))
-              :accessibility-label :message-timestamp}
-             timestamp-str]])
+           [display-name-view display-name contact timestamp true])
          ;; MESSAGE CONTENT
          content
          [link-preview/link-preview-wrapper (:links (:content message)) false false]]]
@@ -752,9 +761,9 @@
 (def list-key-fn #(or (:message-id %) (:value %)))
 
 (defn pinned-messages-list [chat-id]
-  (let [pinned-messages (vec (vals (<sub [:chats/pinned chat-id])))
-        current-chat    (<sub [:chats/current-chat])
-        community       (<sub [:communities/community (:community-id current-chat)])]
+  (let [pinned-messages (vec (vals (rf/sub [:chats/pinned chat-id])))
+        current-chat    (rf/sub [:chats/current-chat])
+        community       (rf/sub [:communities/community (:community-id current-chat)])]
     [rn/view {:accessibility-label :pinned-messages-list}
      [rn/text {:style (merge typography/heading-1 typography/font-semi-bold {:margin-horizontal 20
                                                                              :color             (colors/theme-colors colors/neutral-100 colors/white)})}
@@ -800,8 +809,8 @@
 (defn pin-system-message [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
     [rn/touchable-opacity {:on-press       (fn []
-                                             (>evt [:bottom-sheet/show-sheet
-                                                    {:content #(pinned-messages-list chat-id)}]))
+                                             (rf/dispatch [:bottom-sheet/show-sheet
+                                                           {:content #(pinned-messages-list chat-id)}]))
                            :active-opacity 1
                            :style          (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
      [rn/view {:style               {:width            photos.style/default-size
@@ -840,7 +849,7 @@
         [render-parsed-text message (:parsed-text content)]]]]]))
 
 (defn pinned-banner [chat-id]
-  (let [pinned-messages (<sub [:chats/pinned chat-id])
+  (let [pinned-messages (rf/sub [:chats/pinned chat-id])
         latest-pin-text (get-in (last (vals pinned-messages)) [:content :text])
         pins-count      (count (seq pinned-messages))]
     (when (> pins-count 0)
