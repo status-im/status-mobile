@@ -25,13 +25,13 @@
   (let [result (case type
                  "paragraph"
                  (reduce
-                  (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
-                    (if (>= length max-subheader-length)
-                      (reduced acc-paragraph)
-                      (add-parsed-to-subheader acc-paragraph parsed-child)))
-                  {:components [rn/text]
-                   :length     0}
-                  children)
+                   (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
+                     (if (>= length max-subheader-length)
+                       (reduced acc-paragraph)
+                       (add-parsed-to-subheader acc-paragraph parsed-child)))
+                   {:components [rn/text]
+                    :length     0}
+                   children)
 
                  "mention"
                  {:components [rn/text (<sub [:contacts/contact-name-by-identity literal])]
@@ -52,37 +52,51 @@
   [parsed-text]
   (let [result
         (reduce
-         (fn [{:keys [_ length] :as acc-text} new-text-chunk]
-           (if (>= length max-subheader-length)
-             (reduced acc-text)
-             (add-parsed-to-subheader acc-text new-text-chunk)))
-         {:components [rn/text {:style               (merge typography/paragraph-2 typography/font-regular
-                                                            {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)
-                                                             :width "90%"})
-                                :number-of-lines     1
-                                :ellipsize-mode      :tail
-                                :accessibility-label :chat-message-text}]
-          :length     0}
-         parsed-text)]
+          (fn [{:keys [_ length] :as acc-text} new-text-chunk]
+            (if (>= length max-subheader-length)
+              (reduced acc-text)
+              (add-parsed-to-subheader acc-text new-text-chunk)))
+          {:components [rn/text {:style               (merge typography/paragraph-2 typography/font-regular
+                                                             {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)
+                                                              :width "90%"})
+                                 :number-of-lines     1
+                                 :ellipsize-mode      :tail
+                                 :accessibility-label :chat-message-text}]
+           :length     0}
+          parsed-text)]
     (:components result)))
+
+(defn verified-or-contact-icon [contact]
+  (if (:ens-verified contact)
+    [rn/view {:style {:margin-left 5 :margin-top 4}}
+     [icons/icon :main-icons2/verified {:no-color true
+                                        :size     12
+                                        :color    (colors/theme-colors colors/success-50 colors/success-60)}]]
+    (when (:added? contact)
+      [rn/view {:style {:margin-left 5 :margin-top 4}}
+       [icons/icon :main-icons2/contact {:no-color true
+                                         :size     12
+                                         :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]])))
 
 (defn display-name-view [display-name contact timestamp]
   [rn/view {:style {:flex-direction :row}}
    [text/text {:weight :semi-bold
                :size   :paragraph-1}
     display-name]
-   (if (:ens-verified contact)
-     [rn/view {:style {:margin-left 5 :margin-top 4}}
-      [icons/icon :main-icons2/verified {:no-color true
-                                         :size 12
-                                         :color (colors/theme-colors colors/success-50 colors/success-60)}]]
-     (when (:added? contact)
-       [rn/view {:style {:margin-left 5 :margin-top 4}}
-        [icons/icon :main-icons2/contact {:no-color true
-                                          :size 12
-                                          :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))
+   [verified-or-contact-icon contact]
    [text/text {:style (style/timestamp)}
     (time/to-short-str timestamp)]])
+
+(defn display-pic-view [group-chat color display-name photo-path]
+  (if group-chat
+    [rn/view {:style (style/group-chat-icon color)}
+     [icons/icon :main-icons2/group {:size 16 :color colors/white-opa-70}]]
+    [user-avatar/user-avatar {:full-name         display-name
+                              :profile-picture   photo-path
+                              :status-indicator? true
+                              :online?           true
+                              :size              :small
+                              :ring?             false}]))
 
 (defn messages-home-item [item]
   (let [{:keys [chat-id
@@ -106,17 +120,8 @@
                                                    (>evt [:search/home-filter-changed nil])
                                                    (>evt [:accept-all-activity-center-notifications-from-chat chat-id]))
                                   :on-long-press #(>evt [:bottom-sheet/show-sheet
-                                                         {:content (fn [] [actions/actions chat-type chat-id])}])})
-     (if group-chat
-       [rn/view {:style (style/group-chat-icon color)}
-        [icons/icon :main-icons2/group {:size 16 :color colors/white-opa-70}]]
-       [user-avatar/user-avatar {:full-name         display-name
-                                 :profile-picture   photo-path
-                                 :status-indicator? true
-                                 :online?           true
-                                 :size              :small
-                                 :ring?             false}])
-
+                                                         {:content (fn [] [actions/actions item])}])})
+     [display-pic-view group-chat color display-name photo-path]
      [rn/view {:style {:margin-left 8}}
       [display-name-view display-name contact timestamp]
       (if (string/blank? (get-in last-message [:content :parsed-text]))
