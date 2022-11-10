@@ -8,7 +8,7 @@
             [status-im.utils.utils :refer [get-shortened-address]]
             [quo.platform :as platform]
             [quo2.components.markdown.text :as text]
-            [status-im.ui2.screens.chat.components.contact-bottom-sheet.view :refer [contact-bottom-sheet]]
+            [status-im.ui2.screens.chat.components.contact-bottom-sheet.view :as contact-bottom-sheet]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
 
 (defn open-chat [chat-id]
@@ -26,7 +26,7 @@
     [rn/touchable-opacity (merge {:style         (style/container)
                                   :on-press      #(open-chat public-key)
                                   :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                {:content (fn [] [contact-bottom-sheet item])}])})
+                                                                {:content (fn [] [contact-bottom-sheet/contact-bottom-sheet item])}])})
      [user-avatar/user-avatar {:full-name         display-name
                                :profile-picture   photo-path
                                :status-indicator? true
@@ -51,5 +51,5 @@
                                              :right    20}
                             :active-opacity 1
                             :on-press       #(rf/dispatch [:bottom-sheet/show-sheet
-                                                           {:content (fn [] [contact-bottom-sheet item])}])}
+                                                           {:content (fn [] [contact-bottom-sheet/contact-bottom-sheet item])}])}
       [icons/icon :main-icons2/options {:size 20 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]]))
