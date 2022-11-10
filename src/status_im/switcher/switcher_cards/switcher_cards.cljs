@@ -1,21 +1,17 @@
-(ns quo2.components.switcher.switcher-cards
+(ns status-im.switcher.switcher-cards.switcher-cards
   (:require [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
             [quo2.foundations.colors :as colors]
             [quo2.components.markdown.text :as text]
             [quo2.components.buttons.button :as button]
-            [quo2.components.switcher.styles :as styles]
             [quo2.components.counter.counter :as counter]
             [quo2.components.tags.status-tags :as status-tags]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.avatars.group-avatar :as group-avatar]
             [quo2.components.list-items.preview-list :as preview-list]
             [quo2.components.avatars.channel-avatar :as channel-avatar]
+            [status-im.switcher.switcher-cards.styles :as styles]
             [status-im.i18n.i18n :as i18n]))
-
-;;TODO move outside quo or find a way how to move i18n outside
-
-;; Supporting Components
 
 (defn content-container [{:keys [content-type data new-notifications? color-50]}]
   [rn/view {:style (styles/content-container new-notifications?)}

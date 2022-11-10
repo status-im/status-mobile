@@ -12,7 +12,8 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as rn]
-            [status-im.ui.components.plus-button :as components.plus-button]))
+            [status-im.ui.components.plus-button :as components.plus-button]
+            [status-im.ui.screens.communities.community :as community]))
 
 (def selected-tab (reagent/atom :joined))
 
@@ -25,7 +26,15 @@
       :accessibility-label :new-chat-button}]))
 
 (defn render-fn [community-item]
-  [community-list-view/communities-membership-list-item community-item])
+  [community-list-view/communities-membership-list-item
+   {:on-press      (fn []
+                     (>evt [:communities/load-category-states (:id community-item)])
+                     (>evt [:dismiss-keyboard])
+                     (>evt [:navigate-to :community {:community-id (:id community-item)}]))
+    :on-long-press #(>evt [:bottom-sheet/show-sheet
+                           {:content (fn []
+                                       [community/community-actions community-item])}])}
+   community-item])
 
 (defn community-list-key-fn [item]
   (:id item))

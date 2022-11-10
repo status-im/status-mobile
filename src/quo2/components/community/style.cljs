@@ -1,6 +1,5 @@
-(ns status-im.ui.screens.communities.styles
-  (:require
-   [quo2.foundations.colors :as colors]))
+(ns quo2.components.community.style
+  (:require [quo2.foundations.colors :as colors]))
 
 (def category-item
   {:flex           1
