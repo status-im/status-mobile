@@ -303,25 +303,25 @@ src
 ├── quo2
 │   ├── components/
 │   ├── foundations/
-│   ├── screens/
 │   └── theme.cljs
-└── status_im
-    ├── common
-    │   ├── components
-    │   │   └── bottom_sheet.cljs
-    │   ├── utils/
-    │   └── utils.cljs
-    ├── contexts/
-    ├── react_native
-    │   ├── gesture.cljs
-    │   └── platform.cljs
-    ├── setup/
-    └── subs/
+├── react_native
+│   ├── gesture.cljs
+│   └── platform.cljs
+├── status_im
+│   ├── common
+│   │   └── components
+│   │       └── bottom_sheet.cljs
+│   ├── contexts/
+│   ├── setup/
+│   └── subs/
+└── utils.cljs
 ```
 
 - `src/js`: Raw Javascript files, e.g. React Native Reanimated worklets.
 - `src/mocks`: Plumbing configuration to be able to run tests.
 - `src/quo2/`: The component library for Status Mobile.
+- `src/react_native/`: Contains only low-level constructs to help React Native
+  work in tandem with Clojure(Script).
 - `src/status_im/common/`: Directories named `common` can appear at any level of
   the directory tree. Just like directories named `utils`, their directory
   nesting level communicates their applicable limits.
@@ -330,8 +330,6 @@ src
 - `src/status_im/contexts/`: Contains [bounded contexts](#glossary), like
   `browser/`, `messaging/`, etc. As much as possible, _bounded contexts_ should
   not directly require each other's namespaces.
-- `src/status_im/react_native/`: Contains only low-level constructs to help
-  React Native work in tandem with Clojure(Script).
 - `src/status_im/setup/`: Contains namespaces that are mostly used to initialize
   the application, configure test runners, etc. In general, such namespaces
   should not be required from the outside.
