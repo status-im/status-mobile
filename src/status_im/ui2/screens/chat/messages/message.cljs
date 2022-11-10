@@ -809,7 +809,7 @@
   (let [response-to (:response-to (:content message))]
     [rn/touchable-opacity {:on-press       (fn []
                                              (rf/dispatch [:bottom-sheet/show-sheet
-                                                    {:content #(pinned-messages-list chat-id)}]))
+                                                           {:content #(pinned-messages-list chat-id)}]))
                            :active-opacity 1
                            :style          (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
      [rn/view {:style               {:width            photos.style/default-size
