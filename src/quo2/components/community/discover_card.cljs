@@ -74,7 +74,6 @@
     [rn/touchable-without-feedback
      {:on-press            on-press
       :accessibility-label accessibility-label}
-<<<<<<< HEAD
      [rn/view (merge (style/community-card 16)
                      {:background-color  (colors/theme-colors
                                           colors/white
@@ -83,16 +82,6 @@
                       :margin-horizontal 20
                       :height          56
                       :padding-right   12})
-=======
-     [react/view (merge (styles/community-card 16)
-                        {:background-color  (colors/theme-colors
-                                             colors/white
-                                             colors/neutral-90)}
-                        {:flex-direction  :row
-                         :margin-horizontal 20
-                         :height          56
-                         :padding-right   12})
->>>>>>> 0347951b2... feat: messages contact requests
       [card-title-and-description title description]
       (for [{:keys [id column-images]} on-joined-images]
         ^{:key id}
@@ -102,24 +91,4 @@
                                  :height        (if (= id 1) 8 26)
                                  :border-radius 6
                                  :first-image   "" ; TODO replace with real data
-<<<<<<< HEAD
                                  :last-image    ""}])]])) ; TODO replace with real data
-=======
-                                 :last-image    ""}]) ; TODO replace with real data
-      ]]))
-<<<<<<< HEAD
-=======
-=======
-                                 :first-image   "" ;; TODO replace with real data
-                                 :last-image    ""}]) ;; TODO replace with real data
->>>>>>> c0e3854d3... feat: messages contact requests
-=======
-=======
->>>>>>> 0b6722a7b... feat: messages home items
-                                 :first-image   "" ; TODO replace with real data
-                                 :last-image    ""}]) ; TODO replace with real data
-      ]]))
->>>>>>> aec9cae20... feat: messages contact requests
->>>>>>> 0347951b2... feat: messages contact requests
-=======
->>>>>>> d0af42c62... rebase

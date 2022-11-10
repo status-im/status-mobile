@@ -35,19 +35,7 @@
             [quo2.components.icon :as quo2.icons]
             [quo.components.safe-area :as safe-area]
             [quo2.components.notifications.info-count :refer [info-count]]
-<<<<<<< HEAD
             [status-im.ui2.screens.chat.components.received-cr-item :as received-cr-item]
-=======
-            [quo2.components.list-items.received-cr-item :refer [received-cr-item]]
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 0347951b2... feat: messages contact requests
-=======
-<<<<<<< HEAD
->>>>>>> ef46f579d... refactor
-=======
->>>>>>> 22bb6d54e... feat: chat & contact bottom sheet ui
             [status-im.ui2.screens.chat.components.message-home-item.view :refer [messages-home-item]]
             [status-im.ui2.screens.chat.components.contact-item.view :refer [contact-item]]
             [clojure.string :as str])
@@ -210,15 +198,7 @@
         [list/flat-list
          {:key-fn    :first
           :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
-<<<<<<< HEAD
           :render-fn received-cr-item/received-cr-item}]]))])
-=======
-          :render-fn received-cr-item}]]))])
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 0347951b2... feat: messages contact requests
-=======
->>>>>>> 22bb6d54e... feat: chat & contact bottom sheet ui
 
 (defn get-display-name [{:keys [chat-id message]}]
   (let [name        (first (<sub [:contacts/contact-two-names-by-identity chat-id]))
