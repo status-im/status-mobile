@@ -6,6 +6,7 @@
    [status-im.ui.screens.communities.styles :as styles]
    [status-im.ui.screens.communities.icon :as communities.icon]))
 
+;; TODO move this component to ui namespace, status-im or re-frame ns shouldn't be used in quo
 (defn community-card-view-item
   [{:keys [name description locked
            status tokens cover tags featured] :as community} on-press]

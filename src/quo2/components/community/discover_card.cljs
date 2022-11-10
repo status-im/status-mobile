@@ -4,6 +4,8 @@
             [status-im.ui.screens.communities.styles :as styles]
             [status-im.ui.components.react :as react]))
 
+;; TODO move this component to ui namespace, status-im or re-frame ns shouldn't be used in quo
+
 ;; Discover card placeholders images.
 ;; TODO replaced when real data is available
 (def images
@@ -91,5 +93,4 @@
                                  :height        (if (= id 1) 8 26)
                                  :border-radius 6
                                  :first-image   "" ; TODO replace with real data
-                                 :last-image    ""}]) ; TODO replace with real data
-      ]]))
+                                 :last-image    ""}])]])) ; TODO replace with real data

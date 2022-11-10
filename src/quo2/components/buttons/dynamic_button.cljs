@@ -1,7 +1,6 @@
 (ns quo2.components.buttons.dynamic-button
   (:require [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
             [quo2.components.icon :as icon]
             [quo2.foundations.colors :as colors]
             [quo2.components.markdown.text :as text]))
@@ -60,7 +59,7 @@
     :customization-color customize jump-to and mention button color}"
   [_]
   (let [pressed? (reagent/atom false)]
-    (fn [{:keys [type on-press count customization-color style]}]
+    (fn [{:keys [type label on-press count customization-color style]}]
       [rn/touchable-without-feedback
        {:on-press-in         #(reset! pressed? true)
         :on-press-out        #(reset! pressed? false)
@@ -93,8 +92,8 @@
                                                 :notification-up   0
                                                 :search-with-label 8)}}
            (case type
-             :jump-to                                       (i18n/label :t/jump-to)
-             :search-with-label                             (i18n/label :t/back)
+             :jump-to                                       label
+             :search-with-label                             label
              (:mention :notification-down :notification-up) (str count))])
         (when (#{:jump-to :notification-down :notification-up} type)
           [icon-view type])]])))

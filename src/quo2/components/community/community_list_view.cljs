@@ -12,6 +12,7 @@
    [status-im.ui.screens.communities.community :as community]
    [status-im.ui.screens.communities.icon :as communities.icon]))
 
+;; TODO move this component to ui namespace, status-im or re-frame ns shouldn't be used in quo
 (defn communities-list-view-item [{:keys [id name locked? status notifications
                                           tokens background-color] :as community}]
   [react/view {:style (merge (styles/community-card 16)

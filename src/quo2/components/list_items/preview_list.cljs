@@ -1,10 +1,9 @@
 (ns quo2.components.list-items.preview-list
   (:require [react-native.core :as rn]
             [react-native.hole-view :as hole-view]
-            [status-im.i18n.i18n :as i18n]
+            [react-native.fast-image :as fast-image]
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as quo2.icons]
-            [status-im.ui.components.fast-image :as fast-image]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.markdown.text :as quo2.text]))
 
@@ -57,7 +56,7 @@
     transparent-color
     (colors/theme-colors light-color dark-color override-theme)))
 
-(defn overflow-label [label size transparent? border-radius margin-left override-theme]
+(defn overflow-label [label size transparent? border-radius margin-left override-theme more-than-99-label]
   [rn/view {:style {:width            size
                     :height           size
                     :margin-left      margin-left
@@ -90,7 +89,7 @@
       ;; If overflow label is below 100, show label as +label (ex. +30), else just show 99+
       (if (< label 100)
         (str "+" label)
-        (i18n/label :counter-99-plus))])])
+        more-than-99-label)])])
 
 (defn border-type [type]
   (case type
@@ -106,7 +105,7 @@
     :transparent?  overflow-label transparent?}
    items           preview list items (only 4 items is required for preview)
   "
-  [{:keys [type size list-size transparent? override-theme]} items]
+  [{:keys [type size list-size transparent? override-theme more-than-99-label]} items]
   (let [items-arr     (into [] items)
         list-size     (or list-size (count items))
         margin-left   (get-in params [size :margin-left])
@@ -121,4 +120,4 @@
        [list-item index type size (get items-arr index) list-size
         margin-left hole-size hole-radius hole-x hole-y border-radius])
      (when (> list-size 4)
-       [overflow-label (- list-size 3) size transparent? border-radius margin-left override-theme])]))
+       [overflow-label (- list-size 3) size transparent? border-radius margin-left override-theme more-than-99-label])]))

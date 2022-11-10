@@ -10,6 +10,7 @@
    [status-im.i18n.i18n :as i18n]
    [status-im.ui.screens.communities.styles :as styles]))
 
+;; TODO move this component to ui namespace, status-im or re-frame ns shouldn't be used in quo
 (defn format-members [count]
   (if (> count 1000000)
     (str (money/with-precision (/ count 1000000) 1) (i18n/label :t/M))
