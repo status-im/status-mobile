@@ -388,8 +388,8 @@ src
   same language used by designers. Even though the directory lives alongside the
   rest of the codebase, we should think of it as an external entity that
   abstracts away particular Status domain knowledge. Additionally, components
-  inside `quo2` should no rely on re-frame, i.e. they should not dispatch events
-  or use subscriptions.
+  inside `quo2` should not rely on re-frame, i.e. they should not dispatch
+  events or use subscriptions.
 
 #### Re-frame
 
