@@ -34,7 +34,7 @@
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.ui2.screens.chat.components.reply :as components.reply]
             [status-im.utils.config :as config]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.utils.re-frame :as rf]
             [status-im.utils.security :as security]
             [quo2.components.icon :as icons]
             [status-im.utils.datetime :as time]
@@ -133,7 +133,7 @@
             {:style    (merge {:color (if (system-text? content-type) quo.colors/black colors/primary-50)}
                               (if (system-text? content-type) typography/font-regular typography/font-medium))
              :on-press (when-not (system-text? content-type)
-                         #(>evt [:chat.ui/show-profile literal]))}
+                         #(rf/dispatch [:chat.ui/show-profile literal]))}
             [mention-element literal]]])
     "status-tag"
     (conj acc [rn/text
@@ -299,9 +299,9 @@
            deleted-for-me? deleted-for-me-undoable-till pinned from]
     :as   message} content]
   (let [response-to  (:response-to (:content message))
-        display-name (first (<sub [:contacts/contact-two-names-by-identity from]))
-        contact      (<sub [:contacts/contact-by-address from])
-        photo-path   (when-not (empty? (:images contact)) (<sub [:chats/photo-path from]))]
+        display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
+        contact      (rf/sub [:contacts/contact-by-address from])
+        photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))]
     (if deleted-for-me?
       [system-message/system-message
        {:type             :deleted
@@ -760,9 +760,9 @@
 (def list-key-fn #(or (:message-id %) (:value %)))
 
 (defn pinned-messages-list [chat-id]
-  (let [pinned-messages (vec (vals (<sub [:chats/pinned chat-id])))
-        current-chat    (<sub [:chats/current-chat])
-        community       (<sub [:communities/community (:community-id current-chat)])]
+  (let [pinned-messages (vec (vals (rf/sub [:chats/pinned chat-id])))
+        current-chat    (rf/sub [:chats/current-chat])
+        community       (rf/sub [:communities/community (:community-id current-chat)])]
     [rn/view {:accessibility-label :pinned-messages-list}
      [rn/text {:style (merge typography/heading-1 typography/font-semi-bold {:margin-horizontal 20
                                                                              :color             (colors/theme-colors colors/neutral-100 colors/white)})}
@@ -808,7 +808,7 @@
 (defn pin-system-message [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
     [rn/touchable-opacity {:on-press       (fn []
-                                             (>evt [:bottom-sheet/show-sheet
+                                             (rf/dispatch [:bottom-sheet/show-sheet
                                                     {:content #(pinned-messages-list chat-id)}]))
                            :active-opacity 1
                            :style          (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
@@ -848,7 +848,7 @@
         [render-parsed-text message (:parsed-text content)]]]]]))
 
 (defn pinned-banner [chat-id]
-  (let [pinned-messages (<sub [:chats/pinned chat-id])
+  (let [pinned-messages (rf/sub [:chats/pinned chat-id])
         latest-pin-text (get-in (last (vals pinned-messages)) [:content :text])
         pins-count      (count (seq pinned-messages))]
     (when (> pins-count 0)
