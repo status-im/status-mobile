@@ -294,51 +294,68 @@ keywords and concatenating them into a single string.
 
 ## Project Structure
 
-As the mobile application grows in size and complexity, new patterns emerge to
-organize the codebase. The structure presented below is just an example of what
-the codebase could look like, so not all pieces are presented here.
+First, the bird's-eye view with some example ClojureScript files:
 
 ```
 src
-├── common
-│  └── bottom_sheet.cljs
-├── contexts
-│   ├── browser/
-│   ├── communities
-│   │   ├── components/
-│   │   ├── screens
-│   │   │   └── __test__
-│   │   └── utils
-│   │       └── example.cljs
-│   ├── messaging/
-│   ├── user_settings/
-│   └── wallet/
+├── js/
+├── mocks/
 ├── quo2
 │   ├── components/
 │   ├── foundations/
 │   ├── screens/
 │   └── theme.cljs
-├── react_native
-│   ├── gesture.cljs
-│   └── platform.cljs
-├── setup
-│   ├── core.cljs
-│   ├── events.cljs
-│   ├── navigation.cljs
-│   ├── reloader.cljs
-│   └── test_runner.cljs
-├── subs
-│   ├── ens.cljs
-│   └── pairing.cljs
-└── utils
-    ├── number.cljs
-    └── test_helpers.cljs
+└── status_im
+    ├── common
+    │   ├── components
+    │   │   └── bottom_sheet.cljs
+    │   ├── utils/
+    │   └── utils.cljs
+    ├── contexts/
+    ├── react_native
+    │   ├── gesture.cljs
+    │   └── platform.cljs
+    ├── setup/
+    └── subs/
 ```
 
-### Example structure for a quo2 component
+- `src/js`: Raw Javascript files, e.g. React Native Reanimated worklets.
+- `src/mocks`: Plumbing configuration to be able to run tests.
+- `src/quo2/`: The component library for Status Mobile.
+- `src/status_im/common/`: Directories named `common` can appear at any level of
+  the directory tree. Just like directories named `utils`, their directory
+  nesting level communicates their applicable limits.
+- `src/status_im/common/components/`: Contains reusable components that are not
+  part of the design system (quo2).
+- `src/status_im/contexts/`: Contains [bounded contexts](#glossary), like
+  `browser/`, `messaging/`, etc. As much as possible, _bounded contexts_ should
+  not directly require each other's namespaces.
+- `src/status_im/react_native/`: Contains only low-level constructs to help
+  React Native work in tandem with Clojure(Script).
+- `src/status_im/setup/`: Contains namespaces that are mostly used to initialize
+  the application, configure test runners, etc. In general, such namespaces
+  should not be required from the outside.
+- `src/status_im/subs/`: All subscriptions should live inside it.
 
-Notice the `test.cljs` file does not live inside a `__tests__/` directory, as
-this would be overkill in the quo2 component library.
+Directories named `utils/` can appear at any level of the directory tree. The
+directory nesting level precisely indicates its boundaries. For example, a
+`contexts/user_settings/utils/datetime.cljs` file communicates that it should
+only be used in the `user_settings` context.
+
+### src/quo2
+
+The `src/quo2/` directory holds all components for the new design system. As
+much as possible, its sub-directories and component names should reflect the
+same language used by designers.
+
+Even though the directory lives alongside the rest of the codebase, we should
+think of it as an external entity that abstracts away particular Status domain
+knowledge.
+
+Components inside `src/quo2/` should not rely on re-frame, i.e. they should not
+dispatch events or use subscriptions.
+
+Example structure:
 
 ```
 src
@@ -353,50 +370,10 @@ src
             └── view.cljs
 ```
 
-### Rationale
+### Re-frame events
 
-- Bringing ideas from [Domain-Driven
-  Design](https://en.wikipedia.org/wiki/Domain-driven_design), we want to
-  establish a clean separation of concerns between different [bounded
-  contexts](https://martinfowler.com/bliki/BoundedContext.html). Directories
-  inside `src/contexts/` should be named after particular Status domains.
-
-- Directories named `utils` can appear at any level of the directory tree. The
-  directory nesting level precisely indicates its boundaries. For example, a
-  `user_settings/utils/datetime.cljs` namespace communicates that the `datetime`
-  namespace should only be used in the `user_settings` context.
-
-- Directories named `common` can appear at any level of the directory tree. Just
-  like directories named `utils`, their directory nesting level communicates
-  their applicable limits.
-
-- Bounded contexts should not directly require each other's namespaces. We don't
-  want to make this a hard rule yet, but it's important to respect it as much as
-  possible. For example, namespaces inside `messaging` should not require
-  namespaces in the `browser` bounded context. In reality, different domains
-  should talk to each other using an interface of some kind.
-
-- The `src/setup/` directory contains namespaces that are mostly used to
-  initialize the application, configure test runners, etc. In general, such
-  namespaces should not be required from the outside.
-
-- The `src/react_native/` directory should contain only low-level constructs to
-  help React Native work in tandem with Clojure(Script).
-
-- The `src/quo2` directory holds all components for the new design system. As
-  much as possible, its sub-directories and component names should reflect the
-  same language used by designers. Even though the directory lives alongside the
-  rest of the codebase, we should think of it as an external entity that
-  abstracts away particular Status domain knowledge. Additionally, components
-  inside `quo2` should not rely on re-frame, i.e. they should not dispatch
-  events or use subscriptions.
-
-#### Re-frame
-
-- Subscriptions should live inside the top-level `src/subs/` directory.
-
-- Re-frame event handlers should be defined in files named `events.cljs`, and
-  they should be _close_ to other _things_, like view files, components, etc.
+Event handlers should be defined in files named `events.cljs`, and they should
+be _close_ to other _things_, like view files, components, etc.
 
 For example:
 
@@ -413,7 +390,7 @@ src
         └── view.cljs
 ```
 
-#### Tests
+### Test structure
 
 [Unit tests](#glossary) should be created alongside their respective source
 implementation. We prefer them colocated with the source and not like most
@@ -425,7 +402,7 @@ Component tests should be created in a separate directory `__tests__`. Example:
 │   ├── message.cljs
 │   └── message_test.cljs
 ├── __tests__
-│   └── component_bla_test.cljs
+│   └── input_bla_test.cljs
 ├── models.cljs
 └── models_test.cljs
 ```
@@ -452,3 +429,10 @@ test
 tests for utility functions and event handlers are considered unit tests in the
 mobile codebase. They should be completely deterministic, _fast_, and they
 should work flawlessly in the REPL.
+
+**Bounded context**: A logical separation between different domains. It's an
+important concept in the [Domain-Driven
+Design](https://en.wikipedia.org/wiki/Domain-driven_design) literature. See
+[Bounded Context, by Martin
+Fowler](https://martinfowler.com/bliki/BoundedContext.html) for an introduction
+to the topic.
