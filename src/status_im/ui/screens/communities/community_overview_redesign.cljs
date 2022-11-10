@@ -16,7 +16,7 @@
              [status-im.ui.components.list.views :as list]
              [status-im.utils.handlers :refer [<sub >evt]]
              [status-im.ui.screens.communities.icon :as communities.icon]))
-(def a 1)
+
 ;; Mocked list items
 (def user-list
   [{:full-name "Alicia K"}

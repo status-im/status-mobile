@@ -54,7 +54,7 @@
 (def scrollable-tabs quo2.components.tabs.tabs/scrollable-tabs)
 (def account-selector quo2.components.tabs.account-selector/account-selector)
 
-;; AVATAR
+;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
 (def channel-avatar quo2.components.avatars.channel-avatar/channel-avatar)
 (def group-avatar quo2.components.avatars.group-avatar/group-avatar)
@@ -62,7 +62,7 @@
 (def user-avatar quo2.components.avatars.user-avatar/user-avatar)
 (def wallet-user-avatar quo2.components.avatars.wallet-user-avatar/wallet-user-avatar)
 
-;; COMMUNITY
+;;;; COMMUNITY
 (def community-card-view-item quo2.components.community.community-card-view/community-card-view-item)
 (def communities-list-view-item quo2.components.community.community-list-view/communities-list-view-item)
 (def communities-membership-list-item quo2.components.community.community-list-view/communities-membership-list-item)
@@ -72,16 +72,16 @@
 (def community-title quo2.components.community.community-view/community-title)
 (def discover-card quo2.components.community.discover-card/discover-card)
 
-;; DIVIDERS
+;;;; DIVIDERS
 (def divider-label quo2.components.dividers.divider-label/divider-label)
 (def new-messages quo2.components.dividers.new-messages/new-messages)
 
-;; LIST ITEMS
+;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
 
-;; NOTIFICATIONS
+;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-logs/activity-log)
 (def info-count quo2.components.notifications.info-count/info-count)
 (def notification-dot quo2.components.notifications.notification-dot/notification-dot)
