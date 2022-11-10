@@ -738,7 +738,7 @@
      [->message message {:ref           on-long-press
                          :modal         false
                          :on-long-press on-open-drawer}]
-     [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press]])) ;; TODO: pass on-open-drawer function
+     [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press]])) ;; TODO: pass on-open-drawer function.
 
 (defn message-render-fn
   [{:keys [outgoing whisper-timestamp] :as message}
