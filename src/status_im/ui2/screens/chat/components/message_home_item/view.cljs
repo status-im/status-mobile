@@ -66,13 +66,13 @@
          parsed-text)]
     (:components result)))
 
-(defn verified-or-contact-icon [contact]
-  (if (:ens-verified contact)
+(defn verified-or-contact-icon [{:keys [ens-verified added?]}]
+  (if ens-verified
     [rn/view {:style {:margin-left 5 :margin-top 4}}
      [icons/icon :main-icons2/verified {:no-color true
                                         :size     12
                                         :color    (colors/theme-colors colors/success-50 colors/success-60)}]]
-    (when (:added? contact)
+    (when added?
       [rn/view {:style {:margin-left 5 :margin-top 4}}
        [icons/icon :main-icons2/contact {:no-color true
                                          :size     12
@@ -100,7 +100,6 @@
 
 (defn messages-home-item [item]
   (let [{:keys [chat-id
-                chat-type
                 color
                 group-chat
                 last-message
