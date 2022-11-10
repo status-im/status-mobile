@@ -8,9 +8,9 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo.react-native :as rn]
-            [status-im.ui.screens.chat.sheets :as sheets]
             [quo.platform :as platform]
             [quo2.components.markdown.text :as text]
+            [status-im.ui2.screens.chat.actions :as actions]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
 
 (def max-subheader-length 50)
@@ -85,7 +85,15 @@
     (time/to-short-str timestamp)]])
 
 (defn messages-home-item [item]
-  (let [{:keys [chat-id color group-chat last-message timestamp name unviewed-mentions-count unviewed-messages-count]} item
+  (let [{:keys [chat-id
+                chat-type
+                color
+                group-chat
+                last-message
+                timestamp
+                name
+                unviewed-mentions-count
+                unviewed-messages-count]} item
         display-name (if-not group-chat (first (<sub [:contacts/contact-two-names-by-identity chat-id])) name)
         contact      (when-not group-chat (<sub [:contacts/contact-by-address chat-id]))
         photo-path   (when-not (empty? (:images contact)) (<sub [:chats/photo-path chat-id]))]
@@ -98,7 +106,7 @@
                                                    (>evt [:search/home-filter-changed nil])
                                                    (>evt [:accept-all-activity-center-notifications-from-chat chat-id]))
                                   :on-long-press #(>evt [:bottom-sheet/show-sheet
-                                                         {:content (fn [] [sheets/actions item])}])})
+                                                         {:content (fn [] [actions/actions chat-type chat-id])}])})
      (if group-chat
        [rn/view {:style (style/group-chat-icon color)}
         [icons/icon :main-icons2/group {:size 16 :color colors/white-opa-70}]]
@@ -120,5 +128,4 @@
        [info-count unviewed-mentions-count {:top 16}]
        (when (> unviewed-messages-count 0)
          [rn/view {:style (style/count-container)}]))]))
-
 
