@@ -119,7 +119,7 @@
                                                    (rf/dispatch [:search/home-filter-changed nil])
                                                    (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
                                   :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                {:content (fn [] [actions/actions item])}])})
+                                                                {:content (fn [] [actions/actions item false])}])})
      [display-pic-view group-chat color display-name photo-path]
      [rn/view {:style {:margin-left 8}}
       [display-name-view display-name contact timestamp]

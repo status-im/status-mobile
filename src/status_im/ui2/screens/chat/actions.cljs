@@ -126,6 +126,14 @@
          nil
          true))
 
+(defn pinned-messages-entry []
+  (entry :main-icons2/pin
+         (i18n/label :pinned-messages)
+         #(js/alert "TODO: to be implemented, requires design input")
+         false
+         nil
+         true))
+
 (defn remove-from-contacts-entry [contact]
   (entry :main-icons2/remove-user
          (i18n/label :remove-from-contacts)
@@ -196,30 +204,34 @@
      (leave-group-entry chat-id)
      (delete-chat-entry chat-id))])
 
-(defn notification-actions [muted? chat-id]
-  [(mute-chat-entry muted? chat-id)
+(defn notification-actions [muted? chat-id inside-chat?]
+  [(mark-as-read-entry chat-id)
+   (mute-chat-entry muted? chat-id)
    (notifications-entry)
-   (fetch-messages-entry)
-   (mark-as-read-entry chat-id)
+   (if inside-chat?
+     (fetch-messages-entry)
+     (pinned-messages-entry))
    (show-qr-entry)
    (share-profile-entry)])
 
-(defn one-to-one-actions [muted? chat-id group-chat]
+(defn one-to-one-actions [muted? chat-id group-chat inside-chat?]
   [drawer/action-drawer [[(view-profile-entry chat-id)
                           (edit-nickname-entry chat-id)]
-                         (notification-actions muted? chat-id)
+                         (notification-actions muted? chat-id inside-chat?)
                          (destructive-actions chat-id group-chat)]])
 
-(defn public-chat-actions [muted? chat-id group-chat]
+(defn public-chat-actions [muted? chat-id group-chat inside-chat?]
   [drawer/action-drawer [[(group-details-entry chat-id)
-                          (add-members-entry)]
-                         (notification-actions muted? chat-id)
+                          (when inside-chat?
+                            (add-members-entry))]
+                         (notification-actions muted? chat-id inside-chat?)
                          (destructive-actions chat-id group-chat)]])
 
-(defn private-group-chat-actions [muted? chat-id group-chat]
+(defn private-group-chat-actions [muted? chat-id group-chat inside-chat?]
   [drawer/action-drawer [[(group-details-entry chat-id)
-                          (add-members-entry)]
-                         (notification-actions muted? chat-id)
+                          (when inside-chat?
+                            (add-members-entry))]
+                         (notification-actions muted? chat-id inside-chat?)
                          (destructive-actions chat-id group-chat)]])
 
 (defn contact-actions [{:keys [public-key] :as contact}]
@@ -231,14 +243,14 @@
                          [(mark-untrustworthy-entry)
                           (block-user-entry)]]])
 
-(defn actions [{:keys [chat-type chat-id group-chat] :as item}]
+(defn actions [{:keys [chat-type chat-id group-chat] :as item} inside-chat?]
   (let [muted? (rf/sub [:chats/muted chat-id])]
     (case chat-type
       constants/one-to-one-chat-type
-      [one-to-one-actions muted? chat-id group-chat]
+      [one-to-one-actions muted? chat-id group-chat inside-chat?]
       constants/public-chat-type
-      [public-chat-actions muted? chat-id group-chat]
+      [public-chat-actions muted? chat-id group-chat inside-chat?]
       constants/private-group-chat-type
-      [private-group-chat-actions muted? chat-id group-chat]
+      [private-group-chat-actions muted? chat-id group-chat inside-chat?]
       [contact-actions item])))
 
