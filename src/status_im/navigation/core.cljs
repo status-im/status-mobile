@@ -332,12 +332,6 @@
 (re-frame/reg-fx :hide-visibility-status-popover
                  (fn [] (dissmiss-overlay "visibility-status-popover")))
 
-(defonce toast-sheet-reg
-         (.registerComponent Navigation
-                             "toast"
-                             (fn [] (gestureHandlerRootHOC views/toast-comp))
-                             (fn [] views/toast-comp)))
-
 ;; BOTTOM SHEETS
 (defonce bottom-sheet-reg
   (.registerComponent Navigation
