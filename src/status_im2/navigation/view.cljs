@@ -24,7 +24,6 @@
             [status-im.utils.config :as config]
             [status-im.keycard.test-menu :as keycard.test-menu]
             [status-im.utils.platform :as platform]
-            [quo2.components.toast.view :as toast]
             [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]))
 >>>>>>> 563fd0332... rebase:src/status_im/ui/screens/views.cljs
 
@@ -114,12 +113,6 @@
       [visibility-status-views/visibility-status-popover]
       (when js/goog.DEBUG
         [reloader/reload-view])])))
-
-(def toast-comp
-  (reagent/reactify-component
-    (fn []
-      [inactive]
-      [toast/toast])))
 
 (def sheet-comp
   (reagent/reactify-component
