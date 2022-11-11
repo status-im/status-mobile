@@ -25,14 +25,14 @@
     [rn/view (if (= type :card-view)
                (style/card-stats-container)
                (style/list-stats-container))
-     [community-stats {:icon       :main-icons2/group
+     [community-stats {:icon       :i/group
                        :members-count "629.2K" ;;TODO here should be formatted value, use money/format-members from outside this component
                        :icon-color icon-color}]
-     [community-stats {:icon       :main-icons2/lightning
+     [community-stats {:icon       :i/lightning
                        :members-count "112.1K"
                        :icon-color icon-color}]
      (when (= type :card-view)
-       [community-stats {:icon       :main-icons2/placeholder
+       [community-stats {:icon       :i/placeholder
                          :count      4
                          :icon-color icon-color}])]))
 

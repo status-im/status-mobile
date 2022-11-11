@@ -88,7 +88,7 @@
                              :border-width     1
                              :right            (get-value-from-size size -3.75 -5.75)
                              :bottom           (get-value-from-size size (- 32 7.75 4) (- 24 7.75 2))})}
-             [icons/icon (if is-required :main-icons2/hold :main-icons2/add)
+             [icons/icon (if is-required :i/hold :i/add)
               {:no-color true
                :size 12}]])}
      (str value " " token)]))

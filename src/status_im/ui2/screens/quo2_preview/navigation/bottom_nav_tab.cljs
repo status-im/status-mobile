@@ -9,13 +9,13 @@
 (def descriptor [{:label   "Type"
                   :key     :icon
                   :type    :select
-                  :options [{:key   :main-icons2/communities
+                  :options [{:key   :i/communities
                              :value "Communities"}
-                            {:key   :main-icons2/messages
+                            {:key   :i/messages
                              :value "Messages"}
-                            {:key   :main-icons2/wallet
+                            {:key   :i/wallet
                              :value "Wallet"}
-                            {:key   :main-icons2/browser
+                            {:key   :i/browser
                              :value "Browser"}]}
                  {:label "Selected?"
                   :key   :selected?
@@ -44,7 +44,7 @@
     :else          colors/neutral-50))
 
 (defn cool-preview []
-  (let [state         (reagent/atom {:icon                   :main-icons2/communities
+  (let [state         (reagent/atom {:icon                   :i/communities
                                      :new-notifications?     true
                                      :notification-indicator :counter
                                      :counter-label          8

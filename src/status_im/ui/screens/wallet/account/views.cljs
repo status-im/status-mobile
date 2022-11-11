@@ -268,13 +268,13 @@
      [react/view
       [react/scroll-view {:horizontal true :margin-bottom 32 :showsHorizontalScrollIndicator false}
        [react/view {:width 20}]
-       [quo2.button/button {:size 56 :width button-width :above :main-icons2/placeholder} "Buy"]
+       [quo2.button/button {:size 56 :width button-width :above :i/placeholder} "Buy"]
        [react/view {:width 12}]
-       [quo2.button/button {:size 56 :width button-width :type :secondary :above :main-icons2/placeholder} "Send"]
+       [quo2.button/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Send"]
        [react/view {:width 12}]
-       [quo2.button/button {:size 56 :width button-width :type :secondary :above :main-icons2/placeholder} "Receive"]
+       [quo2.button/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Receive"]
        [react/view {:width 12}]
-       [quo2.button/button {:size 56 :width button-width :type :secondary :above :main-icons2/placeholder} "Swap"]
+       [quo2.button/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Swap"]
        [react/view {:width 20}]]]
      [assets-and-collections-new selected-account]]))
 

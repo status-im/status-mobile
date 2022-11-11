@@ -180,7 +180,7 @@
            :justify-content  :center
            :align-items      :center
            :margin-bottom    24}}
-         [quo2.icons/icon :main-icons2/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
+         [quo2.icons/icon :i/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
         [rn/text {:style (merge
                           typography/heading-1
                           typography/font-semi-bold
@@ -235,7 +235,7 @@
                      :border-radius   16
                      :border-width    1
                      :border-color    (colors/theme-colors colors/neutral-20 colors/neutral-80)}}
-    [quo2.icons/icon :main-icons2/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
+    [quo2.icons/icon :i/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
    [rn/view {:style {:margin-left 8}}
     [rn/text {:style
               (merge typography/paragraph-1 typography/font-semi-bold {:color (colors/theme-colors "#000000" "#ffffff")})} (i18n/label :t/pending-requests)]

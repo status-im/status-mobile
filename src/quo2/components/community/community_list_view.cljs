@@ -55,13 +55,13 @@
           [counter/counter {:type :default} 5]
 
           (= notifications :muted)
-          [icons/icon :main-icons2/muted {:container-style {:align-items     :center
-                                                            :justify-content :center}
-                                          :resize-mode     :center
-                                          :size            20
-                                          :color           (colors/theme-colors
-                                                            colors/neutral-40
-                                                            colors/neutral-50)}]))]]]])
+          [icons/icon :i/muted {:container-style {:align-items     :center
+                                                  :justify-content :center}
+                                :resize-mode     :center
+                                :size            20
+                                :color           (colors/theme-colors
+                                                  colors/neutral-40
+                                                  colors/neutral-50)}]))]]]])
 
 (defn communities-membership-list-item [props {:keys [name status tokens locked?]}]
   [rn/view {:margin-bottom 20}

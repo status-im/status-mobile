@@ -36,12 +36,12 @@
                                                 colors/neutral-50
                                                 colors/neutral-40)}}
            (str "+" extra-group-count)]
-          [icons/icon :main-icons2/pending-default {:container-style {:align-items     :center
-                                                                      :justify-content :center}
-                                                    :color (colors/theme-colors
-                                                            colors/neutral-50
-                                                            colors/neutral-40)
-                                                    :size  12}])]])))
+          [icons/icon :i/pending-default {:container-style {:align-items     :center
+                                                            :justify-content :center}
+                                          :color (colors/theme-colors
+                                                  colors/neutral-50
+                                                  colors/neutral-40)
+                                          :size  12}])]])))
 
 (defn selected-token-count [group]
   (cond
@@ -114,8 +114,8 @@
                 :justify-content  :flex-end}
       [rn/view {:padding-left    (case 32 8 24 6)
                 :padding-right   (case size 32 16 24 12)}
-       [icons/icon (if locked :main-icons2/locked
-                       :main-icons2/unlocked)
+       [icons/icon (if locked :i/locked
+                       :i/unlocked)
         {:resize-mode      :center
          :size             (case size 32 20 24 16)
          :color            (colors/theme-colors

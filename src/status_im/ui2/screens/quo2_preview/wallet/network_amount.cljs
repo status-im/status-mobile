@@ -8,10 +8,10 @@
             [clojure.string :as string]))
 
 (def ^:private networks
-  [{:icon :main-icons2/ethereum :name "Mainnet"}
-   {:icon :main-icons2/arbitrum :name "Arbitrum"}
-   {:icon :main-icons2/optimism :name "Optimism"}
-   {:icon :main-icons2/zksync :name "zkSync"}])
+  [{:icon :i/ethereum :name "Mainnet"}
+   {:icon :i/arbitrum :name "Arbitrum"}
+   {:icon :i/optimism :name "Optimism"}
+   {:icon :i/zksync :name "zkSync"}])
 
 (defn- networks->options [networks]
   (for [{:keys [name]

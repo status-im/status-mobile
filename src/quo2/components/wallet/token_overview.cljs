@@ -51,7 +51,7 @@
                     :size  :heading-2} (str currency price)]
 
        [rn/view {:style {:display :flex :flex-direction :row :margin-top 6 :align-items :center}}
-        (when (not (zero? direction)) [icons/icon (if (>= direction 0) :main-icons2/price-increase12 :main-icons2/price-decrease12)
+        (when (not (zero? direction)) [icons/icon (if (>= direction 0) :i/price-increase12 :i/price-decrease12)
                                        {:no-color true
                                         :width 14
                                         :height 14
@@ -88,7 +88,7 @@
                    :style {:height 32
                            :width 32}}]]
        [rn/view {:style {:display :flex :flex-direction :row :margin-top 6 :align-items :center}}
-        (when (not (zero? direction)) [icons/icon (if (pos? direction) :main-icons2/price-increase :main-icons2/price-decrease)
+        (when (not (zero? direction)) [icons/icon (if (pos? direction) :i/price-increase :i/price-decrease)
                                        {:no-color true
                                         :size 12
                                         :container-style {:margin-right 4}}])

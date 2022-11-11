@@ -44,7 +44,7 @@
   (let [right-icon         {:background-color (if (colors/dark?)
                                                 colors/neutral-80
                                                 colors/neutral-20)
-                            :icon             :main-icons2/placeholder
+                            :icon             :i/placeholder
                             :icon-color       nil}
         base-props         {:horizontal-description?            true
                             :one-icon-align-left?               true
@@ -52,16 +52,16 @@
                             :page-nav-color                     :transparent
                             :page-nav-background-uri            ""
                             :mid-section {:type                   :text-with-description
-                                          :icon                   :main-icons2/placeholder
+                                          :icon                   :i/placeholder
                                           :main-text              "Status"
-                                          :left-icon              :main-icons2/placeholder
-                                          :right-icon             :main-icons2/placeholder
+                                          :left-icon              :i/placeholder
+                                          :right-icon             :i/placeholder
                                           :description            "SNT"
                                           :description-color      "black"
-                                          :description-icon       :main-icons2/placeholder
+                                          :description-icon       :i/placeholder
                                           :description-user-icon  "https://i.picsum.photos/id/810/200/300.jpg?hmac=HgwlXd-OaLOAqhGyCiZDUb_75EgUI4u0GtS7nfgxd8s"}
                             :left-section
-                            {:icon                  :main-icons2/unlocked
+                            {:icon                  :i/unlocked
                              :icon-background-color (if (colors/dark?)
                                                       colors/neutral-80
                                                       colors/neutral-20)}}

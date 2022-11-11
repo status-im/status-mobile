@@ -27,7 +27,7 @@
 (defn cool-preview []
   (let [state    (reagent/atom {:type        :default
                                 :closable?    true
-                                :icon         :main-icons2/placeholder
+                                :icon         :i/placeholder
                                 :message      "This is an information box This is an information"
                                 :button-label "Press Me"
                                 :style         {:width 335}

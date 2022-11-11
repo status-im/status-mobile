@@ -96,13 +96,13 @@
                         :style               {:margin-right   6}}
         (i18n/label :t/featured)]
        [quo2.counter/counter @count (:value @count)]]
-      [icons/icon :main-icons2/info {:container-style {:align-items     :center
-                                                       :justify-content :center}
-                                     :resize-mode      :center
-                                     :size             20
-                                     :color            (colors/theme-colors
-                                                        colors/neutral-50
-                                                        colors/neutral-40)}]]
+      [icons/icon :i/info {:container-style {:align-items     :center
+                                             :justify-content :center}
+                           :resize-mode      :center
+                           :size             20
+                           :color            (colors/theme-colors
+                                              colors/neutral-50
+                                              colors/neutral-40)}]]
      [rn/view {:margin-top     8
                :padding-left   20}
       [featured-communities communities]]]))

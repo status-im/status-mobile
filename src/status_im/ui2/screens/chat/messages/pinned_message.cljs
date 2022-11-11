@@ -47,6 +47,6 @@
                                :style               {:position :absolute
                                                      :top      16
                                                      :right    16}}
-         [icons/icon :main-icons2/close {:color  (colors/theme-colors colors/white colors/neutral-100)
-                                         :height 8
-                                         :width  8}]]]))])
+         [icons/icon :i/close {:color  (colors/theme-colors colors/white colors/neutral-100)
+                               :height 8
+                               :width  8}]]]))])

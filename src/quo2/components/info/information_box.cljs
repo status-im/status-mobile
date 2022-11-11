@@ -78,10 +78,10 @@
           [rn/touchable-opacity
            {:on-press            on-close
             :accessibility-label (str (or id "information-box") "-close-button")}
-           [quo2.icons/icon :main-icons2/close {:size            12
-                                                :color           (get-color :close-button)
-                                                :container-style {:margin-top  4
-                                                                  :margin-left 8}}]])]
+           [quo2.icons/icon :i/close {:size            12
+                                      :color           (get-color :close-button)
+                                      :container-style {:margin-top  4
+                                                        :margin-left 8}}]])]
        (when include-button?
          [quo2.button/button {:type     :primary
                               :size     24

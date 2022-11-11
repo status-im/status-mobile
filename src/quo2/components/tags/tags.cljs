@@ -22,7 +22,7 @@
                      :icon-color    icon-color
                      :labelled      (if (= type :label) true labelled)
                      :resource      (if (= type :icon)
-                                      :main-icons2/placeholder
+                                      :i/placeholder
                                       resource)
                      :on-press      #(do (reset! active-tab-id %)
                                          (when on-change (on-change %)))})]])]))))

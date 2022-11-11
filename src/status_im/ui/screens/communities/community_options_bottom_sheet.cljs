@@ -8,36 +8,36 @@
              [status-im.utils.handlers :refer [<sub >evt]]
              [status-im.communities.core :as communities]))
 
-(def not-joined-options [{:icon  :main-icons2/members
+(def not-joined-options [{:icon  :i/members
                           :label (i18n/label :t/view-members)}
-                         {:icon :main-icons2/bullet-list
-                          :right-icon :main-icons2/chevron-right
+                         {:icon :i/bullet-list
+                          :right-icon :i/chevron-right
                           :label (i18n/label :t/view-community-rules)}
-                         {:icon :main-icons2/add-user
+                         {:icon :i/add-user
                           :label  (i18n/label :t/invite-contacts)}
-                         {:icon :main-icons2/qr-code
+                         {:icon :i/qr-code
                           :label (i18n/label :t/show-qr)}
-                         {:icon :main-icons2/share
+                         {:icon :i/share
                           :label (i18n/label :t/share-community)}])
 
-(def joined-options [{:icon :main-icons2/members
+(def joined-options [{:icon :i/members
                       :label (i18n/label :t/view-members)}
-                     {:icon :main-icons2/bullet-list
-                      :right-icon :main-icons2/chevron-right
+                     {:icon :i/bullet-list
+                      :right-icon :i/chevron-right
                       :label (i18n/label :t/view-community-rules)}
-                     {:icon :main-icons2/up-to-date
+                     {:icon :i/up-to-date
                       :label  (i18n/label :t/mark-as-read)}
-                     {:icon :main-icons2/muted
+                     {:icon :i/muted
                       :label  (i18n/label :t/mute-community)
-                      :right-icon :main-icons2/chevron-right}
-                     {:icon :main-icons2/notifications
+                      :right-icon :i/chevron-right}
+                     {:icon :i/notifications
                       :label  (i18n/label :t/community-notification-settings)
-                      :right-icon :main-icons2/chevron-right}
-                     {:icon :main-icons2/add-user
+                      :right-icon :i/chevron-right}
+                     {:icon :i/add-user
                       :label  (i18n/label :t/invite-contacts)}
-                     {:icon :main-icons2/qr-code
+                     {:icon :i/qr-code
                       :label (i18n/label :t/show-qr)}
-                     {:icon :main-icons2/share
+                     {:icon :i/share
                       :label (i18n/label :t/share-community)}])
 
 (defn leave-sheet [community]
@@ -48,7 +48,7 @@
                 :weight              :semi-bold
                 :size                :heading-1}
      (i18n/label :t/leave-community?)]]
-       ;; TODO get tag image from community data 
+       ;; TODO get tag image from community data
    [context-tags/context-tag
     {:style
      {:margin-right :auto
@@ -73,14 +73,14 @@
       :style {:flex 1}}   (i18n/label :t/leave-community)]]])
 
 (defn options-menu []
-  (let [community-mock (<sub [:get-screen-params :community-overview]) ;;TODO stop using mock data and only pass community id 
+  (let [community-mock (<sub [:get-screen-params :community-overview]) ;;TODO stop using mock data and only pass community id
         community (<sub [:communities/community (:id community-mock)])]
     [action-drawers/action-drawer {:actions (if (:joined community)
                                               joined-options
                                               not-joined-options)
                                    :actions-with-consequence
                                    (when (:joined community)
-                                     [{:icon :main-icons2/log-out
+                                     [{:icon :i/log-out
                                        :label  (i18n/label :t/leave-community)
                                        :on-press #(>evt [:bottom-sheet/show-sheet
                                                          {:content (constantly [leave-sheet community])

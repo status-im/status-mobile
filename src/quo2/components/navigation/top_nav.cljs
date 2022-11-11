@@ -63,9 +63,9 @@
                        :right    20
                        :top      12
                        :flex-direction :row}}
-      [base-button :main-icons2/search open-search :open-search-button button-common-props]
-      [base-button :main-icons2/scan open-scanner :open-scanner-button button-common-props]
-      [base-button :main-icons2/qr-code show-qr :show-qr-button button-common-props]
+      [base-button :i/search open-search :open-search-button button-common-props]
+      [base-button :i/scan open-scanner :open-scanner-button button-common-props]
+      [base-button :i/qr-code show-qr :show-qr-button button-common-props]
       [rn/view ;; Keep view instead of "[:<>" to make sure relative
                ;; position is calculated from this view instead of its parent
        [hole-view/hole-view {:key   new-notifications? ;; Key is required to force removal of holes
@@ -78,7 +78,7 @@
 
                                       :else
                                       [{:x 33 :y -7 :width 18 :height 18 :borderRadius 7}])}
-        [base-button :main-icons2/activity-center open-activity-center
+        [base-button :i/activity-center open-activity-center
          :open-activity-center-button button-common-props]]
        (when new-notifications?
          (if (= notification-indicator :counter)
