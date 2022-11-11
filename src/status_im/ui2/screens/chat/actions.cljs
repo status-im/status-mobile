@@ -95,7 +95,7 @@
           :sub-label nil
           :chevron?  false}))
 
-(defn edit-nickname-entry [chat-id]
+(defn view-profile-entry [chat-id]
   (entry {:icon      :i/friend
           :label     (i18n/label :t/view-profile)
           :on-press  #(show-profile-action chat-id)
