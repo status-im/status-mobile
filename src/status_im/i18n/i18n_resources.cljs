@@ -5,8 +5,11 @@
 ;;TODO (14/11/22 flexsurfer) this namespace has been moved to the status-im2 namespace, we keep this only for old (status 1.0) code,
 ;; can be removed with old code later
 
+(def get-keyword
+  (if js/global.__TEST__ str keyword))
+
 (def default-device-language
-  (keyword (.-language react-native-languages)))
+  (get-keyword (.-language react-native-languages)))
 
 (def languages #{:ar :bn :de :el :en :es :es_419 :es_AR :fil :fr :hi :id :in :it :ja :ko :ms :nl :pl :pt :pt_BR :ru :tr :vi :zh :zh_Hant :zh_TW})
 
@@ -16,17 +19,17 @@
 
 (defn valid-language [lang]
   (if (contains? languages lang)
-    (keyword lang)
+    (get-keyword lang)
     (let [parts (string/split (name lang) #"[\-\_]")
-          short-lang (keyword (str (first parts) "_" (second parts)))
-          shortest-lang (keyword (first parts))]
+          short-lang (get-keyword (str (first parts) "_" (second parts)))
+          shortest-lang (get-keyword (first parts))]
       (if (and (> (count parts) 2) (contains? languages short-lang))
         short-lang
         (when (contains? languages shortest-lang)
           shortest-lang)))))
 
 (defn require-translation [lang-key]
-  (when-let [lang (valid-language (keyword lang-key))]
+  (when-let [lang (valid-language (get-keyword lang-key))]
     (case lang
       :ar         (js/require "../translations/ar.json")
       :bn         (js/require "../translations/bn.json")
@@ -63,10 +66,10 @@
     (assoc default-device-language
            (require-translation (-> (name default-device-language)
                                     (string/replace "-" "_")
-                                    keyword)))))
+                                    get-keyword)))))
 
 (defn load-language [lang]
-  (when-let [lang-key (valid-language (keyword lang))]
+  (when-let [lang-key (valid-language (get-keyword lang))]
     (when-not (contains? @loaded-languages lang-key)
       (aset (.-translations i18n-js)
             lang

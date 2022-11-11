@@ -307,7 +307,7 @@ test-watch: ##@ Watch tests and re-run no changes to cljs files
 
 test: export TARGET := clojure
 test: ##@test Run tests once in NodeJS
-	# Here we creates the gyp bindings for nodejs
+	# Here we create the gyp bindings for nodejs
 	yarn install
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
@@ -316,14 +316,27 @@ test: ##@test Run tests once in NodeJS
 
 run-visual-test-ios: export TARGET := clojure
 run-visual-test-ios: XCODE_DERIVED_DATA := $(HOME)/Library/Developer/Xcode/DerivedData
-run-visual-test-ios: APPLICATION_NAME := $(shell ls $(XCODE_DERIVED_DATA) | grep -E '\bStatusIm-')
+run-visual-test-ios: APPLICATION_NAME := StatusIm-brfnruzfrkkycpbndmdoeyrigthc
 run-visual-test-ios: export TEST_BINARY_PATH := $(XCODE_DERIVED_DATA)/$(APPLICATION_NAME)/Build/Products/Debug-iphonesimulator/StatusIm.app
 run-visual-test-ios: ##@test Run tests once in NodeJS
-	yarn install
-	detox build --configuration ios.sim.debug && \
 	detox test --configuration ios.sim.debug 
 
-#--------------
+component-test-watch: export TARGET := clojure
+component-test: export COMPONENT_TEST := true
+component-test: export BABEL_ENV := test
+component-test-watch: ##@ Watch tests and re-run no changes to cljs files
+	yarn install
+	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js' -e cljs
+
+component-test: export TARGET := clojure
+component-test: export COMPONENT_TEST := true
+component-test: export BABEL_ENV := test
+component-test: ##@test Run tests once in NodeJS
+	# Here we create the gyp bindings for nodejs
+	yarn install
+	yarn shadow-cljs compile component-test && \
+	jest --config=test/jest/jest.config.js
+
 # Other
 #--------------
 

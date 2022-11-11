@@ -4,9 +4,14 @@
 
 (def icon-path "./resources/images/icons2/")
 
+(defn combine-path [path el]
+  (if (System/getenv "COMPONENT_TEST")
+    (str "." path el "@2x.png")
+    (str "." path el ".png")))
+
 (defn require-icon [size path]
   (fn [el]
-    (let [s (str "." path el ".png")
+    (let [s (combine-path path el)
           k (-> el
                 (cstr/replace "_" "-")
                 (cstr/replace " " "-")

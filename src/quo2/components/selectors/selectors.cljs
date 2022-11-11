@@ -133,7 +133,8 @@
                   :border-radius 20
                   :background-color (get-color @checked? disabled? blurred-background?)})
          :accessibility-label (str "toggle-" (if @checked? "on" "off"))
-         :accessibility-role  :checkbox}
+         :accessibility-role  :checkbox
+         :testID "toggle-component"}
         [rn/view {:style
                   {:margin-left (if @checked? 12 2)
                    :height 16
