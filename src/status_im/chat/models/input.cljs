@@ -126,6 +126,7 @@
 
         text (get-in message [:content :text])]
     {:dispatch [:chat.ui.input/set-chat-input-text text current-chat-id]
+     :set-input-text [current-chat-id text]
      :db (-> db
              (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
                        message)

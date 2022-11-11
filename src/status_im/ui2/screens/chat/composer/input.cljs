@@ -21,6 +21,7 @@
 (defonce input-texts (atom {}))
 (defonce mentions-enabled (reagent/atom {}))
 (defonce chat-input-key (reagent/atom 1))
+(defonce text-input-ref (reagent/atom nil))
 
 (declare selectable-text-input)
 
@@ -182,6 +183,7 @@
                                  [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
                                   text]) input-with-mentions)
                               (get @input-texts chat-id)))]
+    (reset! text-input-ref (:text-input-ref refs))
     ;when ios implementation for selectable-text-input is ready, we need remove this condition and use selectable-text-input directly.
     (if platform/android?
       [selectable-text-input chat-id props children]
@@ -199,6 +201,17 @@
 (defn update-input-text [{:keys [text-input chat-id]} text]
   (on-text-change text chat-id)
   (.setNativeProps ^js text-input (clj->js {:text text})))
+
+(re-frame/reg-fx
+ :set-input-text
+ (fn [[chat-id text]]
+   (if platform/ios?
+     (.setNativeProps ^js (quo.react/current-ref @text-input-ref) (clj->js {:text text}))
+     (do
+       (on-text-change text chat-id)
+       (if (string/blank? text)
+         (.clear ^js (quo.react/current-ref @text-input-ref))
+         (.setNativeProps ^js (quo.react/current-ref @text-input-ref) (clj->js {:text text})))))))
 
 (defn calculate-input-text [{:keys [full-text selection-start selection-end]} content]
   (let [head (subs full-text 0 selection-start)

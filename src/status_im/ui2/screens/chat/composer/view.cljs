@@ -3,7 +3,7 @@
             [react-native.reanimated :as reanimated]
             [re-frame.core :as re-frame]
             [quo.components.safe-area :as safe-area]
-            [quo.react-native :as rn]
+            [quo.react-native :as rn :refer [navigation-const]]
             [status-im.ui2.screens.chat.composer.style :as styles]
             [status-im.ui2.screens.chat.composer.reply :as reply]
             [quo2.components.buttons.button :as quo2.button]
@@ -16,7 +16,8 @@
             [status-im.ui.components.permissions :as permissions]
             [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
             [status-im.utils.utils :as utils]
-            [i18n.i18n :as i18n]))
+            [i18n.i18n :as i18n]
+            [status-im.ui2.screens.chat.composer.edit.view :as edit]))
 
 (defn calculate-y [context keyboard-shown min-y max-y added-value]
   (if keyboard-shown
@@ -135,13 +136,14 @@
          [:f>
           (fn []
             (let [reply                (<sub [:chats/reply-message])
+                  edit                 (<sub [:chats/edit-message])
                   suggestions          (<sub [:chat/mention-suggestions])
                   {window-height :height} (rn/use-window-dimensions)
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
-                  max-y                (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - default height
+                  max-y                (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets) (:status-bar-height @navigation-const)) ; 360 - default height
                   max-height           (Math/abs (- max-y 56 (:bottom insets))) ; 56 - top-bar height
-                  added-value          (if (and (not (seq suggestions)) reply) 38 0) ; increased height of input box needed when reply
-                  min-y                (+ min-y (when reply 38))
+                  added-value          (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
+                  min-y                (+ min-y (when (or edit reply) 38))
                   y                    (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply)
                   translate-y          (reanimated/use-shared-value 0)
                   shared-height        (reanimated/use-shared-value min-y)
@@ -160,6 +162,12 @@
                                       (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0)))
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
+              (quo.react/effect! #(when (and (not edit) (= (:state @context) :max))
+                                    (swap! context assoc :state :min)
+                                    (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
+                                    (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
+                                    (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
+                                    (re-frame/dispatch [:dismiss-keyboard])) edit)
               [reanimated/view {:style (reanimated/apply-animations-to-style
                                         {:height shared-height}
                                         {})}
@@ -170,6 +178,7 @@
                                           (styles/input-bottom-sheet window-height))}
                  ;handle
                  [rn/view {:style (styles/bottom-sheet-handle)}]
+                 [edit/edit-message-auto-focus-wrapper (:text-input-ref refs) edit]
                  [reply/reply-message-auto-focus-wrapper (:text-input-ref refs) reply]
                  [rn/view {:style {:height (- max-y 80 added-value)}}
                   [input/text-input {:chat-id                chat-id

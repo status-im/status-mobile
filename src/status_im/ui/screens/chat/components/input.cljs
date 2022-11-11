@@ -187,16 +187,6 @@
     (when platform/ios?
       (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
-(re-frame/reg-fx
- :set-input-text
- (fn [[chat-id text]]
-    ;; We enable mentions
-   (swap! mentions-enabled assoc chat-id true)
-   (on-text-change text chat-id)
-    ;; We update the key so that we force a refresh of the text input, as those
-    ;; are not ratoms
-   (force-text-input-update!)))
-
 (fx/defn set-input-text
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
