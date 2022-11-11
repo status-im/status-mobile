@@ -1845,5 +1845,8 @@
     "rename": "Rename",
     "mark-untrustworthy": "Mark as Untrustworthy",
     "block-user": "Block User",
-    "group-details": "Group details"
+    "group-details": "Group details",
+    "edit-name-and-image": "Edit name and image",
+    "change-group-privacy": "Change group privacy",
+    "manage-members": "Manage members"
 }

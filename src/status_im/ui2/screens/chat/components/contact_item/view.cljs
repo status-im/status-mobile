@@ -22,7 +22,7 @@
 (defn contact-item [item]
   (let [{:keys [public-key ens-verified added? images]} item
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
-        photo-path   (if-not (empty? images) (rf/sub [:chats/photo-path public-key]) nil)]
+        photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))]
     [rn/touchable-opacity (merge {:style         (style/container)
                                   :on-press      #(open-chat public-key)
                                   :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet

@@ -14,8 +14,8 @@
                       sub-label
                       right-icon
                       danger?
-                      on-press] :as item}]
-  (when item
+                      on-press] :as action-props}]
+  (when action-props
     [rn/touchable-opacity {:on-press on-press}
      [rn/view {:style
                {:height            (if sub-label 56 47)

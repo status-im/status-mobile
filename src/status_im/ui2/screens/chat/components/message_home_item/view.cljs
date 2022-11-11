@@ -3,12 +3,12 @@
             [status-im.utils.re-frame :as rf]
             [status-im.utils.datetime :as time]
             [quo2.foundations.typography :as typography]
-            [quo2.components.notifications.info-count :as info-count]
             [quo2.components.icon :as icons]
             [quo2.foundations.colors :as colors]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo.react-native :as rn]
             [quo.platform :as platform]
+            [quo2.core :as quo2]
             [quo2.components.markdown.text :as text]
             [status-im.ui2.screens.chat.actions :as actions]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
@@ -129,7 +129,7 @@
          (get-in last-message [:content :text])]
         [render-subheader (get-in last-message [:content :parsed-text])])]
      (if (> unviewed-mentions-count 0)
-       [info-count/info-count unviewed-mentions-count {:top 16}]
+       [quo2/info-count unviewed-mentions-count {:top 16}]
        (when (> unviewed-messages-count 0)
          [rn/view {:style (style/count-container)}]))]))
 

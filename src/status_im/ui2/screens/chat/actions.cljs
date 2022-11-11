@@ -7,7 +7,7 @@
    [status-im.utils.re-frame :as rf]
    [quo2.components.drawers.action-drawers :as drawer]))
 
-(defn- entry [icon label on-press danger? sub-label chevron?]
+(defn- entry [{:keys [icon label on-press danger? sub-label chevron?]}]
   {:pre [(keyword? icon)
          (string? label)
          (fn? on-press)
@@ -49,6 +49,7 @@
 (defn leave-group-action [chat-id]
   (hide-sheet-and-dispatch [:group-chats.ui/leave-chat-pressed chat-id]))
 
+<<<<<<< HEAD
 (defn mute-chat-entry [muted? chat-id]
   (entry :i/muted
          (i18n/label
@@ -85,16 +86,56 @@
          true
          nil
          false))
+=======
+(defn mute-chat-entry [chat-id]
+  (let [muted? (rf/sub [:chats/muted chat-id])]
+    (entry {:icon      :main-icons2/muted
+            :label     (i18n/label
+                        (if muted?
+                          :unmute-chat
+                          :mute-chat))
+            :on-press  (if muted?
+                         #(unmute-chat-action chat-id)
+                         #(mute-chat-action chat-id))
+            :danger?   false
+            :sub-label nil
+            :chevron?  true})))
+
+(defn mark-as-read-entry [chat-id]
+  (entry {:icon      :main-icons2/correct
+          :label     (i18n/label :t/mark-as-read)
+          :on-press  #(mark-all-read-action chat-id)
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
+
+(defn clear-history-entry [chat-id]
+  (entry {:icon      :main-icons2/delete
+          :label     (i18n/label :t/clear-history)
+          :on-press  #(clear-history-action chat-id)
+          :danger?   true
+          :sub-label nil
+          :chevron?  false}))
+
+(defn delete-chat-entry [chat-id]
+  (entry {:icon      :main-icons2/delete
+          :label     (i18n/label :t/delete-chat)
+          :on-press  #(delete-chat-action chat-id)
+          :danger?   true
+          :sub-label nil
+          :chevron?  false}))
+>>>>>>> 0b8ba99e1... refactor
 
 (defn leave-group-entry [chat-id]
-  (entry :main-icons2/log-out
-         (i18n/label :leave-group)
-         #(leave-group-action chat-id)
-         true
-         nil
-         false))
+  (entry {:icon      :main-icons2/log-out
+          :label     (i18n/label :t/leave-group)
+          :on-press  #(leave-group-action chat-id)
+          :danger?   true
+          :sub-label nil
+          :chevron?  false}))
 
 (defn view-profile-entry [chat-id]
+<<<<<<< HEAD
   (entry :i/friend
          (i18n/label :view-profile)
          #(show-profile-action chat-id)
@@ -109,94 +150,142 @@
          false
          nil
          false))
+=======
+  (entry {:icon      :main-icons2/friend
+          :label     (i18n/label :t/view-profile)
+          :on-press  #(show-profile-action chat-id)
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
+
+(defn edit-nickname-entry [chat-id]
+  (entry {:icon      :main-icons2/edit
+          :label     (i18n/label :t/edit-nickname)
+          :on-press  #(edit-nickname-action chat-id)
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
+>>>>>>> 0b8ba99e1... refactor
 
 (defn notifications-entry []
-  (entry :main-icons2/notifications
-         (i18n/label :notifications)
-         #(js/alert "TODO: to be implemented, requires design input")
-         false
-         "All messages" ; placeholder
-         true))
+  (entry {:icon      :main-icons2/notifications
+          :label     (i18n/label :t/notifications)
+          :on-press  #(js/alert "TODO: to be implemented, requires design input")
+          :danger?   false
+          :sub-label "All messages" ; TODO: placeholder
+          :chevron?  true}))
 
 (defn fetch-messages-entry []
-  (entry :main-icons2/save
-         (i18n/label :fetch-messages)
-         #(js/alert "TODO: to be implemented, requires design input")
-         false
-         nil
-         true))
+  (entry {:icon      :main-icons2/save
+          :label     (i18n/label :t/fetch-messages)
+          :on-press  #(js/alert "TODO: to be implemented, requires design input")
+          :danger?   false
+          :sub-label nil
+          :chevron?  true}))
 
 (defn pinned-messages-entry []
-  (entry :main-icons2/pin
-         (i18n/label :pinned-messages)
-         #(js/alert "TODO: to be implemented, requires design input")
-         false
-         nil
-         true))
+  (entry {:icon      :main-icons2/pin
+          :label     (i18n/label :t/pinned-messages)
+          :on-press  #(js/alert "TODO: to be implemented, requires design input")
+          :danger?   false
+          :sub-label nil
+          :chevron?  true}))
 
 (defn remove-from-contacts-entry [contact]
-  (entry :main-icons2/remove-user
-         (i18n/label :remove-from-contacts)
-         #(hide-sheet-and-dispatch [:contact.ui/remove-contact-pressed contact])
-         false
-         nil
-         false))
+  (entry {:icon      :main-icons2/remove-user
+          :label     (i18n/label :t/remove-from-contacts)
+          :on-press  #(hide-sheet-and-dispatch [:contact.ui/remove-contact-pressed contact])
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
 
 (defn rename-entry []
-  (entry :main-icons2/edit
-         (i18n/label :rename)
-         #(js/alert "TODO: to be implemented, requires design input")
-         false
-         nil
-         false))
+  (entry {:icon      :main-icons2/edit
+          :label     (i18n/label :t/rename)
+          :on-press  #(js/alert "TODO: to be implemented, requires design input")
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
 
 (defn show-qr-entry []
-  (entry :main-icons2/qr-code
-         (i18n/label :show-qr)
-         #(js/alert "TODO: to be implemented, requires design input")
-         false
-         nil
-         false))
+  (entry {:icon      :main-icons2/qr-code
+          :label     (i18n/label :t/show-qr)
+          :on-press  #(js/alert "TODO: to be implemented, requires design input")
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
 
 (defn share-profile-entry []
-  (entry :main-icons2/share
-         (i18n/label :share-profile)
-         #(js/alert "TODO: to be implemented")
-         false
-         nil
-         false))
+  (entry {:icon      :main-icons2/share
+          :label     (i18n/label :t/share-profile)
+          :on-press  #(js/alert "TODO: to be implemented")
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
+
+(defn share-group-entry []
+  (entry {:icon      :main-icons2/share
+          :label     (i18n/label :t/share)
+          :on-press  #(js/alert "TODO: to be implemented")
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
 
 (defn mark-untrustworthy-entry []
-  (entry :main-icons2/alert
-         (i18n/label :mark-untrustworthy)
-         #(js/alert "TODO: to be implemented, probably requires status-go impl. and design input")
-         true
-         nil
-         false))
+  (entry {:icon      :main-icons2/alert
+          :label     (i18n/label :t/mark-untrustworthy)
+          :on-press  #(js/alert "TODO: to be implemented, probably requires status-go impl. and design input")
+          :danger?   true
+          :sub-label nil
+          :chevron?  false}))
 
 (defn block-user-entry []
-  (entry :main-icons2/block
-         (i18n/label :block-user)
-         #(js/alert "TODO: to be implemented, requires design input")
-         true
-         nil
-         false))
+  (entry {:icon      :main-icons2/block
+          :label     (i18n/label :t/block-user)
+          :on-press  #(js/alert "TODO: to be implemented, requires design input")
+          :danger?   true
+          :sub-label nil
+          :chevron?  false}))
 
 (defn group-details-entry [chat-id]
-  (entry :main-icons2/members
-         (i18n/label :group-details)
-         #(hide-sheet-and-dispatch [:show-group-chat-profile chat-id])
-         false
-         nil
-         false))
+  (entry {:icon      :main-icons2/members
+          :label     (i18n/label :t/group-details)
+          :on-press  #(hide-sheet-and-dispatch [:show-group-chat-profile chat-id])
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
 
 (defn add-members-entry []
-  (entry :main-icons2/add-user
-         (i18n/label :add-members)
-         #(js/alert "TODO: to be implemented")
-         false
-         nil
-         false))
+  (entry {:icon      :main-icons2/add-user
+          :label     (i18n/label :t/add-members)
+          :on-press  #(js/alert "TODO: to be implemented")
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
+
+(defn manage-members-entry []
+  (entry {:icon      :main-icons2/add-user
+          :label     (i18n/label :t/manage-members)
+          :on-press  #(js/alert "TODO: to be implemented")
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
+
+(defn edit-group-entry []
+  (entry {:icon      :main-icons2/edit
+          :label     (i18n/label :t/edit-name-and-image)
+          :on-press  #(js/alert "TODO: to be implemented")
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
+
+(defn group-privacy-entry []
+  (entry {:icon      :main-icons2/privacy
+          :label     (i18n/label :t/change-group-privacy)
+          :on-press  #(js/alert "TODO: to be implemented")
+          :danger?   false
+          :sub-label nil
+          :chevron?  false}))
 
 (defn destructive-actions [chat-id group-chat]
   [(clear-history-entry chat-id)
@@ -204,34 +293,47 @@
      (leave-group-entry chat-id)
      (delete-chat-entry chat-id))])
 
-(defn notification-actions [muted? chat-id inside-chat?]
+(defn notification-actions [{:keys [chat-id group-chat public?]} inside-chat?]
   [(mark-as-read-entry chat-id)
-   (mute-chat-entry muted? chat-id)
+   (mute-chat-entry chat-id)
    (notifications-entry)
    (if inside-chat?
      (fetch-messages-entry)
      (pinned-messages-entry))
-   (show-qr-entry)
-   (share-profile-entry)])
+   (when (or (not group-chat) public?)
+     (show-qr-entry))
+   (when-not group-chat
+     (share-profile-entry))
+   (when public?
+     (share-group-entry))])
 
-(defn one-to-one-actions [muted? chat-id group-chat inside-chat?]
+(defn group-actions [{:keys [chat-id admins]} inside-chat?]
+  (let [current-pk (rf/sub [:multiaccount/public-key])
+        admin?     (get admins current-pk)]
+    [(group-details-entry chat-id)
+     (when inside-chat?
+       (if admin?
+         (manage-members-entry)
+         (add-members-entry)))
+     (when (and admin? inside-chat?) (edit-group-entry))
+     (when (and admin? inside-chat?) (group-privacy-entry))]))
+
+(defn one-to-one-actions [{:keys [chat-id group-chat] :as item} inside-chat?]
   [drawer/action-drawer [[(view-profile-entry chat-id)
                           (edit-nickname-entry chat-id)]
-                         (notification-actions muted? chat-id inside-chat?)
+                         (notification-actions item inside-chat?)
                          (destructive-actions chat-id group-chat)]])
 
-(defn public-chat-actions [muted? chat-id group-chat inside-chat?]
+(defn public-chat-actions [{:keys [chat-id group-chat] :as item} inside-chat?]
   [drawer/action-drawer [[(group-details-entry chat-id)
                           (when inside-chat?
                             (add-members-entry))]
-                         (notification-actions muted? chat-id inside-chat?)
+                         (notification-actions item inside-chat?)
                          (destructive-actions chat-id group-chat)]])
 
-(defn private-group-chat-actions [muted? chat-id group-chat inside-chat?]
-  [drawer/action-drawer [[(group-details-entry chat-id)
-                          (when inside-chat?
-                            (add-members-entry))]
-                         (notification-actions muted? chat-id inside-chat?)
+(defn private-group-chat-actions [{:keys [chat-id group-chat] :as item} inside-chat?]
+  [drawer/action-drawer [(group-actions item inside-chat?)
+                         (notification-actions item inside-chat?)
                          (destructive-actions chat-id group-chat)]])
 
 (defn contact-actions [{:keys [public-key] :as contact}]
@@ -243,14 +345,13 @@
                          [(mark-untrustworthy-entry)
                           (block-user-entry)]]])
 
-(defn actions [{:keys [chat-type chat-id group-chat] :as item} inside-chat?]
-  (let [muted? (rf/sub [:chats/muted chat-id])]
-    (case chat-type
-      constants/one-to-one-chat-type
-      [one-to-one-actions muted? chat-id group-chat inside-chat?]
-      constants/public-chat-type
-      [public-chat-actions muted? chat-id group-chat inside-chat?]
-      constants/private-group-chat-type
-      [private-group-chat-actions muted? chat-id group-chat inside-chat?]
-      [contact-actions item])))
+(defn actions [{:keys [chat-type] :as item} inside-chat?]
+  (case chat-type
+    constants/one-to-one-chat-type
+    [one-to-one-actions item inside-chat?]
+    constants/public-chat-type
+    [public-chat-actions item inside-chat?]
+    constants/private-group-chat-type
+    [private-group-chat-actions item inside-chat?]
+    [contact-actions item]))
 
