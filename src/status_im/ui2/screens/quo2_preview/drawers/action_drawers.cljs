@@ -14,23 +14,23 @@
                   :key     :show-red-options?
                   :type    :boolean}])
 
-(def options-with-consequences [{:icon    :main-icons2/delete
+(def options-with-consequences [{:icon    :i/delete
                                  :danger? true
                                  :label   "Clear history"}])
 
 (defn render-action-sheet [state]
-  [quo2/action-drawer (cond-> [[{:icon  :main-icons2/friend
+  [quo2/action-drawer (cond-> [[{:icon  :i/friend
                                  :label "View channel members and details"}
-                                {:icon  :main-icons2/communities
+                                {:icon  :i/communities
                                  :label "Mark as read"}
-                                {:icon       :main-icons2/muted
+                                {:icon       :i/muted
                                  :label      (if (:muted? @state) "Unmute channel" "Mute channel")
-                                 :right-icon :main-icons2/chevron-right
+                                 :right-icon :i/chevron-right
                                  :sub-label  (when (:muted? @state) "Muted for 15 min")}
-                                {:icon       :main-icons2/scan
-                                 :right-icon :main-icons2/chevron-right
+                                {:icon       :i/scan
+                                 :right-icon :i/chevron-right
                                  :label      "Fetch messages"}
-                                {:icon  :main-icons2/add-user
+                                {:icon  :i/add-user
                                  :label "Share link to the channel"}]]
 
                         (:show-red-options? @state)

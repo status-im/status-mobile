@@ -37,15 +37,15 @@
         display-name]
        (if ens-verified
          [rn/view {:style {:margin-left 5 :margin-top 4}}
-          [icons/icon :main-icons2/verified {:no-color true :size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
+          [icons/icon :i/verified {:no-color true :size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
          (when added?
            [rn/view {:style {:margin-left 5 :margin-top 4}}
-            [icons/icon :main-icons2/contact {:no-color true :size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
+            [icons/icon :i/contact {:no-color true :size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
       [text/text {:size :paragraph-1
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
        (get-shortened-address public-key)]]
      [rn/touchable-opacity {:style          {:position :absolute
                                              :right    20}
                             :active-opacity 1} ; TODO: on-long-press to be added when contact bottom sheet is implemented
-      [icons/icon :main-icons2/options {:size 20 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]]))
+      [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]]))
 

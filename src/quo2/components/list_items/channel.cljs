@@ -38,7 +38,7 @@
    [rn/view {:style {:height 20}}
     (when (and (not locked?)
                muted?)
-      [quo2.icons/icon :main-icons2/muted
+      [quo2.icons/icon :i/muted
        {:size     20
         :no-color true}])
     (when (and (not locked?)
@@ -51,6 +51,6 @@
                (not muted?)
                (not (pos? (int mentions-count)))
                unread-messages?)
-      [quo2.icons/icon :main-icons2/channel-notification
+      [quo2.icons/icon :i/channel-notification
        {:size     20
         :no-color true}])]])

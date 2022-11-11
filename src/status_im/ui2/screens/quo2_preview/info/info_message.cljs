@@ -28,7 +28,7 @@
 (defn cool-preview []
   (let [state (reagent/atom {:type    :default
                              :size    :default
-                             :icon    :main-icons2/placeholder
+                             :icon    :i/placeholder
                              :message "This is a message"})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}

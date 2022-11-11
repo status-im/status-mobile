@@ -9,7 +9,7 @@
    opts
    {:style        style                 ;; extra styles for the container (takes precedence)
     :network-name \"Mainnet\"             ;; shown network name
-    :icon         :main-icons2/ethereum ;; key of icon belonging to the network
+    :icon         :i/ethereum ;; key of icon belonging to the network
     :eth-value    1.2345678             ;; shown ETH value}"
   [{:keys [show-right-border? style network-name icon eth-value labels] :as _opts}]
   [rn/view (merge {:accessibility-label :network-amount

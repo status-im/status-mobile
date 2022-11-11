@@ -96,7 +96,7 @@
                         :style               {:margin-right   6}}
         (i18n/label :t/featured)]
        [quo2.counter/counter @count (:value @count)]]
-      [icons/icon :main-icons2/info {:container-style {:align-items     :center
+      [icons/icon :i/info {:container-style {:align-items     :center
                                                        :justify-content :center}
                                      :resize-mode      :center
                                      :size             20

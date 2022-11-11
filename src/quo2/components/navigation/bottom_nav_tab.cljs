@@ -17,7 +17,7 @@
 (defn bottom-nav-tab
   "[bottom-nav-tab opts]
    opts
-   {:icon                   :main-icons2/communities
+   {:icon                   :i/communities
     :new-notifications?     true/false
     :notification-indicator :unread-dot/:counter
     :counter-label          number

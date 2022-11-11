@@ -53,7 +53,7 @@
   (load-selected-stack @animation/selected-stack-id)
   [rn/view {:style (styles/bottom-tabs-container false)}
    [rn/view {:style (styles/bottom-tabs)}
-    [bottom-tab :main-icons2/communities :communities-stack shared-values]
-    [bottom-tab :main-icons2/messages :chats-stack shared-values]
-    [bottom-tab :main-icons2/wallet :wallet-stack shared-values]
-    [bottom-tab :main-icons2/browser :browser-stack  shared-values]]])
+    [bottom-tab :i/communities :communities-stack shared-values]
+    [bottom-tab :i/messages :chats-stack shared-values]
+    [bottom-tab :i/wallet :wallet-stack shared-values]
+    [bottom-tab :i/browser :browser-stack  shared-values]]])

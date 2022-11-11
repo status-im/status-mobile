@@ -69,12 +69,12 @@
 (defn verified-or-contact-icon [{:keys [ens-verified added?]}]
   (if ens-verified
     [rn/view {:style {:margin-left 5 :margin-top 4}}
-     [icons/icon :main-icons2/verified {:no-color true
+     [icons/icon :i/verified {:no-color true
                                         :size     12
                                         :color    (colors/theme-colors colors/success-50 colors/success-60)}]]
     (when added?
       [rn/view {:style {:margin-left 5 :margin-top 4}}
-       [icons/icon :main-icons2/contact {:no-color true
+       [icons/icon :i/contact {:no-color true
                                          :size     12
                                          :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]])))
 
@@ -90,7 +90,7 @@
 (defn display-pic-view [group-chat color display-name photo-path]
   (if group-chat
     [rn/view {:style (style/group-chat-icon color)}
-     [icons/icon :main-icons2/group {:size 16 :color colors/white-opa-70}]]
+     [icons/icon :i/group {:size 16 :color colors/white-opa-70}]]
     [user-avatar/user-avatar {:full-name         display-name
                               :profile-picture   photo-path
                               :status-indicator? true

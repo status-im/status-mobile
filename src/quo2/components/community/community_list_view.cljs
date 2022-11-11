@@ -55,7 +55,7 @@
           [counter/counter {:type :default} 5]
 
           (= notifications :muted)
-          [icons/icon :main-icons2/muted {:container-style {:align-items     :center
+          [icons/icon :i/muted {:container-style {:align-items     :center
                                                             :justify-content :center}
                                           :resize-mode     :center
                                           :size            20

@@ -96,14 +96,14 @@
        :page-nav-color                     :transparent
        :page-nav-background-uri            ""
        :mid-section {:type                   :text-with-description}
-       :right-section-buttons [{:icon :main-icons2/search
+       :right-section-buttons [{:icon :i/search
                                 :background-color (icon-color)}
-                               {:icon :main-icons2/options
+                               {:icon :i/options
                                 :background-color (icon-color)
                                 :on-press #(>evt [:bottom-sheet/show-sheet
                                                   {:content (constantly [options-menu/options-menu community])
                                                    :content-height 400}])}]
-       :left-section {:icon                  :main-icons2/close
+       :left-section {:icon                  :i/close
                       :icon-background-color (icon-color)
                       :on-press #(>evt [:navigate-back])}}]]]
    [rn/view {:flex               1
@@ -156,7 +156,7 @@
           :margin-top 20
           :margin-left :auto
           :margin-right :auto}
-         :before :main-icons2/communities}
+         :before :i/communities}
         (i18n/label :join-open-community)])]
     [channel-list-component]]])
 

@@ -44,7 +44,7 @@
   (hide-sheet-and-dispatch [:chat.ui/remove-chat-pressed chat-id]))
 
 (defn mute-chat-entry [muted? chat-id]
-  (entry :main-icons2/muted
+  (entry :i/muted
          (i18n/label
           (if muted?
             :unmute-chat
@@ -55,31 +55,31 @@
          false))
 
 (defn mark-as-read-entry [chat-id]
-  (entry :main-icons2/check
+  (entry :i/check
          (i18n/label :mark-as-read)
          #(mark-all-read-action chat-id)
          false))
 
 (defn clear-history-entry [chat-id]
-  (entry :main-icons2/delete
+  (entry :i/delete
          (i18n/label :clear-history)
          #(clear-history-action chat-id)
          true))
 
 (defn delete-chat-entry [chat-id]
-  (entry :main-icons2/delete
+  (entry :i/delete
          (i18n/label :delete-chat)
          #(delete-chat-action chat-id)
          true))
 
 (defn view-profile-entry [chat-id]
-  (entry :main-icons2/friend
+  (entry :i/friend
          (i18n/label :view-profile)
          #(show-profile-action chat-id)
          false))
 
 (defn edit-nickname-entry [chat-id]
-  (entry :main-icons2/edit
+  (entry :i/edit
          (i18n/label :edit-nickname)
          #(edit-nickname-action chat-id)
          false))

@@ -70,7 +70,7 @@
                                        colors/neutral-70
                                        override-theme)}}
    (if (= size 16)
-     [quo2.icons/icon :main-icons2/more {:size 12
+     [quo2.icons/icon :i/more {:size 12
                                          :color (get-overflow-color
                                                  transparent?
                                                  colors/white-opa-70

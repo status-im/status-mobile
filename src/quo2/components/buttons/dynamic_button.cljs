@@ -22,13 +22,13 @@
 (defn- icon-view [type]
   [icon/icon
    (case type
-     :jump-to           :main-icons2/jump-to
-     :mention           :main-icons2/mention
-     :notification-down :main-icons2/arrow-down
-     :notification-up   :main-icons2/arrow-up
-     :search-with-label :main-icons2/search
-     :search            :main-icons2/search
-     :bottom            :main-icons2/arrow-down)
+     :jump-to           :i/jump-to
+     :mention           :i/mention
+     :notification-down :i/arrow-down
+     :notification-up   :i/arrow-up
+     :search-with-label :i/search
+     :search            :i/search
+     :bottom            :i/arrow-down)
    {:size            12
     :color           (get-icon-and-text-color type)
     :container-style {:margin-top    6
