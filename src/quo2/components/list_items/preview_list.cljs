@@ -71,12 +71,12 @@
                                        override-theme)}}
    (if (= size 16)
      [quo2.icons/icon :i/more {:size 12
-                                         :color (get-overflow-color
-                                                 transparent?
-                                                 colors/white-opa-70
-                                                 colors/neutral-50
-                                                 colors/neutral-40
-                                                 override-theme)}]
+                               :color (get-overflow-color
+                                       transparent?
+                                       colors/white-opa-70
+                                       colors/neutral-50
+                                       colors/neutral-40
+                                       override-theme)}]
      [quo2.text/text {:size   (if (= size 32) :paragraph-2 :label)
                       :weight :medium
                       :style  {:color       (get-overflow-color

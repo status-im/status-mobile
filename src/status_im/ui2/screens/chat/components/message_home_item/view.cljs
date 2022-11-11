@@ -70,13 +70,13 @@
   (if ens-verified
     [rn/view {:style {:margin-left 5 :margin-top 4}}
      [icons/icon :i/verified {:no-color true
-                                        :size     12
-                                        :color    (colors/theme-colors colors/success-50 colors/success-60)}]]
+                              :size     12
+                              :color    (colors/theme-colors colors/success-50 colors/success-60)}]]
     (when added?
       [rn/view {:style {:margin-left 5 :margin-top 4}}
        [icons/icon :i/contact {:no-color true
-                                         :size     12
-                                         :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]])))
+                               :size     12
+                               :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]])))
 
 (defn display-name-view [display-name contact timestamp]
   [rn/view {:style {:flex-direction :row}}

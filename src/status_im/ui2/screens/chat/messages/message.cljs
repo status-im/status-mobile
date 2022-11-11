@@ -221,8 +221,8 @@
 
 (defn pin-icon [color size]
   [icons/icon :i/pin {:color  color
-                                :height size
-                                :width  size}])
+                      :height size
+                      :width  size}])
 
 (defn pinned-by-indicator [pinned-by]
   [rn/view {:style               (style/pin-indicator)

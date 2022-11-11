@@ -37,11 +37,11 @@
                                                 colors/neutral-40)}}
            (str "+" extra-group-count)]
           [icons/icon :i/pending-default {:container-style {:align-items     :center
-                                                                      :justify-content :center}
-                                                    :color (colors/theme-colors
-                                                            colors/neutral-50
-                                                            colors/neutral-40)
-                                                    :size  12}])]])))
+                                                            :justify-content :center}
+                                          :color (colors/theme-colors
+                                                  colors/neutral-50
+                                                  colors/neutral-40)
+                                          :size  12}])]])))
 
 (defn selected-token-count [group]
   (cond
