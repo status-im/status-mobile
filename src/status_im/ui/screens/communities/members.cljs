@@ -70,7 +70,7 @@
                    :title               (i18n/label :t/invite-people)
                    :accessibility-label :community-invite-people
                    :theme               :accent
-                   :on-press            #(>evt [::communities/invite-people-pressed community-id])}]
+                   :on-press            #(>evt [:communities/invite-people-pressed community-id])}]
    [quo/separator {:style {:margin-vertical 8}}]])
 
 (defn requests-to-join [community-id]

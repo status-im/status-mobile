@@ -87,14 +87,14 @@
          :title               (i18n/label :t/invite-people)
          :icon                :main-icons/share
          :accessibility-label :community-invite-people
-         :on-press            #(>evt [::communities/invite-people-pressed id])}])
+         :on-press            #(>evt [:communities/invite-people-pressed id])}])
      (when (and can-share? (not can-invite?))
        [quo/list-item
         {:theme               :accent
          :title               (i18n/label :t/invite-people)
          :icon                :main-icons/share
          :accessibility-label :community-share
-         :on-press            #(>evt [::communities/share-community-pressed id])}])]))
+         :on-press            #(>evt [:communities/share-community-pressed id])}])]))
 
 (defn community-actions [{:keys [id name images color can-manage-users?]}]
   (let [thumbnail-image (get-in images [:thumbnail :uri])]
