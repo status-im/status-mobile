@@ -6,7 +6,8 @@
             [clojure.string :as string]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.ethereum.core :as ethereum]))
+            [status-im.ethereum.core :as ethereum]
+            [status-im.constants :as constants]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -67,6 +68,20 @@
  :<- [:contacts/contacts]
  (fn [contacts]
    (contact.db/get-active-contacts contacts)))
+
+(re-frame/reg-sub
+ :contacts/sorted-and-grouped-by-first-letter 
+ :<- [:contacts/active]
+ :<- [:selected-contacts-count]
+  (fn [[contacts selected-contacts-count]]
+    (->> contacts
+         (map #(assoc % :allow-new-users? (< selected-contacts-count
+                                             (dec constants/max-group-chat-participants))))
+         (group-by (comp (fnil string/upper-case "") first :alias))
+         (sort-by (fn [[title]] title))
+         (map (fn [[title data]]
+                {:title title
+                 :data  data})))))
 
 (re-frame/reg-sub
  :contacts/sorted-contacts

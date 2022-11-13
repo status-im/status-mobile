@@ -122,7 +122,8 @@
             [status-im.ui2.screens.quo2-preview.main :as quo2.preview]
             [status-im.utils.config :as config]
             [status-im.ui.screens.wallet.manage-connections.views :as manage-all-connections]
-            [status-im.navigation2.screens :as navigation2.screens]))
+            [status-im.navigation2.screens :as navigation2.screens]
+            [status-im.ui2.screens.chat.components.new-chat :as new-chat-aio]))
 
 (def components
   [])
@@ -599,6 +600,12 @@
             ;;TODO accessories
             :options   {:topBar {:visible false}}
             :component new-chat/new-chat}
+           
+           {:name      :new-chat-aio
+            :on-focus  [::new-chat.events/new-chat-focus]
+            ;;TODO accessories
+            :options   {:topBar {:visible false}}
+            :component new-chat-aio/contact-toggle-list}
 
                                         ;[Chat] New Public chat
            {:name      :new-public-chat

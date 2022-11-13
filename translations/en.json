@@ -1850,5 +1850,10 @@
     "group-details": "Group details",
     "edit-name-and-image": "Edit name and image",
     "change-group-privacy": "Change group privacy",
-    "manage-members": "Manage members"
+    "manage-members": "Manage members",
+    "chat-with": "Chat with {{selected-user}}",
+    "setup-group-chat": "Setup group chat",
+    "search-contacts": "Search contacts",
+    "who-are-you-looking-for": "Who are you looking for ?",
+    "close-contact-search": "Close contact search"
 }
