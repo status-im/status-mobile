@@ -3,7 +3,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.chat.models :as chat]
             [status-im.router.core :as router]
-            [status-im.navigation :as navigation]
+            [status-im2.navigation.events :as navigation]
             [status-im.utils.utils :as utils]
             [status-im.ethereum.core :as ethereum]
             [status-im.add-new.db :as new-chat.db]

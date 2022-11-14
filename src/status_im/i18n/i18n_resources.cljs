@@ -2,6 +2,8 @@
   (:require [clojure.string :as string]
             ["i18n-js" :as i18n-js]
             ["react-native-languages" :default react-native-languages]))
+;;TODO (14/11/22 flexsurfer) this namespace has been moved to the status-im2 namespace, we keep this only for old (status 1.0) code,
+;; can be removed with old code later
 
 (def default-device-language
   (keyword (.-language react-native-languages)))

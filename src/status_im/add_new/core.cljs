@@ -11,7 +11,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.contact.core :as contact]
             [status-im.router.core :as router]
-            [status-im.navigation :as navigation]
+            [status-im2.navigation.events :as navigation]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.utils.db :as utils.db]))
 

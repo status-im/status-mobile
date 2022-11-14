@@ -4,7 +4,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.nfc :as nfc]
             [status-im.i18n.i18n :as i18n]
-            [status-im.navigation :as navigation]
+            [status-im2.navigation.events :as navigation]
             [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]

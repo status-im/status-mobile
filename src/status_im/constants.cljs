@@ -195,3 +195,5 @@
 (def ^:const sticker-pack-status-installed 1)
 (def ^:const sticker-pack-status-pending 2)
 (def ^:const sticker-pack-status-owned 3)
+
+(def ^:const delete-message-for-me-undo-time-limit-ms 4000)

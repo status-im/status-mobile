@@ -1,5 +1,5 @@
 (ns status-im.keycard.mnemonic
-  (:require [status-im.navigation :as navigation]
+  (:require [status-im2.navigation.events :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.keycard.common :as common]

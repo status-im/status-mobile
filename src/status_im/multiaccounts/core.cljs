@@ -8,12 +8,12 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
-            [status-im.utils.theme :as utils.theme]
             [status-im.theme.core :as theme]
             [status-im.utils.utils :as utils]
             [quo.platform :as platform]
             [taoensso.timbre :as log]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im2.common.theme.core :as utils.theme]))
 
 ;; validate that the given mnemonic was generated from Status Dictionary
 (re-frame/reg-fx
@@ -164,7 +164,7 @@
 (re-frame/reg-fx
  ::switch-theme
  (fn [theme-id]
-   (let [theme (if (or (= 2 theme-id) (and (= 0 theme-id) (utils.theme/is-dark-mode)))
+   (let [theme (if (or (= 2 theme-id) (and (= 0 theme-id) (utils.theme/dark-mode?)))
                  :dark
                  :light)]
      (theme/change-theme theme))))

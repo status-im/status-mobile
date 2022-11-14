@@ -10,7 +10,7 @@
 
 (defn setup []
   (h/register-helper-events)
-  (rf/dispatch [:init/app-started]))
+  (rf/dispatch [:setup/app-started]))
 
 ;;;; Contact verification
 

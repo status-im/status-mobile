@@ -8,7 +8,7 @@
             [quo2.components.buttons.button :as quo2.button]
             [quo2.foundations.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.navigation.state :as navigation.state]
+            [status-im2.navigation.state :as navigation.state]
             [status-im.ui2.screens.chat.messages.view :as messages]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.ui.components.icons.icons :as icons]

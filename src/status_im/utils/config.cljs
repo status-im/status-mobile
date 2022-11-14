@@ -3,7 +3,8 @@
             [clojure.string :as string]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]))
-
+;;TODO (14/11/22 flexsurfer) this namespace has been moved to the status-im2 namespace, we keep this only for old (status 1.0) code,
+;; can be removed with old code later
 (def config
   (memoize
    (fn []
@@ -14,9 +15,6 @@
   ([k not-found] (get (config) k not-found)))
 
 (defn enabled? [v] (= "1" v))
-
-;; NOTE(oskarth): Feature flag deprecation lifecycles. We want to make sure
-;; flags stay up to date and are removed once behavior introduced is stable.
 
 (goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
 (goog-define OPENSEA_API_KEY "")
@@ -151,5 +149,3 @@
 ;; TODO: Remove this (highly) temporary flag once the new Activity Center is
 ;; usable enough to replace the old one **in the new UI**.
 (def new-activity-center-enabled? false)
-
-(def delete-message-for-me-undo-time-limit-ms 4000)

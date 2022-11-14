@@ -8,7 +8,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
             [status-im.i18n.i18n :as i18n]
-            [status-im.navigation :as navigation]
+            [status-im2.navigation.events :as navigation]
             [status-im.utils.core :as utils.core]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]

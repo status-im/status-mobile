@@ -21,7 +21,6 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.screens.chat.sheets :as sheets]
-            [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.components.invite.views :as invite]
             [status-im.utils.config :as config]
             [quo2.components.markdown.text :as quo2.text]
@@ -340,8 +339,7 @@
                 :margin-bottom 8}
     [quo2.text/text {:size :heading-1 :weight :semi-bold} (i18n/label :t/messages)]
     [plus-button]]
-   [chats-list]
-   [tabbar/tabs-counts-subscriptions]])
+   [chats-list]])
 
 (defn home-old []
   [react/keyboard-avoiding-view {:style {:flex 1}
@@ -352,5 +350,4 @@
                                      [connectivity/connectivity-button]
                                      [notifications-button-old]]}]
    [chats-list-old]
-   [plus-button-old]
-   [tabbar/tabs-counts-subscriptions]])
+   [plus-button-old]])
