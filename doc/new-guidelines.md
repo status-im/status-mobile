@@ -213,8 +213,8 @@ due to performance constraints.
 
 ### Requiring quo2 components
 
-Never directly import a submodule of `quo2`, instead, use the provided
-`quo2.core` namespace.
+Consume `quo2` components from `quo2.core`, unless the namespace is also inside
+the `quo2/` directory.
 
 ```clojure
 ;; bad
@@ -228,6 +228,10 @@ Never directly import a submodule of `quo2`, instead, use the provided
   (:require [quo2.core :as quo2]))
 
 (quo2/icon :i/verified)
+
+;; also good because both namespaces are inside quo2/
+(ns quo2.components.tabs.account-selector
+  (:require [quo2.components.markdown.text :as text]))
 ```
 
 ### Require/import
