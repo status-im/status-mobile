@@ -1,15 +1,14 @@
 (ns status-im.ui2.screens.common.alert.view
   (:require
-   [reagent.core :as reagent]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.utils.re-frame :as rf]
-   [quo2.components.markdown.text :as quo2.text]
-   [react-native.core :as rn]
-   [quo2.core :as quo2]
-   [quo2.components.buttons.button :as quo2.button]
-   [status-im.switcher.constants :as switcher.constants]
-   [status-im.ui2.screens.common.alert.style :as style]
-   [quo2.components.selectors.selectors :as selectors]))
+    [reagent.core :as reagent]
+    [status-im.i18n.i18n :as i18n]
+    [status-im.utils.re-frame :as rf]
+    [quo2.components.markdown.text :as quo2.text]
+    [react-native.core :as rn]
+    [quo2.core :as quo2]
+    [quo2.components.buttons.button :as quo2.button]
+    [status-im.ui2.screens.common.alert.style :as style]
+    [quo2.components.selectors.selectors :as selectors]))
 
 (defn avatar [group-chat color display-name photo-path]
   (if group-chat
@@ -33,9 +32,7 @@
             id           (or chat-id public-key)
             display-name (if-not group-chat (first (rf/sub [:contacts/contact-two-names-by-identity id])) name)
             contact      (when-not group-chat (rf/sub [:contacts/contact-by-address id]))
-            photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path id]))
-            {:keys [width]} (switcher.constants/dimensions)
-            button-width (/ (- width 52) 2)]
+            photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path id]))]
         [rn/view {:style {:margin-horizontal 20}}
          [quo2.text/text {:weight :semi-bold
                           :size   :heading-1} title]
@@ -48,11 +45,11 @@
          [extra-action-view extra-action extra-text extra-action-selected?]
          [rn/view {:style (style/buttons-container)}
           [quo2.button/button {:type     :grey
-                               :style    {:width button-width}
+                               :style    {:flex 0.48}
                                :on-press #(rf/dispatch [:bottom-sheet/hide])}
            (i18n/label :t/close)]
           [quo2.button/button {:type     :danger
-                               :style    {:width button-width}
+                               :style    {:flex 0.48}
                                :on-press #(do
                                             (when @extra-action-selected? (extra-action))
                                             (on-press))}
