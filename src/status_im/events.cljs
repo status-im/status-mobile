@@ -5,7 +5,6 @@
             [status-im.async-storage.core :as async-storage]
             status-im.backup.core
             status-im.bootnodes.core
-            [status-im.bottom-sheet.core :as bottom-sheet]
             status-im.browser.core
             status-im.browser.permissions
             [status-im.chat.models :as chat]
@@ -23,7 +22,6 @@
             status-im.fleet.core
             status-im.http.core
             [status-im.i18n.i18n :as i18n]
-            status-im.init.core
             [status-im.keycard.core :as keycard]
             status-im.log-level.core
             status-im.mailserver.constants
@@ -34,11 +32,10 @@
             status-im.multiaccounts.logout.core
             status-im.multiaccounts.update.core
             [status-im.native-module.core :as status]
-            [status-im.navigation :as navigation]
+            [status-im2.navigation.events :as navigation]
             status-im.notifications-center.core
             status-im.activity-center.core
             status-im.pairing.core
-            [status-im.popover.core :as popover]
             status-im.profile.core
             status-im.search.core
             status-im.signals.core
@@ -49,23 +46,17 @@
             status-im.ui.screens.privacy-and-security-settings.events
             [status-im.utils.dimensions :as dimensions]
             [status-im.utils.fx :as fx]
-            status-im.utils.logging.core
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.utils :as utils]
-            [status-im.visibility-status-popover.core :as visibility-status-popover]
             status-im.visibility-status-updates.core
             status-im.waku.core
             status-im.wallet.accounts.core
             status-im.wallet.choose-recipient.core
             [status-im.wallet.core :as wallet]
             status-im.wallet.custom-tokens.core
-            [status-im.navigation.core :as navigation.core]
-            [status-im.navigation.state :as navigation.state]
-            [status-im.signing.core :as signing]
             status-im.wallet-connect.core
             status-im.wallet-connect-legacy.core
-            status-im.navigation2
-            status-im.navigation2.core))
+            status-im.network.net-info))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -119,56 +110,9 @@
 
 (fx/defn system-theme-mode-changed
   {:events [:system-theme-mode-changed]}
-  [{:keys [db] :as cofx} theme]
-  (let [cur-theme        (get-in db [:multiaccount :appearance])
-        current-tab      (get db :current-tab :chat)
-        view-id          (:view-id db)
-        screen-params    (get-in db [:navigation/screen-params view-id])
-        root-id          @navigation.state/root-id
-        key-uid          (get-in db [:multiaccounts/login :key-uid])
-        keycard-account? (boolean (get-in db [:multiaccounts/multiaccounts
-                                              key-uid
-                                              :keycard-pairing]))
-        dispatch-later   (cond-> []
-                           (= view-id :chat)
-                           (conj {:ms       1000
-                                  :dispatch [:chat.ui/navigate-to-chat (:current-chat-id db)]})
-
-                           (and
-                            (= root-id :chat-stack)
-                            (not-any? #(= view-id %) '(:home :empty-tab :wallet :status :my-profile :chat)))
-                           (conj {:ms       1000
-                                  :dispatch [:navigate-to view-id screen-params]})
-
-                           (some #(= view-id %) navigation.core/community-screens)
-                           (conj {:ms 800 :dispatch
-                                  [:navigate-to :community
-                                   (get-in db [:navigation/screen-params :community])]})
-
-                           (= view-id :community-emoji-thumbnail-picker)
-                           (conj {:ms 900 :dispatch
-                                  [:navigate-to :create-community-channel
-                                   (get-in db [:navigation/screen-params :create-community-channel])]}))]
-    (when (and (some? root-id) (or (nil? cur-theme) (zero? cur-theme)))
-      (navigation.core/dismiss-all-modals)
-      (fx/merge cofx
-                (merge
-                 {::multiaccounts/switch-theme (if (= :dark theme) 2 1)}
-                 (when (seq dispatch-later)
-                   {:utils/dispatch-later dispatch-later}))
-                (when (get-in db [:bottom-sheet/show?])
-                  (bottom-sheet/hide-bottom-sheet))
-                (when (get-in db [:popover/popover])
-                  (popover/hide-popover))
-                (when (get-in db [:visibility-status-popover/popover])
-                  (visibility-status-popover/hide-visibility-status-popover))
-                (when (get-in db [:signing/tx])
-                  (signing/discard))
-                (if (and (= root-id :multiaccounts) keycard-account?)
-                  (navigation/init-root-with-component :multiaccounts-keycard :multiaccounts)
-                  (navigation/init-root root-id))
-                (when (= root-id :chat-stack)
-                  (navigation/change-tab current-tab))))))
+  [_ theme]
+  {::multiaccounts/switch-theme (if (= :dark theme) 2 1)
+   :dispatch [:reload-new-ui]})
 
 (def authentication-options
   {:reason (i18n/label :t/biometric-auth-reason-login)})
@@ -195,9 +139,7 @@
                            (>= (- now app-in-background-since)
                                constants/ms-in-bg-for-require-bioauth))]
     (fx/merge cofx
-              {:db (-> db
-                       (dissoc :app-in-background-since)
-                       (assoc :app-active-since now))}
+              {:db (dissoc db :app-in-background-since)}
               (mailserver/process-next-messages-request)
               (wallet/restart-wallet-service-after-background app-in-background-since)
               (universal-links/process-stored-event)
@@ -207,10 +149,8 @@
                  (biometric/authenticate % on-biometric-auth-result authentication-options)))))
 
 (fx/defn on-going-in-background
-  [{:keys [db now] :as cofx}]
-  {:db         (-> db
-                   (dissoc :app-active-since)
-                   (assoc :app-in-background-since now))
+  [{:keys [db now]}]
+  {:db         (assoc db :app-in-background-since now)
    :dispatch-n [[:audio-recorder/on-background] [:audio-message/on-background]]})
 
 (fx/defn app-state-change

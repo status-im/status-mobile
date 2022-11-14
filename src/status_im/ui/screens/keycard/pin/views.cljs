@@ -164,7 +164,6 @@
           (case new-status
             :error (when (or (nil? previous-status)
                              (= :verifying previous-status))
-                     (utils/vibrate)
                      (reset! !error? true)
                      (animate-info-in error-y-translation
                                       error-opacity

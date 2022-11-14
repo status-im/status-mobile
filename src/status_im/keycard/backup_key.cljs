@@ -6,7 +6,7 @@
             [status-im.ethereum.mnemonic :as mnemonic]
             [status-im.keycard.common :as common]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
-            [status-im.navigation :as navigation]
+            [status-im2.navigation.events :as navigation]
             [status-im.signing.core :as signing.core]
             [taoensso.timbre :as log]))
 

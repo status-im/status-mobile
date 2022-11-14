@@ -439,7 +439,7 @@
                   (when pinned (pin-message message))
                   (re-frame/dispatch
                    [:chat.ui/delete-message-for-me message
-                    config/delete-message-for-me-undo-time-limit-ms]))
+                    constants/delete-message-for-me-undo-time-limit-ms]))
       :label    (i18n/label :t/delete-for-me)
       :icon     :i/delete
       :id       :delete-for-me}]
@@ -590,7 +590,7 @@
                                  [{:type     :danger
                                    :on-press #(re-frame/dispatch
                                                [:chat.ui/delete-message-for-me message
-                                                config/delete-message-for-me-undo-time-limit-ms])
+                                                constants/delete-message-for-me-undo-time-limit-ms])
                                    :label    (i18n/label :t/delete-for-me)
                                    :icon     :i/delete-context20
                                    :id       :delete-for-me}]
@@ -627,7 +627,7 @@
                                                  {:type     :danger
                                                   :on-press #(re-frame/dispatch
                                                               [:chat.ui/delete-message-for-me message
-                                                               config/delete-message-for-me-undo-time-limit-ms])
+                                                               constants/delete-message-for-me-undo-time-limit-ms])
                                                   :label    (i18n/label :t/delete-for-me)
                                                   :icon     :i/delete-context20
                                                   :id       :delete-for-me}

@@ -2,12 +2,14 @@
   (:require [clojure.string :as string]
             [goog.string :as gstring]
             [status-im.i18n.i18n :as i18n]
-            [re-frame.core :as re-frame]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.core :as ethereum]
             ["react-native" :as react-native]
-            ["react-native-background-timer" :default background-timer]))
+            ["react-native-background-timer" :default background-timer]
+            [re-frame.core :as re-frame]))
 
+;;TODO (14/11/22 flexsurfer) .-Alert usage code has been moved to the status-im2 namespace, we keep this only for old (status 1.0) code,
+;; can be removed with old code later
 (defn show-popup
   ([title content]
    (show-popup title content nil))
@@ -22,14 +24,6 @@
                            (when on-dismiss {:onPress on-dismiss}))))
            (when on-dismiss
              (clj->js {:cancelable false})))))
-
-(defn vibrate []
-  #_(.vibrate (.-Vibration react-native)))
-
-(re-frame/reg-fx
- :utils/show-popup
- (fn [{:keys [title content on-dismiss]}]
-   (show-popup title content on-dismiss)))
 
 (defn show-confirmation
   [{:keys [title content confirm-button-text on-accept on-cancel cancel-button-text
@@ -51,17 +45,6 @@
             (or extra-options nil)))
           #js {:cancelable false}))
 
-(re-frame/reg-fx
- :utils/show-confirmation
- (fn [{:keys [title content confirm-button-text on-accept on-cancel cancel-button-text extra-options]}]
-   (show-confirmation {:title title
-                       :content content
-                       :confirm-button-text confirm-button-text
-                       :cancel-button-text cancel-button-text
-                       :on-accept on-accept
-                       :on-cancel on-cancel
-                       :extra-options extra-options})))
-
 (defn show-question
   ([title content on-accept]
    (show-question title content on-accept nil))
@@ -77,6 +60,38 @@
                      :onPress             on-accept
                      :accessibility-label :yes-button})))))
 
+;;TODO (14/11/22 flexsurfer) background-timer usage code has been moved to the status-im2 namespace, we keep this only for old (status 1.0) code,
+;; can be removed with old code later
+
+(defn set-timeout [cb ms]
+  (.setTimeout background-timer cb ms))
+
+(defn clear-timeout [id]
+  (.clearTimeout background-timer id))
+
+(defn set-interval [cb ms]
+  (.setInterval background-timer cb ms))
+
+(defn clear-interval [id]
+  (.clearInterval background-timer id))
+
+(re-frame/reg-fx
+ :utils/dispatch-later
+ (fn [params]
+   (doseq [{:keys [ms dispatch]} params]
+     (when (and ms dispatch)
+       (set-timeout #(re-frame/dispatch dispatch) ms)))))
+
+(re-frame/reg-fx
+ ::clear-timeouts
+ (fn [ids]
+   (doseq [id ids]
+     (when id
+       (clear-timeout id)))))
+
+
+;;TODO (14/11/22 flexsurfer) haven't moved yet
+
 (defn get-shortened-address
   "Takes first and last 4 digits from address including leading 0x
   and adds unicode ellipsis in between"
@@ -87,36 +102,6 @@
 (defn get-shortened-checksum-address [address]
   (when address
     (get-shortened-address (eip55/address->checksum (ethereum/normalized-hex address)))))
-
-;; background-timer
-
-(defn set-timeout [cb ms]
-  (.setTimeout background-timer cb ms))
-
-;; same as re-frame dispatch-later but using background timer for long
-;; running timeouts
-(re-frame/reg-fx
- :utils/dispatch-later
- (fn [params]
-   (doseq [{:keys [ms dispatch]} params]
-     (when (and ms dispatch)
-       (set-timeout #(re-frame/dispatch dispatch) ms)))))
-
-(defn clear-timeout [id]
-  (.clearTimeout background-timer id))
-
-(re-frame/reg-fx
- ::clear-timeouts
- (fn [ids]
-   (doseq [id ids]
-     (when id
-       (clear-timeout id)))))
-
-(defn set-interval [cb ms]
-  (.setInterval background-timer cb ms))
-
-(defn clear-interval [id]
-  (.clearInterval background-timer id))
 
 (defn format-decimals [amount places]
   (let [decimal-part (get (string/split (str amount) ".") 1)]

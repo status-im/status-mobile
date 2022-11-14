@@ -100,7 +100,7 @@
 (views/defview new-group []
   (views/letsubs [contacts   [:selected-group-contacts]
                   group-name [:new-chat-name]]
-    (let [group-name-empty? (not (spec/valid? :global/not-empty-string group-name))]
+    (let [group-name-empty? (not (and (string? group-name) (not-empty group-name)))]
       [react/keyboard-avoiding-view  {:style styles/group-container
                                       :ignore-offset true}
        [react/view {:flex 1}

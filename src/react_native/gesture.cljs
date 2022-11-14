@@ -1,8 +1,9 @@
 (ns react-native.gesture
-  (:require ["react-native-gesture-handler" :refer (GestureDetector Gesture)]
+  (:require ["react-native-gesture-handler" :refer (GestureDetector Gesture gestureHandlerRootHOC)]
             [reagent.core :as reagent]))
 
 (def gesture-detector (reagent/adapt-react-class GestureDetector))
+(def gesture-handler-root-hoc gestureHandlerRootHOC)
 
 (defn gesture-pan [] (.Pan ^js Gesture))
 

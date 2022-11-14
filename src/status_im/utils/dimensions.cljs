@@ -2,13 +2,10 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]))
 
-(declare window)
-
 (defn add-event-listener []
   (.addEventListener ^js react/dimensions
                      "change"
-                     #(do
-                        (re-frame/dispatch [:update-window-dimensions %]))))
+                     #(re-frame/dispatch-sync [:update-window-dimensions %])))
 
 (defn window
   ([]

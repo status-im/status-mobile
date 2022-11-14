@@ -377,6 +377,5 @@
                 :margin-bottom     20}
        [quo2.text/text {:size :heading-1 :weight :semi-bold} (i18n/label :t/messages)]
        [plus-button]]
-      [chats-list]
-      [tabbar/tabs-counts-subscriptions]])])
+      [chats-list]])])
 

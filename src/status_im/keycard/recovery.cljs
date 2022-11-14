@@ -1,5 +1,5 @@
 (ns status-im.keycard.recovery
-  (:require [status-im.navigation :as navigation]
+  (:require [status-im2.navigation.events :as navigation]
             [status-im.utils.datetime :as utils.datetime]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.multiaccounts.model :as multiaccounts.model]

@@ -12,7 +12,7 @@
    [status-im.utils.universal-links.core :as universal-links]
    [status-im.ethereum.json-rpc :as json-rpc]
    [quo.design-system.colors :as colors]
-   [status-im.navigation :as navigation]
+   [status-im2.navigation.events :as navigation]
    [status-im.utils.handlers :refer [>evt]]
    [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
    [status-im.notifications-center.core :as notification-center]))
