@@ -1,14 +1,14 @@
 (ns status-im.ui2.screens.common.alert.view
   (:require
-    [reagent.core :as reagent]
-    [status-im.i18n.i18n :as i18n]
-    [status-im.utils.re-frame :as rf]
-    [quo2.components.markdown.text :as quo2.text]
-    [react-native.core :as rn]
-    [quo2.core :as quo2]
-    [quo2.components.buttons.button :as quo2.button]
-    [status-im.ui2.screens.common.alert.style :as style]
-    [quo2.components.selectors.selectors :as selectors]))
+   [reagent.core :as reagent]
+   [status-im.i18n.i18n :as i18n]
+   [status-im.utils.re-frame :as rf]
+   [quo2.components.markdown.text :as quo2.text]
+   [react-native.core :as rn]
+   [quo2.core :as quo2]
+   [quo2.components.buttons.button :as quo2.button]
+   [status-im.ui2.screens.common.alert.style :as style]
+   [quo2.components.selectors.selectors :as selectors]))
 
 (defn avatar [group-chat color display-name photo-path]
   (if group-chat
