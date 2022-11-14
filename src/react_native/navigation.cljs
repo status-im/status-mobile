@@ -56,6 +56,3 @@
 
 (defn merge-options [id opts]
   (.mergeOptions Navigation id (clj->js opts)))
-
-
-

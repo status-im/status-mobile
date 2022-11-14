@@ -139,4 +139,3 @@
   {:events [:change-root-status-bar-style]}
   [_ style]
   {:change-root-status-bar-style-fx style})
-
