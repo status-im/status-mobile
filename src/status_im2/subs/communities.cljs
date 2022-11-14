@@ -100,6 +100,29 @@
     (vals communities))))
 
 (re-frame/reg-sub
+ :communities/community-ids
+ :<- [:communities/communities]
+ (fn [communities]
+   (map :id communities)))
+
+(defn community->home-item [community counts]
+  {:name                  (:name community)
+   :muted?                (:muted community)
+   :unread-messages?      (pos? (:unviewed-messages-count counts))
+   :unread-mentions-count (:unviewed-mentions-count counts)
+   :community-icon        (get-in community [:images :thumbnail :uri])})
+
+(re-frame/reg-sub
+ :communities/home-item
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:raw-communities])
+    (re-frame/subscribe [:communities/unviewed-counts community-id])])
+ (fn [[communities counts] [_ identity]]
+   (community->home-item
+    (get communities identity)
+    counts)))
+
+(re-frame/reg-sub
  :communities/edited-community
  :<- [:communities]
  :<- [:communities/community-id-input]
@@ -123,17 +146,20 @@
            0
            chats)))
 
+(defn calculate-unviewed-counts [chats]
+  (reduce (fn [acc {:keys [unviewed-mentions-count unviewed-messages-count]}]
+            {:unviewed-messages-count (+ (:unviewed-messages-count acc) (or unviewed-messages-count 0))
+             :unviewed-mentions-count (+ (:unviewed-mentions-count acc) (or unviewed-mentions-count 0))})
+          {:unviewed-messages-count 0
+           :unviewed-mentions-count 0}
+          chats))
+
 (re-frame/reg-sub
  :communities/unviewed-counts
  (fn [[_ community-id]]
    [(re-frame/subscribe [:chats/by-community-id community-id])])
  (fn [[chats]]
-   (reduce (fn [acc {:keys [unviewed-mentions-count unviewed-messages-count]}]
-             {:unviewed-messages-count (+ (:unviewed-messages-count acc) (or unviewed-messages-count 0))
-              :unviewed-mentions-count (+ (:unviewed-mentions-count acc) (or unviewed-mentions-count 0))})
-           {:unviewed-messages-count 0
-            :unviewed-mentions-count 0}
-           chats)))
+   (calculate-unviewed-counts chats)))
 
 (re-frame/reg-sub
  :communities/requests-to-join-for-community

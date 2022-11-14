@@ -8,7 +8,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.community.discover-card :as discover-card]
             [quo2.components.navigation.top-nav :as topnav]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.utils.re-frame :as rf]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as rn]
@@ -18,26 +18,24 @@
 (def selected-tab (reagent/atom :joined))
 
 (defn plus-button []
-  (let [logging-in? (<sub [:multiaccounts/login])]
+  (let [logging-in? (rf/sub [:multiaccounts/login])]
     [components.plus-button/plus-button
      {:on-press (when-not logging-in?
                   #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
       :loading logging-in?
       :accessibility-label :new-chat-button}]))
 
-(defn render-fn [community-item]
-  [community-list-view/communities-membership-list-item
-   {:on-press      (fn []
-                     (>evt [:communities/load-category-states (:id community-item)])
-                     (>evt [:dismiss-keyboard])
-                     (>evt [:navigate-to :community {:community-id (:id community-item)}]))
-    :on-long-press #(>evt [:bottom-sheet/show-sheet
-                           {:content (fn []
-                                       [community/community-actions community-item])}])}
-   community-item])
-
-(defn community-list-key-fn [item]
-  (:id item))
+(defn render-fn [id]
+  (let [community-item  (rf/sub [:communities/home-item id])]
+    [community-list-view/communities-membership-list-item
+     {:on-press      (fn []
+                       (rf/dispatch [:communities/load-category-states id])
+                       (rf/dispatch [:dismiss-keyboard])
+                       (rf/dispatch [:navigate-to :community {:community-id id}]))
+      :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                    {:content (fn []
+                                                [community/community-actions community-item])}])}
+     community-item]))
 
 (defn get-item-layout-js [_ index]
   #js {:length 64 :offset (* 64 index) :index index})
@@ -55,18 +53,19 @@
                       {:id :pending  :label (i18n/label :t/pending)    :accessibility-label :pending-tab}
                       {:id :opened   :label (i18n/label :t/opened)     :accessibility-label :opened-tab}]}]])
 
-(defn communities-list [communities]
+(defn communities-list [community-ids]
   [list/flat-list
-   {:key-fn                            community-list-key-fn
+   {:key-fn                            identity
     :getItemLayout                     get-item-layout-js
     :keyboard-should-persist-taps      :always
     :shows-horizontal-scroll-indicator false
-    :data                              communities
+    :data                              community-ids
     :render-fn                         render-fn}])
 
 (defn segments-community-lists [communities]
   (let [tab @selected-tab]
     [rn/view {:style {:padding-left      20
+                      :padding-right     8
                       :padding-vertical  12}}
      (case tab
        :joined
@@ -96,13 +95,13 @@
    [plus-button]])
 
 (defn discover-card []
-  [discover-card/discover-card {:on-press            #(>evt [:navigate-to  :discover-communities])
+  [discover-card/discover-card {:on-press            #(rf/dispatch [:navigate-to  :discover-communities])
                                 :title               (i18n/label :t/discover)
                                 :description         (i18n/label :t/whats-trending)
                                 :accessibility-label :communities-home-discover-card}])
 
 (defn communities-home []
-  (let [communities  (<sub [:communities/communities])]
+  (let [communities  (rf/sub [:communities/community-ids])]
     [rn/view  {:flex    1}
      [topnav/top-nav {:type    :default}]
      [title-column]
@@ -119,5 +118,3 @@
                                           colors/neutral-5
                                           colors/neutral-95)}}
       [communities-home]])])
-
-

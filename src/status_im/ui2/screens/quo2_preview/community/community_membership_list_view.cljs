@@ -1,10 +1,10 @@
-(ns status-im.ui2.screens.quo2-preview.community.community-list-view
+(ns status-im.ui2.screens.quo2-preview.community.community-membership-list-view
   (:require [quo.react-native :as rn]
             [quo.previews.preview :as preview]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
-            [quo2.components.community.community-list-view :as community-list-view]
-            [status-im.ui2.screens.quo2-preview.community.data :as data]))
+            [status-im.ui2.screens.quo2-preview.community.data :as data]
+            [quo2.components.community.community-list-view :as community-list-view]))
 
 (def descriptor [{:label   "Notifications:"
                   :key     :notifications
@@ -41,15 +41,15 @@
          [preview/customizer state descriptor]]
         [rn/view {:padding-vertical 60
                   :justify-content  :center}
-         [community-list-view/communities-list-view-item {} (cond-> (merge @state data/community)
-                                                              (= :muted (:notifications @state))
-                                                              (assoc :muted? true)
+         [community-list-view/communities-membership-list-item {} (cond-> (merge @state data/community)
+                                                                    (= :muted (:notifications @state))
+                                                                    (assoc :muted? true)
 
-                                                              (= :unread-mentions-count (:notifications @state))
-                                                              (assoc :unread-mentions-count 5)
+                                                                    (= :unread-mentions-count (:notifications @state))
+                                                                    (assoc :unread-mentions-count 5)
 
-                                                              (= :unread-messages-count (:notifications @state))
-                                                              (assoc :unread-messages? true))]]]])))
+                                                                    (= :unread-messages-count (:notifications @state))
+                                                                    (assoc :unread-messages? true))]]]])))
 
 (defn preview-community-list-view []
   [rn/view {:background-color (colors/theme-colors colors/neutral-5
