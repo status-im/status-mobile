@@ -13,6 +13,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.datetime :as datetime]
+            [goog.string :as gstring]
             [status-im.utils.handlers :refer [<sub >evt]]
             [quo.components.safe-area :as safe-area]))
 
@@ -24,6 +25,14 @@
       (get-in contact [:names :three-words-name])))
 
 (defmulti notification-component :type)
+
+;; TODO(rasom): should be removed as soon as all notifications types covered
+(defmethod notification-component :default
+  [{:keys [type]}]
+  [rn/view {:style {:width 300, :height 100}}
+   [rn/text
+    (gstring/format
+     "I exist just to avoid crashing for no reason. I'm sorry. Type %d" type)]])
 
 ;;;; Contact request notifications
 
@@ -135,7 +144,7 @@
                     :override-theme   :dark
                     :on-press         #(>evt [:activity-center.notifications/fetch-first-page
                                               {:filter-status (if unread-filter-enabled?
-                                                                :read
+                                                                :all
                                                                 :unread)}])}
      :i/unread]))
 

@@ -86,18 +86,23 @@
   (and (some? cursor)
        (not= cursor start-or-end-cursor)))
 
-(defn- filter-status->rpc-method
-  [filter-status]
-  (if (= filter-status :read)
-    "wakuext_readActivityCenterNotifications"
-    "wakuext_unreadActivityCenterNotifications"))
+(def ^:const status-read 1)
+(def ^:const status-unread 2)
+(def ^:const status-all 3)
+
+(defn status [filter-status]
+  (case filter-status
+    :read status-read
+    :unread status-unread
+    :all status-all
+    99))
 
 (fx/defn notifications-fetch
   [{:keys [db]} {:keys [cursor filter-type filter-status reset-data?]}]
   (when-not (get-in db [:activity-center :notifications filter-type filter-status :loading?])
     {:db             (assoc-in db [:activity-center :notifications filter-type filter-status :loading?] true)
-     ::json-rpc/call [{:method     (filter-status->rpc-method filter-status)
-                       :params     [cursor (defaults :notifications-per-page) filter-type]
+     ::json-rpc/call [{:method     "wakuext_activityCenterNotificationsBy"
+                       :params     [cursor (defaults :notifications-per-page) filter-type (status filter-status)]
                        :on-success #(rf/dispatch [:activity-center.notifications/fetch-success filter-type filter-status reset-data? %])
                        :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error filter-type filter-status %])}]}))
 

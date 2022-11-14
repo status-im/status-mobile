@@ -434,7 +434,7 @@
 
          (rf/dispatch [:activity-center.notifications/fetch-next-page])
 
-         (is (= "wakuext_unreadActivityCenterNotifications" (get-in @spy-queue [0 :args 0 :method])))
+         (is (= "wakuext_activityCenterNotificationsBy" (get-in @spy-queue [0 :args 0 :method])))
          (is (= "10" (get-in @spy-queue [0 :args 0 :params 0]))
              "Should be called with current cursor")
          (is (= {types/mention
