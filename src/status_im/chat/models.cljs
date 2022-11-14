@@ -252,7 +252,8 @@
   (fx/merge cofx
             {:dispatch [:navigate-to :chat]}
             (navigation/change-tab :chat)
-            (navigation/pop-to-root-tab :chat-stack)
+            (when-not (= (:view-id db) :community)
+              (navigation/pop-to-root-tab :chat-stack))
             (close-chat)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
