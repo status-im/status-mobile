@@ -11,7 +11,7 @@
                :medium 32
                :large  48}})
 
-;; TODO: this implementation does not support group display picture (can only display default group icon)
+;; TODO: this implementation does not support group display picture (can only display default group icon).
 (defn group-avatar [_]
   (fn [{:keys [color size]}]
     (let [container-size (get-in sizes [:container size])
