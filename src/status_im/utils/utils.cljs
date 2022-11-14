@@ -89,9 +89,7 @@
      (when id
        (clear-timeout id)))))
 
-
 ;;TODO (14/11/22 flexsurfer) haven't moved yet
-
 (defn get-shortened-address
   "Takes first and last 4 digits from address including leading 0x
   and adds unicode ellipsis in between"

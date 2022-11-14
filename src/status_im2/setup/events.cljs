@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im2.setup.db :as db]
             [status-im2.common.theme.core :as theme]
-
+            [quo2.theme :as quo2.theme]
             ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
@@ -62,12 +62,12 @@
   [{{:keys         [keycard supported-biometric-auth goto-key-storage?]
      :network/keys [type] :keycard/keys [banner-hidden]} :db}]
   {:db (assoc db/app-db
-         :network/type type
-         :keycard/banner-hidden banner-hidden
-         :keycard (dissoc keycard :secrets :pin :application-info)
-         :supported-biometric-auth supported-biometric-auth
-         :goto-key-storage? goto-key-storage?
-         :multiaccounts/loading true)})
+              :network/type type
+              :keycard/banner-hidden banner-hidden
+              :keycard (dissoc keycard :secrets :pin :application-info)
+              :supported-biometric-auth supported-biometric-auth
+              :goto-key-storage? goto-key-storage?
+              :multiaccounts/loading true)})
 
 (fx/defn start-app
   {:events [:setup/app-started]}

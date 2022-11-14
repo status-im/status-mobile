@@ -11,7 +11,6 @@
    [status-im2.navigation.state :as state]
 
    ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
-   [quo.components.text-input :as quo.text-input]
    [status-im.multiaccounts.login.core :as login-core]
    [status-im2.navigation.view :as views]
    [status-im.utils.fx :as fx]
@@ -132,14 +131,14 @@
         (reset! state/pushed-screen-id view-id)))))
 
 ;; SCREEN DID DISAPPEAR
-(defn component-did-disappear-listener [view-id]
-  (when-not (#{:popover :bottom-sheet :signing-sheet :visibility-status-popover :wallet-connect-sheet
-               :wallet-connect-success-sheet :wallet-connect-app-management-sheet}
-             view-id)
-    ;; TODO what to do ?
-    #_(doseq [[_ {:keys [ref value]}] @quo.text-input/text-input-refs]
+(defn component-did-disappear-listener [_]
+  #_(when-not (#{:popover :bottom-sheet :signing-sheet :visibility-status-popover :wallet-connect-sheet
+                 :wallet-connect-success-sheet :wallet-connect-app-management-sheet}
+               view-id)
+      ;; TODO what to do ?
+      (doseq [[_ {:keys [ref value]}] @quo.text-input/text-input-refs]
         (.setNativeProps ^js ref (clj->js {:text value})))
-    #_(doseq [[^js text-input default-value] @react/text-input-refs]
+      (doseq [[^js text-input default-value] @react/text-input-refs]
         (.setNativeProps text-input (clj->js {:text default-value})))))
 
 ;; APP LAUNCHED
@@ -211,8 +210,8 @@
    {:component {:name    comp
                 :id      comp
                 :options (merge (cond-> (roots/status-bar-options)
-                                        (and platform/android? (not (colors/dark?)))
-                                        (assoc-in [:statusBar :backgroundColor] "#99999A"))
+                                  (and platform/android? (not (colors/dark?)))
+                                  (assoc-in [:statusBar :backgroundColor] "#99999A"))
                                 {:layout  {:componentBackgroundColor (if platform/android?
                                                                        colors/neutral-80-opa-20 ;; TODO adjust color
                                                                        "transparent")}
@@ -249,54 +248,54 @@
 (re-frame/reg-fx :hide-select-acc-sheet (fn [] (dissmiss-overlay "select-acc-sheet")))
 
 (defonce
- _
- [(navigation/set-default-options {:layout {:orientation "portrait"}})
-  (navigation/set-lazy-component-registrator reg-comp)
-  (navigation/reg-button-pressed-listener button-pressed-listener)
-  (navigation/reg-modal-dismissed-listener modal-dismissed-listener)
-  (navigation/reg-component-did-appear-listener component-did-appear-listener)
-  (navigation/reg-component-did-disappear-listener component-did-disappear-listener)
-  (navigation/reg-app-launched-listener app-launched-listener)
+  _
+  [(navigation/set-default-options {:layout {:orientation "portrait"}})
+   (navigation/set-lazy-component-registrator reg-comp)
+   (navigation/reg-button-pressed-listener button-pressed-listener)
+   (navigation/reg-modal-dismissed-listener modal-dismissed-listener)
+   (navigation/reg-component-did-appear-listener component-did-appear-listener)
+   (navigation/reg-component-did-disappear-listener component-did-disappear-listener)
+   (navigation/reg-app-launched-listener app-launched-listener)
 
-  (navigation/register-component
-   "popover"
-   (fn [] (gesture/gesture-handler-root-hoc views/popover-comp))
-   (fn [] views/popover-comp))
+   (navigation/register-component
+    "popover"
+    (fn [] (gesture/gesture-handler-root-hoc views/popover-comp))
+    (fn [] views/popover-comp))
 
-  (navigation/register-component
-   "visibility-status-popover"
-   (fn [] (gesture/gesture-handler-root-hoc views/visibility-status-popover-comp))
-   (fn [] views/visibility-status-popover-comp))
+   (navigation/register-component
+    "visibility-status-popover"
+    (fn [] (gesture/gesture-handler-root-hoc views/visibility-status-popover-comp))
+    (fn [] views/visibility-status-popover-comp))
 
-  (navigation/register-component
-   "bottom-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/sheet-comp))
-   (fn [] views/sheet-comp))
+   (navigation/register-component
+    "bottom-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/sheet-comp))
+    (fn [] views/sheet-comp))
 
-  (navigation/register-component
-   "wallet-connect-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-comp))
-   (fn [] views/wallet-connect-comp))
+   (navigation/register-component
+    "wallet-connect-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-comp))
+    (fn [] views/wallet-connect-comp))
 
-  (navigation/register-component
-   "wallet-connect-success-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-success-comp))
-   (fn [] views/wallet-connect-success-comp))
+   (navigation/register-component
+    "wallet-connect-success-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-success-comp))
+    (fn [] views/wallet-connect-success-comp))
 
-  (navigation/register-component
-   "wallet-connect-app-management-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-app-management-comp))
-   (fn [] views/wallet-connect-app-management-comp))
+   (navigation/register-component
+    "wallet-connect-app-management-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-app-management-comp))
+    (fn [] views/wallet-connect-app-management-comp))
 
-  (navigation/register-component
-   "signing-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/signing-comp))
-   (fn [] views/signing-comp))
+   (navigation/register-component
+    "signing-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/signing-comp))
+    (fn [] views/signing-comp))
 
-  (navigation/register-component
-   "select-acc-sheet"
-   (fn [] (gesture/gesture-handler-root-hoc views/select-acc-comp))
-   (fn [] views/select-acc-comp))])
+   (navigation/register-component
+    "select-acc-sheet"
+    (fn [] (gesture/gesture-handler-root-hoc views/select-acc-comp))
+    (fn [] views/select-acc-comp))])
 
 ;; NAVIGATION
 

@@ -21,7 +21,6 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.screens.chat.sheets :as sheets]
-            [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.components.invite.views :as invite]
             [status-im.utils.config :as config]
             [quo2.components.markdown.text :as quo2.text]

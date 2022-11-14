@@ -1,5 +1,4 @@
-(ns status-im.utils.core
-  (:require [clojure.string :as string]))
+(ns status-im.utils.core)
 
 (defn truncate-str-memo
   "Given string and max threshold, trims the string to threshold length with `...`

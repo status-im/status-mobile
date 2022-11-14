@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.group.views
-  (:require [cljs.spec.alpha :as spec]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.constants :as constants]

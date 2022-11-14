@@ -47,6 +47,4 @@
   (.addChangeListener appearance handler))
 
 (defn get-window []
-  (let [res (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true)]
-    (println "WINDOW" (.-Dimensions ^js react-native) res)
-    res))
+  (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))

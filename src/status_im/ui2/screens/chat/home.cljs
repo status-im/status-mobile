@@ -17,7 +17,6 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
-            [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.components.invite.views :as invite]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.utils.config :as config]

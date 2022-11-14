@@ -4,11 +4,11 @@
 
 (defn- all-screens-params [db view screen-params]
   (cond-> db
-          (and (seq screen-params) (:screen screen-params) (:params screen-params))
-          (all-screens-params (:screen screen-params) (:params screen-params))
+    (and (seq screen-params) (:screen screen-params) (:params screen-params))
+    (all-screens-params (:screen screen-params) (:params screen-params))
 
-          (seq screen-params)
-          (assoc-in [:navigation/screen-params view] screen-params)))
+    (seq screen-params)
+    (assoc-in [:navigation/screen-params view] screen-params)))
 
 (fx/defn navigate-to-cofx
   [{:keys [db]} go-to-view-id screen-params]
@@ -46,8 +46,8 @@
   {:events       [:navigate-replace]}
   [{:keys [db]} go-to-view-id screen-params]
   (let [db (cond-> (assoc db :view-id go-to-view-id)
-                   (seq screen-params)
-                   (assoc-in [:navigation/screen-params go-to-view-id] screen-params))]
+             (seq screen-params)
+             (assoc-in [:navigation/screen-params go-to-view-id] screen-params))]
     {:db                  db
      :navigate-replace-fx go-to-view-id}))
 
@@ -101,9 +101,7 @@
            (dissoc :wallet-connect/session-managed))
    :hide-wallet-connect-app-management-sheet nil})
 
-
 ;; NAVIGATION 2
-
 (fx/defn reload-new-ui
   {:events [:reload-new-ui]}
   [_]
