@@ -24,7 +24,7 @@
                 :justify-content  :center
                 :border-radius    (/ container-size 2)
                 :background-color color
-                ;:background-color (if (= theme :light) ; TODO: colors/custom-color method here is not working for some reason
+                ;:background-color (if (= theme :light) ; TODO: colors/custom-color method here is not working for some reason.
                 ;                    (colors/custom-color color 50)
                 ;                    (colors/custom-color color 60))
                 }
