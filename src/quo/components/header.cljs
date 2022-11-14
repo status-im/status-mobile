@@ -108,7 +108,7 @@
                   :number-of-lines 1}
        title]
       [text/text {:weight          :regular
-                  :color           :secondary
+                  :color           :primary
                   :number-of-lines 1}
        subtitle]]
 

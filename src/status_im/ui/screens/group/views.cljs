@@ -17,6 +17,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.group.styles :as styles]
             [quo.core :as quo]
+            [status-im.utils.handlers :refer [<sub]]
             [status-im.utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -58,7 +59,7 @@
        {:title     first-name
         :subtitle  second-name
         :icon      [chat-icon/contact-icon-contacts-tab
-                    (multiaccounts/displayed-photo  contact)]
+                    (multiaccounts/displayed-photo contact)]
         :on-press  #(on-toggle allow-new-users? contact-selected? public-key)
         :active    contact-selected?
         :accessory :checkbox}])))
@@ -159,10 +160,11 @@
           [no-contacts {:no-contacts no-contacts-label}])]])))
 
 ;; Start group chat
-(views/defview contact-toggle-list []
-  (views/letsubs [contacts                [:contacts/active]
-                  selected-contacts-count [:selected-contacts-count]]
-    [react/keyboard-avoiding-view {:style styles/group-container
+(defn contact-toggle-list []
+  (let [contacts                (<sub [:contacts/active])
+        selected-contacts-count (<sub [:selected-contacts-count])
+        one-contact-pub-key     (-> contacts first :public-key)]
+    [react/keyboard-avoiding-view {:style         styles/group-container
                                    :ignore-offset true}
      [topbar/topbar {:use-insets    false
                      :border-bottom false
@@ -178,12 +180,13 @@
                              (dec constants/max-group-chat-participants))}]
      [toolbar/toolbar
       {:show-border? true
-       :right
-       [quo/button {:type                :secondary
-                    :after               :main-icon/next
-                    :accessibility-label :next-button
-                    :on-press            #(re-frame/dispatch [:navigate-to :new-group])}
-        (i18n/label :t/next)]}]]))
+       :right        [quo/button {:type                :secondary
+                                  :after               :main-icon/next
+                                  :accessibility-label :next-button
+                                  :on-press            #(if (= 1 selected-contacts-count)
+                                                          (re-frame/dispatch [:chat.ui/start-chat one-contact-pub-key])
+                                                          (re-frame/dispatch [:navigate-to :new-group]))}
+                      (i18n/label :t/next)]}]]))
 
 ;; Add participants to existing group chat
 (views/defview add-participants-toggle-list []

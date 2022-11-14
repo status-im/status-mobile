@@ -1,7 +1,8 @@
 (ns status-im.ui.components.topbar
   (:require [re-frame.core :as re-frame]
             [quo.core :as quo]
-            [quo2.foundations.colors :as quo2.colors]))
+            [quo2.foundations.colors :as quo2.colors]
+            [quo2.components.header :as quo2.header]))
 
 (def default-button-width 48)
 
@@ -30,7 +31,7 @@
                      [(default-navigation modal? navigation)])]
     [quo/safe-area-consumer
      (fn [insets]
-       [quo/header (merge {:left-accessories navigation
+       [quo2.header/header (merge {:left-accessories navigation
                            :title-component  content
                            :insets           (when use-insets insets)
                            :left-width       (when navigation

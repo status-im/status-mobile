@@ -1,4 +1,4 @@
-(ns quo.components.list.item
+(ns quo2.components.list-items.list-item
   (:require [quo.react-native :as rn]
             [quo.platform :as platform]
             [quo.haptic :as haptic]
@@ -210,7 +210,7 @@
            left-side-alignment icon-color icon-bg-color title-column-style
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label accessory-style
-           haptic-feedback haptic-type error animated animated-accessory? title-text-weight container-style
+           haptic-feedback text-color active-background passive-background haptic-type error animated animated-accessory? title-text-weight container-style
            active-background-enabled background-color container-padding-horizontal container-padding-vertical]
     :or   {subtitle-max-lines        1
            theme                     :main
@@ -219,8 +219,6 @@
            active-background-enabled true
            haptic-type               :selection}}]
   (let [theme           (if disabled :disabled theme)
-        {:keys [text-color active-background passive-background]}
-        (themes theme)
         icon-color      (or icon-color (:icon-color (themes theme)))
         icon-bg-color   (or icon-bg-color (:icon-bg-color (themes theme)))
         optional-haptic (fn []

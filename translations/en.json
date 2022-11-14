@@ -1457,6 +1457,8 @@
     "set-custom-fee": "Set custom fee",
     "not-enough-snt": "Not enough SNT",
     "add-new-contact": "Add new contact",
+    "add-a-contact": "Add a contact",
+    "enter-a-chat-key": "Enter a chat key or scan a QR",
     "you-dont-have-contacts": "You don’t have any contacts yet.",
     "set-max": "Set max",
     "continue-anyway": "Continue anyway",
@@ -1853,5 +1855,11 @@
     "mark-user-untrustworthy": "Mark {{username}} as untrustworthy",
     "leave-group?": "Leave Group?",
     "block-user?": "Block User?",
-    "clear-history?": "Clear History?"
+    "clear-history?": "Clear History?",
+    "chat-with": "Chat with {{selected-user}}",
+    "setup-group-chat": "Setup group chat",
+    "search-contacts": "Search contacts",
+    "who-are-you-looking-for": "Who are you looking for ?",
+    "close-contact-search": "Close contact search",
+    "selected-count-from-max": "{{selected}}/{{max}}"
 }

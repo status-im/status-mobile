@@ -5,7 +5,7 @@
             [quo2.foundations.typography :as typography]
             [reagent.core :as reagent]))
 
-(defn text-style [{:keys [size align weight style]}]
+(defn text-style [{:keys [size align weight style secondary-color]}]
   (merge (case (or weight :regular)
            :regular   typography/font-regular
            :medium    typography/font-medium
@@ -24,7 +24,8 @@
          {:text-align (or align :auto)}
          (if (:color style)
            style
-           (assoc style :color (if (= (theme/get-theme) :dark) colors/white colors/neutral-100)))))
+           (assoc style :color (or secondary-color
+                                   (colors/theme-colors colors/neutral-100 colors/white))))))
 
 (defn text []
   (let [this  (reagent/current-component)

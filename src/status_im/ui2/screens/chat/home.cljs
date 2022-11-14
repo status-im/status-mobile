@@ -298,11 +298,19 @@
 
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]
-    [components.plus-button/plus-button
-     {:on-press            (when-not logging-in?
-                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
-      :loading             logging-in?
-      :accessibility-label :new-chat-button}]))
+                 [components.plus-button/plus-button
+                  {:on-press            (when-not logging-in?
+                                          #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+                   :loading             logging-in?
+                   :accessibility-label :new-chat-button}]))
+
+(views/defview plus-button-new-messages []
+  (views/letsubs [logging-in? [:multiaccounts/login]]
+                 [components.plus-button/plus-button
+                  {:on-press            (when-not logging-in?
+                                          #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new-sheet-view {}]))
+                   :loading             logging-in?
+                   :accessibility-label :new-chat-button}]))
 
 (views/defview notifications-button []
   (views/letsubs [notif-count [:activity.center/notifications-count]]
