@@ -80,8 +80,9 @@
 
 (defn display-name-view [display-name contact timestamp]
   [rn/view {:style {:flex-direction :row}}
-   [text/text {:weight :semi-bold
-               :size   :paragraph-1}
+   [text/text {:weight              :semi-bold
+               :accessibility-label :chat-name-text
+               :size                :paragraph-1}
     display-name]
    [verified-or-contact-icon contact]
    [text/text {:style (style/timestamp)}
