@@ -3,8 +3,9 @@
    [status-im.chat.models :as chat.models]
    [status-im.chat.models.pin-message :as models.pin-message]
    [status-im.i18n.i18n :as i18n]
-   [status-im.constants :as constants]
    [status-im.utils.re-frame :as rf]
+   [status-im.ui2.screens.common.core :as common]
+   [status-im.constants :as constants]
    [quo2.components.drawers.action-drawers :as drawer]))
 
 (defn- entry [{:keys [icon label on-press danger? sub-label chevron?]}]
@@ -40,14 +41,37 @@
 (defn unmute-chat-action [chat-id]
   (hide-sheet-and-dispatch [::chat.models/mute-chat-toggled chat-id false]))
 
-(defn clear-history-action [chat-id]
-  (hide-sheet-and-dispatch [:chat.ui/clear-history-pressed chat-id]))
+(defn clear-history-action [{:keys [chat-id] :as item}]
+  (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
+                            {:content #(common/alert {:title       (i18n/label :t/clear-history?)
+                                                      :description (i18n/label :t/clear-history-confirmation-content)
+                                                      :context     item
+                                                      :button-text (i18n/label :t/clear-history)
+                                                      :on-press    (fn [] (hide-sheet-and-dispatch [:chat.ui/clear-history chat-id]))})}]))
 
-(defn delete-chat-action [chat-id]
-  (hide-sheet-and-dispatch [:chat.ui/remove-chat-pressed chat-id]))
+(defn delete-chat-action [{:keys [chat-id] :as item}]
+  (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
+                            {:content #(common/alert {:title       (i18n/label :t/delete-chat?)
+                                                      :description (i18n/label :t/delete-chat-confirmation)
+                                                      :context     item
+                                                      :button-text (i18n/label :t/delete-chat)
+                                                      :on-press    (fn [] (hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id]))})}]))
 
-(defn leave-group-action [chat-id]
-  (hide-sheet-and-dispatch [:group-chats.ui/leave-chat-pressed chat-id]))
+(defn leave-group-action [{:keys [chat-id] :as item}]
+  (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
+                            {:content #(common/alert {:title       (i18n/label :t/leave-group?)
+                                                      :description (i18n/label :t/leave-chat-confirmation)
+                                                      :context     item
+                                                      :button-text (i18n/label :t/leave-group)
+                                                      :on-press    (fn [] (hide-sheet-and-dispatch [:chat.ui/leave-chat chat-id]))})}]))
+
+(defn block-user-action [{:keys [public-key] :as item}]
+  (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
+                            {:content #(common/alert {:title       (i18n/label :t/block-user?)
+                                                      :description (i18n/label :t/block-user-confirmation)
+                                                      :context     item
+                                                      :button-text (i18n/label :t/block-user)
+                                                      :on-press    (fn [] (hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed public-key]))})}]))
 
 (defn mute-chat-entry [chat-id]
   (let [muted? (rf/sub [:chats/muted chat-id])]
@@ -79,18 +103,18 @@
           :sub-label nil
           :chevron?  false}))
 
-(defn delete-chat-entry [chat-id]
+(defn delete-chat-entry [item]
   (entry {:icon      :i/delete
           :label     (i18n/label :t/delete-chat)
-          :on-press  #(delete-chat-action chat-id)
+          :on-press  #(delete-chat-action item)
           :danger?   true
           :sub-label nil
           :chevron?  false}))
 
-(defn leave-group-entry [chat-id]
+(defn leave-group-entry [item]
   (entry {:icon      :i/log-out
           :label     (i18n/label :t/leave-group)
-          :on-press  #(leave-group-action chat-id)
+          :on-press  #(leave-group-action item)
           :danger?   true
           :sub-label nil
           :chevron?  false}))
@@ -178,15 +202,16 @@
 (defn mark-untrustworthy-entry []
   (entry {:icon      :i/alert
           :label     (i18n/label :t/mark-untrustworthy)
-          :on-press  #(js/alert "TODO: to be implemented, probably requires status-go impl. and design input")
+          :on-press  #(js/alert "TODO: to be implemented, requires status-go impl.")
           :danger?   true
           :sub-label nil
           :chevron?  false}))
 
-(defn block-user-entry []
+(defn block-user-entry [item]
   (entry {:icon      :i/block
           :label     (i18n/label :t/block-user)
-          :on-press  #(js/alert "TODO: to be implemented, requires design input")
+          ;:on-press  #(js/alert "TODO: to be implemented, requires design input")
+          :on-press  #(block-user-action item)
           :danger?   true
           :sub-label nil
           :chevron?  false}))
@@ -231,11 +256,11 @@
           :sub-label nil
           :chevron?  false}))
 
-(defn destructive-actions [chat-id group-chat]
+(defn destructive-actions [{:keys [chat-id group-chat] :as item}]
   [(clear-history-entry chat-id)
    (if group-chat
-     (leave-group-entry chat-id)
-     (delete-chat-entry chat-id))])
+     (leave-group-entry item)
+     (delete-chat-entry item))])
 
 (defn notification-actions [{:keys [chat-id group-chat public?]} inside-chat?]
   [(mark-as-read-entry chat-id)
@@ -262,23 +287,23 @@
      (when (and admin? inside-chat?) (edit-group-entry))
      (when (and admin? inside-chat?) (group-privacy-entry))]))
 
-(defn one-to-one-actions [{:keys [chat-id group-chat] :as item} inside-chat?]
+(defn one-to-one-actions [{:keys [chat-id] :as item} inside-chat?]
   [drawer/action-drawer [[(view-profile-entry chat-id)
                           (edit-nickname-entry chat-id)]
                          (notification-actions item inside-chat?)
-                         (destructive-actions chat-id group-chat)]])
+                         (destructive-actions item)]])
 
-(defn public-chat-actions [{:keys [chat-id group-chat] :as item} inside-chat?]
+(defn public-chat-actions [{:keys [chat-id] :as item} inside-chat?]
   [drawer/action-drawer [[(group-details-entry chat-id)
                           (when inside-chat?
                             (add-members-entry))]
                          (notification-actions item inside-chat?)
-                         (destructive-actions chat-id group-chat)]])
+                         (destructive-actions item)]])
 
-(defn private-group-chat-actions [{:keys [chat-id group-chat] :as item} inside-chat?]
+(defn private-group-chat-actions [item inside-chat?]
   [drawer/action-drawer [(group-actions item inside-chat?)
                          (notification-actions item inside-chat?)
-                         (destructive-actions chat-id group-chat)]])
+                         (destructive-actions item)]])
 
 (defn contact-actions [{:keys [public-key] :as contact}]
   [drawer/action-drawer [[(view-profile-entry public-key)
@@ -287,7 +312,7 @@
                           (show-qr-entry)
                           (share-profile-entry)]
                          [(mark-untrustworthy-entry)
-                          (block-user-entry)]]])
+                          (block-user-entry contact)]]])
 
 (defn actions [{:keys [chat-type] :as item} inside-chat?]
   (case chat-type
