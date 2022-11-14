@@ -156,7 +156,7 @@
     "clear-all": "Clear all",
     "clear-history": "Clear history",
     "clear-history-action": "Clear",
-    "clear-history?": "Clear history?",
+    "clear-history-confirmation": "Clear history?",
     "clear-history-confirmation-content": "Are you sure you want to clear this chat history?",
     "clear-history-title": "Clear history?",
     "close": "Close",
@@ -1852,5 +1852,6 @@
     "delete-chat?": "Delete Chat?",
     "mark-user-untrustworthy": "Mark {{username}} as untrustworthy",
     "leave-group?": "Leave Group?",
-    "block-user?": "Block User?"
+    "block-user?": "Block User?",
+    "clear-history?": "Clear History?"
 }
