@@ -10,9 +10,9 @@
             [status-im.utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [id] :as notification}]
-  (let [message   (or (:message notification) (:last-message notification))
-        contact   (rf/sub [:contacts/contact-by-identity (:author notification)])
+  [{:keys [id author message last-message] :as notification}]
+  (let [message   (or message last-message)
+        contact   (rf/sub [:contacts/contact-by-identity author])
         pressable (case (:contact-request-state message)
                     constants/contact-request-message-state-accepted
                     ;; NOTE(2022-09-21): We need to dispatch to
@@ -22,7 +22,7 @@
                     ;; before for the accepted contact.
                     [animation/pressable {:on-press (fn []
                                                       (rf/dispatch [:hide-popover])
-                                                      (rf/dispatch [:contact.ui/send-message-pressed {:public-key (:author notification)}]))}]
+                                                      (rf/dispatch [:contact.ui/send-message-pressed {:public-key author}]))}]
                     [:<>])]
     (conj pressable
           [quo2/activity-log
