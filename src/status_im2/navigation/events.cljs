@@ -1,6 +1,6 @@
 (ns status-im2.navigation.events
   (:require [status-im.utils.fx :as fx]
-            [hot-reload :as hot-reload]))
+            [status-im2.setup.hot-reload :as hot-reload]))
 
 (defn- all-screens-params [db view screen-params]
   (cond-> db

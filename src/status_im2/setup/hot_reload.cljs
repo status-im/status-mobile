@@ -1,4 +1,4 @@
-(ns hot-reload
+(ns status-im2.setup.hot-reload
   (:require [reagent.core :as reagent]
             [react-native.core :as rn]
             [re-frame.core :as re-frame]))

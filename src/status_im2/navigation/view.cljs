@@ -1,6 +1,6 @@
 (ns status-im2.navigation.view
   (:require [reagent.core :as reagent]
-            [hot-reload :as reloader]
+            [status-im2.setup.hot-reload :as reloader]
             [oops.core :refer [oget]]
             [re-frame.core :as re-frame]
             [react-native.core :as rn]

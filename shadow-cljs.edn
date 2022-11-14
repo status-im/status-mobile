@@ -43,8 +43,8 @@
            ;; the target files (a.k.a hot reload). When false, you can manually
            ;; reload by calling `shadow.cljs.devtools.api/watch-compile-all!`.
            :devtools {:autobuild #shadow/env ["SHADOW_AUTOBUILD_ENABLED" :default true :as :bool]}
-           :dev {:devtools {:after-load hot-reload/reload
-                            :build-notify hot-reload/build-notify
+           :dev {:devtools {:after-load status-im2.setup.hot-reload/reload
+                            :build-notify status-im2.setup.hot-reload/build-notify
                             :preloads [re-frisk-remote.preload]}
                  :closure-defines
                  {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
