@@ -16,7 +16,7 @@
   (fn [{:keys [color size]}]
     (let [container-size (get-in sizes [:container size])
           icon-size      (get-in sizes [:icon size])
-          ;theme          (or override-theme (if (colors/dark?) :dark :light))
+          ;; theme          (or override-theme (if (colors/dark?) :dark :light))
           ]
       [rn/view {:width            container-size
                 :height           container-size
