@@ -78,6 +78,7 @@
     "tdigest": "^0.1.1"
   },
   "devDependencies": {
+    "@jest/globals": "^25.1.0",
     "@babel/generator": "7.0.0",
     "@babel/helper-builder-react-jsx": "7.0.0",
     "@babel/plugin-transform-block-scoping": "7.0.0",
