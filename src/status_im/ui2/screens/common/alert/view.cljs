@@ -22,7 +22,7 @@
 (defn extra-action-view [extra-action extra-text extra-action-selected?]
   (when extra-action
     [rn/view {:style {:margin-top 16 :flex-direction :row}}
-     [selectors/checkbox {:on-change (fn [^js e] (reset! extra-action-selected? e))}]
+     [selectors/checkbox {:on-change (fn [selected?] (reset! extra-action-selected? selected?))}]
      [quo2.text/text {:style {:margin-left 10}} extra-text]]))
 
 (defn alert [{:keys [title description context button-text on-press extra-action extra-text]}]
