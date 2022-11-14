@@ -18,7 +18,7 @@
 
 (defn- activity-reply-text-input
   [reply-input on-update-reply]
-  [rn/view {:style {:flex-direction :column}}
+  [rn/view
    [rn/view {:style {:margin-top     16
                      :margin-bottom  8
                      :flex-direction :row}}
@@ -54,7 +54,6 @@
             :margin-top      10
             :border-width    1
             :border-color    colors/white-opa-5
-            :flex-direction  :column
             :align-items     :center
             :justify-content :center}
    [icon/icon icon {:color colors/white}]])
@@ -92,8 +91,7 @@
             :margin-top         12
             :padding-horizontal 12
             :padding-vertical   8
-            :background-color   colors/white-opa-5
-            :flex-direction     :column}
+            :background-color   colors/white-opa-5}
    (when title
      [text/text {:size  :paragraph-2
                  :style {:color         colors/white-opa-40
@@ -183,9 +181,8 @@
                                   colors/primary-50-opa-10)}
    (when-not replying?
      [activity-icon icon])
-   [rn/view {:flex-direction :column
-             :padding-left   (when-not replying? 8)
-             :flex-grow      1}
+   [rn/view {:padding-left (when-not replying? 8)
+             :flex-grow    1}
     [rn/view {:flex-grow      1
               :align-items    :center
               :flex-direction :row}
