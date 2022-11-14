@@ -119,6 +119,8 @@
 (def channel-list-item quo2.components.list-items.channel/list-item)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
+(def index quo2.components.list-items.index/index)
+(def list-item quo2.components.list-items.list-item/list-item)
 
 ;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-log.view/view)

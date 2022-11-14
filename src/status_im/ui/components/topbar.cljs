@@ -1,7 +1,8 @@
 (ns status-im.ui.components.topbar
-  (:require [quo.core :as quo]
+  (:require [re-frame.core :as re-frame]
+            [quo.core :as quo]
             [quo2.foundations.colors :as quo2.colors]
-            [re-frame.core :as re-frame]))
+            [quo2.components.header :as quo2.header]))
 
 (def default-button-width 48)
 
@@ -34,16 +35,14 @@
                      [(default-navigation modal? navigation)])]
     [quo/safe-area-consumer
      (fn [insets]
-       [quo/header
-        (merge {:left-accessories navigation
-                :title-component  content
-                :insets           (when use-insets insets)
-                :left-width       (when navigation
-                                    default-button-width)
-                :border-bottom    border-bottom?}
-               props
-               (when (seq right-accessories)
-                 {:right-accessories right-accessories})
-               (when new-ui?
-                 {:background (quo2.colors/theme-colors quo2.colors/neutral-5
-                                                        quo2.colors/neutral-95)}))])]))
+       [quo2.header/header (merge {:left-accessories navigation
+                           :title-component  content
+                           :insets           (when use-insets insets)
+                           :left-width       (when navigation
+                                               default-button-width)
+                           :border-bottom    border-bottom?}
+                          props
+                          (when (seq right-accessories)
+                            {:right-accessories right-accessories})
+                          (when new-ui?
+                            {:background (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}))])]))

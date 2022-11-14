@@ -1,12 +1,10 @@
 (ns quo2.components.markdown.text
   (:require [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
-            [quo2.theme :as theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 
-(defn text-style
-  [{:keys [size align weight style]}]
+(defn text-style [{:keys [size align weight style secondary-color]}]
   (merge (case (or weight :regular)
            :regular   typography/font-regular
            :medium    typography/font-medium
@@ -25,7 +23,8 @@
          {:text-align (or align :auto)}
          (if (:color style)
            style
-           (assoc style :color (if (= (theme/get-theme) :dark) colors/white colors/neutral-100)))))
+           (assoc style :color (or secondary-color
+                                   (colors/theme-colors colors/neutral-100 colors/white))))))
 
 (defn text
   []

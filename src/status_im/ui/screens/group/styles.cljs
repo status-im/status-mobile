@@ -1,9 +1,11 @@
 (ns status-im.ui.screens.group.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as quo2.colors]))
 
 (def group-container
-  {:flex           1
-   :flex-direction :column})
+  {:flex             1
+   :flex-direction   :column
+   :background-color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)})
 
 (defn no-contact-text
   []
@@ -27,9 +29,9 @@
 (defn search-container
   []
   {:border-bottom-color colors/gray-lighter
-   :border-bottom-width 1
-   :padding-horizontal  16
-   :padding-vertical    10})
+   :background-color    (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
+   :padding-horizontal  20
+   :padding-top         10})
 
 (defn members-title
   []

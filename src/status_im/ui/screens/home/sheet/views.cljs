@@ -5,7 +5,8 @@
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.react :as react]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [quo2.foundations.colors :as colors]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -61,6 +62,37 @@
        :on-press            #(hide-sheet-and-dispatch [:navigate-to :communities])}])
    [invite/list-item
     {:accessibility-label :chats-menu-invite-friends-button}]])
+
+(defn add-new-sheet-view []
+  [react/view
+   [quo/list-item
+    {:theme                        :main
+     :title                        (i18n/label :t/new-chat)
+     :icon-bg-color                :transparent
+     :icon-container-style         {:padding-horizontal 0}
+     :container-padding-horizontal {:padding-horizontal 4}
+     :container-padding-vertical   12
+     :title-column-style           {:margin-left 2}
+     :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
+     :accessibility-label          :start-a-new-chat
+     :icon                         :main-icons2/new-message
+     :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-chat-aio])}]
+   [quo/list-item
+    {:theme                        :main
+     :title                        (i18n/label :t/add-a-contact)
+     :icon-bg-color                :transparent
+     :icon-container-style         {:padding-horizontal 0}
+     :container-padding-horizontal {:padding-horizontal 4}
+     :container-padding-vertical   12
+     :title-column-style           {:margin-left 2}
+     :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
+     :accessibility-label          :add-a-contact
+     :subtitle                     (i18n/label :t/enter-a-chat-key)
+     :icon                         :main-icons2/add-user
+     :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
+
+(def add-new-sheet
+  {:content add-new-sheet-view})
 
 (def add-new
   {:content add-new-view})

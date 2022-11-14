@@ -1,4 +1,4 @@
-(ns quo.components.list.item
+(ns quo2.components.list-items.list-item
   (:require [quo.react-native :as rn]
             [quo.platform :as platform]
             [quo.haptic :as haptic]
@@ -49,20 +49,17 @@
                :passive-background (:ui-background @quo.colors/theme)
                :text-color         (:text-02 @quo.colors/theme)}))
 
-(defn size->icon-size
-  [size]
+(defn size->icon-size [size]
   (case size
     :small 36
     40))
 
-(defn size->container-size
-  [size]
+(defn size->container-size [size]
   (case size
     :small 52
     64))
 
-(defn size->single-title-size
-  [size]
+(defn size->single-title-size [size]
   (case size
     :small :paragraph-1
     :paragraph-1))
@@ -107,16 +104,14 @@
 
      (and title subtitle)
      [:<>
-      ;; FIXME(Ferossgp): ReactNative 63 will support view inside text on andrid, remove thess if when
-      ;; migrating
+      ;; FIXME(Ferossgp): ReactNative 63 will support view inside text on andrid, remove thess if when migrating
       (if (string? title)
-        [text/text
-         {:weight              (or title-text-weight :medium)
-          :style               {:color text-color}
-          :accessibility-label title-accessibility-label
-          :ellipsize-mode      :tail
-          :number-of-lines     1
-          :size                text-size}
+        [text/text {:weight              (or title-text-weight :medium)
+                    :style               {:color text-color}
+                    :accessibility-label title-accessibility-label
+                    :ellipsize-mode      :tail
+                    :number-of-lines     1
+                    :size                text-size}
          title]
         title)
       (if (string? subtitle-secondary)
@@ -157,45 +152,38 @@
 
      title
      (if (string? title)
-       [text/text
-        {:weight                    (or title-text-weight :regular)
-         :number-of-lines           1
-         :style                     {:color text-color}
-         :title-accessibility-label title-accessibility-label
-         :ellipsize-mode            :tail
-         :size                      (or text-size (size->single-title-size size))}
+       [text/text {:weight                    (or title-text-weight :regular)
+                   :number-of-lines           1
+                   :style                     {:color text-color}
+                   :title-accessibility-label title-accessibility-label
+                   :ellipsize-mode            :tail
+                   :size                      (or text-size (size->single-title-size size))}
         title]
        title))])
 
-(defn left-side
-  [props]
-  [rn/view
-   {:style {:flex-direction :row
-            ;; Occupy only content width, never grow, but shrink if need be
-            :flex-grow      0
-            :flex-shrink    1
-            :padding-right  16
-            :align-items    (or (:left-side-alignment props) :center)}}
+(defn left-side [props]
+  [rn/view {:style {:flex-direction :row
+                    ;; Occupy only content width, never grow, but shrink if need be
+                    :flex-grow      0
+                    :flex-shrink    1
+                    :padding-right  16
+                    :align-items    (or (:left-side-alignment props) :center)}}
    [icon-column props]
    [title-column props]])
 
-(defn right-side
-  [{:keys [chevron active disabled accessory accessory-text accessory-style animated-accessory?]}]
+(defn right-side [{:keys [chevron active disabled accessory accessory-text accessory-style animated-accessory?]}]
   (when (or chevron accessory)
-    [rn/view
-     {:style (merge {:align-items     :center
-                     :justify-content :flex-end
-                     :flex-direction  :row
-                     ;; Grow to occupy full space, shrink when need be, but always maitaining 16px left
-                     ;; gutter
-                     :flex-grow       1
-                     :flex-shrink     0
-                     :margin-left     16
-                     ;; When the left-side leaves no room for right-side, the rendered element is pushed
-                     ;; out. A flex-basis ensures that there is some room reserved.
-                     ;; The number 80px was determined by trial and error.
-                     :flex-basis      80}
-                    accessory-style)}
+    [rn/view {:style (merge {:align-items     :center
+                             :justify-content :flex-end
+                             :flex-direction  :row
+                             ;; Grow to occupy full space, shrink when need be, but always maitaining 16px left gutter
+                             :flex-grow       1
+                             :flex-shrink     0
+                             :margin-left     16
+                             ;; When the left-side leaves no room for right-side, the rendered element is pushed out. A flex-basis ensures that there is some room reserved.
+                             ;; The number 80px was determined by trial and error.
+                             :flex-basis      80}
+                            accessory-style)}
      [rn/view {:style (:tiny spacing/padding-horizontal)}
       (case accessory
         :radio    [controls/radio {:value active :disabled disabled}]
@@ -204,10 +192,9 @@
                      controls/checkbox)
                    {:value active :disabled disabled}]
         :switch   [controls/switch {:value active :disabled disabled}]
-        :text     [text/text
-                   {:color           :secondary
-                    :ellipsize-mode  :middle
-                    :number-of-lines 1}
+        :text     [text/text {:color           :secondary
+                              :ellipsize-mode  :middle
+                              :number-of-lines 1}
                    accessory-text]
         accessory)]
      (when (and chevron platform/ios?)
@@ -223,7 +210,7 @@
            left-side-alignment icon-color icon-bg-color title-column-style
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label accessory-style
-           haptic-feedback haptic-type error animated animated-accessory? title-text-weight container-style
+           haptic-feedback text-color active-background passive-background haptic-type error animated animated-accessory? title-text-weight container-style
            active-background-enabled background-color container-padding-horizontal container-padding-vertical]
     :or   {subtitle-max-lines        1
            theme                     :main
@@ -231,29 +218,24 @@
            animated                  platform/ios?
            active-background-enabled true
            haptic-type               :selection}}]
-  (let [theme                                                     (if disabled :disabled theme)
-        {:keys [text-color active-background passive-background]}
-        (themes theme)
-        icon-color                                                (or icon-color
-                                                                      (:icon-color (themes theme)))
-        icon-bg-color                                             (or icon-bg-color
-                                                                      (:icon-bg-color (themes theme)))
-        optional-haptic                                           (fn []
-                                                                    (when haptic-feedback
-                                                                      (haptic/trigger haptic-type)))
-        component                                                 (cond
-                                                                    (and (not on-press)
-                                                                         (not on-long-press))
-                                                                    rn/view
-                                                                    animated animated/pressable
-                                                                    :else gh/touchable-highlight)]
-    [rn/view
-     {:background-color (cond (not= background-color nil)
-                              background-color
-                              (and (= accessory :radio) active)
-                              active-background
-                              :else
-                              passive-background)}
+  (let [theme           (if disabled :disabled theme)
+        icon-color      (or icon-color (:icon-color (themes theme)))
+        icon-bg-color   (or icon-bg-color (:icon-bg-color (themes theme)))
+        optional-haptic (fn []
+                          (when haptic-feedback
+                            (haptic/trigger haptic-type)))
+        component       (cond
+                          (and (not on-press)
+                               (not on-long-press))
+                          rn/view
+                          animated animated/pressable
+                          :else    gh/touchable-highlight)]
+    [rn/view {:background-color (cond (not= background-color nil)
+                                      background-color
+                                      (and (= accessory :radio) active)
+                                      active-background
+                                      :else
+                                      passive-background)}
      [component
       (merge {:type                :list-item
               :disabled            disabled
@@ -295,11 +277,9 @@
                     :accessory-style     accessory-style
                     :accessory           accessory}]]]
      (when error
-       [tooltip/tooltip
-        (merge {:bottom-value 0}
-               (when accessibility-label
-                 {:accessibility-label (str (name accessibility-label) "-error")}))
-        [text/text
-         {:color :negative
-          :size  :small}
+       [tooltip/tooltip (merge {:bottom-value 0}
+                               (when accessibility-label
+                                 {:accessibility-label (str (name accessibility-label) "-error")}))
+        [text/text {:color :negative
+                    :size  :small}
          error]])]))
