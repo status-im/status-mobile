@@ -135,7 +135,9 @@
                   {window-height :height} (rn/use-window-dimensions)
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
                   max-y (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets)) ; 360 - default height
+                  ;max-y 100 ; 360 - default height
                   max-height (Math/abs (- max-y 56 (:bottom insets)))  ; 56 - top-bar height
+                  ;max-height 100  ; 56 - top-bar height
                   added-value (if (and (not (seq suggestions)) reply) 38 0) ; increased height of input box needed when reply
                   min-y (+ min-y (when reply 38))
                   y (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply)
@@ -156,6 +158,7 @@
                                       (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0)))
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
+              (js/console.log "WWWWasdfdf" (:bottom insets) (:top insets) max-y max-height min-y y translate-y shared-height)
               [reanimated/view {:style (reanimated/apply-animations-to-style
                                         {:height shared-height}
                                         {})}
@@ -172,7 +175,8 @@
                                      :on-content-size-change input-content-change
                                      :sending-image          false
                                      :refs                   refs
-                                     :set-active-panel       #()}]]]]
+                                     :set-active-panel       #()}]
+                  ]]]
                ;CONTROLS
                (when-not (seq suggestions)
                  [rn/view {:style (styles/bottom-sheet-controls insets)}
