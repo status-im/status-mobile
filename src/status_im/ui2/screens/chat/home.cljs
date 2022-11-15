@@ -305,12 +305,12 @@
                    :accessibility-label :new-chat-button}]))
 
 (views/defview plus-button-new-messages []
-  (views/letsubs [logging-in? [:multiaccounts/login]]
-                 [components.plus-button/plus-button
-                  {:on-press            (when-not logging-in?
-                                          #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new-sheet-view {}]))
-                   :loading             logging-in?
-                   :accessibility-label :new-chat-button}]))
+  (let [logging-in? (<sub [:multiaccounts/login])]
+    [components.plus-button/plus-button
+     {:on-press            (when-not logging-in?
+                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new-sheet-view {}]))
+      :loading             logging-in?
+      :accessibility-label :new-chat-button}]))
 
 (views/defview notifications-button []
   (views/letsubs [notif-count [:activity.center/notifications-count]]
@@ -384,6 +384,6 @@
                 :margin-top        15
                 :margin-bottom     20}
        [quo2.text/text {:size :heading-1 :weight :semi-bold} (i18n/label :t/messages)]
-       [plus-button]]
+       [plus-button-new-messages]]
       [chats-list]])])
 
