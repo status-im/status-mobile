@@ -37,10 +37,7 @@
 (defn get-shared-values []
   (let [selected-stack-id-sv    (reanimated/use-shared-value
                                  ;; passing keywords or nil is not working with reanimated
-                                 (name (if @selected-stack-id @selected-stack-id :none)))
-        ;; Second shared value of selected-stack-id required to make sure stack is still visible while minimizing
-        selected-stack-id-sv2   (reanimated/use-shared-value
-                                 (name (if @selected-stack-id @selected-stack-id :none)))
+                                 (name (or @selected-stack-id :communities-stack)))
         pass-through-sv         (reanimated/use-shared-value @pass-through?)
         home-stack-open-sv      (reanimated/use-shared-value @home-stack-open?)
         animate-home-stack-left (reanimated/use-shared-value (not @home-stack-open?))
@@ -54,22 +51,22 @@
           acc
           stack-opacity-keyword   (.stackOpacity
                                    ^js reanimated/worklet-factory
-                                   (name id) selected-stack-id-sv2)
+                                   (name id) selected-stack-id-sv)
           stack-pointer-keyword   (.stackPointer
                                    ^js reanimated/worklet-factory
-                                   (name id) selected-stack-id-sv2)
+                                   (name id) selected-stack-id-sv)
           tabs-icon-color-keyword (.bottomTabIconColor
                                    ^js reanimated/worklet-factory
-                                   (name id) selected-stack-id-sv pass-through-sv
-                                   colors/white colors/neutral-50 colors/white-opa-40))))
+                                   (name id) selected-stack-id-sv home-stack-open-sv
+                                   pass-through-sv colors/white colors/neutral-50
+                                   colors/white-opa-40))))
      {:selected-stack-id   selected-stack-id-sv
-      :selected-stack-id2  selected-stack-id-sv2
       :pass-through?       pass-through-sv
       :home-stack-open?    home-stack-open-sv
       :animate-home-stack-left animate-home-stack-left
       :home-stack-left    (.homeStackLeft
                            ^js reanimated/worklet-factory
-                           selected-stack-id-sv2 animate-home-stack-left home-stack-open-sv
+                           selected-stack-id-sv animate-home-stack-left home-stack-open-sv
                            (clj->js (:left home-stack-position)))
       :home-stack-top     (.homeStackTop
                            ^js reanimated/worklet-factory
@@ -85,24 +82,33 @@
 
 ;; Animation
 
-(defn change-tab [shared-values stack-id]
-  (when-not (colors/dark?)
-    (js/setTimeout #(re-frame/dispatch [:change-root-status-bar-style :dark]) 300))
-  (if @home-stack-open?
-    (reanimated/set-shared-value (:animate-home-stack-left shared-values) false)
-    (reset! home-stack-open? true))
-  (reset! selected-stack-id stack-id)
-  (reanimated/set-shared-value (:selected-stack-id2 shared-values) (name stack-id))
+(defn open-home-stack [shared-values stack-id]
   (reanimated/set-shared-value (:selected-stack-id shared-values) (name stack-id))
   (reanimated/set-shared-value (:home-stack-open?  shared-values) true)
+  (when-not (colors/dark?)
+    (js/setTimeout
+     #(re-frame/dispatch [:change-root-status-bar-style :dark])
+     constants/shell-animation-time))
+  (reset! home-stack-open? true)
+  (reset! selected-stack-id stack-id)
   (async-storage/set-item! :selected-stack-id stack-id))
 
+(defn change-tab [shared-values stack-id]
+  (reanimated/set-shared-value (:animate-home-stack-left shared-values) false)
+  (reanimated/set-shared-value (:selected-stack-id shared-values) (name stack-id))
+  (reset! selected-stack-id stack-id)
+  (async-storage/set-item! :selected-stack-id stack-id))
+
+(defn bottom-tab-on-press [shared-values stack-id]
+  (if @home-stack-open?
+    (change-tab shared-values stack-id)
+    (open-home-stack shared-values stack-id)))
+
 (defn close-home-stack [shared-values]
-  (re-frame/dispatch [:change-root-status-bar-style :light])
   (reanimated/set-shared-value (:animate-home-stack-left shared-values) true)
+  (reanimated/set-shared-value (:home-stack-open? shared-values) false)
+  (when-not (colors/dark?)
+    (re-frame/dispatch [:change-root-status-bar-style :light]))
   (reset! home-stack-open? false)
   (reset! selected-stack-id nil)
-  (reanimated/set-shared-value (:home-stack-open? shared-values) false)
-  (reanimated/set-shared-value (:selected-stack-id shared-values) "none")
   (async-storage/set-item! :selected-stack-id nil))
-

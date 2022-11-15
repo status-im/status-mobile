@@ -2,6 +2,7 @@
   (:require [react-native.core :as rn]
             [status-im.ui2.screens.quo2-preview.preview :as preview]
             [reagent.core :as reagent]
+            [react-native.reanimated :as reanimated]
             [quo2.components.navigation.floating-shell-button :as quo2]
             [quo2.foundations.colors :as colors]
             [status-im.i18n.i18n :as i18n]))
@@ -43,13 +44,16 @@
 (defn cool-preview []
   (let [state (reagent/atom {:show-jump-to? true
                              :scroll-type   :notification-down})]
-    (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
-        [rn/view {:padding-vertical 60
-                  :align-items      :center}
-         [quo2/floating-shell-button (mock-data @state)]]]])))
+    [:f>
+     (fn []
+       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+        [rn/view {:padding-bottom 150}
+         [preview/customizer state descriptor]
+         [rn/view {:padding-vertical 60
+                   :align-items      :center}
+          [quo2/floating-shell-button (mock-data @state)
+           nil (reanimated/use-shared-value 1)
+           (reanimated/use-shared-value "auto")]]]])]))
 
 (defn preview-floating-shell-button []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)

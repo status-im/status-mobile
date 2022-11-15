@@ -3,7 +3,6 @@
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             [status-im.switcher.styles :as styles]
-            [status-im.utils.platform :as platform]
             [status-im.switcher.constants :as constants]
             [status-im.switcher.animation :as animation]
             [quo2.components.navigation.bottom-nav-tab :as bottom-nav-tab]))
@@ -33,11 +32,8 @@
 
 (defn bottom-tab-on-press [shared-values stack-id]
   (when-not (= stack-id @animation/selected-stack-id)
-    (let [stack-load-delay (cond
-                             @animation/home-stack-open? 0
-                             platform/android?           250
-                             :else                       300)]
-      (animation/change-tab shared-values stack-id)
+    (let [stack-load-delay (if @animation/home-stack-open? 0 constants/shell-animation-time)]
+      (animation/bottom-tab-on-press shared-values stack-id)
       (js/setTimeout #(load-selected-stack stack-id) stack-load-delay))))
 
 (defn bottom-tab [icon stack-id shared-values]
