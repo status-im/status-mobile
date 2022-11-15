@@ -7,14 +7,12 @@
             [quo2.components.tabs.tabs :as tabs]
             [quo2.foundations.colors :as colors]
             [quo2.components.community.discover-card :as discover-card]
-            [quo2.components.community.community-card :as community-card]
             [quo2.components.navigation.top-nav :as topnav]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as rn]
             [status-im.ui.components.plus-button :as components.plus-button]
-            [status-im.react-native.resources :as resources]
             [status-im.ui.screens.communities.community :as community]))
 
 (def selected-tab (reagent/atom :joined))
@@ -104,17 +102,6 @@
                                 :accessibility-label :communities-home-discover-card}])
 
 
-(defn community-card []
-    [community-card/community-card {
-                                     :title  (i18n/label :t/decent-title)
-                                     :description (i18n/label :t/decent-desc)
-                                     :image (resources/get-image :decentraland)
-                                     :member_count (i18n/label :t/member-count)
-                                     :likes_count (i18n/label :t/likes-count)
-                                     :dislike_count (i18n/label :t/dislike-count)
-                                     }])
-
-
 (defn communities-home []
   (let [communities  (<sub [:communities/communities])]
     [rn/view  {:flex    1}
@@ -122,7 +109,6 @@
      [title-column]
      [discover-card]
      [home-community-segments]
-     [community-card]
      [segments-community-lists communities]]))
 
 (defn views []
