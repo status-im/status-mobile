@@ -138,13 +138,14 @@
     (fn [{:keys [left-accessories left-component border-bottom
                  right-accessories right-component insets get-layout
                  title subtitle title-component style title-align
-                 background]
+                 background header-style]
           :or   {title-align   :center
                  border-bottom false}}]
       (let [status-bar-height (get insets :top 0)
             height            (+ header-height status-bar-height)]
         [reanimated/view {:style (header-wrapper-style {:height        height
                                                         :background    background
+                                                        :header-style  header-style
                                                         :border-bottom border-bottom})}
          [rn/view {:pointer-events :box-none
                    :height         status-bar-height}]

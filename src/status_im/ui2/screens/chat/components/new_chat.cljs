@@ -182,10 +182,20 @@
         {:keys [alias public-key]} (-> contacts first :data first)]
     [react/keyboard-avoiding-view {:style         styles/group-container
                                    :ignore-offset true}
-     [topbar/topbar {:use-insets    false
-                     :border-bottom false
-                     :modal?        true
-                     :background    (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)}]
+     [topbar/topbar {:use-insets                 false
+                     :border-bottom              false
+                     :style                      {:top -15}
+                     :close-icon-container-props {:style {:width            32
+                                                          :height           32
+                                                          :border-radius    10
+                                                          :justify-content  :center
+                                                          :align-items      :center
+                                                          :background-color (quo2.colors/theme-colors quo2.colors/neutral-10 quo2.colors/neutral-80)}}
+                     :close-icon-props           {:size            20
+                                                  :color           (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}
+                     :navigation                 {:sheet? true}
+                     :modal?                     true
+                     :background                 (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)}]
      [react/view {:style {:flex-direction     :row
                           :justify-content    :space-between
                           :align-items        :flex-end

@@ -91,6 +91,11 @@
 (def white-opa-90 (alpha white 0.9))
 (def white-opa-95 (alpha white 0.95))
 
+;;;;Black
+
+;;Solid
+(def black "#000000")
+
 ;;;;Primary
 
 ;;Solid
