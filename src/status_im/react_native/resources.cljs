@@ -52,7 +52,8 @@
    :community-cover    (js/require "../resources/images/ui/community-cover.png")
    :lifestyle          (js/require "../resources/images/ui/lifestyle.png")
    :music              (js/require "../resources/images/ui/music.png")
-   :podcasts           (js/require "../resources/images/ui/podcasts.png")})
+   :podcasts           (js/require "../resources/images/ui/podcasts.png")
+   :decentraland       (js/require "../resources/images/ui/rarible.png")})
 
 (def mock-images
   {:photo1               (js/require "../resources/images/mock/photo1.png")
