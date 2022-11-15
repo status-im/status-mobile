@@ -29,7 +29,7 @@
 
           (= view :add-new-sheet-view)
           (merge home.sheet/add-new-sheet)
-          
+
           (= view :start-a-new-chat)
           (merge home.sheet/start-a-new-chat)
 

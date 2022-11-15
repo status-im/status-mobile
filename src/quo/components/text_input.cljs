@@ -148,10 +148,9 @@
         blur    (fn []
                   (some-> @ref (ocall "blur")))]
     (fn [{:keys [label multiline error style input-style keyboard-type before after
-                 cancel-label on-focus text-padding-left placeholder-text-color on-blur show-cancel accessibility-label
+                 on-focus text-padding-left placeholder-text-color on-blur show-cancel accessibility-label
                  bottom-value secure-text-entry container-style get-ref on-cancel
                  monospace auto-complete-type auto-correct]
-          :or  {cancel-label "Cancel"}
           :as  props}]
       {:pre [(check-spec ::text-input props)]}
       (let [show-cancel (if (nil? show-cancel)
