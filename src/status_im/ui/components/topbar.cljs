@@ -2,12 +2,13 @@
   (:require [re-frame.core :as re-frame]
             [quo.core :as quo]
             [quo2.foundations.colors :as quo2.colors]
-            [quo2.components.header :as quo2.header]))
+            [quo2.components.header :as quo2.header]
+            [quo2.components.icon :as quo2.icon]))
 
 (def default-button-width 48)
 
 (defn default-navigation [modal? {:keys [on-press label icon]}]
-  (cond-> {:icon                (if modal? :main-icons/close :main-icons/arrow-left)
+  (cond-> {:icon                (if modal? [quo2.icon/icon :main-icons/close] [quo2.icon/icon :main-icons/arrow-left])
            :accessibility-label :back-button
            :on-press            #(re-frame/dispatch [:navigate-back])}
     on-press
@@ -32,13 +33,13 @@
     [quo/safe-area-consumer
      (fn [insets]
        [quo2.header/header (merge {:left-accessories navigation
-                           :title-component  content
-                           :insets           (when use-insets insets)
-                           :left-width       (when navigation
-                                               default-button-width)
-                           :border-bottom    border-bottom?}
-                          props
-                          (when (seq right-accessories)
-                            {:right-accessories right-accessories})
-                          (when new-ui?
-                            {:background (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}))])]))
+                                   :title-component  content
+                                   :insets           (when use-insets insets)
+                                   :left-width       (when navigation
+                                                       default-button-width)
+                                   :border-bottom    border-bottom?}
+                                  props
+                                  (when (seq right-accessories)
+                                    {:right-accessories right-accessories})
+                                  (when new-ui?
+                                    {:background (quo2.colors/theme-colors quo2.colors/neutral-5 quo2.colors/neutral-95)}))])]))

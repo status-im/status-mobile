@@ -6,7 +6,6 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.config :as config]
             [status-im.ui.components.invite.views :as invite]
-            [quo.theme :as theme]
             [quo2.foundations.colors :as colors]))
 
 (defn hide-sheet-and-dispatch [event]
