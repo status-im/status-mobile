@@ -56,6 +56,7 @@
             [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
             [status-im2.contexts.quo-preview.navigation.page-nav :as page-nav]
             [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
+            [status-im2.contexts.quo-preview.notifications.toast :as toast]
             [status-im2.contexts.quo-preview.community.token-gating :as token-gating]
             [re-frame.core :as re-frame]))
 
@@ -158,7 +159,10 @@
                  :component floating-shell-button/preview-floating-shell-button}]
    :notifications [{:name      :activity-logs
                     :insets    {:top false}
-                    :component activity-logs/preview-activity-logs}]
+                    :component activity-logs/preview-activity-logs}
+                   {:name      :toast
+                   :insets    {:top false}
+                   :component toast/preview-toasts}]
    :posts-and-attachments [{:name      :messages-skeleton
                             :insets    {:top false}
                             :component messages-skeleton/preview-messages-skeleton}]

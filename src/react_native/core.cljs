@@ -1,9 +1,11 @@
 (ns react-native.core
-  (:require [reagent.core :as reagent]
+  (:require ["react" :as react]
             ["react-native" :as react-native]
             ["@react-native-community/blur" :as blur]
+            [oops.core :as oops]
             [react-native.flat-list :as flat-list]
             [react-native.section-list :as section-list]
+            [reagent.core :as reagent]
             [react-native.platform :as platform]))
 
 (def app-state ^js (.-AppState ^js react-native))
@@ -73,3 +75,11 @@
          (merge (when platform/ios? {:behavior :padding})
                 props)]
         children))
+
+(def use-effect react/useEffect)
+(def use-ref react/useRef)
+(defn use-effect-once [effect] (use-effect effect #js []))
+(defn use-unmount [f]
+  (let [fn-ref (use-ref f)]
+    (oops/oset! fn-ref "current" f)
+    (use-effect-once (fn [] #((oops/oget fn-ref "current"))))))

@@ -13,7 +13,8 @@
    [utils.re-frame :as rf]
 
    ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
-   [status-im.multiaccounts.login.core :as login-core]))
+   [status-im.multiaccounts.login.core :as login-core]
+   [status-im.utils.utils :as utils.utils]))
 
 ;; REGISTER COMPONENT (LAZY)
 (defn reg-comp [key]
@@ -132,6 +133,7 @@
   (log/debug "screen-appear-reg" view-id)
   (when (get views/screens view-id)
     (when (and (not= view-id :bottom-sheet)
+               (not= view-id :toasts)
                (not= view-id :popover)
                (not= view-id :visibility-status-popover))
       (set-view-id view-id)
@@ -212,22 +214,33 @@
 ;; OVERLAY (Popover and bottom sheets)
 (def dissmiss-overlay navigation/dissmiss-overlay)
 
-(defn show-overlay [comp]
-  (dissmiss-overlay comp)
-  (navigation/show-overlay
-   {:component {:name    comp
-                :id      comp
-                :options (merge (cond-> (roots/status-bar-options)
-                                  (and platform/android? (not (colors/dark?)))
-                                  (assoc-in [:statusBar :backgroundColor] "#99999A"))
-                                {:layout  {:componentBackgroundColor (if platform/android?
-                                                                       colors/neutral-80-opa-20 ;; TODO adjust color
-                                                                       "transparent")}
-                                 :overlay {:interceptTouchOutside true}})}}))
+(defn show-overlay
+  ([comp] (show-overlay comp {}))
+  ([comp opts]
+   (dissmiss-overlay comp)
+   (navigation/show-overlay
+    {:component {:name    comp
+                 :id      comp
+                 :options (merge (cond-> (roots/status-bar-options)
+                                   (and platform/android? (not (colors/dark?)))
+                                   (assoc-in [:statusBar :backgroundColor] "#99999A"))
+                                 {:layout  {:componentBackgroundColor (if platform/android?
+                                                                        colors/neutral-80-opa-20 ;; TODO adjust color
+                                                                        "transparent")}
+                                  :overlay {:interceptTouchOutside true}}
+                                 opts)}})))
 
 ;; POPOVER
 (re-frame/reg-fx :show-popover (fn [] (show-overlay "popover")))
 (re-frame/reg-fx :hide-popover (fn [] (dissmiss-overlay "popover")))
+
+;; TOAST
+(re-frame/reg-fx :show-toasts (fn [] (show-overlay "toasts" {:overlay {:interceptTouchOutside false} :layout {:componentBackgroundColor :transparent}})))
+(re-frame/reg-fx :hide-toasts (fn [delay]
+                                (if delay
+                                  ;; hide toast with delay for exiting animation
+                                  (utils.utils/set-timeout #(dissmiss-overlay "toasts") delay)
+                                  (dissmiss-overlay "toasts"))))
 
 ;; VISIBILITY STATUS POPOVER
 (re-frame/reg-fx :show-visibility-status-popover
@@ -269,6 +282,12 @@
     "popover"
     (fn [] (gesture/gesture-handler-root-hoc views/popover-comp))
     (fn [] views/popover-comp))
+
+   (navigation/register-component
+    "toasts"
+    ;; DON'T wrap this with gesture-handler-root-hoc, it makes it unable to click through toasts
+    (fn [] views/toasts-comp)
+    (fn [] views/toasts-comp))
 
    (navigation/register-component
     "visibility-status-popover"

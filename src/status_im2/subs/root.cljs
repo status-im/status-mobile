@@ -3,10 +3,10 @@
             status-im2.subs.activity-center
             status-im2.subs.bootnodes
             status-im2.subs.browser
-            status-im2.subs.communities
-            status-im2.subs.contact
             status-im2.subs.chat.chats
             status-im2.subs.chat.messages
+            status-im2.subs.communities
+            status-im2.subs.contact
             status-im2.subs.ens
             status-im2.subs.general
             status-im2.subs.home
@@ -196,6 +196,8 @@
 ;;intro-wizard
 (reg-root-key-sub :intro-wizard-state :intro-wizard)
 
+(reg-root-key-sub :toasts/toasts :toasts/toasts)
+(reg-root-key-sub :toasts/index :toasts/index)
 (reg-root-key-sub :popover/popover :popover/popover)
 (reg-root-key-sub :visibility-status-popover/popover :visibility-status-popover/popover)
 (reg-root-key-sub :add-account :add-account)

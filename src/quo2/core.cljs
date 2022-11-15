@@ -36,6 +36,7 @@
             quo2.components.tags.tags
             quo2.components.tags.context-tags
             quo2.components.tabs.tabs
+            quo2.components.notifications.toast
             quo2.components.tabs.account-selector
             quo2.components.navigation.floating-shell-button
             quo2.components.tags.status-tags
@@ -45,6 +46,7 @@
             quo2.components.settings.privacy-option
             quo2.components.loaders.skeleton))
 
+(def toast quo2.components.notifications.toast/toast)
 (def button quo2.components.buttons.button/button)
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
 (def text quo2.components.markdown.text/text)
