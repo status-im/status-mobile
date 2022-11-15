@@ -17,7 +17,8 @@
            {:padding-vertical    8
             :text-align-vertical :top}
            {:margin-top    8
-            :margin-bottom 8})))
+            :margin-bottom 0})
+         ))
 
 (defn input-bottom-sheet [window-height]
   (merge {:border-top-left-radius  20
@@ -55,8 +56,12 @@
    :background-color   (colors/theme-colors colors/white colors/neutral-90)
    ;these 3 props play together, we need this magic to hide message text in the safe area
    :padding-top        10
-   :padding-bottom     (+ 12 (:bottom insets))
-   :bottom             (- 2 (:bottom insets))})
+   ;:padding-bottom     (+ 12 (:bottom insets))
+   ;:padding-bottom     0
+   :bottom  (+ 12 (:bottom insets))
+   ;:bottom              (- (:bottom insets))
+   ;:bottom             (- 2 (:bottom insets))
+   })
 
 (defn bottom-sheet-background [window-height]
   {:pointerEvents    :none

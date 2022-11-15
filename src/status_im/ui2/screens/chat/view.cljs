@@ -14,7 +14,8 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui2.screens.chat.messages.pinned-message :as pinned-message]
             [re-frame.db]
-            [status-im.ui2.screens.chat.messages.message :as message]))
+            [status-im.ui2.screens.chat.messages.message :as message]
+            [status-im.utils.platform :as platform]))
 
 (defn topbar-content []
   (let [window-width (<sub [:dimensions/window-width])
@@ -55,7 +56,7 @@
         (<sub [:chats/current-chat-chat-view])
         mutual-contact-requests-enabled? (<sub [:mutual-contact-requests/enabled?])]
     [react/keyboard-avoiding-view-new {:style         {:flex 1}
-                                       :ignore-offset false}
+                                       :ignore-offset platform/ios?}
      ;;TODO It is better to not use topbar component because of performance
      [topbar/topbar {:navigation      :none
                      :left-component  [rn/view {:flex-direction :row :margin-left 16}
