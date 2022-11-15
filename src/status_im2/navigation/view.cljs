@@ -9,7 +9,7 @@
             [status-im2.navigation.screens :as screens]
             [status-im2.setup.config :as config]
 
-            ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
+    ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
             [status-im.ui.screens.popover.views :as popover]
             [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
             [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
@@ -41,7 +41,7 @@
     ;:background-color colors/white} ;; TODO ajust color
    (when platform/android?
      {:border-bottom-width 1})
-      ;:border-bottom-color colors/gray-lighter}) ;; TODO ajust color
+    ;:border-bottom-color colors/gray-lighter}) ;; TODO ajust color
    style
    (when (get insets :bottom)
      {:padding-bottom (+ (oget insets-obj "bottom")

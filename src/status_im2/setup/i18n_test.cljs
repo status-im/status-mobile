@@ -108,7 +108,7 @@
     :blank-keycard-title
     :block
     :block-contact
-    :block-contact-details
+    :block-user-confirmation
     :blocked-users
     :bootnode-address
     :bootnode-details

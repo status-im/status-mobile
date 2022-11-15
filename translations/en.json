@@ -90,7 +90,7 @@
     "block": "Block",
     "unblock": "Unblock",
     "block-contact": "Block this user",
-    "block-contact-details": "Blocking will delete this user's previous messages and stop new ones from reaching you",
+    "block-user-confirmation": "Blocking will delete this user's previous messages and stop new ones from reaching you",
     "blocked-users": "Blocked users",
     "bootnode-address": "Bootnode address",
     "bootnode-details": "Bootnode details",
@@ -1848,5 +1848,10 @@
     "group-details": "Group details",
     "edit-name-and-image": "Edit name and image",
     "change-group-privacy": "Change group privacy",
-    "manage-members": "Manage members"
+    "manage-members": "Manage members",
+    "delete-chat?": "Delete Chat?",
+    "mark-user-untrustworthy": "Mark {{username}} as untrustworthy",
+    "leave-group?": "Leave Group?",
+    "block-user?": "Block User?",
+    "clear-history?": "Clear History?"
 }

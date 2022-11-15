@@ -4,25 +4,29 @@
             [react-native.core :as rn]))
 
 (def sizes
-  {:icon {:small 12
-          :medium 16
-          :large 20}
-   :container {:small 20
+  {:icon      {:small  12
+               :medium 16
+               :large  20}
+   :container {:small  20
                :medium 32
-               :large 48}})
+               :large  48}})
 
+;; TODO: this implementation does not support group display picture (can only display default group icon).
 (defn group-avatar [_]
-  (fn [{:keys [color size override-theme]}]
-    (let [theme          (or override-theme (if (colors/dark?) :dark :light))
-          container-size (get-in sizes [:container size])
-          icon-size      (get-in sizes [:icon size])]
+  (fn [{:keys [color size]}]
+    (let [container-size (get-in sizes [:container size])
+          icon-size      (get-in sizes [:icon size])
+          ;; theme          (or override-theme (if (colors/dark?) :dark :light))
+          ]
       [rn/view {:width            container-size
                 :height           container-size
                 :align-items      :center
                 :justify-content  :center
                 :border-radius    (/ container-size 2)
-                :background-color (if (= theme :light)
-                                    (colors/custom-color color 50)
-                                    (colors/custom-color color 60))}
-       [icon/icon :total-members {:size icon-size
-                                  :color colors/white-opa-70}]])))
+                :background-color color
+                ;; :background-color (if (= theme :light) TODO: colors/custom-color method here is not working for some reason.
+                ;;                    (colors/custom-color color 50)
+                ;;                    (colors/custom-color color 60))
+                }
+       [icon/icon :i/group {:size  icon-size ; TODO: group icon sizes 12 and 20 (small and large) are missing
+                            :color colors/white-opa-70}]])))
