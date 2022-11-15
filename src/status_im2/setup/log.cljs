@@ -3,8 +3,7 @@
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im2.setup.config :as config]
-            ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
-            [status-im.utils.fx :as fx]))
+            [utils.re-frame :as rf]))
 
 (def logs-queue (atom #queue[]))
 (def max-log-entries 1000)
@@ -32,7 +31,7 @@
  (fn [level]
    (setup level)))
 
-(fx/defn set-log-level
+(rf/defn set-log-level
   [{:keys [db]} log-level]
   (let [log-level (or log-level config/log-level)]
     {:db             (assoc-in db [:multiaccount :log-level] log-level)

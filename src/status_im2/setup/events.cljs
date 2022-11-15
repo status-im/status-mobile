@@ -4,10 +4,11 @@
             [status-im2.setup.db :as db]
             [status-im2.common.theme.core :as theme]
             [quo2.theme :as quo2.theme]
+            [utils.re-frame :as rf]
+
             ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
-            [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im2.navigation.events :as navigation]))
 
@@ -22,7 +23,7 @@
    (theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
    (quo2.theme/set-theme (if (theme/dark-mode?) :dark :light))))
 
-(fx/defn initialize-views
+(rf/defn initialize-views
   {:events [:setup/initialize-view]}
   [cofx]
   (let [{{:multiaccounts/keys [multiaccounts]} :db} cofx]
@@ -30,14 +31,14 @@
       ;; We specifically pass a bunch of fields instead of the whole multiaccount
       ;; as we want store some fields in multiaccount that are not here
       (let [multiaccount (first (sort-by :timestamp > (vals multiaccounts)))]
-        (fx/merge cofx
+        (rf/merge cofx
                   (multiaccounts.login/open-login (select-keys
                                                    multiaccount
                                                    [:key-uid :name :public-key :identicon :images]))
                   (keychain/get-auth-method (:key-uid multiaccount))))
       (navigation/init-root cofx :intro))))
 
-(fx/defn initialize-multiaccounts
+(rf/defn initialize-multiaccounts
   {:events [:setup/initialize-multiaccounts]}
   [{:keys [db] :as cofx} all-multiaccounts {:keys [logout?]}]
   (let [multiaccounts (reduce (fn [acc {:keys [key-uid keycard-pairing]
@@ -48,7 +49,7 @@
                                                 keycard-pairing))))
                               {}
                               all-multiaccounts)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db         (-> db
                                (assoc :multiaccounts/multiaccounts multiaccounts)
                                (assoc :multiaccounts/logout? logout?)
@@ -57,7 +58,7 @@
                             [:get-opted-in-to-new-terms-of-service]
                             [:load-information-box-states]]})))
 
-(fx/defn initialize-app-db
+(rf/defn initialize-app-db
   "Initialize db to initial state"
   [{{:keys         [keycard supported-biometric-auth goto-key-storage?]
      :network/keys [type] :keycard/keys [banner-hidden]} :db}]
@@ -69,10 +70,10 @@
               :goto-key-storage? goto-key-storage?
               :multiaccounts/loading true)})
 
-(fx/defn start-app
+(rf/defn start-app
   {:events [:setup/app-started]}
   [cofx]
-  (fx/merge cofx
+  (rf/merge cofx
             {:setup/init-theme                      nil
              :get-supported-biometric-auth          nil
              :network/listen-to-network-info        nil

@@ -3,7 +3,7 @@
    [status-im.chat.models :as chat.models]
    [status-im.chat.models.pin-message :as models.pin-message]
    [status-im.i18n.i18n :as i18n]
-   [status-im.utils.re-frame :as rf]
+   [utils.re-frame :as rf]
    [status-im.ui2.screens.common.core :as common]
    [status-im.constants :as constants]
    [quo2.components.drawers.action-drawers :as drawer]))

@@ -8,7 +8,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.community.discover-card :as discover-card]
             [quo2.components.navigation.top-nav :as topnav]
-            [status-im.utils.re-frame :as rf]
+            [utils.re-frame :as rf]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as rn]

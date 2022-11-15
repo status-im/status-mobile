@@ -18,7 +18,6 @@
             [status-im2.setup.i18n-resources :as i18n-resources]
             [status-im2.setup.config :as config]
             [status-im2.setup.log :as log]
-
             status-im.events
 
             ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
