@@ -26,7 +26,7 @@
                                           :border-color           (if dark?
                                                                     colors/neutral-70
                                                                     colors/neutral-30)})}
-     [icons/icon :main-icons2/add
+     [icons/icon :i/add
       {:size 20
        :color (if dark?
                 colors/white

@@ -56,12 +56,12 @@
                     emoji-reaction-sad         (:sad resources/reactions-old)
                     emoji-reaction-angry       (:angry resources/reactions-old)})
 
-(def reactions {emoji-reaction-love        :main-icons2/love
-                emoji-reaction-thumbs-up   :main-icons2/angry
-                emoji-reaction-thumbs-down :main-icons2/sad
-                emoji-reaction-laugh       :main-icons2/laugh
-                emoji-reaction-sad         :main-icons2/thumbs-up
-                emoji-reaction-angry       :main-icons2/thumbs-down})
+(def reactions {emoji-reaction-love        :i/love
+                emoji-reaction-thumbs-up   :i/thumbs-up
+                emoji-reaction-thumbs-down :i/thumbs-down
+                emoji-reaction-laugh       :i/laugh
+                emoji-reaction-sad         :i/sad
+                emoji-reaction-angry       :i/angry})
 
 (def ^:const invitation-state-unknown 0)
 (def ^:const invitation-state-requested 1)

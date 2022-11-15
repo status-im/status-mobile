@@ -39,7 +39,7 @@
           [rn/view {:style
                     {:height 20
                      :width 20}}
-           [icons/icon :main-icons2/check-small
+           [icons/icon :i/check-small
             {:size 20
              :color (colors/theme-colors
                      (colors/alpha colors/neutral-100 (if disabled? 0.3 1))
@@ -72,7 +72,7 @@
            [rn/view {:style
                      {:height 20
                       :width 20}}
-            [icons/icon :main-icons2/check-small
+            [icons/icon :i/check-small
              {:size 20
               :color colors/white}]])]]])))
 

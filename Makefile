@@ -287,6 +287,7 @@ endif
 
 lint: export TARGET := clojure
 lint: ##@test Run code style checks
+	sh scripts/lint-re-frame-in-quo-components.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
 	TARGETS=$$(git diff --diff-filter=d --cached --name-only src && echo src) && \
 	clojure -Scp "$$CLASS_PATH" -m cljfmt.main check --indents indentation.edn $$TARGETS

@@ -7,12 +7,13 @@
             [quo2.components.counter.counter :as quo2.counter]
             [quo.components.safe-area :as safe-area]
             [status-im.react-native.resources :as resources]
-            [status-im.utils.handlers :refer [<sub  >evt]]
+            [status-im.utils.handlers :refer [<sub >evt]]
             [quo2.components.buttons.button :as quo2.button]
             [quo2.components.community.community-card-view :as community-card]
             [quo2.components.community.community-list-view :as community-list]
             [quo2.components.icon :as icons]
-            [quo2.foundations.colors :as colors]))
+            [quo2.foundations.colors :as colors]
+            [status-im.ui.screens.communities.community :as community]))
 
 (def view-type   (reagent/atom  :card-view))
 
@@ -40,7 +41,15 @@
                     {:featured       false})]
     (if (= @view-type :card-view)
       [community-card/community-card-view-item item #(>evt [:navigate-to :community-overview item])]
-      [community-list/communities-list-view-item item])))
+      [community-list/communities-list-view-item
+       {:on-press      (fn []
+                         (>evt [:communities/load-category-states (:id item)])
+                         (>evt [:dismiss-keyboard])
+                         (>evt [:navigate-to :community {:community-id (:id item)}]))
+        :on-long-press #(>evt [:bottom-sheet/show-sheet
+                               {:content (fn []
+                                           [community/community-actions item])}])}
+       item])))
 
 (defn render-featured-fn [community-item]
   (let [item (merge community-item
@@ -87,13 +96,13 @@
                         :style               {:margin-right   6}}
         (i18n/label :t/featured)]
        [quo2.counter/counter @count (:value @count)]]
-      [icons/icon :main-icons2/info {:container-style {:align-items     :center
-                                                       :justify-content :center}
-                                     :resize-mode      :center
-                                     :size             20
-                                     :color            (colors/theme-colors
-                                                        colors/neutral-50
-                                                        colors/neutral-40)}]]
+      [icons/icon :i/info {:container-style {:align-items     :center
+                                             :justify-content :center}
+                           :resize-mode      :center
+                           :size             20
+                           :color            (colors/theme-colors
+                                              colors/neutral-50
+                                              colors/neutral-40)}]]
      [rn/view {:margin-top     8
                :padding-left   20}
       [featured-communities communities]]]))

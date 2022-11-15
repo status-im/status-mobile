@@ -1,6 +1,5 @@
 (ns status-im.utils.core
-  (:require [clojure.string :as string]
-            #?(:cljs [taoensso.timbre :as log])))
+  (:require [clojure.string :as string]))
 
 (defn truncate-str-memo
   "Given string and max threshold, trims the string to threshold length with `...`
@@ -66,10 +65,3 @@
   Similar to group-by except that the map values are single objects (depends on key uniqueness)."
   [key coll]
   (into {} (map #(vector (key %) %) coll)))
-
-#?(:cljs
-   (defn safe-read-message-content [content]
-     (try
-       (js->clj (.parse js/JSON content) :keywordize-keys true)
-       (catch :default e
-         (log/warn "failed to transform message with " e)))))

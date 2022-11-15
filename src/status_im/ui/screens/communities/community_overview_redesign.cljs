@@ -8,13 +8,13 @@
              [quo2.components.dividers.divider-label :as divider-label]
              [quo2.components.community.community-view :as community-view]
              [quo2.components.tags.status-tags :as status-tags]
+             [quo2.components.community.style :as styles]
+             [quo2.foundations.colors :as colors]
+             [quo2.components.navigation.page-nav :as page-nav]
              [status-im.ui.screens.communities.request-to-join-bottom-sheet-redesign :as request-to-join]
              [status-im.ui.screens.communities.community-options-bottom-sheet :as options-menu]
              [status-im.ui.components.list.views :as list]
              [status-im.utils.handlers :refer [<sub >evt]]
-             [status-im.ui.screens.communities.styles :as styles]
-             [quo2.foundations.colors :as colors]
-             [quo2.components.navigation.page-nav :as page-nav]
              [status-im.ui.screens.communities.icon :as communities.icon]))
 
 ;; Mocked list items
@@ -29,6 +29,7 @@
                     :align-items :center
                     :margin-top 20}}
    [preview-list/preview-list {:type :user
+                               :more-than-99-label (i18n/label :counter-99-plus)
                                :user user-list :list-size 4 :size 24}]
    [text/text {:accessibility-label :communities-screen-title
                :style {:margin-left 8}
@@ -95,14 +96,14 @@
        :page-nav-color                     :transparent
        :page-nav-background-uri            ""
        :mid-section {:type                   :text-with-description}
-       :right-section-buttons [{:icon :main-icons2/search
+       :right-section-buttons [{:icon :i/search
                                 :background-color (icon-color)}
-                               {:icon :main-icons2/options
+                               {:icon :i/options
                                 :background-color (icon-color)
                                 :on-press #(>evt [:bottom-sheet/show-sheet
                                                   {:content (constantly [options-menu/options-menu community])
                                                    :content-height 400}])}]
-       :left-section {:icon                  :main-icons2/close
+       :left-section {:icon                  :i/close
                       :icon-background-color (icon-color)
                       :on-press #(>evt [:navigate-back])}}]]]
    [rn/view {:flex               1
@@ -155,7 +156,7 @@
           :margin-top 20
           :margin-left :auto
           :margin-right :auto}
-         :before :main-icons2/communities}
+         :before :i/communities}
         (i18n/label :join-open-community)])]
     [channel-list-component]]])
 

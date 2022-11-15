@@ -6,10 +6,7 @@
    [quo2.components.icon :as icon]
    [quo2.components.markdown.text :as text]
    [quo2.foundations.colors :as colors]
-   [reagent.core :as reagent]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.ui.components.react :refer [pressable-class]]
-   [status-im.utils.handlers :refer [>evt]]))
+   [reagent.core :as reagent]))
 
 ;;; helpers
 (def themes
@@ -84,7 +81,7 @@
                       :color          (get-color :time)}} str])
 
 (defn info-button [on-press]
-  [pressable-class
+  [rn/touchable-without-feedback
    {:on-press on-press}
    [icon/icon "message-gap-info" {:size 12 :no-color true :container-style {:padding 4}}]])
 
@@ -99,7 +96,7 @@
    [rn/image {:style {:flex 1} :source (get-image :circles) :resize-mode :repeat}]
    [circle]])
 
-(defn body [timestamp-far timestamp-near chat-id gap-ids on-info-button-pressed]
+(defn body [timestamp-far timestamp-near on-info-button-pressed on-press warning-label]
   [rn/view {:flex 1}
    [rn/view
     {:flex-direction    :row
@@ -109,12 +106,10 @@
     [timestamp timestamp-far]
     (when on-info-button-pressed [info-button on-info-button-pressed])]
 
-   [pressable-class
+   [rn/touchable-without-feedback
     {:style    {:flex 1 :margin-top 16 :margin-bottom 20}
-     :on-press #(when (and chat-id gap-ids)
-                  (>evt [:chat.ui/fill-gaps chat-id gap-ids]))}
-    [text/text
-     (i18n/label :messages-gap-warning)]]
+     :on-press #(when on-press (on-press))}
+    [text/text warning-label]]
 
    [timestamp timestamp-near]])
 
@@ -124,10 +119,10 @@
   if `on-info-button-pressed` fn is provided, the info button will show up and is pressable"
   [{:keys [timestamp-far
            timestamp-near
-           gap-ids
-           chat-id
            on-info-button-pressed
-           style]}]
+           style
+           on-press
+           warning-label]}]
   (let [body-height (reagent/atom nil)]
     (fn []
       [rn/view
@@ -145,6 +140,6 @@
                        style)
 
         [timeline]
-        [body timestamp-far timestamp-near chat-id gap-ids on-info-button-pressed]]
+        [body timestamp-far timestamp-near on-info-button-pressed on-press warning-label]]
        [vborder :left body-height]
        [vborder :right body-height]])))

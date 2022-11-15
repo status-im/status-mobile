@@ -44,7 +44,7 @@
     (conj pressable
           [activity-logs/activity-log
            (merge {:title     (i18n/label :t/contact-request)
-                   :icon      :main-icons2/add-user
+                   :icon      :i/add-user
                    :timestamp (datetime/timestamp->relative (:timestamp notification))
                    :unread?   (not (:read notification))
                    :context   [[context-tags/user-avatar-tag
@@ -83,7 +83,7 @@
         contact (<sub [:contacts/contact-by-identity (:author notification)])]
     [activity-logs/activity-log
      (merge {:title     (i18n/label :t/identity-verification-request)
-             :icon      :main-icons2/friend
+             :icon      :i/friend
              :timestamp (datetime/timestamp->relative (:timestamp notification))
              :unread?   (not (:read notification))
              :context   [[context-tags/user-avatar-tag
@@ -137,7 +137,7 @@
                                               {:filter-status (if unread-filter-enabled?
                                                                 :read
                                                                 :unread)}])}
-     :main-icons2/unread]))
+     :i/unread]))
 
 ;; TODO(2022-10-07): The empty state is still under design analysis, so we
 ;; shouldn't even care about translations at this point. A placeholder box is
@@ -201,7 +201,7 @@
                      :style          {:margin-bottom  12
                                       :margin-left      screen-padding}
                      :on-press       #(>evt [:hide-popover])}
-      :main-icons2/close]
+      :i/close]
      [text/text {:size   :heading-1
                  :weight :semi-bold
                  :style  {:padding-horizontal screen-padding

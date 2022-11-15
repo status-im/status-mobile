@@ -23,29 +23,36 @@
 
 (defn contact-names
   "Returns map of all existing names for contact"
-  [{:keys [name preferred-name alias public-key ens-verified nickname]}]
+  [{:keys [name
+           display-name
+           preferred-name
+           alias
+           public-key
+           ens-verified
+           nickname]}]
   (let [ens-name (or preferred-name
                      name)]
     (cond-> {:nickname         nickname
+             :display-name     display-name
              :three-words-name (or alias (gfycat/generate-gfy public-key))}
             ;; Preferred name is our own otherwise we make sure it's verified
       (or preferred-name (and ens-verified name))
       (assoc :ens-name (str "@" (or (stateofus/username ens-name) ens-name))))))
 
+;; NOTE: this does a bit of unnecessary work, we could short-circuit the work
+;; once the first two are found, i.e don't calculate short key if 2 are already
+;; available
 (defn contact-two-names
-  "Returns vector of two names in next order nickname, ens name, three word name, public key"
+  "Returns vector of two names in next order nickname, ens name, display-name, three word name, public key"
   [{:keys [names public-key] :as contact} public-key?]
-  (let [{:keys [nickname ens-name three-words-name]} (or names (contact-names contact))
+  (let [{:keys [nickname
+                ens-name
+                display-name
+                three-words-name]} (or names (contact-names contact))
         short-public-key (when public-key? (utils/get-shortened-address public-key))]
-    (cond (not (string/blank? nickname))
-          [nickname (or ens-name three-words-name short-public-key)]
-          (not (string/blank? ens-name))
-          [ens-name (or three-words-name short-public-key)]
-          (not (string/blank? three-words-name))
-          [three-words-name short-public-key]
-          :else
-          (when public-key?
-            [short-public-key short-public-key]))))
+    (->> [nickname ens-name display-name three-words-name short-public-key]
+         (remove string/blank?)
+         (take 2))))
 
 (defn contact-with-names
   "Returns contact with :names map "

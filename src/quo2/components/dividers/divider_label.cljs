@@ -1,8 +1,8 @@
 (ns quo2.components.dividers.divider-label
   (:require [react-native.core :as rn]
             [quo2.components.markdown.text :as markdown.text]
-            [status-im.ui.components.icons.icons :as icons]
-            [quo2.foundations.colors :as colors]))
+            [quo2.foundations.colors :as colors]
+            [quo2.components.icon :as icons]))
 
 (def chevron-icon-container-width 20)
 
@@ -42,8 +42,7 @@
        [icons/icon
         :main-icons/chevron-down
         {:color  text-and-icon-color
-         :width  chevron-icon-container-width
-         :height chevron-icon-container-height}])
+         :size  chevron-icon-container-width}])
      (when (pos? counter-value)
        [rn/view {:style {:border-radius 6
                          :height 16

@@ -46,8 +46,8 @@
 (defview bottom-sheet-view []
   (letsubs [view-id [:view-id]
             acc-to-login-keycard-pairing [:intro-wizard/acc-to-login-keycard-pairing]]
-    [react/view {:flex 1 :flex-direction :row}
-     [react/view {:flex 1}
+    [react/view {:flex-direction :row}
+     [react/view {}
       ;; Show manage storage link when on login screen, only on android devices
       ;; and the selected account is not paired with keycard
       (when (and (= view-id :login)

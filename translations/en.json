@@ -584,7 +584,7 @@
     "community-private-key": "Community private key",
     "failed": "Failed",
     "faq": "Frequently asked questions",
-    "fetch-messages": "↓ Fetch messages",
+    "fetch-messages": "Fetch messages",
     "fetch-timeline": "↓ Fetch",
     "find": "Find",
     "finish": "Finish",
@@ -1846,5 +1846,12 @@
     "pending-requests": "Pending requests",
     "received": "Received",
     "sent": "Sent",
-    "and": "and"
+    "and": "and",
+    "rename": "Rename",
+    "mark-untrustworthy": "Mark as Untrustworthy",
+    "block-user": "Block User",
+    "group-details": "Group details",
+    "edit-name-and-image": "Edit name and image",
+    "change-group-privacy": "Change group privacy",
+    "manage-members": "Manage members"
 }

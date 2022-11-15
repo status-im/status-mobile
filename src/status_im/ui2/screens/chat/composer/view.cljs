@@ -176,9 +176,9 @@
                ;CONTROLS
                (when-not (seq suggestions)
                  [rn/view {:style (styles/bottom-sheet-controls insets)}
-                  [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/image]
+                  [quo2.button/button {:icon true :type :outline :size 32} :i/image]
                   [rn/view {:width 12}]
-                  [quo2.button/button {:icon true :type :outline :size 32} :main-icons2/reaction]
+                  [quo2.button/button {:icon true :type :outline :size 32} :i/reaction]
                   [rn/view {:flex 1}]
                   ;;SEND button
                   [rn/view {:ref send-ref :style (when-not (seq (get @input/input-texts chat-id)) {:width 0 :right -100})}
@@ -186,7 +186,7 @@
                                         :on-press #(do (swap! context assoc :clear true)
                                                        (input/clear-input chat-id refs)
                                                        (re-frame/dispatch [:chat.ui/send-current-message]))}
-                    :main-icons2/arrow-up]]])
+                    :i/arrow-up]]])
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
                                          {:opacity bg-opacity}

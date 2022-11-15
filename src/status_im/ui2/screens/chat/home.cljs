@@ -35,7 +35,7 @@
             [quo2.components.icon :as quo2.icons]
             [quo.components.safe-area :as safe-area]
             [quo2.components.notifications.info-count :refer [info-count]]
-            [quo2.components.list-items.received-cr-item :refer [received-cr-item]]
+            [status-im.ui2.screens.chat.components.received-cr-item :as received-cr-item]
             [status-im.ui2.screens.chat.components.message-home-item.view :refer [messages-home-item]]
             [status-im.ui2.screens.chat.components.contact-item.view :refer [contact-item]]
             [clojure.string :as str])
@@ -180,7 +180,7 @@
            :justify-content  :center
            :align-items      :center
            :margin-bottom    24}}
-         [quo2.icons/icon :main-icons2/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
+         [quo2.icons/icon :i/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
         [rn/text {:style (merge
                           typography/heading-1
                           typography/font-semi-bold
@@ -198,7 +198,7 @@
         [list/flat-list
          {:key-fn    :first
           :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
-          :render-fn received-cr-item}]]))])
+          :render-fn received-cr-item/received-cr-item}]]))])
 
 (defn get-display-name [{:keys [chat-id message]}]
   (let [name        (first (<sub [:contacts/contact-two-names-by-identity chat-id]))
@@ -235,7 +235,7 @@
                      :border-radius   16
                      :border-width    1
                      :border-color    (colors/theme-colors colors/neutral-20 colors/neutral-80)}}
-    [quo2.icons/icon :main-icons2/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
+    [quo2.icons/icon :i/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
    [rn/view {:style {:margin-left 8}}
     [rn/text {:style
               (merge typography/paragraph-1 typography/font-semi-bold {:color (colors/theme-colors "#000000" "#ffffff")})} (i18n/label :t/pending-requests)]

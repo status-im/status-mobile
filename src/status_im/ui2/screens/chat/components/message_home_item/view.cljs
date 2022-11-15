@@ -1,16 +1,16 @@
 (ns status-im.ui2.screens.chat.components.message-home-item.view
   (:require [clojure.string :as string]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.utils.re-frame :as rf]
             [status-im.utils.datetime :as time]
             [quo2.foundations.typography :as typography]
-            [quo2.components.notifications.info-count :refer [info-count]]
             [quo2.components.icon :as icons]
             [quo2.foundations.colors :as colors]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo.react-native :as rn]
-            [status-im.ui.screens.chat.sheets :as sheets]
             [quo.platform :as platform]
+            [quo2.core :as quo2]
             [quo2.components.markdown.text :as text]
+            [status-im.ui2.screens.chat.actions :as actions]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]))
 
 (def max-subheader-length 50)
@@ -34,7 +34,7 @@
                   children)
 
                  "mention"
-                 {:components [rn/text (<sub [:contacts/contact-name-by-identity literal])]
+                 {:components [rn/text (rf/sub [:contacts/contact-name-by-identity literal])]
                   :length     4} ;; we can't predict name length so take the smallest possible
 
                  "status-tag"
@@ -66,49 +66,61 @@
          parsed-text)]
     (:components result)))
 
+(defn verified-or-contact-icon [{:keys [ens-verified added?]}]
+  (if ens-verified
+    [rn/view {:style {:margin-left 5 :margin-top 4}}
+     [icons/icon :i/verified {:no-color true
+                              :size     12
+                              :color    (colors/theme-colors colors/success-50 colors/success-60)}]]
+    (when added?
+      [rn/view {:style {:margin-left 5 :margin-top 4}}
+       [icons/icon :i/contact {:no-color true
+                               :size     12
+                               :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]])))
+
 (defn display-name-view [display-name contact timestamp]
   [rn/view {:style {:flex-direction :row}}
    [text/text {:weight :semi-bold
                :size   :paragraph-1}
     display-name]
-   (if (:ens-verified contact)
-     [rn/view {:style {:margin-left 5 :margin-top 4}}
-      [icons/icon :main-icons2/verified {:no-color true
-                                         :size 12
-                                         :color (colors/theme-colors colors/success-50 colors/success-60)}]]
-     (when (:added? contact)
-       [rn/view {:style {:margin-left 5 :margin-top 4}}
-        [icons/icon :main-icons2/contact {:no-color true
-                                          :size 12
-                                          :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))
+   [verified-or-contact-icon contact]
    [text/text {:style (style/timestamp)}
     (time/to-short-str timestamp)]])
 
+(defn display-pic-view [group-chat color display-name photo-path]
+  (if group-chat
+    [rn/view {:style (style/group-chat-icon color)}
+     [icons/icon :i/group {:size 16 :color colors/white-opa-70}]]
+    [user-avatar/user-avatar {:full-name         display-name
+                              :profile-picture   photo-path
+                              :status-indicator? true
+                              :online?           true
+                              :size              :small
+                              :ring?             false}]))
+
 (defn messages-home-item [item]
-  (let [{:keys [chat-id color group-chat last-message timestamp name unviewed-mentions-count unviewed-messages-count]} item
-        display-name (if-not group-chat (first (<sub [:contacts/contact-two-names-by-identity chat-id])) name)
-        contact      (when-not group-chat (<sub [:contacts/contact-by-address chat-id]))
-        photo-path   (when-not (empty? (:images contact)) (<sub [:chats/photo-path chat-id]))]
+  (let [{:keys [chat-id
+                color
+                group-chat
+                last-message
+                timestamp
+                name
+                unviewed-mentions-count
+                unviewed-messages-count]} item
+        display-name (if-not group-chat (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])) name)
+        contact      (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
     [rn/touchable-opacity (merge {:style         (style/container)
                                   :on-press      (fn []
-                                                   (>evt [:dismiss-keyboard])
+                                                   (rf/dispatch [:dismiss-keyboard])
                                                    (if platform/android?
-                                                     (>evt [:chat.ui/navigate-to-chat-nav2 chat-id])
-                                                     (>evt [:chat.ui/navigate-to-chat chat-id]))
-                                                   (>evt [:search/home-filter-changed nil])
-                                                   (>evt [:accept-all-activity-center-notifications-from-chat chat-id]))
-                                  :on-long-press #(>evt [:bottom-sheet/show-sheet
-                                                         {:content (fn [] [sheets/actions item])}])})
-     (if group-chat
-       [rn/view {:style (style/group-chat-icon color)}
-        [icons/icon :main-icons2/group {:size 16 :color colors/white-opa-70}]]
-       [user-avatar/user-avatar {:full-name         display-name
-                                 :profile-picture   photo-path
-                                 :status-indicator? true
-                                 :online?           true
-                                 :size              :small
-                                 :ring?             false}])
-
+                                                     (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
+                                                     (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))
+                                                   (rf/dispatch [:search/home-filter-changed nil])
+                                                   (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
+                                  :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                                                {:content (fn [] [actions/actions item false])}])})
+     [display-pic-view group-chat color display-name photo-path]
      [rn/view {:style {:margin-left 8}}
       [display-name-view display-name contact timestamp]
       (if (string/blank? (get-in last-message [:content :parsed-text]))
@@ -117,8 +129,7 @@
          (get-in last-message [:content :text])]
         [render-subheader (get-in last-message [:content :parsed-text])])]
      (if (> unviewed-mentions-count 0)
-       [info-count unviewed-mentions-count {:top 16}]
+       [quo2/info-count unviewed-mentions-count {:top 16}]
        (when (> unviewed-messages-count 0)
          [rn/view {:style (style/count-container)}]))]))
-
 

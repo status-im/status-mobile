@@ -3,8 +3,7 @@
             [quo2.theme :as quo2.theme]
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [status-im.i18n.i18n :as i18n]))
+            [quo2.foundations.colors :as colors]))
 
 (def default-container-style
   {:border-radius 20
@@ -54,7 +53,7 @@
              :background-color colors/success-50-opa-10
              :icon             :verified
              :border-color     colors/success-50-opa-20
-             :label            (or label (i18n/label :positive))
+             :label            label
              :text-color       (if (= theme :light) colors/success-50
                                    colors/success-60)}])
 
@@ -64,7 +63,7 @@
              :icon             :untrustworthy
              :background-color colors/danger-50-opa-10
              :border-color     colors/danger-50-opa-20
-             :label            (or label (i18n/label :negative))
+             :label            label
              :text-color       (if (= theme :light)
                                  colors/danger-50
                                  colors/danger-60)}])
@@ -73,7 +72,7 @@
   [size theme label]
   [base-tag {:size             size
              :icon             :pending
-             :label            (or label (i18n/label :pending))
+             :label            label
              :background-color (if (= theme :light)
                                  colors/neutral-10
                                  colors/neutral-80)

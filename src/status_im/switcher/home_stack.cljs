@@ -1,5 +1,6 @@
 (ns status-im.switcher.home-stack
   (:require [react-native.reanimated :as reanimated]
+            [status-im.i18n.i18n :as i18n]
             [status-im.switcher.styles :as styles]
             [status-im.switcher.animation :as animation]
             [status-im.ui2.screens.chat.home :as chat.home]
@@ -54,6 +55,7 @@
         [stack-view :browser-stack shared-values]
         [stack-view :wallet-stack shared-values]
         [floating-shell-button/floating-shell-button
-         {:jump-to {:on-press #(animation/close-home-stack shared-values)}}
+         {:jump-to {:on-press #(animation/close-home-stack shared-values)
+                    :label (i18n/label :t/jump-to)}}
          {:position :absolute
           :bottom   12}]]))])

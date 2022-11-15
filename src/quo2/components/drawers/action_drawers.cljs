@@ -1,9 +1,8 @@
 (ns quo2.components.drawers.action-drawers
-  (:require  [status-im.ui.components.react :as react]
-             [react-native.core :as rn]
-             [quo2.components.markdown.text :as text]
-             [quo2.components.icon :as icon]
-             [quo2.foundations.colors :as colors]))
+  (:require [react-native.core :as rn]
+            [quo2.components.markdown.text :as text]
+            [quo2.components.icon :as icon]
+            [quo2.foundations.colors :as colors]))
 
 (defn- get-icon-color [danger?]
   (if danger?
@@ -15,47 +14,48 @@
                       sub-label
                       right-icon
                       danger?
-                      on-press]}]
-  [rn/touchable-opacity {:on-press on-press}
-   [react/view {:style
-                {:height            (if sub-label 56 47)
-                 :margin-horizontal 20
-                 :flex-direction    :row}}
-    [react/view {:style
-                 {:height        20
-                  :margin-top    :auto
-                  :margin-bottom :auto
-                  :margin-right  12
-                  :width         20}}
-     [icon/icon icon
-      {:color (get-icon-color danger?)
-       :size 20}]]
-    [react/view
-     {:style
-      {:flex            1
-       :justify-content :center}}
-     [text/text
-      {:size   :paragraph-1
-       :weight :medium
-       :style  {:color
-                (when danger?
-                  (colors/theme-colors colors/danger-50 colors/danger-60))}}
-      label]
-     (when sub-label
-       [text/text
-        {:size  :paragraph-2
-         :style {:color
-                 (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
-        sub-label])]
-    (when right-icon
-      [react/view {:style
-                   {:height        20
-                    :margin-top    :auto
-                    :margin-bottom :auto
-                    :width 20}}
-       [icon/icon right-icon
+                      on-press] :as action-props}]
+  (when action-props
+    [rn/touchable-opacity {:on-press on-press}
+     [rn/view {:style
+               {:height            (if sub-label 56 47)
+                :margin-horizontal 20
+                :flex-direction    :row}}
+      [rn/view {:style
+                {:height        20
+                 :margin-top    :auto
+                 :margin-bottom :auto
+                 :margin-right  12
+                 :width         20}}
+       [icon/icon icon
         {:color (get-icon-color danger?)
-         :size 20}]])]])
+         :size  20}]]
+      [rn/view
+       {:style
+        {:flex            1
+         :justify-content :center}}
+       [text/text
+        {:size   :paragraph-1
+         :weight :medium
+         :style  {:color
+                  (when danger?
+                    (colors/theme-colors colors/danger-50 colors/danger-60))}}
+        label]
+       (when sub-label
+         [text/text
+          {:size  :paragraph-2
+           :style {:color
+                   (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
+          sub-label])]
+      (when right-icon
+        [rn/view {:style
+                  {:height        20
+                   :margin-top    :auto
+                   :margin-bottom :auto
+                   :width         20}}
+         [icon/icon right-icon
+          {:color (get-icon-color danger?)
+           :size  20}]])]]))
 
 (defn divider []
   [rn/view {:style {:border-top-width 1

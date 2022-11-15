@@ -1,6 +1,5 @@
 (ns quo2.components.code.snippet
   (:require ["react-native" :as react-native]
-            ["react-syntax-highlighter" :default Highlighter]
             [cljs-bean.core :as bean]
             [clojure.string :as str]
             [oops.core :as oops]
@@ -10,7 +9,9 @@
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
-            [status-im.ui.components.react :as react]))
+            [react-native.linear-gradient :as linear-gradient]
+            [react-native.masked-view :as masked-view]
+            [react-native.syntax-highlighter :as highlighter]))
 
 ;; Example themes:
 ;; https://github.com/react-syntax-highlighter/react-syntax-highlighter/tree/master/src/styles/hljs
@@ -91,12 +92,12 @@
             max-text-height       (some-> max-lines (* font-scale 18)) ;; 18 is font's line height.
             truncated?            (and max-text-height (< max-text-height @text-height))
             maybe-mask-wrapper    (if truncated?
-                                    [react/masked-view
+                                    [masked-view/masked-view
                                      {:mask-element
                                       (reagent/as-element
-                                       [react/linear-gradient {:colors ["black" "transparent"]
-                                                               :locations [0.75 1]
-                                                               :style {:flex 1}}])}]
+                                       [linear-gradient/linear-gradient {:colors    ["black" "transparent"]
+                                                                         :locations [0.75 1]
+                                                                         :style     {:flex 1}}])}]
                                     [:<>])]
 
         [rn/view {:style {:overflow         :hidden
@@ -140,15 +141,15 @@
                                 :on-copy-press on-copy-press}])))
 
 (defn snippet [{:keys [language max-lines on-copy-press]} children]
-  [:> Highlighter {:language          language
-                   :renderer          (wrap-renderer-fn
-                                       native-renderer {:max-lines max-lines
-                                                        :on-copy-press #(when on-copy-press
-                                                                          (on-copy-press children))})
-                   ;; Default props to adapt Highlighter for react-native.
-                   :CodeTag           react-native/View
-                   :PreTag            react-native/View
-                   :show-line-numbers false
-                   :style             #js {}
-                   :custom-style      #js {:backgroundColor nil}}
+  [highlighter/highlighter {:language          language
+                            :renderer          (wrap-renderer-fn
+                                                native-renderer {:max-lines max-lines
+                                                                 :on-copy-press #(when on-copy-press
+                                                                                   (on-copy-press children))})
+                            ;; Default props to adapt Highlighter for react-native.
+                            :CodeTag           react-native/View
+                            :PreTag            react-native/View
+                            :show-line-numbers false
+                            :style             #js {}
+                            :custom-style      #js {:backgroundColor nil}}
    children])

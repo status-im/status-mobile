@@ -280,7 +280,7 @@
                                  :on-press            #(re-frame/dispatch
                                                         [::qr-scanner/scan-code
                                                          {:handler :wallet.send/qr-scanner-result}])}
-             :main-icons2/placeholder]
+             :i/placeholder]
             [react/view {:width 12}]
             [quo2.button/button {:icon                true
                                  :size  32
@@ -288,7 +288,7 @@
                                  :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                                            {:content (sheets/accounts-options mnemonic)}])
                                  :accessibility-label :accounts-more-options}
-             :main-icons2/placeholder]]
+             :i/placeholder]]
            [total-value]
            [accounts selected-account-atom]]
           [account.views/account-new @selected-account-atom]])])))

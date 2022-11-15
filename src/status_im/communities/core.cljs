@@ -655,7 +655,7 @@
     {:db (update-in db [:communities community-id :categories] merge categories)}))
 
 (fx/defn load-category-states
-  {:events [::load-category-states]}
+  {:events [:communities/load-category-states]}
   [{:keys [db]} community-id]
   (let [public-key            (get-in db [:multiaccount :public-key])
         categories            (get-in db [:communities community-id :categories])

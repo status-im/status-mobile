@@ -98,8 +98,8 @@
                              :border-radius 8
                              :display :flex
                              :justify-content :center}}
-         [icon/icon  :main-icons2/info]]]
-       ;; TODO get tag image from community data 
+         [icon/icon  :i/info]]]
+       ;; TODO get tag image from community data
        [context-tags/context-tag
         {:style
          {:margin-right :auto

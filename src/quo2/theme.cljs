@@ -1,7 +1,7 @@
 (ns quo2.theme
   (:require [reagent.core :as reagent]))
 
-(def theme (reagent/atom nil))
+(def theme (reagent/atom :light))
 
 (defn dark? []
   (= :dark @theme))

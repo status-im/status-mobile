@@ -22,7 +22,7 @@
             [re-frame.core :as re-frame]
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.components.accordion :as accordion]
-            [status-im.ui.screens.communities.styles :as styles]))
+            [quo2.components.community.style :as styles]))
 
 (def request-cooldown-ms (* 24 60 60 1000))
 
