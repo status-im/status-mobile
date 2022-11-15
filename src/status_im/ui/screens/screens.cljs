@@ -18,7 +18,6 @@
             [status-im.ui.screens.browser.views :as browser]
             [status-im.ui.screens.bug-report :as bug-report]
             [status-im.ui.screens.chat.pinned-messages :as pin-messages]
-            [status-im.ui.screens.chat.views :as chat]
             [status-im.ui.screens.communities.community-overview-redesign :as community-overview]
             [status-im.ui.screens.communities.channel-details :as communities.channel-details]
             [status-im.ui.screens.communities.community :as community]
@@ -57,8 +56,6 @@
             [status-im.ui.screens.glossary.view :as glossary]
             [status-im.ui.screens.group.views :as group-chat]
             [status-im.ui.screens.help-center.views :as help-center]
-            [status-im.ui.screens.home.views :as old-chat.home]
-            [status-im.ui2.screens.chat.home :as chat.home]
             [status-im.ui.screens.keycard.authentication-method.views :as keycard.authentication]
             [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
             [status-im.ui.screens.keycard.pairing.views :as keycard.pairing]
@@ -118,7 +115,6 @@
             [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
             [status-im.ui.screens.wallet.recipient.views :as recipient]
             [status-im.ui.screens.wallet.send.views :as wallet.send]
-            [status-im.utils.config :as config]
             [status-im.ui.screens.wallet.manage-connections.views :as manage-all-connections]))
 
 (defn right-button-options [id icon]
