@@ -50,11 +50,13 @@ export function stackPointer (stackId, selectedStackId) {
   );
 }
 
-export function bottomTabIconColor (stackId, selectedStackId, passThrough, selectedTabColor, defaultColor, passThroughColor) {
+export function bottomTabIconColor (stackId, selectedStackId, homeStackOpen,
+				    passThrough, selectedTabColor, defaultColor,
+				    passThroughColor) {
   return useDerivedValue(
     function () {
       'worklet'
-      if (selectedStackId.value == stackId){
+      if (selectedStackId.value == stackId && homeStackOpen.value){
 	return selectedTabColor;
       }
       else if (passThrough.value){
@@ -70,8 +72,10 @@ export function bottomTabIconColor (stackId, selectedStackId, passThrough, selec
 
 // Home Stack
 
+const shellAnimationTime = 200;
+
 const defaultDurationAndEasing = {
-  duration: 300,
+  duration: shellAnimationTime,
   easing: Easing.bezier(0, 0, 1, 1),
 }
 

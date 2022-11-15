@@ -60,10 +60,12 @@
   [_]
   (let [pressed? (reagent/atom false)]
     (fn [{:keys [type label on-press count customization-color style]}]
-      [rn/touchable-without-feedback
+      [rn/touchable-opacity
        {:on-press-in         #(reset! pressed? true)
         :on-press-out        #(reset! pressed? false)
         :on-press            on-press
+        :active-opacity      1
+        :style               {:padding 5}
         :accessibility-label type}
        [rn/view {:style (merge
                          {:flex-direction   :row
