@@ -137,7 +137,6 @@
 (def danger-50-opa-40 (alpha danger-50 0.4))
 
 
-;;Community link card
 (def community-link-card-button "#EC4D57")
 
 ;;;; Customization
