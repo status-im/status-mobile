@@ -182,13 +182,13 @@
        ]
      ]
 
-     [text/text {
-                  :font-size 5
+     [rn/text {:style {
+                  :font-size 15
                   :font-weight 500
                   :font-style :normal
                   :padding-left 10
-                  :weight :semi-bold
-                  }
+                  :color colors/white
+                  }}
       "View Community"
      ]
     ]
