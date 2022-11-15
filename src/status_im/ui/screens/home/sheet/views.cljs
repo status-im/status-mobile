@@ -1,12 +1,13 @@
 (ns status-im.ui.screens.home.sheet.views
   (:require [quo.core :as quo]
+            [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.react :as react]
-            [status-im.utils.config :as config]
-            [quo2.foundations.colors :as colors]))
+            [status-im.ui2.screens.chat.components.new-chat :as new-chat-aio]
+            [status-im.utils.config :as config]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -76,7 +77,7 @@
      :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label          :start-a-new-chat
      :icon                         :main-icons2/new-message
-     :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-chat-aio])}]
+     :on-press                     #(re-frame/dispatch [:bottom-sheet/show-sheet :start-a-new-chat {}])}]
    [quo/list-item
     {:theme                        :main
      :title                        (i18n/label :t/add-a-contact)
@@ -91,8 +92,16 @@
      :icon                         :main-icons2/add-user
      :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
 
+(defn start-a-new-chat-modal []
+  [react/view {:style {:width  "100%"
+                       :height "100%"}}
+   [new-chat-aio/contact-toggle-list]])
+
 (def add-new-sheet
   {:content add-new-sheet-view})
 
 (def add-new
   {:content add-new-view})
+
+(def start-a-new-chat
+  {:content start-a-new-chat-modal})
