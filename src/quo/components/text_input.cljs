@@ -4,7 +4,6 @@
             [quo.components.text :as text]
             [quo.components.tooltip :as tooltip]
             [quo.design-system.colors :as colors]
-            [quo.components.text :as text]
             [quo2.components.icon :as quo2.icons]
             [status-im.i18n.i18n :as i18n]
             [quo.design-system.spacing :as spacing]

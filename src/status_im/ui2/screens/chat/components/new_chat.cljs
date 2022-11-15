@@ -110,49 +110,49 @@
 (views/defview new-group []
   (views/letsubs [contacts   [:selected-group-contacts]
                   group-name [:new-chat-name]]
-                 (let [group-name-empty? (not (spec/valid? :global/not-empty-string group-name))]
-                   [react/keyboard-avoiding-view  {:style styles/group-container
-                                                   :ignore-offset true}
-                    [react/view {:flex 1}
-                     [topbar/topbar {:use-insets false
-                                     :title      (i18n/label :t/new-group-chat)
-                                     :subtitle   (i18n/label :t/group-chat-members-count
-                                                             {:selected (inc (count contacts))
-                                                              :max      constants/max-group-chat-participants})}]
-                     [react/view {:style {:padding-top 16
-                                          :flex        1}}
-                      [react/view {:style {:padding-horizontal 16}}
-                       [quo/text-input
-                        {:auto-focus          true
-                         :on-change-text      #(re-frame/dispatch [:set :new-chat-name %])
-                         :default-value       group-name
-                         :placeholder         (i18n/label :t/set-a-topic)
-                         :accessibility-label :chat-name-input}]
-                       [react/text {:style (styles/members-title)}
-                        (i18n/label :t/members-title)]]
-                      [react/view {:style {:margin-top 8
-                                           :flex       1}}
-                       [list/flat-list {:data                         contacts
-                                        :key-fn                       :address
-                                        :render-fn                    render-contact
-                                        :bounces                      false
-                                        :keyboard-should-persist-taps :always
-                                        :enable-empty-sections        true}]]]
-                     [toolbar/toolbar
-                      {:show-border? true
-                       :left
-                       [quo/button {:type                :secondary
-                                    :before              :main-icon/back
-                                    :accessibility-label :previous-button
-                                    :on-press            #(re-frame/dispatch [:navigate-back])}
-                        (i18n/label :t/back)]
-                       :right
-                       [quo/button {:type                :secondary
-                                    :accessibility-label :create-group-chat-button
-                                    :disabled            group-name-empty?
-                                    :on-press            #(debounce/dispatch-and-chill [:group-chats.ui/create-pressed group-name]
-                                                                                       300)}
-                        (i18n/label :t/create-group-chat)]}]]])))
+    (let [group-name-empty? (not (spec/valid? :global/not-empty-string group-name))]
+      [react/keyboard-avoiding-view  {:style styles/group-container
+                                      :ignore-offset true}
+       [react/view {:flex 1}
+        [topbar/topbar {:use-insets false
+                        :title      (i18n/label :t/new-group-chat)
+                        :subtitle   (i18n/label :t/group-chat-members-count
+                                                {:selected (inc (count contacts))
+                                                 :max      constants/max-group-chat-participants})}]
+        [react/view {:style {:padding-top 16
+                             :flex        1}}
+         [react/view {:style {:padding-horizontal 16}}
+          [quo/text-input
+           {:auto-focus          true
+            :on-change-text      #(re-frame/dispatch [:set :new-chat-name %])
+            :default-value       group-name
+            :placeholder         (i18n/label :t/set-a-topic)
+            :accessibility-label :chat-name-input}]
+          [react/text {:style (styles/members-title)}
+           (i18n/label :t/members-title)]]
+         [react/view {:style {:margin-top 8
+                              :flex       1}}
+          [list/flat-list {:data                         contacts
+                           :key-fn                       :address
+                           :render-fn                    render-contact
+                           :bounces                      false
+                           :keyboard-should-persist-taps :always
+                           :enable-empty-sections        true}]]]
+        [toolbar/toolbar
+         {:show-border? true
+          :left
+          [quo/button {:type                :secondary
+                       :before              :main-icon/back
+                       :accessibility-label :previous-button
+                       :on-press            #(re-frame/dispatch [:navigate-back])}
+           (i18n/label :t/back)]
+          :right
+          [quo/button {:type                :secondary
+                       :accessibility-label :create-group-chat-button
+                       :disabled            group-name-empty?
+                       :on-press            #(debounce/dispatch-and-chill [:group-chats.ui/create-pressed group-name]
+                                                                          300)}
+           (i18n/label :t/create-group-chat)]}]]])))
 
 (defn searchable-contact-list []
   (let [search-value (reagent/atom nil)]
@@ -259,29 +259,29 @@
 (views/defview edit-group-chat-name []
   (views/letsubs [{:keys [name chat-id]} [:chats/current-chat]
                   new-group-chat-name (reagent/atom nil)]
-                 [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
-                  [react/scroll-view {:style {:padding 16
-                                              :flex    1}}
-                   [quo/text-input
-                    {:on-change-text      #(reset! new-group-chat-name %)
-                     :default-value       name
-                     :on-submit-editing   #(when (seq @new-group-chat-name)
-                                             (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name]))
-                     :placeholder         (i18n/label :t/enter-contact-code)
-                     :accessibility-label :new-chat-name
-                     :return-key-type     :go}]]
-                  [react/view {:style {:flex 1}}]
-                  [toolbar/toolbar
-                   {:show-border? true
-                    :center
-                    [quo/button {:type                :secondary
-                                 :accessibility-label :done
-                                 :disabled            (and (<= (count @new-group-chat-name) 1)
-                                                           (not (nil? @new-group-chat-name)))
-                                 :on-press            #(cond
-                                                         (< 1 (count @new-group-chat-name))
-                                                         (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name])
+    [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
+     [react/scroll-view {:style {:padding 16
+                                 :flex    1}}
+      [quo/text-input
+       {:on-change-text      #(reset! new-group-chat-name %)
+        :default-value       name
+        :on-submit-editing   #(when (seq @new-group-chat-name)
+                                (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name]))
+        :placeholder         (i18n/label :t/enter-contact-code)
+        :accessibility-label :new-chat-name
+        :return-key-type     :go}]]
+     [react/view {:style {:flex 1}}]
+     [toolbar/toolbar
+      {:show-border? true
+       :center
+       [quo/button {:type                :secondary
+                    :accessibility-label :done
+                    :disabled            (and (<= (count @new-group-chat-name) 1)
+                                              (not (nil? @new-group-chat-name)))
+                    :on-press            #(cond
+                                            (< 1 (count @new-group-chat-name))
+                                            (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name])
 
-                                                         (nil? @new-group-chat-name)
-                                                         (re-frame/dispatch [:navigate-back]))}
-                     (i18n/label :t/done)]}]]))
+                                            (nil? @new-group-chat-name)
+                                            (re-frame/dispatch [:navigate-back]))}
+        (i18n/label :t/done)]}]]))
