@@ -63,17 +63,20 @@
                         :number-of-lines 1
                         :style           {:margin-left 4}}
         (format-reply-author from contact-name current-public-key)]
-       [quo2.text/text {:number-of-lines 1
-                        :size            :label
-                        :weight          :regular
-                        :style           (merge {:ellipsize-mode :tail
-                                                 :text-transform :none
-                                                 :margin-left 4
-                                                 :margin-top 2}
-                                                (when (or (= constants/content-type-image content-type)
-                                                          (= constants/content-type-sticker content-type)
-                                                          (= constants/content-type-audio content-type))
-                                                  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}))}
+       [quo2.text/text
+        {:number-of-lines     1
+         :size                :label
+         :weight              :regular
+         :accessibility-label :quoted-message
+         :style               (merge
+                               {:ellipsize-mode :tail
+                                :text-transform :none
+                                :margin-left 4
+                                :margin-top 2}
+                               (when (or (= constants/content-type-image content-type)
+                                         (= constants/content-type-sticker content-type)
+                                         (= constants/content-type-audio content-type))
+                                 {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}))}
         (case (or content-type contentType)
           constants/content-type-image "Image"
           constants/content-type-sticker "Sticker"
