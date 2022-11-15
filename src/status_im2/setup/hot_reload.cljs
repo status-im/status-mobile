@@ -50,6 +50,8 @@
       [rn/view {:pointerEvents :none
                 :style         {:position        :absolute :top 0 :left 0 :right 0 :bottom 0
                                 :justify-content :center :align-items :center}}
-       [rn/view {:width 64 :height 64 :background-color :blue}]
+       [rn/view {:width           64 :height 64 :background-color "#0000FF30" :border-radius 32
+                 :justify-content :center :align-items :center}
+        [rn/activity-indicator {:animating true}]]
        [rn/text {:style {:margin-top 10 :color (if @warning? :red :black)}}
         @label]])))

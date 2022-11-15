@@ -209,19 +209,6 @@
     :component onboarding.phrase/wizard-recovery-success}
 
    ;;CHAT
-
-                                ;Home
-   {:name      :home
-    :component (if  config/new-ui-enabled? chat.home/home old-chat.home/home-old)}
-
-                                ;Chat
-   {:name          :chat
-    :options       {:popGesture false
-                    :hardwareBackButton {:dismissModalOnPress false
-                                         :popStackOnPress     false}
-                    :topBar             {:visible false}}
-    :component     chat/chat}
-
                                 ;Pinned messages
    {:name      :chat-pinned-messages
                                 ;TODO custom subtitle
