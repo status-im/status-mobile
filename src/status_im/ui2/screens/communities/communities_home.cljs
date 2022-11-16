@@ -101,7 +101,6 @@
                                 :description         (i18n/label :t/whats-trending)
                                 :accessibility-label :communities-home-discover-card}])
 
-
 (defn communities-home []
   (let [communities  (<sub [:communities/communities])]
     [rn/view  {:flex    1}
