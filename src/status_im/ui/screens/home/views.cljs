@@ -234,7 +234,7 @@
 
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]
-    [components.plus-button/plus-button
+    [components.plus-button/plus-button-old
      {:on-press (when-not logging-in?
                   #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
       :loading logging-in?

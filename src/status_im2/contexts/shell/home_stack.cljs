@@ -3,12 +3,12 @@
             [status-im2.contexts.shell.style :as styles]
             [status-im2.contexts.shell.constants :as constants]
             [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]
+            [status-im2.contexts.communities.home.view :as communities]
 
             ;; TODO move to status-im2
             [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
-            [status-im.ui2.screens.chat.home :as chat.home]
-            [status-im.ui2.screens.communities.communities-home :as communities-home]))
+            [status-im.ui2.screens.chat.home :as chat.home]))
 
 (defn load-stack? [stack-id]
   (case stack-id
@@ -32,7 +32,7 @@
                   :right               0
                   :accessibility-label stack-id})}
         (case stack-id
-          :communities-stack [communities-home/views]
+          :communities-stack [communities/home]
           :chats-stack       [chat.home/home]
           :wallet-stack      [wallet.accounts/accounts-overview]
           :browser-stack     [profile.user/my-profile])])]))

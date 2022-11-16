@@ -1,12 +1,12 @@
 (ns status-im2.navigation.screens
   (:require [status-im2.setup.config :as config]
-            [status-im.ui2.screens.quo2-preview.main :as quo2.preview]
-            [status-im.ui2.screens.chat.home :as chat.home]
-            [status-im.ui2.screens.chat.view :as chat]
-            [status-im.ui2.screens.communities.discover-communities :as discover-communities]
+            [status-im2.contexts.communities.discover.view :as discover-communities]
             [status-im2.contexts.shell.view :as shell]
 
             ;; TODO remove when not used anymore
+            [status-im.ui2.screens.quo2-preview.main :as quo2.preview]
+            [status-im.ui2.screens.chat.home :as chat.home]
+            [status-im.ui2.screens.chat.view :as chat]
             [status-im.ui.screens.screens :as old-screens]))
 
 (def components
@@ -28,7 +28,7 @@
 
            {:name      :discover-communities
             :options   {:topBar {:visible false}}
-            :component discover-communities/communities}]
+            :component discover-communities/discover-communities}]
 
           (when config/quo-preview-enabled?
             quo2.preview/screens)

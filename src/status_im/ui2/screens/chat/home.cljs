@@ -16,7 +16,6 @@
             [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.components.invite.views :as invite]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.utils.config :as config]
@@ -37,7 +36,8 @@
             [status-im.ui2.screens.chat.components.received-cr-item :as received-cr-item]
             [status-im.ui2.screens.chat.components.message-home-item.view :refer [messages-home-item]]
             [status-im.ui2.screens.chat.components.contact-item.view :refer [contact-item]]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [status-im2.common.plus-button.view :as components.plus-button])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn home-tooltip-view []
