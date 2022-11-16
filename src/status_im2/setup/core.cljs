@@ -18,12 +18,12 @@
             [status-im2.setup.i18n-resources :as i18n-resources]
             [status-im2.setup.config :as config]
             [status-im2.setup.log :as log]
-            status-im.events
+            [status-im2.contexts.shell.animation :as animation]
 
             ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
+            status-im.events
             [status-im.native-module.core :as status]
             [status-im.notifications.local :as notifications]
-            [status-im.switcher.animation :as animation]
             [status-im.async-storage.core :as async-storage]
             [status-im.utils.universal-links.core :as utils.universal-links]))
 

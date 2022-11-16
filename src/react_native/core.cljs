@@ -48,3 +48,5 @@
 
 (defn get-window []
   (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))
+
+(def status-bar (.-StatusBar ^js react-native))

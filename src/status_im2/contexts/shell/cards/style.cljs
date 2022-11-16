@@ -1,4 +1,4 @@
-(ns status-im.switcher.switcher-cards.styles
+(ns status-im2.contexts.shell.cards.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def colors-map

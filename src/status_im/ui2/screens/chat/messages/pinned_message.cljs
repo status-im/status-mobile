@@ -5,7 +5,6 @@
             [quo.react-native :as rn]
             [quo2.foundations.typography :as typography]
             [quo2.foundations.colors :as colors]
-            [status-im.switcher.constants :as constants]
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.utils.handlers :refer [<sub >evt]]
             [status-im.ui2.screens.chat.messages.style :as style]
@@ -14,7 +13,7 @@
 (defn pin-limit-popover [chat-id pinned-messages-list]
   [:f>
    (fn []
-     (let [{:keys [width]} (constants/dimensions)
+     (let [width                 (<sub [:dimensions/window-width])
            show-pin-limit-modal? (<sub [:chats/pin-modal chat-id])
            opacity-animation     (reanimated/use-shared-value 0)
            z-index-animation     (reanimated/use-shared-value -1)]

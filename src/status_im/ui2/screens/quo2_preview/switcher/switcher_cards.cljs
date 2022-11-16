@@ -4,7 +4,7 @@
             [status-im.ui2.screens.quo2-preview.preview :as preview]
             [quo2.foundations.colors :as colors]
             [status-im.react-native.resources :as resources]
-            [status-im.switcher.switcher-cards.switcher-cards :as switcher-cards]))
+            [status-im2.contexts.shell.cards.view :as switcher-cards]))
 
 (def descriptor [{:label   "Type"
                   :key     :type

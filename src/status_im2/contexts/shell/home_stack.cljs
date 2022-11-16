@@ -1,11 +1,13 @@
-(ns status-im.switcher.home-stack
-  (:require [status-im.switcher.styles :as styles]
-            [react-native.reanimated :as reanimated]
-            [status-im.switcher.constants :as constants]
-            [status-im.ui2.screens.chat.home :as chat.home]
-            [status-im.switcher.bottom-tabs :as bottom-tabs]
+(ns status-im2.contexts.shell.home-stack
+  (:require [react-native.reanimated :as reanimated]
+            [status-im2.contexts.shell.style :as styles]
+            [status-im2.contexts.shell.constants :as constants]
+            [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]
+
+            ;; TODO move to status-im2
             [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
+            [status-im.ui2.screens.chat.home :as chat.home]
             [status-im.ui2.screens.communities.communities-home :as communities-home]))
 
 (defn load-stack? [stack-id]

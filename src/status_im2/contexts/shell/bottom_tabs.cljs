@@ -1,10 +1,10 @@
-(ns status-im.switcher.bottom-tabs
-  (:require [quo.react-native :as rn]
-            [reagent.core :as reagent]
+(ns status-im2.contexts.shell.bottom-tabs
+  (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
-            [status-im.switcher.styles :as styles]
-            [status-im.switcher.constants :as constants]
-            [status-im.switcher.animation :as animation]
+            [react-native.core :as rn]
+            [status-im2.contexts.shell.style :as styles]
+            [status-im2.contexts.shell.constants :as constants]
+            [status-im2.contexts.shell.animation :as animation]
             [quo2.components.navigation.bottom-nav-tab :as bottom-nav-tab]))
 
 ;; Reagent atoms used for lazily loading home screen tabs
