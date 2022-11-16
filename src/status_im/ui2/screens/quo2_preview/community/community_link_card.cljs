@@ -9,11 +9,11 @@
      [community-link-card/community-link-card {:title              (i18n/label :t/decent-title)
                                                :description        (i18n/label :t/decent-desc)
                                                :image              (resources/get-image :decentraland)
-                                               :member_count       (i18n/label :t/member-count)
-                                               :active-members     (i18n/label :t/active-members)
+                                               :member-count       (i18n/label :t/member-count)
+                                               :active-members     (i18n/label :t/active-comm-members)
                                                :mutual-contacts    (i18n/label :t/mutual-contacts)}])
 
-(defn preview-community-card []
+(defn preview-community-link-card []
       [rn/view {:background-color (colors/theme-colors colors/neutral-5
                                                        colors/neutral-95)
                 :flex             1}
