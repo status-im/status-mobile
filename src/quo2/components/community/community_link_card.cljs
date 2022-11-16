@@ -1,10 +1,10 @@
 (ns quo2.components.community.community-link-card
-(:require [quo2.components.markdown.text :as text]
-          [quo2.foundations.colors :as colors]
-          [quo2.components.community.style :as style]
-          [quo2.components.icon :as icons]
-          [react-native.core :as rn]
-          [status-im.i18n.i18n :as i18n]))
+  (:require [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]
+            [quo2.components.community.style :as style]
+            [quo2.components.icon :as icons]
+            [react-native.core :as rn]
+            [status-im.i18n.i18n :as i18n]))
 
 (defn community-title-and-description [title description image]
   [:<>
@@ -93,12 +93,12 @@
              :padding-vertical   5
              :padding-horizontal 12}}
     [:<>
-      [icons/icon :i/communities
-       {:size  20
-        :color colors/white}]]
-     [text/text {:style {:size           :paragraph-1
-                         :weight         :font-medium
-                         :padding-left   10
-                         :color          colors/white}}
-      (i18n/label :t/community-link-card-button-text)]]])
+     [icons/icon :i/communities
+      {:size  20
+       :color colors/white}]]
+    [text/text {:style {:size           :paragraph-1
+                        :weight         :font-medium
+                        :padding-left   10
+                        :color          colors/white}}
+     (i18n/label :t/community-link-card-button-text)]]])
 
