@@ -17,6 +17,7 @@
             [status-im.ui2.screens.quo2-preview.community.community-card-view :as community-card]
             [status-im.ui2.screens.quo2-preview.community.community-list-view :as community-list-view]
             [status-im.ui2.screens.quo2-preview.community.discover-card :as discover-card]
+            [status-im.ui2.screens.quo2-preview.community.community-link-card :as community-link-card]
             [status-im.ui2.screens.quo2-preview.dividers.divider-label :as divider-label]
             [status-im.ui2.screens.quo2-preview.dividers.new-messages :as new-messages]
             [status-im.ui2.screens.quo2-preview.drawers.action-drawers :as drawers]
@@ -88,7 +89,10 @@
                 :component community-list-view/preview-community-list-view}
                {:name      :discover-card
                 :insets    {:top false}
-                :component discover-card/preview-discoverd-card}]
+                :component discover-card/preview-discoverd-card}
+               {:name      :community-link-card
+                :insets    {:top false}
+                :component community-link-card/preview-community-link-card}]
    :counter [{:name      :counter
               :insets    {:top false}
               :component counter/preview-counter}]
