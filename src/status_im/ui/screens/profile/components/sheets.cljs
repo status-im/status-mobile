@@ -12,7 +12,7 @@
                   in-progress? (reagent/atom false)]
     [react/view {:style {:padding-top 16 :padding-horizontal 24 :padding-bottom 8}}
      [react/text {:style styles/sheet-text}
-      (i18n/label :t/block-user-confirmation)]
+      (i18n/label :t/block-contact-details)]
      [react/view {:align-items :center :margin-top 16}
       [quo/button {:theme               :negative
                    :disabled            @in-progress?

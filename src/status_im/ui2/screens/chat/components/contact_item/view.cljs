@@ -49,6 +49,8 @@
        (utils/get-shortened-address public-key)]]
      [rn/touchable-opacity {:style          {:position :absolute
                                              :right    20}
-                            :active-opacity 1} ; TODO: on-long-press to be added when contact bottom sheet is implemented
-      [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]]))
+                            :active-opacity 1
+                            :on-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                                     {:content (fn [] [actions/actions item])}])}
+      [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]))
 

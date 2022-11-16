@@ -15,18 +15,12 @@
 (defn group-avatar [_]
   (fn [{:keys [color size]}]
     (let [container-size (get-in sizes [:container size])
-          icon-size      (get-in sizes [:icon size])
-          ;; theme          (or override-theme (if (colors/dark?) :dark :light))
-          ]
+          icon-size      (get-in sizes [:icon size])]
       [rn/view {:width            container-size
                 :height           container-size
                 :align-items      :center
                 :justify-content  :center
                 :border-radius    (/ container-size 2)
-                :background-color color
-                ;; :background-color (if (= theme :light) TODO: colors/custom-color method here is not working for some reason.
-                ;;                    (colors/custom-color color 50)
-                ;;                    (colors/custom-color color 60))
-                }
+                :background-color (colors/custom-hex-color color 50 60)}
        [icon/icon :i/group {:size  icon-size ; TODO: group icon sizes 12 and 20 (small and large) are missing
                             :color colors/white-opa-70}]])))
