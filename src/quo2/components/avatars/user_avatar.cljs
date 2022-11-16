@@ -136,6 +136,7 @@
                                :style               (container-styling inner-dimensions outer-dimensions)}]
        ;; else display initials
        [container inner-dimensions outer-dimensions
+        ^{:key :icon-text}
         [text/text {:weight :semi-bold
                     :size   font-size
                     :style  {:color colors/white-opa-70}}
