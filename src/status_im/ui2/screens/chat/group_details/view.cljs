@@ -5,7 +5,7 @@
             [status-im.ui2.screens.chat.group-details.style :as style]
             [quo2.core :as quo2]
             [quo2.components.icon :as icons]
-            [status-im.utils.re-frame :as rf]
+            [utils.re-frame :as rf]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]))
