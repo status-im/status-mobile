@@ -9,6 +9,7 @@
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.datemark :as message-datemark]
             [status-im.ui.screens.chat.message.gap :as gap]
+            [status-im.ui.screens.chat.components.messages-skeleton :as messages-skeleton]
             [status-im.utils.utils :as utils]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.chat.state :as state]
@@ -18,6 +19,11 @@
 
 (defonce show-floating-scroll-down-button (reagent/atom false))
 (defonce messages-list-ref (atom nil))
+
+(def messages-view-height (reagent/atom 0))
+
+(defn on-messages-view-layout [^js ev]
+  (reset! messages-view-height (-> ev .-nativeEvent .-layout .-height)))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 (def list-ref #(reset! messages-list-ref %))
@@ -63,8 +69,7 @@
         all-loaded? (<sub [:chats/all-loaded? chat-id])]
     [rn/view {:style (when platform/android? {:scaleY -1})}
      (if (or loading-messages? (not chat-id) (not all-loaded?))
-       [rn/view {:height 324 :align-items :center :justify-content :center}
-        [rn/activity-indicator {:animating true}]]
+       [messages-skeleton/messages-skeleton @messages-view-height]
        [chat-intro-header-container chat no-messages?])]))
 
 (defn list-header [{:keys [chat-id chat-type invitation-admin]}]
@@ -186,6 +191,7 @@
         :on-scroll                    on-scroll
         ;;TODO https://github.com/facebook/react-native/issues/30034
         :inverted                     (when platform/ios? true)
-        :style                        (when platform/android? {:scaleY -1})})]
+        :style                        (when platform/android? {:scaleY -1})
+        :on-layout                    on-messages-view-layout})]
      (when @show-floating-scroll-down-button
        [floating-scroll-down-button show-input?])]))

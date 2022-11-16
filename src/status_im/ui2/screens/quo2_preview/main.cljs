@@ -31,6 +31,7 @@
             [status-im.ui2.screens.quo2-preview.messages.gap :as messages-gap]
             [status-im.ui2.screens.quo2-preview.messages.system-message :as system-message]
             [status-im.ui2.screens.quo2-preview.notifications.activity-logs :as activity-logs]
+            [status-im.ui2.screens.quo2-preview.posts-and-attachments.messages-skeleton :as messages-skeleton]
             [status-im.ui2.screens.quo2-preview.reactions.react :as react]
             [status-im.ui2.screens.quo2-preview.selectors.disclaimer :as disclaimer]
             [status-im.ui2.screens.quo2-preview.selectors.selectors :as selectors]
@@ -144,6 +145,9 @@
    :notifications [{:name      :activity-logs
                     :insets    {:top false}
                     :component activity-logs/preview-activity-logs}]
+   :posts-and-attachments [{:name      :messages-skeleton
+                            :insets    {:top false}
+                            :component messages-skeleton/preview-messages-skeleton}]
    :reactions [{:name      :react
                 :insets    {:top false}
                 :component react/preview-react}]
