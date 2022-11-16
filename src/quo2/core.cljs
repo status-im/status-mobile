@@ -56,7 +56,7 @@
 (def scrollable-tabs quo2.components.tabs.tabs/scrollable-tabs)
 (def account-selector quo2.components.tabs.account-selector/account-selector)
 (def top-nav quo2.components.navigation.top-nav/top-nav)
-(def floating-shell-button quo2.components.navigation.floating-shell-button)
+(def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
 
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
