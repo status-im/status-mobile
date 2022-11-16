@@ -325,7 +325,7 @@
   {:db (assoc db :communities/create-channel {})})
 
 (fx/defn invite-people-pressed
-  {:events [::invite-people-pressed]}
+  {:events [:communities/invite-people-pressed]}
   [cofx id]
   (fx/merge cofx
             (reset-community-id-input id)
@@ -333,7 +333,7 @@
             (navigation/open-modal :invite-people-community {:invite? true})))
 
 (fx/defn share-community-pressed
-  {:events [::share-community-pressed]}
+  {:events [:communities/share-community-pressed]}
   [cofx id]
   (fx/merge cofx
             (reset-community-id-input id)

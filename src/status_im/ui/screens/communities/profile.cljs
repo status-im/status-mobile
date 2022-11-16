@@ -31,7 +31,7 @@
                                                     :on-press            #(>evt [:navigate-back])}]
                                :right-accessories [{:icon                :main-icons/share
                                                     :accessibility-label :invite-button
-                                                    :on-press            #(>evt [::communities/share-community-pressed community-id])}]
+                                                    :on-press            #(>evt [:communities/share-community-pressed community-id])}]
                                :extended-header   (profile-header/extended-header
                                                    {:title    name
                                                     :color    (or color (rand-nth colors/chat-colors))

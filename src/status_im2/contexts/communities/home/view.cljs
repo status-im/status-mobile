@@ -12,9 +12,7 @@
             [utils.re-frame :as rf]
             [i18n.i18n :as i18n]
             [quo2.core :as quo]
-
-            ;; TODO move to status-im2
-            [status-im.ui.screens.communities.community :as community]))
+            [status-im.ui.screens.communities.community-options-bottom-sheet :as home-actions]))
 
 (defn plus-button []
   (let [logging-in? (rf/sub [:multiaccounts/login])]
@@ -33,8 +31,7 @@
                        (rf/dispatch [:navigate-to :community {:community-id id}]))
       :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
                                     {:content (fn []
-                                                ;; TODO implement with quo2
-                                                [community/community-actions community-item])}])}
+                                                [home-actions/options-menu community-item])}])}
      community-item]))
 
 (defn get-item-layout-js [_ index]
