@@ -41,6 +41,7 @@
   [quo2.button/button {:type                :grey
                        :size                32
                        :width               32
+                       :style               {:margin-left 20}
                        :accessibility-label "back-button"
                        :on-press            #(do
                                                (rf/dispatch [:navigate-back]))}
@@ -50,6 +51,7 @@
   [quo2.button/button {:type                :grey
                        :size                32
                        :width               32
+                       :style               {:margin-right 20}
                        :accessibility-label "options-button"}
    [icons/icon :i/options {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
@@ -129,10 +131,16 @@
         current-pk        (rf/sub [:multiaccount/public-key])
         admin?            (get admins current-pk)]
     [rn/view {:style {:padding-top 50}}
-     [top-buttons]
+     [quo2/header {:left-component  [back-button]
+                   :right-component [options-button]
+                   :background      colors/white}]
      [rn/view {:style {:flex-direction     :row
+<<<<<<< HEAD
                        :margin-top         24
 >>>>>>> 4b20ea02d... feat: group details screen
+=======
+                       :margin-top         12
+>>>>>>> e069b53ef... refactor
                        :padding-horizontal 20}}
       [quo2/group-avatar {:color color
                           :size  :medium}]
