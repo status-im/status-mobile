@@ -14,13 +14,13 @@
             [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.wallet.send.views :as wallet.send.views]
-<<<<<<< HEAD:src/status_im2/navigation/view.cljs
             [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]
 <<<<<<< HEAD
             [status-im.keycard.test-menu :as keycard.test-menu]
             [quo2.foundations.colors :as colors]))
 =======
             [status-im.keycard.test-menu :as keycard.test-menu]))
+<<<<<<< HEAD
 =======
             [re-frame.core :as re-frame]
             [quo.design-system.colors :as colors]
@@ -30,6 +30,8 @@
             [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]))
 >>>>>>> 588594ee4... rebase:src/status_im/ui/screens/views.cljs
 >>>>>>> 89bde8d49... rebase
+=======
+>>>>>>> 752c7b3f2... feat: group details screen
 
 (defn get-screens []
   (reduce
