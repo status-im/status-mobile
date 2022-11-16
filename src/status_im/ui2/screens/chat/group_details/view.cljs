@@ -28,12 +28,6 @@
                        :accessibility-label "options-button"}
    [icons/icon :i/options {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
-(defn top-buttons []
-  [rn/view {:style {:flex-direction     :row
-                    :padding-horizontal 20
-                    :justify-content    :space-between}}
-   [back-button] [options-button]])
-
 (defn count-container [count]
   [rn/view {:style (style/count-container)}
    [quo2/text {:size   :label
