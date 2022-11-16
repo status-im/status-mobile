@@ -2,7 +2,7 @@
   (:require
    [reagent.core :as reagent]
    [status-im.i18n.i18n :as i18n]
-   [status-im.utils.re-frame :as rf]
+   [utils.re-frame :as rf]
    [quo2.components.markdown.text :as quo2.text]
    [react-native.core :as rn]
    [quo2.core :as quo2]

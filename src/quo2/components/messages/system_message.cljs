@@ -6,7 +6,7 @@
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [utils :as utils]))
+            [utils.string :as utils]))
 
 (def themes-landed {:pinned  colors/primary-50-opa-5
                     :added   colors/primary-50-opa-5

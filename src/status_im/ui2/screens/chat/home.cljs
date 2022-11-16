@@ -249,7 +249,6 @@
         contacts           (prepare-contacts contacts)
         notifications      (<sub [:activity.center/notifications-grouped-by-date])
         {requests :received-requests new-info :has-unread?} (find-contact-requests notifications)]
-    (println "wtfff" items contacts)
     [rn/view {:style {:flex 1}}
      [discover-card/discover-card {:title       (i18n/label :t/invite-friends-to-status)
                                    :description (i18n/label :t/share-invite-link)}]
@@ -378,4 +377,3 @@
        [quo2.text/text {:size :heading-1 :weight :semi-bold} (i18n/label :t/messages)]
        [plus-button]]
       [chats-list]])])
-

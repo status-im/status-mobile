@@ -3,7 +3,8 @@
             [react-native.core :as rn]
             [quo2.components.tabs.tab :as tab]
             [reagent.core :as reagent]
-            [utils :as utils]
+            [utils.number :as utils.number]
+            [utils.collection :as utils.collection]
             [quo2.foundations.colors :as colors]
             [quo2.components.notifications.notification-dot :refer [notification-dot]]
             [react-native.masked-view :as masked-view]
@@ -50,7 +51,7 @@
     ;; Truncate to avoid unnecessary rendering.
     (if (> fade-percentage 0.99)
       0.99
-      (utils/naive-round fade-percentage 2))))
+      (utils.number/naive-round fade-percentage 2))))
 
 (defn scrollable-tabs
   "Just like the component `tabs`, displays horizontally scrollable tabs with
@@ -120,7 +121,7 @@
                               :scroll-on-press?
                               :size)
                       (when scroll-on-press?
-                        {:initial-scroll-index (utils/first-index #(= @active-tab-id (:id %)) data)})
+                        {:initial-scroll-index (utils.collection/first-index #(= @active-tab-id (:id %)) data)})
                       {:ref                               #(reset! flat-list-ref %)
                        :extra-data                        (str @active-tab-id)
                        :horizontal                        true

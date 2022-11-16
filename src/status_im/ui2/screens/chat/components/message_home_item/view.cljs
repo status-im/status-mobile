@@ -1,6 +1,6 @@
 (ns status-im.ui2.screens.chat.components.message-home-item.view
   (:require [clojure.string :as string]
-            [status-im.utils.re-frame :as rf]
+            [utils.re-frame :as rf]
             [status-im.utils.datetime :as time]
             [quo2.foundations.typography :as typography]
             [quo2.components.icon :as icons]

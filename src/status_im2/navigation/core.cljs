@@ -6,15 +6,14 @@
    [react-native.platform :as platform]
    [re-frame.core :as re-frame]
    [taoensso.timbre :as log]
-
+   [quo2.foundations.colors :as colors]
    [status-im2.navigation.roots :as roots]
    [status-im2.navigation.state :as state]
+   [status-im2.navigation.view :as views]
+   [utils.re-frame :as rf]
 
    ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
-   [status-im.multiaccounts.login.core :as login-core]
-   [status-im2.navigation.view :as views]
-   [status-im.utils.fx :as fx]
-   [quo2.foundations.colors :as colors]))
+   [status-im.multiaccounts.login.core :as login-core]))
 
 ;; REGISTER COMPONENT (LAZY)
 (defn reg-comp [key]
@@ -171,7 +170,7 @@
    (reset! state/root-id @state/root-comp-id)
    (navigation/set-root (get (roots/roots) new-root-id))))
 
-(fx/defn set-multiaccount-root
+(rf/defn set-multiaccount-root
   {:events [::set-multiaccount-root]}
   [{:keys [db]}]
   (log/debug :set-multiaccounts-root)

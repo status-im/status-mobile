@@ -34,7 +34,7 @@
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.ui2.screens.chat.components.reply :as components.reply]
             [status-im.utils.config :as config]
-            [status-im.utils.re-frame :as rf]
+            [utils.re-frame :as rf]
             [status-im.utils.security :as security]
             [quo2.components.icon :as icons]
             [status-im.utils.datetime :as time]
