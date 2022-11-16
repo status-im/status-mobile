@@ -6,7 +6,7 @@
 (def ^:const mention 3)
 (def ^:const reply 4)
 (def ^:const contact-request 5)
-(def ^:const contact-verification 6)
+(def ^:const contact-verification 10)
 
 ;; TODO: Remove this constant once the old Notification Center code is removed.
 ;; Its value clashes with the new constant `-contact-verification`

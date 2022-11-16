@@ -32,6 +32,7 @@
             quo2.components.notifications.info-count
             quo2.components.notifications.notification-dot
             quo2.components.tags.tags
+            quo2.components.tags.context-tags
             quo2.components.tabs.tabs
             quo2.components.tabs.account-selector
             quo2.components.navigation.top-nav
@@ -52,6 +53,7 @@
 (def system-message quo2.components.messages.system-message/system-message)
 (def reaction quo2.components.reactions.reaction/reaction)
 (def tags quo2.components.tags.tags/tags)
+(def user-avatar-tag quo2.components.tags.context-tags/user-avatar-tag)
 (def tabs quo2.components.tabs.tabs/tabs)
 (def scrollable-tabs quo2.components.tabs.tabs/scrollable-tabs)
 (def account-selector quo2.components.tabs.account-selector/account-selector)

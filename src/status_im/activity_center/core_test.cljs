@@ -3,6 +3,7 @@
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
             [status-im.activity-center.notification-types :as types]
+            [status-im.constants :as constants]
             [status-im.ethereum.json-rpc :as json-rpc]
             status-im.events
             [status-im.test-helpers :as h]
@@ -14,87 +15,140 @@
 
 ;;;; Contact verification
 
+(def notification-id 24)
+
+(def contact-verification-rpc-response
+  {:activityCenterNotifications
+   [{:accepted                  false
+     :author                    "0x04d03f"
+     :chatId                    "0x04d03f"
+     :contactVerificationStatus constants/contact-verification-status-pending
+     :dismissed                 false
+     :id                        notification-id
+     :message                   {}
+     :name                      "0x04d03f"
+     :read                      true
+     :timestamp                 1666647286000
+     :type                      types/contact-verification}]})
+
+(def contact-verification-expected-notification
+  {:accepted                    false
+   :author                      "0x04d03f"
+   :chat-id                     "0x04d03f"
+   :contact-verification-status constants/contact-verification-status-pending
+   :dismissed                   false
+   :id                          notification-id
+   :last-message                nil
+   :message                     {:command-parameters nil
+                                 :content            {:chat-id     nil
+                                                      :ens-name    nil
+                                                      :image       nil
+                                                      :line-count  nil
+                                                      :links       nil
+                                                      :parsed-text nil
+                                                      :response-to nil
+                                                      :rtl?        nil
+                                                      :sticker     nil
+                                                      :text        nil}
+                                 :outgoing           false
+                                 :outgoing-status    nil
+                                 :quoted-message     nil}
+   :name                        "0x04d03f"
+   :read                        true
+   :reply-message               nil
+   :timestamp                   1666647286000
+   :type                        types/contact-verification})
+
+(defn test-log-on-failure
+  [{:keys [notification-id event action]}]
+  (rf-test/run-test-sync
+   (setup)
+   (h/using-log-test-appender
+    (fn [logs]
+      (h/stub-fx-with-callbacks ::json-rpc/call :on-error (constantly :fake-error))
+
+      (rf/dispatch event)
+
+      (is (= {:args  [(str "Failed to " action)
+                      {:notification-id notification-id
+                       :error           :fake-error}]
+              :level :warn}
+             (last @logs)))))))
+
+(defn test-contact-verification-event
+  [{:keys [event expected-rpc-call]}]
+  (rf-test/run-test-sync
+   (setup)
+   (let [spy-queue (atom [])]
+     (h/stub-fx-with-callbacks ::json-rpc/call :on-success (constantly contact-verification-rpc-response))
+     (h/spy-fx spy-queue ::json-rpc/call)
+     (rf/dispatch event)
+
+     (is (= {types/no-type
+             {:read   {:data [contact-verification-expected-notification]}
+              :unread {:data []}}
+             types/contact-verification
+             {:read   {:data [contact-verification-expected-notification]}
+              :unread {:data []}}}
+            (get-in (h/db) [:activity-center :notifications])))
+
+     (is (= expected-rpc-call
+            (-> @spy-queue
+                (get-in [0 :args 0])
+                (select-keys [:method :params])))))))
+
 (deftest contact-verification-decline-test
   (with-redefs [config/new-activity-center-enabled? true]
-    (testing "successfully declines and reconciles returned notification"
-      (rf-test/run-test-sync
-       (setup)
-       (let [spy-queue               (atom [])
-             contact-verification-id 24
-             expected-notification   {:accepted                    false
-                                      :author                      "0x04d03f"
-                                      :chat-id                     "0x04d03f"
-                                      :contact-verification-status 3
-                                      :dismissed                   false
-                                      :id                          24
-                                      :last-message                nil
-                                      :message                     {:command-parameters nil
-                                                                    :content            {:chat-id     nil
-                                                                                         :ens-name    nil
-                                                                                         :image       nil
-                                                                                         :line-count  nil
-                                                                                         :links       nil
-                                                                                         :parsed-text nil
-                                                                                         :response-to nil
-                                                                                         :rtl?        nil
-                                                                                         :sticker     nil
-                                                                                         :text        nil}
-                                                                    :outgoing           false
-                                                                    :outgoing-status    nil
-                                                                    :quoted-message     nil}
-                                      :name                        "0x04d03f"
-                                      :read                        true
-                                      :reply-message               nil
-                                      :timestamp                   1666647286000
-                                      :type                        types/contact-verification}]
-         (h/stub-fx-with-callbacks
-          ::json-rpc/call
-          :on-success (constantly {:activityCenterNotifications
-                                   [{:accepted                  false
-                                     :author                    "0x04d03f"
-                                     :chatId                    "0x04d03f"
-                                     :contactVerificationStatus 3
-                                     :dismissed                 false
-                                     :id                        contact-verification-id
-                                     :message                   {}
-                                     :name                      "0x04d03f"
-                                     :read                      true
-                                     :timestamp                 1666647286000
-                                     :type                      types/contact-verification}]}))
+    (testing "declines notification and reconciles"
+      (test-contact-verification-event
+       {:event             [:activity-center.contact-verification/decline notification-id]
+        :expected-rpc-call {:method "wakuext_declineContactVerificationRequest"
+                            :params [notification-id]}}))
+    (testing "logs on failure"
+      (test-log-on-failure
+       {:notification-id notification-id
+        :event           [:activity-center.contact-verification/decline notification-id]
+        :action          :contact-verification/decline}))))
 
-         (h/spy-fx spy-queue ::json-rpc/call)
+(deftest contact-verification-reply-test
+  (with-redefs [config/new-activity-center-enabled? true]
+    (testing "sends reply and reconciles"
+      (let [reply "any answer"]
+        (test-contact-verification-event
+         {:event             [:activity-center.contact-verification/reply notification-id reply]
+          :expected-rpc-call {:method "wakuext_acceptContactVerificationRequest"
+                              :params [notification-id reply]}})))
+    (testing "logs on failure"
+      (test-log-on-failure
+       {:notification-id notification-id
+        :event           [:activity-center.contact-verification/reply notification-id "any answer"]
+        :action          :contact-verification/reply}))))
 
-         (rf/dispatch [:activity-center.contact-verification/decline contact-verification-id])
+(deftest contact-verification-mark-as-trusted-test
+  (with-redefs [config/new-activity-center-enabled? true]
+    (testing "marks notification as trusted and reconciles"
+      (test-contact-verification-event
+       {:event             [:activity-center.contact-verification/mark-as-trusted notification-id]
+        :expected-rpc-call {:method "wakuext_verifiedTrusted"
+                            :params [{:id notification-id}]}}))
+    (testing "logs on failure"
+      (test-log-on-failure
+       {:notification-id notification-id
+        :event           [:activity-center.contact-verification/mark-as-trusted notification-id]
+        :action          :contact-verification/mark-as-trusted}))))
 
-         (is (= {:method "wakuext_declineContactVerificationRequest"
-                 :params [contact-verification-id]}
-                (-> @spy-queue
-                    (get-in [0 :args 0])
-                    (select-keys [:method :params]))))
-
-         (is (= {types/no-type
-                 {:read   {:data [expected-notification]}
-                  :unread {:data []}}
-                 types/contact-verification
-                 {:read   {:data [expected-notification]}
-                  :unread {:data []}}}
-                (get-in (h/db) [:activity-center :notifications]))))))
-
-    (testing "logs failure"
-      (rf-test/run-test-sync
-       (setup)
-       (let [contact-verification-id 666]
-         (h/using-log-test-appender
-          (fn [logs]
-            (h/stub-fx-with-callbacks ::json-rpc/call :on-error (constantly :fake-error))
-
-            (rf/dispatch [:activity-center.contact-verification/decline contact-verification-id])
-
-            (is (= {:args  ["Failed to decline contact verification"
-                            {:contact-verification-id contact-verification-id
-                             :error                   :fake-error}]
-                    :level :warn}
-                   (last @logs))))))))))
+(deftest contact-verification-mark-as-untrustworthy-test
+  (with-redefs [config/new-activity-center-enabled? true]
+    (testing "marks notification as untrustworthy and reconciles"
+      (test-contact-verification-event
+       {:event             [:activity-center.contact-verification/mark-as-untrustworthy notification-id]
+        :expected-rpc-call {:method "wakuext_verifiedUntrustworthy"
+                            :params [{:id notification-id}]}}))
+    (testing "logs on failure"
+      (test-log-on-failure
+       {:notification-id notification-id
+        :event           [:activity-center.contact-verification/mark-as-untrustworthy notification-id]
+        :action          :contact-verification/mark-as-untrustworthy}))))
 
 ;;;; Notification reconciliation
 

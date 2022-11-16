@@ -1,154 +1,32 @@
 (ns status-im.ui.screens.activity-center.views
-  (:require [quo.components.animated.pressable :as animation]
+  (:require [quo.components.safe-area :as safe-area]
             [quo.react :as react]
             [quo.react-native :as rn]
-            [quo2.components.buttons.button :as button]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.notifications.activity-logs :as activity-logs]
-            [quo2.components.tabs.tabs :as tabs]
-            [quo2.components.tags.context-tags :as context-tags]
+            [quo2.core :as quo2]
             [quo2.foundations.colors :as colors]
-            [status-im.constants :as constants]
             [status-im.activity-center.notification-types :as types]
             [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.utils.datetime :as datetime]
-            [goog.string :as gstring]
-            [status-im.utils.handlers :refer [<sub >evt]]
-            [quo.components.safe-area :as safe-area]))
-
-;;;; Misc
-
-(defn sender-name
-  [contact]
-  (or (get-in contact [:names :nickname])
-      (get-in contact [:names :three-words-name])))
-
-(defmulti notification-component :type)
-
-;; TODO(rasom): should be removed as soon as all notifications types covered
-(defmethod notification-component :default
-  [{:keys [type]}]
-  [rn/view {:style {:width 300, :height 100}}
-   [rn/text
-    (gstring/format
-     "I exist just to avoid crashing for no reason. I'm sorry. Type %d" type)]])
-
-;;;; Contact request notifications
-
-(defmethod notification-component types/contact-request
-  [{:keys [id] :as notification}]
-  (let [message   (or (:message notification) (:last-message notification))
-        contact   (<sub [:contacts/contact-by-identity (:author notification)])
-        pressable (case (:contact-request-state message)
-                    constants/contact-request-message-state-accepted
-                    ;; NOTE [2022-09-21]: We need to dispatch to
-                    ;; `:contact.ui/send-message-pressed` instead of
-                    ;; `:chat.ui/navigate-to-chat`, otherwise the chat screen looks completely
-                    ;; broken if it has never been opened before for the accepted contact.
-                    [animation/pressable {:on-press (fn []
-                                                      (>evt [:hide-popover])
-                                                      (>evt [:contact.ui/send-message-pressed {:public-key (:author notification)}]))}]
-                    [:<>])]
-    (conj pressable
-          [activity-logs/activity-log
-           (merge {:title     (i18n/label :t/contact-request)
-                   :icon      :i/add-user
-                   :timestamp (datetime/timestamp->relative (:timestamp notification))
-                   :unread?   (not (:read notification))
-                   :context   [[context-tags/user-avatar-tag
-                                {:color          :purple
-                                 :override-theme :dark
-                                 :size           :small
-                                 :style          {:background-color colors/white-opa-10}
-                                 :text-style     {:color colors/white}}
-                                (sender-name contact)
-                                (multiaccounts/displayed-photo contact)]
-                               [rn/text {:style {:color colors/white}}
-                                (i18n/label :t/contact-request-sent)]]
-                   :message   {:body (get-in message [:content :text])}
-                   :status    (case (:contact-request-state message)
-                                constants/contact-request-message-state-accepted
-                                {:type :positive :label (i18n/label :t/accepted)}
-                                constants/contact-request-message-state-declined
-                                {:type :negative :label (i18n/label :t/declined)}
-                                nil)}
-                  (case (:contact-request-state message)
-                    constants/contact-request-state-mutual
-                    {:button-1 {:label    (i18n/label :t/decline)
-                                :type     :danger
-                                :on-press #(>evt [:contact-requests.ui/decline-request id])}
-                     :button-2 {:label                     (i18n/label :t/message-reply)
-                                :type                      :success
-                                :override-background-color colors/success-60
-                                :on-press                  #(>evt [:contact-requests.ui/accept-request id])}}
-                    nil))])))
-
-;;;; Contact verification notifications
-
-(defmethod notification-component types/contact-verification
-  [{:keys [id contact-verification-status] :as notification}]
-  (let [message (or (:message notification) (:last-notification notification))
-        contact (<sub [:contacts/contact-by-identity (:author notification)])]
-    [activity-logs/activity-log
-     (merge {:title     (i18n/label :t/identity-verification-request)
-             :icon      :i/friend
-             :timestamp (datetime/timestamp->relative (:timestamp notification))
-             :unread?   (not (:read notification))
-             :context   [[context-tags/user-avatar-tag
-                          {:color          :purple
-                           :override-theme :dark
-                           :size           :small
-                           :style          {:background-color colors/white-opa-10}
-                           :text-style     {:color colors/white}}
-                          (sender-name contact)
-                          (multiaccounts/displayed-photo contact)]
-                         [rn/text {:style {:color colors/white}}
-                          (str (i18n/label :t/identity-verification-request-sent)
-                               ":")]]
-             :message   (case contact-verification-status
-                          (constants/contact-verification-state-pending
-                           constants/contact-verification-state-declined)
-                          {:body (get-in message [:content :text])}
-                          nil)
-             :status    (case contact-verification-status
-                          constants/contact-verification-state-declined
-                          {:type :negative :label (i18n/label :t/declined)}
-                          nil)}
-            (case contact-verification-status
-              constants/contact-verification-state-pending
-              {:button-1 {:label    (i18n/label :t/decline)
-                          :type     :danger
-                          :on-press #(>evt [:activity-center.contact-verification/decline id])}
-               :button-2 {:label    (i18n/label :t/accept)
-                          :type     :primary
-                          ;; TODO: The acceptance flow will be implemented in follow-up PRs.
-                          :on-press identity}}
-              nil))]))
-
-;;;; Type-independent components
-
-(defn render-notification
-  [notification index]
-  [rn/view {:margin-top         (if (= 0 index) 0 4)
-            :padding-horizontal 20}
-   [notification-component notification]])
+            [status-im.ui.screens.activity-center.notification.contact-request.view :as contact-request]
+            [status-im.ui.screens.activity-center.notification.contact-verification.view :as contact-verification]
+            [status-im.ui.screens.activity-center.style :as style]
+            [utils.re-frame :as rf]))
 
 (defn filter-selector-read-toggle
   []
-  (let [unread-filter-enabled? (<sub [:activity-center/filter-status-unread-enabled?])]
-    ;; TODO: Replace the button by a Filter Selector component once available for use.
-    [button/button {:icon             true
-                    :type             (if unread-filter-enabled? :primary :blur-bg-outline)
-                    :size             32
-                    :override-theme   :dark
-                    :on-press         #(>evt [:activity-center.notifications/fetch-first-page
-                                              {:filter-status (if unread-filter-enabled?
-                                                                :all
-                                                                :unread)}])}
+  (let [unread-filter-enabled? (rf/sub [:activity-center/filter-status-unread-enabled?])]
+    ;; TODO(@ilmotta): Replace the button by a Filter Selector.
+    ;; https://github.com/status-im/status-mobile/issues/14355
+    [quo2/button {:icon           true
+                  :type           (if unread-filter-enabled? :primary :blur-bg-outline)
+                  :size           32
+                  :override-theme :dark
+                  :on-press       #(rf/dispatch [:activity-center.notifications/fetch-first-page
+                                                 {:filter-status (if unread-filter-enabled?
+                                                                   :all
+                                                                   :unread)}])}
      :i/unread]))
 
-;; TODO(2022-10-07): The empty state is still under design analysis, so we
+;; TODO(@ilmotta,2022-10-07): The empty state is still under design analysis, so we
 ;; shouldn't even care about translations at this point. A placeholder box is
 ;; used instead of an image.
 (defn empty-tab
@@ -161,24 +39,24 @@
                      :height           120
                      :margin-bottom    20
                      :width            120}}]
-   [text/text {:size   :paragraph-1
+   [quo2/text {:size   :paragraph-1
                :style  {:padding-bottom 2}
                :weight :semi-bold}
     "No notifications"]
-   [text/text {:size :paragraph-2}
+   [quo2/text {:size :paragraph-2}
     "Your notifications will be here"]])
 
 (defn tabs
   []
-  (let [filter-type (<sub [:activity-center/filter-type])]
-    [tabs/scrollable-tabs {:size                32
+  (let [filter-type (rf/sub [:activity-center/filter-type])]
+    [quo2/scrollable-tabs {:size                32
                            :blur?               true
                            :override-theme      :dark
-                           :style               {:padding-left 20}
+                           :style               style/tabs
                            :fade-end-percentage 0.79
                            :scroll-on-press?    true
                            :fade-end?           true
-                           :on-change           #(>evt [:activity-center.notifications/fetch-first-page {:filter-type %}])
+                           :on-change           #(rf/dispatch [:activity-center.notifications/fetch-first-page {:filter-type %}])
                            :default-active      filter-type
                            :data                [{:id    types/no-type
                                                   :label (i18n/label :t/all)}
@@ -203,19 +81,16 @@
   []
   (let [screen-padding 20]
     [rn/view
-     [button/button {:icon           true
-                     :type           :blur-bg
-                     :size           32
-                     :override-theme :dark
-                     :style          {:margin-bottom  12
-                                      :margin-left      screen-padding}
-                     :on-press       #(>evt [:hide-popover])}
+     [quo2/button {:icon           true
+                   :type           :blur-bg
+                   :size           32
+                   :override-theme :dark
+                   :style          style/header-button
+                   :on-press       #(rf/dispatch [:hide-popover])}
       :i/close]
-     [text/text {:size   :heading-1
+     [quo2/text {:size   :heading-1
                  :weight :semi-bold
-                 :style  {:padding-horizontal screen-padding
-                          :padding-vertical   12
-                          :color              colors/white}}
+                 :style  style/header-heading}
       (i18n/label :t/notifications)]
      [rn/view {:flex-direction   :row
                :padding-vertical 12}
@@ -227,22 +102,31 @@
                 :padding-right screen-padding}
        [filter-selector-read-toggle]]]]))
 
+(defn render-notification
+  [notification index]
+  [rn/view {:style (style/notification-container index)}
+   (case (:type notification)
+     types/contact-verification
+     [contact-verification/view notification {}]
+
+     types/contact-request
+     [contact-request/view notification]
+
+     nil)])
+
 (defn activity-center
   []
   [:f>
    (fn []
-     (let [notifications         (<sub [:activity-center/filtered-notifications])
-           window-width          (<sub [:dimensions/window-width])
-           {:keys [top bottom]}  (safe-area/use-safe-area)]
-       (react/effect! #(>evt [:activity-center.notifications/fetch-first-page]))
-       [rn/view {:style {:flex           1
-                         :width          window-width
-                         :padding-top    (if (pos? top) (+ top 12) 12)
-                         :padding-bottom bottom}}
+     (let [notifications        (rf/sub [:activity-center/filtered-notifications])
+           window-width         (rf/sub [:dimensions/window-width])
+           {:keys [top bottom]} (safe-area/use-safe-area)]
+       (react/effect! #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
+       [rn/view {:style (style/screen-container window-width top bottom)}
         [header]
-        [rn/flat-list {:content-container-style {:flex-grow 1}
+        [rn/flat-list {:content-container-style style/notifications-container
                        :data                    notifications
                        :empty-component         [empty-tab]
                        :key-fn                  :id
-                       :on-end-reached          #(>evt [:activity-center.notifications/fetch-next-page])
+                       :on-end-reached          #(rf/dispatch [:activity-center.notifications/fetch-next-page])
                        :render-fn               render-notification}]]))])
