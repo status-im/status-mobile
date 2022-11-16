@@ -9,7 +9,7 @@
             [status-im.ui.screens.activity-center.notification.contact-request.view :as contact-request]
             [status-im.ui.screens.activity-center.notification.contact-verification.view :as contact-verification]
             [status-im.ui.screens.activity-center.style :as style]
-            [status-im.utils.re-frame :as rf]))
+            [utils.re-frame :as rf]))
 
 (defn filter-selector-read-toggle
   []

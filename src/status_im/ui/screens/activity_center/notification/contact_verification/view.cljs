@@ -7,7 +7,7 @@
             [status-im.ui.screens.activity-center.notification.contact-verification.style :as style]
             [status-im.ui.screens.activity-center.utils :as activity-center.utils]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.re-frame :as rf]))
+            [utils.re-frame :as rf]))
 
 (defn- hide-bottom-sheet-and-dispatch
   [event]

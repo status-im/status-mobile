@@ -7,7 +7,7 @@
             [status-im.ui.screens.activity-center.notification.contact-request.style :as style]
             [status-im.ui.screens.activity-center.utils :as activity-center.utils]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.re-frame :as rf]))
+            [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [id author message last-message] :as notification}]
