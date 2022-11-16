@@ -288,11 +288,17 @@
     display-name]
    [message-home-item/verified-or-contact-icon contact]
    (when show-key?
-     [text/text {:size  :label
-                 :style {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40)
-                         :margin-left 8
-                         :margin-top  2}}
-      (str (utils/get-shortened-address (:public-key contact)) " • " (time/to-short-str timestamp))])])
+     (let [props {:size  :label
+                  :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}]
+       [text/text {:style {:margin-left 8
+                           :margin-top  2}}
+        [text/text
+         (assoc props :accessibility-label :message-chat-key)
+         (utils/get-shortened-address (:public-key contact))]
+        [text/text props " • "]
+        [text/text
+         (assoc props :accessibility-label :message-timestamp)
+         (time/to-short-str timestamp)]]))])
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
