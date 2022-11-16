@@ -39,7 +39,7 @@
              :align-items     :center}}
     [:<>
      [icons/icon  :i/group
-      {:size    20
+      {:size    16
        :color   colors/neutral-50}]]
     [text/text {:size         :paragraph-2
                 :weight       :regular}
@@ -50,7 +50,7 @@
              :padding-horizontal  10}}
     [:<>
      [icons/icon  :i/lightning
-      {:size   20
+      {:size   16
        :color  colors/neutral-50
        :left   10}]]
     [text/text {:size         :paragraph-2
@@ -61,7 +61,7 @@
              :align-items     :center}}
     [:<>
      [icons/icon :i/placeholder
-      {:size   20
+      {:size   16
        :color  colors/neutral-50}]]
     [text/text {:size         :paragraph-2
                 :weight       :regular}
