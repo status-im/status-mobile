@@ -55,6 +55,7 @@
                        :accessibility-label "options-button"}
    [icons/icon :i/options {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
+<<<<<<< HEAD
 (defn top-buttons []
   [rn/view {:style {:flex-direction     :row
                     :padding-horizontal 20
@@ -63,6 +64,8 @@
 >>>>>>> 4b20ea02d... feat: group details screen
 >>>>>>> 752c7b3f2... feat: group details screen
 
+=======
+>>>>>>> c3f9147a9... refactor
 (defn count-container [count]
   [rn/view {:style (style/count-container)}
    [quo2/text {:size   :label
