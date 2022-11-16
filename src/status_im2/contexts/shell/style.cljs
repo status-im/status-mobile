@@ -1,7 +1,7 @@
-(ns status-im.switcher.styles
+(ns status-im2.contexts.shell.style
   (:require [quo2.foundations.colors :as colors]
-            [status-im.utils.platform :as platform]
-            [status-im.switcher.constants :as constants]))
+            [status-im2.contexts.shell.constants :as constants]
+            [react-native.platform :as platform]))
 
 ;; Bottom Tabs
 (defn bottom-tabs-container [pass-through?]

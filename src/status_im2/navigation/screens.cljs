@@ -4,9 +4,9 @@
             [status-im.ui2.screens.chat.home :as chat.home]
             [status-im.ui2.screens.chat.view :as chat]
             [status-im.ui2.screens.communities.discover-communities :as discover-communities]
+            [status-im2.contexts.shell.view :as shell]
 
-            ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
-            [status-im.switcher.shell-stack :as shell-stack]
+            ;; TODO remove when not used anymore
             [status-im.ui.screens.screens :as old-screens]))
 
 (def components
@@ -17,7 +17,7 @@
 
           [{:name      :shell-stack
             :insets    {:top false}
-            :component shell-stack/shell-stack}
+            :component shell/shell-stack}
 
            {:name      :home
             :component chat.home/home}
@@ -27,7 +27,6 @@
             :component chat/chat}
 
            {:name      :discover-communities
-            ;;TODO animated-header scroll behaviours
             :options   {:topBar {:visible false}}
             :component discover-communities/communities}]
 

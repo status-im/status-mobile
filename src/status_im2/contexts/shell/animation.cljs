@@ -1,9 +1,11 @@
-(ns status-im.switcher.animation
+(ns status-im2.contexts.shell.animation
   (:require [re-frame.core :as re-frame]
             [react-native.reanimated :as reanimated]
             [quo2.foundations.colors :as colors]
-            [status-im.async-storage.core :as async-storage]
-            [status-im.switcher.constants :as constants]))
+            [status-im2.contexts.shell.constants :as constants]
+
+            ;;TODO remove when not used anymore
+            [status-im.async-storage.core :as async-storage]))
 
 ;;;; Bottom Tabs & Home Stack Animations
 
