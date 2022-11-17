@@ -16,7 +16,7 @@
   [window-width top bottom]
   {:flex           1
    :width          window-width
-   :padding-top    (if (pos? 0) (+ top 12) 12)
+   :padding-top    (if (pos? top) (+ top 12) 12)
    :padding-bottom bottom})
 
 (def notifications-container
