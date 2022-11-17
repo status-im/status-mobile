@@ -5,7 +5,6 @@
             [quo2.core :as quo2]
             [utils.re-frame :as rf]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.list.views :as list]
             [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]))
 
 (defn back-button []
@@ -89,8 +88,8 @@
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
         [count-container (count members)]]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if admin? :t/manage-members :t/add-members))]]]
-     [list/section-list {:key-fn                         :title
-                         :sticky-section-headers-enabled false
-                         :sections                       sectioned-members
-                         :render-section-header-fn       contacts-section-header
-                         :render-fn                      contact-item/contact-item}]]))
+     [rn/section-list {:key-fn                         :title
+                       :sticky-section-headers-enabled false
+                       :sections                       sectioned-members
+                       :render-section-header-fn       contacts-section-header
+                       :render-fn                      contact-item/contact-item}]]))

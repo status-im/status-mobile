@@ -2,7 +2,9 @@
   (:require [reagent.core :as reagent]
             ["react-native" :as react-native]
             [react-native.flat-list :as flat-list]
-            ["react-native-navigation" :refer (Navigation)]))
+            [react-native.section-list :as section-list]
+            ["react-native-navigation" :refer (Navigation)]
+            [react-native.platform :as platform]))
 
 (def app-state ^js (.-AppState ^js react-native))
 
@@ -10,13 +12,15 @@
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js react-native)))
 (def image (reagent/adapt-react-class (.-Image ^js react-native)))
 (def text (reagent/adapt-react-class (.-Text ^js react-native)))
-(def text-input (reagent/adapt-react-class  (.-TextInput ^js react-native)))
+(def text-input (reagent/adapt-react-class (.-TextInput ^js react-native)))
 
 (def touchable-opacity (reagent/adapt-react-class (.-TouchableOpacity ^js react-native)))
 (def touchable-highlight (reagent/adapt-react-class (.-TouchableHighlight ^js react-native)))
 (def touchable-without-feedback (reagent/adapt-react-class (.-TouchableWithoutFeedback ^js react-native)))
 
 (def flat-list flat-list/flat-list)
+
+(def section-list section-list/section-list)
 
 (def activity-indicator (reagent/adapt-react-class (.-ActivityIndicator ^js react-native)))
 
@@ -56,6 +60,18 @@
 
 (.then (.constants Navigation)
        (fn [^js consts]
-         (reset! navigation-const {:top-bar-height (.-topBarHeight consts)
+         (reset! navigation-const {:top-bar-height     (.-topBarHeight consts)
                                    :bottom-tabs-height (.-bottomTabsHeight consts)
-                                   :status-bar-height (.-statusBarHeight consts)})))
+                                   :status-bar-height  (.-statusBarHeight consts)})))
+
+(def keyboard-avoiding-view-class (reagent/adapt-react-class (.-KeyboardAvoidingView ^js react-native)))
+
+(defn keyboard-avoiding-view []
+  (let [this  (reagent/current-component)
+        props (reagent/props this)]
+    (into [keyboard-avoiding-view-class
+           (merge (when platform/ios?
+                    {:behavior :padding})
+                  props
+                  {:keyboardVerticalOffset (+ 44 (:status-bar-height @navigation-const))})]
+          (reagent/children this))))
