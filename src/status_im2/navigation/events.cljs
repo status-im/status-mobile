@@ -41,7 +41,7 @@
   {:events [:navigate-change-tab]}
   [_ tab]
   ;{:change-tab-fx tab} ; TODO: effect needs to be implemented (may not be possible: https://github.com/wix/react-native-navigation/issues/4837)
-         )
+  )
 
 (rf/defn navigate-replace
   {:events       [:navigate-replace]}

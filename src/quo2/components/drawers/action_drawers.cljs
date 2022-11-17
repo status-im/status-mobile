@@ -9,7 +9,6 @@
     (colors/theme-colors colors/danger-50 colors/danger-60)
     (colors/theme-colors colors/neutral-50 colors/neutral-40)))
 
-
 (defn divider []
   [rn/view {:style {:border-top-width 1
                     :border-top-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
@@ -69,10 +68,9 @@
            {:color (get-icon-color danger?)
             :size  20}]])]]]))
 
-
 (defn action-drawer [sections]
   [:<>
    (doall
-     (for [actions sections]
-       (doall
-         (map action actions))))])
+    (for [actions sections]
+      (doall
+       (map action actions))))])

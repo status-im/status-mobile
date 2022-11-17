@@ -127,9 +127,9 @@
                       :border-radius outer-dimensions}}
      (when (and ring? identicon?)
        [icons/icon :i/identicon-ring {:width    outer-dimensions
-                                               :height   outer-dimensions
-                                               :size     32
-                                               :no-color true}])
+                                      :height   outer-dimensions
+                                      :size     32
+                                      :no-color true}])
      (if profile-picture
        ;; display image
        [fast-image/fast-image {:source              {:uri profile-picture}

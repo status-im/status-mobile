@@ -327,6 +327,6 @@
    (navigation/merge-options "shell-stack" {:statusBar {:style style}})))
 
 (re-frame/reg-fx
-  :pop-to-root-tab-fx
-  (fn [tab]
-    (navigation/pop-to-root tab)))
+ :pop-to-root-tab-fx
+ (fn [tab]
+   (navigation/pop-to-root tab)))

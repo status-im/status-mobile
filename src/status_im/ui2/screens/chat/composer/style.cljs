@@ -17,8 +17,7 @@
            {:padding-vertical    8
             :text-align-vertical :top}
            {:margin-top    8
-            :margin-bottom 0})
-         ))
+            :margin-bottom 0})))
 
 (defn input-bottom-sheet [window-height]
   (merge {:border-top-left-radius  20
