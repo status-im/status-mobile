@@ -6,7 +6,7 @@
 
 ;; Only ignore warnings/errors that cannot be fixed for the time being.
 ;; When you add a warning to be ignored explain below why it is ignored and how it can be fixed.
-;; When a warning is fixed make sure to removed it from here.
+;; When a warning is fixed make sure to remove it from here.
 (.ignoreLogs ^js LogBox (clj->js ["undefined is not an object (evaluating 'e.message')"
                                   "group12"]))
 
