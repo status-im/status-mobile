@@ -5,6 +5,7 @@
             [quo2.core :as quo2]
             [utils.re-frame :as rf]
             [status-im.i18n.i18n :as i18n]
+            [status-im.utils.platform :as platform]
             [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]))
 
 (defn back-button []
@@ -56,7 +57,7 @@
         pinned-messages   (rf/sub [:chats/pinned chat-id])
         current-pk        (rf/sub [:multiaccount/public-key])
         admin?            (get admins current-pk)]
-    [rn/view {:style {:padding-top      (:status-bar-height @rn/navigation-const)
+    [rn/view {:style {:padding-top      (when platform/ios? (:status-bar-height @rn/navigation-const))
                       :flex             1
                       :background-color (colors/theme-colors colors/white colors/neutral-95)}}
      [quo2/header {:left-component  [back-button]
