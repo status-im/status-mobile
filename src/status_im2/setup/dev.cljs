@@ -8,12 +8,18 @@
 ;; When you add a warning to be ignored explain below why it is ignored and how it can be fixed.
 ;; When a warning is fixed make sure to remove it from here.
 (.ignoreLogs ^js LogBox (clj->js ["undefined is not an object (evaluating 'e.message')"
+                                  "Cannot read property 'message' of undefined"
+                                  "InternalError Metro has encountered an error"
+                                  "undefined Unable to resolve module `parse-svg-path`"
                                   "group12"]))
 
 ;; List of ignored warnings/errors:
 ;; 1. "evaluating 'e.message'": Not sure why this error is happening, but it is coming from here
 ;; @walletconnect/jsonrpc-utils/dist/esm/error.js parseConnectionError() method
-;; 2. "group12": referring to the group-icon size 12x12. Currently, it is not available. When the design team adds it to the
+;; 2. "Cannot read property 'message' of undefined": same as 1, but for Android
+;; 3. "InternalError Metro has encountered an error": an error that happens when losing connection to metro, can be safely ignored
+;; 4. "undefined Unable to resolve module `parse-svg-path`": an error that happens when losing connection to metro, can be safely ignored
+;; 5. "group12": referring to the group-icon size 12x12. Currently, it is not available. When the design team adds it to the
 ;; icon set it will be added to project.
 
 
