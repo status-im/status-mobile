@@ -14,20 +14,20 @@
 
 (defn get-quoted-text-with-mentions [parsed-text]
   (string/join
-   (mapv (fn [{:keys [type literal children]}]
-           (cond
-             (= type "paragraph")
-             (get-quoted-text-with-mentions children)
+    (mapv (fn [{:keys [type literal children]}]
+            (cond
+              (= type "paragraph")
+              (get-quoted-text-with-mentions children)
 
-             (= type "mention")
-             (<sub [:contacts/contact-name-by-identity literal])
+              (= type "mention")
+              (<sub [:contacts/contact-name-by-identity literal])
 
-             (seq children)
-             (get-quoted-text-with-mentions children)
+              (seq children)
+              (get-quoted-text-with-mentions children)
 
-             :else
-             literal))
-         parsed-text)))
+              :else
+              literal))
+          parsed-text)))
 
 (defn format-author [contact-name]
   (let [author (if (or (= (aget contact-name 0) "@")
@@ -68,15 +68,15 @@
          :size                :label
          :weight              :regular
          :accessibility-label :quoted-message
+         :ellipsize-mode      :tail
          :style               (merge
-                               {:ellipsize-mode :tail
-                                :text-transform :none
-                                :margin-left 4
-                                :margin-top 2}
-                               (when (or (= constants/content-type-image content-type)
-                                         (= constants/content-type-sticker content-type)
-                                         (= constants/content-type-audio content-type))
-                                 {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}))}
+                                {:text-transform :none
+                                 :margin-left    4
+                                 :margin-top     2}
+                                (when (or (= constants/content-type-image content-type)
+                                          (= constants/content-type-sticker content-type)
+                                          (= constants/content-type-audio content-type))
+                                  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}))}
         (case (or content-type contentType)
           constants/content-type-image "Image"
           constants/content-type-sticker "Sticker"

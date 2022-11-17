@@ -27,6 +27,9 @@
 (defn show-overlay [comp]
   (.showOverlay Navigation (clj->js comp)))
 
+(defn pop-to-root [tab]
+  (.popToRoot Navigation (clj->js tab)))
+
 (defn dissmiss-overlay [comp]
   (.catch (.dismissOverlay Navigation comp) #()))
 
