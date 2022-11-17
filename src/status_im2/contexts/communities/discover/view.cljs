@@ -120,7 +120,7 @@
       :data                              sorted-communities
       :render-fn                         render-other-fn}]))
 
-(defn discover-communities []
+(defn discover []
   [safe-area/consumer
    (fn []
      [rn/view {:style {:flex             1

@@ -1,6 +1,7 @@
 (ns status-im2.navigation.screens
   (:require [status-im2.setup.config :as config]
-            [status-im2.contexts.communities.discover.view :as discover-communities]
+            [status-im2.contexts.communities.discover.view :as communities.discover]
+            [status-im2.contexts.communities.overview.view :as communities.overview]
             [status-im2.contexts.shell.view :as shell]
 
             ;; TODO remove when not used anymore
@@ -28,7 +29,11 @@
 
            {:name      :discover-communities
             :options   {:topBar {:visible false}}
-            :component discover-communities/discover-communities}]
+            :component communities.discover/discover}
+
+           {:name      :community-overview
+            :options   {:topBar {:visible false}}
+            :component communities.overview/overview}]
 
           (when config/quo-preview-enabled?
             quo2.preview/screens)

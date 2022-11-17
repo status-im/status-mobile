@@ -18,7 +18,6 @@
             [status-im.ui.screens.browser.views :as browser]
             [status-im.ui.screens.bug-report :as bug-report]
             [status-im.ui.screens.chat.pinned-messages :as pin-messages]
-            [status-im.ui.screens.communities.community-overview-redesign :as community-overview]
             [status-im.ui.screens.communities.channel-details :as communities.channel-details]
             [status-im.ui.screens.communities.community :as community]
             [status-im.ui.screens.communities.community-emoji-thumbnail-picker :as community-emoji-thumbnail-picker]
@@ -307,9 +306,7 @@
    {:name      :community-membership
     :options   {:topBar {:title {:text (i18n/label :t/membership-title)}}}
     :component membership/membership}
-   {:name      :community-overview
-    :options   {:topBar {:visible false}}
-    :component community-overview/overview}
+
    ;;BROWSER
 
    {:name      :empty-tab

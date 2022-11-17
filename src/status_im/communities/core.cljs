@@ -134,7 +134,7 @@
                                     (re-frame/dispatch [::failed-to-import %]))}]})
 
 (fx/defn join
-  {:events [::join]}
+  {:events [:communities/join]}
   [cofx community-id]
   {::json-rpc/call [{:method "wakuext_joinCommunity"
                      :params [community-id]
@@ -156,8 +156,8 @@
                                   (re-frame/dispatch [::failed-to-request-to-join %]))}]})
 
 (fx/defn leave
-  {:events [::leave]}
-  [{:keys [db] :as cofx} community-id]
+  {:events [:communities/leave]}
+  [{:keys [db]} community-id]
   (let [community-chat-ids (map #(str community-id %)
                                 (keys (get-in db [:communities community-id :chats])))]
     {:clear-message-notifications  [community-chat-ids

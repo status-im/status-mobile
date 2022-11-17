@@ -36,7 +36,10 @@
             quo2.components.tabs.tabs
             quo2.components.tabs.account-selector
             quo2.components.navigation.top-nav
-            quo2.components.navigation.floating-shell-button))
+            quo2.components.navigation.floating-shell-button
+            quo2.components.tags.status-tags
+            quo2.components.navigation.page-nav
+            quo2.components.selectors.disclaimer))
 
 (def button quo2.components.buttons.button/button)
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
@@ -54,11 +57,15 @@
 (def reaction quo2.components.reactions.reaction/reaction)
 (def tags quo2.components.tags.tags/tags)
 (def user-avatar-tag quo2.components.tags.context-tags/user-avatar-tag)
+(def context-tag quo2.components.tags.context-tags/context-tag)
 (def tabs quo2.components.tabs.tabs/tabs)
 (def scrollable-tabs quo2.components.tabs.tabs/scrollable-tabs)
 (def account-selector quo2.components.tabs.account-selector/account-selector)
 (def top-nav quo2.components.navigation.top-nav/top-nav)
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
+(def status-tag quo2.components.tags.status-tags/status-tag)
+(def page-nav quo2.components.navigation.page-nav/page-nav)
+(def disclaimer quo2.components.selectors.disclaimer/disclaimer)
 
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
@@ -76,6 +83,7 @@
 (def community-stats quo2.components.community.community-view/community-stats)
 (def community-tags quo2.components.community.community-view/community-tags)
 (def community-title quo2.components.community.community-view/community-title)
+(def permission-tag-container quo2.components.community.community-view/permission-tag-container)
 (def discover-card quo2.components.community.discover-card/discover-card)
 
 ;;;; DIVIDERS
