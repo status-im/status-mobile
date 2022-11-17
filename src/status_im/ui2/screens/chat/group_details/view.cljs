@@ -118,6 +118,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                   (seq admins)  (assoc :owner {:title :Owner :data admins})
                   (seq online)  (assoc :online {:title :Online :data online})
                   (seq offline) (assoc :offline {:title :offline :data offline})))))
@@ -137,6 +138,11 @@
             (seq online) (assoc :online {:title :Online :data online})
             (seq offline) (assoc :offline {:title :offline :data offline})))))
 >>>>>>> 459f86ddb... lint
+=======
+            (seq admins) (assoc :owner {:title "Owner" :data admins})
+            (seq online) (assoc :online {:title "Online" :data online})
+            (seq offline) (assoc :offline {:title "Offline" :data offline})))))
+>>>>>>> 9aedd60b3... refactor
 
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:padding-horizontal 20 :border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :margin-top 8}}
