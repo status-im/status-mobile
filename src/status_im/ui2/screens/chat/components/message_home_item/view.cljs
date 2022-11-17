@@ -91,9 +91,9 @@
   (if group-chat
     [quo2/group-avatar {:color color
                         :size  :medium}]
-    [quo2/user-avatar {:full-name         display-name
-                       :profile-picture   photo-path
-                       :size              :small}]))
+    [quo2/user-avatar {:full-name       display-name
+                       :profile-picture photo-path
+                       :size            :small}]))
 
 (defn messages-home-item [item]
   (let [{:keys [chat-id
@@ -109,13 +109,12 @@
         photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
     [rn/touchable-opacity (merge {:style         (style/container)
                                   :on-press      (fn []
-                                                   ;(rf/dispatch [:dismiss-keyboard])
+                                                   (rf/dispatch [:dismiss-keyboard])
                                                    (if platform/android?
                                                      (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                                                      (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))
-                                                   ;(rf/dispatch [:search/home-filter-changed nil])
-                                                   ;(rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id])
-                                                   )
+                                                   (rf/dispatch [:search/home-filter-changed nil])
+                                                   (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
                                   :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
                                                                 {:content (fn [] [actions/actions item false])}])})
      [display-pic-view group-chat color display-name photo-path]

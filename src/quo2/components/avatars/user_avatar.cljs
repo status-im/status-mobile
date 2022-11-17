@@ -128,7 +128,7 @@
      (when (and ring? identicon?)
        [icons/icon :i/identicon-ring {:width    outer-dimensions
                                       :height   outer-dimensions
-                                      :size     32
+                                      :size     outer-dimensions
                                       :no-color true}])
      (if profile-picture
        ;; display image
