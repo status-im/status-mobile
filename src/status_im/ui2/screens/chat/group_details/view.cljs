@@ -34,15 +34,15 @@
 (defn prepare-members
   [contact-addresses admins]
   (let [contacts (map #(assoc (rf/sub [:contacts/contact-by-address %])
-                         :admin? (get admins %))
+                              :admin? (get admins %))
                       contact-addresses)
         admins   (filter :admin? contacts)
         online   (filter #(and (not (:admin? %)) (:online? %)) contacts)
         offline  (filter #(and (not (:admin? %)) (not (:online? %))) contacts)]
     (vals (cond-> {}
-                  (seq admins) (assoc :owner {:title :Owner :data admins})
-                  (seq online) (assoc :online {:title :Online :data online})
-                  (seq offline) (assoc :offline {:title :offline :data offline})))))
+            (seq admins) (assoc :owner {:title :Owner :data admins})
+            (seq online) (assoc :online {:title :Online :data online})
+            (seq offline) (assoc :offline {:title :offline :data offline})))))
 
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:padding-horizontal 20 :border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :margin-top 8}}
