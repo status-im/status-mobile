@@ -183,7 +183,7 @@
       (let [base-color (get-in colors-map [(keyword color) suffix])]
         (if opacity (alpha base-color (/ opacity 100)) base-color))))))
 
-(defn map-opacity-to-hex [opacity]
+(defn- opacity->hex [opacity]
   (case opacity
     0 "00"
     10 "1A"
@@ -198,7 +198,7 @@
     "FF"))
 
 (defn custom-hex-color [color light-opacity dark-opacity]
-  (str color (map-opacity-to-hex (if (theme/dark?) dark-opacity light-opacity))))
+  (str color (opacity->hex (if (theme/dark?) dark-opacity light-opacity))))
 
 (defn custom-color-by-theme
   "(custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark)
