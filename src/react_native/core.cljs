@@ -4,10 +4,16 @@
             ["@react-native-community/blur" :as blur]
             [react-native.flat-list :as flat-list]
 <<<<<<< HEAD
+<<<<<<< HEAD
             [react-native.section-list :as section-list]))
 =======
             ["react-native-navigation" :refer (Navigation)]))
 >>>>>>> 3c47804f9... refactor
+=======
+            [react-native.section-list :as section-list]
+            ["react-native-navigation" :refer (Navigation)]
+            [react-native.platform :as platform]))
+>>>>>>> ca683e4a1... add SectionList to RN
 
 (def app-state ^js (.-AppState ^js react-native))
 (def blur-view (reagent/adapt-react-class (.-BlurView blur)))
@@ -64,6 +70,18 @@
 
 (.then (.constants Navigation)
        (fn [^js consts]
-         (reset! navigation-const {:top-bar-height (.-topBarHeight consts)
+         (reset! navigation-const {:top-bar-height     (.-topBarHeight consts)
                                    :bottom-tabs-height (.-bottomTabsHeight consts)
-                                   :status-bar-height (.-statusBarHeight consts)})))
+                                   :status-bar-height  (.-statusBarHeight consts)})))
+
+(def keyboard-avoiding-view-class (reagent/adapt-react-class (.-KeyboardAvoidingView ^js react-native)))
+
+(defn keyboard-avoiding-view []
+  (let [this  (reagent/current-component)
+        props (reagent/props this)]
+    (into [keyboard-avoiding-view-class
+           (merge (when platform/ios?
+                    {:behavior :padding})
+                  props
+                  {:keyboardVerticalOffset (+ 44 (:status-bar-height @navigation-const))})]
+          (reagent/children this))))
