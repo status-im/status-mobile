@@ -46,6 +46,7 @@
             status-im.ui.screens.privacy-and-security-settings.events
             [status-im.utils.dimensions :as dimensions]
             [status-im.utils.fx :as fx]
+            status-im.utils.logging.core
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.utils :as utils]
             status-im.visibility-status-updates.core
