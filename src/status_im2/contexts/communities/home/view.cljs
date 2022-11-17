@@ -9,7 +9,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.community.discover-card :as discover-card]
             [quo2.components.navigation.top-nav :as topnav]
-            [status-im.utils.config :as config]
+            [status-im2.setup.config :as config]
             [status-im2.common.plus-button.view :as components.plus-button]
             [status-im2.contexts.communities.home.actions.view :as home.actions]
             [status-im2.contexts.communities.home.style :as style]))
@@ -17,7 +17,12 @@
 (defn navigate-to-activity-center []
   (rf/dispatch [:mark-all-activity-center-notifications-as-read])
   (if config/new-activity-center-enabled?
-    (rf/dispatch [:activity-center/open])
+    (rf/dispatch [:show-popover {:view                        :activity-center
+                                 :style                       {:margin 0}
+                                 :disable-touchable-overlay?  true
+                                 :blur-view?                  true
+                                 :blur-view-props             {:blur-amount 20
+                                                               :blur-type   :dark}}])
     (rf/dispatch [:navigate-to :notifications-center])))
 
 (defn plus-button []
