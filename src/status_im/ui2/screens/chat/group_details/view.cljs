@@ -1,32 +1,30 @@
 (ns status-im.ui2.screens.chat.group-details.view
   (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
-            [quo2.components.buttons.button :as quo2.button]
             [status-im.ui2.screens.chat.group-details.style :as style]
             [quo2.core :as quo2]
-            [quo2.components.icon :as icons]
             [utils.re-frame :as rf]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]))
+            [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]
+            [reagent.core :as reagent]))
 
 (defn back-button []
-  [quo2.button/button {:type                :grey
+  [quo2/button {:type                :grey
                        :size                32
                        :width               32
                        :style               {:margin-left 20}
-                       :accessibility-label "back-button"
-                       :on-press            #(do
-                                               (rf/dispatch [:navigate-back]))}
-   [icons/icon :i/arrow-left {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
+                       :accessibility-label :back-button
+                       :on-press            #(rf/dispatch [:navigate-back])}
+   [quo2/icon :i/arrow-left {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
 (defn options-button []
-  [quo2.button/button {:type                :grey
+  [quo2/button {:type                :grey
                        :size                32
                        :width               32
                        :style               {:margin-right 20}
-                       :accessibility-label "options-button"}
-   [icons/icon :i/options {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
+                       :accessibility-label :options-button}
+   [quo2/icon :i/options {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
 (defn count-container [count]
   [rn/view {:style (style/count-container)}
@@ -34,27 +32,18 @@
                :weight :medium
                :style  {:text-align :center}} count]])
 
-(defn prepare-members [contacts admins]
-  (let [data (atom {:owner   {:title :Owner
-                              :data  []}
-                    :online  {:title :Online
-                              :data  []}
-                    :offline {:title :Offline
-                              :data  []}})]
-    (doseq [i (range (count contacts))]
-      (let [contact (rf/sub [:contacts/contact-by-address (nth contacts i)])
-            admin?  (get admins (nth contacts i))
-            online? (:online? contact)]
-        (if admin?
-          (swap! data #(assoc-in % [:owner :data] (conj (:data (get @data :owner)) contact)))
-          (if online?
-            (swap! data #(assoc-in % [:online :data] (conj (:data (get @data :online)) contact)))
-            (swap! data #(assoc-in % [:offline :data] (conj (:data (get @data :offline)) contact)))))))
-    (when (empty? (get-in @data [:online :data]))
-      (swap! data #(dissoc % :online)))
-    (when (empty? (get-in @data [:offline :data]))
-      (swap! data #(dissoc % :offline)))
-    (vals @data)))
+(defn prepare-members
+  [contact-addresses admins]
+  (let [contacts (map #(assoc (rf/sub [:contacts/contact-by-address %])
+                         :admin? (get admins %))
+                      contact-addresses)
+        admins   (filter :admin? contacts)
+        online   (filter #(and (not (:admin? %)) (:online? %)) contacts)
+        offline  (filter #(and (not (:admin? %)) (not (:online? %))) contacts)]
+    (vals (cond-> {}
+                  (seq admins)  (assoc :owner {:title :Owner :data admins})
+                  (seq online)  (assoc :online {:title :Online :data online})
+                  (seq offline) (assoc :offline {:title :offline :data offline})))))
 
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:padding-horizontal 20 :border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :margin-top 8}}
@@ -82,21 +71,21 @@
                   :size   :heading-1
                   :style  {:margin-horizontal 8}} chat-name]
       [rn/view {:style {:margin-top 8}}
-       [icons/icon (if public? :i/world :i/privacy) {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]
+       [quo2/icon (if public? :i/world :i/privacy) {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]
      [rn/view {:style (style/actions-view)}
       [rn/view {:style (style/action-container color)}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
-        [icons/icon :i/pin {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
+        [quo2/icon :i/pin {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
         [count-container (count pinned-messages)]]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label :t/pinned-messages)]]
       [rn/view {:style (style/action-container color)}
-       [icons/icon :i/activity-center {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
+       [quo2/icon :i/activity-center {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label :t/mute-group)]]
       [rn/view {:style (style/action-container color)}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
-        [icons/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
+        [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
         [count-container (count members)]]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if admin? :t/manage-members :t/add-members))]]]
      [list/section-list {:key-fn                         :title
