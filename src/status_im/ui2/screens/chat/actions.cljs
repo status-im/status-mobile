@@ -8,18 +8,19 @@
    [status-im.constants :as constants]
    [quo2.components.drawers.action-drawers :as drawer]))
 
-(defn- entry [{:keys [icon label on-press danger? sub-label chevron?]}]
+(defn- entry [{:keys [icon label on-press danger? sub-label chevron? add-divider?]}]
   {:pre [(keyword? icon)
          (string? label)
          (fn? on-press)
          (boolean? danger?)
          (boolean? chevron?)]}
-  {:icon       icon
-   :label      label
-   :on-press   on-press
-   :danger?    danger?
-   :sub-label  sub-label
-   :right-icon (when chevron? :i/chevron-right)})
+  {:icon         icon
+   :label        label
+   :on-press     on-press
+   :danger?      danger?
+   :sub-label    sub-label
+   :right-icon   (when chevron? :i/chevron-right)
+   :add-divider? add-divider?})
 
 (defn hide-sheet-and-dispatch [event]
   (rf/dispatch [:bottom-sheet/hide])
@@ -91,20 +92,22 @@
             :chevron?  true})))
 
 (defn mark-as-read-entry [chat-id]
-  (entry {:icon      :i/correct
-          :label     (i18n/label :t/mark-as-read)
-          :on-press  #(mark-all-read-action chat-id)
-          :danger?   false
-          :sub-label nil
-          :chevron?  false}))
+  (entry {:icon         :i/correct
+          :label        (i18n/label :t/mark-as-read)
+          :on-press     #(mark-all-read-action chat-id)
+          :danger?      false
+          :sub-label    nil
+          :chevron?     false
+          :add-divider? true}))
 
 (defn clear-history-entry [chat-id]
-  (entry {:icon      :i/delete
-          :label     (i18n/label :t/clear-history)
-          :on-press  #(clear-history-action chat-id)
-          :danger?   true
-          :sub-label nil
-          :chevron?  false}))
+  (entry {:icon         :i/delete
+          :label        (i18n/label :t/clear-history)
+          :on-press     #(clear-history-action chat-id)
+          :danger?      true
+          :sub-label    nil
+          :chevron?     false
+          :add-divider? true}))
 
 (defn delete-chat-entry [item]
   (entry {:icon      :i/delete
@@ -203,12 +206,13 @@
           :chevron?  false}))
 
 (defn mark-untrustworthy-entry []
-  (entry {:icon      :i/alert
-          :label     (i18n/label :t/mark-untrustworthy)
-          :on-press  #(js/alert "TODO: to be implemented, requires status-go impl.")
-          :danger?   true
-          :sub-label nil
-          :chevron?  false}))
+  (entry {:icon         :i/alert
+          :label        (i18n/label :t/mark-untrustworthy)
+          :on-press     #(js/alert "TODO: to be implemented, requires status-go impl.")
+          :danger?      true
+          :sub-label    nil
+          :chevron?     false
+          :add-divider? true}))
 
 (defn block-user-entry [item]
   (entry {:icon      :i/block

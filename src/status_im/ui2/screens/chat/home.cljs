@@ -195,7 +195,7 @@
                            {:id    :sent
                             :label (i18n/label :t/sent)}]}]
         [list/flat-list
-         {:key-fn    :first
+         {:key-fn    :chat-id
           :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
           :render-fn received-cr-item/received-cr-item}]]))])
 

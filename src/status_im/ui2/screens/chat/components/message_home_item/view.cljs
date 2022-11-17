@@ -91,9 +91,9 @@
   (if group-chat
     [quo2/group-avatar {:color color
                         :size  :medium}]
-    [quo2/user-avatar {:full-name         display-name
-                       :profile-picture   photo-path
-                       :size              :small}]))
+    [quo2/user-avatar {:full-name       display-name
+                       :profile-picture photo-path
+                       :size            :small}]))
 
 (defn messages-home-item [item]
   (let [{:keys [chat-id

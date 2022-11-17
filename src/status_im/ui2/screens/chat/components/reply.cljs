@@ -68,11 +68,11 @@
          :size                :label
          :weight              :regular
          :accessibility-label :quoted-message
+         :ellipsize-mode      :tail
          :style               (merge
-                               {:ellipsize-mode :tail
-                                :text-transform :none
-                                :margin-left 4
-                                :margin-top 2}
+                               {:text-transform :none
+                                :margin-left    4
+                                :margin-top     2}
                                (when (or (= constants/content-type-image content-type)
                                          (= constants/content-type-sticker content-type)
                                          (= constants/content-type-audio content-type))
