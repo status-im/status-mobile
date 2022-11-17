@@ -6,8 +6,7 @@
             [utils.re-frame :as rf]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]
-            [reagent.core :as reagent]))
+            [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]))
 
 (defn back-button []
   [quo2/button {:type                :grey
@@ -35,15 +34,15 @@
 (defn prepare-members
   [contact-addresses admins]
   (let [contacts (map #(assoc (rf/sub [:contacts/contact-by-address %])
-                              :admin? (get admins %))
+                         :admin? (get admins %))
                       contact-addresses)
         admins   (filter :admin? contacts)
         online   (filter #(and (not (:admin? %)) (:online? %)) contacts)
         offline  (filter #(and (not (:admin? %)) (not (:online? %))) contacts)]
     (vals (cond-> {}
-            (seq admins)  (assoc :owner {:title :Owner :data admins})
-            (seq online)  (assoc :online {:title :Online :data online})
-            (seq offline) (assoc :offline {:title :offline :data offline})))))
+                  (seq admins) (assoc :owner {:title :Owner :data admins})
+                  (seq online) (assoc :online {:title :Online :data online})
+                  (seq offline) (assoc :offline {:title :offline :data offline})))))
 
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:padding-horizontal 20 :border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :margin-top 8}}
@@ -58,10 +57,12 @@
         pinned-messages   (rf/sub [:chats/pinned chat-id])
         current-pk        (rf/sub [:multiaccount/public-key])
         admin?            (get admins current-pk)]
-    [rn/view {:style {:padding-top 50}}
+    [rn/view {:style {:padding-top      50
+                      :flex             1
+                      :background-color (colors/theme-colors colors/white colors/neutral-95)}}
      [quo2/header {:left-component  [back-button]
                    :right-component [options-button]
-                   :background      colors/white}]
+                   :background      (colors/theme-colors colors/white colors/neutral-95)}]
      [rn/view {:style {:flex-direction     :row
                        :margin-top         12
                        :padding-horizontal 20}}
