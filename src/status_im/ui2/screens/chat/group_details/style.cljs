@@ -8,7 +8,7 @@
    :padding-horizontal 20})
 
 (defn action-container [color]
-  {:background-color (colors/custom-hex-color color 10 10)
+  {:background-color (colors/theme-alpha color 0.1 0.1)
    :flex             0.29
    :border-radius    16
    :padding          12})

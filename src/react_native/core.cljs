@@ -1,7 +1,8 @@
 (ns react-native.core
   (:require [reagent.core :as reagent]
             ["react-native" :as react-native]
-            [react-native.flat-list :as flat-list]))
+            [react-native.flat-list :as flat-list]
+            ["react-native-navigation" :refer (Navigation)]))
 
 (def app-state ^js (.-AppState ^js react-native))
 
@@ -50,3 +51,11 @@
   (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))
 
 (def status-bar (.-StatusBar ^js react-native))
+
+(def navigation-const (atom nil))
+
+(.then (.constants Navigation)
+       (fn [^js consts]
+         (reset! navigation-const {:top-bar-height (.-topBarHeight consts)
+                                   :bottom-tabs-height (.-bottomTabsHeight consts)
+                                   :status-bar-height (.-statusBarHeight consts)})))
