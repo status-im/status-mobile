@@ -43,7 +43,7 @@
   "returns discovery v5 topic derived from genesis of the provided network"
   [network]
   (let [les-discovery-identifier "LES2@"
-        hash-prefix (get-network-genesis-hash-prefix network)]
+        hash-prefix              (get-network-genesis-hash-prefix network)]
     (when hash-prefix
       (str les-discovery-identifier hash-prefix))))
 
@@ -92,13 +92,13 @@
 
 (defn- get-multiaccount-node-config
   [{:keys [multiaccount :networks/networks :networks/current-network]
-    :as db}]
-  (let [wakuv2-config (get multiaccount :wakuv2-config {})
-        current-fleet-key (current-fleet-key db)
-        current-fleet (get-current-fleet db)
-        wakuv2-enabled (boolean (:waku current-fleet))
-        wakuv2-nodes (into (vals (:waku current-fleet)) (vals (get wakuv2-config :CustomNodes)))
-        rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
+    :as   db}]
+  (let [wakuv2-config        (get multiaccount :wakuv2-config {})
+        current-fleet-key    (current-fleet-key db)
+        current-fleet        (get-current-fleet db)
+        wakuv2-enabled       (boolean (:waku current-fleet))
+        waku-nodes           (:waku-nodes current-fleet)
+        rendezvous-nodes     (pick-nodes 3 (vals (:rendezvous current-fleet)))
         {:keys [installation-id log-level
                 waku-bloom-filter-mode
                 custom-bootnodes custom-bootnodes-enabled?]} multiaccount
@@ -111,10 +111,10 @@
       (get-login-node-config)
 
       current-fleet
-      (assoc :NoDiscovery   wakuv2-enabled
-             :Rendezvous    (if wakuv2-enabled false (boolean (seq rendezvous-nodes)))
-             :ClusterConfig {:Enabled true
-                             :Fleet              (name current-fleet-key)
+      (assoc :NoDiscovery wakuv2-enabled
+             :Rendezvous (if wakuv2-enabled false (boolean (seq rendezvous-nodes)))
+             :ClusterConfig {:Enabled         true
+                             :Fleet           (name current-fleet-key)
                              :BootNodes
                              (if wakuv2-enabled [] (pick-nodes 4 (vals (:boot current-fleet))))
                              :TrustedMailServers
@@ -124,9 +124,8 @@
                                  (into (pick-nodes 2
                                                    (vals (:whisper current-fleet)))
                                        (vals (:static current-fleet))))
-                             :RelayNodes wakuv2-nodes
-                             :StoreNodes wakuv2-nodes
-                             :RendezvousNodes    (if wakuv2-enabled [] rendezvous-nodes)})
+                             :RendezvousNodes (if wakuv2-enabled [] rendezvous-nodes)
+                             :WakuNodes       (or waku-nodes [])})
 
       :always
       (assoc :LocalNotificationsConfig {:Enabled true}
@@ -135,10 +134,10 @@
              :MailserversConfig {:Enabled true}
              :EnableNTPSync true
              :WakuConfig
-             {:Enabled true
+             {:Enabled         true
               :BloomFilterMode waku-bloom-filter-mode
-              :LightClient true
-              :MinimumPoW 0.000001}
+              :LightClient     true
+              :MinimumPoW      0.000001}
              :WakuV2Config (assoc wakuv2-config :Enabled wakuv2-enabled :Host "0.0.0.0")
              :ShhextConfig
              {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
@@ -174,8 +173,8 @@
 app-db"
   {:events [::save-new-config]}
   [{:keys [db]} config {:keys [on-success]}]
-  {::json-rpc/call [{:method "settings_saveSetting"
-                     :params [:node-config config]
+  {::json-rpc/call [{:method     "settings_saveSetting"
+                     :params     [:node-config config]
                      :on-success on-success}]})
 
 (fx/defn prepare-new-config

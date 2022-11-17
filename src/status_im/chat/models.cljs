@@ -10,8 +10,6 @@
             [status-im.i18n.i18n :as i18n]
             [quo.design-system.colors :as colors]
             [status-im.constants :as constants]
-            [status-im.navigation :as navigation]
-            [status-im.navigation2 :as navigation2]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
@@ -19,7 +17,8 @@
             [status-im.add-new.db :as new-public-chat.db]
             [status-im.chat.models.loading :as loading]
             [status-im.ui.screens.chat.state :as chat.state]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [status-im2.navigation.events :as navigation]))
 
 (defn chats []
   (:chats (types/json->clj (js/require "./chats.js"))))
@@ -253,7 +252,8 @@
   (fx/merge cofx
             {:dispatch [:navigate-to :chat]}
             (navigation/change-tab :chat)
-            (navigation/pop-to-root-tab :chat-stack)
+            (when-not (= (:view-id db) :community)
+              (navigation/pop-to-root-tab :chat-stack))
             (close-chat)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
@@ -270,7 +270,7 @@
             {:db (assoc db :current-chat-id chat-id)}
             (offload-messages chat-id)
             (preload-chat-data chat-id)
-            (navigation2/navigate-to-nav2 :chat chat-id nil from-switcher?)))
+            (navigation/navigate-to-nav2 :chat chat-id nil from-switcher?)))
 
 (fx/defn handle-clear-history-response
   {:events [::history-cleared]}

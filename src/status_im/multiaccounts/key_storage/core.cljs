@@ -8,7 +8,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
             [status-im.native-module.core :as native-module]
-            [status-im.navigation :as navigation]
+            [status-im2.navigation.events :as navigation]
             [status-im.popover.core :as popover]
             [status-im.utils.fx :as fx]
             [status-im.utils.security :as security]

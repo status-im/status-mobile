@@ -126,16 +126,15 @@
                       :height        outer-dimensions
                       :border-radius outer-dimensions}}
      (when (and ring? identicon?)
-       [icons/icon :main-icons/identicon-ring {:width    outer-dimensions
-                                               :height   outer-dimensions
-                                               :size     outer-dimensions
-                                               :no-color true}])
+       [icons/icon :i/identicon-ring {:size     outer-dimensions
+                                      :no-color true}])
      (if profile-picture
        ;; display image
        [fast-image/fast-image {:source              {:uri profile-picture}
                                :style               (container-styling inner-dimensions outer-dimensions)}]
        ;; else display initials
        [container inner-dimensions outer-dimensions
+        ^{:key :icon-text}
         [text/text {:weight :semi-bold
                     :size   font-size
                     :style  {:color colors/white-opa-70}}

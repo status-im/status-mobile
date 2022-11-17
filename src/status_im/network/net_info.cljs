@@ -51,7 +51,7 @@
                                             (js->clj % :keywordize-keys true)]))))
 
 (re-frame/reg-fx
- ::listen-to-network-info
+ :network/listen-to-network-info
  (fn []
    (add-net-info-listener)))
 

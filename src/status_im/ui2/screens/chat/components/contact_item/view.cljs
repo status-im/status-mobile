@@ -8,7 +8,7 @@
             [quo.platform :as platform]
             [quo2.components.markdown.text :as text]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]
-            [status-im.utils.re-frame :as rf]
+            [utils.re-frame :as rf]
             [status-im.ui2.screens.chat.actions :as actions]))
 
 (defn open-chat [chat-id]

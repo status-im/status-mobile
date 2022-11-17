@@ -36,7 +36,7 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.utils.debounce :as debounce]
-            [status-im.navigation.state :as navigation.state]
+            [status-im2.navigation.state :as navigation.state]
             [status-im.react-native.resources :as resources]))
 
 (defn invitation-requests [chat-id admins]

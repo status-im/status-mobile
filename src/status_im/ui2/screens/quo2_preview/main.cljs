@@ -16,6 +16,7 @@
             [status-im.ui2.screens.quo2-preview.counter.counter :as counter]
             [status-im.ui2.screens.quo2-preview.community.community-card-view :as community-card]
             [status-im.ui2.screens.quo2-preview.community.community-list-view :as community-list-view]
+            [status-im.ui2.screens.quo2-preview.community.community-membership-list-view :as community-membership-list-view]
             [status-im.ui2.screens.quo2-preview.community.discover-card :as discover-card]
             [status-im.ui2.screens.quo2-preview.community.community-link-card :as community-link-card]
             [status-im.ui2.screens.quo2-preview.dividers.divider-label :as divider-label]
@@ -31,6 +32,7 @@
             [status-im.ui2.screens.quo2-preview.messages.gap :as messages-gap]
             [status-im.ui2.screens.quo2-preview.messages.system-message :as system-message]
             [status-im.ui2.screens.quo2-preview.notifications.activity-logs :as activity-logs]
+            [status-im.ui2.screens.quo2-preview.posts-and-attachments.messages-skeleton :as messages-skeleton]
             [status-im.ui2.screens.quo2-preview.reactions.react :as react]
             [status-im.ui2.screens.quo2-preview.selectors.disclaimer :as disclaimer]
             [status-im.ui2.screens.quo2-preview.selectors.selectors :as selectors]
@@ -87,6 +89,9 @@
                {:name      :community-list-view
                 :insets    {:top false}
                 :component community-list-view/preview-community-list-view}
+               {:name      :community-membership-list-view
+                :insets    {:top false}
+                :component community-membership-list-view/preview-community-list-view}
                {:name      :discover-card
                 :insets    {:top false}
                 :component discover-card/preview-discoverd-card}
@@ -144,6 +149,9 @@
    :notifications [{:name      :activity-logs
                     :insets    {:top false}
                     :component activity-logs/preview-activity-logs}]
+   :posts-and-attachments [{:name      :messages-skeleton
+                            :insets    {:top false}
+                            :component messages-skeleton/preview-messages-skeleton}]
    :reactions [{:name      :react
                 :insets    {:top false}
                 :component react/preview-react}]

@@ -34,7 +34,7 @@
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.ui2.screens.chat.components.reply :as components.reply]
             [status-im.utils.config :as config]
-            [status-im.utils.re-frame :as rf]
+            [utils.re-frame :as rf]
             [status-im.utils.security :as security]
             [quo2.components.icon :as icons]
             [status-im.utils.datetime :as time]
@@ -288,11 +288,17 @@
     display-name]
    [message-home-item/verified-or-contact-icon contact]
    (when show-key?
-     [text/text {:size  :label
-                 :style {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40)
-                         :margin-left 8
-                         :margin-top  2}}
-      (str (utils/get-shortened-address (:public-key contact)) " • " (time/to-short-str timestamp))])])
+     (let [props {:size  :label
+                  :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}]
+       [text/text {:style {:margin-left 8
+                           :margin-top  2}}
+        [text/text
+         (assoc props :accessibility-label :message-chat-key)
+         (utils/get-shortened-address (:public-key contact))]
+        [text/text props " • "]
+        [text/text
+         (assoc props :accessibility-label :message-timestamp)
+         (time/to-short-str timestamp)]]))])
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
@@ -439,7 +445,7 @@
                   (when pinned (pin-message message))
                   (re-frame/dispatch
                    [:chat.ui/delete-message-for-me message
-                    config/delete-message-for-me-undo-time-limit-ms]))
+                    constants/delete-message-for-me-undo-time-limit-ms]))
       :label    (i18n/label :t/delete-for-me)
       :icon     :i/delete
       :id       :delete-for-me}]
@@ -505,17 +511,17 @@
                               [{:type     :main
                                 :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
                                 :id       :reply
-                                :icon     :i/reply-context20
+                                :icon     :i/reply
                                 :label    (i18n/label :t/message-reply)}
                                {:type     :main
                                 :on-press #(react/copy-to-clipboard (get content :text))
                                 :id       :copy
-                                :icon     :i/copy-context20
+                                :icon     :i/copy
                                 :label    (i18n/label :t/copy-text)}]
                               (when message-pin-enabled [{:type     :main
                                                           :on-press #(pin-message message)
                                                           :id       :pin
-                                                          :icon     :i/pin-context20
+                                                          :icon     :i/pin
                                                           :label    (if pinned (i18n/label :t/unpin) (i18n/label :t/pin))}]))))]
         (reset! ref on-long-press)
         [message-content-wrapper message
@@ -546,7 +552,7 @@
                         (on-long-press
                          (when-not outgoing
                            [{:type     :main
-                             :icon     :i/stickers-context20
+                             :icon     :i/stickers
                              :on-press #(when pack
                                           (re-frame/dispatch [:chat.ui/show-profile from]))
                              :label    (i18n/label :t/see-sticker-set)}])))]
@@ -574,31 +580,31 @@
                          (concat [{:type     :main
                                    :on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
                                    :id       :reply
-                                   :icon     :i/reply-context20
+                                   :icon     :i/reply
                                    :label    (i18n/label :t/message-reply)}
                                   {:type     :main
                                    :on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
                                    :id       :save
-                                   :icon     :i/save-context20
+                                   :icon     :i/save
                                    :label    (i18n/label :t/save-image-library)}
                                   {:type     :main
                                    :on-press #(images/download-image-http
                                                (get-in message [:content :image]) preview/share)
                                    :id       :share
-                                   :icon     :i/share-context20
+                                   :icon     :i/share
                                    :label    (i18n/label :t/share-image)}]
                                  [{:type     :danger
                                    :on-press #(re-frame/dispatch
                                                [:chat.ui/delete-message-for-me message
-                                                config/delete-message-for-me-undo-time-limit-ms])
+                                                constants/delete-message-for-me-undo-time-limit-ms])
                                    :label    (i18n/label :t/delete-for-me)
-                                   :icon     :i/delete-context20
+                                   :icon     :i/delete
                                    :id       :delete-for-me}]
                                  (when (and outgoing config/delete-message-enabled?)
                                    [{:type     :danger
                                      :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
                                      :label    (i18n/label :t/delete-for-everyone)
-                                     :icon     :i/delete-context20
+                                     :icon     :i/delete
                                      :id       :delete}]))))]
     (reset! ref on-long-press)
     [message-content-wrapper message
@@ -622,20 +628,20 @@
                                                  {:type     :main
                                                   :on-press #(pin-message message)
                                                   :label    (i18n/label (if pinned :t/unpin-from-chat :t/pin-to-chat))
-                                                  :icon     :i/pin-context20
+                                                  :icon     :i/pin
                                                   :id       (if pinned :unpin :pin)}
                                                  {:type     :danger
                                                   :on-press #(re-frame/dispatch
                                                               [:chat.ui/delete-message-for-me message
-                                                               config/delete-message-for-me-undo-time-limit-ms])
+                                                               constants/delete-message-for-me-undo-time-limit-ms])
                                                   :label    (i18n/label :t/delete-for-me)
-                                                  :icon     :i/delete-context20
+                                                  :icon     :i/delete
                                                   :id       :delete-for-me}
                                                  (when (and outgoing config/delete-message-enabled?)
                                                    {:type     :danger
                                                     :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
                                                     :label    (i18n/label :t/delete-for-everyone)
-                                                    :icon     :i/delete-context20
+                                                    :icon     :i/delete
                                                     :id       :delete})]))]
         (reset! ref on-long-press)
         [message-content-wrapper message

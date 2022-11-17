@@ -2,24 +2,9 @@
   (:require [quo.react-native :as rn]
             [quo.previews.preview :as preview]
             [reagent.core :as reagent]
-            [status-im.constants :as constants]
-            [quo.design-system.colors :as quo.colors]
             [quo2.foundations.colors :as colors]
             [quo2.components.community.community-list-view :as community-list-view]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.react-native.resources :as resources]))
-
-(def community-data
-  {:id             constants/status-community-id
-   :name           "Status"
-   :description    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
-   :cover          (resources/get-image :community-cover)
-   :community-icon (resources/get-image :status-logo)
-   :color          (rand-nth quo.colors/chat-colors)
-   :tokens         [{:id 1 :group [{:id 1 :token-icon (resources/get-image :status-logo)}]}]
-   :tags           [{:id 1 :tag-label (i18n/label :t/music) :resource (resources/get-image :music)}
-                    {:id 2 :tag-label (i18n/label :t/lifestyle) :resource (resources/get-image :lifestyle)}
-                    {:id 3 :tag-label (i18n/label :t/podcasts) :resource (resources/get-image :podcasts)}]})
+            [status-im.ui2.screens.quo2-preview.community.data :as data]))
 
 (def descriptor [{:label   "Notifications:"
                   :key     :notifications
@@ -56,8 +41,15 @@
          [preview/customizer state descriptor]]
         [rn/view {:padding-vertical 60
                   :justify-content  :center}
-         [community-list-view/communities-list-view-item {} (merge @state
-                                                                   community-data)]]]])))
+         [community-list-view/communities-list-view-item {} (cond-> (merge @state data/community)
+                                                              (= :muted (:notifications @state))
+                                                              (assoc :muted? true)
+
+                                                              (= :unread-mentions-count (:notifications @state))
+                                                              (assoc :unread-mentions-count 5)
+
+                                                              (= :unread-messages-count (:notifications @state))
+                                                              (assoc :unread-messages? true))]]]])))
 
 (defn preview-community-list-view []
   [rn/view {:background-color (colors/theme-colors colors/neutral-5
@@ -67,4 +59,3 @@
                   :keyboardShouldPersistTaps :always
                   :header                    [cool-preview]
                   :key-fn                    str}]])
-

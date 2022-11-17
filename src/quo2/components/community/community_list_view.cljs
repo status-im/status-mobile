@@ -6,10 +6,49 @@
    [quo2.components.counter.counter :as counter]
    [quo2.components.icon :as icons]
    [quo2.components.community.style :as style]
+   [react-native.fast-image :as fast-image]
    [react-native.core :as rn]))
 
-(defn communities-list-view-item [props {:keys [name locked? status notifications
-                                                tokens background-color]}]
+(defn community-icon-view [community-icon]
+  [rn/view {:width  32
+            :height 32}
+   [fast-image/fast-image {:source {:uri community-icon}
+                           :style  {:height        32
+                                    :border-radius 16
+                                    :width         32}}]])
+
+(defn notification-view [{:keys [muted?
+                                 unread-messages?
+                                 unread-mentions-count]}]
+  (cond
+    muted?
+    [icons/icon :i/muted {:container-style {:align-items     :center
+                                            :justify-content :center}
+                          :resize-mode     :center
+                          :size            20
+                          :color           (colors/theme-colors
+                                            colors/neutral-40
+                                            colors/neutral-50)}]
+    (pos? unread-mentions-count)
+    [counter/counter {:type :default} unread-mentions-count]
+
+    unread-messages?
+    [rn/view {:style {:width            8
+                      :height           8
+                      :border-radius    4
+                      :background-color (colors/theme-colors
+                                         colors/neutral-40
+                                         colors/neutral-60)}}]))
+
+(defn communities-list-view-item [props {:keys [name
+                                                locked?
+                                                status
+                                                muted?
+                                                unread-messages?
+                                                unread-mentions-count
+                                                community-icon
+                                                tokens
+                                                background-color]}]
   [rn/view {:style (merge (style/community-card 16)
                           {:margin-bottom     12
                            :margin-horizontal 20})}
@@ -24,8 +63,8 @@
                :padding-vertical   8
                :background-color   background-color}
       [rn/view]
-       ;;TODO new pure component based on quo2 should be implemented without status-im usage
-       ;[communities.icon/community-icon-redesign community 32]]
+      (when community-icon
+        [community-icon-view community-icon])
       [rn/view {:flex              1
                 :margin-horizontal 12}
        [text/text {:weight              :semi-bold
@@ -33,7 +72,7 @@
                    :accessibility-label :community-name-text
                    :number-of-lines     1
                    :ellipsize-mode      :tail
-                   :style               {:color (when (= notifications :muted)
+                   :style               {:color (when muted?
                                                   (colors/theme-colors
                                                    colors/neutral-40
                                                    colors/neutral-60))}}
@@ -42,28 +81,18 @@
       (if (= status :gated)
         [community-view/permission-tag-container {:locked? locked?
                                                   :tokens  tokens}]
-        (cond
-          (= notifications :unread-messages-count)
-          [rn/view {:style {:width            8
-                            :height           8
-                            :border-radius    4
-                            :background-color (colors/theme-colors
-                                               colors/neutral-40
-                                               colors/neutral-60)}}]
+        [notification-view {:muted?                muted?
+                            :unread-mentions-count unread-mentions-count
+                            :unread-messages?      unread-messages?}])]]]])
 
-          (= notifications :unread-mentions-count)
-          [counter/counter {:type :default} 5]
-
-          (= notifications :muted)
-          [icons/icon :i/muted {:container-style {:align-items     :center
-                                                  :justify-content :center}
-                                :resize-mode     :center
-                                :size            20
-                                :color           (colors/theme-colors
-                                                  colors/neutral-40
-                                                  colors/neutral-50)}]))]]]])
-
-(defn communities-membership-list-item [props {:keys [name status tokens locked?]}]
+(defn communities-membership-list-item [props {:keys [name
+                                                      muted?
+                                                      unread-messages?
+                                                      unread-mentions-count
+                                                      status
+                                                      community-icon
+                                                      tokens
+                                                      locked?]}]
   [rn/view {:margin-bottom 20}
    [rn/touchable-highlight (merge {:underlay-color colors/primary-50-opa-5
                                    :style          {:border-radius 12}}
@@ -72,8 +101,9 @@
      [rn/view {:flex-direction :row
                :border-radius  16
                :align-items    :center}
-      ;;TODO new pure component based on quo2 should be implemented without status-im usage
-      ;[communities.icon/community-icon-redesign community 32]
+
+      (when community-icon
+        [community-icon-view community-icon])
       [rn/view {:flex            1
                 :margin-left     12
                 :justify-content :center}
@@ -84,8 +114,12 @@
          :weight              :semi-bold
          :size                :paragraph-1}
         name]]
-      (when (= status :gated)
-        [rn/view {:justify-content :center
-                  :margin-right    12}
+
+      [rn/view {:justify-content :center
+                :margin-right    16}
+       (if (= status :gated)
          [community-view/permission-tag-container {:locked? locked?
-                                                   :tokens  tokens}]])]]]])
+                                                   :tokens  tokens}]
+         [notification-view {:muted?                muted?
+                             :unread-mentions-count unread-mentions-count
+                             :unread-messages?      unread-messages?}])]]]]])

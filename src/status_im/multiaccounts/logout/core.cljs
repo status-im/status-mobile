@@ -1,13 +1,13 @@
 (ns status-im.multiaccounts.logout.core
   (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
-            [status-im.init.core :as init]
             [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.keychain.core :as keychain]
             [status-im.notifications.core :as notifications]
-            [status-im.wallet.core :as wallet]))
+            [status-im.wallet.core :as wallet]
+            [status-im2.setup.events :as init]))
 
 (fx/defn logout-method
   {:events [::logout-method]}
@@ -22,7 +22,7 @@
                ::logout                              nil
                ::multiaccounts/webview-debug-changed false
                :keychain/clear-user-password         key-uid
-               ::init/open-multiaccounts             #(re-frame/dispatch [::init/initialize-multiaccounts % {:logout? logout?}])}
+               :setup/open-multiaccounts             #(re-frame/dispatch [:setup/initialize-multiaccounts % {:logout? logout?}])}
               (keychain/save-auth-method key-uid auth-method)
               (wallet/clear-timeouts)
               (init/initialize-app-db))))

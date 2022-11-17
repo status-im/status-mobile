@@ -3,6 +3,8 @@
             ["react-native" :as react-native]
             [react-native.flat-list :as flat-list]))
 
+(def app-state ^js (.-AppState ^js react-native))
+
 (def view (reagent/adapt-react-class (.-View ^js react-native)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js react-native)))
 (def image (reagent/adapt-react-class (.-Image ^js react-native)))
@@ -29,3 +31,22 @@
      :height     (.-height window)
      :scale      (.-scale window)
      :width      (.-width window)}))
+
+(defn hide-splash-screen []
+  (.hide ^js (-> react-native .-NativeModules .-SplashScreen)))
+
+(defn alert [title message buttons options]
+  (.alert (.-Alert ^js react-native) title message (clj->js buttons) (clj->js options)))
+
+(def appearance ^js (.-Appearance ^js react-native))
+
+(defn get-color-scheme []
+  (.getColorScheme appearance))
+
+(defn appearance-add-change-listener [handler]
+  (.addChangeListener appearance handler))
+
+(defn get-window []
+  (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))
+
+(def status-bar (.-StatusBar ^js react-native))

@@ -5,6 +5,8 @@
             [clojure.set :as set]
             [cljs.spec.alpha :as spec]
             [clojure.string :as string]))
+;;TODO (14/11/22 flexsurfer) this namespace has been moved to the status-im2 namespace, we keep this only for old (status 1.0) code,
+;; can be removed with old code later
 
 ;; english as source of truth
 (def labels (set (keys (js->clj (:en i18n-resources/translations-by-locale)
@@ -108,7 +110,7 @@
     :blank-keycard-title
     :block
     :block-contact
-    :block-contact-details
+    :block-user-confirmation
     :blocked-users
     :bootnode-address
     :bootnode-details

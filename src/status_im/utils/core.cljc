@@ -1,5 +1,4 @@
-(ns status-im.utils.core
-  (:require [clojure.string :as string]))
+(ns status-im.utils.core)
 
 (defn truncate-str-memo
   "Given string and max threshold, trims the string to threshold length with `...`
@@ -20,12 +19,6 @@
 
 (def truncate-str (memoize truncate-str-memo))
 
-(defn clean-text [s]
-  (-> s
-      (string/replace #"\n" "")
-      (string/replace #"\r" "")
-      (string/trim)))
-
 (defn first-index
   "Returns first index in coll where predicate on coll element is truthy"
   [pred coll]
@@ -34,31 +27,6 @@
                        (when (pred e)
                          idx)))
        first))
-
-(defn hash-tag? [s]
-  (= \# (first s)))
-
-(defn update-if-present
-  "Like regular `clojure.core/update` but returns original map if update key is not present"
-  [m k f & args]
-  (if (contains? m k)
-    (apply update m k f args)
-    m))
-
-(defn map-values
-  "Efficiently apply function to all map values"
-  [f m]
-  (into {}
-        (map (fn [[k v]]
-               [k (f v)]))
-        m))
-
-(defn deep-merge
-  "Recursively merge maps"
-  [& maps]
-  (if (every? map? maps)
-    (apply merge-with deep-merge maps)
-    (last maps)))
 
 (defn index-by
   "Given a collection and a unique key function, returns a map that indexes the collection.

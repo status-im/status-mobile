@@ -38,13 +38,13 @@
  :builds {:mobile
           {:target :react-native
            :output-dir "app"
-           :init-fn status-im.core/init
+           :init-fn status-im2.setup.core/init
            ;; When false, the Shadow-CLJS watcher won't automatically refresh
            ;; the target files (a.k.a hot reload). When false, you can manually
            ;; reload by calling `shadow.cljs.devtools.api/watch-compile-all!`.
            :devtools {:autobuild #shadow/env ["SHADOW_AUTOBUILD_ENABLED" :default true :as :bool]}
-           :dev {:devtools {:after-load status-im.reloader/reload
-                            :build-notify status-im.reloader/build-notify
+           :dev {:devtools {:after-load status-im2.setup.hot-reload/reload
+                            :build-notify status-im2.setup.hot-reload/build-notify
                             :preloads [re-frisk-remote.preload]}
                  :closure-defines
                  {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"

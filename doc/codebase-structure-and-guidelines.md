@@ -1,5 +1,9 @@
 # Codebase Structure and Guidelines
 
+As of Nov/2022, we're starting to document and migrate the codebase to [new
+guidelines](new-guidelines.md), which will supersede some of the guidelines in
+this document.
+
 ## Starting the app
 
 The app is bundled and run in a Nix environment. Information regarding how to run it locally can be found [here](https://status.im/technical/build_status/).
@@ -85,7 +89,7 @@ These guidelines make db.cljs namespaces the place to go when making changes to 
     - If issues - label 'TESTED-ISSUES' and comment from QA with bugs.
     - After fix and/or discussion the process is repeated.
 
-  - If manual QA is not needed but all tests don't pass, you can ping @churik or @Serhy to confirm that failed E2E tests are not unrelated. 
+  - If manual QA is not needed but all tests don't pass, you can ping @churik or @Serhy to confirm that failed E2E tests are not unrelated.
 
 ## Enabling debug logs
 Calls to `log/debug` will not be printed to the console by default. It can be enabled under "Advanced settings" in the app:

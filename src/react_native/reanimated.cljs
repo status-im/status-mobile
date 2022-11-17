@@ -2,8 +2,9 @@
   (:require ["react-native" :as rn]
             [reagent.core :as reagent]
             [clojure.string :as string]
+            ["react-native-linear-gradient" :default LinearGradient]
             ["react-native-reanimated" :default reanimated
-             :refer (useSharedValue useAnimatedStyle withTiming withDelay withSpring Easing Keyframe)]))
+             :refer (useSharedValue useAnimatedStyle withTiming withDelay withSpring withRepeat Easing Keyframe)]))
 
 ;; Animated Components
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
@@ -11,6 +12,8 @@
 (def view (reagent/adapt-react-class (.-View reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
 (def touchable-opacity (create-animated-component (.-TouchableOpacity ^js rn)))
+
+(def linear-gradient (create-animated-component LinearGradient))
 
 ;; Hooks 
 (def use-shared-value useSharedValue)
@@ -21,6 +24,7 @@
 (def with-delay withDelay)
 (def with-spring withSpring)
 (def key-frame Keyframe)
+(def with-repeat withRepeat)
 
 ;; Easings
 (def bezier (.-bezier ^js Easing))
@@ -68,3 +72,7 @@
 (defn animate-shared-value-with-delay [anim val duration easing delay]
   (set-shared-value anim (with-delay delay (with-timing val (js-obj "duration" duration
                                                                     "easing"   (get easings easing))))))
+
+(defn animate-shared-value-with-repeat [anim val duration easing number-of-repetitions reverse?]
+  (set-shared-value anim (with-repeat (with-timing val (js-obj "duration" duration
+                                                               "easing"   (get easings easing))) number-of-repetitions reverse?)))

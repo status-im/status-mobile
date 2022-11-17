@@ -5,7 +5,7 @@
    [status-im.wallet.core :as wallet]
    [status-im.bottom-sheet.core :as bottom-sheet]
    [status-im.multiaccounts.model :as multiaccounts.model]
-   [status-im.navigation :as navigation]
+   [status-im2.navigation.events :as navigation]
    [status-im.mailserver.core :as mailserver]
    [status-im.utils.mobile-sync :as utils]
    [taoensso.timbre :as log]))

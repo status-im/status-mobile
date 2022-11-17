@@ -21,7 +21,6 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.screens.chat.sheets :as sheets]
-            [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.components.invite.views :as invite]
             [status-im.utils.config :as config]
             [quo2.components.markdown.text :as quo2.text]
@@ -235,7 +234,7 @@
 
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]
-    [components.plus-button/plus-button
+    [components.plus-button/plus-button-old
      {:on-press (when-not logging-in?
                   #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
       :loading logging-in?
@@ -260,12 +259,7 @@
                           :on-press #(do
                                        (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
                                        (if config/new-activity-center-enabled?
-                                         (re-frame/dispatch [:show-popover {:view                        :activity-center
-                                                                            :style                       {:margin 0}
-                                                                            :disable-touchable-overlay?  true
-                                                                            :blur-view?                  true
-                                                                            :blur-view-props             {:blur-amount 20
-                                                                                                          :blur-type   :dark}}])
+                                         (re-frame/dispatch [:activity-center/open])
                                          (re-frame/dispatch [:navigate-to :notifications-center])))}
       [icons/icon :main-icons/notification2 {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]]
      (when (pos? notif-count)
@@ -340,8 +334,7 @@
                 :margin-bottom 8}
     [quo2.text/text {:size :heading-1 :weight :semi-bold} (i18n/label :t/messages)]
     [plus-button]]
-   [chats-list]
-   [tabbar/tabs-counts-subscriptions]])
+   [chats-list]])
 
 (defn home-old []
   [react/keyboard-avoiding-view {:style {:flex 1}
@@ -352,5 +345,4 @@
                                      [connectivity/connectivity-button]
                                      [notifications-button-old]]}]
    [chats-list-old]
-   [plus-button-old]
-   [tabbar/tabs-counts-subscriptions]])
+   [plus-button-old]])

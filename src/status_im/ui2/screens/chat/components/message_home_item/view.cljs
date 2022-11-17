@@ -1,11 +1,10 @@
 (ns status-im.ui2.screens.chat.components.message-home-item.view
   (:require [clojure.string :as string]
-            [status-im.utils.re-frame :as rf]
+            [utils.re-frame :as rf]
             [status-im.utils.datetime :as time]
             [quo2.foundations.typography :as typography]
             [quo2.components.icon :as icons]
             [quo2.foundations.colors :as colors]
-            [quo2.components.avatars.user-avatar :as user-avatar]
             [quo.react-native :as rn]
             [quo.platform :as platform]
             [quo2.core :as quo2]
@@ -80,8 +79,9 @@
 
 (defn display-name-view [display-name contact timestamp]
   [rn/view {:style {:flex-direction :row}}
-   [text/text {:weight :semi-bold
-               :size   :paragraph-1}
+   [text/text {:weight              :semi-bold
+               :accessibility-label :chat-name-text
+               :size                :paragraph-1}
     display-name]
    [verified-or-contact-icon contact]
    [text/text {:style (style/timestamp)}
@@ -89,14 +89,11 @@
 
 (defn display-pic-view [group-chat color display-name photo-path]
   (if group-chat
-    [rn/view {:style (style/group-chat-icon color)}
-     [icons/icon :i/group {:size 16 :color colors/white-opa-70}]]
-    [user-avatar/user-avatar {:full-name         display-name
-                              :profile-picture   photo-path
-                              :status-indicator? true
-                              :online?           true
-                              :size              :small
-                              :ring?             false}]))
+    [quo2/group-avatar {:color color
+                        :size  :medium}]
+    [quo2/user-avatar {:full-name       display-name
+                       :profile-picture photo-path
+                       :size            :small}]))
 
 (defn messages-home-item [item]
   (let [{:keys [chat-id

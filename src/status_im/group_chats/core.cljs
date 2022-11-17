@@ -5,7 +5,7 @@
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models.chat]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.navigation :as navigation]
+            [status-im2.navigation.events :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
