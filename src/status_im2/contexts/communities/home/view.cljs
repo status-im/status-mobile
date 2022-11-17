@@ -17,12 +17,7 @@
 (defn navigate-to-activity-center []
   (rf/dispatch [:mark-all-activity-center-notifications-as-read])
   (if config/new-activity-center-enabled?
-    (rf/dispatch [:show-popover {:view                        :activity-center
-                                 :style                       {:margin 0}
-                                 :disable-touchable-overlay?  true
-                                 :blur-view?                  true
-                                 :blur-view-props             {:blur-amount 20
-                                                               :blur-type   :dark}}])
+    (rf/dispatch [:activity-center/open])
     (rf/dispatch [:navigate-to :notifications-center])))
 
 (defn plus-button []

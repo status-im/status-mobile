@@ -6,6 +6,18 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
+;;;; Navigation
+
+(fx/defn open-activity-center
+  {:events [:activity-center/open]}
+  [_]
+  (rf/dispatch [:show-popover {:view                        :activity-center
+                               :style                       {:margin 0}
+                               :disable-touchable-overlay?  true
+                               :blur-view?                  true
+                               :blur-view-props             {:blur-amount 20
+                                                             :blur-type   :dark}}]))
+
 ;;;; Misc
 
 (fx/defn process-notification-failure
