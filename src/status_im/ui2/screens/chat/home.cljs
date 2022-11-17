@@ -18,7 +18,6 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.invite.views :as invite]
             [status-im.utils.handlers :refer [<sub >evt]]
-            [status-im.utils.config :as config]
             [quo2.components.markdown.text :as quo2.text]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
@@ -37,7 +36,8 @@
             [status-im.ui2.screens.chat.components.message-home-item.view :refer [messages-home-item]]
             [status-im.ui2.screens.chat.components.contact-item.view :refer [contact-item]]
             [clojure.string :as str]
-            [status-im2.common.plus-button.view :as components.plus-button])
+            [status-im2.common.plus-button.view :as components.plus-button]
+            [status-im2.setup.config :as config])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn home-tooltip-view []
@@ -314,7 +314,7 @@
                           :on-press            #(do
                                                   (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
                                                   (if config/new-activity-center-enabled?
-                                                    (re-frame/dispatch [:navigate-to :activity-center])
+                                                    (re-frame/dispatch [:activity-center/open])
                                                     (re-frame/dispatch [:navigate-to :notifications-center])))}
       [icons/icon :main-icons/notification2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
      (when (pos? notif-count)

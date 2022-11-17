@@ -9,9 +9,16 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.community.discover-card :as discover-card]
             [quo2.components.navigation.top-nav :as topnav]
+            [status-im2.setup.config :as config]
             [status-im2.common.plus-button.view :as components.plus-button]
             [status-im2.contexts.communities.home.actions.view :as home.actions]
             [status-im2.contexts.communities.home.style :as style]))
+
+(defn navigate-to-activity-center []
+  (rf/dispatch [:mark-all-activity-center-notifications-as-read])
+  (if config/new-activity-center-enabled?
+    (rf/dispatch [:activity-center/open])
+    (rf/dispatch [:navigate-to :notifications-center])))
 
 (defn plus-button []
   [components.plus-button/plus-button
@@ -88,7 +95,8 @@
                        :background-color (colors/theme-colors
                                           colors/neutral-5
                                           colors/neutral-95)}}
-      [topnav/top-nav {:type :default}]
+      [topnav/top-nav {:type                 :default
+                       :open-activity-center navigate-to-activity-center}]
       [title-column]
       [discover-card/discover-card {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
                                     :title               (i18n/label :t/discover)
