@@ -3,7 +3,11 @@
             ["react-native" :as react-native]
             ["@react-native-community/blur" :as blur]
             [react-native.flat-list :as flat-list]
+<<<<<<< HEAD
             [react-native.section-list :as section-list]))
+=======
+            ["react-native-navigation" :refer (Navigation)]))
+>>>>>>> 3c47804f9... refactor
 
 (def app-state ^js (.-AppState ^js react-native))
 (def blur-view (reagent/adapt-react-class (.-BlurView blur)))
@@ -55,3 +59,11 @@
   (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))
 
 (def status-bar (.-StatusBar ^js react-native))
+
+(def navigation-const (atom nil))
+
+(.then (.constants Navigation)
+       (fn [^js consts]
+         (reset! navigation-const {:top-bar-height (.-topBarHeight consts)
+                                   :bottom-tabs-height (.-bottomTabsHeight consts)
+                                   :status-bar-height (.-statusBarHeight consts)})))
