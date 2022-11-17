@@ -3,24 +3,20 @@
             [reagent.core :as reagent]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.tabs.tabs :as tabs]
+            [utils.re-frame :as rf]
+            [i18n.i18n :as i18n]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.components.community.discover-card :as discover-card]
             [quo2.components.navigation.top-nav :as topnav]
             [status-im2.common.plus-button.view :as components.plus-button]
-            [utils.re-frame :as rf]
-            [i18n.i18n :as i18n]
-            [quo2.core :as quo]
-            [status-im.ui.screens.communities.community-options-bottom-sheet :as home-actions]))
+            [status-im2.contexts.communities.home.actions.view :as home.actions]
+            [status-im2.contexts.communities.home.style :as style]))
 
 (defn plus-button []
-  (let [logging-in? (rf/sub [:multiaccounts/login])]
-    [components.plus-button/plus-button
-     {:on-press            (when-not logging-in?
-                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
-      :loading             logging-in?
-      :accessibility-label :new-chat-button}]))
+  [components.plus-button/plus-button
+   {:on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}])
+    :accessibility-label :new-chat-button}])
 
 (defn render-fn [id]
   (let [community-item (rf/sub [:communities/home-item id])]
@@ -31,7 +27,7 @@
                        (rf/dispatch [:navigate-to :community {:community-id id}]))
       :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
                                     {:content (fn []
-                                                [home-actions/options-menu community-item])}])}
+                                                [home.actions/actions community-item])}])}
      community-item]))
 
 (defn get-item-layout-js [_ index]
@@ -45,12 +41,12 @@
                     :margin-top         8
                     :height             60
                     :padding-horizontal 20}}
-   [tabs/tabs {:size           32
-               :on-change      #(reset! selected-tab %)
-               :default-active :joined
-               :data           [{:id :joined :label (i18n/label :chats/joined) :accessibility-label :joined-tab}
-                                {:id :pending :label (i18n/label :t/pending) :accessibility-label :pending-tab}
-                                {:id :opened :label (i18n/label :t/opened) :accessibility-label :opened-tab}]}]])
+   [quo/tabs {:size           32
+              :on-change      #(reset! selected-tab %)
+              :default-active :joined
+              :data           [{:id :joined :label (i18n/label :chats/joined) :accessibility-label :joined-tab}
+                               {:id :pending :label (i18n/label :t/pending) :accessibility-label :pending-tab}
+                               {:id :opened :label (i18n/label :t/opened) :accessibility-label :opened-tab}]}]])
 
 (defn communities-list [community-ids]
   [rn/flat-list
@@ -78,27 +74,11 @@
        [communities-list communities])]))
 
 (defn title-column []
-  [rn/view
-   {:style {:flex-direction     :row
-            :align-items        :center
-            :height             56
-            :padding-vertical   12
-            :margin-bottom      8
-            :padding-horizontal 20}}
-   [rn/view
-    {:flex 1}
-    [text/text {:accessibility-label :communities-screen-title
-                :margin-right        6
-                :weight              :semi-bold
-                :size                :heading-1}
+  [rn/view style/title-column
+   [rn/view {:flex 1}
+    [quo/text style/title-column-text
      (i18n/label :t/communities)]]
    [plus-button]])
-
-(defn discover-card []
-  [discover-card/discover-card {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
-                                :title               (i18n/label :t/discover)
-                                :description         (i18n/label :t/whats-trending)
-                                :accessibility-label :communities-home-discover-card}])
 
 (defn home []
   [safe-area/consumer
@@ -108,9 +88,11 @@
                        :background-color (colors/theme-colors
                                           colors/neutral-5
                                           colors/neutral-95)}}
-      [rn/view {:flex 1}
-       [topnav/top-nav {:type :default}]
-       [title-column]
-       [discover-card]
-       [home-community-segments]
-       [segments-community-lists]]])])
+      [topnav/top-nav {:type :default}]
+      [title-column]
+      [discover-card/discover-card {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
+                                    :title               (i18n/label :t/discover)
+                                    :description         (i18n/label :t/whats-trending)
+                                    :accessibility-label :communities-home-discover-card}]
+      [home-community-segments]
+      [segments-community-lists]])])

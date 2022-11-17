@@ -1,13 +1,8 @@
-(ns status-im.ui.screens.communities.community-options-bottom-sheet
-  (:require  [status-im.i18n.i18n :as i18n]
-             [quo.react-native :as rn]
-             [quo2.components.markdown.text :as text]
-             [quo2.components.buttons.button :as button]
-             [quo2.components.drawers.action-drawers :as action-drawers]
-             [quo2.components.tags.context-tags :as context-tags]
-             [status-im.react-native.resources :as resources]
-             [utils.re-frame :as rf]
-             [status-im.communities.core :as communities]))
+(ns status-im2.contexts.communities.home.actions.view
+  (:require [i18n.i18n :as i18n]
+            [utils.re-frame :as rf]
+            [react-native.core :as rn]
+            [quo2.core :as quo]))
 
 (defn hide-sheet-and-dispatch [event]
   (rf/dispatch [:bottom-sheet/hide])
@@ -63,49 +58,44 @@
   [rn/view {:style {:flex 1 :margin-left 20 :margin-right 20 :margin-bottom 20}}
    [rn/view {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :space-between}}
 
-    [text/text {:accessibility-label :communities-join-community
-                :weight              :semi-bold
-                :size                :heading-1}
+    [quo/text {:accessibility-label :communities-join-community
+               :weight              :semi-bold
+               :size                :heading-1}
      (i18n/label :t/leave-community?)]]
-       ;; TODO get tag image from community data
-   [context-tags/context-tag
-    {:style
-     {:margin-right :auto
-      :margin-top   8}}
-    (resources/get-image :status-logo) (:name community)]
-   [text/text {:accessibility-label :communities-join-community
-               :size                :paragraph-1
-               :style               {:margin-top 16}}
+   ;; TODO get tag image from community data
+   #_[quo/context-tag
+      {:style
+       {:margin-right :auto
+        :margin-top   8}}
+      (resources/get-image :status-logo) (:name community)]
+   [quo/text {:accessibility-label :communities-join-community
+              :size                :paragraph-1
+              :style               {:margin-top 16}}
     (i18n/label :t/leave-community-message)]
-   [rn/view {:style {:width           "100%"
-                     :margin-top      16
+   [rn/view {:style {:margin-top      16
                      :margin-bottom   16
                      :flex            1
                      :flex-direction  :row
                      :align-items     :center
                      :justify-content :space-evenly}}
-    [button/button {:on-press #(rf/dispatch [:bottom-sheet/hide])
-                    :type     :grey
-                    :style    {:flex         1
-                               :margin-right 12}}
+    [quo/button {:on-press #(rf/dispatch [:bottom-sheet/hide])
+                 :type     :grey
+                 :style    {:flex         1
+                            :margin-right 12}}
      (i18n/label :t/cancel)]
-    [button/button {:on-press (fn []
-                                #(rf/dispatch [::communities/leave (:id community)])
-                                #(rf/dispatch [:bottom-sheet/hide]))
-                    :style {:flex 1}}
+    [quo/button {:on-press #(hide-sheet-and-dispatch [:communities/leave (:id community)])
+                 :style {:flex 1}}
      (i18n/label :t/leave-community)]]])
 
-(defn options-menu []
+(defn actions []
   (let [community-mock (rf/sub [:get-screen-params :community-overview]) ;;TODO stop using mock data and only pass community id
         community (rf/sub [:communities/community (:id community-mock)])]
-    [action-drawers/action-drawer [(get (if (:joined community)
-                                          (joined-options (:id community))
-                                          not-joined-options) :actions)
-                                   (when (:joined community)
-                                     [{:icon      :i/log-out
-                                       :label     (i18n/label :t/leave-community)
-                                       :on-press  #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                 {:content        (constantly [leave-sheet community])
-                                                                  :content-height 300}])}])]]))
-
-
+    [quo/action-drawer [(get (if (:joined community)
+                               (joined-options (:id community))
+                               not-joined-options) :actions)
+                        (when (:joined community)
+                          [{:icon      :i/log-out
+                            :label     (i18n/label :t/leave-community)
+                            :on-press  #(rf/dispatch [:bottom-sheet/show-sheet
+                                                      {:content        (constantly [leave-sheet community])
+                                                       :content-height 300}])}])]]))

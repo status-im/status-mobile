@@ -159,15 +159,3 @@
                  :accessibility-label :chat-key
                  :monospace           true}
        community-key]]]))
-
-(defn render-featured-community [{:keys [name id]}]
-  [react/touchable-highlight {:on-press            #(>evt [:navigate-to :community {:community-id id}])
-                              :accessibility-label :chat-item}
-   [react/view {:padding-right    8
-                :padding-vertical 8}
-    [react/view {:border-color       quo.colors/gray-lighter
-                 :border-radius      36
-                 :border-width       1
-                 :padding-horizontal 8
-                 :padding-vertical   5}
-     [quo/text {:color :link} name]]]])

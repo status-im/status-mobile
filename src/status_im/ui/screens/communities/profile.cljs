@@ -95,7 +95,7 @@
            [quo/list-item {:theme    :accent
                            :icon     :main-icons/arrow-left
                            :title    (i18n/label :t/leave-community)
-                           :on-press #(>evt [::communities/leave community-id])}]
+                           :on-press #(>evt [:communities/leave community-id])}]
            ;; Disable as not implemented yet
            (when false
              [quo/list-item {:theme    :negative
