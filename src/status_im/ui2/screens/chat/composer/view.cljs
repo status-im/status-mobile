@@ -188,7 +188,7 @@
                                                        (re-frame/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
                ;black background
-               [reanimated/view {:style (reanimated/apply-animations-to-style
-                                         {:opacity bg-opacity}
-                                         (styles/bottom-sheet-background window-height))}]
+               #_[reanimated/view {:style (reanimated/apply-animations-to-style
+                                           {:opacity bg-opacity}
+                                           (styles/bottom-sheet-background window-height))}]
                [mentions/autocomplete-mentions suggestions]]))])))])
