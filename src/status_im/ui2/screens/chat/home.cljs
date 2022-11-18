@@ -38,9 +38,9 @@
             [quo2.components.notifications.info-count :refer [info-count]]
             [status-im.ui2.screens.chat.components.received-cr-item :as received-cr-item]
             [status-im.ui2.screens.chat.components.message-home-item.view :refer [messages-home-item]]
-            [status-im.ui2.screens.chat.components.contact-item.view :refer [contact-item]]
             [clojure.string :as str]
             [status-im2.common.plus-button.view :as components.plus-button]
+            [status-im.ui2.screens.common.contact-list.view :as contact-list]
             [status-im2.setup.config :as config])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -249,8 +249,6 @@
   (let [{:keys [items search-filter]} (<sub [:home-items])
         current-active-tab @selected-tab
         items              (prepare-items current-active-tab items)
-        contacts           (<sub [:contacts/active])
-        contacts           (prepare-contacts contacts)
         notifications      (<sub [:activity.center/notifications-grouped-by-date])
         {requests :received-requests new-info :has-unread?} (find-contact-requests notifications)]
     [rn/view {:style {:flex 1}}
@@ -283,12 +281,7 @@
            :render-fn                    messages-home-item}]
          [rn/view {:style {:flex 1}} (when (> (count requests) 0)
                                        [contact-requests requests])
-          [rn/section-list
-           {:key-fn                         :title
-            :sticky-section-headers-enabled false
-            :sections                       contacts
-            :render-section-header-fn       contacts-section-header
-            :render-fn                      contact-item}]]))]))
+          [contact-list/contact-list {:icon :options}]]))]))
 
 (views/defview chats-list []
   (views/letsubs [loading? [:chats/loading?]]

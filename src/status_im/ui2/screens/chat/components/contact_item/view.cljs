@@ -9,8 +9,7 @@
             [quo2.components.markdown.text :as text]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]
             [utils.re-frame :as rf]
-            [status-im.ui2.screens.chat.actions :as actions]
-            [reagent.core :as reagent]))
+            [status-im.ui2.screens.chat.actions :as actions]))
 
 (defn open-chat [chat-id]
   (rf/dispatch [:dismiss-keyboard])
@@ -20,7 +19,7 @@
   (rf/dispatch [:search/home-filter-changed nil])
   (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
 
-(defn contact-item [item extra-data]
+(defn contact-item [item {:keys [icon] :as extra-data}]
   (let [{:keys [public-key ens-verified added? images]} item
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
         photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))
@@ -56,6 +55,7 @@
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
        (utils/get-shortened-address public-key)]]
 <<<<<<< HEAD
+<<<<<<< HEAD
      (when-not (= current-pk public-key)
        [rn/touchable-opacity {:style          {:position :absolute
                                                :right    20}
@@ -71,4 +71,23 @@
                                                      {:content (fn [] [actions/actions item extra-data])}])}
       [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]))
 >>>>>>> 4b20ea02d... feat: group details screen
+=======
+     [rn/touchable-opacity {:style          (merge {:position :absolute
+                                                    :right    20}
+                                                   (when (= icon :check)
+                                                     {:background-color (colors/theme-colors colors/primary-50 colors/primary-60)
+                                                      :width 20
+                                                      :height 20
+                                                      :border-radius 6
+                                                      :justify-content :center
+                                                      :align-items :center}))
+                            :active-opacity 1
+                            :on-press       (if (= icon :options)
+                                              #(rf/dispatch [:bottom-sheet/show-sheet
+                                                             {:content (fn [] [actions/actions item extra-data])}])
+                                              #(println "other"))}
+      (if (= icon :options)
+        [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+        [icons/icon :i/check-large {:size 12 :color colors/white}])]]))
+>>>>>>> 6bc845a97... updates
 

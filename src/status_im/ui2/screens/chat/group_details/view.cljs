@@ -42,7 +42,7 @@
             [status-im.chat.models :as chat.models]
             [utils.re-frame :as rf]
             [i18n.i18n :as i18n]
-            [react-native.platform :as platform]
+            [status-im.ui2.screens.common.contact-list.view :as contact-list]
             [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]
             [status-im.ui2.screens.chat.actions :as actions]
             [quo.components.safe-area :as safe-area]))
@@ -173,12 +173,12 @@
    (fn []
      (let [{window-height :height} (rn/use-window-dimensions)
            safe-area (safe-area/use-safe-area)]
-       [rn/view {:style {:margin-left 20
-                         :height      (- window-height (:top safe-area))}}
+       [rn/view {:style {:height (- window-height (:top safe-area))}}
         [rn/touchable-opacity
          {:on-press #(rf/dispatch [:bottom-sheet/hide])
           :style
           {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
+           :margin-left      20
            :width            32
            :height           32
            :border-radius    10
@@ -187,13 +187,14 @@
            :margin-bottom    24}}
          [quo2/icon :i/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
         [quo2/text {:size   :heading-1
-                    :weight :semi-bold}
+                    :weight :semi-bold
+                    :style  {:margin-left 20}}
          (i18n/label :t/add-members)]
-        [rn/flat-list
-         {:key-fn    :chat-id
-          :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
-          :render-fn received-cr-item/received-cr-item}]
-        ]))])
+        [rn/text-input {:placeholder "Search..."
+                        :style       {:height             32
+                                      :padding-horizontal 20
+                                      :margin-vertical    12}}]
+        [contact-list/contact-list {:icon :check}]]))])
 
 (defn group-details []
 <<<<<<< HEAD
@@ -310,5 +311,10 @@
 =======
                        :render-fn                      (fn [item]
                                                          [contact-item/contact-item item {:chat-id chat-id
+<<<<<<< HEAD
                                                                                           :admin?  admin?}])}]]))
 >>>>>>> 25441811e... feat: group details screen 2
+=======
+                                                                                          :admin?  admin?
+                                                                                          :icon :options}])}]]))
+>>>>>>> 6bc845a97... updates
