@@ -223,16 +223,16 @@
        [quo2/icon (if public? :i/world :i/privacy) {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]
 >>>>>>> 8c3cd6f91... refactor
      [rn/view {:style (style/actions-view)}
-      [rn/view {:style (style/action-container color)}
+      [rn/touchable-opacity {:style (style/action-container color)}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/pin {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
         [count-container (count pinned-messages)]]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label :t/pinned-messages)]]
-      [rn/view {:style (style/action-container color)}
+      [rn/touchable-opacity {:style (style/action-container color)}
        [quo2/icon :i/activity-center {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label :t/mute-group)]]
-      [rn/view {:style (style/action-container color)}
+      [rn/touchable-opacity {:style (style/action-container color)}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
