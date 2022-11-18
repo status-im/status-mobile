@@ -4,8 +4,8 @@
             [status-im.ui2.screens.chat.group-details.style :as style]
             [quo2.core :as quo2]
             [utils.re-frame :as rf]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.utils.platform :as platform]
+            [i18n.i18n :as i18n]
+            [react-native.platform :as platform]
             [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]))
 
 (defn back-button []

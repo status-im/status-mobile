@@ -1,7 +1,5 @@
 (ns react-native.section-list
   (:require [reagent.core :as reagent]
-            [status-im.ui.components.list.styles :as styles]
-            [status-im.ui.components.react :as react]
             [react-native.flat-list :as flat-list]
             ["react-native" :as react-native]))
 
@@ -19,12 +17,6 @@
       (reagent/as-element [f {:title (.-title section)
                               :data  (.-data section)}]))))
 
-(defn- default-render-section-header [{:keys [title data]}]
-  (when (seq data)
-    [react/view styles/section-header-container
-     [react/text {:style styles/section-header}
-      title]]))
-
 (defn- wrap-per-section-render-fn [props]
   (update
    (if-let [f (:render-fn props)]
@@ -37,9 +29,7 @@
    To render something on empty sections, use renderSectionFooter and conditionaly
    render on empty data
    See https://facebook.github.io/react-native/docs/sectionlist.html"
-  [{:keys [sections render-section-header-fn render-section-footer-fn style] :as props
-    :or {render-section-header-fn default-render-section-header
-         style {}}}]
+  [{:keys [sections render-section-header-fn render-section-footer-fn style] :as props}]
   [section-list-class
    (merge (flat-list/base-list-props props)
           props
