@@ -12,6 +12,7 @@ let
 
   # Source can be changed with a local override from config
   source = callPackage ./source.nix { };
+  nimbusSource = callPackage ./nimbus_source.nix { };
 
   # Params to be set at build time, important for About section and metrics
   goBuildParams = {
@@ -31,12 +32,19 @@ let
     "-w" # -w disables DWARF debugging information
   ];
 in rec {
+  inherit nimbusSource;
   mobile = callPackage ./mobile {
-    inherit meta source goBuildLdFlags;
+    inherit meta source nimbusSource goBuildLdFlags;
   };
 
   library = callPackage ./library {
     inherit meta source;
+  };
+
+  liblcproxy = callPackage ./mobile/buildNimbus.nix {
+    srcRaw = nimbusSource;
+    platform = "ios";
+    arch = "386";
   };
 
   shell = mkShell {

@@ -1,4 +1,4 @@
-{ callPackage, meta, source, goBuildLdFlags }:
+{ callPackage, meta, source, nimbusSource, goBuildLdFlags }:
 
 {
   android = callPackage ./build.nix {
@@ -6,7 +6,7 @@
     platformVersion = "23";
     targets = [ "android/arm" "android/arm64" "android/386" ];
     outputFileName = "status-go-${source.shortRev}.aar";
-    inherit meta source goBuildLdFlags;
+    inherit meta source nimbusSource goBuildLdFlags;
   };
 
   ios = callPackage ./build.nix {
@@ -14,6 +14,6 @@
     platformVersion = "8.0";
     targets = [ "ios" "iossimulator" ];
     outputFileName = "Statusgo.xcframework";
-    inherit meta source goBuildLdFlags;
+    inherit meta source nimbusSource goBuildLdFlags;
   };
 }
