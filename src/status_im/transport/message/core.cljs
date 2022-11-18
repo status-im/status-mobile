@@ -5,7 +5,7 @@
             [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.chat.models :as models.chat]
             [status-im.chat.models.reactions :as models.reactions]
-            [status-im.utils.config :as config]
+            [status-im2.setup.config :as config]
             [status-im.contact.core :as models.contact]
             [status-im.communities.core :as models.communities]
             [status-im.pairing.core :as models.pairing]
