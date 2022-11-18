@@ -38,8 +38,7 @@
   ~excessively~ big, this implementation will probably need to be revisited."
   [db-notifications new-notifications]
   (reduce (fn [acc {:keys [id type read] :as notification}]
-            (let [filter-status       (if read :read :unread)
-                  remove-notification (fn [data]
+            (let [remove-notification (fn [data]
                                         (remove #(= id (:id %)) data))
                   insert-and-sort     (fn [data]
                                         (->> notification
@@ -47,14 +46,17 @@
                                              (sort-by (juxt :timestamp :id))
                                              reverse))]
               (as-> acc $
-                (update-in $ [type :read :data] remove-notification)
+                (update-in $ [type :all :data] remove-notification)
+                (update-in $ [types/no-type :all :data] remove-notification)
                 (update-in $ [type :unread :data] remove-notification)
-                (update-in $ [types/no-type :read :data] remove-notification)
                 (update-in $ [types/no-type :unread :data] remove-notification)
                 (if (or (:dismissed notification) (:accepted notification))
                   $
-                  (-> $ (update-in [type filter-status :data] insert-and-sort)
-                      (update-in [types/no-type filter-status :data] insert-and-sort))))))
+                  (cond-> (-> $
+                              (update-in [type :all :data] insert-and-sort)
+                              (update-in [types/no-type :all :data] insert-and-sort))
+                    (not read) (update-in [type :unread :data] insert-and-sort)
+                    (not read) (update-in [types/no-type :unread :data] insert-and-sort))))))
           db-notifications
           new-notifications))
 
@@ -137,13 +139,11 @@
   (and (some? cursor)
        (not= cursor start-or-end-cursor)))
 
-(def ^:const status-read 1)
 (def ^:const status-unread 2)
 (def ^:const status-all 3)
 
 (defn status [filter-status]
   (case filter-status
-    :read   status-read
     :unread status-unread
     :all    status-all
     99))

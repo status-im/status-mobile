@@ -3,7 +3,7 @@
             [status-im.constants :as constants]
             [status-im.activity-center.notification-types :as notification-types]
             [status-im.data-store.activities :as store]
-            [status-im.utils.config :as config]))
+            [status-im2.setup.config :as config]))
 
 (def chat-id
   "0x04c66155")
