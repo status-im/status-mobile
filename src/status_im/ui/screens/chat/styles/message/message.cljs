@@ -77,7 +77,7 @@
 
 (defn pin-indicator-container []
   {:margin-top  4
-   :margin-left 68
+   :margin-left 54
    :top 4
    :justify-content :center
    :align-self   :flex-start

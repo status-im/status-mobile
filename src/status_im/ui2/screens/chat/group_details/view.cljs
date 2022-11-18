@@ -2,6 +2,7 @@
   (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
 <<<<<<< HEAD
+<<<<<<< HEAD
             [status-im.ui2.screens.chat.group-details.style :as style]
             [quo2.core :as quo2]
             [utils.re-frame :as rf]
@@ -33,11 +34,18 @@
 =======
 >>>>>>> 8c3cd6f91... refactor
             [status-im.ui2.screens.chat.group-details.style :as style]
+=======
+>>>>>>> 25441811e... feat: group details screen 2
             [quo2.core :as quo2]
+            [status-im.ui2.screens.chat.group-details.style :as style]
+            [status-im.ui2.screens.chat.messages.message :as message]
+            [status-im.chat.models :as chat.models]
             [utils.re-frame :as rf]
             [i18n.i18n :as i18n]
             [react-native.platform :as platform]
-            [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]))
+            [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]
+            [status-im.ui2.screens.chat.actions :as actions]
+            [quo.components.safe-area :as safe-area]))
 
 (defn back-button []
   [quo2/button {:type                :grey
@@ -49,12 +57,15 @@
    [quo2/icon :i/arrow-left {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
 (defn options-button []
-  [quo2/button {:type                :grey
-                :size                32
-                :width               32
-                :style               {:margin-right 20}
-                :accessibility-label :options-button}
-   [quo2/icon :i/options {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
+  (let [group (rf/sub [:chats/current-chat])]
+    [quo2/button {:type                :grey
+                  :size                32
+                  :width               32
+                  :style               {:margin-right 20}
+                  :accessibility-label :options-button
+                  :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+                                                      {:content (fn [] [actions/group-details-actions group])}])}
+     [quo2/icon :i/options {:color (colors/theme-colors colors/neutral-100 colors/white)}]]))
 
 <<<<<<< HEAD
 (defn top-buttons []
@@ -110,12 +121,13 @@
 (defn prepare-members
   [contact-addresses admins]
   (let [contacts (map #(assoc (rf/sub [:contacts/contact-by-address %])
-                              :admin? (get admins %))
+                         :admin? (get admins %))
                       contact-addresses)
         admins   (filter :admin? contacts)
         online   (filter #(and (not (:admin? %)) (:online? %)) contacts)
         offline  (filter #(and (not (:admin? %)) (not (:online? %))) contacts)]
     (vals (cond-> {}
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -144,6 +156,11 @@
             (seq online) (assoc :online {:title "Online" :data online})
             (seq offline) (assoc :offline {:title "Offline" :data offline})))))
 >>>>>>> 9aedd60b3... refactor
+=======
+                  (seq admins) (assoc :owner {:title "Owner" :data admins})
+                  (seq online) (assoc :online {:title "Online" :data online})
+                  (seq offline) (assoc :offline {:title "Offline" :data offline})))))
+>>>>>>> 25441811e... feat: group details screen 2
 
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:padding-horizontal 20 :border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :margin-top 8}}
@@ -151,7 +168,35 @@
                :weight :medium
                :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}} title]])
 
+(defn contact-requests-sheet []
+  [:f>
+   (fn []
+     (let [{window-height :height} (rn/use-window-dimensions)
+           safe-area     (safe-area/use-safe-area)]
+       [rn/view {:style {:margin-left 20
+                         :height      (- window-height (:top safe-area))}}
+        [rn/touchable-opacity
+         {:on-press #(rf/dispatch [:bottom-sheet/hide])
+          :style
+          {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
+           :width            32
+           :height           32
+           :border-radius    10
+           :justify-content  :center
+           :align-items      :center
+           :margin-bottom    24}}
+         [quo2/icon :i/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
+        [quo2/text {:size :heading-1
+                    :weight :semi-bold}
+         (i18n/label :t/pending-requests)]
+        ;[list/flat-list
+        ; {:key-fn    :chat-id
+        ;  :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
+        ;  :render-fn received-cr-item/received-cr-item}]
+        ]))])
+
 (defn group-details []
+<<<<<<< HEAD
 <<<<<<< HEAD
   (let [{:keys [admins chat-id chat-name color public?]} (rf/sub [:chats/current-chat])
         members (rf/sub [:contacts/current-chat-contacts])
@@ -168,13 +213,15 @@
                        :margin-top         12
 =======
   (let [{:keys [admins chat-id chat-name color contacts public?]} (rf/sub [:chats/current-chat])
+=======
+  (let [{:keys [admins chat-id chat-name color contacts public? muted]} (rf/sub [:chats/current-chat])
+>>>>>>> 25441811e... feat: group details screen 2
         members           (rf/sub [:contacts/current-chat-contacts])
         sectioned-members (prepare-members (seq contacts) admins)
         pinned-messages   (rf/sub [:chats/pinned chat-id])
         current-pk        (rf/sub [:multiaccount/public-key])
         admin?            (get admins current-pk)]
-    [rn/view {:style {:padding-top      (when platform/ios? (:status-bar-height @rn/navigation-const))
-                      :flex             1
+    [rn/view {:style {:flex             1
                       :background-color (colors/theme-colors colors/white colors/neutral-95)}}
      [quo2/header {:left-component  [back-button]
                    :right-component [options-button]
@@ -223,16 +270,23 @@
        [quo2/icon (if public? :i/world :i/privacy) {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]
 >>>>>>> 8c3cd6f91... refactor
      [rn/view {:style (style/actions-view)}
-      [rn/touchable-opacity {:style (style/action-container color)}
+      [rn/touchable-opacity {:style    (style/action-container color)
+                             :on-press (fn []
+                                         (rf/dispatch [:bottom-sheet/show-sheet
+                                                       {:content #(message/pinned-messages-list chat-id)}]))}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/pin {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
         [count-container (count pinned-messages)]]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label :t/pinned-messages)]]
-      [rn/touchable-opacity {:style (style/action-container color)}
-       [quo2/icon :i/activity-center {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
-       [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label :t/mute-group)]]
-      [rn/touchable-opacity {:style (style/action-container color)}
+      [rn/touchable-opacity {:style    (style/action-container color)
+                             :on-press #(rf/dispatch [::chat.models/mute-chat-toggled chat-id (not muted)])}
+       [quo2/icon (if muted :i/muted :i/activity-center) {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
+       [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if muted :unmute-group :mute-group))]]
+      [rn/touchable-opacity {:style (style/action-container color)
+                             :on-press (rf/dispatch
+                                         [:bottom-sheet/show-sheet
+                                          {:content (fn [] [contact-requests-sheet])}])}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
@@ -250,5 +304,11 @@
                        :sticky-section-headers-enabled false
                        :sections                       sectioned-members
                        :render-section-header-fn       contacts-section-header
+<<<<<<< HEAD
                        :render-fn                      contact-item/contact-item}]]))
 >>>>>>> ca683e4a1... add SectionList to RN
+=======
+                       :render-fn                      (fn [item]
+                                                         [contact-item/contact-item item {:chat-id chat-id
+                                                                                          :admin?  admin?}])}]]))
+>>>>>>> 25441811e... feat: group details screen 2

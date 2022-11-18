@@ -9,7 +9,8 @@
             [quo2.components.markdown.text :as text]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]
             [utils.re-frame :as rf]
-            [status-im.ui2.screens.chat.actions :as actions]))
+            [status-im.ui2.screens.chat.actions :as actions]
+            [reagent.core :as reagent]))
 
 (defn open-chat [chat-id]
   (rf/dispatch [:dismiss-keyboard])
@@ -19,16 +20,21 @@
   (rf/dispatch [:search/home-filter-changed nil])
   (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
 
-(defn contact-item [item]
+(defn contact-item [item extra-data]
   (let [{:keys [public-key ens-verified added? images]} item
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
         photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))
         current-pk   (rf/sub [:multiaccount/public-key])]
     [rn/touchable-opacity (merge {:style         (style/container)
                                   :on-press      #(open-chat public-key)
+<<<<<<< HEAD
                                   :on-long-press #(when-not (= current-pk public-key)
                                                     (rf/dispatch [:bottom-sheet/show-sheet
                                                                   {:content (fn [] [actions/actions item])}]))})
+=======
+                                  :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                                                {:content (fn [] [actions/actions item extra-data])}])})
+>>>>>>> 25441811e... feat: group details screen 2
      [user-avatar/user-avatar {:full-name         display-name
                                :profile-picture   photo-path
                                :status-indicator? true
@@ -62,7 +68,7 @@
                                              :right    20}
                             :active-opacity 1
                             :on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                                     {:content (fn [] [actions/actions item])}])}
+                                                     {:content (fn [] [actions/actions item extra-data])}])}
       [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]))
 >>>>>>> 4b20ea02d... feat: group details screen
 
