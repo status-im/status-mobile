@@ -77,7 +77,7 @@
                          :justify-content :space-between}}
         [quo2/icon :i/pin {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
         [count-container (count pinned-messages)]]
-       [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label :t/pinned-messages)]]
+       [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label :t/pinned-messages-2)]]
       [rn/touchable-opacity {:style (style/action-container color)}
        [quo2/icon :i/activity-center {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label :t/mute-group)]]
