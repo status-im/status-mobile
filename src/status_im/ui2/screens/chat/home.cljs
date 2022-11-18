@@ -22,6 +22,7 @@
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
             [react-native.core :as rn]
+            [quo.react-native :as quo.rn]
             [quo.react]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
@@ -355,9 +356,9 @@
   [:f>
    (fn []
      (quo.react/effect! #(re-frame/dispatch [:get-activity-center-notifications]))
-     [rn/keyboard-avoiding-view {:style         {:flex             1
-                                                 :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
-                                 :ignore-offset true}
+     [quo.rn/keyboard-avoiding-view {:style         {:flex             1
+                                                     :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
+                                     :ignore-offset true}
       [topbar/topbar {:navigation      :none
                       :use-insets      true
                       :background      (colors/theme-colors colors/neutral-5 colors/neutral-95)
