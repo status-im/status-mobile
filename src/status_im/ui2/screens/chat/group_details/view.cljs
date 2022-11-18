@@ -5,7 +5,6 @@
             [quo2.core :as quo2]
             [utils.re-frame :as rf]
             [i18n.i18n :as i18n]
-            [react-native.platform :as platform]
             [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]))
 
 (defn back-button []
