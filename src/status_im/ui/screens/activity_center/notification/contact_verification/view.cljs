@@ -82,23 +82,28 @@
                    :status          (activity-status challenger? contact-verification-status)}
                   (if challenger?
                     (cond (= contact-verification-status constants/contact-verification-status-accepted)
-                          {:button-1 {:label    (i18n/label :t/untrustworthy)
-                                      :type     :danger
-                                      :on-press #(rf/dispatch [:activity-center.contact-verification/mark-as-untrustworthy id])}
-                           :button-2 {:label    (i18n/label :t/accept)
-                                      :type     :positive
-                                      :on-press #(rf/dispatch [:activity-center.contact-verification/mark-as-trusted id])}})
+                          {:button-1 {:label               (i18n/label :t/untrustworthy)
+                                      :accessibility-label :mark-contact-verification-as-untrustworthy
+                                      :type                :danger
+                                      :on-press            #(rf/dispatch [:activity-center.contact-verification/mark-as-untrustworthy id])}
+                           :button-2 {:label               (i18n/label :t/accept)
+                                      :accessibility-label :mark-contact-verification-as-trusted
+                                      :type                :positive
+                                      :on-press            #(rf/dispatch [:activity-center.contact-verification/mark-as-trusted id])}})
                     (cond (= contact-verification-status constants/contact-verification-status-pending)
-                          {:button-1 {:label    (i18n/label :t/decline)
-                                      :type     :danger
-                                      :on-press #(hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/decline id])}
+                          {:button-1 {:label               (i18n/label :t/decline)
+                                      :accessibility-label :decline-contact-verification
+                                      :type                :danger
+                                      :on-press            #(hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/decline id])}
                            :button-2 (if replying?
-                                       {:label    (i18n/label :t/send-reply)
-                                        :type     :primary
-                                        :on-press #(hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/reply id @reply])}
-                                       {:label    (i18n/label :t/message-reply)
-                                        :type     :primary
-                                        :on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                 :activity-center.contact-verification/reply
-                                                                 {:notification notification
-                                                                  :replying?    true}])})})))])))))
+                                       {:label               (i18n/label :t/send-reply)
+                                        :accessibility-label :reply-to-contact-verification
+                                        :type                :primary
+                                        :on-press            #(hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/reply id @reply])}
+                                       {:label               (i18n/label :t/message-reply)
+                                        :accessibility-label :send-reply-to-contact-verification
+                                        :type                :primary
+                                        :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+                                                                            :activity-center.contact-verification/reply
+                                                                            {:notification notification
+                                                                             :replying?    true}])})})))])))))

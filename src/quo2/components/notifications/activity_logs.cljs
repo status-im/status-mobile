@@ -92,13 +92,15 @@
             :padding-vertical   8
             :background-color   colors/white-opa-5}
    (when title
-     [text/text {:size  :paragraph-2
-                 :style {:color         colors/white-opa-40
-                         :margin-bottom 2}}
+     [text/text {:size                :paragraph-2
+                 :accessibility-label :activity-message-title
+                 :style               {:color         colors/white-opa-40
+                                       :margin-bottom 2}}
       title])
    (if (string? body)
-     [text/text {:style {:color colors/white}
-                 :size  :paragraph-1}
+     [text/text {:style               {:color colors/white}
+                 :accessibility-label :activity-message-body
+                 :size                :paragraph-1}
       body]
      body)])
 
@@ -126,36 +128,40 @@
 
 (defn- activity-status
   [status]
-  [rn/view {:margin-top  12
-            :align-items :flex-start
-            :flex        1}
+  [rn/view {:style               {:margin-top  12
+                                  :align-items :flex-start
+                                  :flex        1}
+            :accessibility-label :activity-status}
    [status-tags/status-tag {:size   :small
                             :label  (:label status)
                             :status status}]])
 
 (defn- activity-title
   [title replying?]
-  [text/text {:weight :semi-bold
-              :style  {:color       colors/white
-                       :flex-shrink 1
-                       :max-width   (when-not replying? "60%")}
-              :size   (if replying? :heading-2 :paragraph-1)}
+  [text/text {:weight              :semi-bold
+              :accessibility-label :activity-title
+              :style               {:color       colors/white
+                                    :flex-shrink 1
+                                    :max-width   (when-not replying? "60%")}
+              :size                (if replying? :heading-2 :paragraph-1)}
    title])
 
 (defn- activity-timestamp
   [timestamp]
-  [text/text {:size  :label
-              :style {:text-transform :none
-                      :flex-grow      1
-                      :margin-left    8
-                      :color          colors/neutral-40}}
+  [text/text {:size                :label
+              :accessibility-label :activity-timestamp
+              :style               {:text-transform :none
+                                    :flex-grow      1
+                                    :margin-left    8
+                                    :color          colors/neutral-40}}
    timestamp])
 
 (defn- activity-unread-dot
   []
-  [rn/view {:style {:margin-left        8
-                    :padding-horizontal 12
-                    :padding-vertical   7}}
+  [rn/view {:accessibility-label :activity-unread-indicator
+            :style               {:margin-left        8
+                                  :padding-horizontal 12
+                                  :padding-vertical   7}}
    [rn/view {:style {:background-color colors/primary-50
                      :border-radius    4
                      :width            8
@@ -183,12 +189,13 @@
            replying?
            unread?]
     :as   props}]
-  [rn/view {:style {:flex-direction     :row
-                    :flex               1
-                    :align-items        :flex-start
-                    :padding-top        8
-                    :padding-horizontal 12
-                    :padding-bottom     12}}
+  [rn/view {:accessibility-label :activity
+            :style               {:flex-direction     :row
+                                  :flex               1
+                                  :align-items        :flex-start
+                                  :padding-top        8
+                                  :padding-horizontal 12
+                                  :padding-bottom     12}}
    (when-not replying?
      [activity-icon icon])
    [rn/view {:style {:padding-left (when-not replying? 8)
