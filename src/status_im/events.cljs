@@ -57,7 +57,8 @@
             status-im.wallet.custom-tokens.core
             status-im.wallet-connect.core
             status-im.wallet-connect-legacy.core
-            status-im.network.net-info))
+            status-im.network.net-info
+            [status-im.multiaccounts.model :as multiaccounts.model]))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -111,9 +112,10 @@
 
 (fx/defn system-theme-mode-changed
   {:events [:system-theme-mode-changed]}
-  [_ theme]
-  {::multiaccounts/switch-theme (if (= :dark theme) 2 1)
-   :dispatch [:reload-new-ui]})
+  [cofx theme]
+  (merge {::multiaccounts/switch-theme (if (= :dark theme) 2 1)}
+         (when (multiaccounts.model/logged-in? cofx)
+          :dispatch [:reload-new-ui])))
 
 (def authentication-options
   {:reason (i18n/label :t/biometric-auth-reason-login)})

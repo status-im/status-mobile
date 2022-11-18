@@ -7,6 +7,7 @@
             [utils.re-frame :as rf]
 
             ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
+            [quo.theme :as quo.theme]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
             [status-im.utils.keychain.core :as keychain]
@@ -21,7 +22,9 @@
  :setup/init-theme
  (fn []
    (theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
-   (quo2.theme/set-theme (if (theme/dark-mode?) :dark :light))))
+   (quo2.theme/set-theme (if (theme/dark-mode?) :dark :light))
+   ;; TODO legacy support
+   (quo.theme/set-theme (if (theme/dark-mode?) :dark :light))))
 
 (rf/defn initialize-views
   {:events [:setup/initialize-view]}

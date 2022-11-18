@@ -9,6 +9,8 @@
             [status-im2.contexts.shell.home-stack :as home-stack]
             [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]))
 
+;;TODO move styles to style namespace
+
 (defn placeholder []
   [rn/view {:style {:position            :absolute
                     :top                 0

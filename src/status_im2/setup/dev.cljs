@@ -14,7 +14,8 @@
                                     "Cannot read property 'message' of undefined"
                                     "InternalError Metro has encountered an error"
                                     "undefined Unable to resolve module `parse-svg-path`"
-                                    "group12"]))
+                                    "group12"
+                                    "Setting a timer for a long period of time"]))
 
 ;; List of ignored warnings/errors:
 ;; 1. "evaluating 'e.message'": Not sure why this error is happening, but it is coming from here
@@ -24,6 +25,7 @@
 ;; 4. "undefined Unable to resolve module `parse-svg-path`": an error that happens when losing connection to metro, can be safely ignored
 ;; 5. "group12": referring to the group-icon size 12x12. Currently, it is not available. When the design team adds it to the
 ;; icon set it will be added to project.
+;; 6. Setting a timer for a long period of time. Not sure why this error is happening
 
 (defn setup []
   (rf/set-mergeable-keys #{:filters/load-filters
