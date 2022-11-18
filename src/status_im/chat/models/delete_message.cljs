@@ -69,7 +69,7 @@
      ::json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
                        :params      [message-id]
                        :js-response true
-                       :on-error    #(log/error "failed to delete message " message-id " " %)
+                       :on-error    #(log/error "failed to delete message " {:message-id message-id :error %})
                        :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
 (defn- chats-reducer
   "traverse all messages find not yet synced deleted? messages, generate dispatch vector"

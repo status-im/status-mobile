@@ -69,7 +69,7 @@
      ::json-rpc/call [{:method      "wakuext_deleteMessageForMeAndSync"
                        :params      [chat-id message-id]
                        :js-response true
-                       :on-error    #(log/error "failed to delete message for me, message id: " message-id " " %)
+                       :on-error    #(log/error "failed to delete message for me, message id: " {:message-id message-id :error %})
                        :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
 
 (defn- chats-reducer
