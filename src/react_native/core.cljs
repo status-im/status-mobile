@@ -2,9 +2,7 @@
   (:require [reagent.core :as reagent]
             ["react-native" :as react-native]
             [react-native.flat-list :as flat-list]
-            [react-native.section-list :as section-list]
-            ["react-native-navigation" :refer (Navigation)]
-            [react-native.platform :as platform]))
+            [react-native.section-list :as section-list]))
 
 (def app-state ^js (.-AppState ^js react-native))
 
