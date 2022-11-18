@@ -1,10 +1,13 @@
 (ns react-native.section-list
   (:require [reagent.core :as reagent]
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             [status-im.ui.components.list.styles :as styles]
             [status-im.ui.components.react :as react]
 >>>>>>> ca683e4a1... add SectionList to RN
+=======
+>>>>>>> 3f9fec088... refactor
             [react-native.flat-list :as flat-list]
             ["react-native" :as react-native]))
 
@@ -23,6 +26,7 @@
                               :data  (.-data section)}]))))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 (defn- default-render-section-header [{:keys [title data]}]
   (when (seq data)
@@ -31,6 +35,8 @@
       title]]))
 
 >>>>>>> ca683e4a1... add SectionList to RN
+=======
+>>>>>>> 3f9fec088... refactor
 (defn- wrap-per-section-render-fn [props]
   (update
    (if-let [f (:render-fn props)]
@@ -44,12 +50,16 @@
    render on empty data
    See https://facebook.github.io/react-native/docs/sectionlist.html"
 <<<<<<< HEAD
+<<<<<<< HEAD
   [{:keys [sections render-section-header-fn render-section-footer-fn style] :as props}]
 =======
   [{:keys [sections render-section-header-fn render-section-footer-fn style] :as props
     :or {render-section-header-fn default-render-section-header
          style {}}}]
 >>>>>>> ca683e4a1... add SectionList to RN
+=======
+  [{:keys [sections render-section-header-fn render-section-footer-fn style] :as props}]
+>>>>>>> 3f9fec088... refactor
   [section-list-class
    (merge (flat-list/base-list-props props)
           props
