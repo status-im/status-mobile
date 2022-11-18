@@ -212,7 +212,6 @@
     :component pin-messages/pinned-messages}
 
    {:name      :group-chat-profile
-    :insets    {:top false}
     ;;TODO animated-header
     :options   {:topBar {:visible false}}
     :component group-details/group-details}
