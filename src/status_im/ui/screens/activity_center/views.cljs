@@ -124,9 +124,8 @@
        (react/effect! #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
        [rn/view {:style (style/screen-container window-width top bottom)}
         [header]
-        [rn/flat-list {:content-container-style style/notifications-container
-                       :data                    notifications
-                       :empty-component         [empty-tab]
-                       :key-fn                  :id
-                       :on-end-reached          #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-                       :render-fn               render-notification}]]))])
+        [rn/flat-list {:data            notifications
+                       :empty-component [empty-tab]
+                       :key-fn          :id
+                       :on-end-reached  #(rf/dispatch [:activity-center.notifications/fetch-next-page])
+                       :render-fn       render-notification}]]))])

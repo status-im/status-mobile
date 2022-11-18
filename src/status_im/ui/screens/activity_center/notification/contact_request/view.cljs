@@ -38,8 +38,7 @@
                                  :text-style     style/user-avatar-tag-text}
                                 (activity-center.utils/contact-name contact)
                                 (multiaccounts/displayed-photo contact)]
-                               [quo2/text {:style style/context-tag-text}
-                                (i18n/label :t/contact-request-sent)]]
+                               (i18n/label :t/contact-request-sent)]
                    :message   {:body (get-in message [:content :text])}
                    :status    (case (:contact-request-state message)
                                 constants/contact-request-message-state-accepted

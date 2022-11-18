@@ -26,16 +26,15 @@
        :text-style     style/user-avatar-tag-text}
       (activity-center.utils/contact-name contact)
       (multiaccounts/displayed-photo contact)]
-     [quo2/text {:style style/context-tag-text}
-      (if challenger?
-        (cond (or (= contact-verification-status constants/contact-verification-status-accepted)
-                  (= contact-verification-status constants/contact-verification-status-trusted)
-                  (= contact-verification-status constants/contact-verification-status-untrustworthy))
-              (str (str/lower-case (i18n/label :t/replied)) ":"))
-        (cond (or (= contact-verification-status constants/contact-verification-status-accepted)
-                  (= contact-verification-status constants/contact-verification-status-pending)
-                  (= contact-verification-status constants/contact-verification-status-declined))
-              (str (i18n/label :t/identity-verification-request-sent) ":")))]]))
+     (if challenger?
+       (cond (or (= contact-verification-status constants/contact-verification-status-accepted)
+                 (= contact-verification-status constants/contact-verification-status-trusted)
+                 (= contact-verification-status constants/contact-verification-status-untrustworthy))
+             (str (str/lower-case (i18n/label :t/replied)) ":"))
+       (cond (or (= contact-verification-status constants/contact-verification-status-accepted)
+                 (= contact-verification-status constants/contact-verification-status-pending)
+                 (= contact-verification-status constants/contact-verification-status-declined))
+             (str (i18n/label :t/identity-verification-request-sent) ":")))]))
 
 (defn- activity-message
   [challenger? {:keys [contact-verification-status message reply-message]}]

@@ -19,13 +19,10 @@
    :padding-top    (if (pos? top) (+ top 12) 12)
    :padding-bottom bottom})
 
-(def notifications-container
-  {:flex-grow 1})
-
 (defn notification-container
   [index]
   {:margin-top         (if (zero? index) 0 4)
-   :padding-horizontal screen-padding})
+   :padding-horizontal 8})
 
 (def tabs
   {:padding-left screen-padding})
