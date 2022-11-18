@@ -172,7 +172,7 @@
   [:f>
    (fn []
      (let [{window-height :height} (rn/use-window-dimensions)
-           safe-area     (safe-area/use-safe-area)]
+           safe-area (safe-area/use-safe-area)]
        [rn/view {:style {:margin-left 20
                          :height      (- window-height (:top safe-area))}}
         [rn/touchable-opacity
@@ -186,13 +186,13 @@
            :align-items      :center
            :margin-bottom    24}}
          [quo2/icon :i/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
-        [quo2/text {:size :heading-1
+        [quo2/text {:size   :heading-1
                     :weight :semi-bold}
-         (i18n/label :t/pending-requests)]
-        ;[list/flat-list
-        ; {:key-fn    :chat-id
-        ;  :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
-        ;  :render-fn received-cr-item/received-cr-item}]
+         (i18n/label :t/add-members)]
+        [rn/flat-list
+         {:key-fn    :chat-id
+          :data      (if (= @selected-requests-tab :received) received-requests sent-requests)
+          :render-fn received-cr-item/received-cr-item}]
         ]))])
 
 (defn group-details []
@@ -283,10 +283,10 @@
                              :on-press #(rf/dispatch [::chat.models/mute-chat-toggled chat-id (not muted)])}
        [quo2/icon (if muted :i/muted :i/activity-center) {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if muted :unmute-group :mute-group))]]
-      [rn/touchable-opacity {:style (style/action-container color)
-                             :on-press (rf/dispatch
-                                         [:bottom-sheet/show-sheet
-                                          {:content (fn [] [contact-requests-sheet])}])}
+      [rn/touchable-opacity {:style    (style/action-container color)
+                             :on-press #(rf/dispatch
+                                          [:bottom-sheet/show-sheet
+                                           {:content (fn [] [contact-requests-sheet])}])}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
