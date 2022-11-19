@@ -27,27 +27,27 @@
       (activity-center.utils/contact-name contact)
       (multiaccounts/displayed-photo contact)]
      (if challenger?
-       (cond (or (= contact-verification-status constants/contact-verification-status-accepted)
+       (when (or (= contact-verification-status constants/contact-verification-status-accepted)
                  (= contact-verification-status constants/contact-verification-status-trusted)
                  (= contact-verification-status constants/contact-verification-status-untrustworthy))
-             (str (str/lower-case (i18n/label :t/replied)) ":"))
-       (cond (or (= contact-verification-status constants/contact-verification-status-accepted)
+         (str (str/lower-case (i18n/label :t/replied)) ":"))
+       (when (or (= contact-verification-status constants/contact-verification-status-accepted)
                  (= contact-verification-status constants/contact-verification-status-pending)
                  (= contact-verification-status constants/contact-verification-status-declined))
-             (str (i18n/label :t/identity-verification-request-sent) ":")))]))
+         (str (i18n/label :t/identity-verification-request-sent) ":")))]))
 
 (defn- activity-message
   [challenger? {:keys [contact-verification-status message reply-message]}]
   (if challenger?
-    (cond (or (= contact-verification-status constants/contact-verification-status-accepted)
+    (when (or (= contact-verification-status constants/contact-verification-status-accepted)
               (= contact-verification-status constants/contact-verification-status-trusted)
               (= contact-verification-status constants/contact-verification-status-untrustworthy))
-          {:title (get-in message [:content :text])
-           :body  (get-in reply-message [:content :text])})
-    (cond (or (= contact-verification-status constants/contact-verification-status-accepted)
+      {:title (get-in message [:content :text])
+       :body  (get-in reply-message [:content :text])})
+    (when (or (= contact-verification-status constants/contact-verification-status-accepted)
               (= contact-verification-status constants/contact-verification-status-pending)
               (= contact-verification-status constants/contact-verification-status-declined))
-          {:body (get-in message [:content :text])})))
+      {:body (get-in message [:content :text])})))
 
 (defn- activity-status
   [challenger? contact-verification-status]
@@ -81,29 +81,29 @@
                    :message         (activity-message challenger? notification)
                    :status          (activity-status challenger? contact-verification-status)}
                   (if challenger?
-                    (cond (= contact-verification-status constants/contact-verification-status-accepted)
-                          {:button-1 {:label               (i18n/label :t/untrustworthy)
-                                      :accessibility-label :mark-contact-verification-as-untrustworthy
-                                      :type                :danger
-                                      :on-press            #(rf/dispatch [:activity-center.contact-verification/mark-as-untrustworthy id])}
-                           :button-2 {:label               (i18n/label :t/accept)
-                                      :accessibility-label :mark-contact-verification-as-trusted
-                                      :type                :positive
-                                      :on-press            #(rf/dispatch [:activity-center.contact-verification/mark-as-trusted id])}})
-                    (cond (= contact-verification-status constants/contact-verification-status-pending)
-                          {:button-1 {:label               (i18n/label :t/decline)
-                                      :accessibility-label :decline-contact-verification
-                                      :type                :danger
-                                      :on-press            #(hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/decline id])}
-                           :button-2 (if replying?
-                                       {:label               (i18n/label :t/send-reply)
-                                        :accessibility-label :reply-to-contact-verification
-                                        :type                :primary
-                                        :on-press            #(hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/reply id @reply])}
-                                       {:label               (i18n/label :t/message-reply)
-                                        :accessibility-label :send-reply-to-contact-verification
-                                        :type                :primary
-                                        :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                            :activity-center.contact-verification/reply
-                                                                            {:notification notification
-                                                                             :replying?    true}])})})))])))))
+                    (when (= contact-verification-status constants/contact-verification-status-accepted)
+                      {:button-1 {:label               (i18n/label :t/untrustworthy)
+                                  :accessibility-label :mark-contact-verification-as-untrustworthy
+                                  :type                :danger
+                                  :on-press            #(rf/dispatch [:activity-center.contact-verification/mark-as-untrustworthy id])}
+                       :button-2 {:label               (i18n/label :t/accept)
+                                  :accessibility-label :mark-contact-verification-as-trusted
+                                  :type                :positive
+                                  :on-press            #(rf/dispatch [:activity-center.contact-verification/mark-as-trusted id])}})
+                    (when (= contact-verification-status constants/contact-verification-status-pending)
+                      {:button-1 {:label               (i18n/label :t/decline)
+                                  :accessibility-label :decline-contact-verification
+                                  :type                :danger
+                                  :on-press            #(hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/decline id])}
+                       :button-2 (if replying?
+                                   {:label               (i18n/label :t/send-reply)
+                                    :accessibility-label :reply-to-contact-verification
+                                    :type                :primary
+                                    :on-press            #(hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/reply id @reply])}
+                                   {:label               (i18n/label :t/message-reply)
+                                    :accessibility-label :send-reply-to-contact-verification
+                                    :type                :primary
+                                    :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
+                                                                        :activity-center.contact-verification/reply
+                                                                        {:notification notification
+                                                                         :replying?    true}])})})))])))))
