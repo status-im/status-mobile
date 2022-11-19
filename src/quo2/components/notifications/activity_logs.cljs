@@ -1,5 +1,5 @@
 (ns quo2.components.notifications.activity-logs
-  (:require [clojure.string :as str]
+  (:require [clojure.string :as string]
             [quo.core :as quo]
             [quo2.components.buttons.button :as button]
             [quo2.components.icon :as icon]
@@ -78,7 +78,7 @@
                                                        :margin-top   0}}
                                       [text/text {:size :paragraph-2}
                                        s]])
-                                   (str/split detail #"\s+"))
+                                   (string/split detail #"\s+"))
                       [[rn/view {:margin-right 4
                                  :margin-top   gap-between-lines}
                         detail]]))
