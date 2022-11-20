@@ -14,13 +14,13 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui2.components.search-input :as search]
-            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui2.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.group.styles :as styles]
             [quo.core :as quo]
             [quo2.core :as quo2]
             [quo2.components.buttons.button :as button]
-            [status-im.utils.handlers :refer [<sub]]
+            [status-im.utils.re-frame :as rf]
             [status-im.utils.debounce :as debounce]
             [quo2.foundations.colors :as quo2.colors])
   (:require-macros [status-im.utils.views :as views]))
@@ -35,25 +35,23 @@
 
 (defn- on-toggle [allow-new-users? checked? public-key]
   (cond
-
     checked?
-    (re-frame/dispatch [:deselect-contact public-key allow-new-users?])
-
+    (rf/dispatch [:deselect-contact public-key allow-new-users?])
     ;; Only allow new users if not reached the maximum
     (and (not checked?)
          allow-new-users?)
-    (re-frame/dispatch [:select-contact public-key allow-new-users?])))
+    (rf/dispatch [:select-contact public-key allow-new-users?])))
 
 (defn- on-toggle-participant [allow-new-users? checked? public-key]
   (cond
 
     checked?
-    (re-frame/dispatch [:deselect-participant public-key allow-new-users?])
+    (rf/dispatch [:deselect-participant public-key allow-new-users?])
 
    ;; Only allow new users if not reached the maximum
     (and (not checked?)
          allow-new-users?)
-    (re-frame/dispatch [:select-participant public-key allow-new-users?])))
+    (rf/dispatch [:select-participant public-key allow-new-users?])))
 
 (defn- toggle-item []
   (fn [allow-new-users? subs-name {:keys [public-key] :as contact} on-toggle]
@@ -124,7 +122,7 @@
          [react/view {:style {:padding-horizontal 16}}
           [quo/text-input
            {:auto-focus          true
-            :on-change-text      #(re-frame/dispatch [:set :new-chat-name %])
+            :on-change-text      #(rf/dispatch [:set :new-chat-name %])
             :default-value       group-name
             :placeholder         (i18n/label :t/set-a-topic)
             :accessibility-label :chat-name-input}]
@@ -144,7 +142,7 @@
           [quo/button {:type                :secondary
                        :before              :main-icon/back
                        :accessibility-label :previous-button
-                       :on-press            #(re-frame/dispatch [:navigate-back])}
+                       :on-press            #(rf/dispatch [:navigate-back])}
            (i18n/label :t/back)]
           :right
           [quo/button {:type                :secondary
@@ -175,8 +173,8 @@
 
 ;; Start group chat
 (defn contact-toggle-list []
-  (let [contacts                   (<sub [:contacts/sorted-and-grouped-by-first-letter])
-        selected-contacts-count    (<sub [:selected-contacts-count])
+  (let [contacts                   (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
+        selected-contacts-count    (rf/sub [:selected-contacts-count])
         one-contact-selected?      (= selected-contacts-count 1)
         no-contacts-selected?      (zero? selected-contacts-count)
         {:keys [alias public-key]} (-> contacts first :data first)]
@@ -222,17 +220,17 @@
          :center        [button/button {:type                :primary
                                         :accessibility-label :next-button
                                         :on-press            #(if one-contact-selected?
-                                                                (re-frame/dispatch [:chat.ui/start-chat public-key])
-                                                                (re-frame/dispatch [:navigate-to :new-group]))}
+                                                                (rf/dispatch [:chat.ui/start-chat public-key])
+                                                                (rf/dispatch [:navigate-to :new-group]))}
                          (if one-contact-selected?
                            (i18n/label :t/chat-with {:selected-user alias})
                            (i18n/label :t/setup-group-chat))]}])]))
 
 ;; Add participants to existing group chat
 (defn add-participants-toggle-list []
-  (let [contacts                   (<sub [:contacts/all-contacts-not-in-current-chat])
-        current-chat               (<sub [:chats/current-chat])
-        selected-contacts-count    (<sub [:selected-participants-count])
+  (let [contacts                   (rf/sub [:contacts/all-contacts-not-in-current-chat])
+        current-chat               (rf/sub [:chats/current-chat])
+        selected-contacts-count    (rf/sub [:selected-participants-count])
         current-participants-count (count (:contacts current-chat))]
     [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
      [topbar/topbar {:use-insets    false
@@ -253,12 +251,12 @@
        :center       [quo/button {:type                :secondary
                                   :accessibility-label :next-button
                                   :disabled            (zero? selected-contacts-count)
-                                  :on-press            #(re-frame/dispatch [:group-chats.ui/add-members-pressed])}
+                                  :on-press            #(rf/dispatch [:group-chats.ui/add-members-pressed])}
                       (i18n/label :t/add)]}]]))
 
-(views/defview edit-group-chat-name []
-  (views/letsubs [{:keys [name chat-id]} [:chats/current-chat]
-                  new-group-chat-name (reagent/atom nil)]
+(defn edit-group-chat-name []
+  (let [{:keys [name chat-id]} (rf/sub [:chats/current-chat])
+        new-group-chat-name (reagent/atom nil)]
     [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
      [react/scroll-view {:style {:padding 16
                                  :flex    1}}
@@ -266,7 +264,7 @@
        {:on-change-text      #(reset! new-group-chat-name %)
         :default-value       name
         :on-submit-editing   #(when (seq @new-group-chat-name)
-                                (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name]))
+                                (rf/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name]))
         :placeholder         (i18n/label :t/enter-contact-code)
         :accessibility-label :new-chat-name
         :return-key-type     :go}]]
@@ -280,8 +278,8 @@
                                               (not (nil? @new-group-chat-name)))
                     :on-press            #(cond
                                             (< 1 (count @new-group-chat-name))
-                                            (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name])
+                                            (rf/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name])
 
                                             (nil? @new-group-chat-name)
-                                            (re-frame/dispatch [:navigate-back]))}
+                                            (rf/dispatch [:navigate-back]))}
         (i18n/label :t/done)]}]]))

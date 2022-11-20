@@ -15,10 +15,11 @@
             [status-im.add-new.db :as db]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
+            [status-im.utils.re-frame :as rf]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.components.invite.views :as invite]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [status-im.utils.handlers :refer [>evt]]
             [status-im.utils.config :as config]
             [quo2.components.markdown.text :as quo2.text]
             [status-im.qr-scanner.core :as qr-scanner]
@@ -42,25 +43,38 @@
 
 (defn home-tooltip-view []
   [rn/view (styles/chat-tooltip)
-   [rn/view {:style {:width       66 :position :absolute :top -6 :background-color quo.colors/white
-                     :align-items :center}}
+   [rn/view {:style {:width            66
+                     :position         :absolute
+                     :top              -6
+                     :background-color quo.colors/white
+                     :align-items      :center}}
     [rn/image {:source (resources/get-image :empty-chats-header)
-               :style  {:width 50 :height 50}}]]
+               :style  {:width  50
+                        :height 50}}]]
    [rn/touchable-highlight
-    {:style               {:position :absolute :right 0 :top 0
-                           :width    44 :height 44 :align-items :center :justify-content :center}
-     :on-press            #(re-frame/dispatch [:multiaccounts.ui/hide-home-tooltip])
+    {:style               {:position        :absolute
+                           :right           0
+                           :top             0
+                           :width           44
+                           :height          44
+                           :align-items     :center
+                           :justify-content :center}
+     :on-press            #(rf/dispatch [:multiaccounts.ui/hide-home-tooltip])
      :accessibility-label :hide-home-button}
     [icons/icon :main-icons/close-circle {:color quo.colors/gray}]]
-   [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]
+   [react/i18n-text {:style styles/no-chats-text
+                     :key   :chat-and-transact}]
    [rn/view {:align-items   :center
              :margin-top    8
              :margin-bottom 12}
     [invite/button]]])
 
 (defn welcome-blank-chats []
-  [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-   [icons/icon :main-icons/placeholder20 {:width 120 :height 120}]
+  [rn/view {:style {:flex            1
+                    :align-items     :center
+                    :justify-content :center}}
+   [icons/icon :main-icons/placeholder20 {:width  120
+                                          :height 120}]
    [rn/text {:style (merge typography/font-semi-bold typography/paragraph-1)} (i18n/label :t/no-messages)]
    [rn/text {:style (merge typography/font-regular typography/paragraph-2)} (i18n/label :t/blank-messages-text)]])
 
@@ -69,7 +83,8 @@
                     :flex-direction  :row
                     :align-items     :center
                     :justify-content :center}}
-   [react/i18n-text {:style styles/welcome-blank-text :key :welcome-blank-message}]])
+   [react/i18n-text {:style styles/welcome-blank-text
+                     :key   :welcome-blank-message}]])
 
 (defonce search-active? (reagent/atom false))
 
@@ -79,25 +94,24 @@
    [search-input/search-input
     {:search-active? search-active?
      :search-filter  search-filter
-     :on-cancel      #(re-frame/dispatch [:search/home-filter-changed nil])
+     :on-cancel      #(rf/dispatch [:search/home-filter-changed nil])
      :on-blur        (fn []
                        (when chats-empty
-                         (re-frame/dispatch [:search/home-filter-changed nil]))
-                       (re-frame/dispatch [::new-chat/clear-new-identity]))
+                         (rf/dispatch [:search/home-filter-changed nil]))
+                       (rf/dispatch [::new-chat/clear-new-identity]))
      :on-focus       (fn [search-filter]
                        (when-not search-filter
-                         (re-frame/dispatch [:search/home-filter-changed ""])
-                         (re-frame/dispatch [::new-chat/clear-new-identity])))
+                         (rf/dispatch [:search/home-filter-changed ""])
+                         (rf/dispatch [::new-chat/clear-new-identity])))
      :on-change      (fn [text]
-                       (re-frame/dispatch [:search/home-filter-changed text])
-                       (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
+                       (rf/dispatch [:search/home-filter-changed text])
+                       (rf/dispatch [:set-in [:contacts/new-identity :state] :searching])
                        (debounce/debounce-and-dispatch [:new-chat/set-new-identity text] 300))}]])
 
 (defn start-suggestion [search-value]
-  (let [{:keys [state ens-name public-key]}
-        @(re-frame/subscribe [:contacts/new-identity])
-        valid-private? (= state :valid)
-        valid-public?  (db/valid-topic? search-value)]
+  (let [{:keys [state ens-name public-key]} (rf/sub [:contacts/new-identity])
+        valid-private?                      (= state :valid)
+        valid-public?                       (db/valid-topic? search-value)]
     (when (or valid-public? valid-private?)
       [rn/view
        [quo/list-header (i18n/label :t/search-no-chat-found)]
@@ -108,16 +122,16 @@
                          :subtitle (i18n/label :t/join-new-private-chat)
                          :on-press (fn []
                                      (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false] 3000)
-                                     (re-frame/dispatch [:search/home-filter-changed nil]))}])
+                                     (rf/dispatch [:search/home-filter-changed nil]))}])
        (when valid-public?
          [quo/list-item {:theme    :accent
                          :icon     :main-icons/public-chat
                          :title    (str "#" search-value)
                          :subtitle (i18n/label :t/join-new-public-chat)
                          :on-press (fn []
-                                     (re-frame/dispatch [:chat.ui/start-public-chat search-value])
-                                     (re-frame/dispatch [:set :public-group-topic nil])
-                                     (re-frame/dispatch [:search/home-filter-changed nil]))}])])))
+                                     (rf/dispatch [:chat.ui/start-public-chat search-value])
+                                     (rf/dispatch [:set :public-group-topic nil])
+                                     (rf/dispatch [:search/home-filter-changed nil]))}])])))
 
 (defn chat-list-key-fn [item]
   (or (:chat-id item) (:public-key item) (:id item)))
@@ -143,7 +157,11 @@
     (vals @data)))
 
 (defn contacts-section-header [{:keys [title]}]
-  [rn/view {:style {:border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :padding-horizontal 20 :margin-top 8}}
+  [rn/view {:style {:border-top-width   1
+                    :border-top-color   colors/neutral-20
+                    :padding-vertical   8
+                    :padding-horizontal 20
+                    :margin-top         8}}
    [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color colors/neutral-50})} title]])
 
 (defn find-contact-requests [notifications]
@@ -162,23 +180,22 @@
 (defn contact-requests-sheet []
   [:f>
    (fn []
-     (let [{window-height :height} (rn/use-window-dimensions)
-           safe-area     (safe-area/use-safe-area)
-           notifications (<sub [:activity.center/notifications-grouped-by-date])
+     (let [{window-height :height}                (rn/use-window-dimensions)
+           safe-area                              (safe-area/use-safe-area)
+           notifications                          (rf/sub [:activity.center/notifications-grouped-by-date])
            {received-requests :received-requests} (find-contact-requests notifications)
-           sent-requests []]
+           sent-requests                          []]
        [rn/view {:style {:margin-left 20
                          :height      (- window-height (:top safe-area))}}
         [rn/touchable-opacity
          {:on-press #(>evt [:bottom-sheet/hide])
-          :style
-          {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
-           :width            32
-           :height           32
-           :border-radius    10
-           :justify-content  :center
-           :align-items      :center
-           :margin-bottom    24}}
+          :style    {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
+                     :width            32
+                     :height           32
+                     :border-radius    10
+                     :justify-content  :center
+                     :align-items      :center
+                     :margin-bottom    24}}
          [quo2.icons/icon :i/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
         [rn/text {:style (merge
                           typography/heading-1
@@ -186,7 +203,8 @@
                           {:color (colors/theme-colors "#000000" "#ffffff")})}
          (i18n/label :t/pending-requests)]
         [quo2.tabs/tabs
-         {:style          {:margin-top 12 :margin-bottom 20}
+         {:style          {:margin-top    12
+                           :margin-bottom 20}
           :size           32
           :on-change      #(reset! selected-requests-tab %)
           :default-active :received
@@ -200,7 +218,7 @@
           :render-fn received-cr-item/received-cr-item}]]))])
 
 (defn get-display-name [{:keys [chat-id message]}]
-  (let [name        (first (<sub [:contacts/contact-two-names-by-identity chat-id]))
+  (let [name        (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
         no-ens-name (str/blank? (get-in message [:content :ens-name]))]
     (if no-ens-name
       (first (str/split name " "))
@@ -242,14 +260,13 @@
    [info-count (count requests)]])
 
 (defn chats []
-  (let [{:keys [items search-filter]} (<sub [:home-items])
+  (let [{:keys [items search-filter]} (rf/sub [:home-items])
         current-active-tab @selected-tab
         items              (prepare-items current-active-tab items)
-        contacts           (<sub [:contacts/active])
+        contacts           (rf/sub [:contacts/active])
         contacts           (prepare-contacts contacts)
-        notifications      (<sub [:activity.center/notifications-grouped-by-date])
+        notifications      (rf/sub [:activity.center/notifications-grouped-by-date])
         {requests :received-requests new-info :has-unread?} (find-contact-requests notifications)]
-    (println "wtfff" items contacts)
     [rn/view {:style {:flex 1}}
      [discover-card/discover-card {:title       (i18n/label :t/invite-friends-to-status)
                                    :description (i18n/label :t/share-invite-link)}]
@@ -274,7 +291,7 @@
          [list/flat-list
           {:key-fn                       chat-list-key-fn
            :getItemLayout                get-item-layout
-           :on-end-reached               #(re-frame/dispatch [:chat.ui/show-more-chats])
+           :on-end-reached               #(rf/dispatch [:chat.ui/show-more-chats])
            :keyboard-should-persist-taps :always
            :data                         items
            :render-fn                    messages-home-item}]
@@ -287,8 +304,8 @@
             :render-section-header-fn       contacts-section-header
             :render-fn                      contact-item}]]))]))
 
-(views/defview chats-list []
-  (views/letsubs [loading? [:chats/loading?]]
+(defn chats-list []
+  (let [loading? (rf/sub [:chats/loading?])]
     [:<>
      [connectivity/loading-indicator]
      (if loading?
@@ -296,24 +313,24 @@
         [rn/activity-indicator {:animating true}]]
        [chats])]))
 
-(views/defview plus-button []
-  (views/letsubs [logging-in? [:multiaccounts/login]]
+(defn plus-button []
+  (let [logging-in? (rf/sub [:multiaccounts/login])]
     [components.plus-button/plus-button
      {:on-press            (when-not logging-in?
-                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+                             #(rf/dispatch [:bottom-sheet/show-sheet :add-new {}]))
       :loading             logging-in?
       :accessibility-label :new-chat-button}]))
 
-(views/defview plus-button-new-messages []
-  (let [logging-in? (<sub [:multiaccounts/login])]
+(defn plus-button-new-messages []
+  (let [logging-in? (rf/sub [:multiaccounts/login])]
     [components.plus-button/plus-button
      {:on-press            (when-not logging-in?
-                             #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new-sheet-view {}]))
+                             #(rf/dispatch [:bottom-sheet/show-sheet :add-new-sheet-view {}]))
       :loading             logging-in?
       :accessibility-label :new-chat-button}]))
 
-(views/defview notifications-button []
-  (views/letsubs [notif-count [:activity.center/notifications-count]]
+(defn notifications-button []
+  (let [notif-count (rf/sub [:activity.center/notifications-count])]
     [rn/view
      [quo2.button/button {:type                :grey
                           :size                32
@@ -321,10 +338,10 @@
                           :style               {:margin-left 12}
                           :accessibility-label :notifications-button
                           :on-press            #(do
-                                                  (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
+                                                  (rf/dispatch [:mark-all-activity-center-notifications-as-read])
                                                   (if config/new-activity-center-enabled?
-                                                    (re-frame/dispatch [:navigate-to :activity-center])
-                                                    (re-frame/dispatch [:navigate-to :notifications-center])))}
+                                                    (rf/dispatch [:navigate-to :activity-center])
+                                                    (rf/dispatch [:navigate-to :notifications-center])))}
       [icons/icon :main-icons/notification2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
      (when (pos? notif-count)
        [rn/view {:style          (merge (styles/counter-public-container) {:top 5 :right 5})
@@ -339,7 +356,7 @@
                        :width               32
                        :style               {:margin-left 12}
                        :on-press            #(do
-                                               (re-frame/dispatch [::qr-scanner/scan-code
+                                               (rf/dispatch [::qr-scanner/scan-code
                                                                    {:handler ::qr-scanner/on-scan-success}]))}
    [icons/icon :main-icons/qr2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
@@ -349,12 +366,12 @@
                        :width               32
                        :accessibility-label "scan-button"
                        :on-press            #(do
-                                               (re-frame/dispatch [::qr-scanner/scan-code
-                                                                   {:handler ::qr-scanner/on-scan-success}]))}
+                                               (rf/dispatch [::qr-scanner/scan-code
+                                                             {:handler ::qr-scanner/on-scan-success}]))}
    [icons/icon :main-icons/scan2 {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
-(views/defview profile-button []
-  (views/letsubs [{:keys [public-key preferred-name emoji]} [:multiaccount]]
+(defn profile-button []
+  (let [{:keys [public-key preferred-name emoji]} (rf/sub [:multiaccount])]
     [rn/view
      [chat-icon/emoji-chat-icon-view public-key false preferred-name emoji
       {:size      28
@@ -363,7 +380,7 @@
 (defn home []
   [:f>
    (fn []
-     (quo.react/effect! #(re-frame/dispatch [:get-activity-center-notifications]))
+     (quo.react/effect! #(rf/dispatch [:get-activity-center-notifications]))
      [rn/keyboard-avoiding-view {:style         {:flex             1
                                                  :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
                                  :ignore-offset true}
