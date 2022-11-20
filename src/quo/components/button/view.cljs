@@ -56,7 +56,7 @@
 
 (defn button [{:keys [on-press disabled type theme before after
                       haptic-feedback haptic-type on-long-press on-press-start
-                      accessibility-label loading border-radius style]
+                      accessibility-label loading border-radius style test-ID]
                :or   {theme           :main
                       type            :primary
                       haptic-feedback true
@@ -92,7 +92,7 @@
                                   {:on-press-start (fn []
                                                      (optional-haptic)
                                                      (on-press-start))}))
-     [rn/view {:style (merge (style-container type) style)}
+     [rn/view {:test-ID test-ID :style (merge (style-container type) style)}
       (when before
         [rn/view
          [icons/icon before {:color icon-color}]])

@@ -26,7 +26,7 @@
     :icon-color-anim        reanimated shared value
   "
   [{:keys [icon new-notifications? notification-indicator counter-label
-           on-press pass-through? icon-color-anim accessibility-label]}]
+           on-press pass-through? icon-color-anim accessibility-label test-ID]}]
   [:f>
    (fn []
      (let [icon-animated-style       (reanimated/apply-animations-to-style
@@ -40,7 +40,8 @@
                                        :height           40
                                        :border-radius    10})]
        [rn/touchable-without-feedback
-        {:on-press            on-press
+        {:test-ID test-ID
+         :on-press            on-press
          :on-press-in         #(toggle-background-color background-color false pass-through?)
          :on-press-out        #(toggle-background-color background-color true pass-through?)
          :accessibility-label accessibility-label}

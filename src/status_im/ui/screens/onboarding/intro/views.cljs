@@ -157,7 +157,7 @@
                  :margin-bottom   24}
      [quo/checkbox {:value     @tos-accepted
                     :on-change #(swap! tos-accepted not)}]
-     [rn/touchable-opacity {:on-press #(swap! tos-accepted not)}
+     [rn/touchable-opacity {:test-ID :terms-of-service :on-press #(swap! tos-accepted not)}
       [react/nested-text {:style {:margin-left 12}}
        (i18n/label :t/accept-status-tos-prefix)
        [{:style               (merge {:color colors/blue}
@@ -167,7 +167,8 @@
         " "
         (i18n/label :t/terms-of-service)]]]]
     [react/view {:style {:margin-bottom 24}}
-     [quo/button {:disabled (not @tos-accepted)
+     [quo/button {:test-ID :get-started
+                  :disabled (not @tos-accepted)
                   :on-press #(do (re-frame/dispatch [:init-root :onboarding])
                                  ;; clear atom state for next use
                                  (reset! tos-accepted false)

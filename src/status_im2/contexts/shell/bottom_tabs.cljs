@@ -38,7 +38,8 @@
 
 (defn bottom-tab [icon stack-id shared-values]
   [bottom-nav-tab/bottom-nav-tab
-   {:icon                icon
+   {:test-ID stack-id
+    :icon                icon
     :icon-color-anim     (get
                           shared-values
                           (get constants/tabs-icon-color-keywords stack-id))

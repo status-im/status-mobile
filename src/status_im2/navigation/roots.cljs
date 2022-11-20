@@ -18,6 +18,7 @@
    :title                {:color colors/neutral-100}
    :rightButtonColor     colors/neutral-100
    :background           {:color colors/white}
+   :backButton {:testID :back-button}
    ;; TODO adjust colors and icons with quo2
    ;;:backButton
    #_{:icon  (icons/icon-source :main-icons/arrow-left)

@@ -234,7 +234,8 @@
                                   :height 110}}])]]]
       [react/view {:margin-bottom 50}
        [quo/button
-        {:on-press #(re-frame/dispatch [:keycard.recovery.no-key.ui/generate-key-pressed])}
+        {:test-id :generate-new-key
+         :on-press #(re-frame/dispatch [:keycard.recovery.no-key.ui/generate-key-pressed])}
         (i18n/label :t/generate-new-key)]
        [quo/button
         {:type     :secondary

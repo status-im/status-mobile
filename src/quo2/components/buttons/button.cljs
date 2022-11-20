@@ -186,7 +186,7 @@
   (let [pressed (reagent/atom false)]
     (fn [{:keys [on-press disabled type size before after above width
                  override-theme override-background-color
-                 on-long-press accessibility-label icon icon-no-color style]
+                 on-long-press accessibility-label icon icon-no-color style test-ID]
           :or   {type :primary
                  size 40}}
          children]
@@ -197,7 +197,8 @@
             state                (cond disabled :disabled @pressed :pressed :else :default)
             icon-size            (when (= 24 size) 12)
             icon-secondary-color (or icon-secondary-color icon-color)]
-        [rn/touchable-without-feedback (merge {:disabled            disabled
+        [rn/touchable-without-feedback (merge {:test-ID test-ID
+                                               :disabled            disabled
                                                :accessibility-label accessibility-label}
                                               (when on-press
                                                 {:on-press (fn []

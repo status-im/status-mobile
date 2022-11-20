@@ -83,7 +83,8 @@
        [react/view {:style {:align-items :center}}
         [react/view {:style (assoc styles/bottom-button :margin-bottom 16)}
          [quo/button
-          {;:disabled            existing-account?
+          {:test-ID :generate-keys
+           ;:disabled            existing-account?
            :on-press            #(re-frame/dispatch [:generate-and-derive-addresses])
            :accessibility-label :onboarding-next-button}
           (i18n/label :t/generate-a-key)]]
