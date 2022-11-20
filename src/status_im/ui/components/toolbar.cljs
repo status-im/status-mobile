@@ -6,6 +6,8 @@
                           :or   {size :default}}]
   (merge {:align-items        :center
           :padding-horizontal 8
+          :position :absolute
+          :bottom 10
           :width              "100%"
           :flex-direction     :row
           :justify-content    :space-between}

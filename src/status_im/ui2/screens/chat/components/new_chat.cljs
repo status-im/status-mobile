@@ -22,7 +22,8 @@
             [quo2.components.buttons.button :as button]
             [status-im.utils.re-frame :as rf]
             [status-im.utils.debounce :as debounce]
-            [quo2.foundations.colors :as quo2.colors])
+            [quo2.foundations.colors :as quo2.colors]
+            [status-im.ui2.screens.chat.actions :refer [hide-sheet-and-dispatch]])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-contact [row]
@@ -178,8 +179,8 @@
         one-contact-selected?      (= selected-contacts-count 1)
         no-contacts-selected?      (zero? selected-contacts-count)
         {:keys [alias public-key]} (-> contacts first :data first)]
-    [react/keyboard-avoiding-view {:style         styles/group-container
-                                   :ignore-offset true}
+    [react/keyboard-avoiding-view-new  {:style         styles/group-container
+                                        :ignore-offset true}
      [topbar/topbar {:use-insets                 false
                      :border-bottom              false
                      :style                      {:top -15}
@@ -189,8 +190,8 @@
                                                           :justify-content  :center
                                                           :align-items      :center
                                                           :background-color (quo2.colors/theme-colors quo2.colors/neutral-10 quo2.colors/neutral-80)}}
-                     :close-icon-props           {:size            20
-                                                  :color           (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}
+                     :close-icon-props           {:size  20
+                                                  :color (quo2.colors/theme-colors quo2.colors/black quo2.colors/white)}
                      :navigation                 {:sheet? true}
                      :modal?                     true
                      :background                 (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)}]
@@ -208,20 +209,22 @@
        (i18n/label :t/selected-count-from-max
                    {:selected (inc selected-contacts-count)
                     :max      constants/max-group-chat-participants})]]
-     [searchable-contact-list
-      {:contacts          contacts
-       :show-cancel?      false
-       :no-contacts-label (i18n/label :t/group-chat-no-contacts)
-       :toggle-fn         group-toggle-contact}]
+     [react/view {:style {:height 430}}
+      [searchable-contact-list
+       {:contacts          contacts
+        :show-cancel?      false
+        :no-contacts-label (i18n/label :t/group-chat-no-contacts)
+        :toggle-fn         group-toggle-contact}]]
      (when-not no-contacts-selected?
        [toolbar/toolbar
         {:show-border?  false
          :margin-bottom 20
          :center        [button/button {:type                :primary
                                         :accessibility-label :next-button
-                                        :on-press            #(if one-contact-selected?
-                                                                (rf/dispatch [:chat.ui/start-chat public-key])
-                                                                (rf/dispatch [:navigate-to :new-group]))}
+                                        :on-press            #(do
+                                                                (if one-contact-selected?
+                                                                  (hide-sheet-and-dispatch [:chat.ui/start-chat public-key])
+                                                                  (hide-sheet-and-dispatch [:navigate-to :new-group])))}
                          (if one-contact-selected?
                            (i18n/label :t/chat-with {:selected-user alias})
                            (i18n/label :t/setup-group-chat))]}])]))
