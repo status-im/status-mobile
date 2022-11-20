@@ -75,7 +75,7 @@
      :icon-color                   (colors/theme-colors colors/neutral-50 colors/neutral-40)
      :accessibility-label          :start-a-new-chat
      :icon                         :i/new-message
-     :on-press                     #(rf/dispatch [:bottom-sheet/show-sheet :start-a-new-chat {}])}]
+     :on-press                     #(hide-sheet-and-dispatch [:bottom-sheet/show-sheet :start-a-new-chat])}]
    [quo2.list-item/list-item
     {:theme                        :main
      :title                        (i18n/label :t/add-a-contact)
@@ -91,8 +91,8 @@
      :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
 
 (defn start-a-new-chat-modal []
-  [rn/view {:style {:width  "100%"
-                    :height "100%"}}
+  [rn/view {:style {:height           "100%"
+                    :width            "100%"}}
    [new-chat-aio/contact-toggle-list]])
 
 (def add-new-sheet

@@ -31,8 +31,7 @@
                                                        :background-color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
                                                        :overflow         :hidden}
                               :input-style            {:height           32
-                                                       :padding-top      2
-                                                       :padding-bottom   2
+                                                       :padding-vertical 2
                                                        :background-color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)}
                               :on-focus               #(do
                                                          (when on-focus
