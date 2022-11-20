@@ -5,21 +5,11 @@
             [quo.gesture-handler :as gh]
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as quo.colors]
-            [clojure.string :as string]
+            [quo.components.text :as text]
             [quo.components.controls.view :as controls]
             [quo.components.tooltip :as tooltip]
-            [quo2.components.markdown.text :as text]
             [status-im.ui.components.icons.icons :as icons]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.icon :as quo2.icons]
             [quo.components.animated.pressable :as animated]))
-
-(defn- icons-lib [icon-name props]
-  (if (-> icon-name
-          namespace
-          (string/includes? "main-icons2"))
-    [quo2.icons/icon icon-name props]
-    [icons/icon icon-name props]))
 
 (defn themes [theme]
   (case theme
@@ -64,13 +54,13 @@
 (defn size->single-title-size
   [size]
   (case size
-    :small :paragraph-1
-    :paragraph-1))
+    :small :base
+    :large))
 
-(defn container [{:keys [size container-style container-padding-horizontal container-padding-vertical]} & children]
-  (into [rn/view {:style (merge (or container-padding-horizontal (:tiny spacing/padding-horizontal))
+(defn container [{:keys [size container-style]} & children]
+  (into [rn/view {:style (merge (:tiny spacing/padding-horizontal)
                                 {:min-height       (size->container-size size)
-                                 :padding-vertical (or container-padding-vertical 8)
+                                 :padding-vertical 8
                                  :flex-direction   :row
                                  :align-items      :center
                                  :justify-content  :space-between} container-style)}]
@@ -91,18 +81,17 @@
                            :justify-content  :center
                            :border-radius    (/ icon-size 2)
                            :background-color icon-bg-color}}
-          (icons-lib icon {:color icon-color})])])))
+          [icons/icon icon {:color icon-color}]])])))
 
 (defn title-column
   [{:keys [title text-color subtitle subtitle-max-lines subtitle-secondary
            title-accessibility-label size text-size title-text-weight
-           right-side-present? title-column-style]}]
-  [rn/view {:style (or title-column-style
-                       (merge (:tiny spacing/padding-horizontal)
+           right-side-present?]}]
+  [rn/view {:style (merge (:tiny spacing/padding-horizontal)
                           ;; make left-side title grow if nothing is present on right-side
-                              (when-not right-side-present?
-                                {:flex            1
-                                 :justify-content :center})))}
+                          (when-not right-side-present?
+                            {:flex            1
+                             :justify-content :center}))}
    (cond
 
      (and title subtitle)
@@ -125,7 +114,6 @@
                      :weight          :regular
                      :color           :secondary
                      :ellipsize-mode  :tail
-                     :secondary-color colors/neutral-50
                      :number-of-lines subtitle-max-lines
                      :size            text-size}
           subtitle]
@@ -133,7 +121,6 @@
                      :weight          :regular
                      :color           :secondary
                      :ellipsize-mode  :middle
-                     :secondary-color colors/neutral-50
                      :number-of-lines subtitle-max-lines
                      :size            text-size}
           "•"]
@@ -141,7 +128,6 @@
                      :weight          :regular
                      :color           :secondary
                      :ellipsize-mode  :middle
-                     :secondary-color colors/neutral-50
                      :number-of-lines subtitle-max-lines
                      :size            text-size}
           subtitle-secondary]]
@@ -149,7 +135,6 @@
           [text/text {:weight          :regular
                       :color           :secondary
                       :ellipsize-mode  :tail
-                      :secondary-color colors/neutral-50
                       :number-of-lines subtitle-max-lines
                       :size            text-size}
            subtitle]
@@ -212,19 +197,19 @@
         accessory)]
      (when (and chevron platform/ios?)
        [rn/view {:style {:padding-right (:tiny spacing/spacing)}}
-        (icons-lib :main-icons/next {:container-style {:opacity         0.4
-                                                       :align-items     :center
-                                                       :justify-content :center}
-                                     :resize-mode     :center
-                                     :color           (:icon-02 @quo.colors/theme)})])]))
+        [icons/icon :i/next {:container-style {:opacity         0.4
+                                                        :align-items     :center
+                                                        :justify-content :center}
+                                      :resize-mode     :center
+                                      :color           (:icon-02 @quo.colors/theme)}]])]))
 
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon icon-container-style
-           left-side-alignment icon-color icon-bg-color title-column-style
+           left-side-alignment icon-color icon-bg-color
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label accessory-style
            haptic-feedback haptic-type error animated animated-accessory? title-text-weight container-style
-           active-background-enabled background-color container-padding-horizontal container-padding-vertical]
+           active-background-enabled background-color]
     :or   {subtitle-max-lines        1
            theme                     :main
            haptic-feedback           true
@@ -267,7 +252,7 @@
                {:on-long-press (fn []
                                  (optional-haptic)
                                  (on-long-press))}))
-      [container {:size size :container-style container-style :container-padding-vertical container-padding-vertical :container-padding-horizontal container-padding-horizontal}
+      [container {:size size :container-style container-style}
        [left-side {:icon-color                icon-color
                    :text-color                (if on-press
                                                 text-color
@@ -284,8 +269,7 @@
                    :subtitle                  subtitle
                    :subtitle-max-lines        subtitle-max-lines
                    :subtitle-secondary        subtitle-secondary
-                   :right-side-present?       (or accessory chevron)
-                   :title-column-style        title-column-style}]
+                   :right-side-present?       (or accessory chevron)}]
        [right-side {:chevron             chevron
                     :active              active
                     :disabled            disabled

@@ -17,6 +17,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.group.styles :as styles]
             [quo.core :as quo]
+            [utils.re-frame :as rf]
             [utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -30,7 +31,6 @@
 
 (defn- on-toggle [allow-new-users? checked? public-key]
   (cond
-
     checked?
     (re-frame/dispatch [:deselect-contact public-key allow-new-users?])
 
@@ -41,7 +41,6 @@
 
 (defn- on-toggle-participant [allow-new-users? checked? public-key]
   (cond
-
     checked?
     (re-frame/dispatch [:deselect-participant public-key allow-new-users?])
 
@@ -159,10 +158,11 @@
           [no-contacts {:no-contacts no-contacts-label}])]])))
 
 ;; Start group chat
-(views/defview contact-toggle-list []
-  (views/letsubs [contacts                [:contacts/active]
-                  selected-contacts-count [:selected-contacts-count]]
-    [react/keyboard-avoiding-view {:style styles/group-container
+(defn contact-toggle-list []
+  (let [contacts                (rf/sub [:contacts/active])
+        selected-contacts-count (rf/sub [:selected-contacts-count])
+        one-contact-pub-key     (-> contacts first :public-key)]
+    [react/keyboard-avoiding-view {:style         styles/group-container
                                    :ignore-offset true}
      [topbar/topbar {:use-insets    false
                      :border-bottom false
@@ -214,9 +214,9 @@
                       :on-press            #(re-frame/dispatch [:group-chats.ui/add-members-pressed])}
           (i18n/label :t/add)]}]])))
 
-(views/defview edit-group-chat-name []
-  (views/letsubs [{:keys [name chat-id]} [:chats/current-chat]
-                  new-group-chat-name (reagent/atom nil)]
+(defn edit-group-chat-name []
+  (let [{:keys [name chat-id]} (rf/sub [:chats/current-chat])
+        new-group-chat-name    (reagent/atom nil)]
     [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
      [react/scroll-view {:style {:padding 16
                                  :flex    1}}
@@ -231,15 +231,14 @@
      [react/view {:style {:flex 1}}]
      [toolbar/toolbar
       {:show-border? true
-       :center
-       [quo/button {:type                :secondary
-                    :accessibility-label :done
-                    :disabled            (and (<= (count @new-group-chat-name) 1)
-                                              (not (nil? @new-group-chat-name)))
-                    :on-press            #(cond
-                                            (< 1 (count @new-group-chat-name))
-                                            (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name])
+       :center       [quo/button {:type                :secondary
+                                  :accessibility-label :done
+                                  :disabled            (and (<= (count @new-group-chat-name) 1)
+                                                            (not (nil? @new-group-chat-name)))
+                                  :on-press            #(cond
+                                                          (< 1 (count @new-group-chat-name))
+                                                          (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name])
 
-                                            (nil? @new-group-chat-name)
-                                            (re-frame/dispatch [:navigate-back]))}
-        (i18n/label :t/done)]}]]))
+                                                          (nil? @new-group-chat-name)
+                                                          (re-frame/dispatch [:navigate-back]))}
+                      (i18n/label :t/done)]}]]))

@@ -1,28 +1,28 @@
 (ns status-im.ui2.screens.chat.components.new-chat
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
+            [quo.core :as quo]
+            [quo2.components.buttons.button :as button]
+            [quo2.core :as quo2]
+            [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.keyboard-avoid-presentation
              :as
              kb-presentation]
-            [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui2.components.search-input :as search]
-            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.group.styles :as styles]
-            [quo.core :as quo]
-            [quo2.core :as quo2]
-            [quo2.components.buttons.button :as button]
-            [status-im.utils.handlers :refer [<sub]]
+            [status-im.ui2.components.search-input :as search]
+            [status-im.ui2.components.toolbar :as toolbar]
             [utils.debounce :as debounce]
-            [quo2.foundations.colors :as quo2.colors])
+            [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-contact [row]
@@ -35,10 +35,8 @@
 
 (defn- on-toggle [allow-new-users? checked? public-key]
   (cond
-
     checked?
     (re-frame/dispatch [:deselect-contact public-key allow-new-users?])
-
     ;; Only allow new users if not reached the maximum
     (and (not checked?)
          allow-new-users?)
@@ -175,8 +173,8 @@
 
 ;; Start group chat
 (defn contact-toggle-list []
-  (let [contacts                   (<sub [:contacts/sorted-and-grouped-by-first-letter])
-        selected-contacts-count    (<sub [:selected-contacts-count])
+  (let [contacts                   (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
+        selected-contacts-count    (rf/sub [:selected-contacts-count])
         one-contact-selected?      (= selected-contacts-count 1)
         no-contacts-selected?      (zero? selected-contacts-count)
         {:keys [alias public-key]} (-> contacts first :data first)]
@@ -230,9 +228,9 @@
 
 ;; Add participants to existing group chat
 (defn add-participants-toggle-list []
-  (let [contacts                   (<sub [:contacts/all-contacts-not-in-current-chat])
-        current-chat               (<sub [:chats/current-chat])
-        selected-contacts-count    (<sub [:selected-participants-count])
+  (let [contacts                   (rf/sub [:contacts/all-contacts-not-in-current-chat])
+        current-chat               (rf/sub [:chats/current-chat])
+        selected-contacts-count    (rf/sub [:selected-participants-count])
         current-participants-count (count (:contacts current-chat))]
     [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
      [topbar/topbar {:use-insets    false
@@ -256,9 +254,9 @@
                                   :on-press            #(re-frame/dispatch [:group-chats.ui/add-members-pressed])}
                       (i18n/label :t/add)]}]]))
 
-(views/defview edit-group-chat-name []
-  (views/letsubs [{:keys [name chat-id]} [:chats/current-chat]
-                  new-group-chat-name (reagent/atom nil)]
+(defn edit-group-chat-name []
+  (let [{:keys [name chat-id]} (rf/sub [:chats/current-chat])
+        new-group-chat-name (reagent/atom nil)]
     [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
      [react/scroll-view {:style {:padding 16
                                  :flex    1}}

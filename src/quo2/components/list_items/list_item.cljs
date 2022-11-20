@@ -5,21 +5,12 @@
             [quo.gesture-handler :as gh]
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as quo.colors]
-            [clojure.string :as string]
             [quo.components.controls.view :as controls]
             [quo.components.tooltip :as tooltip]
             [quo2.components.markdown.text :as text]
-            [status-im.ui.components.icons.icons :as icons]
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as quo2.icons]
             [quo.components.animated.pressable :as animated]))
-
-(defn- icons-lib [icon-name props]
-  (if (-> icon-name
-          namespace
-          (string/includes? "main-icons2"))
-    [quo2.icons/icon icon-name props]
-    [icons/icon icon-name props]))
 
 (defn themes [theme]
   (case theme
@@ -88,7 +79,7 @@
                            :justify-content  :center
                            :border-radius    (/ icon-size 2)
                            :background-color icon-bg-color}}
-          (icons-lib icon {:color icon-color})])])))
+          (quo2.icons/icon icon {:color icon-color})])])))
 
 (defn title-column
   [{:keys [title text-color subtitle subtitle-max-lines subtitle-secondary
@@ -199,7 +190,7 @@
         accessory)]
      (when (and chevron platform/ios?)
        [rn/view {:style {:padding-right (:tiny spacing/spacing)}}
-        (icons-lib :main-icons/next {:container-style {:opacity         0.4
+        (quo2.icons/icon :main-icons/next {:container-style {:opacity         0.4
                                                        :align-items     :center
                                                        :justify-content :center}
                                      :resize-mode     :center

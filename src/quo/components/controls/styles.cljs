@@ -1,7 +1,6 @@
 (ns quo.components.controls.styles
   (:require [quo.animated :as animated]
-            [quo.design-system.colors :as colors]
-            [quo2.foundations.colors :as quo2.colors]))
+            [quo.design-system.colors :as colors]))
 
 (defn switch-style
   [state disabled]
@@ -79,7 +78,7 @@
                        (if disabled
                          (:interactive-04 @colors/theme)
                          (:interactive-01 @colors/theme))
-                       (quo2.colors/theme-colors quo2.colors/neutral-20 quo2.colors/neutral-70))})
+                       (:ui-01 @colors/theme))})
 
 (defn animated-check-icon-style
   [state hold]
