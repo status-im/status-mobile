@@ -290,8 +290,9 @@
    (when show-key?
      (let [props {:size  :label
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}]
-       [text/text {:style {:margin-left 8
-                           :margin-top  2}}
+       [rn/view {:style {:margin-left    8
+                         :margin-top     2
+                         :flex-direction :row}}
         [text/text
          (assoc props :accessibility-label :message-chat-key)
          (utils/get-shortened-address (:public-key contact))]

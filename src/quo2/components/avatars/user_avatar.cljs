@@ -122,9 +122,10 @@
                                  first-initial-letter
                                  initials)
                                "")]
-    [rn/view {:style {:width         outer-dimensions
-                      :height        outer-dimensions
-                      :border-radius outer-dimensions}}
+    [rn/view {:accessibility-label :user-avatar
+              :style               {:width         outer-dimensions
+                                    :height        outer-dimensions
+                                    :border-radius outer-dimensions}}
      (when (and ring? identicon?)
        [icons/icon :i/identicon-ring {:size     outer-dimensions
                                       :no-color true}])

@@ -73,6 +73,7 @@
            :center
            [quo/button {:disabled (and (str/blank? @user-pk)
                                        (zero? (count selected)))
+                        :accessibility-label :share-community-link
                         :type     :secondary
                         :on-press #(>evt-once
                                     [(if can-invite?
