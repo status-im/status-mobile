@@ -39,6 +39,12 @@
                  :deleted-undoable-till)
       (update-db-clear-undo-timer db chat-id message-id))))
 
+(defn- update-db-delete-locally-without-time-limit
+  "Delete message in re-frame db, used to handle received removed-messages"
+  [db chat-id message-id]
+  (when (get-in db [:messages chat-id message-id])
+    (update-in db [:messages chat-id message-id] assoc :deleted? true)))
+
 (fx/defn delete
   "Delete message now locally and broadcast after undo time limit timeout"
   {:events [:chat.ui/delete-message]}
@@ -85,3 +91,13 @@
   {:events [:chat.ui/send-all-deleted-messages]}
   [{:keys [db]}]
   {:dispatch-n (reduce-kv chats-reducer [] (:messages db))})
+
+(fx/defn delete-messages-localy
+  "Mark messages :deleted? localy in client"
+  {:events [:chat.ui/delete-messages-localy]}
+  [{:keys [db]} messages chat-id]
+  (let [new-db (->> messages
+                    (filter #(get-in db [:messages chat-id (:message-id %)]))
+                    (reduce #(update-db-delete-locally-without-time-limit %1 chat-id (:message-id %2)) db))]
+    (when new-db
+      (message-list/rebuild-message-list {:db new-db} chat-id))))
