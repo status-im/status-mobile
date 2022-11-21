@@ -1,10 +1,12 @@
-(ns quo2.components.notifications.activity-logs
-  (:require [quo.core :as quo]
+(ns quo2.components.notifications.activity-log.view
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
             [quo2.components.buttons.button :as button]
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.status-tags :as status-tags]
             [quo2.foundations.colors :as colors]
+            [quo2.components.notifications.activity-log.style :as style]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]))
@@ -48,58 +50,40 @@
 
 (defn- activity-icon
   [icon]
-  [rn/view {:height          32
-            :width           32
-            :border-radius   100
-            :margin-top      10
-            :border-width    1
-            :border-color    colors/white-opa-5
-            :align-items     :center
-            :justify-content :center}
+  [rn/view {:style style/icon}
    [icon/icon icon {:color colors/white}]])
-
-(defn- activity-unread-dot
-  []
-  [rn/view {:margin-left      14
-            :margin-right     6
-            :background-color colors/primary-50
-            :width            8
-            :height           8
-            :border-radius    4}])
 
 (defn- activity-context
   [context replying?]
-  (let [first-line-offset (if replying? 4 -2)
+  (let [first-line-offset (if replying? 4 0)
         gap-between-lines 4]
-    (into [rn/view {:flex-direction :row
-                    :align-items    :center
-                    :flex-wrap      :wrap
-                    :margin-top     first-line-offset}]
-          (map-indexed (fn [index detail]
-                         ^{:key index}
-                         [rn/view {:margin-right 4
-                                   :margin-top   gap-between-lines}
-                          (if (string? detail)
-                            [text/text {:size :paragraph-2}
-                             detail]
-                            detail)])
-                       context))))
+    (into [rn/view {:style (assoc style/context-container :margin-top first-line-offset)}]
+          (mapcat (fn [detail]
+                    ^{:key (hash detail)}
+                    (if (string? detail)
+                      (map (fn [s]
+                             [rn/view {:style {:margin-right 4
+                                               :margin-top   0}}
+                              [text/text {:size :paragraph-2}
+                               s]])
+                           (string/split detail #"\s+"))
+                      [[rn/view {:margin-right 4
+                                 :margin-top   gap-between-lines}
+                        detail]]))
+                  context))))
 
 (defn- activity-message
   [{:keys [title body]}]
-  [rn/view {:border-radius      12
-            :margin-top         12
-            :padding-horizontal 12
-            :padding-vertical   8
-            :background-color   colors/white-opa-5}
+  [rn/view {:style style/message-container}
    (when title
-     [text/text {:size  :paragraph-2
-                 :style {:color         colors/white-opa-40
-                         :margin-bottom 2}}
+     [text/text {:size                :paragraph-2
+                 :accessibility-label :activity-message-title
+                 :style               style/message-title}
       title])
    (if (string? body)
-     [text/text {:style {:color colors/white}
-                 :size  :paragraph-1}
+     [text/text {:style               style/message-body
+                 :accessibility-label :activity-message-body
+                 :size                :paragraph-1}
       body]
      body)])
 
@@ -110,9 +94,7 @@
                        {:padding-vertical 9
                         :flex-grow        1
                         :flex-basis       0})]
-    [rn/view {:margin-top     12
-              :flex-direction :row
-              :align-items    :flex-start}
+    [rn/view style/buttons-container
      (when button-1
        [button/button (-> button-1
                           (assoc :size size)
@@ -127,27 +109,32 @@
 
 (defn- activity-status
   [status]
-  [rn/view {:margin-top  12
-            :align-items :flex-start
-            :flex        1}
+  [rn/view {:style               style/status
+            :accessibility-label :activity-status}
    [status-tags/status-tag {:size   :small
                             :label  (:label status)
                             :status status}]])
 
 (defn- activity-title
   [title replying?]
-  [text/text {:weight :semi-bold
-              :style  {:color colors/white}
-              :size   (if replying? :heading-2 :paragraph-1)}
+  [text/text {:weight              :semi-bold
+              :accessibility-label :activity-title
+              :style               (style/title replying?)
+              :size                (if replying? :heading-2 :paragraph-1)}
    title])
 
 (defn- activity-timestamp
   [timestamp]
-  [rn/view {:margin-left 8}
-   [text/text {:size  :label
-               :style {:text-transform :none
-                       :color          colors/neutral-40}}
-    timestamp]])
+  [text/text {:size                :label
+              :accessibility-label :activity-timestamp
+              :style               style/timestamp}
+   timestamp])
+
+(defn- activity-unread-dot
+  []
+  [rn/view {:accessibility-label :activity-unread-indicator
+            :style               style/unread-dot-container}
+   [rn/view {:style style/unread-dot}]])
 
 (defn- footer
   [_]
@@ -162,7 +149,7 @@
              (or button-1 button-2)
              [activity-buttons button-1 button-2 replying? reply-input])])))
 
-(defn activity-log
+(defn view
   [{:keys [icon
            message
            context
@@ -171,32 +158,21 @@
            replying?
            unread?]
     :as   props}]
-  [rn/view {:flex-direction     :row
-            :align-items        :flex-start
-            :border-radius      16
-            :padding-top        8
-            :padding-horizontal (if replying? 20 12)
-            :padding-bottom     12
-            :background-color   (when (and unread? (not replying?))
-                                  colors/primary-50-opa-10)}
+  [rn/view {:accessibility-label :activity
+            :style               style/container}
    (when-not replying?
      [activity-icon icon])
-   [rn/view {:padding-left (when-not replying? 8)
-             :flex-grow    1}
-    [rn/view {:flex-grow      1
-              :align-items    :center
-              :flex-direction :row}
-     [rn/view {:flex           1
-               :align-items    :center
-               :flex-direction :row}
-      [rn/view {:flex-shrink 1}
-       [activity-title title replying?]]
+   [rn/view {:style {:padding-left (when-not replying? 8)
+                     :flex         1}}
+    [rn/view
+     [rn/view {:style style/top-section-container}
+      [activity-title title replying?]
       (when-not replying?
-        [activity-timestamp timestamp])]
-     (when (and unread? (not replying?))
-       [activity-unread-dot])]
-    (when context
-      [activity-context context replying?])
+        [activity-timestamp timestamp])
+      (when (and unread? (not replying?))
+        [activity-unread-dot])]
+     (when context
+       [activity-context context replying?])]
     (when message
       [activity-message message])
     [footer props]]])

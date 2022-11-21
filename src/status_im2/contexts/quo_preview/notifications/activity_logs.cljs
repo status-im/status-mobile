@@ -1,12 +1,10 @@
 (ns status-im2.contexts.quo-preview.notifications.activity-logs
-  (:require [status-im2.contexts.quo-preview.preview :as preview]
-            [react-native.core :as rn]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.notifications.activity-logs :as activity-logs]
-            [quo2.components.tags.context-tags :as context-tags]
+  (:require [quo2.core :as quo2]
             [quo2.foundations.colors :as colors]
-            [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
-            [reagent.core :as reagent]))
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]))
 
 (def descriptor [{:label "Unread?"
                   :key   :unread?
@@ -68,12 +66,14 @@
                  status-tags/status-tags-options])
 
 (def basic-user-action
-  [[context-tags/group-avatar-tag "Name" {:color          :purple
-                                          :override-theme :dark
-                                          :size           :small
-                                          :style          {:background-color colors/white-opa-10}
-                                          :text-style     {:color colors/white}}]
-   [rn/text {:style {:color colors/white}} "did something here."]])
+  [[quo2/user-avatar-tag
+    {:color          :purple
+     :override-theme :dark
+     :size           :small
+     :style          {:background-color colors/white-opa-10}
+     :text-style     {:color colors/white}}
+    "Name"]
+   "did something here."])
 
 (def complex-user-action
   (let [tag-props {:color          :purple
@@ -81,28 +81,28 @@
                    :size           :small
                    :style          {:background-color colors/white-opa-10}
                    :text-style     {:color colors/white}}]
-    [[context-tags/group-avatar-tag "250,000 SNT" tag-props]
-     [rn/text {:style {:color colors/white}} "from"]
-     [context-tags/group-avatar-tag "Mainnet" tag-props]
-     [rn/text {:style {:color colors/white}} "to"]
-     [context-tags/group-avatar-tag "Optimism" tag-props]
-     [rn/text {:style {:color colors/white}} "on"]
-     [context-tags/group-avatar-tag "My savings" tag-props]]))
+    [[quo2/user-avatar-tag tag-props "Alice"]
+     "from"
+     [quo2/user-avatar-tag tag-props "Mainnet"]
+     "to"
+     [quo2/user-avatar-tag tag-props "Optimism"]
+     "on"
+     [quo2/user-avatar-tag tag-props "My savings"]]))
 
 (def message-with-mention
   (let [common-text-style {:style {:color colors/white}
                            :size  :paragraph-1}]
     {:body [rn/view {:flex           1
                      :flex-direction :row}
-            [text/text common-text-style "Hello"]
-            [text/text {:style {:background-color   colors/primary-50-opa-10
+            [quo2/text common-text-style "Hello"]
+            [quo2/text {:style {:background-color   colors/primary-50-opa-10
                                 :border-radius      6
                                 :color              colors/primary-50
                                 :margin-horizontal  3
                                 :padding-horizontal 3
                                 :size               :paragraph-1}}
              "@name"]
-            [text/text common-text-style "! How are you feeling?"]]}))
+            [quo2/text common-text-style "! How are you feeling?"]]}))
 
 (def message-with-title
   {:body  "Your favorite color is Turquoise."
@@ -161,7 +161,7 @@
                    :flex-direction   :row
                    :justify-content  :center
                    :padding-vertical 60}
-          [activity-logs/activity-log props]]]))))
+          [quo2/activity-log props]]]))))
 
 (defn preview-activity-logs []
   [rn/view {:flex 1}

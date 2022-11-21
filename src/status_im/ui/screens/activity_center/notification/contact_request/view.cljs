@@ -38,8 +38,7 @@
                                  :text-style     style/user-avatar-tag-text}
                                 (activity-center.utils/contact-name contact)
                                 (multiaccounts/displayed-photo contact)]
-                               [quo2/text {:style style/context-tag-text}
-                                (i18n/label :t/contact-request-sent)]]
+                               (i18n/label :t/contact-request-sent)]
                    :message   {:body (get-in message [:content :text])}
                    :status    (case (:contact-request-state message)
                                 constants/contact-request-message-state-accepted
@@ -49,10 +48,12 @@
                                 nil)}
                   (case (:contact-request-state message)
                     constants/contact-request-state-mutual
-                    {:button-1 {:label    (i18n/label :t/decline)
-                                :type     :danger
-                                :on-press #(rf/dispatch [:contact-requests.ui/decline-request id])}
-                     :button-2 {:label    (i18n/label :t/accept)
-                                :type     :positive
-                                :on-press #(rf/dispatch [:contact-requests.ui/accept-request id])}}
+                    {:button-1 {:label               (i18n/label :t/decline)
+                                :accessibility-label :decline-contact-request
+                                :type                :danger
+                                :on-press            #(rf/dispatch [:contact-requests.ui/decline-request id])}
+                     :button-2 {:label               (i18n/label :t/accept)
+                                :accessibility-label :accept-contact-request
+                                :type                :positive
+                                :on-press            #(rf/dispatch [:contact-requests.ui/accept-request id])}}
                     nil))])))
