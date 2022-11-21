@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -319,6 +319,20 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		D0D5C8D06825D33BA2D2121E /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				BB42B2C150BA8A2AA109EA43 /* Pods-Status-StatusIm.debug.xcconfig */,
+				45E0DC52E25A332264874B0F /* Pods-Status-StatusIm.release.xcconfig */,
+				7AFBE28450C0239119FBDBA2 /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */,
+				B650FC314F823A68E7CE11D5 /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */,
+				FBF6AB84EBC2085D28C3CDEF /* Pods-Status-StatusImPR.debug.xcconfig */,
+				BF23313BEFBC84C6BB7E7677 /* Pods-Status-StatusImPR.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -397,12 +411,12 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = DTX7Z4U3YA;
+						DevelopmentTeam = 8B5X2M6H2Y;
 						ProvisioningStyle = Manual;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = DTX7Z4U3YA;
+						DevelopmentTeam = 8B5X2M6H2Y;
 						LastSwiftMigration = 1140;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
@@ -421,7 +435,7 @@
 						};
 					};
 					3AAD2AB924A3A60E0075D594 = {
-						DevelopmentTeam = DTX7Z4U3YA;
+						DevelopmentTeam = 8B5X2M6H2Y;
 						ProvisioningStyle = Manual;
 					};
 				};
@@ -751,7 +765,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -762,7 +776,11 @@
 				);
 				INFOPLIST_FILE = StatusImTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -785,14 +803,18 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = StatusImTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -812,12 +834,12 @@
 				BUNDLE_ID_SUFFIX = .debug;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CUSTOM_PRODUCT_NAME = "Status Debug";
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphoneos*]" = x86_64;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -851,7 +873,11 @@
 				);
 				INFOPLIST_FILE = StatusIm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -882,12 +908,12 @@
 				BUNDLE_ID_SUFFIX = "";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CUSTOM_PRODUCT_NAME = Status;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../modules/react-native-status/ios/RCTStatus",
@@ -913,7 +939,11 @@
 				);
 				INFOPLIST_FILE = StatusIm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -947,7 +977,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CUSTOM_PRODUCT_NAME = "Status Debug";
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../modules/react-native-status/ios/RCTStatus",
 					"$(inherited)",
@@ -978,7 +1008,11 @@
 				);
 				INFOPLIST_FILE = StatusImPR/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -990,7 +1024,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum.pr;
 				PRODUCT_NAME = "Status PR";
-				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc im.status.ethereum.pr";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development im.status.ethereum.pr";
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -1007,12 +1041,12 @@
 				BUNDLE_ID_SUFFIX = "";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = StatusImPR/StatusImPR.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CUSTOM_PRODUCT_NAME = Status;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../modules/react-native-status/ios/RCTStatus",
 					"$(inherited)",
@@ -1037,7 +1071,11 @@
 				);
 				INFOPLIST_FILE = StatusImPR/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1090,7 +1128,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1173,7 +1211,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = YES;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

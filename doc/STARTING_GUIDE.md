@@ -71,3 +71,17 @@ Steps:
 2. [Setup Git to use your GPG key](https://help.github.com/en/github/authenticating-to-github/telling-git-about-your-signing-key)
 3. [Setup Git to sign commits](https://help.github.com/en/github/authenticating-to-github/signing-commits)
 4. [Setup GitHub to validate commits](https://help.github.com/en/github/authenticating-to-github/adding-a-new-gpg-key-to-your-github-account)
+
+## Physical iOS Device
+
+To use a physical iPhone your device UDID must be added to provisioning profiles and your Apple account invited as Developer to Status team.
+
+1. [Get your UDID of your iPhone.](https://www.extentia.com/post/finding-the-udid-of-an-ios-device)
+2. Request from someone with access like @cammellos or @jakubgs to
+  - Add the UDID to development devices on Apple Developer Portal.
+  - Invite your Apple account to be Developer in Status team.
+3. Run a build in XCode using the project from `status-mobile/ios` directory.
+  - You might see error: `Select a development team in the Signing & Capabilities editor`
+  - Select `Status Research & Development GmbH` as the development team and rebuild again.
+
+Once build finishes Status should start on your iPhone with its logs in terminal running `make run-metro`.
