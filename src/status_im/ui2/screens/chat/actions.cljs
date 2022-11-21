@@ -1,12 +1,12 @@
 (ns status-im.ui2.screens.chat.actions
   (:require
-    [status-im.chat.models :as chat.models]
-    [status-im.chat.models.pin-message :as models.pin-message]
-    [status-im.i18n.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im.ui2.screens.common.core :as common]
-    [status-im.constants :as constants]
-    [quo2.components.drawers.action-drawers :as drawer]))
+   [status-im.chat.models :as chat.models]
+   [status-im.chat.models.pin-message :as models.pin-message]
+   [status-im.i18n.i18n :as i18n]
+   [utils.re-frame :as rf]
+   [status-im.ui2.screens.common.core :as common]
+   [status-im.constants :as constants]
+   [quo2.components.drawers.action-drawers :as drawer]))
 
 (defn- entry [{:keys [icon label on-press danger? sub-label chevron? add-divider?]}]
   {:pre [(keyword? icon)
@@ -81,9 +81,9 @@
   (let [muted? (rf/sub [:chats/muted chat-id])]
     (entry {:icon      :i/muted
             :label     (i18n/label
-                         (if muted?
-                           :unmute-chat
-                           :mute-chat))
+                        (if muted?
+                          :unmute-chat
+                          :mute-chat))
             :on-press  (if muted?
                          #(unmute-chat-action chat-id)
                          #(mute-chat-action chat-id))
