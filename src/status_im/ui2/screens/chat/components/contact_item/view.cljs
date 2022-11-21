@@ -9,19 +9,63 @@
             [quo2.components.markdown.text :as text]
             [status-im.ui2.screens.chat.components.message-home-item.style :as style]
             [utils.re-frame :as rf]
-            [status-im.ui2.screens.chat.actions :as actions]))
+            [status-im.ui2.screens.chat.actions :as actions]
+            [quo2.components.selectors.selectors :as selectors]))
 
 (defn open-chat [chat-id]
-  (rf/dispatch [:dismiss-keyboard])
-  (if platform/android?
-    (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
-    (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))
-  (rf/dispatch [:search/home-filter-changed nil])
-  (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
+  (let [view-id (rf/sub [:view-id])]
+    (when (= view-id :shell-stack)
+      (rf/dispatch [:dismiss-keyboard])
+      (if platform/android?
+        (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
+        (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))
+      (rf/dispatch [:search/home-filter-changed nil])
+      (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))))
 
-(defn contact-item [item {:keys [icon] :as extra-data}]
+;(defn action-icon [{:keys [public-key] :as item} {:keys [icon group] :as extra-data}]
+;  (let [{:keys [contacts]} group
+;        member? (contains? contacts public-key)]
+;    [rn/touchable-opacity {:style          (merge {:position :absolute
+;                                                   :right    20}
+;                                                  (when (= icon :check)
+;                                                    (if member?
+;                                                      {:width           20
+;                                                       :height          20
+;                                                       :border-radius   6
+;                                                       :justify-content :center
+;                                                       :align-items     :center
+;                                                       :background-color (colors/theme-colors colors/primary-50 colors/primary-60)}
+;                                                      {:width           20
+;                                                       :height          20
+;                                                       :border-radius   6
+;                                                       :border-width 1
+;                                                       :border-color (colors/theme-colors colors/neutral-20 colors/neutral-80)
+;                                                       :background-color (colors/theme-colors colors/white colors/neutral-80-opa-40)})))
+;                           :active-opacity 1
+;                           :on-press       (if (= icon :options)
+;                                             #(rf/dispatch [:bottom-sheet/show-sheet
+;                                                            {:content (fn [] [actions/actions item extra-data])}])
+;                                             #(println "other"))}
+;     (if (= icon :options)
+;       [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+;       [icons/icon :i/check-large {:size 12 :color colors/white}])]))
+
+(defn action-icon [{:keys [public-key] :as item} {:keys [icon group added] :as extra-data}]
+  (let [{:keys [contacts]} group
+        member? (contains? contacts public-key)]
+    (if (= icon :options)
+      [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+      [rn/view {:style {:position :absolute
+                        :right    20}}
+       [selectors/checkbox {:default-checked? member?
+                            :on-change        (fn [selected] (if selected
+                                                               (swap! added conj public-key)
+                                                               (reset! added (filter #(-> % (not= public-key)) @added))))}]])))
+
+(defn contact-item [item extra-data]
   (let [{:keys [public-key ens-verified added? images]} item
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
+<<<<<<< HEAD
         photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))
         current-pk   (rf/sub [:multiaccount/public-key])]
     [rn/touchable-opacity (merge {:style         (style/container)
@@ -34,6 +78,14 @@
                                   :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
                                                                 {:content (fn [] [actions/actions item extra-data])}])})
 >>>>>>> 25441811e... feat: group details screen 2
+=======
+        photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))]
+    [rn/touchable-opacity (merge {:style          (style/container)
+                                  :active-opacity 1
+                                  :on-press       #(open-chat public-key)
+                                  :on-long-press  #(rf/dispatch [:bottom-sheet/show-sheet
+                                                                 {:content (fn [] [actions/actions item extra-data])}])})
+>>>>>>> faae21626... updates
      [user-avatar/user-avatar {:full-name         display-name
                                :profile-picture   photo-path
                                :status-indicator? true
@@ -54,6 +106,7 @@
       [text/text {:size  :paragraph-1
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
        (utils/get-shortened-address public-key)]]
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
      (when-not (= current-pk public-key)
@@ -90,4 +143,7 @@
         [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
         [icons/icon :i/check-large {:size 12 :color colors/white}])]]))
 >>>>>>> 6bc845a97... updates
+=======
+     [action-icon item extra-data]]))
+>>>>>>> faae21626... updates
 

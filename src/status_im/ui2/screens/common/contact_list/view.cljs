@@ -24,7 +24,7 @@
                :weight :medium
                :style  {:color colors/neutral-50}} title]])
 
-(defn contact-list [{:keys [icon]}]
+(defn contact-list [data]
   (let [contacts (rf/sub [:contacts/active])
         contacts (prepare-contacts contacts)]
     [rn/section-list
@@ -33,4 +33,4 @@
       :sections                       contacts
       :render-section-header-fn       contacts-section-header
       :render-fn                      (fn [item]
-                                        [contact-item/contact-item item {:icon icon}])}]))
+                                        [contact-item/contact-item item data])}]))

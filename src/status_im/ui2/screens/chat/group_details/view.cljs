@@ -45,7 +45,8 @@
             [status-im.ui2.screens.common.contact-list.view :as contact-list]
             [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]
             [status-im.ui2.screens.chat.actions :as actions]
-            [quo.components.safe-area :as safe-area]))
+            [quo.components.safe-area :as safe-area]
+            [reagent.core :as reagent]))
 
 (defn back-button []
   [quo2/button {:type                :grey
@@ -168,7 +169,9 @@
                :weight :medium
                :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}} title]])
 
-(defn contact-requests-sheet []
+(def added (reagent/atom ()))
+
+(defn contact-requests-sheet [group]
   [:f>
    (fn []
      (let [{window-height :height} (rn/use-window-dimensions)
@@ -185,7 +188,7 @@
            :justify-content  :center
            :align-items      :center
            :margin-bottom    24}}
-         [quo2/icon :i/close {:color (colors/theme-colors "#000000" "#ffffff")}]]
+         [quo2/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
         [quo2/text {:size   :heading-1
                     :weight :semi-bold
                     :style  {:margin-left 20}}
@@ -194,9 +197,24 @@
                         :style       {:height             32
                                       :padding-horizontal 20
                                       :margin-vertical    12}}]
-        [contact-list/contact-list {:icon :check}]]))])
+        [contact-list/contact-list {:icon  :check
+                                    :group group
+                                    :added added}]
+        [rn/view {:position           :absolute
+                  :padding-horizontal 20
+                  :padding-vertical   12
+                  :padding-bottom     (+ (:bottom safe-area) 33)
+                  :width              "100%"
+                  :background-color   colors/white
+                  :flex-direction     :row
+                  :bottom             0}
+         [quo2/button {:style    {:flex 1}
+                       :on-press #(rf/dispatch [:bottom-sheet/hide])
+                       :disabled (= (count @added) 0)}
+          (i18n/label :t/save)]]]))])
 
 (defn group-details []
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   (let [{:keys [admins chat-id chat-name color public?]} (rf/sub [:chats/current-chat])
@@ -217,6 +235,9 @@
 =======
   (let [{:keys [admins chat-id chat-name color contacts public? muted]} (rf/sub [:chats/current-chat])
 >>>>>>> 25441811e... feat: group details screen 2
+=======
+  (let [{:keys [admins chat-id chat-name color contacts public? muted] :as group} (rf/sub [:chats/current-chat])
+>>>>>>> faae21626... updates
         members           (rf/sub [:contacts/current-chat-contacts])
         sectioned-members (prepare-members (seq contacts) admins)
         pinned-messages   (rf/sub [:chats/pinned chat-id])
@@ -287,7 +308,7 @@
       [rn/touchable-opacity {:style    (style/action-container color)
                              :on-press #(rf/dispatch
                                           [:bottom-sheet/show-sheet
-                                           {:content (fn [] [contact-requests-sheet])}])}
+                                           {:content (fn [] [contact-requests-sheet group])}])}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
@@ -316,5 +337,9 @@
 >>>>>>> 25441811e... feat: group details screen 2
 =======
                                                                                           :admin?  admin?
+<<<<<<< HEAD
                                                                                           :icon :options}])}]]))
 >>>>>>> 6bc845a97... updates
+=======
+                                                                                          :icon    :options}])}]]))
+>>>>>>> faae21626... updates
