@@ -66,12 +66,14 @@
                  status-tags/status-tags-options])
 
 (def basic-user-action
-  [[quo2/group-avatar-tag "Name" {:color          :purple
-                                  :override-theme :dark
-                                  :size           :small
-                                  :style          {:background-color colors/white-opa-10}
-                                  :text-style     {:color colors/white}}]
-   [quo2/text {:style {:color colors/white}} "did something here."]])
+  [[quo2/user-avatar-tag
+    {:color          :purple
+     :override-theme :dark
+     :size           :small
+     :style          {:background-color colors/white-opa-10}
+     :text-style     {:color colors/white}}
+    "Name"]
+   "did something here."])
 
 (def complex-user-action
   (let [tag-props {:color          :purple
@@ -79,13 +81,13 @@
                    :size           :small
                    :style          {:background-color colors/white-opa-10}
                    :text-style     {:color colors/white}}]
-    [[quo2/group-avatar-tag "250,000 SNT" tag-props]
-     [quo2/text {:style {:color colors/white}} "from"]
-     [quo2/group-avatar-tag "Mainnet" tag-props]
-     [quo2/text {:style {:color colors/white}} "to"]
-     [quo2/group-avatar-tag "Optimism" tag-props]
-     [quo2/text {:style {:color colors/white}} "on"]
-     [quo2/group-avatar-tag "My savings" tag-props]]))
+    [[quo2/user-avatar-tag tag-props "Alice"]
+     "from"
+     [quo2/user-avatar-tag tag-props "Mainnet"]
+     "to"
+     [quo2/user-avatar-tag tag-props "Optimism"]
+     "on"
+     [quo2/user-avatar-tag tag-props "My savings"]]))
 
 (def message-with-mention
   (let [common-text-style {:style {:color colors/white}
