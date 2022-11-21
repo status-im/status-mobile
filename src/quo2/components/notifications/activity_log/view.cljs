@@ -61,13 +61,12 @@
           (mapcat (fn [detail]
                     ^{:key (hash detail)}
                     (if (string? detail)
-                      (map-indexed (fn [index s]
-                                     ^{:key index}
-                                     [rn/view {:style {:margin-right 4
-                                                       :margin-top   0}}
-                                      [text/text {:size :paragraph-2}
-                                       s]])
-                                   (string/split detail #"\s+"))
+                      (map (fn [s]
+                             [rn/view {:style {:margin-right 4
+                                               :margin-top   0}}
+                              [text/text {:size :paragraph-2}
+                               s]])
+                           (string/split detail #"\s+"))
                       [[rn/view {:margin-right 4
                                  :margin-top   gap-between-lines}
                         detail]]))
