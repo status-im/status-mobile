@@ -172,8 +172,7 @@
                                      :on-content-size-change input-content-change
                                      :sending-image          false
                                      :refs                   refs
-                                     :set-active-panel       #()}]
-                  ]]]
+                                     :set-active-panel       #()}]]]]
                ;CONTROLS
                (when-not (seq suggestions)
                  [rn/view {:style (styles/bottom-sheet-controls insets)}
