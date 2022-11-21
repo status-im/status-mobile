@@ -1,8 +1,10 @@
 import time
+
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+
+from tests import test_dapp_url
 from views.base_element import Button, Text, BaseElement, SilentButton, CheckBox
 from views.base_view import BaseView
-from tests import test_dapp_url
 
 
 class ChatButton(Button):
@@ -239,6 +241,9 @@ class HomeView(BaseView):
         self.not_connected_to_node_text = Text(self.driver, accessibility_id="not-connected-nodes")
         self.not_connected_to_peers_text = Text(self.driver, accessibility_id="not-connected-to-peers")
 
+        # New UI
+        self.new_chat_button = Button(self.driver, accessibility_id="new-chat-button")
+
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing to complete')
         while True:
@@ -301,9 +306,12 @@ class HomeView(BaseView):
         self.driver.info("## 1-1 chat is created successfully!", device=False)
         return one_to_one_chat
 
-    def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat'):
+    def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat', new_ui=False):
         self.driver.info("## Creating group chat '%s'" % group_chat_name, device=False)
-        self.plus_button.click()
+        if new_ui:
+            self.new_chat_button.click()
+        else:
+            self.plus_button.click()
         chat_view = self.new_group_chat_button.click()
         if user_names_to_add:
             for user_name in user_names_to_add:

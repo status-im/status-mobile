@@ -140,16 +140,17 @@ class BaseElement(object):
             return WebDriverWait(self.driver, seconds) \
                 .until(expected_conditions.invisibility_of_element_located((self.by, self.locator)))
         except TimeoutException:
-            raise TimeoutException("Device %s: %s by %s: `%s`  is still visible on the screen after %s seconds after wait_for_invisibility_of_element" % (
-                self.driver.number, self.name, self.by, self.locator, seconds)) from None
+            raise TimeoutException(
+                "Device %s: %s by %s: `%s`  is still visible on the screen after %s seconds after wait_for_invisibility_of_element" % (
+                    self.driver.number, self.name, self.by, self.locator, seconds)) from None
 
-    def wait_for_element_text(self, text, wait_time=30):
+    def wait_for_element_text(self, text, wait_time=30, message=None):
         counter = 0
         self.driver.info("Wait for text element `%s` to be equal to `%s`" % (self.name, text))
         while True:
             if counter >= wait_time:
-                self.driver.fail(
-                    "`%s` is not equal to expected `%s` in %s sec" % (self.find_element().text, text, wait_time))
+                self.driver.fail(message if message else "`%s` is not equal to expected `%s` in %s sec" % (
+                    self.find_element().text, text, wait_time))
             elif self.find_element().text != text:
                 counter += 10
                 time.sleep(10)

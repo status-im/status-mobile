@@ -125,7 +125,6 @@ class TestrailReport(BaseTestReport):
         test_cases['pr']['one_to_one_chat'] = 50956
         test_cases['pr']['deep_links'] = 50967
 
-
         ## Nightly e2e
         # test_cases['nightly']['medium'] = 736
         # test_cases['nightly']['chat'] = 50811
@@ -145,6 +144,10 @@ class TestrailReport(BaseTestReport):
         # test_cases['nightly']['mutual_contact_requests'] = 50857
         # test_cases['nightly']['keycard'] = 50850
         # test_cases['nightly']['wallet'] = 50851
+
+        test_cases['nightly']['1_1_chat'] = 50958
+        test_cases['nightly']['group_chat'] = 50964
+
         ## Upgrade e2e
         # test_cases['upgrade']['general'] = 881
 
@@ -154,7 +157,7 @@ class TestrailReport(BaseTestReport):
                 key, value = arg.split('=')
                 case_ids = value.split(',')
         if len(case_ids) == 0:
-           # if 'critical' in argv:
+            # if 'critical' in argv:
             if 'new_ui_critical' in argv:
                 for category in test_cases['pr']:
                     for case in self.get_cases([test_cases['pr'][category]]):
