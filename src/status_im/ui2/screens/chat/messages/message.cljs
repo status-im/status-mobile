@@ -716,7 +716,7 @@
   [message-content-wrapper message
    [unknown-content-type message]])
 
-(defn chat-message [{:keys [pinned pinned-by mentioned in-pinned-view? last-in-group?] :as message}]
+(defn chat-message [{:keys [pinned pinned-by mentioned in-pinned-view? last-in-group? deleted? deleted-for-me?] :as message}]
   (let [reactions      @(re-frame/subscribe [:chats/message-reactions (:message-id message) (:chat-id message)])
         own-reactions  (reduce (fn [acc {:keys [emoji-id own]}]
                                  (if own (conj acc emoji-id) acc))
@@ -756,7 +756,8 @@
      [->message message {:ref           on-long-press
                          :modal         false
                          :on-long-press on-open-drawer}]
-     [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press]])) ;; TODO: pass on-open-drawer function
+     (when-not (or deleted? deleted-for-me?)
+       [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press])])) ;; TODO: pass on-open-drawer function
 
 (defn message-render-fn
   [{:keys [outgoing whisper-timestamp] :as message}
