@@ -28,7 +28,7 @@
             quo2.components.messages.gap
             quo2.components.messages.system-message
             quo2.components.reactions.reaction
-            quo2.components.notifications.activity-logs
+            quo2.components.notifications.activity-log.view
             quo2.components.notifications.info-count
             quo2.components.notifications.notification-dot
             quo2.components.tags.tags
@@ -58,6 +58,7 @@
 (def tags quo2.components.tags.tags/tags)
 (def user-avatar-tag quo2.components.tags.context-tags/user-avatar-tag)
 (def context-tag quo2.components.tags.context-tags/context-tag)
+(def group-avatar-tag quo2.components.tags.context-tags/group-avatar-tag)
 (def tabs quo2.components.tabs.tabs/tabs)
 (def scrollable-tabs quo2.components.tabs.tabs/scrollable-tabs)
 (def account-selector quo2.components.tabs.account-selector/account-selector)
@@ -96,6 +97,6 @@
 (def preview-list quo2.components.list-items.preview-list/preview-list)
 
 ;;;; NOTIFICATIONS
-(def activity-log quo2.components.notifications.activity-logs/activity-log)
+(def activity-log quo2.components.notifications.activity-log.view/view)
 (def info-count quo2.components.notifications.info-count/info-count)
 (def notification-dot quo2.components.notifications.notification-dot/notification-dot)

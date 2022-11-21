@@ -1,4 +1,4 @@
-(ns quo2.components.notifications.activity-logs
+(ns quo2.components.notifications.activity-log.view
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [quo2.components.buttons.button :as button]
@@ -6,6 +6,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.status-tags :as status-tags]
             [quo2.foundations.colors :as colors]
+            [quo2.components.notifications.activity-log.style :as style]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]))
@@ -49,26 +50,14 @@
 
 (defn- activity-icon
   [icon]
-  [rn/view {:height          32
-            :width           32
-            :border-radius   100
-            :margin-top      10
-            :border-width    1
-            :border-color    colors/white-opa-5
-            :align-items     :center
-            :justify-content :center}
+  [rn/view {:style style/icon}
    [icon/icon icon {:color colors/white}]])
 
 (defn- activity-context
   [context replying?]
   (let [first-line-offset (if replying? 4 0)
         gap-between-lines 4]
-    (into [rn/view {:style {:flex-direction  :row
-                            :flex            1
-                            :align-items     :center
-                            :justify-content :flex-start
-                            :flex-wrap       :wrap
-                            :margin-top      first-line-offset}}]
+    (into [rn/view {:style (assoc style/context-container :margin-top first-line-offset)}]
           (mapcat (fn [detail]
                     ^{:key (hash detail)}
                     (if (string? detail)
@@ -86,19 +75,14 @@
 
 (defn- activity-message
   [{:keys [title body]}]
-  [rn/view {:border-radius      12
-            :margin-top         12
-            :padding-horizontal 12
-            :padding-vertical   8
-            :background-color   colors/white-opa-5}
+  [rn/view {:style style/message-container}
    (when title
      [text/text {:size                :paragraph-2
                  :accessibility-label :activity-message-title
-                 :style               {:color         colors/white-opa-40
-                                       :margin-bottom 2}}
+                 :style               style/message-title}
       title])
    (if (string? body)
-     [text/text {:style               {:color colors/white}
+     [text/text {:style               style/message-body
                  :accessibility-label :activity-message-body
                  :size                :paragraph-1}
       body]
@@ -111,9 +95,7 @@
                        {:padding-vertical 9
                         :flex-grow        1
                         :flex-basis       0})]
-    [rn/view {:margin-top     12
-              :flex-direction :row
-              :align-items    :flex-start}
+    [rn/view style/buttons-container
      (when button-1
        [button/button (-> button-1
                           (assoc :size size)
@@ -128,9 +110,7 @@
 
 (defn- activity-status
   [status]
-  [rn/view {:style               {:margin-top  12
-                                  :align-items :flex-start
-                                  :flex        1}
+  [rn/view {:style               style/status
             :accessibility-label :activity-status}
    [status-tags/status-tag {:size   :small
                             :label  (:label status)
@@ -140,9 +120,7 @@
   [title replying?]
   [text/text {:weight              :semi-bold
               :accessibility-label :activity-title
-              :style               {:color       colors/white
-                                    :flex-shrink 1
-                                    :max-width   (when-not replying? "60%")}
+              :style               (style/title replying?)
               :size                (if replying? :heading-2 :paragraph-1)}
    title])
 
@@ -150,22 +128,14 @@
   [timestamp]
   [text/text {:size                :label
               :accessibility-label :activity-timestamp
-              :style               {:text-transform :none
-                                    :flex-grow      1
-                                    :margin-left    8
-                                    :color          colors/neutral-40}}
+              :style               style/timestamp}
    timestamp])
 
 (defn- activity-unread-dot
   []
   [rn/view {:accessibility-label :activity-unread-indicator
-            :style               {:margin-left        8
-                                  :padding-horizontal 12
-                                  :padding-vertical   7}}
-   [rn/view {:style {:background-color colors/primary-50
-                     :border-radius    4
-                     :width            8
-                     :height           8}}]])
+            :style               style/unread-dot-container}
+   [rn/view {:style style/unread-dot}]])
 
 (defn- footer
   [_]
@@ -180,7 +150,7 @@
              (or button-1 button-2)
              [activity-buttons button-1 button-2 replying? reply-input])])))
 
-(defn activity-log
+(defn view
   [{:keys [icon
            message
            context
@@ -190,20 +160,13 @@
            unread?]
     :as   props}]
   [rn/view {:accessibility-label :activity
-            :style               {:flex-direction     :row
-                                  :flex               1
-                                  :align-items        :flex-start
-                                  :padding-top        8
-                                  :padding-horizontal 12
-                                  :padding-bottom     12}}
+            :style               style/container}
    (when-not replying?
      [activity-icon icon])
    [rn/view {:style {:padding-left (when-not replying? 8)
                      :flex         1}}
     [rn/view
-     [rn/view {:style {:align-items    :center
-                       :flex           1
-                       :flex-direction :row}}
+     [rn/view {:style style/top-section-container}
       [activity-title title replying?]
       (when-not replying?
         [activity-timestamp timestamp])
