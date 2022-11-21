@@ -3,7 +3,7 @@
 
 (def container
   {:flex-direction     :row
-   :flex               1
+   :flex-grow          1
    :align-items        :flex-start
    :padding-top        8
    :padding-horizontal 12
@@ -67,12 +67,10 @@
 
 (def context-container
   {:flex-direction  :row
-   :flex            1
    :align-items     :center
    :justify-content :flex-start
    :flex-wrap       :wrap})
 
 (def top-section-container
   {:align-items    :center
-   :flex           1
    :flex-direction :row})
