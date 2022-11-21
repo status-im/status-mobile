@@ -63,6 +63,7 @@
                        :right    20
                        :top      12
                        :flex-direction :row}}
+      ;; TODO component shouldn't know anything about parent system, we should pass buttons as parameters
       [base-button :i/search open-search :open-search-button button-common-props]
       [base-button :i/scan open-scanner :open-scanner-button button-common-props]
       [base-button :i/qr-code show-qr :show-qr-button button-common-props]
