@@ -4,7 +4,7 @@
             [quo.haptic :as haptic]
             [quo.gesture-handler :as gh]
             [quo.design-system.spacing :as spacing]
-            [quo.design-system.colors :as quo.colors]
+            [quo.design-system.colors :as colors]
             [quo.components.text :as text]
             [quo.components.controls.view :as controls]
             [quo.components.tooltip :as tooltip]
@@ -13,31 +13,31 @@
 
 (defn themes [theme]
   (case theme
-    :main {:icon-color         (:icon-04 @quo.colors/theme)
-           :icon-bg-color      (:interactive-02 @quo.colors/theme)
-           :active-background  (:interactive-02 @quo.colors/theme)
-           :passive-background (:ui-background @quo.colors/theme)
-           :text-color         (:text-01 @quo.colors/theme)}
-    :accent {:icon-color         (:icon-04 @quo.colors/theme)
-             :icon-bg-color      (:interactive-02 @quo.colors/theme)
-             :active-background  (:interactive-02 @quo.colors/theme)
-             :passive-background (:ui-background @quo.colors/theme)
-             :text-color         (:text-04 @quo.colors/theme)}
-    :negative {:icon-color         (:negative-01 @quo.colors/theme)
-               :icon-bg-color      (:negative-02 @quo.colors/theme)
-               :active-background  (:negative-02 @quo.colors/theme)
-               :passive-background (:ui-background @quo.colors/theme)
-               :text-color         (:negative-01 @quo.colors/theme)}
-    :positive {:icon-color         (:positive-01 @quo.colors/theme)
-               :icon-bg-color      (:positive-02 @quo.colors/theme)
-               :active-background  (:positive-02 @quo.colors/theme)
-               :passive-background (:ui-background @quo.colors/theme)
-               :text-color         (:positive-01 @quo.colors/theme)}
-    :disabled {:icon-color         (:icon-02 @quo.colors/theme)
-               :icon-bg-color      (:ui-01 @quo.colors/theme)
-               :active-background  (:ui-01 @quo.colors/theme)
-               :passive-background (:ui-background @quo.colors/theme)
-               :text-color         (:text-02 @quo.colors/theme)}))
+    :main {:icon-color         (:icon-04 @colors/theme)
+           :icon-bg-color      (:interactive-02 @colors/theme)
+           :active-background  (:interactive-02 @colors/theme)
+           :passive-background (:ui-background @colors/theme)
+           :text-color         (:text-01 @colors/theme)}
+    :accent {:icon-color         (:icon-04 @colors/theme)
+             :icon-bg-color      (:interactive-02 @colors/theme)
+             :active-background  (:interactive-02 @colors/theme)
+             :passive-background (:ui-background @colors/theme)
+             :text-color         (:text-04 @colors/theme)}
+    :negative {:icon-color         (:negative-01 @colors/theme)
+               :icon-bg-color      (:negative-02 @colors/theme)
+               :active-background  (:negative-02 @colors/theme)
+               :passive-background (:ui-background @colors/theme)
+               :text-color         (:negative-01 @colors/theme)}
+    :positive {:icon-color         (:positive-01 @colors/theme)
+               :icon-bg-color      (:positive-02 @colors/theme)
+               :active-background  (:positive-02 @colors/theme)
+               :passive-background (:ui-background @colors/theme)
+               :text-color         (:positive-01 @colors/theme)}
+    :disabled {:icon-color         (:icon-02 @colors/theme)
+               :icon-bg-color      (:ui-01 @colors/theme)
+               :active-background  (:ui-01 @colors/theme)
+               :passive-background (:ui-background @colors/theme)
+               :text-color         (:text-02 @colors/theme)}))
 
 (defn size->icon-size
   [size]
@@ -197,11 +197,11 @@
         accessory)]
      (when (and chevron platform/ios?)
        [rn/view {:style {:padding-right (:tiny spacing/spacing)}}
-        [icons/icon :i/next {:container-style {:opacity         0.4
+        [icons/icon :main-icons/next {:container-style {:opacity         0.4
                                                         :align-items     :center
                                                         :justify-content :center}
                                       :resize-mode     :center
-                                      :color           (:icon-02 @quo.colors/theme)}]])]))
+                                      :color           (:icon-02 @colors/theme)}]])]))
 
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon icon-container-style
