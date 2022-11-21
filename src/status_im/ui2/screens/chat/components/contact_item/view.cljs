@@ -26,8 +26,9 @@
         current-pk   (rf/sub [:multiaccount/public-key])]
     [rn/touchable-opacity (merge {:style         (style/container)
                                   :on-press      #(open-chat public-key)
-                                  :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                {:content (fn [] [actions/actions item])}])})
+                                  :on-long-press #(when-not (= current-pk public-key)
+                                                    (rf/dispatch [:bottom-sheet/show-sheet
+                                                                  {:content (fn [] [actions/actions item])}]))})
      [user-avatar/user-avatar {:full-name         display-name
                                :profile-picture   photo-path
                                :status-indicator? true

@@ -30,18 +30,14 @@
                :weight :medium
                :style  {:text-align :center}} count]])
 
-(defn prepare-members
-  [contact-addresses admins]
-  (let [contacts (map #(assoc (rf/sub [:contacts/contact-by-address %])
-                              :admin? (get admins %))
-                      contact-addresses)
-        admins   (filter :admin? contacts)
-        online   (filter #(and (not (:admin? %)) (:online? %)) contacts)
-        offline  (filter #(and (not (:admin? %)) (not (:online? %))) contacts)]
+(defn prepare-members [members]
+  (let [admins  (filter :admin? members)
+        online  (filter #(and (not (:admin? %)) (:online? %)) members)
+        offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
     (vals (cond-> {}
-            (seq admins) (assoc :owner {:title "Owner" :data admins})
-            (seq online) (assoc :online {:title "Online" :data online})
-            (seq offline) (assoc :offline {:title "Offline" :data offline})))))
+                  (seq admins) (assoc :owner {:title "Owner" :data admins})
+                  (seq online) (assoc :online {:title "Online" :data online})
+                  (seq offline) (assoc :offline {:title "Offline" :data offline})))))
 
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:padding-horizontal 20 :border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :margin-top 8}}
@@ -50,9 +46,9 @@
                :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}} title]])
 
 (defn group-details []
-  (let [{:keys [admins chat-id chat-name color contacts public?]} (rf/sub [:chats/current-chat])
+  (let [{:keys [admins chat-id chat-name color public?]} (rf/sub [:chats/current-chat])
         members           (rf/sub [:contacts/current-chat-contacts])
-        sectioned-members (prepare-members (seq contacts) admins)
+        sectioned-members (prepare-members members)
         pinned-messages   (rf/sub [:chats/pinned chat-id])
         current-pk        (rf/sub [:multiaccount/public-key])
         admin?            (get admins current-pk)]
