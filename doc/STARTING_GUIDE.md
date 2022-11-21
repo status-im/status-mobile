@@ -93,6 +93,6 @@ To use a physical iPhone your device UDID must be added to provisioning profiles
   - Invite your Apple account to be Developer in Status team.
 3. Run a build in XCode using the project from `status-mobile/ios` directory.
   - You might see error: `Select a development team in the Signing & Capabilities editor`
-  - Select `STATUS HOLDINGS PTE. LTD.` as the development team and rebuild again.
+  - Select `Status Research & Development GmbH` as the development team and rebuild again.
 
 Once build finishes Status should start on your iPhone with its logs in terminal running `make run-metro`.
