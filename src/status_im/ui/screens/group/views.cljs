@@ -17,7 +17,6 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.group.styles :as styles]
             [quo.core :as quo]
-            [status-im.utils.re-frame :as rf]
             [status-im.utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -31,6 +30,7 @@
 
 (defn- on-toggle [allow-new-users? checked? public-key]
   (cond
+
     checked?
     (re-frame/dispatch [:deselect-contact public-key allow-new-users?])
 
@@ -41,6 +41,7 @@
 
 (defn- on-toggle-participant [allow-new-users? checked? public-key]
   (cond
+
     checked?
     (re-frame/dispatch [:deselect-participant public-key allow-new-users?])
 
@@ -57,7 +58,7 @@
        {:title     first-name
         :subtitle  second-name
         :icon      [chat-icon/contact-icon-contacts-tab
-                    (multiaccounts/displayed-photo contact)]
+                    (multiaccounts/displayed-photo  contact)]
         :on-press  #(on-toggle allow-new-users? contact-selected? public-key)
         :active    contact-selected?
         :accessory :checkbox}])))
@@ -158,11 +159,10 @@
           [no-contacts {:no-contacts no-contacts-label}])]])))
 
 ;; Start group chat
-(defn contact-toggle-list []
-  (let [contacts                (rf/sub [:contacts/active])
-        selected-contacts-count (rf/sub [:selected-contacts-count])
-        one-contact-pub-key     (-> contacts first :public-key)]
-    [react/keyboard-avoiding-view {:style         styles/group-container
+(views/defview contact-toggle-list []
+  (views/letsubs [contacts                [:contacts/active]
+                  selected-contacts-count [:selected-contacts-count]]
+    [react/keyboard-avoiding-view {:style styles/group-container
                                    :ignore-offset true}
      [topbar/topbar {:use-insets    false
                      :border-bottom false
@@ -178,13 +178,12 @@
                              (dec constants/max-group-chat-participants))}]
      [toolbar/toolbar
       {:show-border? true
-       :right        [quo/button {:type                :secondary
-                                  :after               :main-icon/next
-                                  :accessibility-label :next-button
-                                  :on-press            #(if (= 1 selected-contacts-count)
-                                                          (re-frame/dispatch [:chat.ui/start-chat one-contact-pub-key])
-                                                          (re-frame/dispatch [:navigate-to :new-group]))}
-                      (i18n/label :t/next)]}]]))
+       :right
+       [quo/button {:type                :secondary
+                    :after               :main-icon/next
+                    :accessibility-label :next-button
+                    :on-press            #(re-frame/dispatch [:navigate-to :new-group])}
+        (i18n/label :t/next)]}]]))
 
 ;; Add participants to existing group chat
 (views/defview add-participants-toggle-list []
@@ -215,9 +214,9 @@
                       :on-press            #(re-frame/dispatch [:group-chats.ui/add-members-pressed])}
           (i18n/label :t/add)]}]])))
 
-(defn edit-group-chat-name []
-  (let [{:keys [name chat-id]} (rf/sub [:chats/current-chat])
-        new-group-chat-name    (reagent/atom nil)]
+(views/defview edit-group-chat-name []
+  (views/letsubs [{:keys [name chat-id]} [:chats/current-chat]
+                  new-group-chat-name (reagent/atom nil)]
     [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
      [react/scroll-view {:style {:padding 16
                                  :flex    1}}
@@ -232,14 +231,15 @@
      [react/view {:style {:flex 1}}]
      [toolbar/toolbar
       {:show-border? true
-       :center       [quo/button {:type                :secondary
-                                  :accessibility-label :done
-                                  :disabled            (and (<= (count @new-group-chat-name) 1)
-                                                            (not (nil? @new-group-chat-name)))
-                                  :on-press            #(cond
-                                                          (< 1 (count @new-group-chat-name))
-                                                          (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name])
+       :center
+       [quo/button {:type                :secondary
+                    :accessibility-label :done
+                    :disabled            (and (<= (count @new-group-chat-name) 1)
+                                              (not (nil? @new-group-chat-name)))
+                    :on-press            #(cond
+                                            (< 1 (count @new-group-chat-name))
+                                            (re-frame/dispatch [:group-chats.ui/name-changed chat-id @new-group-chat-name])
 
-                                                          (nil? @new-group-chat-name)
-                                                          (re-frame/dispatch [:navigate-back]))}
-                      (i18n/label :t/done)]}]]))
+                                            (nil? @new-group-chat-name)
+                                            (re-frame/dispatch [:navigate-back]))}
+        (i18n/label :t/done)]}]]))

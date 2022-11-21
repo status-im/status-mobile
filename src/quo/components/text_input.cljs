@@ -10,9 +10,7 @@
             [quo.design-system.typography :as typography]
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as colors]
-            [quo.components.text :as text]
-            [quo2.components.icon :as quo2.icons]
-            [status-im.i18n.i18n :as i18n]))
+            [quo.components.text :as text]))
 
 ;; NOTE(Ferossgp): Refactor with hooks when available
 ;; We track all currently mounted text input refs
@@ -87,7 +85,7 @@
           :background-color (:ui-01 @colors/theme)}
          style))
 
-(defn text-input-style [multiline text-padding-left input-style monospace before after]
+(defn text-input-style [multiline input-style monospace before after]
   (merge (if monospace
            typography/monospace
            typography/font-regular)
@@ -100,7 +98,7 @@
           :color               (:text-01 @colors/theme)
           :height              height}
          (when-not before
-           {:padding-left (or text-padding-left (:base spacing/spacing))})
+           {:padding-left (:base spacing/spacing)})
          (when-not after
            {:padding-right (:base spacing/spacing)})
          (when multiline
@@ -148,9 +146,10 @@
         blur    (fn []
                   (some-> @ref (ocall "blur")))]
     (fn [{:keys [label multiline error style input-style keyboard-type before after
-                 on-focus text-padding-left placeholder-text-color on-blur show-cancel accessibility-label
+                 cancel-label on-focus on-blur show-cancel accessibility-label
                  bottom-value secure-text-entry container-style get-ref on-cancel
                  monospace auto-complete-type auto-correct]
+          :or  {cancel-label "Cancel"}
           :as  props}]
       {:pre [(check-spec ::text-input props)]}
       (let [show-cancel (if (nil? show-cancel)
@@ -206,11 +205,11 @@
            (when before
              [accessory-element before])
            [rn/text-input
-            (merge {:style                   (text-input-style multiline text-padding-left input-style monospace before after)
+            (merge {:style                   (text-input-style multiline input-style monospace before after)
                     :ref                     (fn [r]
                                                (reset! ref r)
                                                (when get-ref (get-ref r)))
-                    :placeholder-text-color  (or placeholder-text-color (:text-02 @colors/theme))
+                    :placeholder-text-color  (:text-02 @colors/theme)
                     :underline-color-android :transparent
                     :auto-capitalize         :none
                     :secure-text-entry       secure
@@ -237,11 +236,9 @@
           (when (and show-cancel
                      (not multiline)
                      @focused)
-            [rn/touchable-opacity {:style               (cancel-style)
-                                   :on-press            on-cancel
-                                   :accessibility-label (i18n/label :t/close-contact-search)}
-             [quo2.icons/icon :i/clear {:size     20
-                                        :no-color true}]])
+            [rn/touchable-opacity {:style    (cancel-style)
+                                   :on-press on-cancel}
+             [text/text {:color :link} cancel-label]])
           (when error
             [tooltip/tooltip (merge {:bottom-value (if bottom-value bottom-value 0)}
                                     (when accessibility-label
