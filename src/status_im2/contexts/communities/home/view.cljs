@@ -40,9 +40,7 @@
 (defn get-item-layout-js [_ index]
   #js {:length 64 :offset (* 64 index) :index index})
 
-(def selected-tab (reagent/atom :joined))
-
-(defn home-community-segments []
+(defn home-community-segments [selected-tab]
   [rn/view {:style {:padding-bottom     12
                     :padding-top        16
                     :margin-top         8
@@ -64,7 +62,7 @@
     :data                              community-ids
     :render-fn                         render-fn}])
 
-(defn segments-community-lists []
+(defn segments-community-lists [selected-tab]
   (let [communities (rf/sub [:communities/community-ids])
         tab @selected-tab]
     [rn/view {:style {:padding-left     20
@@ -90,17 +88,19 @@
 (defn home []
   [safe-area/consumer
    (fn [insets]
-     [rn/view {:style {:flex             1
-                       :padding-top      (:top insets)
-                       :background-color (colors/theme-colors
-                                          colors/neutral-5
-                                          colors/neutral-95)}}
-      [topnav/top-nav {:type                 :default
-                       :open-activity-center navigate-to-activity-center}]
-      [title-column]
-      [discover-card/discover-card {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
-                                    :title               (i18n/label :t/discover)
-                                    :description         (i18n/label :t/whats-trending)
-                                    :accessibility-label :communities-home-discover-card}]
-      [home-community-segments]
-      [segments-community-lists]])])
+     (let [selected-tab (reagent/atom :joined)]
+       (fn []
+         [rn/view {:style {:flex             1
+                           :padding-top      (:top insets)
+                           :background-color (colors/theme-colors
+                                              colors/neutral-5
+                                              colors/neutral-95)}}
+          [topnav/top-nav {:type                 :default
+                           :open-activity-center navigate-to-activity-center}]
+          [title-column]
+          [discover-card/discover-card {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
+                                        :title               (i18n/label :t/discover)
+                                        :description         (i18n/label :t/whats-trending)
+                                        :accessibility-label :communities-home-discover-card}]
+          [home-community-segments selected-tab]
+          [segments-community-lists selected-tab]])))])

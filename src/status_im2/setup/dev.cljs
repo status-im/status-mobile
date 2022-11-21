@@ -4,14 +4,17 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             ["react-native" :refer (DevSettings LogBox)]))
 
+;; Ignore all logs, because there are lots of temporary warnings when developing and hot reloading
+(.ignoreAllLogs LogBox)
+
 ;; Only ignore warnings/errors that cannot be fixed for the time being.
 ;; When you add a warning to be ignored explain below why it is ignored and how it can be fixed.
 ;; When a warning is fixed make sure to remove it from here.
-(.ignoreLogs ^js LogBox (clj->js ["undefined is not an object (evaluating 'e.message')"
-                                  "Cannot read property 'message' of undefined"
-                                  "InternalError Metro has encountered an error"
-                                  "undefined Unable to resolve module `parse-svg-path`"
-                                  "group12"]))
+#_(.ignoreLogs ^js LogBox (clj->js ["undefined is not an object (evaluating 'e.message')"
+                                    "Cannot read property 'message' of undefined"
+                                    "InternalError Metro has encountered an error"
+                                    "undefined Unable to resolve module `parse-svg-path`"
+                                    "group12"]))
 
 ;; List of ignored warnings/errors:
 ;; 1. "evaluating 'e.message'": Not sure why this error is happening, but it is coming from here
@@ -21,7 +24,6 @@
 ;; 4. "undefined Unable to resolve module `parse-svg-path`": an error that happens when losing connection to metro, can be safely ignored
 ;; 5. "group12": referring to the group-icon size 12x12. Currently, it is not available. When the design team adds it to the
 ;; icon set it will be added to project.
-
 
 (defn setup []
   (rf/set-mergeable-keys #{:filters/load-filters

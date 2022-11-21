@@ -133,6 +133,6 @@
                    :style    {:margin-vertical 12
                               :margin-left     20}
                    :on-press #(rf/dispatch [:navigate-back])}
-       :close]
+       :i/close]
       [screen-title]
       [other-communities]])])
