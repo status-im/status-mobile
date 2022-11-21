@@ -22,11 +22,13 @@
 (defn contact-item [item]
   (let [{:keys [public-key ens-verified added? images]} item
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
-        photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))]
+        photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))
+        current-pk   (rf/sub [:multiaccount/public-key])]
     [rn/touchable-opacity (merge {:style         (style/container)
                                   :on-press      #(open-chat public-key)
-                                  :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                {:content (fn [] [actions/actions item])}])})
+                                  :on-long-press #(when-not (= current-pk public-key)
+                                                    (rf/dispatch [:bottom-sheet/show-sheet
+                                                                  {:content (fn [] [actions/actions item])}]))})
      [user-avatar/user-avatar {:full-name         display-name
                                :profile-picture   photo-path
                                :status-indicator? true
@@ -44,11 +46,14 @@
          (when added?
            [rn/view {:style {:margin-left 5 :margin-top 4}}
             [icons/icon :i/contact {:no-color true :size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
-      [text/text {:size :paragraph-1
+      [text/text {:size  :paragraph-1
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
        (utils/get-shortened-address public-key)]]
-     [rn/touchable-opacity {:style          {:position :absolute
-                                             :right    20}
-                            :active-opacity 1} ; TODO: on-long-press to be added when contact bottom sheet is implemented
-      [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]]))
+     (when-not (= current-pk public-key)
+       [rn/touchable-opacity {:style          {:position :absolute
+                                               :right    20}
+                              :active-opacity 1
+                              :on-press       #(rf/dispatch [:bottom-sheet/show-sheet
+                                                             {:content (fn [] [actions/actions item])}])}
+        [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]])]))
 

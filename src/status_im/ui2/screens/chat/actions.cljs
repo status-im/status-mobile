@@ -72,7 +72,7 @@
 (defn block-user-action [{:keys [public-key] :as item}]
   (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
                             {:content (fn [] (common/alert {:title       (i18n/label :t/block-user?)
-                                                            :description (i18n/label :t/block-user-confirmation)
+                                                            :description (i18n/label :t/block-contact-details)
                                                             :context     item
                                                             :button-text (i18n/label :t/block-user)
                                                             :on-press    #(hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed public-key])}))}]))
@@ -262,8 +262,8 @@
           :sub-label nil
           :chevron?  false}))
 
-(defn destructive-actions [{:keys [chat-id group-chat] :as item}]
-  [(clear-history-entry chat-id)
+(defn destructive-actions [{:keys [group-chat] :as item}]
+  [(clear-history-entry item)
    (if group-chat
      (leave-group-entry item)
      (delete-chat-entry item))])
@@ -311,12 +311,13 @@
                          (notification-actions item inside-chat?)
                          (destructive-actions item)]])
 
-(defn contact-actions [{:keys [public-key] :as contact}]
+(defn contact-actions [{:keys [public-key added] :as contact}]
   [drawer/action-drawer [[(view-profile-entry public-key)
-                          (remove-from-contacts-entry contact)
-                          (rename-entry)
-                          (show-qr-entry)
-                          (share-profile-entry)]
+                          (when added
+                            (remove-from-contacts-entry contact)
+                            (rename-entry)
+                            (show-qr-entry)
+                            (share-profile-entry))]
                          [(mark-untrustworthy-entry)
                           (block-user-entry contact)]]])
 

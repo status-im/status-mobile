@@ -114,7 +114,8 @@
             [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
             [status-im.ui.screens.wallet.recipient.views :as recipient]
             [status-im.ui.screens.wallet.send.views :as wallet.send]
-            [status-im.ui.screens.wallet.manage-connections.views :as manage-all-connections]))
+            [status-im.ui.screens.wallet.manage-connections.views :as manage-all-connections]
+            [status-im.ui2.screens.chat.group-details.view :as group-details]))
 
 (defn right-button-options [id icon]
   {:id   id
@@ -211,10 +212,9 @@
     :component pin-messages/pinned-messages}
 
    {:name      :group-chat-profile
-    :insets    {:top false}
     ;;TODO animated-header
     :options   {:topBar {:visible false}}
-    :component profile.group-chat/group-chat-profile}
+    :component group-details/group-details}
    {:name      :group-chat-invite
     ;;TODO parameter in the event
     :options   {:topBar {:visible false}}

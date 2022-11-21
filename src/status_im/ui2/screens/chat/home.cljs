@@ -21,7 +21,8 @@
             [quo2.components.markdown.text :as quo2.text]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
-            [quo.react-native :as rn]
+            [react-native.core :as rn]
+            [quo.react-native :as quo.rn]
             [quo.react]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
@@ -279,7 +280,7 @@
            :render-fn                    messages-home-item}]
          [rn/view {:style {:flex 1}} (when (> (count requests) 0)
                                        [contact-requests requests])
-          [list/section-list
+          [rn/section-list
            {:key-fn                         :title
             :sticky-section-headers-enabled false
             :sections                       contacts
@@ -355,9 +356,9 @@
   [:f>
    (fn []
      (quo.react/effect! #(re-frame/dispatch [:get-activity-center-notifications]))
-     [rn/keyboard-avoiding-view {:style         {:flex             1
-                                                 :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
-                                 :ignore-offset true}
+     [quo.rn/keyboard-avoiding-view {:style         {:flex             1
+                                                     :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
+                                     :ignore-offset true}
       [topbar/topbar {:navigation      :none
                       :use-insets      true
                       :background      (colors/theme-colors colors/neutral-5 colors/neutral-95)
