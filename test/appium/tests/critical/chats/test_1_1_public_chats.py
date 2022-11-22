@@ -1294,7 +1294,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         message = 'profile_photo'
         self.chat_1.send_message(message)
         self.chat_2.chat_element_by_text(message).wait_for_visibility_of_element(30)
-        if not self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member.png",
+        if not self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member2.png",
                                                                                                    diff=5):
             self.errors.append("Image of user in 1-1 chat is updated even when user is not added to contacts!")
 
@@ -1309,7 +1309,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         [home.chats_tab.click() for home in (self.home_1, self.home_2)]
         if not self.chat_2.chat_message_input.is_element_displayed():
             self.home_2.get_chat(self.default_username_1).click()
-        if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member.png", diff=5):
+        if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member2.png", diff=5):
             self.errors.append("Image of user in 1-1 chat is too different from template!")
         self.errors.verify_no_errors()
 

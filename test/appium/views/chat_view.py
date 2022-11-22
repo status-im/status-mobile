@@ -163,7 +163,7 @@ class ChatElementByText(Text):
     def member_photo(self):
         class MemberPhoto(Button):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='member-photo']")
+                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='user-avatar']")
 
         return MemberPhoto(self.driver, self.locator)
 
