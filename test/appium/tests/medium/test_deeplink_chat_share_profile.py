@@ -336,9 +336,9 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="one_2")
+@pytest.mark.xdist_group(name="two_1")
 @marks.new_ui_critical
-class TestDeeplinkOneDevice(MultipleSharedDeviceTestCase):
+class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(1)

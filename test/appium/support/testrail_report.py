@@ -145,7 +145,6 @@ class TestrailReport(BaseTestReport):
         # test_cases['nightly']['keycard'] = 50850
         # test_cases['nightly']['wallet'] = 50851
 
-        test_cases['nightly']['1_1_chat'] = 50958
         test_cases['nightly']['group_chat'] = 50964
 
         ## Upgrade e2e

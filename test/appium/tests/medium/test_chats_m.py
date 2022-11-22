@@ -1116,7 +1116,7 @@ class TestMutualContactRequests(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="three_2")
 @marks.new_ui_medium
-class TestChatMediumMultipleDeviceNewUI(MultipleSharedDeviceTestCase):
+class TestGroupChatMediumMultipleDeviceNewUI(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
@@ -1134,100 +1134,19 @@ class TestChatMediumMultipleDeviceNewUI(MultipleSharedDeviceTestCase):
         self.home_2.chats_tab.click()
         self.home_2.handle_contact_request(self.default_username_1)
         self.home_2.click_system_back_button_until_element_is_shown()
-        self.chat_1 = self.home_1.get_chat(self.default_username_2).click()
-        self.chat_1.send_message('1')
-        self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
-        self.message_1, self.message_2, self.message_3, self.message_4 = \
-            "Message 1", "Message 2", "Message 3", "Message 4"
-
-    @marks.testrail_id(702731)
-    def test_chat_1_1_pin_messages(self):
-        self.home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
-        self.chat_1.send_message(self.message_1)
-        self.chat_1.send_message(self.message_2)
-        self.chat_1.pin_message(self.message_1, 'pin-to-chat')
-        if not self.chat_1.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed():
-            self.drivers[0].fail("Message is not pinned!")
-
-        self.home_1.just_fyi("Check that Device2 can pin Device1 message in 1-1 chat and two pinned "
-                             "messages are in Device1 profile")
-        self.chat_2.pin_message(self.message_2, 'pin-to-chat')
-        for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-            chat.pinned_messages_count.wait_for_element_text("2", message="Pinned messages count is not 2 as expected!")
-
-            self.home_1.just_fyi("Check pinned message are visible in Pinned panel for user %s" % (chat_number + 1))
-            chat.pinned_messages_count.click()
-            for message in self.message_1, self.message_2:
-                pinned_by = chat.pinned_messages_list.get_message_pinned_by_text(message)
-                if pinned_by.is_element_displayed():
-                    text = pinned_by.text.strip()
-                    if chat_number == 0:
-                        expected_text = "You" if message == self.message_1 else self.default_username_2
-                    else:
-                        expected_text = "You" if message == self.message_2 else self.default_username_1
-                    if text != expected_text:
-                        self.errors.append(
-                            "Pinned by '%s' doesn't match expected '%s' for user %s" % (
-                                text, expected_text, chat_number + 1)
-                        )
-                else:
-                    self.errors.append(
-                        "Message '%s' is missed on Pinned messages list for user %s" % (message, chat_number + 1)
-                    )
-            chat.click_system_back_button()
-
-        self.home_1.just_fyi("Check that Device1 can not pin more than 3 messages and 'Unpin' dialog appears")
-        self.chat_1.send_message(self.message_3)
-        self.chat_1.send_message(self.message_4)
-        self.chat_1.pin_message(self.message_3, 'pin-to-chat')
-        self.chat_1.pin_message(self.message_4, 'pin-to-chat')
-        if self.chat_1.pin_limit_popover.is_element_displayed(30):
-            self.chat_1.view_pinned_messages_button.click()
-            self.chat_1.pinned_messages_list.message_element_by_text(
-                self.message_2).click_inside_element_by_coordinate()
-            self.home_1.just_fyi("Unpin one message so that another could be pinned")
-            self.chat_1.element_by_translation_id('unpin-from-chat').double_click()
-            self.chat_1.chat_element_by_text(self.message_4).click()
-            self.chat_1.pin_message(self.message_4, 'pin-to-chat')
-            if not (self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30) and
-                    self.chat_2.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30)):
-                self.errors.append("Message 4 is not pinned in chat after unpinning previous one")
-        else:
-            self.errors.append("Can pin more than 3 messages in chat")
-
-        self.home_1.just_fyi("Check pinned messages are visible in Pinned panel for both users")
-        for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-            count = chat.pinned_messages_count.text
-            if count != '3':
-                self.errors.append("Pinned messages count is not 3 for user %s" % (chat_number + 1))
-
-        self.home_1.just_fyi("Unpin one message and check it's unpinned for another user")
-        self.chat_2.chat_element_by_text(self.message_4).long_press_element()
-        self.chat_2.element_by_translation_id("unpin-from-chat").click()
-        self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.wait_for_invisibility_of_element()
-        if self.chat_1.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed():
-            self.errors.append("Message_4 is not unpinned!")
-
-        for chat_number, chat in enumerate([self.chat_1, self.chat_2]):
-            count = chat.pinned_messages_count.text
-            if count != '2':
-                self.errors.append(
-                    "Pinned messages count is not 2 after unpinning the last pinned message for user %s" % (
-                            chat_number + 1)
-                )
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(702732)
-    def test_chat_pin_messages_in_group_chat(self):
-        [chat.click_system_back_button_until_element_is_shown() for chat in [self.chat_1, self.chat_2]]
-        self.home_1.just_fyi("Enter group chat and pin message there. It's pinned for both members.")
-
         self.group_chat_name = "Group Chat"
         self.group_chat_1 = self.home_1.create_group_chat(user_names_to_add=[self.default_username_2],
                                                           group_chat_name=self.group_chat_name,
                                                           new_ui=True)
         self.group_chat_2 = self.home_2.get_chat(self.group_chat_name).click()
         self.group_chat_2.join_chat_button.click_if_shown()
+        self.message_1, self.message_2, self.message_3, self.message_4 = \
+            "Message 1", "Message 2", "Message 3", "Message 4"
+
+
+    @marks.testrail_id(702732)
+    def test_group_chat_pin_messages(self):
+        self.home_1.just_fyi("Enter group chat and pin message there. It's pinned for both members.")
 
         self.group_chat_1.send_message(self.message_1)
         self.group_chat_1.pin_message(self.message_1, "pin-to-chat")
