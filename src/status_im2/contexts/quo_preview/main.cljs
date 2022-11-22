@@ -53,6 +53,7 @@
             [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
             [status-im2.contexts.quo-preview.navigation.page-nav :as page-nav]
             [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
+            [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -121,7 +122,10 @@
                  :component channel/preview-channel}
                 {:name      :preview-lists
                  :insets    {:top false}
-                 :component preview-lists/preview-preview-lists}]
+                 :component preview-lists/preview-preview-lists}
+                {:name      :user-list
+                 :insets    {:top false}
+                 :component user-list/preview-channel}]
    :markdown [{:name      :texts
                :insets    {:top false}
                :component text/preview-text}]
