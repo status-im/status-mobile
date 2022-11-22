@@ -89,7 +89,6 @@
      (when id
        (clear-timeout id)))))
 
-;;TODO (14/11/22 flexsurfer) haven't moved yet
 (defn get-shortened-address
   "Takes first and last 4 digits from address including leading 0x
   and adds unicode ellipsis in between"
@@ -101,6 +100,7 @@
   (when address
     (get-shortened-address (eip55/address->checksum (ethereum/normalized-hex address)))))
 
+;;TODO (14/11/22 flexsurfer) haven't moved yet
 (defn format-decimals [amount places]
   (let [decimal-part (get (string/split (str amount) ".") 1)]
     (if (> (count decimal-part) places)

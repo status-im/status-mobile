@@ -1,10 +1,27 @@
-(ns quo2.components.navigation.top-nav
+(ns status-im2.common.home.view
   (:require [react-native.core :as rn]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [quo2.components.counter.counter :as counter]
-            [quo2.components.buttons.button :as quo2.button]
-            [quo2.components.avatars.user-avatar :as user-avatar]
-            [react-native.hole-view :as hole-view]))
+            [status-im2.common.plus-button.view :as components.plus-button]
+            [status-im2.common.home.style :as style]
+            [react-native.hole-view :as hole-view]
+            [status-im2.setup.config :as config]
+            [utils.re-frame :as rf]))
+
+(defn navigate-to-activity-center []
+  (rf/dispatch [:mark-all-activity-center-notifications-as-read])
+  (if config/new-activity-center-enabled?
+    (rf/dispatch [:activity-center/open])
+    (rf/dispatch [:navigate-to :notifications-center])))
+
+(defn title-column [{:keys [label handler accessibility-label]}]
+  [rn/view style/title-column
+   [rn/view {:flex 1}
+    [quo/text style/title-column-text
+     label]]
+   [components.plus-button/plus-button
+    {:on-press            handler
+     :accessibility-label accessibility-label}]])
 
 (defn- get-button-common-props [type]
   (let [default? (= type :default)
@@ -19,11 +36,10 @@
                                   colors/neutral-90)}))
 
 (defn- base-button [icon on-press accessibility-label button-common-props]
-  [quo2.button/button
-   (merge
-    {:on-press            on-press
-     :accessibility-label accessibility-label}
-    button-common-props)
+  [quo/button (merge
+               {:on-press            on-press
+                :accessibility-label accessibility-label}
+               button-common-props)
    icon])
 
 (defn top-nav
@@ -32,43 +48,37 @@
   {:type                   :default/:blurred/:shell
    :new-notifications?     true/false
    :notification-indicator :unread-dot/:counter
-   :open-profile           fn
-   :open-search            fn
-   :open-scanner           fn
-   :show-qr                fn
-   :open-activity-center   fn
    :style                  override-style
    :avatar                 user-avatar
    :counter-label          number}
   "
-  [{:keys [type new-notifications? notification-indicator open-profile open-search
-           open-scanner show-qr open-activity-center style avatar counter-label]}]
+  [{:keys [type new-notifications? notification-indicator open-profile style avatar counter-label hide-search]}]
   (let [button-common-props (get-button-common-props type)]
     [rn/view {:style (merge
                       {:height 56}
                       style)}
-   ;; Left Section
+     ;; Left Section
      [rn/touchable-without-feedback {:on-press open-profile}
       [rn/view {:style {:position :absolute
                         :left     20
                         :top      12}}
-       [user-avatar/user-avatar
+       [quo/user-avatar
         (merge
          {:ring?             true
           :status-indicator? true
           :size              :small}
          avatar)]]]
-   ;; Right Section
+     ;; Right Section
      [rn/view {:style {:position :absolute
                        :right    20
                        :top      12
                        :flex-direction :row}}
-      ;; TODO component shouldn't know anything about parent system, we should pass buttons as parameters
-      [base-button :i/search open-search :open-search-button button-common-props]
-      [base-button :i/scan open-scanner :open-scanner-button button-common-props]
-      [base-button :i/qr-code show-qr :show-qr-button button-common-props]
+      (when-not hide-search
+        [base-button :i/search #() :open-search-button button-common-props])
+      [base-button :i/scan #() :open-scanner-button button-common-props]
+      [base-button :i/qr-code #() :show-qr-button button-common-props]
       [rn/view ;; Keep view instead of "[:<>" to make sure relative
-               ;; position is calculated from this view instead of its parent
+       ;; position is calculated from this view instead of its parent
        [hole-view/hole-view {:key   new-notifications? ;; Key is required to force removal of holes
                              :holes (cond
                                       (not new-notifications?) ;; No new notifications, remove holes
@@ -79,21 +89,21 @@
 
                                       :else
                                       [{:x 33 :y -7 :width 18 :height 18 :borderRadius 7}])}
-        [base-button :i/activity-center open-activity-center
+        [base-button :i/activity-center navigate-to-activity-center
          :open-activity-center-button button-common-props]]
        (when new-notifications?
          (if (= notification-indicator :counter)
-           [counter/counter {:outline             false
-                             :override-text-color colors/white
-                             :override-bg-color   colors/primary-50
-                             :style               {:position :absolute
-                                                   :left     34
-                                                   :top      -6}}
+           [quo/counter {:outline             false
+                         :override-text-color colors/white
+                         :override-bg-color   colors/primary-50
+                         :style               {:position :absolute
+                                               :left     34
+                                               :top      -6}}
             counter-label]
            [rn/view {:style {:width            8
                              :height           8
                              :border-radius    4
-                             :top             -2
+                             :top              -2
                              :left             38
                              :position         :absolute
                              :background-color colors/primary-50}}]))]]]))

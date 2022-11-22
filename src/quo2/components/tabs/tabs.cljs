@@ -12,26 +12,29 @@
 
 (def default-tab-size 32)
 
+(defn indicator []
+  [rn/view {:position         :absolute
+            :z-index          1
+            :right            -2
+            :top              -2
+            :width            10
+            :height           10
+            :border-radius    5
+            :justify-content  :center
+            :align-items      :center
+            :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
+   [notification-dot]])
+
 (defn tabs [{:keys [default-active on-change style]}]
   (let [active-tab-id (reagent/atom default-active)]
     (fn [{:keys [data size] :or {size default-tab-size}}]
       [rn/view (merge {:flex-direction :row} style)
        (doall
-        (for [{:keys [label id new-info accessibility-label]} data]
+        (for [{:keys [label id notification-dot? accessibility-label]} data]
           ^{:key id}
           [rn/view {:style {:margin-right (if (= size default-tab-size) 12 8)}}
-           (when new-info
-             [rn/view {:position         :absolute
-                       :z-index          1
-                       :right            -2
-                       :top              -2
-                       :width            10
-                       :height           10
-                       :border-radius    5
-                       :justify-content  :center
-                       :align-items      :center
-                       :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}
-              [notification-dot]])
+           (when notification-dot?
+             [indicator])
            [tab/tab
             {:id                  id
              :size                size

@@ -73,3 +73,14 @@
                    :timestamp (or (:timestamp %) (:timestamp (or (:message %) (:last-message %))))
                    :contact (multiaccounts/contact-by-identity contacts (get-in % [:message :from])))
            supported-notifications)))))
+
+(re-frame/reg-sub
+ :activity.center/notifications-contact-requests
+ :<- [:activity.center/notifications-grouped-by-date]
+ (fn [notifications]
+   (reduce
+    (fn [acc {:keys [data]}]
+      (update acc :received-requests (fn [val] (concat val (filter #(= 1 (get-in % [:message :contact-request-state])) data)))
+                  :has-unread? (fn [val] (or val (some #(not (:read %)) data)))))
+    {:received-requests [] :has-unread? false}
+    notifications)))

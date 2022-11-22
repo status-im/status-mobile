@@ -38,7 +38,6 @@
             [status-im.utils.security :as security]
             [quo2.components.icon :as icons]
             [status-im.utils.datetime :as time]
-            [status-im.ui2.screens.chat.components.message-home-item.view :as message-home-item]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.markdown.text :as text]
             [status-im.utils.utils :as utils])
@@ -286,7 +285,8 @@
                :number-of-lines 1
                :style           {:width "45%"}}
     display-name]
-   [message-home-item/verified-or-contact-icon contact]
+   ;;TODO move
+   ;[message-home-item/verified-or-contact-icon contact]
    (when show-key?
      (let [props {:size  :label
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}]
@@ -329,12 +329,13 @@
                  :pointer-events :box-none}
         [rn/view {:style {:width 40}}
          (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
-           [user-avatar/user-avatar {:full-name         display-name
-                                     :profile-picture   photo-path
-                                     :status-indicator? true
-                                     :online?           true
-                                     :size              :small
-                                     :ring?             false}])]
+           [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
+            [user-avatar/user-avatar {:full-name         display-name
+                                      :profile-picture   photo-path
+                                      :status-indicator? true
+                                      :online?           true
+                                      :size              :small
+                                      :ring?             false}]])]
         [rn/view {:style (style/message-author-wrapper)}
          (when (or (and (seq response-to) (:quoted-message message)) last-in-group? pinned)
            [display-name-view display-name contact timestamp true])

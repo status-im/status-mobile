@@ -7,7 +7,8 @@
             [status-im2.contexts.shell.constants :as constants]
             [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.home-stack :as home-stack]
-            [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]))
+            [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]
+            [status-im2.common.home.view :as common.home]))
 
 (defn placeholder []
   [rn/view {:style {:position            :absolute
@@ -44,8 +45,8 @@
                        :bottom           -1
                        :position         :absolute
                        :background-color colors/neutral-100}}
-      [quo/top-nav {:type  :shell
-                    :style {:margin-top (:top insets)}}]
+      [common.home/top-nav {:type  :shell
+                            :style {:margin-top (:top insets)}}]
       [placeholder]
       [rn/scroll-view {:style {:padding-horizontal 20
                                :flex-direction     :row}}

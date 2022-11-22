@@ -35,11 +35,11 @@
             quo2.components.tags.context-tags
             quo2.components.tabs.tabs
             quo2.components.tabs.account-selector
-            quo2.components.navigation.top-nav
             quo2.components.navigation.floating-shell-button
             quo2.components.tags.status-tags
             quo2.components.navigation.page-nav
-            quo2.components.selectors.disclaimer))
+            quo2.components.selectors.disclaimer
+            quo2.components.selectors.selectors))
 
 (def button quo2.components.buttons.button/button)
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
@@ -61,12 +61,11 @@
 (def tabs quo2.components.tabs.tabs/tabs)
 (def scrollable-tabs quo2.components.tabs.tabs/scrollable-tabs)
 (def account-selector quo2.components.tabs.account-selector/account-selector)
-(def top-nav quo2.components.navigation.top-nav/top-nav)
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
 (def status-tag quo2.components.tags.status-tags/status-tag)
 (def page-nav quo2.components.navigation.page-nav/page-nav)
 (def disclaimer quo2.components.selectors.disclaimer/disclaimer)
-
+(def checkbox quo2.components.selectors.selectors/checkbox)
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
 (def channel-avatar quo2.components.avatars.channel-avatar/channel-avatar)
