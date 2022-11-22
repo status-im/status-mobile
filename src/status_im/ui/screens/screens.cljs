@@ -115,7 +115,8 @@
             [status-im.ui.screens.wallet.recipient.views :as recipient]
             [status-im.ui.screens.wallet.send.views :as wallet.send]
             [status-im.ui.screens.wallet.manage-connections.views :as manage-all-connections]
-            [status-im.ui2.screens.chat.group-details.view :as group-details]))
+            [status-im.ui2.screens.chat.group-details.view :as group-details]
+            [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]))
 
 (defn right-button-options [id icon]
   {:id   id
@@ -210,6 +211,10 @@
                                 ;TODO custom subtitle
     :options   {:topBar {:visible false}}
     :component pin-messages/pinned-messages}
+
+   {:name      :photo-selector
+    :options   {:topBar {:visible false}}
+    :component photo-selector/photo-selector}
 
    {:name      :group-chat-profile
     ;;TODO animated-header
