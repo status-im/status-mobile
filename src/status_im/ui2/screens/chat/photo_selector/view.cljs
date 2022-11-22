@@ -45,24 +45,25 @@
           [quo2/icon :i/chevron-down {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]
         [rn/flat-list {:key-fn                  (fn [item] item)
                        :render-fn               (fn [item index]
-                                                 [rn/touchable-opacity
-                                                  {:on-press (fn []
-                                                               (if (contains? @selected item)
-                                                                 (reset! )
-                                                                 (swap! selected conj item)))}
-                                                  [rn/image {:source {:uri item}
-                                                             :style  {:width (- (/ window-width 3) 0.67)
-                                                                      :height (/ window-width 3)
-                                                                      :margin-left (when (not= (mod index 3) 0) 1)
-                                                                      :margin-bottom 1}}]
-                                                  [rn/view {:style {:position :absolute
-                                                                    :width (- (/ window-width 3) 0.67)
-                                                                    :height (/ window-width 3)
-                                                                    :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)}}]]
+                                                  [rn/touchable-opacity
+                                                   {:on-press (fn []
+                                                                (if (contains? @selected item)
+                                                                  (reset! selected (filter #(-> % (not= item)) @selected))
+                                                                  (swap! selected conj item)))}
+                                                   [rn/image {:source {:uri item}
+                                                              :style  {:width         (- (/ window-width 3) 0.67)
+                                                                       :height        (/ window-width 3)
+                                                                       :margin-left   (when (not= (mod index 3) 0) 1)
+                                                                       :margin-bottom 1}}]
+                                                   (when (contains? @selected item)
+                                                     [rn/view {:style {:position         :absolute
+                                                                       :width            (- (/ window-width 3) 0.67)
+                                                                       :height           (/ window-width 3)
+                                                                       :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)}}])]
                                                   )
                        :data                    camera-roll-photos
                        :num-columns             3
-                       :content-container-style {:width "100%"
+                       :content-container-style {:width          "100%"
                                                  :padding-bottom 40}
-                       :style {:border-radius 20}}]
+                       :style                   {:border-radius 20}}]
         ]))])
