@@ -6,6 +6,7 @@
 , writeTextFile
 , androidPkgs
 , git 
+, nimBinary 
 , platform ? "android"
 , arch ? "386"
 , api ? "29" }:
@@ -14,7 +15,7 @@ let
   osId = builtins.elemAt (builtins.split "\-" stdenv.hostPlatform.system) 2;
   osArch = builtins.elemAt (builtins.split "\-" stdenv.hostPlatform.system) 0;
 
-  ANDROID_NDK_HOME = "${androidPkgs}/ndk-bundle";
+  ANDROID_NDK_HOME = "${androidPkgs.ndk}";
 
   
   targetArchMap = rec {
@@ -71,6 +72,19 @@ let
 
   PROJECT_ROOT = srcRaw.src;
 
+  # androidIncludes = stdenv.mkDerivation {
+  #   name = "nim-status-android-includes";
+  #   buildInputs = [ pkgs.coreutils pkgs.gnused ];
+  #   builder = writeScript "nim-android-includes.sh"
+  #   ''
+  #     export PATH=${pkgs.coreutils}/bin:${pkgs.patch}/bin
+  #     mkdir $out
+  #     cd $out
+  #     cp ${ANDROID_NDK_HOME}/sysroot/usr/include/stdio.h .
+  #     patch -u stdio.h -i ${stdioPatch}
+  #   '';
+  # };
+
   iosIncludes = stdenv.mkDerivation {
     name = "nim-status-ios-includes";
     buildInputs = [ pkgs.coreutils ];
@@ -85,7 +99,7 @@ let
   };
 
   compilerFlags = if isAndroid then
-    "--sysroot ${ANDROID_NDK_HOME}/sysroot -target ${androidTarget}${api} -fPIC -I ${ANDROID_NDK_HOME}/sources/cxx-stl/llvm-libc++/include/ "
+    "--sysroot ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${osId}-${osArch}/sysroot -target ${androidTarget}${api} -fPIC -I ${ANDROID_NDK_HOME}/sources/cxx-stl/llvm-libc++/include/ -I${PROJECT_ROOT}/vendor/nimbus-build-system/vendor/Nim-csources-v1/c_code"
     else if isIOS then
     # TODO The conditional for -miphoneos-version-min=8.0 is required,
     # otherwise Nim will complain that thread-local storage is not supported for the current target
@@ -108,7 +122,7 @@ let
   };
 
   linkerFlags = if isAndroid then
-  "--sysroot ${ANDROID_NDK_HOME}/platforms/android-${api}/arch-${ldArch} -target ${androidTarget}"
+  "--sysroot ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${osId}-${osArch}/sysroot -target ${androidTarget}"
   else if isIOS then
   "--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"
   else throw "Unsupported platform!";
@@ -127,6 +141,8 @@ let
       export NM=${androidToolPrefix}-nm
       export RANLIB=${androidToolPrefix}-ranlib
       export CC=${androidToolPathPrefix}/clang
+      export CXX=${androidToolPathPrefix}/clang
+      export LD=${androidToolPathPrefix}/ld
 
       # This is important, otherwise Nim might not use proper tooling
       mkdir bin
@@ -134,11 +150,18 @@ let
       ln -s $AS bin/as
       ln -s $CC bin/gcc
       ln -s $RANLIB bin/ranlib
+
+      touch bin/git
+      chmod +x bin/git
       export PATH=./bin:$PATH
     ''
     else if isIOS then
     ''
-      #mkdir bin
+      mkdir bin
+      touch bin/git
+      chmod +x bin/git
+      export PATH=`pwd`/bin:$PATH
+
       export PATH=${xcodeWrapper}/bin:$PATH
       export CC=$(xcrun --sdk ${iosSdk} --find clang)
       export CXX=$(xcrun --sdk ${iosSdk} --find clang++)
@@ -191,34 +214,32 @@ in stdenv.mkDerivation rec {
   name = "liblcproxy";
   src = srcRaw.src;
   #version = lib.strings.substring 0 7 src.rev;
-  buildInputs = with pkgs; [ libtool wget git clang which tcl cmake];
+  buildInputs = with pkgs; [ wget git clang which tcl cmake];
 
   phases = [ "unpackPhase" "preBuildPhase" "buildPhase" "installPhase" ];
 
   preBuildPhase = ''
-    mkdir -p bin
-    touch bin/git
-    chmod +x bin/git
-    export PATH=`pwd`/bin:$PATH
+      sed -E -i 's|^(.*)-C vendor/nim-nat-traversal/vendor/miniupnp/miniupnpc(.*)|\1 -C vendor/nim-nat-traversal/vendor/miniupnp/miniupnpc CFLAGS="$(CFLAGS)" CC="$(CC)"\2|g' vendor/nimbus-build-system/makefiles/targets.mk
+
+
+    export HOME=$PWD
+    echo 'switch("passC", "${compilerFlags}")' > config.nims
+    echo 'switch("passL", "${linkerFlags}")' >> config.nims
+    echo 'switch("cpu", "${nimCpu}")' >> config.nims
+    echo 'switch("os", "${nimPlatform}")' >> config.nims
 
     ${createNimbleLink}
-    # export HOME=$PWD
-    # make V=3 CC=clang build-nim
 
-
+    ${compilerVars}
+    export PATH=${nimBinary}:$PATH
+    which clang
+    echo $PATH
   '';
 
 
   buildPhase = ''
-    # ${compilerVars}
-    # echo 'switch("passC", "${compilerFlags}")' >> config.nims
-    # echo 'switch("passL", "${linkerFlags}")' >> config.nims
-    # echo 'switch("cpu", "${nimCpu}")' >> config.nims
-    # echo 'switch("os", "${nimPlatform}")' >> config.nims
+    make V=3 CFLAGS="${compilerFlags}" LDFLAGS="${linkerFlags}" CC=clang CXX=clang LD=ld OS=${nimHostOs} USE_SYSTEM_NIM=1 USE_SYSTEM_LIBS=1 NIMFLAGS="-d:libbacktraceUseSystemLibs" liblcproxy
 
-
-    # make V=3 CFLAGS="${compilerFlags}" CXXFLAGS="${compilerFlags}" LDFLAGS="${linkerFlags}" CC=clang CXX=clang OS=${nimHostOs} liblcproxy
-    make V=3 CC=clang liblcproxy
    '';
 
   installPhase = ''

@@ -41,10 +41,15 @@ in rec {
     inherit meta source;
   };
 
+  nimCompiler = callPackage ./mobile/buildNim.nix {
+    srcRaw = nimbusSource;
+  };
+
   liblcproxy = callPackage ./mobile/buildNimbus.nix {
     srcRaw = nimbusSource;
-    platform = "ios";
-    arch = "386";
+    nimBinary = nimCompiler;
+    platform = "android";
+    arch = "arm64";
   };
 
   shell = mkShell {
