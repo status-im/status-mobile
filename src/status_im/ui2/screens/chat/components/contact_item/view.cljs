@@ -65,27 +65,12 @@
 (defn contact-item [item extra-data]
   (let [{:keys [public-key ens-verified added? images]} item
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
-<<<<<<< HEAD
         photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))
         current-pk   (rf/sub [:multiaccount/public-key])]
     [rn/touchable-opacity (merge {:style         (style/container)
                                   :on-press      #(open-chat public-key)
-<<<<<<< HEAD
-                                  :on-long-press #(when-not (= current-pk public-key)
-                                                    (rf/dispatch [:bottom-sheet/show-sheet
-                                                                  {:content (fn [] [actions/actions item])}]))})
-=======
                                   :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
                                                                 {:content (fn [] [actions/actions item extra-data])}])})
->>>>>>> 25441811e... feat: group details screen 2
-=======
-        photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))]
-    [rn/touchable-opacity (merge {:style          (style/container)
-                                  :active-opacity 1
-                                  :on-press       #(open-chat public-key)
-                                  :on-long-press  #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                 {:content (fn [] [actions/actions item extra-data])}])})
->>>>>>> faae21626... updates
      [user-avatar/user-avatar {:full-name         display-name
                                :profile-picture   photo-path
                                :status-indicator? true
@@ -106,44 +91,7 @@
       [text/text {:size  :paragraph-1
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
        (utils/get-shortened-address public-key)]]
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
      (when-not (= current-pk public-key)
-       [rn/touchable-opacity {:style          {:position :absolute
-                                               :right    20}
-                              :active-opacity 1
-                              :on-press       #(rf/dispatch [:bottom-sheet/show-sheet
-                                                             {:content (fn [] [actions/actions item])}])}
-        [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]])]))
-=======
-     [rn/touchable-opacity {:style          {:position :absolute
-                                             :right    20}
-                            :active-opacity 1
-                            :on-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                                     {:content (fn [] [actions/actions item extra-data])}])}
-      [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]))
->>>>>>> 4b20ea02d... feat: group details screen
-=======
-     [rn/touchable-opacity {:style          (merge {:position :absolute
-                                                    :right    20}
-                                                   (when (= icon :check)
-                                                     {:background-color (colors/theme-colors colors/primary-50 colors/primary-60)
-                                                      :width 20
-                                                      :height 20
-                                                      :border-radius 6
-                                                      :justify-content :center
-                                                      :align-items :center}))
-                            :active-opacity 1
-                            :on-press       (if (= icon :options)
-                                              #(rf/dispatch [:bottom-sheet/show-sheet
-                                                             {:content (fn [] [actions/actions item extra-data])}])
-                                              #(println "other"))}
-      (if (= icon :options)
-        [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
-        [icons/icon :i/check-large {:size 12 :color colors/white}])]]))
->>>>>>> 6bc845a97... updates
-=======
-     [action-icon item extra-data]]))
->>>>>>> faae21626... updates
+       [action-icon item extra-data])]))
+
 

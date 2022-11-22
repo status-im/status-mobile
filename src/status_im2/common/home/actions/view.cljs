@@ -360,19 +360,7 @@
                          (notification-actions item inside-chat?)
                          (destructive-actions item)]])
 
-<<<<<<< HEAD
-(defn contact-actions [{:keys [public-key added] :as contact}]
-  [drawer/action-drawer [[(view-profile-entry public-key)
-                          (when added
-                            (remove-from-contacts-entry contact)
-                            (rename-entry)
-                            (show-qr-entry)
-                            (share-profile-entry))]
-                         [(mark-untrustworthy-entry)
-                          (block-user-entry contact)]]])
 
-(defn actions [{:keys [chat-type] :as item} inside-chat?]
-=======
 (defn contact-actions [{:keys [public-key] :as contact} {:keys [chat-id admin?] :as extra-data}]
   (let [current-pk (rf/sub [:multiaccount/public-key])]
     [drawer/action-drawer [[(view-profile-entry public-key)
@@ -388,7 +376,6 @@
                                 (remove-from-group-entry contact chat-id))])]]))
 
 (defn actions [{:keys [chat-type] :as item} {:keys [inside-chat?] :as extra-data}]
->>>>>>> 25441811e... feat: group details screen 2
   (case chat-type
     constants/one-to-one-chat-type
     [one-to-one-actions item inside-chat?]

@@ -22,10 +22,7 @@
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
             [react-native.core :as rn]
-<<<<<<< HEAD
             [quo.react-native :as quo.rn]
-=======
->>>>>>> ca683e4a1... add SectionList to RN
             [quo.react]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
