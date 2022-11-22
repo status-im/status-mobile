@@ -11,7 +11,7 @@
      :background-color   (case background-type
                            :5  colors/primary-50-opa-5
                            :10 colors/primary-50-opa-10
-                           :tranpsarent)
+                           :transparent :transparent)
      :flex-direction     :column
      :justify-content    :center}))
 
