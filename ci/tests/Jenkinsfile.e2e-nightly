@@ -62,7 +62,7 @@ pipeline {
                 --rerun_count=2 \
                 --testrail_report=True \
                 -m testrail_id \
-                -m \"new_ui_critical or new_ui_medium\" \
+                -m \"critical or medium\" \
                 -k \"${params.KEYWORD_EXPRESSION}\" \
                 --apk=${params.APK_NAME}
             """
