@@ -64,15 +64,15 @@
            {:closure-defines
             {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
              status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
-                     :compiler-options {:output-feature-set :es6
+            :compiler-options {:output-feature-set :es6
                                         ;;disable for android build as there
                                         ;;is an intermittent warning with deftype
-                                        :warnings-as-errors false
-                                        :infer-externs :auto
-                                        :static-fns true
-                                        :fn-invoke-direct true
-                                        :optimizations :advanced
-                                        :js-options {:js-provider :closure}}}}
+                               :warnings-as-errors false
+                               :infer-externs :auto
+                               :static-fns true
+                               :fn-invoke-direct true
+                               :optimizations :advanced
+                               :js-options {:js-provider :closure}}}}
           ;; the tests are ran with node, react-native dependencies are mocked
           ;; by using node --require override.js, which uses the node-library
           ;; produced by the target :mocks below and redefines node require
@@ -106,4 +106,11 @@
            :output-to "target/mocks/mocks.js"
            :output-dir "target/mocks"
            :compiler-options {:optimizations :simple
-                              :source-map false}}}}
+                              :source-map false}}
+          :component-test {:target :npm-module
+                           :entries [quo2.core-spec]
+                           :ns-regexp "-component-spec$"
+                           :output-dir "component-spec"
+                           :compiler-options {:warnings-as-errors false
+                                              :static-fns    false
+                                              :infer-externs true}}}}
