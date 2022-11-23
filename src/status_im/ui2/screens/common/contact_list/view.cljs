@@ -3,15 +3,20 @@
             [quo2.foundations.colors :as colors]
             [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]
             [quo2.core :as quo2]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [reagent.core :as reagent]
+            [clojure.string :as str]))
+
+(def query (reagent/atom ""))
 
 (defn prepare-contacts [contacts]
   (let [data (atom {})]
     (doseq [i (range (count contacts))]
       (let [first-char (get (:alias (nth contacts i)) 0)]
-        (if-not (contains? @data first-char)
-          (swap! data #(assoc % first-char {:title first-char :data [(nth contacts i)]}))
-          (swap! data #(assoc-in % [first-char :data] (conj (:data (get @data first-char)) (nth contacts i)))))))
+        (when (or (empty? @query) (str/includes? (str/lower-case (:alias (nth contacts i))) (str/lower-case @query)))
+          (if-not (contains? @data first-char)
+            (swap! data #(assoc % first-char {:title first-char :data [(nth contacts i)]}))
+            (swap! data #(assoc-in % [first-char :data] (conj (:data (get @data first-char)) (nth contacts i))))))))
     (swap! data #(sort @data))
     (vals @data)))
 
@@ -24,7 +29,14 @@
                :weight :medium
                :style  {:color colors/neutral-50}} title]])
 
-(defn contact-list [data]
+(defn search-input []
+  [rn/text-input {:placeholder "Search..."
+                  :style       {:height             32
+                                :padding-horizontal 20
+                                :margin-vertical    12}
+                  :on-change   (fn [e] (reset! query (.-text ^js (.-nativeEvent ^js e))))}])
+
+(defn contact-list [{:keys [search?] :as data}]
   (let [contacts (rf/sub [:contacts/active])
         contacts (prepare-contacts contacts)]
     [rn/section-list
@@ -32,5 +44,7 @@
       :sticky-section-headers-enabled false
       :sections                       contacts
       :render-section-header-fn       contacts-section-header
+      :content-container-style        {:padding-bottom 120}
+      :header                         (when search? (search-input))
       :render-fn                      (fn [item]
                                         [contact-item/contact-item item data])}]))

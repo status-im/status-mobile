@@ -12,6 +12,7 @@
 =======
 (ns status-im.ui2.screens.chat.actions
   (:require
+<<<<<<< HEAD:src/status_im2/common/home/actions/view.cljs
     [status-im.chat.models :as chat.models]
     [status-im.chat.models.pin-message :as models.pin-message]
     [status-im.i18n.i18n :as i18n]
@@ -21,6 +22,15 @@
     [quo2.components.drawers.action-drawers :as drawer]
     [status-im2.navigation.events :as navigation]))
 >>>>>>> 07052f985... feat: group details screen 2:src/status_im/ui2/screens/chat/actions.cljs
+=======
+   [status-im.chat.models :as chat.models]
+   [status-im.chat.models.pin-message :as models.pin-message]
+   [status-im.i18n.i18n :as i18n]
+   [utils.re-frame :as rf]
+   [status-im.ui2.screens.common.core :as common]
+   [status-im.constants :as constants]
+   [quo2.components.drawers.action-drawers :as drawer]))
+>>>>>>> 512250cd9... feat: group details screen:src/status_im/ui2/screens/chat/actions.cljs
 
 (defn- entry [{:keys [icon label on-press danger? sub-label chevron? add-divider?]}]
   {:pre [(keyword? icon)
@@ -49,7 +59,6 @@
 
 (defn edit-nickname-action [chat-id]
   (hide-sheet-and-dispatch [:chat.ui/edit-nickname chat-id]))
-
 
 (defn mute-chat-action [chat-id]
   (hide-sheet-and-dispatch [::chat.models/mute-chat-toggled chat-id true]))
@@ -110,9 +119,9 @@
   (let [muted? (rf/sub [:chats/muted chat-id])]
     (entry {:icon      (if muted? :i/muted :i/activity-center)
             :label     (i18n/label
-                         (if muted?
-                           :unmute-chat
-                           :mute-chat))
+                        (if muted?
+                          :unmute-chat
+                          :mute-chat))
             :on-press  (if muted?
                          #(unmute-chat-action chat-id)
                          #(mute-chat-action chat-id))
@@ -359,7 +368,6 @@
   [drawer/action-drawer [(group-actions item inside-chat?)
                          (notification-actions item inside-chat?)
                          (destructive-actions item)]])
-
 
 (defn contact-actions [{:keys [public-key] :as contact} {:keys [chat-id admin?] :as extra-data}]
   (let [current-pk (rf/sub [:multiaccount/public-key])]

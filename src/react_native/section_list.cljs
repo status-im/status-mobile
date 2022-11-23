@@ -7,9 +7,9 @@
 
 (def memo-wrap-render-fn
   (memoize
-    (fn [f render-data]
-      (fn [^js data]
-        (reagent/as-element [f (.-item data) (.-index data) (.-separators data) render-data])))))
+   (fn [f render-data]
+     (fn [^js data]
+       (reagent/as-element [f (.-item data) (.-index data) (.-separators data) render-data])))))
 
 (defn- wrap-render-section-header-fn [f]
   (fn [^js data]
@@ -19,10 +19,10 @@
 
 (defn- wrap-per-section-render-fn [props]
   (update
-    (if-let [f (:render-fn props)]
-      (assoc (dissoc props :render-fn :render-data) :renderItem (memo-wrap-render-fn f (:render-data props)))
-      props)
-    :data to-array))
+   (if-let [f (:render-fn props)]
+     (assoc (dissoc props :render-fn :render-data) :renderItem (memo-wrap-render-fn f (:render-data props)))
+     props)
+   :data to-array))
 
 (defn section-list
   "A wrapper for SectionList.

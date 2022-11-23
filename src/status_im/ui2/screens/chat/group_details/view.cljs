@@ -57,7 +57,6 @@
                 :on-press            #(rf/dispatch [:navigate-back])}
    [quo2/icon :i/arrow-left {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
 
-
 (defn options-button []
   (let [group (rf/sub [:chats/current-chat])]
     [quo2/button {:type                :grey
@@ -86,15 +85,14 @@
                :weight :medium
                :style  {:text-align :center}} count]])
 
-
 (defn prepare-members [members]
   (let [admins (filter :admin? members)
         online (filter #(and (not (:admin? %)) (:online? %)) members)
         offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
     (vals (cond-> {}
-                  (seq admins) (assoc :owner {:title "Owner" :data admins})
-                  (seq online) (assoc :online {:title "Online" :data online})
-                  (seq offline) (assoc :offline {:title "Offline" :data offline})))))
+            (seq admins) (assoc :owner {:title "Owner" :data admins})
+            (seq online) (assoc :online {:title "Online" :data online})
+            (seq offline) (assoc :offline {:title "Offline" :data offline})))))
 
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:padding-horizontal 20 :border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :margin-top 8}}
@@ -109,7 +107,6 @@
    (fn []
      (let [{window-height :height} (rn/use-window-dimensions)
            safe-area (safe-area/use-safe-area)]
-       (println "ASDF" (count @added))
        [rn/view {:style {:height (- window-height (:top safe-area))}}
         [rn/touchable-opacity
          {:on-press #(rf/dispatch [:bottom-sheet/hide])
@@ -127,13 +124,10 @@
                     :weight :semi-bold
                     :style  {:margin-left 20}}
          (i18n/label :t/add-members)]
-        [rn/text-input {:placeholder "Search..."
-                        :style       {:height             32
-                                      :padding-horizontal 20
-                                      :margin-vertical    12}}]
         [contact-list/contact-list {:icon  :check
                                     :group group
-                                    :added added}]
+                                    :added added
+                                    :search? true}]
         [rn/view {:position           :absolute
                   :padding-horizontal 20
                   :padding-vertical   12
@@ -193,8 +187,8 @@
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if muted :unmute-group :mute-group))]]
       [rn/touchable-opacity {:style    (style/action-container color)
                              :on-press #(rf/dispatch
-                                          [:bottom-sheet/show-sheet
-                                           {:content (fn [] [contact-requests-sheet group])}])}
+                                         [:bottom-sheet/show-sheet
+                                          {:content (fn [] [contact-requests-sheet group])}])}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
