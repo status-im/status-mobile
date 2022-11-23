@@ -17,8 +17,7 @@
             [quo2.components.markdown.text :as quo2.text]
             [quo2.components.tabs.tabs :as quo2.tabs]
             [status-im.ui.screens.wallet.accounts.common :as common]
-            [status-im.ui.screens.wallet.account.views :as account.views]
-            [quo.components.safe-area :as safe-area])
+            [status-im.ui.screens.wallet.account.views :as account.views])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview account-card [{:keys [name color address type wallet] :as account} keycard? card-width]

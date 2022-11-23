@@ -40,7 +40,8 @@
             [status-im.utils.datetime :as time]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.markdown.text :as text]
-            [status-im.utils.utils :as utils])
+            [status-im.utils.utils :as utils]
+            [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
@@ -285,8 +286,7 @@
                :number-of-lines 1
                :style           {:width "45%"}}
     display-name]
-   ;;TODO move
-   ;[message-home-item/verified-or-contact-icon contact]
+   [home.chat-list-item/verified-or-contact-icon contact]
    (when show-key?
      (let [props {:size  :label
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}]
