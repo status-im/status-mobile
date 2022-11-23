@@ -10,7 +10,7 @@
    :flex-direction     :row
    :align-items        :center})
 
-(def count-container
+(defn count-container []
   {:width            8
    :height           8
    :border-radius    4
@@ -19,7 +19,7 @@
    :top              16
    :background-color (colors/theme-colors colors/neutral-40 colors/neutral-60)})
 
-(def timestamp
+(defn timestamp []
   {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40)
    :margin-top  3
    :margin-left 8})

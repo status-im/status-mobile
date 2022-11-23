@@ -25,7 +25,7 @@
 
 (defn- get-button-common-props [type]
   (let [default? (= type :default)
-        dark?    (colors/dark?)]
+        dark? (colors/dark?)]
     {:icon                      true
      :size                      32
      :style                     {:margin-left 12}
@@ -46,14 +46,15 @@
   "[top-nav opts]
   opts
   {:type                   :default/:blurred/:shell
-   :new-notifications?     true/false
-   :notification-indicator :unread-dot/:counter
    :style                  override-style
-   :avatar                 user-avatar
-   :counter-label          number}
+   :avatar                 user-avatar}
   "
-  [{:keys [type new-notifications? notification-indicator open-profile style avatar counter-label hide-search]}]
-  (let [button-common-props (get-button-common-props type)]
+  [{:keys [type open-profile style avatar hide-search]}]
+  (let [button-common-props (get-button-common-props type)
+        notif-count (rf/sub [:activity.center/notifications-count])
+        new-notifications? (pos? notif-count)
+        notification-indicator :unread-dot
+        counter-label "0"]
     [rn/view {:style (merge
                       {:height 56}
                       style)}
@@ -69,17 +70,17 @@
           :size              :small}
          avatar)]]]
      ;; Right Section
-     [rn/view {:style {:position :absolute
-                       :right    20
-                       :top      12
+     [rn/view {:style {:position       :absolute
+                       :right          20
+                       :top            12
                        :flex-direction :row}}
       (when-not hide-search
         [base-button :i/search #() :open-search-button button-common-props])
       [base-button :i/scan #() :open-scanner-button button-common-props]
       [base-button :i/qr-code #() :show-qr-button button-common-props]
-      [rn/view ;; Keep view instead of "[:<>" to make sure relative
+      [rn/view                                              ;; Keep view instead of "[:<>" to make sure relative
        ;; position is calculated from this view instead of its parent
-       [hole-view/hole-view {:key   new-notifications? ;; Key is required to force removal of holes
+       [hole-view/hole-view {:key   new-notifications?      ;; Key is required to force removal of holes
                              :holes (cond
                                       (not new-notifications?) ;; No new notifications, remove holes
                                       []

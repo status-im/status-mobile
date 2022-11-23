@@ -89,7 +89,7 @@
     display-name]
    [verified-or-contact-icon contact]
    [quo/text {:size  :label
-              :style style/timestamp}
+              :style (style/timestamp)}
     (time/to-short-str timestamp)]])
 
 (defn avatar-view [group-chat color display-name photo-path]
@@ -121,4 +121,4 @@
      (if (> unviewed-mentions-count 0)
        [quo/info-count unviewed-mentions-count {:top 16}]
        (when (> unviewed-messages-count 0)
-         [rn/view {:style style/count-container}]))]))
+         [rn/view {:style (style/count-container)}]))]))

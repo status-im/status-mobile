@@ -39,7 +39,7 @@
                      :style  {:margin-left 4}} display-name]]
          [quo/text description]
          [extra-action-view extra-action extra-text extra-action-selected?]
-         [rn/view {:style (style/buttons-container)}
+         [rn/view {:style style/buttons-container}
           [quo/button {:type     :grey
                        :style    {:flex 0.48} ;;WUT? 0.48 , whats that ?
                        :on-press #(rf/dispatch [:bottom-sheet/hide])}

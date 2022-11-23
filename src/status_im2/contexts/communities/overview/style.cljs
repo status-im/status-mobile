@@ -1,13 +1,13 @@
 (ns status-im2.contexts.communities.overview.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def container1
+(defn container1 []
   {:flex             1
    :height           20
    :border-radius    16
    :background-color (colors/theme-colors colors/white colors/neutral-90)})
 
-(def container2
+(defn container2 []
   {:border-radius    40
    :border-width     1
    :border-color     colors/white

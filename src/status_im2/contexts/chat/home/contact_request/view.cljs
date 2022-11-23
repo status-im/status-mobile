@@ -18,7 +18,7 @@
         [rn/view {:style {:margin-left 20}}
          [rn/touchable-opacity
           {:on-press #(rf/dispatch [:bottom-sheet/hide])
-           :style    style/contact-requests-sheet}
+           :style    (style/contact-requests-sheet)}
           [quo/icon :i/close]]
          [rn/text {:size :heading-1 :weight :semi-bold}
           (i18n/label :t/pending-requests)]
@@ -60,7 +60,7 @@
                                      {:content (fn [] [contact-requests-sheet received-requests])}])
                        (rf/dispatch [:mark-all-activity-center-notifications-as-read]))
     :style          style/contact-requests}
-   [rn/view {:style style/contact-requests-icon}
+   [rn/view {:style (style/contact-requests-icon)}
     [quo/icon :i/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
    [rn/view {:style {:margin-left 8}}
     [rn/text {:weight :semi-bold} (i18n/label :t/pending-requests)]

@@ -94,9 +94,9 @@
          :left-section            {:icon                  :i/close
                                    :icon-background-color icon-color
                                    :on-press              #(rf/dispatch [:navigate-back])}}]]]
-     [rn/view style/container1
+     [rn/view (style/container1)
       [rn/view {:padding-horizontal 20}
-       [rn/view style/container2
+       [rn/view (style/container2)
         [communities.icon/community-icon-redesign community 80]]
        (when (and (not joined)
                   (= status :gated))
