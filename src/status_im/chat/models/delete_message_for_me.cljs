@@ -72,16 +72,17 @@
                        :on-error    #(log/error "failed to delete message for me, message id: " {:message-id message-id :error %})
                        :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
 
-(defn- chats-reducer
-  "traverse all messages find not yet synced deleted-for-me? messages, generate dispatch vector"
+(defn- filter-pending-sync-messages
+  "traverse all messages find not yet synced deleted-for-me? messages"
   [acc chat-id messages]
   (->> messages
        (filter (fn [[_ {:keys [deleted-for-me? deleted-for-me-undoable-till]}]] (and deleted-for-me? deleted-for-me-undoable-till)))
-       (map #(vector :chat.ui/delete-message-for-me-and-sync chat-id (first %)))
+       (map (fn [message] {:chat-id chat-id :message-id (first message)}))
        (concat acc)))
 
 (fx/defn sync-all
   "Get all deleted-for-me messages that not yet synced with status-go and sync them"
   {:events [:chat.ui/sync-all-deleted-for-me-messages]}
-  [{:keys [db]}]
-  {:dispatch-n (reduce-kv chats-reducer [] (:messages db))})
+  [{:keys [db] :as cofx}]
+  (let [pending-sync-messages (reduce-kv filter-pending-sync-messages [] (:messages db))]
+    (apply fx/merge cofx (map delete-and-sync pending-sync-messages))))

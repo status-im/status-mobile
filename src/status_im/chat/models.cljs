@@ -3,6 +3,8 @@
             [taoensso.timbre :as log]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chat.models.message-list :as message-list]
+            [status-im.chat.models.delete-message :as delete-message]
+            [status-im.chat.models.delete-message-for-me :as delete-for-me]
             [status-im.data-store.chats :as chats-store]
             [status-im.mailserver.core :as mailserver]
             [status-im.data-store.contacts :as contacts-store]
@@ -212,6 +214,8 @@
   (when-let [chat-id (:current-chat-id db)]
     (chat.state/reset-visible-item)
     (fx/merge cofx
+              (delete-for-me/sync-all)
+              (delete-message/send-all)
               {:db (dissoc db :current-chat-id)}
               (offload-messages chat-id))))
 

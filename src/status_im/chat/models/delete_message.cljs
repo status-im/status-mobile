@@ -77,20 +77,21 @@
                        :js-response true
                        :on-error    #(log/error "failed to delete message " {:message-id message-id :error %})
                        :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
-(defn- chats-reducer
-  "traverse all messages find not yet synced deleted? messages, generate dispatch vector"
+
+(defn- filter-pending-send-messages
+  "traverse all messages find not yet synced deleted? messages"
   [acc chat-id messages]
   (->> messages
        (filter (fn [[_ {:keys [deleted? deleted-undoable-till]}]] (and deleted? deleted-undoable-till)))
-       (map #(vector :chat.ui/delete-message-and-send {:chat-id    chat-id
-                                                       :message-id (first %)}))
+       (map (fn [message] {:chat-id chat-id :message-id (first message)}))
        (concat acc)))
 
 (fx/defn send-all
   "Get all deleted messages that not yet synced with status-go and send them"
   {:events [:chat.ui/send-all-deleted-messages]}
-  [{:keys [db]}]
-  {:dispatch-n (reduce-kv chats-reducer [] (:messages db))})
+  [{:keys [db] :as cofx}]
+  (let [pending-send-messages (reduce-kv filter-pending-send-messages [] (:messages db))]
+    (apply fx/merge cofx (map delete-and-send pending-send-messages))))
 
 (fx/defn delete-messages-localy
   "Mark messages :deleted? localy in client"

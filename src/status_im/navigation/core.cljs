@@ -15,7 +15,6 @@
    [status-im.ui.screens.views :as views]
    [status-im.utils.fx :as fx]
    [status-im.utils.platform :as platform]
-   [taoensso.encore :as enc]
    [taoensso.timbre :as log]))
 
 (def debug? ^boolean js/goog.DEBUG)
@@ -439,7 +438,4 @@
                               :community
 
                               :else
-                              :home))
-     :dispatch-n (enc/conj-when []
-                                (and (= view-id :chat) [:chat.ui/sync-all-deleted-for-me-messages])
-                                (and (= view-id :chat) [:chat.ui/send-all-deleted-messages]))}))
+                              :home))}))
