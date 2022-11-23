@@ -27,7 +27,6 @@
             status-im.mailserver.constants
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.multiaccounts.core :as multiaccounts]
             status-im.multiaccounts.login.core
             status-im.multiaccounts.logout.core
             status-im.multiaccounts.update.core
