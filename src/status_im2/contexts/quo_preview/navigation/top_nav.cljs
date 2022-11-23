@@ -2,7 +2,7 @@
   (:require [react-native.core :as rn]
             [status-im2.contexts.quo-preview.preview :as preview]
             [reagent.core :as reagent]
-            [quo2.components.navigation.top-nav :as quo2]
+            [status-im2.common.home.view :as home.view]
             [quo2.foundations.colors :as colors]))
 
 (def descriptor [{:label   "Type"
@@ -40,7 +40,7 @@
         [rn/view {:padding-vertical 60
                   :flex-direction   :row
                   :align-items      :center}
-         [quo2/top-nav @state (:value @state)]]]])))
+         [home.view/top-nav @state (:value @state)]]]])))
 
 (defn preview-top-nav []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-95)

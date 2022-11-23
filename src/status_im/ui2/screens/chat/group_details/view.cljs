@@ -5,24 +5,24 @@
             [quo2.core :as quo2]
             [utils.re-frame :as rf]
             [i18n.i18n :as i18n]
-            [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]))
+            [status-im2.common.contact-list-item.view :as contact-item]))
 
 (defn back-button []
   [quo2/button {:type                :grey
                 :size                32
-                :width               32
                 :style               {:margin-left 20}
                 :accessibility-label :back-button
-                :on-press            #(rf/dispatch [:navigate-back])}
-   [quo2/icon :i/arrow-left {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
+                :on-press            #(rf/dispatch [:navigate-back])
+                :icon                true}
+   :i/arrow-left])
 
 (defn options-button []
   [quo2/button {:type                :grey
                 :size                32
-                :width               32
                 :style               {:margin-right 20}
-                :accessibility-label :options-button}
-   [quo2/icon :i/options {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
+                :accessibility-label :options-button
+                :icon                true}
+   :i/options])
 
 (defn count-container [count]
   [rn/view {:style (style/count-container)}
@@ -31,8 +31,8 @@
                :style  {:text-align :center}} count]])
 
 (defn prepare-members [members]
-  (let [admins  (filter :admin? members)
-        online  (filter #(and (not (:admin? %)) (:online? %)) members)
+  (let [admins (filter :admin? members)
+        online (filter #(and (not (:admin? %)) (:online? %)) members)
         offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
     (vals (cond-> {}
             (seq admins) (assoc :owner {:title "Owner" :data admins})
@@ -47,11 +47,11 @@
 
 (defn group-details []
   (let [{:keys [admins chat-id chat-name color public?]} (rf/sub [:chats/current-chat])
-        members           (rf/sub [:contacts/current-chat-contacts])
+        members (rf/sub [:contacts/current-chat-contacts])
         sectioned-members (prepare-members members)
-        pinned-messages   (rf/sub [:chats/pinned chat-id])
-        current-pk        (rf/sub [:multiaccount/public-key])
-        admin?            (get admins current-pk)]
+        pinned-messages (rf/sub [:chats/pinned chat-id])
+        current-pk (rf/sub [:multiaccount/public-key])
+        admin? (get admins current-pk)]
     [rn/view {:style {:flex             1
                       :background-color (colors/theme-colors colors/white colors/neutral-95)}}
      [quo2/header {:left-component  [back-button]

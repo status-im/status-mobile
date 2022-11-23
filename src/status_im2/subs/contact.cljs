@@ -69,6 +69,21 @@
    (contact.db/get-active-contacts contacts)))
 
 (re-frame/reg-sub
+ :contacts/active-sections
+ :<- [:contacts/active]
+ (fn [contacts]
+   (-> (reduce
+        (fn [acc contact]
+          (let [first-char (first (:alias contact))]
+            (if (get acc first-char)
+              (update-in acc [first-char :data] #(conj % contact))
+              (assoc acc first-char {:title first-char :data [contact]}))))
+        {}
+        contacts)
+       sort
+       vals)))
+
+(re-frame/reg-sub
  :contacts/sorted-contacts
  :<- [:contacts/active]
  (fn [active-contacts]

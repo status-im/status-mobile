@@ -1,29 +1,12 @@
 (ns status-im2.contexts.communities.home.view
-  (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
+  (:require [reagent.core :as reagent]
             [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
             [utils.re-frame :as rf]
             [i18n.i18n :as i18n]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [quo2.components.community.discover-card :as discover-card]
-            [quo2.components.navigation.top-nav :as topnav]
-            [status-im2.setup.config :as config]
-            [status-im2.common.plus-button.view :as components.plus-button]
             [status-im2.contexts.communities.home.actions.view :as home.actions]
-            [status-im2.contexts.communities.home.style :as style]))
-
-(defn navigate-to-activity-center []
-  (rf/dispatch [:mark-all-activity-center-notifications-as-read])
-  (if config/new-activity-center-enabled?
-    (rf/dispatch [:activity-center/open])
-    (rf/dispatch [:navigate-to :notifications-center])))
-
-(defn plus-button []
-  [components.plus-button/plus-button
-   {:on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}])
-    :accessibility-label :new-chat-button}])
+            [status-im2.common.home.view :as common.home]))
 
 (defn render-fn [id]
   (let [community-item (rf/sub [:communities/home-item id])]
@@ -78,29 +61,17 @@
        :opened
        [communities-list communities])]))
 
-(defn title-column []
-  [rn/view style/title-column
-   [rn/view {:flex 1}
-    [quo/text style/title-column-text
-     (i18n/label :t/communities)]]
-   [plus-button]])
-
 (defn home []
-  [safe-area/consumer
-   (fn [insets]
-     (let [selected-tab (reagent/atom :joined)]
-       (fn []
-         [rn/view {:style {:flex             1
-                           :padding-top      (:top insets)
-                           :background-color (colors/theme-colors
-                                              colors/neutral-5
-                                              colors/neutral-95)}}
-          [topnav/top-nav {:type                 :default
-                           :open-activity-center navigate-to-activity-center}]
-          [title-column]
-          [discover-card/discover-card {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
-                                        :title               (i18n/label :t/discover)
-                                        :description         (i18n/label :t/whats-trending)
-                                        :accessibility-label :communities-home-discover-card}]
-          [home-community-segments selected-tab]
-          [segments-community-lists selected-tab]])))])
+  (let [selected-tab (reagent/atom :joined)]
+    (fn []
+      [:<>
+       [common.home/top-nav {:type :default :hide-search true}]
+       [common.home/title-column {:label               (i18n/label :t/communities)
+                                  :handler             #(rf/dispatch [:bottom-sheet/show-sheet :add-new {}])
+                                  :accessibility-label :new-chat-button}]
+       [discover-card/discover-card {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
+                                     :title               (i18n/label :t/discover)
+                                     :description         (i18n/label :t/whats-trending)
+                                     :accessibility-label :communities-home-discover-card}]
+       [home-community-segments selected-tab]
+       [segments-community-lists selected-tab]])))

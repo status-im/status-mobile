@@ -1,4 +1,4 @@
-(ns status-im2.contexts.communities.home.style)
+(ns status-im2.common.home.style)
 
 (def title-column
   {:flex-direction     :row

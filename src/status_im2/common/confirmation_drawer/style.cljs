@@ -1,4 +1,4 @@
-(ns status-im.ui2.screens.common.alert.style
+(ns status-im2.common.confirmation-drawer.style
   (:require [quo2.foundations.colors :as colors]))
 
 (defn context-container []
@@ -12,7 +12,7 @@
    :margin-left      -4
    :margin-bottom    16})
 
-(defn buttons-container []
+(def buttons-container
   {:flex-direction  :row
    :justify-content :space-between
    :margin-top      20})

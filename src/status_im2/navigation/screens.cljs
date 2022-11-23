@@ -5,8 +5,7 @@
             [status-im2.contexts.shell.view :as shell]
             [status-im2.contexts.quo-preview.main :as quo.preview]
 
-            ;; TODO remove when not used anymore
-            [status-im.ui2.screens.chat.home :as chat.home]
+            ;; TODO remove when not used anymore\
             [status-im.ui2.screens.chat.view :as chat]
             [status-im.ui.screens.screens :as old-screens]))
 
@@ -19,9 +18,6 @@
           [{:name      :shell-stack
             :insets    {:top false}
             :component shell/shell-stack}
-
-           {:name      :home
-            :component chat.home/home}
 
            {:name      :chat
             :options   {:topBar {:visible false}}

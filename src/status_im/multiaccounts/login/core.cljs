@@ -392,6 +392,7 @@
               (get-node-config)
               (communities/fetch)
               (logging/set-log-level (:log-level multiaccount))
+              (notifications-center/get-activity-center-notifications)
               (notifications-center/get-activity-center-notifications-count))))
 
 (re-frame/reg-fx
