@@ -52,12 +52,12 @@
     (str (get-display-name (first requests)) ", " (get-display-name (second requests)) " "
          (i18n/label :t/and) " " (- (count requests) 2) " " (i18n/label :t/more))))
 
-(defn contact-requests [received-requests]
+(defn contact-requests [requests]
   [rn/touchable-opacity
    {:active-opacity 1
     :on-press       #(do
                        (rf/dispatch [:bottom-sheet/show-sheet
-                                     {:content (fn [] [contact-requests-sheet received-requests])}])
+                                     {:content (fn [] [contact-requests-sheet requests])}])
                        (rf/dispatch [:mark-all-activity-center-notifications-as-read]))
     :style          style/contact-requests}
    [rn/view {:style (style/contact-requests-icon)}
@@ -66,5 +66,5 @@
     [rn/text {:weight :semi-bold} (i18n/label :t/pending-requests)]
     [rn/text {:size  :paragraph-2
               :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
-     (requests-summary received-requests)]]
-   [quo/info-count (count received-requests)]])
+     (requests-summary requests)]]
+   [quo/info-count (count requests)]])

@@ -47,13 +47,13 @@
 (defn contacts-section-header [{:keys [title]}]
   [quo/divider-label {:label title}])
 
-(defn contacts [received-requests]
+(defn contacts [contact-requests]
   (let [items (rf/sub [:contacts/active-sections])]
     (if (empty? items)
       [welcome-blank-contacts]
       [:<>
-       (when (> (count received-requests) 0)
-         [contact-request/contact-requests received-requests])
+       (when (pos? (count contact-requests))
+         [contact-request/contact-requests contact-requests])
        [rn/section-list
         {:key-fn                         :title
          :sticky-section-headers-enabled false
@@ -64,7 +64,7 @@
 (defn tabs []
   (let [selected-tab (reagent/atom :recent)]
     (fn []
-      (let [{:keys [has-unread? received-requests]} (rf/sub [:activity.center/notifications-contact-requests])]
+      (let [contact-requests (rf/sub [:activity.center/notifications-contact-requests])]
         [:<>
          [quo/discover-card {:title       (i18n/label :t/invite-friends-to-status)
                              :description (i18n/label :t/share-invite-link)}]
@@ -80,9 +80,9 @@
                                       :label (i18n/label :t/groups)}
                                      {:id                :contacts
                                       :label             (i18n/label :t/contacts)
-                                      :notification-dot? has-unread?}]}]
+                                      :notification-dot? (pos? (count contact-requests))}]}]
          (if (= @selected-tab :contacts)
-           [contacts received-requests]
+           [contacts contact-requests]
            [chats @selected-tab])]))))
 
 (defn home []
