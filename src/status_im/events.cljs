@@ -112,10 +112,10 @@
 
 (fx/defn system-theme-mode-changed
   {:events [:system-theme-mode-changed]}
-  [cofx theme]
-  (merge {::multiaccounts/switch-theme (if (= :dark theme) 2 1)}
-         (when (multiaccounts.model/logged-in? cofx)
-          :dispatch [:reload-new-ui])))
+  [cofx _]
+  (when (multiaccounts.model/logged-in? cofx)
+    {:multiaccounts.ui/switch-theme (get-in cofx [:db :multiaccount :appearance])
+     :dispatch [:reload-new-ui]}))
 
 (def authentication-options
   {:reason (i18n/label :t/biometric-auth-reason-login)})

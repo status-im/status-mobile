@@ -162,7 +162,7 @@
     {::blank-preview-flag-changed private?}))
 
 (re-frame/reg-fx
- ::switch-theme
+ :multiaccounts.ui/switch-theme
  (fn [theme-id]
    (let [theme (if (or (= 2 theme-id) (and (= 0 theme-id) (utils.theme/dark-mode?)))
                  :dark
@@ -173,7 +173,7 @@
   {:events [:multiaccounts.ui/appearance-switched]}
   [cofx theme]
   (fx/merge cofx
-            {::switch-theme theme}
+            {:multiaccounts.ui/switch-theme theme}
             (multiaccounts.update/multiaccount-update :appearance theme {})))
 
 (fx/defn switch-profile-picture-show-to

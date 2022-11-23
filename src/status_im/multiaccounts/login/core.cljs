@@ -336,7 +336,7 @@
      :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}]})
 
 (fx/defn initialize-appearance [cofx]
-  {::multiaccounts/switch-theme (get-in cofx [:db :multiaccount :appearance])})
+  {:multiaccounts.ui/switch-theme (get-in cofx [:db :multiaccount :appearance])})
 
 (fx/defn get-group-chat-invitations [_]
   {::json-rpc/call
