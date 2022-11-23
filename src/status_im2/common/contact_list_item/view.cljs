@@ -18,7 +18,7 @@
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
         photo-path (when (seq images) (rf/sub [:chats/photo-path public-key]))
         current-pk (rf/sub [:multiaccount/public-key])]
-    [rn/touchable-opacity (merge {:style         (style/container)
+    [rn/touchable-opacity (merge {:style         style/container
                                   :on-press      #(open-chat public-key)
                                   :on-long-press #(when-not (= current-pk public-key)
                                                     (rf/dispatch [:bottom-sheet/show-sheet

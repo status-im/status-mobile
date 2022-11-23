@@ -1,6 +1,6 @@
 (ns status-im2.common.contact-list-item.style)
 
-(defn container []
+(def container
   {:margin-top         8
    :margin-horizontal  8
    :padding-vertical   8

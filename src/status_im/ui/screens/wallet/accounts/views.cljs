@@ -270,7 +270,7 @@
        [react/view {:padding-horizontal 20}
         [react/view {:flex-direction :row :height 56 :align-items :center :justify-content :flex-end}
          [quo2.button/button {:icon                true
-                              :size 32
+                              :size                32
                               :type                :grey
                               :accessibility-label :accounts-qr-code
                               :on-press            #(re-frame/dispatch
@@ -279,7 +279,7 @@
           :i/placeholder]
          [react/view {:width 12}]
          [quo2.button/button {:icon                true
-                              :size  32
+                              :size                32
                               :type                :grey
                               :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                                         {:content (sheets/accounts-options mnemonic)}])
