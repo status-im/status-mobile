@@ -9,13 +9,105 @@
             [status-im.test-helpers :as h]
             [status-im2.setup.config :as config]))
 
+(def notification-id "0x1")
+
 (defn setup []
   (h/register-helper-events)
   (rf/dispatch [:setup/app-started]))
 
-;;;; Contact verification
+(defn test-log-on-failure
+  [{:keys [before-test notification-id event action]}]
+  (rf-test/run-test-sync
+   (setup)
+   (h/using-log-test-appender
+    (fn [logs]
+      (when before-test
+        (before-test))
+      (h/stub-fx-with-callbacks ::json-rpc/call :on-error (constantly :fake-error))
 
-(def notification-id 24)
+      (rf/dispatch event)
+
+      (is (= {:args  [(str "Failed to " action)
+                      {:notification-id notification-id
+                       :error           :fake-error}]
+              :level :warn}
+             (last @logs)))))))
+
+;;;; Misc
+
+(deftest mark-as-read-test
+  (testing "does nothing if the notification ID cannot be found in the app db"
+    (rf-test/run-test-sync
+     (setup)
+     (let [spy-queue (atom [])]
+       (h/spy-fx spy-queue ::json-rpc/call)
+       (let [notifications {types/one-to-one-chat
+                            {:all    {:cursor "" :data [{:id   notification-id
+                                                         :read false
+                                                         :type types/one-to-one-chat}]}
+                             :unread {:cursor "" :data []}}}]
+         (rf/dispatch [:test/assoc-in [:activity-center]
+                       {:notifications notifications
+                        :filter        {:type   types/one-to-one-chat
+                                        :status :all}}])
+
+         (rf/dispatch [:activity-center.notifications/mark-as-read "0x666"])
+
+         (is (= [] @spy-queue))
+         (is (= notifications (get-in (h/db) [:activity-center :notifications])))))))
+
+  (testing "marks notifications as read and updates app db"
+    (rf-test/run-test-sync
+     (setup)
+     (let [notif-1     {:id "0x1" :read true :type types/one-to-one-chat}
+           notif-2     {:id "0x2" :read false :type types/one-to-one-chat}
+           notif-3     {:id "0x3" :read false :type types/one-to-one-chat}
+           new-notif-3 (assoc notif-3 :read true)
+           new-notif-2 (assoc notif-2 :read true)]
+       (h/stub-fx-with-callbacks ::json-rpc/call :on-success (constantly nil))
+       (rf/dispatch [:test/assoc-in [:activity-center]
+                     {:notifications {types/one-to-one-chat
+                                      {:all    {:cursor "" :data [notif-3 notif-2 notif-1]}
+                                       :unread {:cursor "" :data [notif-3 notif-2]}}}
+                      :filter        {:type   types/one-to-one-chat
+                                      :status :unread}}])
+
+       (rf/dispatch [:activity-center.notifications/mark-as-read (:id notif-2)])
+       (is (= {types/one-to-one-chat
+               {:all    {:cursor "" :data [notif-3 new-notif-2 notif-1]}
+                :unread {:cursor "" :data [notif-3]}}
+
+               types/no-type
+               {:all    {:data [new-notif-2]}
+                :unread {:data []}}}
+              (get-in (h/db) [:activity-center :notifications])))
+
+       (rf/dispatch [:activity-center.notifications/mark-as-read (:id notif-3)])
+       (is (= {types/one-to-one-chat
+               {:all    {:cursor "" :data [new-notif-3 new-notif-2 notif-1]}
+                :unread {:cursor "" :data []}}
+
+               types/no-type
+               {:all    {:data [new-notif-3 new-notif-2]}
+                :unread {:data []}}}
+              (get-in (h/db) [:activity-center :notifications]))))))
+
+  (testing "logs on failure"
+    (test-log-on-failure
+     {:notification-id notification-id
+      :event           [:activity-center.notifications/mark-as-read notification-id]
+      :action          :notification/mark-as-read
+      :before-test     (fn []
+                         (rf/dispatch [:test/assoc-in [:activity-center]
+                                       {:notifications {types/one-to-one-chat
+                                                        {:all    {:cursor "" :data [{:id   notification-id
+                                                                                     :read false
+                                                                                     :type types/one-to-one-chat}]}
+                                                         :unread {:cursor "" :data []}}}
+                                        :filter        {:type   types/one-to-one-chat
+                                                        :status :all}}]))})))
+
+;;;; Contact verification
 
 (def contact-verification-rpc-response
   {:activityCenterNotifications
@@ -58,22 +150,6 @@
    :reply-message               nil
    :timestamp                   1666647286000
    :type                        types/contact-verification})
-
-(defn test-log-on-failure
-  [{:keys [notification-id event action]}]
-  (rf-test/run-test-sync
-   (setup)
-   (h/using-log-test-appender
-    (fn [logs]
-      (h/stub-fx-with-callbacks ::json-rpc/call :on-error (constantly :fake-error))
-
-      (rf/dispatch event)
-
-      (is (= {:args  [(str "Failed to " action)
-                      {:notification-id notification-id
-                       :error           :fake-error}]
-              :level :warn}
-             (last @logs)))))))
 
 (defn test-contact-verification-event
   [{:keys [event expected-rpc-call]}]

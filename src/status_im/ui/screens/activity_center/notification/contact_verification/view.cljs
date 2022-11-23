@@ -85,21 +85,29 @@
                       {:button-1 {:label               (i18n/label :t/untrustworthy)
                                   :accessibility-label :mark-contact-verification-as-untrustworthy
                                   :type                :danger
-                                  :on-press            #(rf/dispatch [:activity-center.contact-verification/mark-as-untrustworthy id])}
+                                  :on-press            (fn []
+                                                         (rf/dispatch [:activity-center.contact-verification/mark-as-untrustworthy id])
+                                                         (rf/dispatch [:activity-center.notifications/mark-as-read id]))}
                        :button-2 {:label               (i18n/label :t/accept)
                                   :accessibility-label :mark-contact-verification-as-trusted
                                   :type                :positive
-                                  :on-press            #(rf/dispatch [:activity-center.contact-verification/mark-as-trusted id])}})
+                                  :on-press            (fn []
+                                                         (rf/dispatch [:activity-center.contact-verification/mark-as-trusted id])
+                                                         (rf/dispatch [:activity-center.notifications/mark-as-read id]))}})
                     (when (= contact-verification-status constants/contact-verification-status-pending)
                       {:button-1 {:label               (i18n/label :t/decline)
                                   :accessibility-label :decline-contact-verification
                                   :type                :danger
-                                  :on-press            #(hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/decline id])}
+                                  :on-press            (fn []
+                                                         (hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/decline id])
+                                                         (rf/dispatch [:activity-center.notifications/mark-as-read id]))}
                        :button-2 (if replying?
                                    {:label               (i18n/label :t/send-reply)
                                     :accessibility-label :reply-to-contact-verification
                                     :type                :primary
-                                    :on-press            #(hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/reply id @reply])}
+                                    :on-press            (fn []
+                                                           (hide-bottom-sheet-and-dispatch [:activity-center.contact-verification/reply id @reply])
+                                                           (rf/dispatch [:activity-center.notifications/mark-as-read id]))}
                                    {:label               (i18n/label :t/message-reply)
                                     :accessibility-label :send-reply-to-contact-verification
                                     :type                :primary

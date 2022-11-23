@@ -51,9 +51,13 @@
                     {:button-1 {:label               (i18n/label :t/decline)
                                 :accessibility-label :decline-contact-request
                                 :type                :danger
-                                :on-press            #(rf/dispatch [:contact-requests.ui/decline-request id])}
+                                :on-press            (fn []
+                                                       (rf/dispatch [:contact-requests.ui/decline-request id])
+                                                       (rf/dispatch [:activity-center.notifications/mark-as-read id]))}
                      :button-2 {:label               (i18n/label :t/accept)
                                 :accessibility-label :accept-contact-request
                                 :type                :positive
-                                :on-press            #(rf/dispatch [:contact-requests.ui/accept-request id])}}
+                                :on-press            (fn []
+                                                       (rf/dispatch [:contact-requests.ui/accept-request id])
+                                                       (rf/dispatch [:activity-center.notifications/mark-as-read id]))}}
                     nil))])))

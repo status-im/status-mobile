@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.home.contact-request.view
   (:require [react-native.core :as rn]
+            [status-im2.setup.config :as config]
             [quo2.core :as quo]
             [i18n.i18n :as i18n]
             [utils.re-frame :as rf]
@@ -58,7 +59,8 @@
     :on-press       #(do
                        (rf/dispatch [:bottom-sheet/show-sheet
                                      {:content (fn [] [contact-requests-sheet requests])}])
-                       (rf/dispatch [:mark-all-activity-center-notifications-as-read]))
+                       (when-not config/new-activity-center-enabled?
+                         (rf/dispatch [:mark-all-activity-center-notifications-as-read])))
     :style          style/contact-requests}
    [rn/view {:style (style/contact-requests-icon)}
     [quo/icon :i/pending-user {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]
