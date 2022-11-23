@@ -5,29 +5,27 @@
 
 (defn status-bar-options []
   (if platform/android?
-    {:navigationBar {:backgroundColor colors/white}
-     :statusBar     {:backgroundColor colors/white
-                     :style           (if (colors/dark?) :light :dark)}}
-    {:statusBar {:style (if (colors/dark?) :light :dark)}}))
+    {:navigationBar {:backgroundColor colors/neutral-100}
+     :statusBar     {:backgroundColor :transparent
+                     :style           :light
+                     :drawBehind      true}}
+    {:statusBar     {:style :light}}))
 
 (defn topbar-options []
   {:noBorder             true
    :scrollEdgeAppearance {:active   false
                           :noBorder true}
    :elevation            0
-   :title                {:color colors/neutral-100}
-   :rightButtonColor     colors/neutral-100
-   :background           {:color colors/white}
-   :backButton {:testID :back-button}
-   ;; TODO adjust colors and icons with quo2
-   ;;:backButton
-   #_{:icon  (icons/icon-source :main-icons/arrow-left)
-      :color colors/neutral-100}})
+   :title                {:color (colors/theme-colors colors/neutral-100 colors/white)}
+   :rightButtonColor     (colors/theme-colors colors/neutral-100 colors/white)
+   :background           {:color (colors/theme-colors colors/white colors/neutral-100)}
+   :backButton           {:color (colors/theme-colors colors/neutral-100 colors/white)
+                          :testID :back-button}})
 
 (defn default-root []
-  {:layout {:componentBackgroundColor colors/white
+  {:layout {:componentBackgroundColor (colors/theme-colors colors/white colors/neutral-100)
             :orientation              "portrait"
-            :backgroundColor          colors/white}})
+            :backgroundColor          (colors/theme-colors colors/white colors/neutral-100)}})
 
 (defn merge-top-bar [root-options options]
   (let [options (:topBar options)]

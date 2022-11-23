@@ -32,6 +32,13 @@
       (navigation/dismiss-modal (name modal)))
     (reset! state/modals [])))
 
+(defn status-bar-options []
+  (if platform/android?
+    {:navigationBar {:backgroundColor (colors/theme-colors colors/white colors/neutral-100)}
+     :statusBar     {:backgroundColor (colors/theme-colors colors/white colors/neutral-100)
+                     :style           (if (colors/dark?) :light :dark)}}
+    {:statusBar {:style (if (colors/dark?) :light :dark)}}))
+
 ;; PUSH SCREEN TO THE CURRENT STACK
 (defn navigate [comp]
   (log/debug "NAVIGATE" comp)
@@ -41,7 +48,7 @@
      {:component {:id      comp
                   :name    comp
                   :options (merge options
-                                  (roots/status-bar-options)
+                                  (status-bar-options)
                                   (roots/merge-top-bar (roots/topbar-options) options))}})
     ;;if we push the screen from modal, we want to dismiss all modals
     (dismiss-all-modals)))

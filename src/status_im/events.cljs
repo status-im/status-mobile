@@ -27,7 +27,6 @@
             status-im.mailserver.constants
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.multiaccounts.core :as multiaccounts]
             status-im.multiaccounts.login.core
             status-im.multiaccounts.logout.core
             status-im.multiaccounts.update.core
@@ -57,7 +56,8 @@
             status-im.wallet.custom-tokens.core
             status-im.wallet-connect.core
             status-im.wallet-connect-legacy.core
-            status-im.network.net-info))
+            status-im.network.net-info
+            [status-im.multiaccounts.model :as multiaccounts.model]))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -111,9 +111,10 @@
 
 (fx/defn system-theme-mode-changed
   {:events [:system-theme-mode-changed]}
-  [_ theme]
-  {::multiaccounts/switch-theme (if (= :dark theme) 2 1)
-   :dispatch [:reload-new-ui]})
+  [cofx _]
+  (when (multiaccounts.model/logged-in? cofx)
+    {:multiaccounts.ui/switch-theme (get-in cofx [:db :multiaccount :appearance])
+     :dispatch [:reload-new-ui]}))
 
 (def authentication-options
   {:reason (i18n/label :t/biometric-auth-reason-login)})

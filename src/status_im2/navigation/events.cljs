@@ -1,6 +1,5 @@
 (ns status-im2.navigation.events
-  (:require [utils.re-frame :as rf]
-            [status-im2.setup.hot-reload :as hot-reload]))
+  (:require [utils.re-frame :as rf]))
 
 (defn- all-screens-params [db view screen-params]
   (cond-> db
@@ -39,9 +38,8 @@
 
 (rf/defn change-tab
   {:events [:navigate-change-tab]}
-  [_ tab]
+  [_ tab])
   ;{:change-tab-fx tab} ; TODO: effect needs to be implemented (may not be possible: https://github.com/wix/react-native-navigation/issues/4837)
-  )
 
 (rf/defn navigate-replace
   {:events       [:navigate-replace]}
@@ -106,7 +104,6 @@
 (rf/defn reload-new-ui
   {:events [:reload-new-ui]}
   [_]
-  (hot-reload/reload)
   {:new-ui/reset-bottom-tabs nil
    :dispatch                 [:init-root :shell-stack]})
 
