@@ -229,43 +229,43 @@ class ChatElementByText(Text):
             return ''
 
     # Old UI
-    # def emojis_below_message(self, emoji: str = 'thumbs-up', own=True):
-    #     class EmojisNumber(Text):
-    #         def __init__(self, driver, parent_locator: str):
-    #             self.own = own
-    #             self.emoji = emoji
-    #             self.emojis_id = 'emoji-' + str(emojis[self.emoji]) + '-is-own-' + str(self.own).lower()
-    #             super().__init__(driver, prefix=parent_locator, xpath="/../..//*[@content-desc='%s']" % self.emojis_id)
-    #
-    #         @property
-    #         def text(self):
-    #             try:
-    #                 text = self.find_element().text
-    #                 self.driver.info("%s is '%s' for '%s' where my reaction is set on message is '%s'" % (self.name, text, self.emoji, str(self.own)))
-    #                 return text
-    #             except NoSuchElementException:
-    #                 return 0
-    #
-    #     return int(EmojisNumber(self.driver, self.locator).text)
-
-    def emojis_below_message(self, emoji: str = 'thumbs-up'):
+    def emojis_below_message(self, emoji: str = 'thumbs-up', own=True):
         class EmojisNumber(Text):
             def __init__(self, driver, parent_locator: str):
+                self.own = own
                 self.emoji = emoji
-                self.emojis_id = 'emoji-reaction-%s' % str(emojis[self.emoji])
-                super().__init__(driver, prefix=parent_locator,
-                                 xpath="/../..//*[@content-desc='%s']/android.widget.TextView" % self.emojis_id)
+                self.emojis_id = 'emoji-' + str(emojis[self.emoji]) + '-is-own-' + str(self.own).lower()
+                super().__init__(driver, prefix=parent_locator, xpath="/../..//*[@content-desc='%s']" % self.emojis_id)
 
             @property
             def text(self):
                 try:
                     text = self.find_element().text
-                    self.driver.info("%s is '%s' for '%s'" % (self.name, text, self.emoji))
-                    return int(text.strip())
+                    self.driver.info("%s is '%s' for '%s' where my reaction is set on message is '%s'" % (self.name, text, self.emoji, str(self.own)))
+                    return text
                 except NoSuchElementException:
                     return 0
 
         return int(EmojisNumber(self.driver, self.locator).text)
+
+    # def emojis_below_message(self, emoji: str = 'thumbs-up'):
+    #     class EmojisNumber(Text):
+    #         def __init__(self, driver, parent_locator: str):
+    #             self.emoji = emoji
+    #             self.emojis_id = 'emoji-reaction-%s' % str(emojis[self.emoji])
+    #             super().__init__(driver, prefix=parent_locator,
+    #                              xpath="/../..//*[@content-desc='%s']/android.widget.TextView" % self.emojis_id)
+    #
+    #         @property
+    #         def text(self):
+    #             try:
+    #                 text = self.find_element().text
+    #                 self.driver.info("%s is '%s' for '%s'" % (self.name, text, self.emoji))
+    #                 return int(text.strip())
+    #             except NoSuchElementException:
+    #                 return 0
+    #
+    #     return int(EmojisNumber(self.driver, self.locator).text)
 
     @property
     def pinned_by_label(self):
@@ -905,8 +905,8 @@ class ChatView(BaseView):
             else:
                 self.element_by_text_part(message).long_press_element()
         # old UI
-        # element = Button(self.driver, accessibility_id='pick-emoji-%s' % key)
-        element = Button(self.driver, accessibility_id='emoji-picker-%s' % key)
+        element = Button(self.driver, accessibility_id='pick-emoji-%s' % key)
+        # element = Button(self.driver, accessibility_id='emoji-picker-%s' % key)
         element.click()
         element.wait_for_invisibility_of_element()
 

@@ -377,9 +377,9 @@ class BaseView(object):
     def click_system_back_button_until_element_is_shown(self, attempts=3, element='home'):
         counter = 0
         if element == 'home':
-            element = self.chats_tab
+            # element = self.chats_tab
             # Old UI
-            # element = self.home_button
+            element = self.home_button
         while not element.is_element_displayed(1) and counter <= attempts:
             self.driver.press_keycode(4)
             try:
