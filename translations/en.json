@@ -1862,5 +1862,10 @@
     "mark-user-untrustworthy": "Mark {{username}} as untrustworthy",
     "leave-group?": "Leave Group?",
     "block-user?": "Block User?",
-    "clear-history?": "Clear History?"
+    "clear-history?": "Clear History?",
+    "cut": "Cut",
+    "biu": "BIU",
+    "bold": "Bold",
+    "italic": "Italic",
+    "strikethrough": "Strikethrough"
 }

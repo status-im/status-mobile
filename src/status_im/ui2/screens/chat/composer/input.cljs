@@ -12,11 +12,17 @@
             [re-frame.core :as re-frame]
             [status-im.chat.models.mentions :as mentions]
             [quo2.foundations.colors :as colors]
-            [quo.react]))
+            [quo.react]
+            ["react-native" :as react-native]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.types :as types]
+            [oops.core :as oops]))
 
 (defonce input-texts (atom {}))
 (defonce mentions-enabled (reagent/atom {}))
 (defonce chat-input-key (reagent/atom 1))
+
+(declare selectable-text-input)
 
 (re-frame/reg-fx
  :chat.ui/clear-inputs
@@ -64,8 +70,8 @@
 
 (defn on-selection-change [timeout-id last-text-change mentionable-users args]
   (let [selection (.-selection ^js (.-nativeEvent ^js args))
-        start (.-start selection)
-        end (.-end selection)]
+        start     (.-start selection)
+        end       (.-end selection)]
     ;; NOTE(rasom): on iOS we do not dispatch this event immediately
     ;; because it is needed only in case if selection is changed without
     ;; typing. Timeout might be canceled on `on-change`.
@@ -91,7 +97,7 @@
              mentionable-users]))))
 
 (defn on-change [last-text-change timeout-id mentionable-users refs chat-id sending-image args]
-  (let [text (.-text ^js (.-nativeEvent ^js args))
+  (let [text      (.-text ^js (.-nativeEvent ^js args))
         prev-text (get @input-texts chat-id)]
     (when (and (seq prev-text) (empty? text) (not sending-image))
       (hide-send refs))
@@ -116,12 +122,12 @@
       (>evt [::mentions/calculate-suggestions mentionable-users]))))
 
 (defn on-text-input [mentionable-users chat-id args]
-  (let [native-event (.-nativeEvent ^js args)
-        text (.-text ^js native-event)
+  (let [native-event  (.-nativeEvent ^js args)
+        text          (.-text ^js native-event)
         previous-text (.-previousText ^js native-event)
-        range (.-range ^js native-event)
-        start (.-start ^js range)
-        end (.-end ^js range)]
+        range         (.-range ^js native-event)
+        start         (.-start ^js range)
+        end           (.-end ^js range)]
     (when (and (not (get @mentions-enabled chat-id)) (string/index-of text "@"))
       (swap! mentions-enabled assoc chat-id true))
 
@@ -140,40 +146,183 @@
 (defn text-input [{:keys [set-active-panel refs chat-id sending-image on-content-size-change]}]
   (let [cooldown-enabled? (<sub [:chats/current-chat-cooldown-enabled?])
         mentionable-users (<sub [:chats/mentionable-users])
-        timeout-id (atom nil)
-        last-text-change (atom nil)
-        mentions-enabled (get @mentions-enabled chat-id)]
+        timeout-id        (atom nil)
+        last-text-change  (atom nil)
+        mentions-enabled  (get @mentions-enabled chat-id)
+        props             {:style                    (style/text-input)
+                           :ref                      (:text-input-ref refs)
+                           :max-font-size-multiplier 1
+                           :accessibility-label      :chat-message-input
+                           :text-align-vertical      :center
+                           :multiline                true
+                           :editable                 (not cooldown-enabled?)
+                           :blur-on-submit           false
+                           :auto-focus               false
+                           :on-focus                 #(set-active-panel nil)
+                           :max-length               chat.constants/max-text-size
+                           :placeholder-text-color   (:text-02 @quo.colors/theme)
+                           :placeholder              (if cooldown-enabled?
+                                                       (i18n/label :cooldown/text-input-disabled)
+                                                       (i18n/label :t/type-a-message))
+                           :underline-color-android  :transparent
+                           :auto-capitalize          :sentences
+                           :auto-correct             false
+                           :spell-check              false
+                           :on-content-size-change   on-content-size-change
+                           :on-selection-change      (partial on-selection-change timeout-id last-text-change mentionable-users)
+                           :on-change                (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
+                           :on-text-input            (partial on-text-input mentionable-users chat-id)}
+        children          (fn []
+                            (if mentions-enabled
+                              (for [[index [type text]] (map-indexed
+                                                         (fn [idx item]
+                                                           [idx item])
+                                                         (<sub [:chat/input-with-mentions]))]
+                                ^{:key (str index "_" type "_" text)}
+                                [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
+                                 text])
+                              (get @input-texts chat-id)))]
+    ;when ios implementation for selectable-text-input is ready, we need remove this condition and use selectable-text-input directly.
+    (if platform/android?
+      [selectable-text-input chat-id props children]
+      [rn/text-input props
+       [children]])))
 
-    [rn/text-input
-     {:style                    (style/text-input)
-      :ref                      (:text-input-ref refs)
-      :max-font-size-multiplier 1
-      :accessibility-label      :chat-message-input
-      :text-align-vertical      :center
-      :multiline                true
-      :editable                 (not cooldown-enabled?)
-      :blur-on-submit           false
-      :auto-focus               false
-      :on-focus                 #(set-active-panel nil)
-      :max-length               chat.constants/max-text-size
-      :placeholder-text-color   (:text-02 @quo.colors/theme)
-      :placeholder              (if cooldown-enabled?
-                                  (i18n/label :cooldown/text-input-disabled)
-                                  (i18n/label :t/type-a-message))
-      :underline-color-android  :transparent
-      :auto-capitalize          :sentences
-      :auto-correct             false
-      :spell-check              false
-      :on-content-size-change   on-content-size-change
-      :on-selection-change      (partial on-selection-change timeout-id last-text-change mentionable-users)
-      :on-change                (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
-      :on-text-input            (partial on-text-input mentionable-users chat-id)}
-     (if mentions-enabled
-       (for [[idx [type text]] (map-indexed
-                                (fn [idx item]
-                                  [idx item])
-                                (<sub [:chat/input-with-mentions]))]
-         ^{:key (str idx "_" type "_" text)}
-         [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
-          text])
-       (get @input-texts chat-id))]))
+(defn selectable-text-input-manager []
+  (when (exists? (.-NativeModules react-native))
+    (.-RNSelectableTextInputManager ^js (.-NativeModules react-native))))
+
+(defonce rn-selectable-text-input (reagent/adapt-react-class (.requireNativeComponent react-native "RNSelectableTextInput")))
+
+(declare first-level-menu-items second-level-menu-items)
+
+(defn update-input-text [{:keys [text-input chat-id]} text]
+  (on-text-change text chat-id)
+  (.setNativeProps ^js text-input (clj->js {:text text})))
+
+(defn calculate-input-text [{:keys [full-text selection-start selection-end]} content]
+  (let [head (subs full-text 0 selection-start)
+        tail (subs full-text selection-end)]
+    (str head content tail)))
+
+(defn update-selection [text-input-handle selection-start selection-end]
+  ;to avoid something disgusting like this https://lightrun.com/answers/facebook-react-native-textinput-controlled-selection-broken-on-both-ios-and-android
+  ;use native invoke instead! do not use setNativeProps! e.g. (.setNativeProps ^js text-input (clj->js {:selection {:start selection-start :end selection-end}}))
+  (let [manager (selectable-text-input-manager)]
+    (oops/ocall manager :setSelection text-input-handle selection-start selection-end)))
+
+(def first-level-menus {:cut               (fn [{:keys [content] :as params}]
+                                             (let [new-text (calculate-input-text params "")]
+                                               (react/copy-to-clipboard content)
+                                               (update-input-text params new-text)))
+
+                        :copy-to-clipboard (fn [{:keys [content]}]
+                                             (react/copy-to-clipboard content))
+
+                        :paste             (fn [params]
+                                             (let [callback (fn [paste-content]
+                                                              (let [content  (string/trim paste-content)
+                                                                    new-text (calculate-input-text params content)]
+                                                                (update-input-text params new-text)))]
+                                               (react/get-from-clipboard callback)))
+
+                        :biu               (fn [{:keys [first-level text-input-handle menu-items selection-start selection-end]}]
+                                             (reset! first-level false)
+                                             (reset! menu-items second-level-menu-items)
+                                             (update-selection text-input-handle selection-start selection-end))})
+
+(def first-level-menu-items (map i18n/label (keys first-level-menus)))
+
+(defn reset-to-first-level-menu [first-level menu-items]
+  (reset! first-level true)
+  (reset! menu-items first-level-menu-items))
+
+(defn append-markdown-char [{:keys [first-level menu-items content selection-start selection-end text-input-handle selection-event] :as params} wrap-chars]
+  (let [content         (str wrap-chars content wrap-chars)
+        new-text        (calculate-input-text params content)
+        len-wrap-chars  (count wrap-chars)
+        selection-start (+ selection-start len-wrap-chars)
+        selection-end   (+ selection-end len-wrap-chars)]
+    ;don't update selection directly here, process it within on-selection-change instead
+    ;so that we can avoid java.lang.IndexOutOfBoundsException: setSpan..
+    (reset! selection-event {:start             selection-start
+                             :end               selection-end
+                             :text-input-handle text-input-handle})
+    (update-input-text params new-text)
+    (reset-to-first-level-menu first-level menu-items)))
+
+(def second-level-menus {:bold          #(append-markdown-char % "**")
+
+                         :italic        #(append-markdown-char % "*")
+
+                         :strikethrough #(append-markdown-char % "~~")})
+
+(def second-level-menu-items (map i18n/label (keys second-level-menus)))
+
+(defn on-menu-item-touched [{:keys [first-level event-type] :as params}]
+  (let [menus         (if @first-level first-level-menus second-level-menus)
+        menu-item-key (nth (keys menus) event-type)
+        action        (get menus menu-item-key)]
+    (action params)))
+
+(defn selectable-text-input [chat-id {:keys [style ref on-selection-change] :as props} children]
+  (let [text-input-ref  (reagent/atom nil)
+        menu-items      (reagent/atom first-level-menu-items)
+        first-level     (reagent/atom true)
+        selection-event (atom nil)
+        manager         (selectable-text-input-manager)]
+    (reagent/create-class
+     {:component-did-mount
+      (fn [this]
+        (when @text-input-ref
+          (let [selectable-text-input-handle (rn/find-node-handle this)
+                text-input-handle            (rn/find-node-handle @text-input-ref)]
+            (oops/ocall manager :setupMenuItems selectable-text-input-handle text-input-handle))))
+
+      :component-did-update (fn [_ _ _ _]
+                              (when (not @first-level)
+                                (let [text-input-handle (rn/find-node-handle @text-input-ref)]
+                                  (oops/ocall manager :startActionMode text-input-handle))))
+
+      :render
+      (fn [_]
+        (let [ref                 #(do (reset! text-input-ref %)
+                                       (when ref
+                                         (quo.react/set-ref-val! ref %)))
+              on-selection-change (fn [args]
+                                    (let [selection    (.-selection ^js (.-nativeEvent ^js args))
+                                          start        (.-start selection)
+                                          end          (.-end selection)
+                                          no-selection (<= (- end start) 0)]
+                                      (when (and no-selection (not @first-level))
+                                        (oops/ocall manager :hideLastActionMode)
+                                        (reset-to-first-level-menu first-level menu-items)))
+                                    (when on-selection-change
+                                      (on-selection-change args))
+                                    (when @selection-event
+                                      (let [{:keys [start end text-input-handle]} @selection-event]
+                                        (update-selection text-input-handle start end)
+                                        (reset! selection-event nil))))
+              on-selection        (fn [event]
+                                    (let [native-event (.-nativeEvent event)
+                                          native-event (types/js->clj native-event)
+                                          {:keys [eventType content selectionStart selectionEnd]} native-event
+                                          full-text    (:input-text (<sub [:chats/current-chat-inputs]))]
+                                      (on-menu-item-touched {:first-level       first-level
+                                                             :event-type        eventType
+                                                             :content           content
+                                                             :selection-start   selectionStart
+                                                             :selection-end     selectionEnd
+                                                             :text-input        @text-input-ref
+                                                             :text-input-handle (rn/find-node-handle @text-input-ref)
+                                                             :full-text         full-text
+                                                             :menu-items        menu-items
+                                                             :chat-id           chat-id
+                                                             :selection-event   selection-event})))
+              props               (merge props {:ref                 ref
+                                                :style               nil
+                                                :on-selection-change on-selection-change
+                                                :on-selection        on-selection})]
+          [rn-selectable-text-input {:menuItems @menu-items :style style}
+           [rn/text-input props
+            [children]]]))})))
