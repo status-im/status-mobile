@@ -14,8 +14,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui2.screens.chat.messages.pinned-message :as pinned-message]
             [re-frame.db]
-            [status-im.ui2.screens.chat.messages.message :as message]
-            [status-im.utils.platform :as platform]))
+            [status-im.ui2.screens.chat.messages.message :as message]))
 
 (defn topbar-content []
   (let [window-width (<sub [:dimensions/window-width])
