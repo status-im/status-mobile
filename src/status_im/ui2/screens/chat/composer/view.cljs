@@ -16,8 +16,7 @@
             [status-im.ui2.screens.chat.composer.mentions :as mentions]
             [status-im.ui.components.permissions :as permissions]
             [status-im.utils.utils :as utils]
-            [i18n.i18n :as i18n]
-            [re-frame.core :as rf]))
+            [i18n.i18n :as i18n]))
 
 (defn calculate-y [context keyboard-shown min-y max-y added-value]
   (if keyboard-shown
@@ -50,34 +49,34 @@
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height bg-opacity]
   (-> (gesture/gesture-pan)
       (gesture/on-start
-        (fn [_]
-          (if keyboard-shown
-            (swap! context assoc :pan-y (reanimated/get-shared-value translate-y))
-            (input/input-focus text-input-ref))))
+       (fn [_]
+         (if keyboard-shown
+           (swap! context assoc :pan-y (reanimated/get-shared-value translate-y))
+           (input/input-focus text-input-ref))))
       (gesture/on-update
-        (fn [evt]
-          (when keyboard-shown
-            (swap! context assoc :dy (- (.-translationY evt) (:pdy @context)))
-            (swap! context assoc :pdy (.-translationY evt))
-            (reanimated/set-shared-value
-              translate-y
-              (max (min (+ (.-translationY evt) (:pan-y @context)) (- min-y)) (- max-y))))))
+       (fn [evt]
+         (when keyboard-shown
+           (swap! context assoc :dy (- (.-translationY evt) (:pdy @context)))
+           (swap! context assoc :pdy (.-translationY evt))
+           (reanimated/set-shared-value
+            translate-y
+            (max (min (+ (.-translationY evt) (:pan-y @context)) (- min-y)) (- max-y))))))
       (gesture/on-end
-        (fn [_]
-          (when keyboard-shown
-            (if (< (:dy @context) 0)
-              (do
-                (swap! context assoc :state :max)
-                (input/input-focus text-input-ref)
-                (reanimated/set-shared-value translate-y (reanimated/with-timing (- max-y)))
-                (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
-                (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1)))
-              (do
-                (swap! context assoc :state :min)
-                (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
-                (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
-                (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
-                (re-frame/dispatch [:dismiss-keyboard]))))))))
+       (fn [_]
+         (when keyboard-shown
+           (if (< (:dy @context) 0)
+             (do
+               (swap! context assoc :state :max)
+               (input/input-focus text-input-ref)
+               (reanimated/set-shared-value translate-y (reanimated/with-timing (- max-y)))
+               (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
+               (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1)))
+             (do
+               (swap! context assoc :state :min)
+               (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
+               (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
+               (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
+               (re-frame/dispatch [:dismiss-keyboard]))))))))
 
 (defn get-input-content-change [context translate-y shared-height max-height bg-opacity keyboard-shown min-y max-y]
   (fn [evt]
@@ -103,19 +102,19 @@
               (swap! context assoc :y new-y)
               (when keyboard-shown
                 (reanimated/set-shared-value
-                  translate-y
-                  (reanimated/with-timing (- new-y)))
+                 translate-y
+                 (reanimated/with-timing (- new-y)))
                 (reanimated/set-shared-value
-                  shared-height
-                  (reanimated/with-timing (min new-y max-height)))))
+                 shared-height
+                 (reanimated/with-timing (min new-y max-height)))))
             (do
               (swap! context assoc :state :max)
               (swap! context assoc :y max-y)
               (when keyboard-shown
                 (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1))
                 (reanimated/set-shared-value
-                  translate-y
-                  (reanimated/with-timing (- max-y)))))))))))
+                 translate-y
+                 (reanimated/with-timing (- max-y)))))))))))
 
 (defn composer [chat-id]
   [safe-area/consumer
@@ -162,13 +161,13 @@
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
               [reanimated/view {:style (reanimated/apply-animations-to-style
-                                         {:height shared-height}
-                                         {})}
+                                        {:height shared-height}
+                                        {})}
                ;;INPUT MESSAGE bottom sheet
                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                 [reanimated/view {:style (reanimated/apply-animations-to-style
-                                           {:transform [{:translateY translate-y}]}
-                                           (styles/input-bottom-sheet window-height))}
+                                          {:transform [{:translateY translate-y}]}
+                                          (styles/input-bottom-sheet window-height))}
                  ;handle
                  [rn/view {:style (styles/bottom-sheet-handle)}]
                  [reply/reply-message-auto-focus-wrapper (:text-input-ref refs) reply]
@@ -183,14 +182,14 @@
                  [rn/view {:style (styles/bottom-sheet-controls insets)}
                   [quo2.button/button {:on-press (fn []
                                                    (permissions/request-permissions
-                                                     {:permissions [:read-external-storage :write-external-storage]
-                                                      :on-allowed  #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                                  {:content [photo-selector/photo-selector]}])
-                                                      :on-denied   (fn []
-                                                                     (utils/set-timeout
-                                                                       #(utils/show-popup (i18n/label :t/error)
-                                                                                          (i18n/label :t/external-storage-denied))
-                                                                       50))}))
+                                                    {:permissions [:read-external-storage :write-external-storage]
+                                                     :on-allowed  #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                                       {:content [photo-selector/photo-selector]}])
+                                                     :on-denied   (fn []
+                                                                    (utils/set-timeout
+                                                                     #(utils/show-popup (i18n/label :t/error)
+                                                                                        (i18n/label :t/external-storage-denied))
+                                                                     50))}))
                                        :icon     true :type :outline :size 32} :i/image]
                   [rn/view {:width 12}]
                   [quo2.button/button {:icon true :type :outline :size 32} :i/reaction]
@@ -204,6 +203,6 @@
                     :i/arrow-up]]])
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
-                                          {:opacity bg-opacity}
-                                          (styles/bottom-sheet-background window-height))}]
+                                         {:opacity bg-opacity}
+                                         (styles/bottom-sheet-background window-height))}]
                [mentions/autocomplete-mentions suggestions]]))])))])

@@ -5,12 +5,12 @@
             ["react-native" :refer (DevSettings LogBox)]))
 
 ;; Ignore all logs, because there are lots of temporary warnings when developing and hot reloading
-;(.ignoreAllLogs LogBox)
+(.ignoreAllLogs LogBox)
 
 ;; Only ignore warnings/errors that cannot be fixed for the time being.
 ;; When you add a warning to be ignored explain below why it is ignored and how it can be fixed.
 ;; When a warning is fixed make sure to remove it from here.
-(.ignoreLogs ^js LogBox (clj->js ["undefined is not an object (evaluating 'e.message')"
+#_(.ignoreLogs ^js LogBox (clj->js ["undefined is not an object (evaluating 'e.message')"
                                     "Cannot read property 'message' of undefined"
                                     "InternalError Metro has encountered an error"
                                     "undefined Unable to resolve module `parse-svg-path`"
