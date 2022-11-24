@@ -92,13 +92,15 @@
               :style (style/timestamp)}
     (time/to-short-str timestamp)]])
 
-(defn avatar-view [group-chat color display-name photo-path]
+(defn avatar-view [group-chat color display-name photo-path chat-id]
   (if group-chat
     [quo/group-avatar {:color color
                        :size  :medium}]
-    [quo/user-avatar {:full-name       display-name
-                      :profile-picture photo-path
-                      :size            :small}]))
+    (let [online? (rf/sub [:visibility-status-updates/online? chat-id])]
+      [quo/user-avatar {:full-name       display-name
+                        :online?         online?
+                        :profile-picture photo-path
+                        :size            :small}])))
 
 (defn chat-list-item [item]
   (let [{:keys [chat-id color group-chat last-message timestamp name unviewed-mentions-count
@@ -110,7 +112,7 @@
                                   :on-press      (open-chat chat-id)
                                   :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
                                                                 {:content (fn [] [actions/actions item false])}])})
-     [avatar-view group-chat color display-name photo-path]
+     [avatar-view group-chat color display-name photo-path chat-id]
      [rn/view {:style {:margin-left 8}}
       [name-view display-name contact timestamp]
       (if (string/blank? (get-in last-message [:content :parsed-text]))
