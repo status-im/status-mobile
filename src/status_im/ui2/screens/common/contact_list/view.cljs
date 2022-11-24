@@ -46,5 +46,6 @@
       :render-section-header-fn       contacts-section-header
       :content-container-style        {:padding-bottom 120}
       :header                         (when search? (search-input))
+      :sticky-header-indices [0]
       :render-fn                      (fn [item]
                                         [contact-item/contact-item item data])}]))
