@@ -45,7 +45,7 @@ in stdenv.mkDerivation rec {
     filter = lib.mkFilter {
       root = path;
       include = [
-        "package.json" "yarn.lock" "metro.config.js" ".babelrc"
+        "package.json" "yarn.lock" "metro.config.js" "babel.config.js"
         "resources/.*" "translations/.*" "src/js/worklet_factory.js"
         "modules/react-native-status/android.*" "android/.*"
         envFileName "VERSION" "status-go-version.json" "react-native.config.js"

@@ -322,8 +322,8 @@ run-visual-test-ios: ##@test Run tests once in NodeJS
 	detox test --configuration ios.sim.debug 
 
 component-test-watch: export TARGET := clojure
-component-test: export COMPONENT_TEST := true
-component-test: export BABEL_ENV := test
+component-test-watch: export COMPONENT_TEST := true
+component-test-watch: export BABEL_ENV := test
 component-test-watch: ##@ Watch tests and re-run no changes to cljs files
 	yarn install
 	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js' -e cljs
