@@ -46,15 +46,6 @@
                :weight :medium
                :style  {:text-align :center}} count]])
 
-(defn prepare-members [members]
-  (let [admins  (filter :admin? members)
-        online  (filter #(and (not (:admin? %)) (:online? %)) members)
-        offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
-    (vals (cond-> {}
-            (seq admins) (assoc :owner {:title "Owner" :data admins})
-            (seq online) (assoc :online {:title "Online" :data online})
-            (seq offline) (assoc :offline {:title "Offline" :data offline})))))
-
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:padding-horizontal 20 :border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :margin-top 8}}
    [quo2/text {:size   :paragraph-2
@@ -108,9 +99,8 @@
           (i18n/label :t/save)]]]))])
 
 (defn group-details []
-  (let [{:keys [admins chat-id chat-name color public? muted] :as group} (rf/sub [:chats/current-chat])
-        members           (rf/sub [:contacts/current-chat-contacts])
-        sectioned-members (prepare-members members)
+  (let [{:keys [admins chat-id chat-name color public? muted contacts] :as group} (rf/sub [:chats/current-chat])
+        members           (rf/sub [:contacts/group-members-sections])
         pinned-messages   (rf/sub [:chats/pinned chat-id])
         current-pk        (rf/sub [:multiaccount/public-key])
         admin?            (get admins current-pk)]
@@ -150,11 +140,11 @@
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
-        [count-container (count members)]]
+        [count-container (count contacts)]]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if admin? :t/manage-members :t/add-members))]]]
      [rn/section-list {:key-fn                         :title
                        :sticky-section-headers-enabled false
-                       :sections                       sectioned-members
+                       :sections                       members
                        :render-section-header-fn       contacts-section-header
                        :render-fn                      (fn [item]
                                                          [contact-list-item/contact-list-item item {:chat-id chat-id

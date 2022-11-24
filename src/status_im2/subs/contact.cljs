@@ -268,4 +268,15 @@
      (swap! data #(sort @data))
      (vals @data))))
 
+(re-frame/reg-sub
+ :contacts/group-members-sections
+ :<- [:contacts/current-chat-contacts]
+ (fn [members]
+   (let [admins  (filter :admin? members)
+         online  (filter #(and (not (:admin? %)) (:online? %)) members)
+         offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
+     (vals (cond-> {}
+             (seq admins) (assoc :owner {:title "Owner" :data admins})
+             (seq online) (assoc :online {:title "Online" :data online})
+             (seq offline) (assoc :offline {:title "Offline" :data offline}))))))
 
