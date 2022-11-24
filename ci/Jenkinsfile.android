@@ -36,7 +36,7 @@ pipeline {
     LANG     = "en_US.UTF-8"
     LC_ALL   = "en_US.UTF-8"
     LANGUAGE = "en_US.UTF-8"
-    TARGET   = 'android'
+    TARGET   = "android${utils.isE2EBuild() ? "-e2e" : ""}"
     BUILD_ENV = 'prod'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     FASTLANE_DISABLE_COLORS = 1
