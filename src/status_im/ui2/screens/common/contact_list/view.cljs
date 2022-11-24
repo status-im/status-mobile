@@ -4,22 +4,8 @@
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [quo2.core :as quo2]
             [utils.re-frame :as rf]
-            [reagent.core :as reagent]
-            [oops.core :refer [oget]]
-            [clojure.string :as str]))
+            [oops.core :refer [oget]]))
 
-(def query (reagent/atom ""))
-
-(defn prepare-contacts [contacts]
-  (let [data (atom {})]
-    (doseq [i (range (count contacts))]
-      (let [first-char (get (:alias (nth contacts i)) 0)]
-        (when (or (empty? @query) (str/includes? (str/lower-case (:alias (nth contacts i))) (str/lower-case @query)))
-          (if-not (contains? @data first-char)
-            (swap! data #(assoc % first-char {:title first-char :data [(nth contacts i)]}))
-            (swap! data #(assoc-in % [first-char :data] (conj (:data (get @data first-char)) (nth contacts i))))))))
-    (swap! data #(sort @data))
-    (vals @data)))
 
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:border-top-width   1
@@ -38,10 +24,7 @@
                   :on-change   (fn [e] (rf/dispatch [:contacts/search-query (oget e "nativeEvent.text")]))}])
 
 (defn contact-list [{:keys [search?] :as data}]
-  (let [;contacts (rf/sub [:contacts/active])
-        ;contacts (prepare-contacts contacts)
-        contacts (rf/sub [:contacts/filtered-active-sections])]
-    ;(println "asdf" contactsx)
+  (let [contacts (rf/sub [:contacts/filtered-active-sections])]
     [rn/section-list
      {:key-fn                         :title
       :sticky-section-headers-enabled false
