@@ -32,9 +32,9 @@
      (if (= icon :options)
        [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
        [quo2/checkbox {:default-checked? member?
-                            :on-change        (fn [selected] (if selected
-                                                               (swap! added conj public-key)
-                                                               (reset! added (remove #(= % public-key) @added))))}])]))
+                       :on-change        (fn [selected] (if selected
+                                                          (swap! added conj public-key)
+                                                          (reset! added (remove #(= % public-key) @added))))}])]))
 
 (defn contact-list-item [item extra-data]
   (let [{:keys [public-key ens-verified added? images]} item

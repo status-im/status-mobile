@@ -50,9 +50,9 @@
         online  (filter #(and (not (:admin? %)) (:online? %)) members)
         offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
     (vals (cond-> {}
-                  (seq admins) (assoc :owner {:title "Owner" :data admins})
-                  (seq online) (assoc :online {:title "Online" :data online})
-                  (seq offline) (assoc :offline {:title "Offline" :data offline})))))
+            (seq admins) (assoc :owner {:title "Owner" :data admins})
+            (seq online) (assoc :online {:title "Online" :data online})
+            (seq offline) (assoc :offline {:title "Offline" :data offline})))))
 
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:padding-horizontal 20 :border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :margin-top 8}}
@@ -139,8 +139,8 @@
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if muted :unmute-group :mute-group))]]
       [rn/touchable-opacity {:style    (style/action-container color)
                              :on-press #(rf/dispatch
-                                          [:bottom-sheet/show-sheet
-                                           {:content (fn [] [contact-requests-sheet group])}])}
+                                         [:bottom-sheet/show-sheet
+                                          {:content (fn [] [contact-requests-sheet group])}])}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
@@ -152,5 +152,5 @@
                        :render-section-header-fn       contacts-section-header
                        :render-fn                      (fn [item]
                                                          [contact-list-item/contact-list-item item {:chat-id chat-id
-                                                                                          :admin?  admin?
-                                                                                          :icon    :options}])}]]))
+                                                                                                    :admin?  admin?
+                                                                                                    :icon    :options}])}]]))

@@ -38,11 +38,9 @@
                   :on-change   (fn [e] (rf/dispatch [:contacts/search-query (oget e "nativeEvent.text")]))}])
 
 (defn contact-list [{:keys [search?] :as data}]
-  (let [
-        ;contacts (rf/sub [:contacts/active])
+  (let [;contacts (rf/sub [:contacts/active])
         ;contacts (prepare-contacts contacts)
-        contacts (rf/sub [:contacts/filtered-active-sections])
-        ]
+        contacts (rf/sub [:contacts/filtered-active-sections])]
     ;(println "asdf" contactsx)
     [rn/section-list
      {:key-fn                         :title
@@ -53,5 +51,4 @@
       :header                         (when search? (search-input))
       :sticky-header-indices [0]
       :render-fn                      (fn [item]
-                                        [contact-list-item/contact-list-item item data])}]
-    ))
+                                        [contact-list-item/contact-list-item item data])}]))

@@ -20,34 +20,34 @@
 
 (defn get-screens []
   (reduce
-    (fn [acc screen]
-      (assoc acc (:name screen) screen))
-    {}
-    (screens/screens)))
+   (fn [acc screen]
+     (assoc acc (:name screen) screen))
+   {}
+   (screens/screens)))
 
 ;;we need this for hot reload (for some reason it doesn't reload, so we have to call get-screens if debug true)
 (def screens (get-screens))
 
 (def components
   (reduce
-    (fn [acc {:keys [name component]}]
-      (assoc acc name component))
-    {}
-    (concat screens/components)))
+   (fn [acc {:keys [name component]}]
+     (assoc acc name component))
+   {}
+   (concat screens/components)))
 
 (defn wrapped-screen-style [{:keys [insets style]} insets-obj]
   (merge
-    {:flex             1
-     :background-color (colors/theme-colors colors/white colors/neutral-100)}
-    style
-    (when (get insets :bottom)
-      {:padding-bottom (+ (oget insets-obj "bottom")
-                          (get style :padding-bottom)
-                          (get style :padding-vertical))})
-    (when (get insets :top true)
-      {:padding-top (+ (oget insets-obj "top")
-                       (get style :padding-top)
-                       (get style :padding-vertical))})))
+   {:flex             1
+    :background-color (colors/theme-colors colors/white colors/neutral-100)}
+   style
+   (when (get insets :bottom)
+     {:padding-bottom (+ (oget insets-obj "bottom")
+                         (get style :padding-bottom)
+                         (get style :padding-vertical))})
+   (when (get insets :top true)
+     {:padding-top (+ (oget insets-obj "top")
+                      (get style :padding-top)
+                      (get style :padding-vertical))})))
 
 (defn inactive []
   (when @(re-frame/subscribe [:hide-screen?])
@@ -57,109 +57,109 @@
 
 (defn screen [key]
   (reagent.core/reactify-component
-    (fn []
-      (let [{:keys [component insets]} (get
-                                         (if js/goog.DEBUG
-                                           (get-screens)
-                                           screens)
-                                         (keyword key))]
-        ^{:key (str "root" key @reloader/cnt)}
-        [safe-area/safe-area-provider
-         [safe-area/safe-area-consumer
-          (fn [safe-insets]
-            (reagent/as-element
-              [rn/view {:style (wrapped-screen-style
-                                 {:insets insets}
-                                 safe-insets)}
-               [inactive]
-               [component]]))]
-         (when js/goog.DEBUG
-           [reloader/reload-view])]))))
+   (fn []
+     (let [{:keys [component insets]} (get
+                                       (if js/goog.DEBUG
+                                         (get-screens)
+                                         screens)
+                                       (keyword key))]
+       ^{:key (str "root" key @reloader/cnt)}
+       [safe-area/safe-area-provider
+        [safe-area/safe-area-consumer
+         (fn [safe-insets]
+           (reagent/as-element
+            [rn/view {:style (wrapped-screen-style
+                              {:insets insets}
+                              safe-insets)}
+             [inactive]
+             [component]]))]
+        (when js/goog.DEBUG
+          [reloader/reload-view])]))))
 
 (defn component [comp]
   (reagent/reactify-component
-    (fn []
-      [rn/view {:width 500 :height 44}
-       [comp]])))
+   (fn []
+     [rn/view {:width 500 :height 44}
+      [comp]])))
 
 (def popover-comp
   (reagent/reactify-component
-    (fn []
-      ^{:key (str "popover" @reloader/cnt)}
-      [safe-area/safe-area-provider
-       [inactive]
-       [popover/popover]
-       (when js/goog.DEBUG
-         [reloader/reload-view])])))
+   (fn []
+     ^{:key (str "popover" @reloader/cnt)}
+     [safe-area/safe-area-provider
+      [inactive]
+      [popover/popover]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))
 
 (def visibility-status-popover-comp
   (reagent/reactify-component
-    (fn []
-      ^{:key (str "visibility-status-popover" @reloader/cnt)}
-      [safe-area/safe-area-provider
-       [inactive]
-       [visibility-status-views/visibility-status-popover]
-       (when js/goog.DEBUG
-         [reloader/reload-view])])))
+   (fn []
+     ^{:key (str "visibility-status-popover" @reloader/cnt)}
+     [safe-area/safe-area-provider
+      [inactive]
+      [visibility-status-views/visibility-status-popover]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))
 
 (def sheet-comp
   (reagent/reactify-component
-    (fn []
-      ^{:key (str "seet" @reloader/cnt)}
-      [safe-area/safe-area-provider
-       [inactive]
-       [bottom-sheets/bottom-sheet]
-       (when js/goog.DEBUG
-         [reloader/reload-view])
-       (when config/keycard-test-menu-enabled?
-         [keycard.test-menu/test-menu])])))
+   (fn []
+     ^{:key (str "seet" @reloader/cnt)}
+     [safe-area/safe-area-provider
+      [inactive]
+      [bottom-sheets/bottom-sheet]
+      (when js/goog.DEBUG
+        [reloader/reload-view])
+      (when config/keycard-test-menu-enabled?
+        [keycard.test-menu/test-menu])])))
 
 (def signing-comp
   (reagent/reactify-component
-    (fn []
-      ^{:key (str "signing-sheet" @reloader/cnt)}
-      [safe-area/safe-area-provider
-       [inactive]
-       [signing/signing]
-       (when js/goog.DEBUG
-         [reloader/reload-view])])))
+   (fn []
+     ^{:key (str "signing-sheet" @reloader/cnt)}
+     [safe-area/safe-area-provider
+      [inactive]
+      [signing/signing]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))
 
 (def select-acc-comp
   (reagent/reactify-component
-    (fn []
-      ^{:key (str "select-acc-sheet" @reloader/cnt)}
-      [safe-area/safe-area-provider
-       [inactive]
-       [wallet.send.views/select-account]
-       (when js/goog.DEBUG
-         [reloader/reload-view])])))
+   (fn []
+     ^{:key (str "select-acc-sheet" @reloader/cnt)}
+     [safe-area/safe-area-provider
+      [inactive]
+      [wallet.send.views/select-account]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))
 
 (def wallet-connect-comp
   (reagent/reactify-component
-    (fn []
-      ^{:key (str "wallet-connect-sheet" @reloader/cnt)}
-      [safe-area/safe-area-provider
-       [inactive]
-       [wallet-connect/wallet-connect-proposal-sheet]
-       (when js/goog.DEBUG
-         [reloader/reload-view])])))
+   (fn []
+     ^{:key (str "wallet-connect-sheet" @reloader/cnt)}
+     [safe-area/safe-area-provider
+      [inactive]
+      [wallet-connect/wallet-connect-proposal-sheet]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))
 
 (def wallet-connect-success-comp
   (reagent/reactify-component
-    (fn []
-      ^{:key (str "wallet-connect-success-sheet" @reloader/cnt)}
-      [safe-area/safe-area-provider
-       [inactive]
-       [wallet-connect/wallet-connect-success-sheet-view]
-       (when js/goog.DEBUG
-         [reloader/reload-view])])))
+   (fn []
+     ^{:key (str "wallet-connect-success-sheet" @reloader/cnt)}
+     [safe-area/safe-area-provider
+      [inactive]
+      [wallet-connect/wallet-connect-success-sheet-view]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))
 
 (def wallet-connect-app-management-comp
   (reagent/reactify-component
-    (fn []
-      ^{:key (str "wallet-connect-app-management-sheet" @reloader/cnt)}
-      [safe-area/safe-area-provider
-       [inactive]
-       [wallet-connect/wallet-connect-app-management-sheet-view]
-       (when js/goog.DEBUG
-         [reloader/reload-view])])))
+   (fn []
+     ^{:key (str "wallet-connect-app-management-sheet" @reloader/cnt)}
+     [safe-area/safe-area-provider
+      [inactive]
+      [wallet-connect/wallet-connect-app-management-sheet-view]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))

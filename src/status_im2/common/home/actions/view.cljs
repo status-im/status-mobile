@@ -47,46 +47,46 @@
   (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
                             {:content (fn []
                                         (confirmation-drawer/confirmation-drawer {:title       (i18n/label :t/clear-history?)
-                                                       :description (i18n/label :t/clear-history-confirmation-content)
-                                                       :context     item
-                                                       :button-text (i18n/label :t/clear-history)
-                                                       :on-press    #(hide-sheet-and-dispatch [:chat.ui/clear-history chat-id])}))}]))
+                                                                                  :description (i18n/label :t/clear-history-confirmation-content)
+                                                                                  :context     item
+                                                                                  :button-text (i18n/label :t/clear-history)
+                                                                                  :on-press    #(hide-sheet-and-dispatch [:chat.ui/clear-history chat-id])}))}]))
 
 (defn delete-chat-action [{:keys [chat-id] :as item}]
   (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
                             {:content (fn []
                                         (confirmation-drawer/confirmation-drawer {:title       (i18n/label :t/delete-chat?)
-                                                       :description (i18n/label :t/delete-chat-confirmation)
-                                                       :context     item
-                                                       :button-text (i18n/label :t/delete-chat)
-                                                       :on-press    #(hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id])}))}]))
+                                                                                  :description (i18n/label :t/delete-chat-confirmation)
+                                                                                  :context     item
+                                                                                  :button-text (i18n/label :t/delete-chat)
+                                                                                  :on-press    #(hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id])}))}]))
 
 (defn leave-group-action [item chat-id]
   (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
                             {:content (fn []
                                         (confirmation-drawer/confirmation-drawer {:title       (i18n/label :t/leave-group?)
-                                                       :description (i18n/label :t/leave-chat-confirmation)
-                                                       :context     item
-                                                       :button-text (i18n/label :t/leave-group)
-                                                       :on-press    #(do
-                                                                       (rf/dispatch [:navigate-back])
-                                                                       (hide-sheet-and-dispatch [:group-chats.ui/leave-chat-confirmed chat-id]))}))}]))
+                                                                                  :description (i18n/label :t/leave-chat-confirmation)
+                                                                                  :context     item
+                                                                                  :button-text (i18n/label :t/leave-group)
+                                                                                  :on-press    #(do
+                                                                                                  (rf/dispatch [:navigate-back])
+                                                                                                  (hide-sheet-and-dispatch [:group-chats.ui/leave-chat-confirmed chat-id]))}))}]))
 
 (defn block-user-action [{:keys [public-key] :as item}]
   (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
                             {:content (fn [] (confirmation-drawer/confirmation-drawer {:title       (i18n/label :t/block-user?)
-                                                            :description (i18n/label :t/block-contact-details)
-                                                            :context     item
-                                                            :button-text (i18n/label :t/block-user)
-                                                            :on-press    #(hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed public-key])}))}]))
+                                                                                       :description (i18n/label :t/block-contact-details)
+                                                                                       :context     item
+                                                                                       :button-text (i18n/label :t/block-user)
+                                                                                       :on-press    #(hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed public-key])}))}]))
 
 (defn mute-chat-entry [chat-id]
   (let [muted? (rf/sub [:chats/muted chat-id])]
     (entry {:icon      (if muted? :i/muted :i/activity-center)
             :label     (i18n/label
-                         (if muted?
-                           :unmute-chat
-                           :mute-chat))
+                        (if muted?
+                          :unmute-chat
+                          :mute-chat))
             :on-press  (if muted?
                          #(unmute-chat-action chat-id)
                          #(mute-chat-action chat-id))

@@ -8,7 +8,6 @@
             [status-im2.common.home.view :as common.home]
             [status-im2.contexts.chat.home.contact-request.view :as contact-request]
             [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
-            [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im.ui2.screens.common.contact-list.view :as contact-list]))
 
 (defn get-item-layout [_ index]

@@ -3,7 +3,6 @@
             [status-im.contact.db :as contact.db]
             [status-im.utils.image-server :as image-server]
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-            [clojure.string :as string]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.ethereum.core :as ethereum]
@@ -119,10 +118,10 @@
   (let [{:keys [nickname three-words-name ens-name]} names]
     (or
      (when ens-name
-       (string/includes? (string/lower-case (str ens-name)) search-filter))
-     (string/includes? (string/lower-case three-words-name) search-filter)
+       (str/includes? (str/lower-case (str ens-name)) search-filter))
+     (str/includes? (str/lower-case three-words-name) search-filter)
      (when nickname
-       (string/includes? (string/lower-case nickname) search-filter)))))
+       (str/includes? (str/lower-case nickname) search-filter)))))
 
 (re-frame/reg-sub
  :contacts/active-with-ens-names
@@ -130,10 +129,10 @@
  :<- [:search/recipient-filter]
  (fn [[contacts search-filter]]
    (let [contacts (filter :ens-verified contacts)]
-     (if (string/blank? search-filter)
+     (if (str/blank? search-filter)
        contacts
        (filter (partial filter-recipient-contacts
-                        (string/lower-case search-filter))
+                        (str/lower-case search-filter))
                contacts)))))
 
 (defn- enrich-contact [_ identity ens-name port]
@@ -255,19 +254,18 @@
            contacts)))
 
 (re-frame/reg-sub
-  :contacts/filtered-active-sections
-  :<- [:contacts/active]
-  :<- [:contacts/search-query]
-  (fn [[contacts query]]
-    contacts
-    (let [data (atom {})]
-      (doseq [i (range (count contacts))]
-        (let [first-char (get (:alias (nth contacts i)) 0)]
-          (when (or (empty? query) (str/includes? (str/lower-case (:alias (nth contacts i))) (str/lower-case query)))
-            (if-not (contains? @data first-char)
-              (swap! data #(assoc % first-char {:title first-char :data [(nth contacts i)]}))
-              (swap! data #(assoc-in % [first-char :data] (conj (:data (get @data first-char)) (nth contacts i))))))))
-      (swap! data #(sort @data))
-      (vals @data))))
+ :contacts/filtered-active-sections
+ :<- [:contacts/active]
+ :<- [:contacts/search-query]
+ (fn [[contacts query]]
+   (let [data (atom {})]
+     (doseq [i (range (count contacts))]
+       (let [first-char (get (:alias (nth contacts i)) 0)]
+         (when (or (empty? query) (str/includes? (str/lower-case (:alias (nth contacts i))) (str/lower-case query)))
+           (if-not (contains? @data first-char)
+             (swap! data #(assoc % first-char {:title first-char :data [(nth contacts i)]}))
+             (swap! data #(assoc-in % [first-char :data] (conj (:data (get @data first-char)) (nth contacts i))))))))
+     (swap! data #(sort @data))
+     (vals @data))))
 
 
