@@ -8,7 +8,8 @@
             [reagent.core :as reagent]
             [quo2.components.notifications.info-count :as info-count]
             [react-native.linear-gradient :as linear-gradient]
-            [status-im.ui2.screens.chat.photo-selector.style :as style]))
+            [status-im.ui2.screens.chat.photo-selector.style :as style]
+            [status-im.utils.core :as utils]))
 
 (def selected (reagent/atom []))
 
@@ -75,7 +76,7 @@
    (when (some #{item} @selected)
      [rn/view {:style (style/overlay window-width)}])
    (when (some #{item} @selected)
-     [info-count/info-count (+ (.indexOf @selected item) 1) (style/image-count)])])
+     [info-count/info-count (+ (utils/first-index #(= item %) @selected) 1) (style/image-count)])])
 
 (defn photo-selector []
   (rf/dispatch [:chat.ui/camera-roll-get-photos 20])
