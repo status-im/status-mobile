@@ -1868,5 +1868,7 @@
     "biu": "BIU",
     "bold": "Bold",
     "italic": "Italic",
-    "strikethrough": "Strikethrough"
+    "strikethrough": "Strikethrough",
+    "add-text": "Add text",
+    "send": "Send"
 }

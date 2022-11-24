@@ -380,7 +380,7 @@
             contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
         [rn/view {:style     (styles/toolbar)
                   :on-layout on-chat-toolbar-layout}
-         ;;EXTENSIONS and IMAGE buttons
+         ;; EXTENSIONS and IMAGE buttons
          [actions extensions image show-send actions-ref active-panel set-active-panel contact-request]
          [rn/view {:style (styles/input-container contact-request)}
           [send-image]
@@ -389,14 +389,14 @@
                         :sending-image    sending-image
                         :refs             refs
                         :set-active-panel set-active-panel}]
-           ;;SEND button
+           ;; SEND button
            [rn/view {:ref send-ref :style (when-not show-send {:width 0 :right -100})}
             (when send
               [send-button #(do (clear-input chat-id refs)
                                 (re-frame/dispatch [:chat.ui/send-current-message]))
                contact-request])]
 
-           ;;STICKERS and AUDIO buttons
+           ;; STICKERS and AUDIO buttons
            (when-not @(re-frame/subscribe [:chats/edit-message])
              [rn/view {:style (merge {:flex-direction :row} (when show-send {:width 0 :right -100}))
                        :ref   sticker-ref}

@@ -10,6 +10,8 @@
                              :position         :absolute
                              :right            22
                              :border-radius    6
+                             :justify-content  :center
+                             :align-items      :center
                              :background-color (colors/theme-colors colors/primary-50 colors/primary-60)}
                             style)}
      [rn/text {:style (merge typography/font-medium typography/label {:color colors/white :text-align :center})} count]]))
