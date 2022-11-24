@@ -20,7 +20,7 @@
                        :border-radius 8
                        :margin-bottom 20}}]
    [rn/touchable-opacity
-    {:on-press (fn [] (reset! selected (vec (filter #(-> % (not= item)) @selected))))
+    {:on-press (fn [] (reset! selected (vec (remove #(= % item) @selected))))
      :style    (style/remove-photo-container)}
     [quo2/icon :i/close {:color colors/white :size 12}]]])
 
@@ -28,7 +28,7 @@
   [:f>
    (fn []
      (let [safe-area (safe-area/use-safe-area)]
-       (when (> (count @selected) 0)
+       (when (pos? (count @selected))
          [linear-gradient/linear-gradient
           {:colors [:black :transparent]
            :start  {:x 0 :y 1}
@@ -54,7 +54,7 @@
             (str (i18n/label :t/send) " " (when (> (count @selected) 1) (count @selected)))]]])))])
 
 (defn clear-button []
-  (when (> (count @selected) 0)
+  (when (pos? (count @selected))
     [rn/touchable-opacity {:on-press #(reset! selected [])
                            :style    (style/clear-container)}
      [quo2/text {:weight :medium} (i18n/label :t/clear)]]))
@@ -65,7 +65,7 @@
     :on-press       (fn []
                       (if (some #{item} @selected)
                         (do
-                          (reset! selected (vec (filter #(-> % (not= item)) @selected)))
+                          (reset! selected (vec (remove #(= % item) @selected)))
                           (rf/dispatch [:chat.ui/image-unselected item]))
                         (do
                           (swap! selected conj item)
