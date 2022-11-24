@@ -309,7 +309,8 @@
   (let [response-to  (:response-to (:content message))
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
         contact      (rf/sub [:contacts/contact-by-address from])
-        photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))]
+        photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))
+        online?      (rf/sub [:visibility-status-updates/online? from])]
     (if deleted-for-me?
       [system-message/system-message
        {:type             :deleted
@@ -333,7 +334,7 @@
             [user-avatar/user-avatar {:full-name         display-name
                                       :profile-picture   photo-path
                                       :status-indicator? true
-                                      :online?           true
+                                      :online?           online?
                                       :size              :small
                                       :ring?             false}]])]
         [rn/view {:style (style/message-author-wrapper)}

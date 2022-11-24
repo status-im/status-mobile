@@ -1,6 +1,7 @@
 (ns status-im2.subs.general
   (:require [re-frame.core :as re-frame]
             [status-im.utils.build :as build]
+            [status-im.constants :as constants]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
@@ -8,9 +9,22 @@
 
 (re-frame/reg-sub
  :visibility-status-updates/visibility-status-update
+ :<- [:multiaccount/public-key]
+ :<- [:multiaccount/current-user-visibility-status]
  :<- [:visibility-status-updates]
- (fn [visibility-status-updates [_ public-key]]
-   (get visibility-status-updates public-key)))
+ (fn [[my-public-key my-status-update status-updates] [_ public-key]]
+   (if (= public-key my-public-key)
+     my-status-update
+     (get status-updates public-key))))
+
+(re-frame/reg-sub
+ :visibility-status-updates/online?
+ (fn [[_ public-key]]
+   [(re-frame/subscribe [:visibility-status-updates/visibility-status-update public-key])])
+ (fn [[status-update]]
+   (let [visibility-status-type (:status-type status-update)]
+     (or (= visibility-status-type constants/visibility-status-automatic)
+         (= visibility-status-type constants/visibility-status-always-online)))))
 
 (re-frame/reg-sub
  :multiaccount/logged-in?
