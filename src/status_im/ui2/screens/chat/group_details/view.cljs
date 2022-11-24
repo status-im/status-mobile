@@ -11,7 +11,8 @@
             [quo.components.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.common.home.actions.view :as actions]
-            [status-im.ui2.screens.common.contact-list.view :as contact-list]))
+            [status-im.ui2.screens.common.contact-list.view :as contact-list]
+            [oops.core :refer [oget]]))
 
 (defn back-button []
   [quo2/button {:type                :grey
@@ -84,6 +85,11 @@
                     :weight :semi-bold
                     :style  {:margin-left 20}}
          (i18n/label :t/add-members)]
+        [rn/text-input {:placeholder "Search..."
+                        :style       {:height             32
+                                      :padding-horizontal 20
+                                      :margin-vertical    12}
+                        :on-change   (fn [e] (rf/dispatch [:contacts/search-query (oget e "nativeEvent.text")]))}]
         [contact-list/contact-list {:icon  :check
                                     :group group
                                     :added added

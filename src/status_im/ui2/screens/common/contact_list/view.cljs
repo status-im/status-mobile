@@ -3,9 +3,7 @@
             [quo2.foundations.colors :as colors]
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [quo2.core :as quo2]
-            [utils.re-frame :as rf]
-            [oops.core :refer [oget]]))
-
+            [utils.re-frame :as rf]))
 
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:border-top-width   1
@@ -16,14 +14,7 @@
                :weight :medium
                :style  {:color colors/neutral-50}} title]])
 
-(defn search-input []
-  [rn/text-input {:placeholder "Search..."
-                  :style       {:height             32
-                                :padding-horizontal 20
-                                :margin-vertical    12}
-                  :on-change   (fn [e] (rf/dispatch [:contacts/search-query (oget e "nativeEvent.text")]))}])
-
-(defn contact-list [{:keys [search?] :as data}]
+(defn contact-list [data]
   (let [contacts (rf/sub [:contacts/filtered-active-sections])]
     [rn/section-list
      {:key-fn                         :title
@@ -31,7 +22,6 @@
       :sections                       contacts
       :render-section-header-fn       contacts-section-header
       :content-container-style        {:padding-bottom 120}
-      :header                         (when search? (search-input))
       :sticky-header-indices [0]
       :render-fn                      (fn [item]
                                         [contact-list-item/contact-list-item item data])}]))
