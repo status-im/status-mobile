@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.home.chat-list-item.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def container
+(defn container []
   {:margin-top         8
    :margin-horizontal  8
    :padding-vertical   8

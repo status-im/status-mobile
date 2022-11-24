@@ -1,36 +1,13 @@
-<<<<<<< HEAD:src/status_im2/common/home/actions/view.cljs
 (ns status-im2.common.home.actions.view
   (:require [i18n.i18n :as i18n]
             [utils.re-frame :as rf]
             [quo2.components.drawers.action-drawers :as drawer]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
 
-            ;;TODO move to status-im2
+    ;;TODO move to status-im2
             [status-im.constants :as constants]
             [status-im.chat.models :as chat.models]
             [status-im.chat.models.pin-message :as models.pin-message]))
-=======
-(ns status-im.ui2.screens.chat.actions
-  (:require
-<<<<<<< HEAD:src/status_im2/common/home/actions/view.cljs
-    [status-im.chat.models :as chat.models]
-    [status-im.chat.models.pin-message :as models.pin-message]
-    [status-im.i18n.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im.ui2.screens.common.core :as common]
-    [status-im.constants :as constants]
-    [quo2.components.drawers.action-drawers :as drawer]
-    [status-im2.navigation.events :as navigation]))
->>>>>>> 07052f985... feat: group details screen 2:src/status_im/ui2/screens/chat/actions.cljs
-=======
-   [status-im.chat.models :as chat.models]
-   [status-im.chat.models.pin-message :as models.pin-message]
-   [status-im.i18n.i18n :as i18n]
-   [utils.re-frame :as rf]
-   [status-im.ui2.screens.common.core :as common]
-   [status-im.constants :as constants]
-   [quo2.components.drawers.action-drawers :as drawer]))
->>>>>>> 512250cd9... feat: group details screen:src/status_im/ui2/screens/chat/actions.cljs
 
 (defn- entry [{:keys [icon label on-press danger? sub-label chevron? add-divider?]}]
   {:pre [(keyword? icon)
@@ -69,59 +46,47 @@
 (defn clear-history-action [{:keys [chat-id] :as item}]
   (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
                             {:content (fn []
-                                        (confirmation-drawer/confirmation-drawer
-                                         {:title       (i18n/label :t/clear-history?)
-                                          :description (i18n/label :t/clear-history-confirmation-content)
-                                          :context     item
-                                          :button-text (i18n/label :t/clear-history)
-                                          :on-press    #(hide-sheet-and-dispatch [:chat.ui/clear-history chat-id])}))}]))
+                                        (confirmation-drawer/confirmation-drawer {:title       (i18n/label :t/clear-history?)
+                                                       :description (i18n/label :t/clear-history-confirmation-content)
+                                                       :context     item
+                                                       :button-text (i18n/label :t/clear-history)
+                                                       :on-press    #(hide-sheet-and-dispatch [:chat.ui/clear-history chat-id])}))}]))
 
 (defn delete-chat-action [{:keys [chat-id] :as item}]
   (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
                             {:content (fn []
-                                        (confirmation-drawer/confirmation-drawer
-                                         {:title       (i18n/label :t/delete-chat?)
-                                          :description (i18n/label :t/delete-chat-confirmation)
-                                          :context     item
-                                          :button-text (i18n/label :t/delete-chat)
-                                          :on-press    #(hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id])}))}]))
+                                        (confirmation-drawer/confirmation-drawer {:title       (i18n/label :t/delete-chat?)
+                                                       :description (i18n/label :t/delete-chat-confirmation)
+                                                       :context     item
+                                                       :button-text (i18n/label :t/delete-chat)
+                                                       :on-press    #(hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id])}))}]))
 
 (defn leave-group-action [item chat-id]
   (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
                             {:content (fn []
-<<<<<<< HEAD:src/status_im2/common/home/actions/view.cljs
-                                        (confirmation-drawer/confirmation-drawer
-                                         {:title       (i18n/label :t/leave-group?)
-                                          :description (i18n/label :t/leave-chat-confirmation)
-                                          :context     item
-                                          :button-text (i18n/label :t/leave-group)
-                                          :on-press    #(hide-sheet-and-dispatch [:chat.ui/leave-chat chat-id])}))}]))
-=======
-                                        (common/alert {:title       (i18n/label :t/leave-group?)
+                                        (confirmation-drawer/confirmation-drawer {:title       (i18n/label :t/leave-group?)
                                                        :description (i18n/label :t/leave-chat-confirmation)
                                                        :context     item
                                                        :button-text (i18n/label :t/leave-group)
                                                        :on-press    #(do
                                                                        (rf/dispatch [:navigate-back])
                                                                        (hide-sheet-and-dispatch [:group-chats.ui/leave-chat-confirmed chat-id]))}))}]))
->>>>>>> 07052f985... feat: group details screen 2:src/status_im/ui2/screens/chat/actions.cljs
 
 (defn block-user-action [{:keys [public-key] :as item}]
   (hide-sheet-and-dispatch [:bottom-sheet/show-sheet
-                            {:content (fn [] (confirmation-drawer/confirmation-drawer
-                                              {:title       (i18n/label :t/block-user?)
-                                               :description (i18n/label :t/block-contact-details)
-                                               :context     item
-                                               :button-text (i18n/label :t/block-user)
-                                               :on-press    #(hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed public-key])}))}]))
+                            {:content (fn [] (confirmation-drawer/confirmation-drawer {:title       (i18n/label :t/block-user?)
+                                                            :description (i18n/label :t/block-contact-details)
+                                                            :context     item
+                                                            :button-text (i18n/label :t/block-user)
+                                                            :on-press    #(hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed public-key])}))}]))
 
 (defn mute-chat-entry [chat-id]
   (let [muted? (rf/sub [:chats/muted chat-id])]
     (entry {:icon      (if muted? :i/muted :i/activity-center)
             :label     (i18n/label
-                        (if muted?
-                          :unmute-chat
-                          :mute-chat))
+                         (if muted?
+                           :unmute-chat
+                           :mute-chat))
             :on-press  (if muted?
                          #(unmute-chat-action chat-id)
                          #(mute-chat-action chat-id))
@@ -162,7 +127,7 @@
           :danger?      true
           :sub-label    nil
           :chevron?     false
-          :add-divider? (when (not= extra-data nil) true)}))
+          :add-divider? extra-data}))
 
 (defn view-profile-entry [chat-id]
   (entry {:icon      :i/friend
@@ -179,6 +144,8 @@
           :danger?   false
           :sub-label nil
           :chevron?  false}))
+
+;; Below TODOs are from OmarBasem
 
 (defn edit-name-image-entry []
   (entry {:icon      :i/edit
@@ -341,8 +308,8 @@
      (share-group-entry))])
 
 (defn group-actions [{:keys [chat-id admins]} inside-chat?]
-  (let [current-pk (rf/sub [:multiaccount/public-key])
-        admin?     (get admins current-pk)]
+  (let [current-pub-key (rf/sub [:multiaccount/public-key])
+        admin?     (get admins current-pub-key)]
     [(group-details-entry chat-id)
      (when inside-chat?
        (if admin?
@@ -370,7 +337,7 @@
                          (destructive-actions item)]])
 
 (defn contact-actions [{:keys [public-key] :as contact} {:keys [chat-id admin?] :as extra-data}]
-  (let [current-pk (rf/sub [:multiaccount/public-key])]
+  (let [current-pub-key (rf/sub [:multiaccount/public-key])]
     [drawer/action-drawer [[(view-profile-entry public-key)
                             (remove-from-contacts-entry contact)
                             (rename-entry)
@@ -379,7 +346,7 @@
                            [(mark-untrustworthy-entry)
                             (block-user-entry contact)]
                            (when (and admin? chat-id)
-                             [(if (= current-pk public-key)
+                             [(if (= current-pub-key public-key)
                                 (leave-group-entry contact extra-data)
                                 (remove-from-group-entry contact chat-id))])]]))
 
@@ -391,16 +358,11 @@
     [public-chat-actions item inside-chat?]
     constants/private-group-chat-type
     [private-group-chat-actions item inside-chat?]
-<<<<<<< HEAD:src/status_im2/common/home/actions/view.cljs
-    [contact-actions item]))
-=======
     [contact-actions item extra-data]))
 
 (defn group-details-actions [{:keys [admins] :as group}]
-  (let [current-pk (rf/sub [:multiaccount/public-key])
-        admin?     (get admins current-pk)]
+  (let [current-pub-key (rf/sub [:multiaccount/public-key])
+        admin?     (get admins current-pub-key)]
     [drawer/action-drawer [(when admin? [(edit-name-image-entry)])
                            [(notifications-entry admin?)]
                            (destructive-actions group)]]))
-
->>>>>>> 07052f985... feat: group details screen 2:src/status_im/ui2/screens/chat/actions.cljs

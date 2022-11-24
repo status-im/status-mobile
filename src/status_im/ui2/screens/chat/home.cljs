@@ -34,7 +34,7 @@
             [quo.components.safe-area :as safe-area]
             [quo2.components.notifications.info-count :refer [info-count]]
             [status-im.ui2.screens.chat.components.received-cr-item :as received-cr-item]
-            [status-im.ui2.screens.chat.components.message-home-item.view :refer [messages-home-item]]
+            [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
             [clojure.string :as str]
             [status-im2.common.plus-button.view :as components.plus-button]
             [status-im.ui2.screens.common.contact-list.view :as contact-list]
@@ -275,7 +275,7 @@
            :on-end-reached               #(re-frame/dispatch [:chat.ui/show-more-chats])
            :keyboard-should-persist-taps :always
            :data                         items
-           :render-fn                    messages-home-item}]
+           :render-fn                    chat-list-item/chat-list-item}]
          [rn/view {:style {:flex 1}} (when (> (count requests) 0)
                                        [contact-requests requests])
           [contact-list/contact-list {:icon :options}]]))]))

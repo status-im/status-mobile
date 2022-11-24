@@ -6,7 +6,8 @@
             [clojure.string :as string]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.ethereum.core :as ethereum]))
+            [status-im.ethereum.core :as ethereum]
+            [clojure.string :as str]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -252,3 +253,21 @@
                acc))
            {}
            contacts)))
+
+(re-frame/reg-sub
+  :contacts/filtered-active-sections
+  :<- [:contacts/active]
+  :<- [:contacts/search-query]
+  (fn [[contacts query]]
+    contacts
+    (let [data (atom {})]
+      (doseq [i (range (count contacts))]
+        (let [first-char (get (:alias (nth contacts i)) 0)]
+          (when (or (empty? query) (str/includes? (str/lower-case (:alias (nth contacts i))) (str/lower-case query)))
+            (if-not (contains? @data first-char)
+              (swap! data #(assoc % first-char {:title first-char :data [(nth contacts i)]}))
+              (swap! data #(assoc-in % [first-char :data] (conj (:data (get @data first-char)) (nth contacts i))))))))
+      (swap! data #(sort @data))
+      (vals @data))))
+
+

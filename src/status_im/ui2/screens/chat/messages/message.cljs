@@ -41,11 +41,8 @@
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.markdown.text :as text]
             [status-im.utils.utils :as utils]
-<<<<<<< HEAD
-            [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item])
-=======
+            [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
             [quo2.core :as quo2])
->>>>>>> 07052f985... feat: group details screen 2
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]

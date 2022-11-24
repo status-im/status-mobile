@@ -5,47 +5,12 @@
             [quo2.core :as quo2]
             [utils.re-frame :as rf]
             [i18n.i18n :as i18n]
-<<<<<<< HEAD
-            [status-im2.common.contact-list-item.view :as contact-item]))
-
-(defn back-button []
-  [quo2/button {:type                :grey
-                :size                32
-                :style               {:margin-left 20}
-                :accessibility-label :back-button
-                :on-press            #(rf/dispatch [:navigate-back])
-                :icon                true}
-   :i/arrow-left])
-
-(defn options-button []
-  [quo2/button {:type                :grey
-                :size                32
-                :style               {:margin-right 20}
-<<<<<<< HEAD
-                :accessibility-label :options-button
-                :icon                true}
-   :i/options])
-=======
-                :accessibility-label :options-button}
-   [quo2/icon :i/options {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
-=======
-            [quo2.components.buttons.button :as quo2.button]
-=======
->>>>>>> 8c3cd6f91... refactor
-            [status-im.ui2.screens.chat.group-details.style :as style]
-=======
->>>>>>> 25441811e... feat: group details screen 2
-            [quo2.core :as quo2]
-            [status-im.ui2.screens.chat.group-details.style :as style]
-            [status-im.ui2.screens.chat.messages.message :as message]
-=======
->>>>>>> bfdee39cf... updates
             [status-im.chat.models :as chat.models]
-            [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]
+            [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im.ui2.screens.chat.messages.message :as message]
             [quo.components.safe-area :as safe-area]
             [reagent.core :as reagent]
-            [status-im.ui2.screens.chat.actions :as actions]
+            [status-im2.common.home.actions.view :as actions]
             [status-im.ui2.screens.common.contact-list.view :as contact-list]))
 
 (defn back-button []
@@ -73,11 +38,6 @@
                     :padding-horizontal 20
                     :justify-content    :space-between}}
    [back-button] [options-button]])
-<<<<<<< HEAD
->>>>>>> 4b20ea02d... feat: group details screen
->>>>>>> 752c7b3f2... feat: group details screen
-=======
->>>>>>> bfdee39cf... updates
 
 (defn count-container [count]
   [rn/view {:style (style/count-container)}
@@ -86,13 +46,13 @@
                :style  {:text-align :center}} count]])
 
 (defn prepare-members [members]
-  (let [admins (filter :admin? members)
-        online (filter #(and (not (:admin? %)) (:online? %)) members)
+  (let [admins  (filter :admin? members)
+        online  (filter #(and (not (:admin? %)) (:online? %)) members)
         offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
     (vals (cond-> {}
-            (seq admins) (assoc :owner {:title "Owner" :data admins})
-            (seq online) (assoc :online {:title "Online" :data online})
-            (seq offline) (assoc :offline {:title "Offline" :data offline})))))
+                  (seq admins) (assoc :owner {:title "Owner" :data admins})
+                  (seq online) (assoc :online {:title "Online" :data online})
+                  (seq offline) (assoc :offline {:title "Offline" :data offline})))))
 
 (defn contacts-section-header [{:keys [title]}]
   [rn/view {:style {:padding-horizontal 20 :border-top-width 1 :border-top-color colors/neutral-20 :padding-vertical 8 :margin-top 8}}
@@ -138,24 +98,16 @@
                   :bottom             0}
          [quo2/button {:style    {:flex 1}
                        :on-press #(rf/dispatch [:bottom-sheet/hide])
-                       :disabled (= (count @added) 0)}
+                       :disabled (zero? (count @added))}
           (i18n/label :t/save)]]]))])
 
 (defn group-details []
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  (let [{:keys [admins chat-id chat-name color public?]} (rf/sub [:chats/current-chat])
-        members (rf/sub [:contacts/current-chat-contacts])
-=======
   (let [{:keys [admins chat-id chat-name color public? muted] :as group} (rf/sub [:chats/current-chat])
         members           (rf/sub [:contacts/current-chat-contacts])
->>>>>>> bfdee39cf... updates
         sectioned-members (prepare-members members)
-        pinned-messages (rf/sub [:chats/pinned chat-id])
-        current-pk (rf/sub [:multiaccount/public-key])
-        admin? (get admins current-pk)]
+        pinned-messages   (rf/sub [:chats/pinned chat-id])
+        current-pk        (rf/sub [:multiaccount/public-key])
+        admin?            (get admins current-pk)]
     [rn/view {:style {:flex             1
                       :background-color (colors/theme-colors colors/white colors/neutral-95)}}
      [quo2/header {:left-component  [back-button]
@@ -187,8 +139,8 @@
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if muted :unmute-group :mute-group))]]
       [rn/touchable-opacity {:style    (style/action-container color)
                              :on-press #(rf/dispatch
-                                         [:bottom-sheet/show-sheet
-                                          {:content (fn [] [contact-requests-sheet group])}])}
+                                          [:bottom-sheet/show-sheet
+                                           {:content (fn [] [contact-requests-sheet group])}])}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
@@ -199,6 +151,6 @@
                        :sections                       sectioned-members
                        :render-section-header-fn       contacts-section-header
                        :render-fn                      (fn [item]
-                                                         [contact-item/contact-item item {:chat-id chat-id
+                                                         [contact-list-item/contact-list-item item {:chat-id chat-id
                                                                                           :admin?  admin?
                                                                                           :icon    :options}])}]]))

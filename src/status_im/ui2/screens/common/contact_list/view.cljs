@@ -1,10 +1,11 @@
 (ns status-im.ui2.screens.common.contact-list.view
   (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
-            [status-im.ui2.screens.chat.components.contact-item.view :as contact-item]
+            [status-im2.common.contact-list-item.view :as contact-list-item]
             [quo2.core :as quo2]
             [utils.re-frame :as rf]
             [reagent.core :as reagent]
+            [oops.core :refer [oget]]
             [clojure.string :as str]))
 
 (def query (reagent/atom ""))
@@ -34,11 +35,15 @@
                   :style       {:height             32
                                 :padding-horizontal 20
                                 :margin-vertical    12}
-                  :on-change   (fn [e] (reset! query (.-text ^js (.-nativeEvent ^js e))))}])
+                  :on-change   (fn [e] (rf/dispatch [:contacts/search-query (oget e "nativeEvent.text")]))}])
 
 (defn contact-list [{:keys [search?] :as data}]
-  (let [contacts (rf/sub [:contacts/active])
-        contacts (prepare-contacts contacts)]
+  (let [
+        ;contacts (rf/sub [:contacts/active])
+        ;contacts (prepare-contacts contacts)
+        contacts (rf/sub [:contacts/filtered-active-sections])
+        ]
+    ;(println "asdf" contactsx)
     [rn/section-list
      {:key-fn                         :title
       :sticky-section-headers-enabled false
@@ -48,4 +53,5 @@
       :header                         (when search? (search-input))
       :sticky-header-indices [0]
       :render-fn                      (fn [item]
-                                        [contact-item/contact-item item data])}]))
+                                        [contact-list-item/contact-list-item item data])}]
+    ))

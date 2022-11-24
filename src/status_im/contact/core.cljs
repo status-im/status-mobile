@@ -151,3 +151,8 @@
    :mutual-contact-enabled?
    enabled?
    nil))
+
+(fx/defn search-query
+  {:events [:contacts/search-query]}
+  [{:keys [db] :as cofx} value ]
+  {:db (assoc db :contacts/search-query value)})
