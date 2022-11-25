@@ -9,10 +9,10 @@
             [utils.re-frame :as rf]))
 
 (defn navigate-to-activity-center []
-  (rf/dispatch [:mark-all-activity-center-notifications-as-read])
   (if config/new-activity-center-enabled?
     (rf/dispatch [:activity-center/open])
-    (rf/dispatch [:navigate-to :notifications-center])))
+    (do (rf/dispatch [:mark-all-activity-center-notifications-as-read])
+        (rf/dispatch [:navigate-to :notifications-center]))))
 
 (defn title-column [{:keys [label handler accessibility-label]}]
   [rn/view style/title-column

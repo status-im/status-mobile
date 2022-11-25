@@ -6,6 +6,14 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
+(def defaults
+  {:filter-status          :unread
+   :filter-type            types/no-type
+   ;; Choose the maximum number of notifications that *usually/safely* fit on
+   ;; most screens, so that the UI doesn't have to needlessly render
+   ;; notifications.
+   :notifications-per-page 8})
+
 ;;;; Navigation
 
 (fx/defn open-activity-center
@@ -75,6 +83,35 @@
        (map data-store.activities/<-rpc)
        (notifications-reconcile cofx)))
 
+;;;; Mark notifications as read
+
+(defn- get-notification
+  [db notification-id]
+  (->> (get-in db [:activity-center
+                   :notifications
+                   (get-in db [:activity-center :filter :type])
+                   (get-in db [:activity-center :filter :status])
+                   :data])
+       (filter #(= notification-id (:id %)))
+       first))
+
+(fx/defn mark-as-read
+  {:events [:activity-center.notifications/mark-as-read]}
+  [{:keys [db]} notification-id]
+  (when-let [notification (get-notification db notification-id)]
+    {::json-rpc/call [{:method     "wakuext_markActivityCenterNotificationsRead"
+                       :params     [[notification-id]]
+                       :on-success #(rf/dispatch [:activity-center.notifications/mark-as-read-success notification])
+                       :on-error   #(rf/dispatch [:activity-center/process-notification-failure
+                                                  notification-id
+                                                  :notification/mark-as-read
+                                                  %])}]}))
+
+(fx/defn mark-as-read-success
+  {:events [:activity-center.notifications/mark-as-read-success]}
+  [cofx notification]
+  (notifications-reconcile cofx [(assoc notification :read true)]))
+
 ;;;; Contact verification
 
 (fx/defn contact-verification-decline
@@ -122,14 +159,6 @@
                                                 %])}]})
 
 ;;;; Notifications fetching and pagination
-
-(def defaults
-  {:filter-status          :unread
-   :filter-type            types/no-type
-   ;; Choose the maximum number of notifications that *usually/safely* fit on
-   ;; most screens, so that the UI doesn't have to needlessly render
-   ;; notifications.
-   :notifications-per-page 8})
 
 (def start-or-end-cursor
   "")

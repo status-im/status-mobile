@@ -256,11 +256,11 @@
                           :width 32
                           :style {:margin-left 12}
                           :accessibility-label :notifications-button
-                          :on-press #(do
-                                       (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
-                                       (if config/new-activity-center-enabled?
-                                         (re-frame/dispatch [:activity-center/open])
-                                         (re-frame/dispatch [:navigate-to :notifications-center])))}
+                          :on-press #(do (if config/new-activity-center-enabled?
+                                           (re-frame/dispatch [:activity-center/open])
+                                           (do
+                                             (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
+                                             (re-frame/dispatch [:navigate-to :notifications-center]))))}
       [icons/icon :main-icons/notification2 {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]]
      (when (pos? notif-count)
        [react/view {:style (merge (styles/counter-public-container) {:top 5 :right 5})
