@@ -9,7 +9,7 @@
 (defn default-navigation [modal? {:keys [on-press label icon]}]
   (cond-> {:icon                (if modal? :main-icons/close :main-icons/arrow-left)
            :accessibility-label :back-button
-           :on-press            #(re-frame/dispatch [:navigate-back])}
+           :on-press            #(re-frame/dispatch [:bottom-sheet/hide :navigate-back])}
     on-press
     (assoc :on-press on-press)
 
