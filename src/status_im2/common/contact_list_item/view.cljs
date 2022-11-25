@@ -1,8 +1,5 @@
 (ns status-im2.common.contact-list-item.view
-  (:require [quo2.foundations.typography :as typography]
-            [quo2.components.icon :as icons]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.avatars.user-avatar :as user-avatar]
+  (:require [quo2.foundations.colors :as colors]
             [quo.react-native :as rn]
             [status-im.utils.utils :as utils]
             [quo.platform :as platform]
@@ -10,7 +7,7 @@
             [status-im2.contexts.chat.home.chat-list-item.style :as style]
             [utils.re-frame :as rf]
             [status-im2.common.home.actions.view :as actions]
-            [quo2.core :as quo2]))
+            [quo2.core :as quo]))
 
 (defn open-chat [chat-id]
   (let [view-id (rf/sub [:view-id])]
@@ -30,8 +27,8 @@
                            :style {:position :absolute
                                    :right    20}}
      (if (= icon :options)
-       [icons/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
-       [quo2/checkbox {:default-checked? member?
+       [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+       [quo/checkbox {:default-checked? member?
                        :on-change        (fn [selected] (if selected
                                                           (swap! added conj public-key)
                                                           (reset! added (remove #(= % public-key) @added))))}])]))
@@ -46,7 +43,7 @@
                                   :on-press       #(open-chat public-key)
                                   :on-long-press  #(rf/dispatch [:bottom-sheet/show-sheet
                                                                  {:content (fn [] [actions/actions item extra-data])}])})
-     [user-avatar/user-avatar {:full-name         display-name
+     [quo/user-avatar {:full-name         display-name
                                :profile-picture   photo-path
                                :status-indicator? true
                                :online?           true
@@ -54,15 +51,13 @@
                                :ring?             false}]
      [rn/view {:style {:margin-left 8}}
       [rn/view {:style {:flex-direction :row}}
-       [text/text {:style (merge typography/paragraph-1 typography/font-semi-bold
-                                 {:color (colors/theme-colors colors/neutral-100 colors/white)})}
-        display-name]
+       [quo/text {:weight :semi-bold} display-name]
        (if ens-verified
          [rn/view {:style {:margin-left 5 :margin-top 4}}
-          [icons/icon :i/verified {:no-color true :size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
+          [quo/icon :i/verified {:no-color true :size 12 :color (colors/theme-colors colors/success-50 colors/success-60)}]]
          (when added?
            [rn/view {:style {:margin-left 5 :margin-top 4}}
-            [icons/icon :i/contact {:no-color true :size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
+            [quo/icon :i/contact {:no-color true :size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
       [text/text {:size  :paragraph-1
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
        (utils/get-shortened-address public-key)]]

@@ -145,8 +145,7 @@
           :sub-label nil
           :chevron?  false}))
 
-;; Below TODOs are from OmarBasem
-
+;; TODO(OmarBasem): Requires design input.
 (defn edit-name-image-entry []
   (entry {:icon      :i/edit
           :label     (i18n/label :t/edit-name-and-image)
@@ -155,6 +154,7 @@
           :sub-label nil
           :chevron?  false}))
 
+;; TODO(OmarBasem): Requires design input.
 (defn notifications-entry [add-divider?]
   (entry {:icon         :i/notifications
           :label        (i18n/label :t/notifications)
@@ -164,6 +164,7 @@
           :chevron?     true
           :add-divider? add-divider?}))
 
+;; TODO(OmarBasem): Requires design input.
 (defn fetch-messages-entry []
   (entry {:icon      :i/save
           :label     (i18n/label :t/fetch-messages)
@@ -172,6 +173,7 @@
           :sub-label nil
           :chevron?  true}))
 
+;; TODO(OmarBasem): Requires design input.
 (defn pinned-messages-entry []
   (entry {:icon      :i/pin
           :label     (i18n/label :t/pinned-messages)
@@ -188,6 +190,7 @@
           :sub-label nil
           :chevron?  false}))
 
+;; TODO(OmarBasem): Requires design input.
 (defn rename-entry []
   (entry {:icon      :i/edit
           :label     (i18n/label :t/rename)
@@ -196,6 +199,7 @@
           :sub-label nil
           :chevron?  false}))
 
+;; TODO(OmarBasem): Requires design input.
 (defn show-qr-entry []
   (entry {:icon      :i/qr-code
           :label     (i18n/label :t/show-qr)
@@ -204,6 +208,7 @@
           :sub-label nil
           :chevron?  false}))
 
+;; TODO(OmarBasem): to be implemented.
 (defn share-profile-entry []
   (entry {:icon      :i/share
           :label     (i18n/label :t/share-profile)
@@ -212,6 +217,7 @@
           :sub-label nil
           :chevron?  false}))
 
+;; TODO(OmarBasem): to be implemented.
 (defn share-group-entry []
   (entry {:icon      :i/share
           :label     (i18n/label :t/share)
@@ -220,6 +226,7 @@
           :sub-label nil
           :chevron?  false}))
 
+;; TODO(OmarBasem): Requires status-go impl.
 (defn mark-untrustworthy-entry []
   (entry {:icon         :i/alert
           :label        (i18n/label :t/mark-untrustworthy)
@@ -255,6 +262,7 @@
           :sub-label nil
           :chevron?  false}))
 
+;; TODO(OmarBasem): to be implemented.
 (defn add-members-entry []
   (entry {:icon      :i/add-user
           :label     (i18n/label :t/add-members)
@@ -263,6 +271,7 @@
           :sub-label nil
           :chevron?  false}))
 
+;; TODO(OmarBasem): to be implemented.
 (defn manage-members-entry []
   (entry {:icon      :i/add-user
           :label     (i18n/label :t/manage-members)
@@ -271,6 +280,7 @@
           :sub-label nil
           :chevron?  false}))
 
+;; TODO(OmarBasem): to be implemented.
 (defn edit-group-entry []
   (entry {:icon      :i/edit
           :label     (i18n/label :t/edit-name-and-image)
@@ -279,6 +289,7 @@
           :sub-label nil
           :chevron?  false}))
 
+;; TODO(OmarBasem): to be implemented.
 (defn group-privacy-entry []
   (entry {:icon      :i/privacy
           :label     (i18n/label :t/change-group-privacy)

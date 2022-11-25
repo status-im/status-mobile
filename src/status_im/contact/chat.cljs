@@ -30,5 +30,3 @@
   {:events       [:contact.ui/pinned-messages-pressed]}
   [cofx public-key]
   (chat/navigate-to-user-pinned-messages cofx public-key))
-
-

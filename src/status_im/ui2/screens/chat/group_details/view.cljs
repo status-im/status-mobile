@@ -54,6 +54,14 @@
 
 (def added (reagent/atom ()))
 
+(defn prepare-members [members]
+  (let [map (reagent/atom {})]
+    (reduce
+      (fn [contact]
+
+        contact)
+      members)))
+
 (defn contact-requests-sheet [group]
   [:f>
    (fn []
@@ -62,21 +70,13 @@
        [rn/view {:style {:height (- window-height (:top safe-area))}}
         [rn/touchable-opacity
          {:on-press #(rf/dispatch [:bottom-sheet/hide])
-          :style
-          {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
-           :margin-left      20
-           :width            32
-           :height           32
-           :border-radius    10
-           :justify-content  :center
-           :align-items      :center
-           :margin-bottom    24}}
+          :style (style/close-icon)}
          [quo2/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
         [quo2/text {:size   :heading-1
                     :weight :semi-bold
                     :style  {:margin-left 20}}
          (i18n/label :t/add-members)]
-        [rn/text-input {:placeholder "Search..."
+        [rn/text-input {:placeholder (str (i18n/label :t/search) "...")
                         :style       {:height             32
                                       :padding-horizontal 20
                                       :margin-vertical    12}
@@ -85,14 +85,7 @@
                                     :group group
                                     :added added
                                     :search? true}]
-        [rn/view {:position           :absolute
-                  :padding-horizontal 20
-                  :padding-vertical   12
-                  :padding-bottom     (+ (:bottom safe-area) 33)
-                  :width              "100%"
-                  :background-color   colors/white
-                  :flex-direction     :row
-                  :bottom             0}
+        [rn/view {:style (style/bottom-container safe-area)}
          [quo2/button {:style    {:flex 1}
                        :on-press #(rf/dispatch [:bottom-sheet/hide])
                        :disabled (zero? (count @added))}
@@ -101,9 +94,12 @@
 (defn group-details []
   (let [{:keys [admins chat-id chat-name color public? muted contacts] :as group} (rf/sub [:chats/current-chat])
         members           (rf/sub [:contacts/group-members-sections])
+        membersX           (rf/sub [:contacts/active])
+        membersY  (prepare-members membersX)
         pinned-messages   (rf/sub [:chats/pinned chat-id])
         current-pk        (rf/sub [:multiaccount/public-key])
         admin?            (get admins current-pk)]
+
     [rn/view {:style {:flex             1
                       :background-color (colors/theme-colors colors/white colors/neutral-95)}}
      [quo2/header {:left-component  [back-button]

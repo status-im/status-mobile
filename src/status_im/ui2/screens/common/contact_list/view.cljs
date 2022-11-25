@@ -22,6 +22,5 @@
       :sections                       contacts
       :render-section-header-fn       contacts-section-header
       :content-container-style        {:padding-bottom 120}
-      :sticky-header-indices [0]
       :render-fn                      (fn [item]
                                         [contact-list-item/contact-list-item item data])}]))

@@ -6,7 +6,8 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.ethereum.core :as ethereum]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [i18n.i18n :as i18n]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -277,7 +278,9 @@
          online  (filter #(and (not (:admin? %)) (:online? %)) members)
          offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
      (vals (cond-> {}
-             (seq admins) (assoc :owner {:title "Owner" :data admins})
-             (seq online) (assoc :online {:title "Online" :data online})
-             (seq offline) (assoc :offline {:title "Offline" :data offline}))))))
+             (seq admins) (assoc :owner {:title (i18n/label :t/owner) :data admins})
+             (seq online) (assoc :online {:title (i18n/label :t/online) :data online})
+             (seq offline) (assoc :offline {:title (i18n/label :t/offline) :data offline}))))))
+
+
 

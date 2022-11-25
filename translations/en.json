@@ -1868,23 +1868,11 @@
     "biu": "BIU",
     "bold": "Bold",
     "italic": "Italic",
-<<<<<<< HEAD
-<<<<<<< HEAD
     "strikethrough": "Strikethrough",
     "add-text": "Add text",
-    "send": "Send"
-=======
-    "strikethrough": "Strikethrough"
-=======
+    "send": "Send",
     "unmute-group": "Unmute group",
     "remove-user-from-group": "Remove {{username}} from the group",
-    "edit-name-image": "Edit name and image"
->>>>>>> d59ba7e3f... feat: group details screen 2
->>>>>>> b55223b1e... feat: group details screen 2
-=======
-    "strikethrough": "Strikethrough",
-    "unmute-group": "Unmute group",
-    "remove-user-from-group": "Remove {{username}} from the group",
-    "edit-name-image": "Edit name and image"
->>>>>>> 5f7400838... updates
+    "edit-name-image": "Edit name and image",
+    "owner": "Owner"
 }
