@@ -54,14 +54,6 @@
 
 (def added (reagent/atom ()))
 
-(defn prepare-members [members]
-  (let [map (reagent/atom {})]
-    (reduce
-      (fn [contact]
-
-        contact)
-      members)))
-
 (defn contact-requests-sheet [group]
   [:f>
    (fn []
@@ -94,12 +86,9 @@
 (defn group-details []
   (let [{:keys [admins chat-id chat-name color public? muted contacts] :as group} (rf/sub [:chats/current-chat])
         members           (rf/sub [:contacts/group-members-sections])
-        membersX           (rf/sub [:contacts/active])
-        membersY  (prepare-members membersX)
         pinned-messages   (rf/sub [:chats/pinned chat-id])
         current-pk        (rf/sub [:multiaccount/public-key])
         admin?            (get admins current-pk)]
-
     [rn/view {:style {:flex             1
                       :background-color (colors/theme-colors colors/white colors/neutral-95)}}
      [quo2/header {:left-component  [back-button]
