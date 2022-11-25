@@ -72,7 +72,7 @@
                         :style       {:height             32
                                       :padding-horizontal 20
                                       :margin-vertical    12}
-                        :on-change   (fn [e] (rf/dispatch [:contacts/search-query (oget e "nativeEvent.text")]))}]
+                        :on-change   (fn [e] (rf/dispatch [:contacts/set-search-query (oget e "nativeEvent.text")]))}]
         [contact-list/contact-list {:icon  :check
                                     :group group
                                     :added added

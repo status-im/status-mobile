@@ -140,7 +140,7 @@
 (reg-root-key-sub :contacts/new-identity :contacts/new-identity)
 (reg-root-key-sub :group/selected-contacts :group/selected-contacts)
 (reg-root-key-sub :contacts/blocked-set :contacts/blocked)
-(reg-root-key-sub :contacts/search-query :contacts/search-query)
+(reg-root-key-sub :contacts/set-search-query :contacts/set-search-query)
 
 ;;wallet
 (reg-root-key-sub :wallet :wallet)
