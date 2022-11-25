@@ -62,6 +62,31 @@ with the source file using it. For a real example, see
     (do-something)]])
 ```
 
+#### Styles def vs defn
+
+Always use `def` over `defn`, unless the style relies on dynamic values, such as
+deref'ed atoms.
+
+```clojure
+;; bad
+(defn title-column []
+  {:height 56})
+
+;; good
+(def title-column
+  {:height 56})
+```
+
+```clojure
+;; bad
+(def community-card
+  {:background-color (colors/theme-colors colors/white colors/neutral-90)})
+
+;; good
+(defn community-card []
+  {:background-color (colors/theme-colors colors/white colors/neutral-90)})
+```
+
 ### Using TODOs comments
 
 _TODO_ comments are used extensively in the codebase, but prefer to use them
@@ -247,6 +272,31 @@ test macros `deftest` and `is`, which are ubiquitous in the Clojure community.
 ;; good
 (ns status-im.utils.datetime
   (:require [cljs-time.coerce :as time.coerce]))
+```
+
+### Namespace aliases
+
+Prefer the following namespace aliases:
+
+```clojure
+[clojure.string :as string]
+[taoensso.timbre :as log]
+```
+
+### Javascript interop
+
+Use [binaryage/oops](https://github.com/binaryage/cljs-oops) macros instead of
+core interop macros.
+
+```clojure
+;; bad
+(fn [^js event]
+  (.-width (.-nativeEvent event)))
+
+;; good
+(require '[oops.core :as  oops])
+(fn [^js event]
+  (oops/oget event "nativeEvent.width"))
 ```
 
 ### Accessibility labels
