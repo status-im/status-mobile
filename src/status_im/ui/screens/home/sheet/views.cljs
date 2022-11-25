@@ -90,10 +90,6 @@
      :icon                         :i/add-user
      :on-press                     #(hide-sheet-and-dispatch [:open-modal :new-contact])}]])
 
-(defn start-a-new-chat-modal []
-  [rn/view {:style {:height           "100%"
-                    :width            "100%"}}
-   [new-chat-aio/contact-toggle-list]])
 
 (def add-new-sheet
   {:content add-new-sheet-view})
@@ -102,4 +98,4 @@
   {:content add-new-view})
 
 (def start-a-new-chat
-  {:content start-a-new-chat-modal})
+  {:content (fn [] [new-chat-aio/contact-toggle-list])})

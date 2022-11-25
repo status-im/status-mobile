@@ -173,11 +173,11 @@
 (defn contact-toggle-list []
   (let [contacts                   (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count    (rf/sub [:selected-contacts-count])
+        window-height              (rf/sub [:dimensions/window-height])
         one-contact-selected?      (= selected-contacts-count 1)
         no-contacts-selected?      (zero? selected-contacts-count)
         {:keys [alias public-key]} (-> contacts first :data first)]
-    [react/keyboard-avoiding-view-new  {:style         styles/group-container
-                                        :ignore-offset true}
+    [react/view  {:style {:height (* window-height 0.95)}}
      [topbar/topbar {:use-insets                 false
                      :border-bottom              false
                      :style                      {:top -15}
