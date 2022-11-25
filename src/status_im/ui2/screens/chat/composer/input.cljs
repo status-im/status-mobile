@@ -172,21 +172,21 @@
                            :on-selection-change      (partial on-selection-change timeout-id last-text-change mentionable-users)
                            :on-change                (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
                            :on-text-input            (partial on-text-input mentionable-users chat-id)}
-        children          (fn []
-                            (if mentions-enabled
-                              (for [[index [type text]] (map-indexed
-                                                         (fn [idx item]
-                                                           [idx item])
-                                                         (<sub [:chat/input-with-mentions]))]
-                                ^{:key (str index "_" type "_" text)}
-                                [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
-                                 text])
-                              (get @input-texts chat-id)))]
+        children          (reagent/as-element
+                           (if mentions-enabled
+                             (for [[index [type text]] (map-indexed
+                                                        (fn [idx item]
+                                                          [idx item])
+                                                        (<sub [:chat/input-with-mentions]))]
+                               ^{:key (str index "_" type "_" text)}
+                               [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
+                                text])
+                             (get @input-texts chat-id)))]
     ;when ios implementation for selectable-text-input is ready, we need remove this condition and use selectable-text-input directly.
     (if platform/android?
       [selectable-text-input chat-id props children]
       [rn/text-input props
-       [children]])))
+       children])))
 
 (defn selectable-text-input-manager []
   (when (exists? (.-NativeModules react-native))
