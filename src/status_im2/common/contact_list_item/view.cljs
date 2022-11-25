@@ -29,9 +29,9 @@
      (if (= icon :options)
        [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
        [quo/checkbox {:default-checked? member?
-                       :on-change        (fn [selected] (if selected
-                                                          (swap! added conj public-key)
-                                                          (reset! added (remove #(= % public-key) @added))))}])]))
+                      :on-change        (fn [selected] (if selected
+                                                         (swap! added conj public-key)
+                                                         (reset! added (remove #(= % public-key) @added))))}])]))
 
 (defn contact-list-item [item extra-data]
   (let [{:keys [public-key ens-verified added? images]} item
@@ -44,11 +44,11 @@
                                   :on-long-press  #(rf/dispatch [:bottom-sheet/show-sheet
                                                                  {:content (fn [] [actions/actions item extra-data])}])})
      [quo/user-avatar {:full-name         display-name
-                               :profile-picture   photo-path
-                               :status-indicator? true
-                               :online?           true
-                               :size              :small
-                               :ring?             false}]
+                       :profile-picture   photo-path
+                       :status-indicator? true
+                       :online?           true
+                       :size              :small
+                       :ring?             false}]
      [rn/view {:style {:margin-left 8}}
       [rn/view {:style {:flex-direction :row}}
        [quo/text {:weight :semi-bold} display-name]

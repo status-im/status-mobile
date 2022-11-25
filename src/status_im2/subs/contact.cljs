@@ -255,20 +255,20 @@
            contacts)))
 
 (re-frame/reg-sub
-  :contacts/filtered-active-sections
-  :<- [:contacts/active-sections]
-  :<- [:contacts/set-search-query]
-  (fn [[contacts query]]
-    (if (empty? query)
-      contacts
-      (->> contacts
-           (map (fn [item]
-                  (update item :data (fn [data]
-                                       (filter #(string/includes?
-                                                  (string/lower-case (:alias %))
-                                                  (string/lower-case query))
-                                               data)))))
-           (remove #(empty? (:data %)))))))
+ :contacts/filtered-active-sections
+ :<- [:contacts/active-sections]
+ :<- [:contacts/set-search-query]
+ (fn [[contacts query]]
+   (if (empty? query)
+     contacts
+     (->> contacts
+          (map (fn [item]
+                 (update item :data (fn [data]
+                                      (filter #(string/includes?
+                                                (string/lower-case (:alias %))
+                                                (string/lower-case query))
+                                              data)))))
+          (remove #(empty? (:data %)))))))
 
 (re-frame/reg-sub
  :contacts/group-members-sections
