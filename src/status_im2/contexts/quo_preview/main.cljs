@@ -69,8 +69,9 @@
    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
    [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
-   [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]))
-
+   [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]
+   [status-im2.contexts.quo-preview.qr.qr :as qr]))
+   
 (def screens-categories
   {:foundations           [{:name      :shadows
                             :insets    {:top false}
@@ -180,6 +181,9 @@
                            {:name      :floating-shell-button
                             :insets    {:top false}
                             :component floating-shell-button/preview-floating-shell-button}]
+  :qr                     [{:name :qr-code
+                            :insets    {:top false}
+                            :component   qr/playground-view}]
    :notifications         [{:name      :activity-logs
                             :insets    {:top false}
                             :component activity-logs/preview-activity-logs}
