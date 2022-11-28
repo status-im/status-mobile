@@ -94,14 +94,17 @@
          :open-activity-center-button button-common-props]]
        (when new-notifications?
          (if (= notification-indicator :counter)
-           [quo/counter {:outline             false
+           [quo/counter {:accessibility-label :notifications-unread-badge
+                         :outline             false
                          :override-text-color colors/white
                          :override-bg-color   colors/primary-50
                          :style               {:position :absolute
                                                :left     34
                                                :top      -6}}
             counter-label]
-           [rn/view {:style {:width            8
+           [rn/view {:accessible true
+                     :accessibility-label :notifications-unread-badge
+                     :style {:width            8
                              :height           8
                              :border-radius    4
                              :top              -2

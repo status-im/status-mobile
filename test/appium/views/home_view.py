@@ -207,7 +207,9 @@ class HomeView(BaseView):
 
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
-        self.notifications_unread_badge = Button(self.driver, accessibility_id="notifications-unread-badge")
+        self.notifications_unread_badge = BaseElement(self.driver, accessibility_id="notifications-unread-badge") 
+        self.open_activity_center_button = Button(self.driver, accessibility_id="open-activity-center-button")
+        
         self.notifications_select_button = Button(self.driver, translation_id="select")
         self.notifications_reject_and_delete_button = Button(self.driver, accessibility_id="reject-and-delete"
                                                                                            "-activity-center")
@@ -257,7 +259,8 @@ class HomeView(BaseView):
         self.driver.info("Looking for chat: '%s'" % username)
         chat_element = ChatElement(self.driver, username[:25], community=community)
         if not chat_element.is_element_displayed(10):
-            self.notifications_unread_badge.wait_and_click(wait_time)
+            if self.notifications_unread_badge.is_element_displayed(30):
+                self.open_activity_center_button.click()
             chat_in_ac = ActivityCenterChatElement(self.driver, username[:25])
             chat_in_ac.wait_for_element(20)
             chat_in_ac.click()
@@ -274,7 +277,8 @@ class HomeView(BaseView):
         return chat_element
 
     def handle_contact_request(self, username: str, accept=True):
-        self.notifications_unread_badge.wait_and_click()
+        if self.notifications_unread_badge.is_element_displayed(30):
+            self.open_activity_center_button.click()
         chat_element = ActivityCenterChatElement(self.driver, username[:25])
         if accept:
             self.driver.info("Accepting contact request for %s" % username)

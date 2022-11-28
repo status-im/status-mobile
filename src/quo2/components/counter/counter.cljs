@@ -20,7 +20,7 @@
 (defn counter
   "type:    default, secondary, grey, outline
    value:   integer"
-  [{:keys [type override-text-color override-bg-color style]} value]
+  [{:keys [type override-text-color override-bg-color style accessibility-label]} value]
   (let [type       (or type :default)
         text-color (or override-text-color
                        (if (or
@@ -38,7 +38,9 @@
                      1     16
                      2     20
                      28)]
-    [rn/view {:style (cond-> (merge
+    [rn/view {:accessible true
+              :accessibility-label accessibility-label
+              :style (cond-> (merge
                               {:align-items     :center
                                :justify-content :center
                                :border-radius   6
