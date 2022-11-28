@@ -11,7 +11,7 @@
             [clojure.string :as str]))
 
 (defn message-body [message]
-  (let [parsed-text (get-in message [:content :parsed-text])
+  (let [parsed-text          (get-in message [:content :parsed-text])
         parsed-text-children (:children (first parsed-text))]
     [quo2/text {:number-of-lines     2
                 :style               style/tag-text
