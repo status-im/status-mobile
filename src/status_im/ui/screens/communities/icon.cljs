@@ -11,7 +11,7 @@
         thumbnail-image (get-in images [:thumbnail :uri])]
     (cond
       (= id constants/status-community-id)
-      [react/image {:source (resources/get-image :status-logo)
+      [react/image {:source (resources/get-image :status-logo) ;; TODO replace with real data (or remove this code)
                     :style  {:width  40
                              :height 40}}]
       (seq thumbnail-image)
@@ -27,7 +27,7 @@
         thumbnail-image (get-in images [:thumbnail :uri])]
     (cond
       (= id constants/status-community-id)
-      [react/image {:source (resources/get-image :status-logo)
+      [react/image {:source (resources/get-image :status-logo) ;; TODO replace with real data
                     :style  {:width  size
                              :height size}}]
       (seq thumbnail-image)

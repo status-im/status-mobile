@@ -35,7 +35,9 @@
 (defn status-bar-options []
   (if platform/android?
     {:navigationBar {:backgroundColor (colors/theme-colors colors/white colors/neutral-100)}
-     :statusBar     {:backgroundColor (colors/theme-colors colors/white colors/neutral-100)
+     :statusBar     {:translucent true
+                     :backgroundColor :transparent
+                     :drawBehind      true
                      :style           (if (colors/dark?) :light :dark)}}
     {:statusBar {:style (if (colors/dark?) :light :dark)}}))
 

@@ -41,7 +41,8 @@
     [icons/icon icon (icon-props icon-color :big)]]])
 
 (defn- mid-section-comp
-  [{:keys [description-user-icon horizontal-description? text-secondary-color align-mid? text-color icon main-text type description]}]
+  [{:keys [description-img description-user-icon horizontal-description?
+           text-secondary-color align-mid? text-color icon main-text type description]}]
   [rn/view {:style (assoc
                     centrify-style
                     :flex-direction    :row
@@ -49,13 +50,16 @@
    (when (or (and (not horizontal-description?)
                   align-mid?
                   (not= :text-with-description type))
-             (and description-user-icon
+             (and (or description-img description-user-icon)
                   (not icon)))
-     [rn/image {:source {:uri description-user-icon}
-                :style  {:width         32
-                         :height        32
-                         :border-radius 32
-                         :margin-right  8}}])
+     (if description-img
+       [rn/view {:margin-right  8}
+        [description-img]]
+       [rn/image {:source {:uri description-user-icon}
+                  :style  {:width         32
+                           :height        32
+                           :border-radius 32
+                           :margin-right  8}}]))
    [rn/view {:style {:flex-direction (if horizontal-description?
                                        :row
                                        :column)}}
@@ -99,7 +103,6 @@
                                          :style  {:padding-horizontal 4
                                                   :color              text-color}}
                               main-text]
-
                              [icons/icon right-icon
                               (icon-props main-text-icon-color :big)]]
        :text-with-one-icon   [rn/view {:style {:flex-direction :row}}
@@ -163,6 +166,7 @@
       :description-color     color
       :description-icon      icon
       :description-user-icon icon
+      :description-img a render prop which will be used in place of :description-user-icon
       :main-text-icon-color  color
      }
      :left-section 
@@ -189,6 +193,7 @@
         mid-section-props
         {:type                    (:type mid-section)
          :horizontal-description? horizontal-description?
+         :description-img         (:description-img mid-section)
          :main-text               (:main-text mid-section)
          :main-text-icon-color    (:main-text-icon-color mid-section)
          :one-icon-align-left?    one-icon-align-left?
