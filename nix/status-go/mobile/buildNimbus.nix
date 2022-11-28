@@ -15,50 +15,27 @@ let
   osId = builtins.elemAt (builtins.split "\-" stdenv.hostPlatform.system) 2;
   osArch = builtins.elemAt (builtins.split "\-" stdenv.hostPlatform.system) 0;
 
-  ANDROID_NDK_HOME = "${androidPkgs.ndk}";
-
   
-  targetArchMap = rec {
-    "386" = "i686";
-    "arm" = "arm";
-    "arm64" = "aarch64";
-  };
-  ldArchMap = {
-    "386" = "x86";
-    "arm" = "arm";
-    "arm64" = "arm64";
-  };
-
-  ldDirMap = {
-    "386" = "x86";
-    "arm" = "armeabi-v7a"; 
-    "arm64" = "arm64-v8a";
-  };
-
-  # Shorthands for the built phase
-  targetArch = lib.getAttr arch targetArchMap;
-  ldArch = lib.getAttr arch ldArchMap;
-  androidTarget = targetArch + "-linux-" + platform;
-
   # Arg arch -> Nim arch
   nimCpuMap = {
-    "386" = "i386";
-    "x86_64" = "amd64"; 
+    "x86" = "i386";
+    "x86-64" = "amd64"; 
     "arm" = "arm"; 
     "arm64" = "arm64";
   };
 
   iosArchMap = {
-    "386" = "x86_64";
+    "x86" = "x86_64";
+    "x86-64" = "x86_64";
     "arm" = "armv7";
     "arm64" = "arm64";
   };
 
-  nimCpu = if platform == "ios" && arch == "386"
+  nimCpu = if platform == "ios" && arch == "x86"
     then "amd64" else "${lib.getAttr arch nimCpuMap}";
   nimPlatform = "${(if platform == "ios" then "ios" else "android")}";
 
-  iosSdk = if arch == "386" then "iphonesimulator" else "iphoneos";
+  iosSdk = if arch == "x86" then "iphonesimulator" else "iphoneos";
   iosArch = lib.getAttr arch iosArchMap;
 
   isAndroid = lib.hasPrefix "android" platform;
@@ -98,8 +75,13 @@ let
     '';
   };
 
+
+  ANDROID_NDK_HOME = "${androidPkgs.sdk}/ndk-bundle";
+  
+  
+  androidToolchain = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${osId}-${osArch}";
   compilerFlags = if isAndroid then
-    "--sysroot ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${osId}-${osArch}/sysroot -target ${androidTarget}${api} -fPIC -I ${ANDROID_NDK_HOME}/sources/cxx-stl/llvm-libc++/include/ -I${PROJECT_ROOT}/vendor/nimbus-build-system/vendor/Nim-csources-v1/c_code"
+    "--sysroot ${androidToolchain}/sysroot -fPIC -I${ANDROID_NDK_HOME}/sources/cxx-stl/llvm-libc++/include/ -I${PROJECT_ROOT}/vendor/nimbus-build-system/vendor/Nim-csources-v1/c_code"
     else if isIOS then
     # TODO The conditional for -miphoneos-version-min=8.0 is required,
     # otherwise Nim will complain that thread-local storage is not supported for the current target
@@ -107,42 +89,46 @@ let
     "-isysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -I${PROJECT_ROOT}/vendor/nimbus-build-system/vendor/Nim-csources-v1/c_code -fembed-bitcode -arch ${iosArch} ${if arch == "arm" then "" else "-miphoneos-version-min=8.0"} -I${iosIncludes}"
     else throw "Unsupported platform!";
 
-  hostMap = {
-      "386" = "x86";
-      "arm" = "arm";
-      "arm64" = "aarch64";
-    };
-  hostFlag = if isAndroid then androidTarget else lib.getAttr arch hostMap;
-
-
-  ldDirMap1 = {
-    "386" = "i686-linux-android";
-    "arm" = "arm-linux-androideabi";
-    "arm64" = "aarch64-linux-android";
-  };
-
   linkerFlags = if isAndroid then
-  "--sysroot ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${osId}-${osArch}/sysroot -target ${androidTarget}"
+  "--sysroot ${androidToolchain}/sysroot"
   else if isIOS then
   "--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"
   else throw "Unsupported platform!";
+  
+  androidTargetArchMap = {
+    "x86" = "i686-linux-android";
+    "x86-64" = "x86_64-linux-android";
+    "arm" = "armv7a-linux-androideabi";
+    "arm64" = "aarch64-linux-android";
+  };
 
-  cppLibPathPrefix = "${ANDROID_NDK_HOME}/sources/cxx-stl/llvm-libc++/libs/${lib.getAttr arch ldDirMap}/";
+  androidTargetArch = lib.getAttr arch androidTargetArchMap;
 
-  cppLibPathPrefix1 = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${osId}-${osArch}/sysroot/usr/lib/${lib.getAttr arch ldDirMap1}/${api}/";
+  ldDirMap = {
+    "x86" = "i686";
+    "x86-64" = "x86_64";
+    "arm" = "armeabi-v7a"; 
+    "arm64" = "arm64-v8a";
+  };
 
-  androidToolPathPrefix = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${osId}-${osArch}/bin";
-  androidToolPrefix = "${androidToolPathPrefix}/${targetArch}-linux-${platform}";
+  cmakeArgs = if isAndroid then
+    "-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=${api} -DCMAKE_ANDROID_ARCH_ABI=${lib.getAttr arch ldDirMap} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME}"
+  else if isIOS then ""
+  else throw "Unsupported platform!";
+
   compilerVars = if isAndroid then
     ''
-      export PATH=${androidToolPathPrefix}:$PATH
-      export AR=${androidToolPrefix}-ar
-      export AS=${androidToolPrefix}-as
-      export NM=${androidToolPrefix}-nm
-      export RANLIB=${androidToolPrefix}-ranlib
-      export CC=${androidToolPathPrefix}/clang
-      export CXX=${androidToolPathPrefix}/clang
-      export LD=${androidToolPathPrefix}/ld
+      export PATH=${androidToolchain}/bin:$PATH
+      export CC=${androidToolchain}/bin/${androidTargetArch}${api}-clang
+      export CXX=${androidToolchain}/bin/${androidTargetArch}${api}-clang++
+      export AR=${androidToolchain}/bin/llvm-ar
+      export NM=${androidToolchain}/bin/llvm-nm
+      export RANLIB=${androidToolchain}/bin/llvm-ranlib
+      export RANLIB=${androidToolchain}/bin/llvm-ranlib
+      export LD=${androidToolchain}/bin/ld
+      export AS=$CC
+      export CFLAGS="${compilerFlags}"
+      export LDFLAGS="${linkerFlags}"
 
       # This is important, otherwise Nim might not use proper tooling
       mkdir bin
@@ -214,12 +200,19 @@ in stdenv.mkDerivation rec {
   name = "liblcproxy";
   src = srcRaw.src;
   #version = lib.strings.substring 0 7 src.rev;
-  buildInputs = with pkgs; [ wget git clang which tcl cmake];
+  buildInputs = with pkgs; [ wget git clang which tcl cmake libtool];
 
   phases = [ "unpackPhase" "preBuildPhase" "buildPhase" "installPhase" ];
 
   preBuildPhase = ''
-      sed -E -i 's|^(.*)-C vendor/nim-nat-traversal/vendor/miniupnp/miniupnpc(.*)|\1 -C vendor/nim-nat-traversal/vendor/miniupnp/miniupnpc CFLAGS="$(CFLAGS)" CC="$(CC)"\2|g' vendor/nimbus-build-system/makefiles/targets.mk
+    sed -E -i 's|^(.*)(-C vendor/nim-nat-traversal/vendor/miniupnp/miniupnpc)(.*)|\1 \2 CFLAGS="$(CFLAGS)" CC="$(CC)"\3|g' vendor/nimbus-build-system/makefiles/targets.mk
+    sed -E -i 's|^(LIBBACKTRACE_SED := true.*)|\1\nCMAKE_ARGS := ${cmakeArgs}|g' vendor/nim-libbacktrace/Makefile
+    sed -E -i 's|^(.*)(-C vendor/nim-libbacktrace --no-print-directory BUILD_CXX_LIB=0)|\1 \2 CFLAGS="$(CFLAGS)"|g' Makefile
+    sed -E -i 's|^CC :=.*|CC := $(CC)|g' vendor/nim-libbacktrace/Makefile
+    sed -E -i 's|^CXX :=.*|CXX := $(CXX)|g' vendor/nim-libbacktrace/Makefile
+    sed -E -i 's|--host=arm| |g' vendor/nim-libbacktrace/Makefile
+    sed -E -i 's|--build=\$\(\./config.guess\)| |g' vendor/nim-libbacktrace/Makefile
+    sed -E -i 's|^(.*\./configure --prefix="/usr")(.*)|\1 --host=${androidTargetArch} --target=${androidTargetArch} CC="$(CC)" \2|g' vendor/nim-libbacktrace/Makefile
 
 
     export HOME=$PWD
@@ -238,7 +231,7 @@ in stdenv.mkDerivation rec {
 
 
   buildPhase = ''
-    make V=3 CFLAGS="${compilerFlags}" LDFLAGS="${linkerFlags}" CC=clang CXX=clang LD=ld OS=${nimHostOs} USE_SYSTEM_NIM=1 USE_SYSTEM_LIBS=1 NIMFLAGS="-d:libbacktraceUseSystemLibs" liblcproxy
+    make -e V=3 OS=${nimHostOs} USE_SYSTEM_NIM=1 liblcproxy
 
    '';
 
