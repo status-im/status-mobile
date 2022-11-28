@@ -39,23 +39,24 @@
                                               :undo-on-press #(do
                                                                 (re-frame/dispatch [:toasts/create {:icon :placeholder :icon-color "green" :text "Undo pressed"}])
                                                                 (re-frame/dispatch [:toasts/close "Toast: with undo action"]))}
-                  "Toast: 30s duration"      {:icon :placeholder :icon-color "green" :text "This is an example toast" :duration 30000}
-                  "Toast: update prev toast" {:icon :placeholder :icon-color "red" :text "This is an example toast" :duration 30000}})
+                  "Toast: 30s duration"      {:icon :placeholder :icon-color "green" :text "This is an example toast" :duration 30000}})
 
-(defn toast-button [id opts]
-  (let [dismissed? (reagent/atom true)
-        dismiss!   #(re-frame/dispatch [:toasts/close id])
-        toast!     (fn []
-                     (reset! dismissed? false)
-                     (re-frame/dispatch [:toasts/upsert id (assoc opts :on-dismissed #(reset! dismissed? true))]))]
-    (fn []
-      [rn/view {:style {:margin-bottom 10}}
-       [button/button
-        {:size     32
-         :on-press #(if @dismissed?
-                      (toast!)
-                      (dismiss!))}
-        (if @dismissed? id (str "DISMISS " id))]])))
+(defn toast-button
+  ([id opts] (toast-button id id opts))
+  ([text id opts]
+   (let [dismissed? (reagent/atom true)
+         dismiss!   #(re-frame/dispatch [:toasts/close id])
+         toast!     (fn []
+                      (reset! dismissed? false)
+                      (re-frame/dispatch [:toasts/upsert id (assoc opts :on-dismissed #(reset! dismissed? true))]))]
+     (fn []
+       [rn/view {:style {:margin-bottom 10}}
+        [button/button
+         {:size     32
+          :on-press #(if @dismissed?
+                       (toast!)
+                       (dismiss!))}
+         (if @dismissed? text (str "DISMISS " text))]]))))
 
 (defn preview
   []
@@ -65,13 +66,13 @@
       {:background-color "#508485"
        :flex-direction   :column
        :justify-content  :flex-start
-       :height           500
-       :padding-vertical 30}]
+       :height           300}]
      [into
       [rn/view
        {:flex    1
         :padding 16}
-       (map (fn [[id opts]] ^{:key id} [vector toast-button id opts]) toasts-opts)]]]))
+       (map (fn [[id opts]] ^{:key id} [vector toast-button id opts]) toasts-opts)]
+      [[toast-button "Toast: update above toast" "Toast: 30s duration" {:icon :placeholder :icon-color "red" :text "This is an updated example toast" :duration 30000}]]]]))
 
 (defn preview-toasts
   []
