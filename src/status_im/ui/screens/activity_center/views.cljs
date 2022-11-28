@@ -8,6 +8,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.activity-center.notification.contact-request.view :as contact-request]
             [status-im.ui.screens.activity-center.notification.contact-verification.view :as contact-verification]
+            [status-im.ui.screens.activity-center.notification.mentions.view :as mentions]
             [status-im.ui.screens.activity-center.style :as style]
             [utils.re-frame :as rf]))
 
@@ -111,6 +112,9 @@
 
      types/contact-request
      [contact-request/view notification]
+
+     types/mention
+     [mentions/view notification]
 
      nil)])
 
