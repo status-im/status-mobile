@@ -139,7 +139,7 @@
               :LightClient     true
               :MinimumPoW      0.000001}
              :WakuV2Config (assoc wakuv2-config
-                                  :LightClient true
+                                  ;;:LightClient true
                                   :Enabled wakuv2-enabled
                                   :Host "0.0.0.0")
              :ShhextConfig
