@@ -396,72 +396,72 @@ class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
                     self.driver.fail("User profile screen is not opened")
             self.errors.verify_no_errors()
 
-    @marks.testrail_id(702777)
-    @marks.skip(reason="Skipping until chat names are implemented in new UI")
-    def test_scan_qr_with_scan_contact_code_via_start_chat(self):
+    # @marks.testrail_id(702777)
+    # @marks.skip(reason="Skipping until chat names are implemented in new UI")
+    # def test_scan_qr_with_scan_contact_code_via_start_chat(self):
 
-        url_data = {
-            'ens_with_stateofus_domain_deep_link': {
-                'url': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_message_sender['ens'],
-                'username': '@%s' % ens_user_message_sender['ens']
-            },
-            'ens_without_stateofus_domain_deep_link': {
-                'url': 'https://join.status.im/u/%s' % ens_user_message_sender['ens'],
-                'username': '@%s' % ens_user_message_sender['ens']
-            },
-            'ens_another_domain_deep_link': {
-                'url': 'status-im://u/%s' % ens_user['ens'],
-                'username': '@%s' % ens_user['ens']
-            },
-            'own_profile_key_deep_link': {
-                'url': 'https://join.status.im/u/%s' % self.public_key,
-                'error': "That's you"
-            },
-            'other_user_profile_key_deep_link': {
-                'url': 'https://join.status.im/u/%s' % transaction_senders['M']['public_key'],
-                'username': transaction_senders['M']['username']
-            },
-            'other_user_profile_key_deep_link_invalid': {
-                'url': 'https://join.status.im/u/%sinvalid' % ens_user['public_key'],
-                'error': 'Please enter or scan a valid chat key'
-            },
-            'own_profile_key': {
-                'url': self.public_key,
-                'error': "That's you"
-            },
-            # 'ens_without_stateofus_domain': {
-            #     'url': ens_user['ens'],
-            #     'username': ens_user['username']
-            # },
-            'other_user_profile_key': {
-                'url': transaction_senders['M']['public_key'],
-                'username': transaction_senders['M']['username']
-            },
-            'other_user_profile_key_invalid': {
-                'url': '%s123' % ens_user['public_key'],
-                'error': 'Please enter or scan a valid chat key'
-            },
-        }
+    #     url_data = {
+    #         'ens_with_stateofus_domain_deep_link': {
+    #             'url': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_message_sender['ens'],
+    #             'username': '@%s' % ens_user_message_sender['ens']
+    #         },
+    #         'ens_without_stateofus_domain_deep_link': {
+    #             'url': 'https://join.status.im/u/%s' % ens_user_message_sender['ens'],
+    #             'username': '@%s' % ens_user_message_sender['ens']
+    #         },
+    #         'ens_another_domain_deep_link': {
+    #             'url': 'status-im://u/%s' % ens_user['ens'],
+    #             'username': '@%s' % ens_user['ens']
+    #         },
+    #         'own_profile_key_deep_link': {
+    #             'url': 'https://join.status.im/u/%s' % self.public_key,
+    #             'error': "That's you"
+    #         },
+    #         'other_user_profile_key_deep_link': {
+    #             'url': 'https://join.status.im/u/%s' % transaction_senders['M']['public_key'],
+    #             'username': transaction_senders['M']['username']
+    #         },
+    #         'other_user_profile_key_deep_link_invalid': {
+    #             'url': 'https://join.status.im/u/%sinvalid' % ens_user['public_key'],
+    #             'error': 'Please enter or scan a valid chat key'
+    #         },
+    #         'own_profile_key': {
+    #             'url': self.public_key,
+    #             'error': "That's you"
+    #         },
+    #         # 'ens_without_stateofus_domain': {
+    #         #     'url': ens_user['ens'],
+    #         #     'username': ens_user['username']
+    #         # },
+    #         'other_user_profile_key': {
+    #             'url': transaction_senders['M']['public_key'],
+    #             'username': transaction_senders['M']['username']
+    #         },
+    #         'other_user_profile_key_invalid': {
+    #             'url': '%s123' % ens_user['public_key'],
+    #             'error': 'Please enter or scan a valid chat key'
+    #         },
+    #     }
 
-        for key in url_data:
-            self.home.chats_tab.click_until_presence_of_element(self.home.plus_button)
-            self.home.plus_button.click_until_presence_of_element(self.home.start_new_chat_button)
-            contacts = self.home.start_new_chat_button.click()
-            self.home.just_fyi('Checking scanning qr for "%s" case' % key)
-            contacts.scan_contact_code_button.click()
-            contacts.allow_button.click_if_shown(3)
-            contacts.enter_qr_edit_box.scan_qr(url_data[key]['url'])
-            chat = ChatView(self.drivers[0])
-            if url_data[key].get('error'):
-                if not chat.element_by_text_part(url_data[key]['error']).is_element_displayed():
-                    self.errors.append('Expected error %s is not shown' % url_data[key]['error'])
-                chat.ok_button.click()
-            if url_data[key].get('username'):
-                if not chat.chat_message_input.is_element_displayed():
-                    self.errors.append(
-                        'In "%s" case chat input is not found after scanning, so no redirect to 1-1' % key)
-                if not chat.element_by_text(url_data[key]['username']).is_element_displayed():
-                    self.errors.append('In "%s" case "%s" not found after scanning' % (key, url_data[key]['username']))
-                chat.get_back_to_home_view()
-        self.errors.verify_no_errors()
+    #     for key in url_data:
+    #         self.home.chats_tab.click_until_presence_of_element(self.home.plus_button)
+    #         self.home.plus_button.click_until_presence_of_element(self.home.start_new_chat_button)
+    #         contacts = self.home.start_new_chat_button.click()
+    #         self.home.just_fyi('Checking scanning qr for "%s" case' % key)
+    #         contacts.scan_contact_code_button.click()
+    #         contacts.allow_button.click_if_shown(3)
+    #         contacts.enter_qr_edit_box.scan_qr(url_data[key]['url'])
+    #         chat = ChatView(self.drivers[0])
+    #         if url_data[key].get('error'):
+    #             if not chat.element_by_text_part(url_data[key]['error']).is_element_displayed():
+    #                 self.errors.append('Expected error %s is not shown' % url_data[key]['error'])
+    #             chat.ok_button.click()
+    #         if url_data[key].get('username'):
+    #             if not chat.chat_message_input.is_element_displayed():
+    #                 self.errors.append(
+    #                     'In "%s" case chat input is not found after scanning, so no redirect to 1-1' % key)
+    #             if not chat.element_by_text(url_data[key]['username']).is_element_displayed():
+    #                 self.errors.append('In "%s" case "%s" not found after scanning' % (key, url_data[key]['username']))
+    #             chat.get_back_to_home_view()
+    #     self.errors.verify_no_errors()
 
