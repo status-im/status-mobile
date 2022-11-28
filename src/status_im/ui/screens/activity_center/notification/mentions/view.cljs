@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.activity-center.notification.mentions.view
   (:require [quo.components.animated.pressable :as animation]
             [quo2.core :as quo2]
-            [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
@@ -14,13 +13,13 @@
 (defn message-body [message]
   (let [parsed-text (get-in message [:content :parsed-text])
         parsed-text-children (:children (first parsed-text))]
-    [text/text {:number-of-lines     2
+    [quo2/text {:number-of-lines     2
                 :style               style/tag-text
                 :accessibility-label :activity-message-body
                 :size                :paragraph-1}
      (for [{:keys [type literal]} parsed-text-children]
        (case type
-         "mention" [text/text {:style style/mention-text
+         "mention" [quo2/text {:style style/mention-text
                                :size  :paragraph-1}
                     (str "@" (rf/sub [:contacts/contact-name-by-identity literal]))]
          literal))]))
@@ -34,7 +33,7 @@
                   (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))}
      [quo2/activity-log
       {:title     (i18n/label :t/mention)
-       :icon      :main-icons2/mention
+       :icon      :i/mention
        :timestamp (datetime/timestamp->relative (:timestamp notification))
        :unread?   (not (:read notification))
        :context   [[quo2/user-avatar-tag
