@@ -37,15 +37,16 @@
         num-lines                (count (string/split input-text "\n"))
         text-height              (* num-lines 22)
         mentions-height          (min 132 (+ 16 (* 46 (- (count suggestions) 1))))
-        should-translate         (if (< (- max-height text-height) mentions-height) true false)
+        should-translate?        (if (< (- max-height text-height) mentions-height) true false)
         min-value                (if-not reply mentions-height (+ mentions-height 44))
         ; translate value when mentions list appear while at bottom of expanded input sheet
-        mentions-translate-value (if should-translate (min min-value (- mentions-height (- max-height text-height))) mentions-height)]
-    (when (or (< y max-y) should-translate) mentions-translate-value)))
+        mentions-translate-value (if should-translate? (min min-value (- mentions-height (- max-height text-height))) mentions-height)]
+    (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
 (defn get-y-value [context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply]
-  (let [y (calculate-y context keyboard-shown min-y max-y added-value)]
-    y (+ y (when (seq suggestions) (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)))))
+  (let [y               (calculate-y context keyboard-shown min-y max-y added-value)
+        y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
+    (+ y (when (seq suggestions) y-with-mentions))))
 
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height set-bg-opacity]
   (-> (gesture/gesture-pan)
