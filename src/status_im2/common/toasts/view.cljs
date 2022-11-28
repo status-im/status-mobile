@@ -92,9 +92,7 @@
                :flex-direction   :column
                :justify-content  :center
                :align-items      :center
-               :background-color :gray
-               ;; :background-color :transparent
-               }}]
+               :background-color :transparent}}]
      (->> toasts-index
           reverse
           (map (fn [id] ^{:key id} [container id])))]))

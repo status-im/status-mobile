@@ -32,6 +32,13 @@
                                               :undo-on-press #(do
                                                                 (re-frame/dispatch [:toasts/create {:icon :placeholder :icon-color "green" :text "Undo pressed"}])
                                                                 (re-frame/dispatch [:toasts/close "Toast: with undo action"]))}
+                  "Toast: multiline"         {:icon          :placeholder
+                                              :icon-color    "green"
+                                              :text          "This is an example multiline toast This is an example multiline toast This is an example multiline toast"
+                                              :undo-duration 4
+                                              :undo-on-press #(do
+                                                                (re-frame/dispatch [:toasts/create {:icon :placeholder :icon-color "green" :text "Undo pressed"}])
+                                                                (re-frame/dispatch [:toasts/close "Toast: with undo action"]))}
                   "Toast: 30s duration"      {:icon :placeholder :icon-color "green" :text "This is an example toast" :duration 30000}
                   "Toast: update prev toast" {:icon :placeholder :icon-color "red" :text "This is an example toast" :duration 30000}})
 

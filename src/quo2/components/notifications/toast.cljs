@@ -63,21 +63,21 @@
   [rn/view {:style {:padding-left 12 :padding-right 12}}
    [rn/view
     {:style (merge-theme-style :container
-                               {:flex-direction  :row
-                                :width           "100%"
-                                :margin          :auto
-                                :justify-content :space-between
-                                :align-items     :center
-                                :padding         8
-                                :border-radius   12})}
-    [toast-left
-     (when left [rn/view {:style {:padding 4}} left])
-     [rn/view {:style {:padding 4 :flex 1}}
-      [text/text
-       {:size   :paragraph-2
-        :weight :medium
-        :style  (merge-theme-style :text {})}
-       middle]]]
+                               {:flex-direction   :row
+                                :width            "100%"
+                                :margin           :auto
+                                :justify-content  :space-between
+                                :padding-vertical 8
+                                :padding-left     10
+                                :padding-right    8
+                                :border-radius    12})}
+    [rn/view {:style {:padding 2}} left]
+    [rn/view {:style {:padding 4 :flex 1}}
+     [text/text
+      {:size   :paragraph-2
+       :weight :medium
+       :style  (merge-theme-style :text {})}
+      middle]]
 
     (when right right)]])
 
@@ -85,9 +85,9 @@
   [{:keys [icon icon-color text action undo-duration undo-on-press]}]
   [toast-container
    {:left   [icon/icon icon
-             {:container-style {:width 14 :height 14}
-              :color           (or icon-color
-                                   (get-in themes [:icon (theme/get-theme) :color]))}]
+             {:container-style {:width 20 :height 20}
+              :color (or icon-color
+                         (get-in themes [:icon (theme/get-theme) :color]))}]
     :middle text
 
     :right (if undo-duration [toast-undo-acton undo-duration undo-on-press] action)}])
