@@ -36,11 +36,20 @@
   [{:keys [db]}]
   (let [port (get db :mediaserver/port)
         url "cs2:5vd6SL:KFC:26gAouU6D6A4dCs9LK7jHmXZ3gjVdPczvX7yeusZRHTeR:3HxJ9Qr4H351dPoXjQYsdPX4tK6tV6TkdsHk1xMZEZmL:3"
-        qr-hardcoded-url (str "https://localhost:" port "/QRImages?qrurl=" (js/btoa url))
-;        profile-images  @(re-frame/subscribe [:multiaccount/images])
+        all-accounts (get db :multiaccounts/multiaccounts)
+        all-key-uids (keys all-accounts)
+        all-vals (vals all-accounts)
+;        second-account (nth all-vals 1)
+        first-account (nth all-vals 0)
+        keyuid (get first-account :key-uid)
+        qr-hardcoded-url (str "https://localhost:" port "/QRImagesWithLogo?qrurl=" (js/btoa url) "&keyUid=" keyuid "&imageName=thumbnail")
         ]
+    (log/info "all :multiaccounts/multiaccounts account =====>" all-accounts)
+    (log/info "all-vals =====>" all-vals)
+;    (log/info "second multiaccount/accounts account =====>" second-account)
+    (log/info "first multiaccount/accounts account =====>" first-account)
     (reset! qr-final-url qr-hardcoded-url)
-    (log/debug "qr-url from media server " qr-hardcoded-url)
+    (log/info "qr-url from media server " qr-hardcoded-url)
     )
 )
 
