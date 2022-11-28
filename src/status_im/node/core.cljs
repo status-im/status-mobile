@@ -138,7 +138,10 @@
               :BloomFilterMode waku-bloom-filter-mode
               :LightClient     true
               :MinimumPoW      0.000001}
-             :WakuV2Config (assoc wakuv2-config :Enabled wakuv2-enabled :Host "0.0.0.0")
+             :WakuV2Config (assoc wakuv2-config
+                                  :LightClient true
+                                  :Enabled wakuv2-enabled
+                                  :Host "0.0.0.0")
              :ShhextConfig
              {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
               :InstallationID             installation-id
