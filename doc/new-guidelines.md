@@ -295,7 +295,7 @@ core interop macros.
 
 ;; good
 (require '[oops.core :as  oops])
-(fn [^js event]
+(fn [event]
   (oops/oget event "nativeEvent.width"))
 ```
 
