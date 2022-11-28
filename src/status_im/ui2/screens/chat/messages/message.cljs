@@ -428,7 +428,7 @@
       (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
 (defn can-manage-community-member?
-  [{:keys [current-public-key from community? can-manage-users?] :as message}]
+  [{:keys [current-public-key from community? can-manage-users?]}]
   (and (not= current-public-key from)
        (and community? can-manage-users?)))
 
