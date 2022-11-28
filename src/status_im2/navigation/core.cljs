@@ -13,8 +13,7 @@
    [utils.re-frame :as rf]
 
    ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
-   [status-im.multiaccounts.login.core :as login-core]
-   [status-im.utils.utils :as utils.utils]))
+   [status-im.multiaccounts.login.core :as login-core]))
 
 ;; REGISTER COMPONENT (LAZY)
 (defn reg-comp [key]
@@ -236,11 +235,7 @@
 
 ;; TOAST
 (re-frame/reg-fx :show-toasts (fn [] (show-overlay "toasts" {:overlay {:interceptTouchOutside false} :layout {:componentBackgroundColor :transparent}})))
-(re-frame/reg-fx :hide-toasts (fn [delay]
-                                (if delay
-                                  ;; hide toast with delay for exiting animation
-                                  (utils.utils/set-timeout #(dissmiss-overlay "toasts") delay)
-                                  (dissmiss-overlay "toasts"))))
+(re-frame/reg-fx :hide-toasts (fn [] (dissmiss-overlay "toasts")))
 
 ;; VISIBILITY STATUS POPOVER
 (re-frame/reg-fx :show-visibility-status-popover
