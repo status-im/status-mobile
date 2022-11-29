@@ -207,7 +207,10 @@
                                   :withTiming             (fn [])
                                   :withDelay              (fn [])
                                   :Easing                 #js {:bezier identity}
-                                  :Keyframe               (fn [])})
+                                  :Keyframe               (fn [])
+                                  :SlideOutUp             #js {:springify (fn [] #js {:damping (fn [])})}
+                                  :SlideInUp              #js {:springify (fn [] #js {:damping (fn [])})}
+                                  :LinearTransition       #js {:springify (fn [] #js {:damping (fn [])})}})
 (def react-native-gesture-handler #js {:default                  #js {}
                                        :State                    #js {:BEGAN        nil
                                                                       :ACTIVE       nil
