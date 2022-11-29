@@ -8,7 +8,7 @@
             [status-im2.setup.config :as config]
             [status-im2.setup.hot-reload :as reloader]
 
-            ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
+    ;; TODO (14/11/22 flexsurfer) move to status-im2 namespace
             [status-im.ui.screens.popover.views :as popover]
             [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
             [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]

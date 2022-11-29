@@ -1870,5 +1870,9 @@
     "italic": "Italic",
     "strikethrough": "Strikethrough",
     "add-text": "Add text",
-    "send": "Send"
+    "send": "Send",
+    "unmute-group": "Unmute group",
+    "remove-user-from-group": "Remove {{username}} from the group",
+    "edit-name-image": "Edit name and image",
+    "owner": "Owner"
 }

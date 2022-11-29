@@ -18,3 +18,23 @@
    :height           16
    :border-radius    6
    :background-color (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5)})
+
+(defn close-icon []
+  {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
+   :margin-left      20
+   :width            32
+   :height           32
+   :border-radius    10
+   :justify-content  :center
+   :align-items      :center
+   :margin-bottom    24})
+
+(def bottom-container
+  {:position           :absolute
+   :padding-horizontal 20
+   :padding-vertical   12
+   :padding-bottom     33
+   :width              "100%"
+   :background-color   colors/white
+   :flex-direction     :row
+   :bottom             0})

@@ -3,10 +3,11 @@
             [status-im.contact.db :as contact.db]
             [status-im.utils.image-server :as image-server]
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-            [clojure.string :as string]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.ethereum.core :as ethereum]))
+            [status-im.ethereum.core :as ethereum]
+            [clojure.string :as string]
+            [i18n.i18n :as i18n]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -252,3 +253,34 @@
                acc))
            {}
            contacts)))
+
+(re-frame/reg-sub
+ :contacts/filtered-active-sections
+ :<- [:contacts/active-sections]
+ :<- [:contacts/search-query]
+ (fn [[contacts query]]
+   (if (empty? query)
+     contacts
+     (->> contacts
+          (map (fn [item]
+                 (update item :data (fn [data]
+                                      (filter #(string/includes?
+                                                (string/lower-case (:alias %))
+                                                (string/lower-case query))
+                                              data)))))
+          (remove #(empty? (:data %)))))))
+
+(re-frame/reg-sub
+ :contacts/group-members-sections
+ :<- [:contacts/current-chat-contacts]
+ (fn [members]
+   (let [admins  (filter :admin? members)
+         online  (filter #(and (not (:admin? %)) (:online? %)) members)
+         offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
+     (vals (cond-> {}
+             (seq admins) (assoc :owner {:title (i18n/label :t/owner) :data admins})
+             (seq online) (assoc :online {:title (i18n/label :t/online) :data online})
+             (seq offline) (assoc :offline {:title (i18n/label :t/offline) :data offline}))))))
+
+
+

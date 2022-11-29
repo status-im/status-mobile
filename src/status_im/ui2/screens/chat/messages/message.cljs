@@ -41,7 +41,8 @@
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.markdown.text :as text]
             [status-im.utils.utils :as utils]
-            [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item])
+            [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
+            [quo2.core :as quo2])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
@@ -774,8 +775,9 @@
         current-chat    (rf/sub [:chats/current-chat])
         community       (rf/sub [:communities/community (:community-id current-chat)])]
     [rn/view {:accessibility-label :pinned-messages-list}
-     [rn/text {:style (merge typography/heading-1 typography/font-semi-bold {:margin-horizontal 20
-                                                                             :color             (colors/theme-colors colors/neutral-100 colors/white)})}
+     [quo2/text {:size   :heading-1
+                 :weight :semi-bold
+                 :style  {:margin-horizontal 20}}
       (i18n/label :t/pinned-messages)]
      (when community
        [rn/view {:style {:flex-direction    :row
@@ -804,15 +806,16 @@
          :separator [rn/view {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80) :height 1 :margin-top 8}]}]
        [rn/view {:style {:justify-content :center
                          :align-items     :center
-                         :flex            1
                          :margin-top      20}}
         [rn/view {:style {:width           120
                           :height          120
                           :justify-content :center
                           :align-items     :center
                           :border-width    1}} [icons/icon :i/placeholder]]
-        [rn/text {:style (merge typography/paragraph-1 typography/font-semi-bold {:margin-top 20})} (i18n/label :t/no-pinned-messages)]
-        [rn/text {:style (merge typography/paragraph-2 typography/font-regular)}
+        [quo2/text {:weight :semi-bold
+                    :style  {:margin-top 20}}
+         (i18n/label :t/no-pinned-messages)]
+        [quo2/text {:size :paragraph-2}
          (i18n/label (if community :t/no-pinned-messages-community-desc :t/no-pinned-messages-desc))]])]))
 
 (defn pin-system-message [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]

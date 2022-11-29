@@ -8,7 +8,7 @@
             [status-im2.common.home.view :as common.home]
             [status-im2.contexts.chat.home.contact-request.view :as contact-request]
             [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
-            [status-im2.common.contact-list-item.view :as contact-list-item]))
+            [status-im.ui2.screens.common.contact-list.view :as contact-list]))
 
 (defn get-item-layout [_ index]
   #js {:length 64 :offset (* 64 index) :index index})
@@ -44,9 +44,6 @@
    [quo/text {:weight :semi-bold} (i18n/label :t/no-contacts)]
    [quo/text (i18n/label :t/blank-contacts-text)]])
 
-(defn contacts-section-header [{:keys [title]}]
-  [quo/divider-label {:label title}])
-
 (defn contacts [contact-requests]
   (let [items (rf/sub [:contacts/active-sections])]
     (if (empty? items)
@@ -54,12 +51,7 @@
       [:<>
        (when (pos? (count contact-requests))
          [contact-request/contact-requests contact-requests])
-       [rn/section-list
-        {:key-fn                         :title
-         :sticky-section-headers-enabled false
-         :sections                       items
-         :render-section-header-fn       contacts-section-header
-         :render-fn                      contact-list-item/contact-item}]])))
+       [contact-list/contact-list {:icon :options}]])))
 
 (defn tabs []
   (let [selected-tab (reagent/atom :recent)]
