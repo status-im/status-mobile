@@ -11,8 +11,6 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.screens.communities.community :as community]))
 
-(def view-type (reagent/atom :card-view))
-
 (def mock-community-item-data  ;; TODO: remove once communities are loaded with this data.
   {:data {:community-color "#0052FF"
           :status          :gated
@@ -31,24 +29,23 @@
                              :tag-label (i18n/label :t/podcasts)
                              :resource  (resources/get-image :podcasts)}]}})
 
-(defn render-fn [featured? width]
-  (fn
-    [community-item]
-    (let [item (merge community-item
-                      (get mock-community-item-data :data)
-                      {:featured featured?})]
-      (if (= @view-type :card-view)
-        [quo/community-card-view-item (assoc item :width width) #(rf/dispatch [:navigate-to :community-overview item])]
-        [quo/communities-list-view-item
-         {:on-press      (fn []
-                           (rf/dispatch [:communities/load-category-states (:id item)])
-                           (rf/dispatch [:dismiss-keyboard])
-                           (rf/dispatch [:navigate-to :community {:community-id (:id item)}]))
-          :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
-                                        {:content (fn []
+(defn render-fn
+  [community-item _ _ {:keys [featured? width view-type]}]
+  (let [item (merge community-item
+                    (get mock-community-item-data :data)
+                    {:featured featured?})]
+    (if (= view-type :card-view)
+      [quo/community-card-view-item (assoc item :width width) #(rf/dispatch [:navigate-to :community-overview item])]
+      [quo/communities-list-view-item
+       {:on-press      (fn []
+                         (rf/dispatch [:communities/load-category-states (:id item)])
+                         (rf/dispatch [:dismiss-keyboard])
+                         (rf/dispatch [:navigate-to :community {:community-id (:id item)}]))
+        :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                      {:content (fn []
                                                   ;; TODO implement with quo2
-                                                    [community/community-actions item])}])}
-         item]))))
+                                                  [community/community-actions item])}])}
+       item])))
 
 (defn screen-title []
   [rn/view
@@ -80,53 +77,64 @@
                                         colors/neutral-50
                                         colors/neutral-40)}]])
 
-(defn featured-list [communities view-size]
-  [rn/view {:style {:flex-direction :row
-                    :overflow :hidden
-                    :width "100%"
-                    :margin-bottom 24}
-            :on-layout #(swap! view-size (fn []
-                                           (oops/oget % "nativeEvent.layout.width")))}
-   (when-not (= @view-size 0)
-     [rn/flat-list
-      {:key-fn                            #(str "featured" (% :id))
-       :horizontal                        true
-       :keyboard-should-persist-taps      :always
-       :shows-horizontal-scroll-indicator false
-       :separator                  [rn/view {:margin-right 12}]
-       :data                              communities
-       :render-fn                         (render-fn true @view-size)}])])
+(defn featured-list [communities view-type]
+  (let [view-size (reagent/atom 0)]
+    (fn []
+      [rn/view {:style {:flex-direction :row
+                        :overflow :hidden
+                        :width "100%"
+                        :margin-bottom 24}
+                :on-layout #(swap! view-size
+                                   (fn []
+                                     (oops/oget % "nativeEvent.layout.width")))}
+       (when-not (= @view-size 0)
+         [rn/flat-list
+          {:key-fn                            :id
+           :horizontal                        true
+           :keyboard-should-persist-taps      :always
+           :shows-horizontal-scroll-indicator false
+           :separator                         [rn/view {:width 12}]
+           :data                              communities
+           :render-fn                         render-fn
+           :render-data                       {:featured? true
+                                               :width     @view-size
+                                               :view-type view-type}}])])))
 
-(defn other-communities-list [communities]
+(defn other-communities-list [communities view-type]
+  (println view-type)
   [rn/flat-list
    {:key-fn                            :id
     :keyboard-should-persist-taps      :always
     :shows-horizontal-scroll-indicator false
     :separator                 [rn/view {:margin-bottom 16}]
     :data                              communities
-    :render-fn                         (render-fn false "100%")}])
+    :render-fn                        render-fn
+    :render-data              {:featured? false
+                               :width "100%"
+                               :view-type view-type}}])
 
 (defn discover []
-  (let [communities (rf/sub [:communities/communities])
-        communities-count (reagent/atom {:value (count communities)})
-        ;;TODO move sorting to subscription
-        sorted-communities (sort-by :name communities)
-        view-size (reagent/atom 0)]
-    [safe-area/consumer
-     (fn []
-       [rn/view {:style {:margin-left     20
-                         :margin-right    20
-                         :flex             1
-                         :background-color (colors/theme-colors
-                                            colors/white
-                                            colors/neutral-90)}}
-        [quo/button {:icon     true
-                     :type     :grey
-                     :size     32
-                     :style    {:margin-vertical 12}
-                     :on-press #(rf/dispatch [:navigate-back])}
-         :i/close]
-        [screen-title]
-        (featured-communities-header (:value  @communities-count))
-        [featured-list communities view-size]
-        [other-communities-list sorted-communities]])]))
+  (let  [view-type (reagent/atom :card-view)]
+    (fn []
+      (let [communities (rf/sub [:communities/communities])
+            communities-count (count communities)
+        ; TODO move sorting to subscription
+            sorted-communities (sort-by :name communities)]
+        [safe-area/consumer
+         (fn []
+           [rn/view {:style {:margin-left     20
+                             :margin-right    20
+                             :flex             1
+                             :background-color (colors/theme-colors
+                                                colors/white
+                                                colors/neutral-90)}}
+            [quo/button {:icon     true
+                         :type     :grey
+                         :size     32
+                         :style    {:margin-vertical 12}
+                         :on-press #(rf/dispatch [:navigate-back])}
+             :i/close]
+            [screen-title]
+            [featured-communities-header communities-count]
+            [featured-list communities @view-type]
+            [other-communities-list sorted-communities @view-type]])]))))
