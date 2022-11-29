@@ -1,26 +1,12 @@
 (ns status-im2.contexts.communities.overview.style
-  (:require [quo.platform :as platform]
+  (:require [react-native.platform :as platform]
+            [status-im2.common.scroll-page.view :as scroll-page]
             [quo2.foundations.colors :as colors]))
 
 (def preview-user
   {:flex-direction :row
    :align-items    :center
    :margin-top     20})
-
-(defn image-slider [height] {:top (if platform/ios? 0 -64) ; -44 -20 (the 20 is needed on android as the scroll doesn't bounce so this won't disapear otherwise) 
-                             :height height
-                             :z-index 4
-                             :flex 1})
-
-(defn blur-slider [height] {:blur-amount 32
-                            :blur-type :xlight
-                            :overlay-color (if platform/ios? colors/white-opa-70 "transparent")
-                            :style {:z-index 5
-                                    :top (if platform/ios? 0 -64) ; -44 -20 (the 20 is needed on android as the scroll doesn't bounce so this won't disapear otherwise) 
-                                    :position :absolute
-                                    :height height
-                                    :width "100%"
-                                    :flex 1}})
 
 (def blur-channel-header {:blur-amount 32
                           :blur-type :xlight
@@ -31,8 +17,17 @@
                                   :width "100%"
                                   :flex 1}})
 
-(defn scroll-view-container [border-radius] {:position :absolute
-                                             :top  -48
-                                             :overflow :scroll
-                                             :border-radius border-radius
-                                             :height "100%"})
+(defn icon-top [scroll-height]
+  (if (<= scroll-height scroll-page/negative-scroll-position-0)
+    -40
+    (->> (+ scroll-page/scroll-position-0 scroll-height)
+         (* (if platform/ios? 3 1))
+         (+ -40)
+         (min 8))))
+
+(defn icon-size [scroll-height]
+  (->> (+ scroll-page/scroll-position-0 scroll-height)
+       (* (if platform/ios? 3 1))
+       (- scroll-page/max-image-size)
+       (max  scroll-page/min-image-size)
+       (min scroll-page/max-image-size)))
