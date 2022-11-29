@@ -1,12 +1,12 @@
 (ns quo2.components.notifications.toast
   (:require
+   [i18n.i18n :as i18n]
    [quo2.components.icon :as icon]
    [quo2.components.markdown.text :as text]
    [quo2.components.notifications.count-down-circle :as count-down-circle]
    [quo2.foundations.colors :as colors]
    [quo2.theme :as theme]
-   [react-native.core :as rn]
-   [status-im.i18n.i18n :as i18n]))
+   [react-native.core :as rn]))
 
 (def ^:private themes
   {:container        {:light {:background-color colors/neutral-80-opa-80}
@@ -22,36 +22,29 @@
   [component-key styles]
   (merge (get-in themes [component-key (theme/get-theme)]) styles))
 
-(defn- toast-left
-  [& args]
-  (into
-   [rn/view
-    {:style {:flex-direction :row
-             :flex           1
-             :justify-content :flex-start
-             :align-items    :center
-             :width          "100%"}}]
-   args))
-
-(defn toast-action-container [{:keys [on-press style]} & children]
+(defn toast-action-container
+  [{:keys [on-press style]} & children]
   [rn/touchable-highlight
    {:on-press on-press}
    [into
     [rn/view
-     {:style    (merge
-                 {:flex-direction     :row
-                  :padding-vertical   3
-                  :padding-horizontal 8
-                  :align-items        :center
-                  :background-color   (get-in themes [:action-container (theme/get-theme) :background-color])}
-                 style)}]
+     {:style (merge
+              {:flex-direction     :row
+               :padding-vertical   3
+               :padding-horizontal 8
+               :align-items        :center
+               :background-color   (get-in themes
+                                           [:action-container (theme/get-theme)
+                                            :background-color])}
+              style)}]
     children]])
 
 (defn toast-undo-acton
   [duration on-press]
   [toast-action-container
    {:on-press on-press}
-   [rn/view {:style {:margin-right 5}} [count-down-circle/circle-timer {:duration duration}]]
+   [rn/view {:style {:margin-right 5}}
+    [count-down-circle/circle-timer {:duration duration}]]
    [text/text
     {:size   :paragraph-2
      :weight :medium
@@ -86,8 +79,10 @@
   [toast-container
    {:left   [icon/icon icon
              {:container-style {:width 20 :height 20}
-              :color (or icon-color
-                         (get-in themes [:icon (theme/get-theme) :color]))}]
+              :color           (or icon-color
+                                   (get-in themes [:icon (theme/get-theme) :color]))}]
     :middle text
 
-    :right (if undo-duration [toast-undo-acton undo-duration undo-on-press] action)}])
+    :right (if undo-duration
+             [toast-undo-acton undo-duration undo-on-press]
+             action)}])

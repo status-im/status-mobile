@@ -161,8 +161,8 @@
                     :insets    {:top false}
                     :component activity-logs/preview-activity-logs}
                    {:name      :toast
-                   :insets    {:top false}
-                   :component toast/preview-toasts}]
+                    :insets    {:top false}
+                    :component toast/preview-toasts}]
    :posts-and-attachments [{:name      :messages-skeleton
                             :insets    {:top false}
                             :component messages-skeleton/preview-messages-skeleton}]
