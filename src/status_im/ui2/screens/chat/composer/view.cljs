@@ -17,7 +17,8 @@
             [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
             [status-im.utils.utils :as utils]
             [i18n.i18n :as i18n]
-            [status-im.ui2.screens.chat.composer.edit.view :as edit]))
+            [status-im.ui2.screens.chat.composer.edit.view :as edit]
+            [reagent.core :as reagent]))
 
 (defn calculate-y [context keyboard-shown min-y max-y added-value]
   (if keyboard-shown
@@ -122,13 +123,13 @@
   [safe-area/consumer
    (fn [insets]
      (let [min-y              112
-           context            (atom {:y     min-y ;current y value
-                                     :min-y min-y ;minimum y value
-                                     :dy    0 ;used for gesture
-                                     :pdy   0 ;used for gesture
-                                     :state :min ;:min, :custom-chat-available, :custom-chat-unavailable, :max
-                                     :clear false})
-           keyboard-was-shown (atom false)
+           context            (reagent/atom {:y     min-y ;current y value
+                                             :min-y min-y ;minimum y value
+                                             :dy    0 ;used for gesture
+                                             :pdy   0 ;used for gesture
+                                             :state :min ;:min, :custom-chat-available, :custom-chat-unavailable, :max
+                                             :clear false})
+           keyboard-was-shown (reagent/atom false)
            text-input-ref     (quo.react/create-ref)
            send-ref           (quo.react/create-ref)
            refs               {:send-ref       send-ref
@@ -155,9 +156,9 @@
                                          (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
                                          (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   input-content-change (get-input-content-change context translate-y shared-height max-height
-                                                                 set-bg-opacity keyboard-shown min-y max-y)
-                  bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
-                                                                 min-y max-y shared-height max-height set-bg-opacity)]
+                                                                 bg-opacity keyboard-shown min-y max-y)
+                  bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
+                                                                 min-y max-y shared-height max-height bg-opacity)]
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown (not keyboard-shown))
                                       (swap! context assoc :state :min))
@@ -183,8 +184,8 @@
                                           (styles/input-bottom-sheet window-height))}
                  ;handle
                  [rn/view {:style (styles/bottom-sheet-handle)}]
-                 [edit/edit-message-auto-focus-wrapper (:text-input-ref refs) edit]
-                 [reply/reply-message-auto-focus-wrapper (:text-input-ref refs) reply]
+                 [edit/edit-message-auto-focus-wrapper text-input-ref edit]
+                 [reply/reply-message-auto-focus-wrapper text-input-ref reply]
                  [rn/view {:style {:height (- max-y 80 added-value)}}
                   [input/text-input {:chat-id                chat-id
                                      :on-content-size-change input-content-change
@@ -219,4 +220,4 @@
                                          {:opacity bg-opacity
                                           :transform [{:translateY bg-bottom}]}
                                          (styles/bottom-sheet-background window-height))}]
-               [mentions/autocomplete-mentions suggestions]]))])))])
+               [mentions/autocomplete-mentions suggestions text-input-ref]]))])))])

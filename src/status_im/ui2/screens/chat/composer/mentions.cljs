@@ -40,7 +40,7 @@
         ens-name?
         (assoc :subtitle alias))]]))
 
-(defn autocomplete-mentions [suggestions]
+(defn autocomplete-mentions [suggestions text-input-ref]
   [:f>
    (fn []
      (let [animation (reanimated/use-shared-value 0)]
@@ -53,4 +53,5 @@
           :data                      suggestions
           :key-fn                    first
           :render-fn                 mention-item
+          :render-data               text-input-ref
           :content-container-style   {:padding-bottom 12}}]]))])

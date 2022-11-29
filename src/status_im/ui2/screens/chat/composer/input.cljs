@@ -145,10 +145,11 @@
       (>evt [::mentions/calculate-suggestions mentionable-users]))))
 
 (defn text-input [{:keys [set-active-panel refs chat-id sending-image on-content-size-change]}]
-  (let [cooldown-enabled?   (<sub [:chats/current-chat-cooldown-enabled?])
+  (let [_                   (reset! text-input-ref (:text-input-ref refs))
+        cooldown-enabled?   (<sub [:chats/current-chat-cooldown-enabled?])
         mentionable-users   (<sub [:chats/mentionable-users])
-        timeout-id          (atom nil)
-        last-text-change    (atom nil)
+        timeout-id          (reagent/atom nil)
+        last-text-change    (reagent/atom nil)
         mentions-enabled    (get @mentions-enabled chat-id)
         props               {:style                    (style/text-input)
                              :ref                      (:text-input-ref refs)
@@ -297,7 +298,7 @@
                                 (let [text-input-handle (rn/find-node-handle @text-input-ref)]
                                   (oops/ocall manager :startActionMode text-input-handle))))
 
-      :render
+      :reagent-render
       (fn [_]
         (let [ref                 #(do (reset! text-input-ref %)
                                        (when ref
