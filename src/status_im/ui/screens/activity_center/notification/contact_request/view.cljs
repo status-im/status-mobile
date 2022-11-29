@@ -3,16 +3,13 @@
             [quo2.core :as quo2]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.screens.activity-center.notification.contact-request.style :as style]
-            [status-im.ui.screens.activity-center.utils :as activity-center.utils]
+            [status-im.ui.screens.activity-center.notification.common.view :as common]
             [status-im.utils.datetime :as datetime]
             [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [id author message last-message] :as notification}]
   (let [message   (or message last-message)
-        contact   (rf/sub [:contacts/contact-by-identity author])
         pressable (case (:contact-request-state message)
                     constants/contact-request-message-state-accepted
                     ;; NOTE(2022-09-21): We need to dispatch to
@@ -30,14 +27,7 @@
                    :icon      :main-icons2/add-user
                    :timestamp (datetime/timestamp->relative (:timestamp notification))
                    :unread?   (not (:read notification))
-                   :context   [[quo2/user-avatar-tag
-                                {:color          :purple
-                                 :override-theme :dark
-                                 :size           :small
-                                 :style          style/user-avatar-tag
-                                 :text-style     style/user-avatar-tag-text}
-                                (activity-center.utils/contact-name contact)
-                                (multiaccounts/displayed-photo contact)]
+                   :context   [[common/user-avatar-tag author]
                                (i18n/label :t/contact-request-sent)]
                    :message   {:body (get-in message [:content :text])}
                    :status    (case (:contact-request-state message)

@@ -3,9 +3,7 @@
             [quo2.core :as quo2]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.screens.activity-center.notification.contact-verification.style :as style]
-            [status-im.ui.screens.activity-center.utils :as activity-center.utils]
+            [status-im.ui.screens.activity-center.notification.common.view :as common]
             [status-im.utils.datetime :as datetime]
             [utils.re-frame :as rf]))
 
@@ -17,24 +15,16 @@
 
 (defn- context-tags
   [challenger? {:keys [author contact-verification-status]}]
-  (let [contact (rf/sub [:contacts/contact-by-identity author])]
-    [[quo2/user-avatar-tag
-      {:color          :purple
-       :override-theme :dark
-       :size           :small
-       :style          style/user-avatar-tag
-       :text-style     style/user-avatar-tag-text}
-      (activity-center.utils/contact-name contact)
-      (multiaccounts/displayed-photo contact)]
-     (if challenger?
-       (when (or (= contact-verification-status constants/contact-verification-status-accepted)
-                 (= contact-verification-status constants/contact-verification-status-trusted)
-                 (= contact-verification-status constants/contact-verification-status-untrustworthy))
-         (str (str/lower-case (i18n/label :t/replied)) ":"))
-       (when (or (= contact-verification-status constants/contact-verification-status-accepted)
-                 (= contact-verification-status constants/contact-verification-status-pending)
-                 (= contact-verification-status constants/contact-verification-status-declined))
-         (str (i18n/label :t/identity-verification-request-sent) ":")))]))
+  [[common/user-avatar-tag author]
+   (if challenger?
+     (when (or (= contact-verification-status constants/contact-verification-status-accepted)
+               (= contact-verification-status constants/contact-verification-status-trusted)
+               (= contact-verification-status constants/contact-verification-status-untrustworthy))
+       (str (str/lower-case (i18n/label :t/replied)) ":"))
+     (when (or (= contact-verification-status constants/contact-verification-status-accepted)
+               (= contact-verification-status constants/contact-verification-status-pending)
+               (= contact-verification-status constants/contact-verification-status-declined))
+       (str (i18n/label :t/identity-verification-request-sent) ":")))])
 
 (defn- activity-message
   [challenger? {:keys [contact-verification-status message reply-message]}]
