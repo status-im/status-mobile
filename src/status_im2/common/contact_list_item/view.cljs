@@ -24,7 +24,7 @@
     [rn/touchable-opacity {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
                                                     {:content (fn [] [actions/actions item extra-data])}])
                            :style    {:position :absolute
-                                   :right    20}}
+                                      :right    20}}
      (if (= icon :options)
        [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
        [quo/checkbox {:default-checked? member?
@@ -58,7 +58,7 @@
            [rn/view {:style {:margin-left 5 :margin-top 4}}
             [quo/icon :i/contact {:no-color true :size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
       [quo/text {:size  :paragraph-1
-                  :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
+                 :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
        (utils.address/get-shortened-address public-key)]]
      (when-not (= current-pk public-key)
        [action-icon item extra-data])]))

@@ -120,8 +120,8 @@
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if muted :unmute-group :mute-group))]]
       [rn/touchable-opacity {:style    (style/action-container color)
                              :on-press #(rf/dispatch
-                                          [:bottom-sheet/show-sheet
-                                           {:content (fn [] [contact-requests-sheet group])}])}
+                                         [:bottom-sheet/show-sheet
+                                          {:content (fn [] [contact-requests-sheet group])}])}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
