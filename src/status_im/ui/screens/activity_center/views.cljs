@@ -8,6 +8,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.activity-center.notification.contact-request.view :as contact-request]
             [status-im.ui.screens.activity-center.notification.contact-verification.view :as contact-verification]
+            [status-im.ui.screens.activity-center.notification.mentions.view :as mentions]
             [status-im.ui.screens.activity-center.style :as style]
             [utils.re-frame :as rf]))
 
@@ -112,6 +113,9 @@
      types/contact-request
      [contact-request/view notification]
 
+     types/mention
+     [mentions/view notification]
+
      nil)])
 
 (defn activity-center
@@ -124,8 +128,9 @@
        (react/effect! #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
        [rn/view {:style (style/screen-container window-width top bottom)}
         [header]
-        [rn/flat-list {:data            notifications
-                       :empty-component [empty-tab]
-                       :key-fn          :id
-                       :on-end-reached  #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-                       :render-fn       render-notification}]]))])
+        [rn/flat-list {:data                      notifications
+                       :empty-component           [empty-tab]
+                       :key-fn                    :id
+                       :on-scroll-to-index-failed identity
+                       :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
+                       :render-fn                 render-notification}]]))])

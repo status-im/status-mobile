@@ -58,6 +58,7 @@
 (def tags quo2.components.tags.tags/tags)
 (def user-avatar-tag quo2.components.tags.context-tags/user-avatar-tag)
 (def context-tag quo2.components.tags.context-tags/context-tag)
+(def group-avatar-tag quo2.components.tags.context-tags/group-avatar-tag)
 (def tabs quo2.components.tabs.tabs/tabs)
 (def scrollable-tabs quo2.components.tabs.tabs/scrollable-tabs)
 (def account-selector quo2.components.tabs.account-selector/account-selector)
