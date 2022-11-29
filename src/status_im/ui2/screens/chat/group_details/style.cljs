@@ -29,11 +29,11 @@
    :align-items      :center
    :margin-bottom    24})
 
-(defn bottom-container [safe-area]
+(def bottom-container
   {:position           :absolute
    :padding-horizontal 20
    :padding-vertical   12
-   :padding-bottom     (+ (:bottom safe-area) 33)
+   :padding-bottom     33
    :width              "100%"
    :background-color   colors/white
    :flex-direction     :row

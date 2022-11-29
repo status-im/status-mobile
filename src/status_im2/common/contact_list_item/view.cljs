@@ -1,13 +1,12 @@
 (ns status-im2.common.contact-list-item.view
   (:require [quo2.foundations.colors :as colors]
-            [quo.react-native :as rn]
-            [status-im.utils.utils :as utils]
-            [quo.platform :as platform]
-            [quo2.components.markdown.text :as text]
             [status-im2.contexts.chat.home.chat-list-item.style :as style]
             [utils.re-frame :as rf]
             [status-im2.common.home.actions.view :as actions]
-            [quo2.core :as quo]))
+            [quo2.core :as quo]
+            [react-native.core :as rn]
+            [react-native.platform :as platform]
+            [utils.address :as utils.address]))
 
 (defn open-chat [chat-id]
   (let [view-id (rf/sub [:view-id])]
@@ -24,7 +23,7 @@
         member? (contains? contacts public-key)]
     [rn/touchable-opacity {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
                                                     {:content (fn [] [actions/actions item extra-data])}])
-                           :style {:position :absolute
+                           :style    {:position :absolute
                                    :right    20}}
      (if (= icon :options)
        [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
@@ -33,7 +32,7 @@
                                                          (swap! added conj public-key)
                                                          (reset! added (remove #(= % public-key) @added))))}])]))
 
-(defn contact-list-item [item extra-data]
+(defn contact-list-item [item _ _ extra-data]
   (let [{:keys [public-key ens-verified added? images]} item
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
         photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))
@@ -58,9 +57,9 @@
          (when added?
            [rn/view {:style {:margin-left 5 :margin-top 4}}
             [quo/icon :i/contact {:no-color true :size 12 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]]))]
-      [text/text {:size  :paragraph-1
+      [quo/text {:size  :paragraph-1
                   :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
-       (utils/get-shortened-address public-key)]]
+       (utils.address/get-shortened-address public-key)]]
      (when-not (= current-pk public-key)
        [action-icon item extra-data])]))
 

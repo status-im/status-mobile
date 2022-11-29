@@ -62,7 +62,7 @@
        [rn/view {:style {:height (- window-height (:top safe-area))}}
         [rn/touchable-opacity
          {:on-press #(rf/dispatch [:bottom-sheet/hide])
-          :style (style/close-icon)}
+          :style    (style/close-icon)}
          [quo2/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
         [quo2/text {:size   :heading-1
                     :weight :semi-bold
@@ -73,11 +73,11 @@
                                       :padding-horizontal 20
                                       :margin-vertical    12}
                         :on-change   (fn [e] (rf/dispatch [:contacts/set-search-query (oget e "nativeEvent.text")]))}]
-        [contact-list/contact-list {:icon  :check
-                                    :group group
-                                    :added added
+        [contact-list/contact-list {:icon    :check
+                                    :group   group
+                                    :added   added
                                     :search? true}]
-        [rn/view {:style (style/bottom-container safe-area)}
+        [rn/view {:style style/bottom-container}
          [quo2/button {:style    {:flex 1}
                        :on-press #(rf/dispatch [:bottom-sheet/hide])
                        :disabled (zero? (count @added))}
@@ -85,10 +85,10 @@
 
 (defn group-details []
   (let [{:keys [admins chat-id chat-name color public? muted contacts] :as group} (rf/sub [:chats/current-chat])
-        members           (rf/sub [:contacts/group-members-sections])
-        pinned-messages   (rf/sub [:chats/pinned chat-id])
-        current-pk        (rf/sub [:multiaccount/public-key])
-        admin?            (get admins current-pk)]
+        members         (rf/sub [:contacts/group-members-sections])
+        pinned-messages (rf/sub [:chats/pinned chat-id])
+        current-pk      (rf/sub [:multiaccount/public-key])
+        admin?          (get admins current-pk)]
     [rn/view {:style {:flex             1
                       :background-color (colors/theme-colors colors/white colors/neutral-95)}}
      [quo2/header {:left-component  [back-button]
@@ -120,8 +120,8 @@
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if muted :unmute-group :mute-group))]]
       [rn/touchable-opacity {:style    (style/action-container color)
                              :on-press #(rf/dispatch
-                                         [:bottom-sheet/show-sheet
-                                          {:content (fn [] [contact-requests-sheet group])}])}
+                                          [:bottom-sheet/show-sheet
+                                           {:content (fn [] [contact-requests-sheet group])}])}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
@@ -131,7 +131,7 @@
                        :sticky-section-headers-enabled false
                        :sections                       members
                        :render-section-header-fn       contacts-section-header
-                       :render-fn                      (fn [item]
-                                                         [contact-list-item/contact-list-item item {:chat-id chat-id
-                                                                                                    :admin?  admin?
-                                                                                                    :icon    :options}])}]]))
+                       :render-fn                      contact-list-item/contact-list-item
+                       :render-data                    {:chat-id chat-id
+                                                        :admin?  admin?
+                                                        :icon    :options}}]]))

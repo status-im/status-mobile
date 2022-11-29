@@ -44,9 +44,6 @@
    [quo/text {:weight :semi-bold} (i18n/label :t/no-contacts)]
    [quo/text (i18n/label :t/blank-contacts-text)]])
 
-(defn contacts-section-header [{:keys [title]}]
-  [quo/divider-label {:label title}])
-
 (defn contacts [contact-requests]
   (let [items (rf/sub [:contacts/active-sections])]
     (if (empty? items)
