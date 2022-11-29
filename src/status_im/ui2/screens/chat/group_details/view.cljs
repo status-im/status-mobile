@@ -55,33 +55,35 @@
 (def added (reagent/atom ()))
 
 (defn contact-requests-sheet [group]
-  [:f>
-   (fn []
-     (let [{window-height :height} (rn/use-window-dimensions)
-           safe-area (safe-area/use-safe-area)]
-       [rn/view {:style {:height (- window-height (:top safe-area))}}
-        [rn/touchable-opacity
-         {:on-press #(rf/dispatch [:bottom-sheet/hide])
-          :style    (style/close-icon)}
-         [quo2/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
-        [quo2/text {:size   :heading-1
-                    :weight :semi-bold
-                    :style  {:margin-left 20}}
-         (i18n/label :t/add-members)]
-        [rn/text-input {:placeholder (str (i18n/label :t/search) "...")
-                        :style       {:height             32
-                                      :padding-horizontal 20
-                                      :margin-vertical    12}
-                        :on-change   (fn [e] (rf/dispatch [:contacts/set-search-query (oget e "nativeEvent.text")]))}]
-        [contact-list/contact-list {:icon    :check
-                                    :group   group
-                                    :added   added
-                                    :search? true}]
-        [rn/view {:style style/bottom-container}
-         [quo2/button {:style    {:flex 1}
-                       :on-press #(rf/dispatch [:bottom-sheet/hide])
-                       :disabled (zero? (count @added))}
-          (i18n/label :t/save)]]]))])
+  (let [added (reagent/atom ())]
+    (fn []
+      [:f>
+       (fn []
+         (let [{window-height :height} (rn/use-window-dimensions)
+               safe-area (safe-area/use-safe-area)]
+           [rn/view {:style {:height (- window-height (:top safe-area))}}
+            [rn/touchable-opacity
+             {:on-press #(rf/dispatch [:bottom-sheet/hide])
+              :style    (style/close-icon)}
+             [quo2/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
+            [quo2/text {:size   :heading-1
+                        :weight :semi-bold
+                        :style  {:margin-left 20}}
+             (i18n/label :t/add-members)]
+            [rn/text-input {:placeholder (str (i18n/label :t/search) "...")
+                            :style       {:height             32
+                                          :padding-horizontal 20
+                                          :margin-vertical    12}
+                            :on-change   (fn [e] (rf/dispatch [:contacts/set-search-query (oget e "nativeEvent.text")]))}]
+            [contact-list/contact-list {:icon    :check
+                                        :group   group
+                                        :added   added
+                                        :search? true}]
+            [rn/view {:style style/bottom-container}
+             [quo2/button {:style    {:flex 1}
+                           :on-press #(rf/dispatch [:bottom-sheet/hide])
+                           :disabled (zero? (count @added))}
+              (i18n/label :t/save)]]]))])))
 
 (defn group-details []
   (let [{:keys [admins chat-id chat-name color public? muted contacts] :as group} (rf/sub [:chats/current-chat])

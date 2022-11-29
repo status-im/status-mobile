@@ -257,7 +257,7 @@
 (re-frame/reg-sub
  :contacts/filtered-active-sections
  :<- [:contacts/active-sections]
- :<- [:contacts/set-search-query]
+ :<- [:contacts/search-query]
  (fn [[contacts query]]
    (if (empty? query)
      contacts
