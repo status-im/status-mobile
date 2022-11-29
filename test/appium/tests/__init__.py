@@ -22,6 +22,20 @@ async def start_threads(quantity: int, func: type, returns: dict, *args):
     return returns
 
 
+async def run_in_parallel(funcs):
+    loop = asyncio.get_event_loop()
+    res = []
+    returns = []
+    for func in funcs:
+        try:
+            res.append(loop.run_in_executor(None, func[0], func[1]))
+        except IndexError:
+            res.append(loop.run_in_executor(None, func[0]))
+    for k in res:
+        returns.append(await k)
+    return returns
+
+
 def get_current_time():
     return datetime.now().strftime('%-m%-d%-H%-M%-S')
 

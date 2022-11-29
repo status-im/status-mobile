@@ -1,12 +1,13 @@
-import emoji
 import random
 import time
 
-from tests import marks, common_password
+import emoji
+import pytest
+
+from tests import marks, common_password, run_in_parallel
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_message_sender
 from views.sign_in_view import SignInView
-import pytest
 
 
 @pytest.mark.xdist_group(name="four_2")
@@ -849,7 +850,8 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702188)
-    @marks.xfail(reason="flaky; issue when sometimes history is not fetched from offline for public chat, needs investigation")
+    @marks.xfail(
+        reason="flaky; issue when sometimes history is not fetched from offline for public chat, needs investigation")
     def test_cellular_settings_on_off_public_chat_fetching_history(self):
         [home.home_button.double_click() for home in [self.home_1, self.home_2]]
         public_chat_name, public_chat_message = 'e2e-started-before', 'message to pub chat'
@@ -1036,7 +1038,8 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.chat_2.just_fyi("Check that message is fetched for receiver")
         self.home_2.get_chat(self.sender['username']).click()
         chat_2_reciever_message = self.chat_2.get_incoming_transaction(transaction_value=amount)
-        chat_2_reciever_message.transaction_status.wait_for_element_text(chat_2_reciever_message.confirmed, wait_time=60)
+        chat_2_reciever_message.transaction_status.wait_for_element_text(chat_2_reciever_message.confirmed,
+                                                                         wait_time=60)
 
     @marks.testrail_id(702155)
     def test_ens_mention_nickname_1_1_chat(self):
@@ -1224,12 +1227,17 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     def prepare_devices(self):
         self.drivers, self.loop = create_shared_drivers(2)
         self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        self.home_1 = self.device_1.create_user(enable_notifications=True)
-        self.home_2 = self.device_2.create_user(enable_notifications=True)
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user,), (self.device_2.create_user,))))
+        self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.profile_1 = self.home_1.get_profile_view()
-        self.public_key_1, self.default_username_1 = self.home_1.get_public_key_and_username(return_username=True)
+        users = self.loop.run_until_complete(run_in_parallel(
+            ((self.home_1.get_public_key_and_username, True),
+             (self.home_2.get_public_key_and_username, True))
+        ))
+        self.public_key_1, self.default_username_1 = users[0]
+        self.public_key_2, self.default_username_2 = users[1]
+
         self.profile_1.switch_push_notifications()
-        self.public_key_2, self.default_username_2 = self.home_2.get_public_key_and_username(return_username=True)
         self.profile_1.chats_tab.click()
         self.chat_1 = self.home_1.add_contact(self.public_key_2)
         self.chat_1.send_message('hey')
@@ -1347,7 +1355,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702745)
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
         self.home_1.click_system_back_button_until_element_is_shown()
-        self.home_1.browser_tab.click() #temp, until profile is on browser tab
+        self.home_1.browser_tab.click()  # temp, until profile is on browser tab
         self.profile_1.edit_profile_picture('sauce_logo.png')
         self.profile_1.chats_tab.click()
 
@@ -1365,7 +1373,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         timestamp = self.chat_2.chat_element_by_text(messages[0]).timestamp
         sent_time_variants = self.chat_2.convert_device_time_to_chat_timestamp()
         if timestamp not in sent_time_variants:
-            self.errors.append('Timestamp on message %s does not correspond expected [%s]' % (timestamp, *sent_time_variants))
+            self.errors.append(
+                'Timestamp on message %s does not correspond expected [%s]' % (timestamp, *sent_time_variants))
         for message in [messages[1], messages[2]]:
             if self.chat_2.chat_element_by_text(message).member_photo.is_element_displayed():
                 self.errors.append('%s is not stack to 1st(they are sent in less than 5 minutes)!' % message)
@@ -1375,7 +1384,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_1.send_message(message)
         self.chat_2.chat_element_by_text(message).wait_for_visibility_of_element(30)
         if not self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member2.png",
-                                                                                                   diff=5):
+                                                                                                       diff=5):
             self.errors.append("Image of user in 1-1 chat is updated even when user is not added to contacts!")
 
         self.chat_1.just_fyi("Users add to contacts each other")
@@ -1389,7 +1398,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         [home.chats_tab.click() for home in (self.home_1, self.home_2)]
         if not self.chat_2.chat_message_input.is_element_displayed():
             self.home_2.get_chat(self.default_username_1).click()
-        if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member2.png", diff=5):
+        if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member2.png",
+                                                                                                   diff=5):
             self.errors.append("Image of user in 1-1 chat is too different from template!")
         self.errors.verify_no_errors()
 
