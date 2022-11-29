@@ -37,9 +37,9 @@
      :unread?   (not (:read notification))
      :context   [[common/user-avatar-tag author]
                  [quo2/text {:style style/tag-text} (str/lower-case (i18n/label :t/on))]
-                   ;; TODO (@smohamedjavid): The `group-avatar-tag` component 
-                   ;; does NOT support displaying channel name along with community/chat name.
-                   ;; Need to update the component to support it. 
+                 ;; TODO (@smohamedjavid): The `group-avatar-tag` component 
+                 ;; does NOT support displaying channel name along with community/chat name.
+                 ;; Need to update the component to support it. 
                  [quo2/group-avatar-tag chat-name {:size           :small
                                                    :override-theme :dark
                                                    :color          colors/primary-50
