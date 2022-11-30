@@ -58,6 +58,7 @@
             status-im.wallet-connect-legacy.core
             status-im.network.net-info
             status-im.visibility-status-popover.core
+            status-im2.contexts.shell.events
             [status-im.multiaccounts.model :as multiaccounts.model]))
 
 (re-frame/reg-fx

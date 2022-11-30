@@ -5,6 +5,8 @@
             [status-im.ui2.screens.chat.composer.view :as composer]
             [status-im.utils.debounce :as debounce]
             [quo.react-native :as rn]
+            [re-frame.core :as re-frame]
+            [status-im.i18n.i18n :as i18n]
             [quo2.components.buttons.button :as quo2.button]
             [quo2.foundations.colors :as colors]
             [status-im.ui.components.react :as react]
@@ -14,6 +16,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui2.screens.chat.messages.pinned-message :as pinned-message]
             [re-frame.db]
+            [quo2.components.navigation.floating-shell-button :as floating-shell-button]
             [status-im.ui2.screens.chat.messages.message :as message]))
 
 (defn topbar-content []
@@ -77,10 +80,16 @@
      [messages/messages-view
       {:chat                             chat
        :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
-       :show-input?                      show-input?}]
+       :show-input?                      show-input?
+       :bottom-space                     15}]
      ;;INPUT COMPOSER
      (when show-input?
-       [composer/composer chat-id])]))
+       [composer/composer chat-id])
+     [floating-shell-button/floating-shell-button
+      {:jump-to {:on-press #(re-frame/dispatch [:shell/navigate-to-jump-to])
+                 :label    (i18n/label :t/jump-to)}}
+      {:position :absolute
+       :bottom   117}]]))
 
 (defn chat []
   (reagent/create-class

@@ -170,7 +170,7 @@
                                     (re-frame/dispatch [:dismiss-keyboard])) edit)
               [reanimated/view {:style (reanimated/apply-animations-to-style
                                         {:height shared-height}
-                                        {})}
+                                        {:z-index 2})}
                ;;INPUT MESSAGE bottom sheet
                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                 [reanimated/view {:style (reanimated/apply-animations-to-style

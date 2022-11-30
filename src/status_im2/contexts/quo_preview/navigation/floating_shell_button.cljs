@@ -52,8 +52,7 @@
          [rn/view {:padding-vertical 60
                    :align-items      :center}
           [quo2/floating-shell-button (mock-data @state)
-           nil (reanimated/use-shared-value 1)
-           (reanimated/use-shared-value "auto")]]]])]))
+           nil (reanimated/use-shared-value 1)]]]])]))
 
 (defn preview-floating-shell-button []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)

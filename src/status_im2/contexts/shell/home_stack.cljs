@@ -2,8 +2,8 @@
   (:require [react-native.reanimated :as reanimated]
             [react-native.core :as rn]
             [status-im2.contexts.shell.style :as styles]
+            [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.constants :as constants]
-            [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]
             [status-im2.contexts.communities.home.view :as communities]
             [status-im2.contexts.chat.home.view :as chat]
 
@@ -14,10 +14,10 @@
 
 (defn load-stack? [stack-id]
   (case stack-id
-    :communities-stack @bottom-tabs/load-communities-tab?
-    :chats-stack       @bottom-tabs/load-chats-tab?
-    :browser-stack     @bottom-tabs/load-browser-tab?
-    :wallet-stack      @bottom-tabs/load-wallet-tab?))
+    :communities-stack @animation/load-communities-stack?
+    :chats-stack       @animation/load-chats-stack?
+    :browser-stack     @animation/load-browser-stack?
+    :wallet-stack      @animation/load-wallet-stack?))
 
 (defn stack-view [stack-id shared-values]
   (when (load-stack? stack-id)
@@ -39,12 +39,13 @@
           :wallet-stack      [wallet.accounts/accounts-overview]
           :browser-stack     [profile.user/my-profile])])]))
 
-(defn home-stack [shared-values]
+(defn home-stack []
   [safe-area/consumer
    (fn [insets]
      [:f>
       (fn []
-        (let [home-stack-original-style (styles/home-stack)
+        (let [shared-values             @animation/shared-values-atom
+              home-stack-original-style (styles/home-stack)
               home-stack-animated-style (reanimated/apply-animations-to-style
                                          {:top            (:home-stack-top shared-values)
                                           :left           (:home-stack-left shared-values)

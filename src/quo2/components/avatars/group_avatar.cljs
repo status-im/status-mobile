@@ -21,6 +21,6 @@
                 :align-items      :center
                 :justify-content  :center
                 :border-radius    (/ container-size 2)
-                :background-color (colors/theme-alpha color 0.5 0.6)}
-       [icon/icon :i/group {:size  icon-size ; TODO: group icon sizes 12 and 20 (small and large) are missing
+                :background-color (colors/custom-color-by-theme color 50 60)}
+       [icon/icon :i/group {:size  icon-size
                             :color colors/white-opa-70}]])))

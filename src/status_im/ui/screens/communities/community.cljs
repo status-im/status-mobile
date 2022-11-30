@@ -22,6 +22,7 @@
             [status-im.ui.components.accordion :as accordion]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
+            [quo2.components.navigation.floating-shell-button :as floating-shell-button]
             [quo.core :as quo]
             [quo.design-system.colors :as colors]))
 
@@ -155,7 +156,7 @@
    (assoc home-item :public? true)
    {:on-press      (fn []
                      (rf/dispatch [:dismiss-keyboard])
-                     (rf/dispatch [:chat.ui/navigate-to-chat chat-id])
+                     (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                      (rf/dispatch [:search/home-filter-changed nil])
                      (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
     :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
@@ -244,7 +245,7 @@
          (i18n/label :t/fetch-community))]]]))
 
 (defn community []
-  (let [{:keys [community-id from-chat]} (rf/sub [:get-screen-params])]
+  (let [{:keys [community-id from-chat]} (rf/sub [:get-screen-params :community])]
     (fn []
       (let [{:keys [id chats name images members permissions color joined
                     can-request-access? can-join? requested-to-join-at admin]
@@ -301,5 +302,10 @@
                 {:show-border? true
                  :center       [quo/button {:on-press #(rf/dispatch [:communities/join id])
                                             :type     :secondary}
-                                (i18n/label :t/follow)]}]))]
+                                (i18n/label :t/follow)]}]))
+           [floating-shell-button/floating-shell-button
+            {:jump-to {:on-press #(rf/dispatch [:shell/navigate-to-jump-to])
+                       :label    (i18n/label :t/jump-to)}}
+            {:position :absolute
+             :bottom   70}]]
           [unknown-community community-id])))))

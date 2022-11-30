@@ -274,9 +274,9 @@
           name]
          [rn/text description]]]
        [rn/view (style/community-view-button)
-        [rn/touchable-opacity {:on-press #(re-frame/dispatch [:navigate-to
-                                                              :community
-                                                              {:community-id (:id community)}])}
+        [rn/touchable-opacity {:on-press #(re-frame/dispatch
+                                           [:communities/navigate-to-community
+                                            {:community-id (:id community)}])}
          [rn/text {:style {:text-align :center
                            :color      quo.colors/blue}} (i18n/label :t/view)]]]])))
 
