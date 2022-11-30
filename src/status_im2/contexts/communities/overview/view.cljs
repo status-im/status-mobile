@@ -143,7 +143,7 @@
                                            (sort-by :height
                                                     (conj @channel-heights
                                                           {:height (int (oops/oget % "nativeEvent.layout.y"))
-                                                           :label first-category}))))}
+                                                           :label  first-category}))))}
 
                      [quo/divider-label
                       {:label first-category
@@ -153,7 +153,8 @@
                        :margin-top    10
                        :margin-bottom 8}
                       (map-indexed (fn [inner-index channel-data]
-                                     [rn/view {:key (str inner-index (:name channel-data)) :margin-top 4}
+                                     [rn/view {:key        (str inner-index (:name channel-data))
+                                               :margin-top 4}
                                       [quo/channel-list-item channel-data]]) (first-category mock-list-of-channels))]]))
                 mock-list-of-channels)])
 
@@ -164,99 +165,124 @@
                             :as   community}
                            channel-heights first-channel-height]
   (let [thumbnail-image (get-in images [:thumbnail])]
-    (fn [scroll-height]
-      [rn/view {:flex 1
-                :border-radius (scroll-page/diff-with-max-min scroll-height 16 0)
-                :background-color (colors/theme-colors
-                                   colors/white
-                                   colors/neutral-90)}
-       [rn/view
-        [rn/view {:padding-horizontal 20}
-         [rn/view {:border-radius    40
-                   :border-width     1
-                   :border-color     colors/white
-                   :position         :absolute
-                   :top              (style/icon-top scroll-height)
-                   :left             17
-                   :padding          2
-                   :background-color (colors/theme-colors
-                                      colors/white
-                                      colors/neutral-90)}
-          [communities.icon/community-icon-redesign community
-           (style/icon-size scroll-height)]]
-         (when (and (not joined)
-                    (= status :gated))
-           [rn/view {:position         :absolute
-                     :top              8
-                     :right            8}
-            [quo/permission-tag-container
-             {:locked       locked
-              :status       status
-              :tokens       tokens
-              :on-press     #(rf/dispatch
-                              [:bottom-sheet/show-sheet
-                               {:content
-                                (constantly [token-gating/token-gating
-                                             {:community {:name name
-                                                          :community-color colors/primary-50
-                                                          :community-avatar (cond
-                                                                              (= id constants/status-community-id)
-                                                                              (resources/get-image :status-logo)
-                                                                              (seq thumbnail-image)
-                                                                              thumbnail-image)
-                                                          :gates {:join [{:token "KNC"
-                                                                          :token-img-src knc-token-img
-                                                                          :amount 200
-                                                                          :is-sufficient? true}
-                                                                         {:token "MANA"
-                                                                          :token-img-src mana-token-img
-                                                                          :amount 10
-                                                                          :is-sufficient? false
-                                                                          :is-purchasable true}
-                                                                         {:token "RARE"
-                                                                          :token-img-src rare-token-img
-                                                                          :amount 10
-                                                                          :is-sufficient? false}]}}}])
-                                :content-height 210}])}]])
-         (when joined
-           [rn/view {:position         :absolute
-                     :top              12
-                     :right            12}
-            [quo/status-tag {:status {:type :positive} :label (i18n/label :t/joined)}]])
-         [rn/view  {:margin-top  56}
-          [quo/text
-           {:accessibility-label :chat-name-text
-            :number-of-lines     1
-            :ellipsize-mode      :tail
-            :weight              :semi-bold
-            :size                :heading-1} name]]
-
+    (fn [scroll-height icon-top icon-size]
+      [rn/view
+       [rn/view {:padding-horizontal 20}
+        [rn/view {:border-radius    40
+                  :border-width     1
+                  :border-color     colors/white
+                  :position         :absolute
+                  :top              (icon-top scroll-height)
+                  :left             17
+                  :padding          2
+                  :background-color (colors/theme-colors
+                                     colors/white
+                                     colors/neutral-90)}
+         [communities.icon/community-icon-redesign community
+          (icon-size scroll-height)]]
+        (when (and (not joined)
+                   (= status :gated))
+          [rn/view {:position         :absolute
+                    :top              8
+                    :right            8}
+           [quo/permission-tag-container
+            {:locked       locked
+             :status       status
+             :tokens       tokens
+             :on-press     #(rf/dispatch
+                             [:bottom-sheet/show-sheet
+                              {:content-height 210
+                               :content
+                               (constantly [token-gating/token-gating
+                                            {:community {:name name
+                                                         :community-color colors/primary-50
+                                                         :community-avatar (cond
+                                                                             (= id constants/status-community-id)
+                                                                             (resources/get-image :status-logo)
+                                                                             (seq thumbnail-image)
+                                                                             thumbnail-image)
+                                                         :gates {:join [{:token "KNC"
+                                                                         :token-img-src knc-token-img
+                                                                         :amount 200
+                                                                         :is-sufficient? true}
+                                                                        {:token "MANA"
+                                                                         :token-img-src mana-token-img
+                                                                         :amount 10
+                                                                         :is-sufficient? false
+                                                                         :is-purchasable true}
+                                                                        {:token "RARE"
+                                                                         :token-img-src rare-token-img
+                                                                         :amount 10
+                                                                         :is-sufficient? false}]}}}])
+                               }])}]])
+        (when joined
+          [rn/view {:position         :absolute
+                    :top              12
+                    :right            12}
+           [quo/status-tag {:status {:type :positive} :label (i18n/label :t/joined)}]])
+        [rn/view  {:margin-top  56}
          [quo/text
-          {:accessibility-label :community-description-text
-           :number-of-lines     2
+          {:accessibility-label :chat-name-text
+           :number-of-lines     1
            :ellipsize-mode      :tail
-           :weight  :regular
-           :size    :paragraph-1
-           :style {:margin-top 8 :margin-bottom 12}}
-          description]
-         [quo/community-stats-column :card-view]
-         [rn/view {:margin-top 12}]
-         [quo/community-tags tags]
-         [preview-user-list]
-         (when-not joined
-           [quo/button
-            {:on-press  #(rf/dispatch [:bottom-sheet/show-sheet
-                                       {:content (constantly [requests.actions/request-to-join community])
-                                        :content-height 300}])
-             :override-background-color community-color
-             :style
-             {:width "100%"
-              :margin-top 20
-              :margin-left :auto
-              :margin-right :auto}
-             :before :i/communities}
-            (i18n/label :t/join-open-community)])]
-        [channel-list-component channel-heights first-channel-height]]])))
+           :weight              :semi-bold
+           :size                :heading-1} name]]
+
+        [quo/text
+         {:accessibility-label :community-description-text
+          :number-of-lines     2
+          :ellipsize-mode      :tail
+          :weight  :regular
+          :size    :paragraph-1
+          :style {:margin-top 8 :margin-bottom 12}}
+         description]
+        [quo/community-stats-column :card-view]
+        [rn/view {:margin-top 12}]
+        [quo/community-tags tags]
+        [preview-user-list]
+        (when-not joined
+          [quo/button
+           {:on-press  #(rf/dispatch [:bottom-sheet/show-sheet
+                                      {:content (constantly [requests.actions/request-to-join community])
+                                       :content-height 300}])
+            :override-background-color community-color
+            :style
+            {:width "100%"
+             :margin-top 20
+             :margin-left :auto
+             :margin-right :auto}
+            :before :i/communities}
+           (i18n/label :t/join-open-community)])]
+       [channel-list-component channel-heights first-channel-height]]))
+
+  [quo/text
+   {:accessibility-label :community-description-text
+    :number-of-lines     2
+    :ellipsize-mode      :tail
+    :weight  :regular
+    :size    :paragraph-1
+    :style {:margin-top 8 :margin-bottom 12}}
+   description]
+  [quo/community-stats-column :card-view]
+  [rn/view {:margin-top 12}]
+  [quo/community-tags tags]
+  [preview-user-list]
+  (when-not joined
+    [quo/button
+     {:on-press  #(rf/dispatch [:bottom-sheet/show-sheet
+                                {:content (constantly [requests.actions/request-to-join community])
+                                 :content-height 300}])
+      :override-background-color community-color
+      :style
+      {:width "100%"
+       :margin-top 20
+       :margin-left :auto
+       :margin-right :auto}
+      :before :i/communities}
+     (i18n/label :t/join-open-community)])
+
+  [channel-list-component channel-heights first-channel-height])
+
 (defn render-sticky-header [channel-heights first-channel-height]
   (fn [scroll-height] (when (>= scroll-height @first-channel-height)
                         [rn/blur-view style/blur-channel-header
