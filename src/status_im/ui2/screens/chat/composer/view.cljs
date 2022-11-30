@@ -20,7 +20,7 @@
             [status-im.ui2.screens.chat.composer.edit.view :as edit]
             [reagent.core :as reagent]))
 
-(defn calculate-y [context keyboard-shown min-y max-y added-value]
+(defn calculate-y [context keyboard-shown min-y max-y added-value number-of-lines]
   (if keyboard-shown
     (if (= (:state @context) :max)
       max-y
@@ -33,7 +33,7 @@
       (swap! context assoc :state :min)
       min-y)))
 
-(defn calculate-y-with-mentions [y max-y max-height chat-id suggestions reply]
+(defn calculate-y-with-mentions [y max-y max-height chat-id suggestions reply number-of-lines]
   (let [input-text               (:input-text (get (<sub [:chat/inputs]) chat-id))
         num-lines                (count (string/split input-text "\n"))
         text-height              (* num-lines 22)
@@ -44,9 +44,9 @@
         mentions-translate-value (if should-translate? (min min-value (- mentions-height (- max-height text-height))) mentions-height)]
     (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
-(defn get-y-value [context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply]
-  (let [y               (calculate-y context keyboard-shown min-y max-y added-value)
-        y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
+(defn get-y-value [context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply number-of-lines]
+  (let [y               (calculate-y context keyboard-shown min-y max-y added-value number-of-lines)
+        y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply number-of-lines)]
     (+ y (when (seq suggestions) y-with-mentions))))
 
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height set-bg-opacity]
@@ -81,7 +81,7 @@
                (set-bg-opacity 0)
                (re-frame/dispatch [:dismiss-keyboard]))))))))
 
-(defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y]
+(defn get-input-content-change [context translate-y shared-height max-height bg-opacity keyboard-shown min-y max-y number-of-lines]
   (fn [evt]
     (if (:clear @context)
       (do
@@ -137,28 +137,27 @@
        (fn []
          [:f>
           (fn []
-            (let [reply                (<sub [:chats/reply-message])
-                  edit                 (<sub [:chats/edit-message])
-                  suggestions          (<sub [:chat/mention-suggestions])
-                  {window-height :height} (rn/use-window-dimensions)
+            (let [reply                                    (<sub [:chats/reply-message])
+                  edit                                     (<sub [:chats/edit-message])
+                  suggestions                              (<sub [:chat/mention-suggestions])
+                  {window-height :height}                  (rn/use-window-dimensions)
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
-                  max-y                (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets) (:status-bar-height @navigation-const)) ; 360 - default height
-                  max-height           (Math/abs (- max-y 56 (:bottom insets))) ; 56 - top-bar height
-                  added-value          (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
-                  min-y                (+ min-y (when (or edit reply) 38))
-                  y                    (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply)
-                  translate-y          (reanimated/use-shared-value 0)
-                  shared-height        (reanimated/use-shared-value min-y)
-                  bg-opacity           (reanimated/use-shared-value 0)
-                  bg-bottom            (reanimated/use-shared-value (- window-height))
-
-                  set-bg-opacity       (fn [value]
-                                         (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
-                                         (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
-                  input-content-change (get-input-content-change context translate-y shared-height max-height
-                                                                 bg-opacity keyboard-shown min-y max-y)
-                  bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
-                                                                 min-y max-y shared-height max-height bg-opacity)]
+                  max-y                                    (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets) (:status-bar-height @navigation-const)) ; 360 - default height
+                  max-height                               (Math/abs (- max-y 56 (:bottom insets))) ; 56 - top-bar height
+                  added-value                              (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
+                  min-y                                    (+ min-y (when (or edit reply) 38))
+                  number-of-lines                          (-> (get @input/input-texts chat-id)
+                                                               frequencies
+                                                               (get "\n"))
+                  y                                        (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply number-of-lines)
+                  translate-y                              (reanimated/use-shared-value 0)
+                  shared-height                            (reanimated/use-shared-value min-y)
+                  bg-opacity                               (reanimated/use-shared-value 0)
+                  more-than-three-lines?                   (<= 3 number-of-lines)
+                  input-content-change                     (get-input-content-change context translate-y shared-height max-height
+                                                                                     bg-opacity keyboard-shown min-y max-y number-of-lines)
+                  bottom-sheet-gesture                     (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
+                                                                                     min-y max-y shared-height max-height bg-opacity)]
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown (not keyboard-shown))
                                       (swap! context assoc :state :min))
@@ -175,12 +174,16 @@
                                     (set-bg-opacity 0)
                                     (re-frame/dispatch [:dismiss-keyboard])) edit)
               [reanimated/view {:style (reanimated/apply-animations-to-style
-                                        {:height shared-height}
+                                        {:height #js{:value (+ (.-value shared-height)
+                                                               (* 2 number-of-lines))}}
                                         {:z-index 2})}
                ;;INPUT MESSAGE bottom sheet
                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                 [reanimated/view {:style (reanimated/apply-animations-to-style
-                                          {:transform [{:translateY translate-y}]}
+                                          {:transform [{:translateY (if more-than-three-lines?
+                                                                      #js{:value (->> (* 2 number-of-lines)
+                                                                                      (- (.-value translate-y)))}
+                                                                      translate-y)}]}
                                           (styles/input-bottom-sheet window-height))}
                  ;handle
                  [rn/view {:style (styles/bottom-sheet-handle)}]
@@ -204,20 +207,28 @@
                                                                     (utils/set-timeout
                                                                      #(utils/show-popup (i18n/label :t/error)
                                                                                         (i18n/label :t/external-storage-denied)) 50))}))
-                                       :icon     true :type :outline :size 32} :i/image]
+                                       :icon     true
+                                       :type     :outline
+                                       :size     32} :i/image]
                   [rn/view {:width 12}]
-                  [quo2.button/button {:icon true :type :outline :size 32} :i/reaction]
+                  [quo2.button/button {:icon true
+                                       :type :outline
+                                       :size 32} :i/reaction]
                   [rn/view {:flex 1}]
                   ;;SEND button
-                  [rn/view {:ref send-ref :style (when-not (seq (get @input/input-texts chat-id)) {:width 0 :right -100})}
-                   [quo2.button/button {:icon     true :size 32 :accessibility-label :send-message-button
-                                        :on-press #(do (swap! context assoc :clear true)
-                                                       (input/clear-input chat-id refs)
-                                                       (re-frame/dispatch [:chat.ui/send-current-message]))}
+                  [rn/view {:ref   send-ref
+                            :style (when-not (seq (get @input/input-texts chat-id)) {:width 0
+                                                                                     :right -100})}
+                   [quo2.button/button {:icon                true
+                                        :size                32
+                                        :accessibility-label :send-message-button
+                                        :on-press            #(do (swap! context assoc :clear true)
+                                                                  (input/clear-input chat-id refs)
+                                                                  (re-frame/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
-                                         {:opacity bg-opacity
+                                         {:opacity   bg-opacity
                                           :transform [{:translateY bg-bottom}]}
                                          (styles/bottom-sheet-background window-height))}]
                [mentions/autocomplete-mentions suggestions text-input-ref]]))])))])
