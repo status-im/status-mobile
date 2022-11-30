@@ -1,40 +1,76 @@
 (ns status-im2.subs.communities-test
-  (:require [cljs.test :refer [deftest is testing]]
-            [status-im2.subs.communities :as subs]))
+  (:require [cljs.test :refer [is testing use-fixtures]]
+            [re-frame.db :as rf-db]
+            [status-im.test-helpers :as h]
+            status-im2.subs.communities
+            [utils.re-frame :as rf]))
 
-(deftest community->home-item-test
-  (testing "has unread messages"
-    (is (= {:name                  "name-1"
-            :muted?                true
-            :unread-messages?      true
-            :unread-mentions-count 5
-            :community-icon        "icon-1"}
-           (subs/community->home-item
-            {:name "name-1"
-             :muted true
-             :images {:thumbnail {:uri "icon-1"}}}
-            {:unviewed-messages-count 1
-             :unviewed-mentions-count 5}))))
-  (testing "no unread messages"
-    (is (= {:name                  "name-2"
-            :muted?                false
-            :unread-messages?      false
-            :unread-mentions-count 5
-            :community-icon        "icon-2"}
-           (subs/community->home-item
-            {:name "name-2"
-             :muted false
-             :images {:thumbnail {:uri "icon-2"}}}
-            {:unviewed-messages-count 0
-             :unviewed-mentions-count 5})))))
+(use-fixtures :each
+  {:before #(reset! rf-db/app-db {:communities/enabled? true})})
 
-(deftest calculate-unviewed-counts-test
-  (let [chats [{:unviewed-messages-count 1
-                :unviewed-mentions-count 2}
-               {:unviewed-messages-count 3
-                :unviewed-mentions-count 0}
-               {:unviewed-messages-count 2
-                :unviewed-mentions-count 1}]]
-    (is (= {:unviewed-messages-count 6
-            :unviewed-mentions-count 3}
-           (subs/calculate-unviewed-counts chats)))))
+(def community-id "0x1")
+
+(h/deftest-sub :communities
+  [sub-name]
+  (testing "returns empty vector if flag is disabled"
+    (swap! rf-db/app-db assoc :communities/enabled? false)
+    (is (= [] (rf/sub [sub-name]))))
+
+  (testing "returns raw communities if flag is enabled"
+    (let [raw-communities {"0x1" {:id "0x1"}}]
+      (swap! rf-db/app-db assoc
+             :communities/enabled? true
+             :communities raw-communities)
+      (is (= raw-communities (rf/sub [sub-name]))))))
+
+(h/deftest-sub :communities/section-list
+  [sub-name]
+  (testing "builds sections using the first community name char (uppercased)"
+    (swap! rf-db/app-db assoc :communities
+           {"0x1" {:name "civilized monkeys"}
+            "0x2" {:name "Civilized rats"}})
+    (is (= [{:title "C"
+             :data  [{:name "civilized monkeys"}
+                     {:name "Civilized rats"}]}]
+           (rf/sub [sub-name]))))
+
+  (testing "sorts by section ascending"
+    (swap! rf-db/app-db assoc :communities
+           {"0x3" {:name "Memorable"}
+            "0x1" {:name "Civilized monkeys"}})
+    (is (= [{:title "C" :data [{:name "Civilized monkeys"}]}
+            {:title "M" :data [{:name "Memorable"}]}]
+           (rf/sub [sub-name]))))
+
+  (testing "builds default section for communities without a name"
+    (swap! rf-db/app-db assoc :communities
+           {"0x2" {:id "0x2"}
+            "0x1" {:id "0x1"}})
+    (is (= [{:title ""
+             :data  [{:id "0x2"}
+                     {:id "0x1"}]}]
+           (rf/sub [sub-name])))))
+
+(h/deftest-sub :communities/unviewed-counts
+  [sub-name]
+  (testing "sums counts for a particular community"
+    (swap! rf-db/app-db assoc :chats
+           {"0x100" {:community-id            community-id
+                     :unviewed-mentions-count 3
+                     :unviewed-messages-count 2}
+            "0x101" {:community-id            "0x2"
+                     :unviewed-mentions-count 7
+                     :unviewed-messages-count 9}
+            "0x102" {:community-id            community-id
+                     :unviewed-mentions-count 5
+                     :unviewed-messages-count 1}})
+    (is (= {:unviewed-messages-count 3
+            :unviewed-mentions-count 8}
+           (rf/sub [sub-name community-id]))))
+
+  (testing "defaults to zero when count keys are not present"
+    (swap! rf-db/app-db assoc :chats
+           {"0x100" {:community-id community-id}})
+    (is (= {:unviewed-messages-count 0
+            :unviewed-mentions-count 0}
+           (rf/sub [sub-name community-id])))))
