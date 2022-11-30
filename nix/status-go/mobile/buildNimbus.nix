@@ -6,7 +6,7 @@
 , writeTextFile
 , androidPkgs
 , git 
-, nimBinary 
+, nimCompiler 
 , platform ? "android"
 , arch ? "386"
 , api ? "29" }:
@@ -80,8 +80,18 @@ let
   
   
   androidToolchain = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${osId}-${osArch}";
+  androidTargetArchMap = {
+    "x86" = "i686-linux-android";
+    "x86-64" = "x86_64-linux-android";
+    "arm" = "armv7a-linux-androideabi";
+    "arm64" = "aarch64-linux-android";
+  };
+
+  androidTargetArch = lib.getAttr arch androidTargetArchMap;
+
+
   compilerFlags = if isAndroid then
-    "--sysroot ${androidToolchain}/sysroot -fPIC -I${ANDROID_NDK_HOME}/sources/cxx-stl/llvm-libc++/include/ -I${PROJECT_ROOT}/vendor/nimbus-build-system/vendor/Nim-csources-v1/c_code"
+    "--sysroot ${androidToolchain}/sysroot -fPIC -I${ANDROID_NDK_HOME}/sources/cxx-stl/llvm-libc++/include/ -I${PROJECT_ROOT}/vendor/nimbus-build-system/vendor/Nim-csources-v1/c_code -I${androidToolchain}/sysroot/usr/include/${androidTargetArch}"
     else if isIOS then
     # TODO The conditional for -miphoneos-version-min=8.0 is required,
     # otherwise Nim will complain that thread-local storage is not supported for the current target
@@ -95,15 +105,6 @@ let
   "--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"
   else throw "Unsupported platform!";
   
-  androidTargetArchMap = {
-    "x86" = "i686-linux-android";
-    "x86-64" = "x86_64-linux-android";
-    "arm" = "armv7a-linux-androideabi";
-    "arm64" = "aarch64-linux-android";
-  };
-
-  androidTargetArch = lib.getAttr arch androidTargetArchMap;
-
   ldDirMap = {
     "x86" = "i686";
     "x86-64" = "x86_64";
@@ -135,6 +136,7 @@ let
       ln -s $AR bin/ar
       ln -s $AS bin/as
       ln -s $CC bin/gcc
+      ln -s $CC bin/clang
       ln -s $RANLIB bin/ranlib
 
       touch bin/git
@@ -171,6 +173,24 @@ let
   nimHostOs = if osId == "darwin" then "Darwin"
               else if osId == "linux" then "Linux"
               else "Windows_NT";
+  createNimbleLink1 = writeTextFile {
+    name = "createNimbleLink.sh";
+    text = ''
+      export EXCLUDED_NIM_PACKAGES=""
+      export NIMBLE_LINK_SCRIPT=$PWD/vendor/nimbus-build-system/scripts/create_nimble_link.sh
+      export NIMBLE_DIR=$PWD/vendor/.nimble
+      export PWD_CMD=$(which pwd)
+      patchShebangs scripts > /dev/null
+      patchShebangs $PWD/vendor/nimbus-build-system/scripts > /dev/null
+      for dep_dir in $(find vendor -type d -maxdepth 1); do
+          pushd "$dep_dir" >/dev/null
+          $NIMBLE_LINK_SCRIPT "$dep_dir"
+          popd >/dev/null
+      done
+    '';
+    executable = true;
+  };
+
   createNimbleLink = writeTextFile {
     name = "createNimbleLink.sh";
     text = ''
@@ -200,7 +220,7 @@ in stdenv.mkDerivation rec {
   name = "liblcproxy";
   src = srcRaw.src;
   #version = lib.strings.substring 0 7 src.rev;
-  buildInputs = with pkgs; [ wget git clang which tcl cmake libtool];
+  buildInputs = with pkgs; [ wget git which tcl cmake libtool];
 
   phases = [ "unpackPhase" "preBuildPhase" "buildPhase" "installPhase" ];
 
@@ -213,6 +233,8 @@ in stdenv.mkDerivation rec {
     sed -E -i 's|--host=arm| |g' vendor/nim-libbacktrace/Makefile
     sed -E -i 's|--build=\$\(\./config.guess\)| |g' vendor/nim-libbacktrace/Makefile
     sed -E -i 's|^(.*\./configure --prefix="/usr")(.*)|\1 --host=${androidTargetArch} --target=${androidTargetArch} CC="$(CC)" \2|g' vendor/nim-libbacktrace/Makefile
+    sed -E -i 's|^(.*)(useNews\* = )(.*)|\1\2 false|g' vendor/nim-json-rpc/json_rpc/clients/config.nim
+
 
 
     export HOME=$PWD
@@ -221,17 +243,30 @@ in stdenv.mkDerivation rec {
     echo 'switch("cpu", "${nimCpu}")' >> config.nims
     echo 'switch("os", "${nimPlatform}")' >> config.nims
 
+    echo 'switch("passC", "${compilerFlags}")' >> vendor/nimbus-eth2/config.nims
+    echo 'switch("passL", "${linkerFlags}")' >> vendor/nimbus-eth2/config.nims
+    echo 'switch("cpu", "${nimCpu}")' >> vendor/nimbus-eth2/config.nims
+    echo 'switch("os", "${nimPlatform}")' >> vendor/nimbus-eth2/config.nims
+
+    echo 'switch("passC", "${compilerFlags}")' >> vendor/nim-sqlite3-abi/config.nims
+    echo 'switch("passL", "${linkerFlags}")' >> vendor/nim-sqlite3-abi/config.nims
+    echo 'switch("cpu", "${nimCpu}")' >> vendor/nim-sqlite3-abi/config.nims
+    echo 'switch("os", "${nimPlatform}")' >> vendor/nim-sqlite3-abi/config.nims
+
+
     ${createNimbleLink}
 
     ${compilerVars}
-    export PATH=${nimBinary}:$PATH
+    export PATH=${nimCompiler}/bin:$PATH
     which clang
     echo $PATH
   '';
 
 
   buildPhase = ''
-    make -e V=3 OS=${nimHostOs} USE_SYSTEM_NIM=1 liblcproxy
+    ulimit -l unlimited
+    ulimit -n 10240
+    make -e V=3 OS=${nimHostOs} USE_SYSTEM_NIM=1 NIMFLAGS="--threads:on" liblcproxy
 
    '';
 

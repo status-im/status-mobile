@@ -47,7 +47,7 @@ in rec {
 
   liblcproxy = callPackage ./mobile/buildNimbus.nix {
     srcRaw = nimbusSource;
-    nimBinary = nimCompiler;
+    nimCompiler = nimCompiler;
     platform = "android";
     arch = "arm64";
   };

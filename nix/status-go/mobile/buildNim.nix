@@ -47,7 +47,7 @@ in stdenv.mkDerivation rec {
   name = "nimCompiler";
   src = srcRaw.src;
   #version = lib.strings.substring 0 7 src.rev;
-  buildInputs = with pkgs; [ wget git clang which tcl cmake];
+  buildInputs = with pkgs; [ wget git clang which tcl curl];
 
   phases = [ "unpackPhase" "buildPhase" "installPhase" ];
 
@@ -55,12 +55,13 @@ in stdenv.mkDerivation rec {
   buildPhase = ''
     ${createNimbleLink}
     export HOME=$PWD
-    make V=3 CC=clang CXX=clang build-nim
+    unset SSL_CERT_FILE
+    make V=3 CC=clang build-nim
    '';
 
   installPhase = ''
     mkdir -p $out
-    cp vendor/nimbus-build-system/vendor/Nim/bin/* $out/
+    cp -r vendor/nimbus-build-system/vendor/Nim/* $out/
   '';
 }
 
