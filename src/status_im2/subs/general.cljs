@@ -286,21 +286,6 @@
  (fn [{:keys [mnemonic]}]
    (if mnemonic 1 0)))
 
-;; NAVIGATION2
-
-(re-frame/reg-sub
- :navigation2/switcher-cards
- :<- [:navigation2/navigation2-stacks]
- (fn [stacks [_ toggle-switcher-screen]]
-   (sort-by :clock >
-            (reduce (fn [acc stack-vector]
-                      (let [{:keys [type clock id]} (get stack-vector 1)]
-                        (conj acc {:type  type
-                                   :clock clock
-                                   :id    id
-                                   :toggle-switcher-screen toggle-switcher-screen})))
-                    '() stacks))))
-
 (re-frame/reg-sub
  :mobile-network/syncing-allowed?
  :<- [:network/type]

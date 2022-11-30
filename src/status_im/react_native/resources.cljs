@@ -47,7 +47,6 @@
    :collectible-dark   (js/require "../resources/images/ui/collectible-dark.png")
    :hand-wave          (js/require "../resources/images/ui/hand-wave.png")
    :graph              (js/require "../resources/images/ui/graph.png")
-   :switcher           (js/require "../resources/images/ui/switcher.png")
    :discover           (js/require "../resources/images/ui/discover.png")
    :community-cover    (js/require "../resources/images/ui/community-cover.png")
    :lifestyle          (js/require "../resources/images/ui/lifestyle.png")

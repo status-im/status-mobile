@@ -8,6 +8,9 @@
 (defn bottom-tabs-container-height []
   (if platform/android? 57 82))
 
+(defn bottom-tabs-extended-container-height []
+  (if platform/android? 90 120))
+
 (defn status-bar-offset []
   (if platform/android? (.-currentHeight ^js rn/status-bar) 0))
 
@@ -39,3 +42,20 @@
    :chats-stack       :chats-tab-icon-opacity
    :wallet-stack      :wallet-tab-icon-opacity
    :browser-stack     :browser-tab-icon-opacity})
+
+;; Home stack states
+
+(def ^:const close-with-animation 0)
+(def ^:const open-with-animation 1)
+(def ^:const close-without-animation 3)
+(def ^:const open-without-animation 4)
+
+;; Switcher Cards
+(def ^:const one-to-one-chat-card 0)
+(def ^:const private-group-chat-card 1)
+(def ^:const community-card 2)
+(def ^:const browser-card 3)
+(def ^:const wallet-card 4)
+(def ^:const wallet-collectible 5)
+(def ^:const wallet-graph 6)
+(def ^:const communities-discover 7)

@@ -672,3 +672,10 @@
     {::async-storage/get {:keys keys
                           :cb   #(re-frame/dispatch
                                   [::category-states-loaded community-id hashes %])}}))
+
+(fx/defn navigate-to-community
+  {:events [:communities/navigate-to-community]}
+  [cofx community-id]
+  (fx/merge cofx
+            (navigation/pop-to-root-tab :shell-stack)
+            (navigation/navigate-to-nav2 :community community-id true)))

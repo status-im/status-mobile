@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.switcher.switcher-cards
   (:require [react-native.core :as rn]
             [reagent.core :as reagent]
+            [status-im2.contexts.shell.constants :as constants]
             [status-im2.contexts.quo-preview.preview :as preview]
             [quo2.foundations.colors :as colors]
             [status-im.react-native.resources :as resources]
@@ -9,21 +10,21 @@
 (def descriptor [{:label   "Type"
                   :key     :type
                   :type    :select
-                  :options [{:key   :communities-discover
+                  :options [{:key   constants/communities-discover
                              :value "Communities Discover"}
-                            {:key   :messaging
+                            {:key   constants/one-to-one-chat-card
                              :value "Messaging"}
-                            {:key   :group-messaging
+                            {:key   constants/private-group-chat-card
                              :value "Group Messaging"}
-                            {:key   :community-card
+                            {:key   constants/community-card
                              :value "Community Card"}
-                            {:key   :browser-card
+                            {:key   constants/browser-card
                              :value "Browser Card"}
-                            {:key   :wallet-card
+                            {:key   constants/wallet-card
                              :value "Wallet Card"}
-                            {:key   :wallet-collectible
+                            {:key   constants/wallet-collectible
                              :value "Wallet Collectible"}
-                            {:key   :wallet-graph
+                            {:key   constants/wallet-graph
                              :value "Wallet Graph"}]}
                  {:label "Title"
                   :key   :title
@@ -105,23 +106,24 @@
     :community-info {:type :kicked}
     (:audio :community :link :code) nil))
 
-(defn get-mock-data [data]
+(defn get-mock-data [{:keys [type] :as data}]
   (merge
    data
-   {:banner  (when (:banner? data) banner)
+   {:type    type
+    :banner  (when (:banner? data) banner)
     :content {:new-notifications?     (:new-notifications? data)
               :notification-indicator (:notification-indicator data)
               :counter-label          (:counter-label data)
               :content-type           (:content-type data)
               :data                   (get-mock-content data)}}
-   (case (:type data)
-     :messaging       {:avatar-params {:full-name (:title data)}}
-     :group-messaging {}
-     :community-card  {:avatar-params community-avatar}
+   (case type
+     constants/one-to-one-chat-card    {:avatar-params {:full-name (:title data)}}
+     constants/private-group-chat-card {}
+     constants/community-card          {:avatar-params community-avatar}
      {})))
 
 (defn cool-preview []
-  (let [state (reagent/atom {:type                   :group-messaging
+  (let [state (reagent/atom {:type                   constants/private-group-chat-card
                              :title                  "Alisher Yakupov"
                              :customization-color    :turquoise
                              :new-notifications?     true
@@ -137,7 +139,7 @@
         [preview/customizer state descriptor]
         [rn/view {:padding-vertical 60
                   :align-items      :center}
-         [switcher-cards/card (:type @state) (get-mock-data @state)]]]])))
+         [switcher-cards/card (get-mock-data @state)]]]])))
 
 (defn preview-switcher-cards []
   [rn/view {:background-color colors/neutral-100

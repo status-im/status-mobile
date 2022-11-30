@@ -18,6 +18,7 @@
             status-im2.subs.pairing
             status-im2.subs.search
             status-im2.subs.stickers
+            status-im2.subs.shell
             status-im2.subs.wallet.signing
             status-im2.subs.wallet.transactions
             status-im2.subs.wallet.wallet))
@@ -64,7 +65,7 @@
 (reg-root-key-sub :home-items-show-number :home-items-show-number)
 (reg-root-key-sub :waku/v2-peer-stats :peer-stats)
 (reg-root-key-sub :visibility-status-updates :visibility-status-updates)
-(reg-root-key-sub :navigation2/navigation2-stacks :navigation2/navigation2-stacks)
+(reg-root-key-sub :shell/switcher-cards :shell/switcher-cards)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network

@@ -104,34 +104,16 @@
 (rf/defn reload-new-ui
   {:events [:reload-new-ui]}
   [_]
-  {:new-ui/reset-bottom-tabs nil
+  {:shell/reset-bottom-tabs  nil
    :dispatch                 [:init-root :shell-stack]})
-
-(defn navigate-from-shell-stack [go-to-view-id id db now]
-  {:navigate-to-fx go-to-view-id
-   :db (assoc-in db [:navigation2/navigation2-stacks id] {:type  go-to-view-id
-                                                          :id    id
-                                                          :clock now})})
-
-(defn navigate-from-switcher [go-to-view-id id db from-home? now]
-  (merge (if from-home?
-           {:navigate-to-fx go-to-view-id}
-           {:set-stack-root-fx [go-to-view-id id]})
-         {:db (assoc-in db [:navigation2/navigation2-stacks id] {:type  go-to-view-id
-                                                                 :id    id
-                                                                 :clock now})}))
 
 (rf/defn navigate-to-nav2
   {:events [:navigate-to-nav2]}
-  [{:keys [db now]} go-to-view-id id _ from-switcher?]
-  (let [view-id     (:view-id db)
-        from-home?  (= view-id :chat-stack)]
-    (if from-switcher?
-      (navigate-from-switcher go-to-view-id id db from-home? now)
-      (if from-home?
-        (navigate-from-shell-stack go-to-view-id id db now)
-        ;; TODO(parvesh) - new stacks created from other screens should be stacked on current stack, instead of creating new entry
-        (navigate-from-shell-stack go-to-view-id id db now)))))
+  [cofx view-id screen-params from-shell?]
+  (rf/merge
+   cofx
+   {:dispatch        [:shell/add-switcher-card view-id screen-params from-shell?]}
+   (navigate-to-cofx view-id screen-params)))
 
 (rf/defn change-root-status-bar-style
   {:events [:change-root-status-bar-style]}

@@ -282,6 +282,8 @@
 (def worklet-factory
   #js {:applyAnimationsToStyle (fn [])})
 
+(def shell-worklets #js {})
+
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -328,6 +330,7 @@
     "@react-native-async-storage/async-storage" async-storage
     "react-native-svg" react-native-svg
     "../src/js/worklet_factory.js" worklet-factory
+    "../src/js/shell_worklets.js" shell-worklets
     "./fleets.js" default-fleets
     "./chats.js" default-chats
     "@walletconnect/client" wallet-connect-client

@@ -12,7 +12,6 @@
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [quo.design-system.colors :as colors]
             [quo.core :as quo]
-            [quo.platform :as platform]
             [status-im.add-new.core :as new-chat]
             [status-im.ui.components.search-input.view :as search-input]
             [status-im.add-new.db :as db]
@@ -131,7 +130,7 @@
      home-item
      {:on-press      (fn []
                        (re-frame/dispatch [:dismiss-keyboard])
-                       (if (and config/new-ui-enabled? platform/android?)
+                       (if config/new-ui-enabled?
                          (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                          (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
                        (re-frame/dispatch [:search/home-filter-changed nil])
@@ -148,7 +147,7 @@
      home-item
      {:on-press      (fn []
                        (re-frame/dispatch [:dismiss-keyboard])
-                       (if (and config/new-ui-enabled? platform/android?)
+                       (if config/new-ui-enabled?
                          (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                          (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
                        (re-frame/dispatch [:search/home-filter-changed nil])

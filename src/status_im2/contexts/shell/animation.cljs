@@ -1,5 +1,6 @@
 (ns status-im2.contexts.shell.animation
-  (:require [re-frame.core :as re-frame]
+  (:require [reagent.core :as reagent]
+            [re-frame.core :as re-frame]
             [react-native.reanimated :as reanimated]
             [quo2.foundations.colors :as colors]
             [status-im2.contexts.shell.constants :as constants]
@@ -7,20 +8,43 @@
             ;;TODO remove when not used anymore
             [status-im.async-storage.core :as async-storage]))
 
-;;;; Bottom Tabs & Home Stack Animations
-
+;; Atoms
 (def selected-stack-id (atom nil))
-(def home-stack-open? (atom false))
-(def pass-through? (atom false))
+(def home-stack-state (atom constants/close-with-animation))
+(def pass-through? (atom false)) ;; TODO - Use dynamic pass-through for transparent bottom tabs
+(def shared-values-atom (atom nil))
 
-(def bottom-nav-tab-width 90)
+;; Reagent atoms used for lazily loading home screen tabs
+(def load-communities-stack? (reagent/atom false))
+(def load-chats-stack? (reagent/atom false))
+(def load-wallet-stack? (reagent/atom false))
+(def load-browser-stack? (reagent/atom false))
+
+;; Helper Functions
+(defn home-stack-open? []
+  (let [state @home-stack-state]
+    (or (= state constants/open-with-animation)
+        (= state constants/open-without-animation))))
+
+(defn load-stack [stack-id]
+  (case stack-id
+    :communities-stack (reset! load-communities-stack? true)
+    :chats-stack       (reset! load-chats-stack? true)
+    :wallet-stack      (reset! load-wallet-stack? true)
+    :browser-stack     (reset! load-browser-stack? true)
+    ""))
 
 (defn selected-stack-id-loaded [stack-id]
   (reset! selected-stack-id stack-id)
-  (reset! home-stack-open? (some? stack-id)))
+  (reset!
+   home-stack-state
+   (if (some? stack-id)
+     constants/open-with-animation
+     constants/close-with-animation)))
 
 (defn calculate-home-stack-position []
   (let [{:keys [width height]} (constants/dimensions)
+        bottom-nav-tab-width   90
         minimize-scale         (/ bottom-nav-tab-width width)
         empty-space-half-scale (/ (- 1 minimize-scale) 2)
         left-margin            (/ (- width (* 4 bottom-nav-tab-width)) 2)
@@ -36,81 +60,105 @@
      :top   (+ top-empty-space (constants/bottom-tabs-container-height))
      :scale minimize-scale}))
 
-(defn get-shared-values []
+(def shell-worklets (js/require "../src/js/shell_worklets.js"))
+
+;; Shared Values
+(defn calculate-shared-values []
   (let [selected-stack-id-sv    (reanimated/use-shared-value
                                  ;; passing keywords or nil is not working with reanimated
                                  (name (or @selected-stack-id :communities-stack)))
         pass-through-sv         (reanimated/use-shared-value @pass-through?)
-        home-stack-open-sv      (reanimated/use-shared-value @home-stack-open?)
-        animate-home-stack-left (reanimated/use-shared-value (not @home-stack-open?))
+        home-stack-state-sv     (reanimated/use-shared-value @home-stack-state)
+        animate-home-stack-left (reanimated/use-shared-value (not (home-stack-open?)))
         home-stack-position     (calculate-home-stack-position)]
-    (reduce
-     (fn [acc id]
-       (let [tabs-icon-color-keyword (get constants/tabs-icon-color-keywords id)
-             stack-opacity-keyword   (get constants/stacks-opacity-keywords id)
-             stack-pointer-keyword   (get constants/stacks-pointer-keywords id)]
-         (assoc
-          acc
-          stack-opacity-keyword   (.stackOpacity
-                                   ^js reanimated/worklet-factory
-                                   (name id) selected-stack-id-sv)
-          stack-pointer-keyword   (.stackPointer
-                                   ^js reanimated/worklet-factory
-                                   (name id) selected-stack-id-sv)
-          tabs-icon-color-keyword (.bottomTabIconColor
-                                   ^js reanimated/worklet-factory
-                                   (name id) selected-stack-id-sv home-stack-open-sv
-                                   pass-through-sv colors/white colors/neutral-50
-                                   colors/white-opa-40))))
-     {:selected-stack-id   selected-stack-id-sv
-      :pass-through?       pass-through-sv
-      :home-stack-open?    home-stack-open-sv
-      :animate-home-stack-left animate-home-stack-left
-      :home-stack-left    (.homeStackLeft
-                           ^js reanimated/worklet-factory
-                           selected-stack-id-sv animate-home-stack-left home-stack-open-sv
-                           (clj->js (:left home-stack-position)))
-      :home-stack-top     (.homeStackTop
-                           ^js reanimated/worklet-factory
-                           home-stack-open-sv (:top home-stack-position))
-      :home-stack-opacity (.homeStackOpacity
-                           ^js reanimated/worklet-factory home-stack-open-sv)
-      :home-stack-pointer (.homeStackPointer
-                           ^js reanimated/worklet-factory home-stack-open-sv)
-      :home-stack-scale   (.homeStackScale
-                           ^js reanimated/worklet-factory home-stack-open-sv
-                           (:scale home-stack-position))}
-     constants/stacks-ids)))
+    (reset! shared-values-atom
+            (reduce
+             (fn [acc id]
+               (let [tabs-icon-color-keyword (get constants/tabs-icon-color-keywords id)
+                     stack-opacity-keyword   (get constants/stacks-opacity-keywords id)
+                     stack-pointer-keyword   (get constants/stacks-pointer-keywords id)]
+                 (assoc
+                  acc
+                  stack-opacity-keyword   (.stackOpacity
+                                           ^js shell-worklets
+                                           (name id) selected-stack-id-sv)
+                  stack-pointer-keyword   (.stackPointer
+                                           ^js shell-worklets
+                                           (name id) selected-stack-id-sv)
+                  tabs-icon-color-keyword (.bottomTabIconColor
+                                           ^js shell-worklets
+                                           (name id) selected-stack-id-sv home-stack-state-sv
+                                           pass-through-sv colors/white colors/neutral-50
+                                           colors/white-opa-40))))
+             {:selected-stack-id       selected-stack-id-sv
+              :pass-through?           pass-through-sv
+              :home-stack-state        home-stack-state-sv
+              :animate-home-stack-left animate-home-stack-left
+              :home-stack-left         (.homeStackLeft
+                                        ^js shell-worklets
+                                        selected-stack-id-sv animate-home-stack-left
+                                        home-stack-state-sv
+                                        (clj->js (:left home-stack-position)))
+              :home-stack-top          (.homeStackTop
+                                        ^js shell-worklets
+                                        home-stack-state-sv (:top home-stack-position))
+              :home-stack-opacity      (.homeStackOpacity
+                                        ^js shell-worklets home-stack-state-sv)
+              :home-stack-pointer      (.homeStackPointer
+                                        ^js shell-worklets home-stack-state-sv)
+              :home-stack-scale        (.homeStackScale
+                                        ^js shell-worklets home-stack-state-sv
+                                        (:scale home-stack-position))
+              :bottom-tabs-height      (.bottomTabsHeight
+                                        ^js shell-worklets home-stack-state-sv
+                                        (constants/bottom-tabs-container-height)
+                                        (constants/bottom-tabs-extended-container-height))}
+             constants/stacks-ids)))
+  @shared-values-atom)
 
-;; Animation
+;; Animations
 
-(defn open-home-stack [shared-values stack-id]
-  (reanimated/set-shared-value (:selected-stack-id shared-values) (name stack-id))
-  (reanimated/set-shared-value (:home-stack-open?  shared-values) true)
-  (when-not (colors/dark?)
-    (js/setTimeout
-     #(re-frame/dispatch [:change-root-status-bar-style :dark])
-     constants/shell-animation-time))
-  (reset! home-stack-open? true)
+(defn open-home-stack [stack-id animate?]
+  (let [home-stack-state-value (if animate?
+                                 constants/open-with-animation
+                                 constants/open-without-animation)]
+    (reanimated/set-shared-value
+     (:selected-stack-id @shared-values-atom) (name stack-id))
+    (reanimated/set-shared-value
+     (:home-stack-state  @shared-values-atom) home-stack-state-value)
+    (when-not (colors/dark?)
+      (js/setTimeout
+       #(re-frame/dispatch [:change-root-status-bar-style :dark])
+       constants/shell-animation-time))
+    (reset! home-stack-state home-stack-state-value)
+    (reset! selected-stack-id stack-id)
+    (async-storage/set-item! :selected-stack-id stack-id)))
+
+(defn change-tab [stack-id]
+  (reanimated/set-shared-value (:animate-home-stack-left @shared-values-atom) false)
+  (reanimated/set-shared-value (:selected-stack-id @shared-values-atom) (name stack-id))
   (reset! selected-stack-id stack-id)
   (async-storage/set-item! :selected-stack-id stack-id))
 
-(defn change-tab [shared-values stack-id]
-  (reanimated/set-shared-value (:animate-home-stack-left shared-values) false)
-  (reanimated/set-shared-value (:selected-stack-id shared-values) (name stack-id))
-  (reset! selected-stack-id stack-id)
-  (async-storage/set-item! :selected-stack-id stack-id))
+(defn bottom-tab-on-press [stack-id]
+  (when-not (= stack-id @selected-stack-id)
+    (let [stack-load-delay (if (home-stack-open?)
+                             0 constants/shell-animation-time)]
+      (if (home-stack-open?)
+        (change-tab stack-id)
+        (open-home-stack stack-id true))
+      (js/setTimeout #(load-stack stack-id) stack-load-delay))))
 
-(defn bottom-tab-on-press [shared-values stack-id]
-  (if @home-stack-open?
-    (change-tab shared-values stack-id)
-    (open-home-stack shared-values stack-id)))
-
-(defn close-home-stack [shared-values]
-  (reanimated/set-shared-value (:animate-home-stack-left shared-values) true)
-  (reanimated/set-shared-value (:home-stack-open? shared-values) false)
-  (when-not (colors/dark?)
-    (re-frame/dispatch [:change-root-status-bar-style :light]))
-  (reset! home-stack-open? false)
-  (reset! selected-stack-id nil)
-  (async-storage/set-item! :selected-stack-id nil))
+(defn close-home-stack [animate?]
+  (let [home-stack-state-value (if animate?
+                                 constants/close-with-animation
+                                 constants/close-without-animation)]
+    (reanimated/set-shared-value
+     (:animate-home-stack-left @shared-values-atom) true)
+    (reanimated/set-shared-value
+     (:home-stack-state @shared-values-atom) home-stack-state-value)
+    (when-not (colors/dark?)
+      (re-frame/dispatch [:change-root-status-bar-style :light]))
+    (reset! home-stack-state home-stack-state-value)
+    (reset! selected-stack-id nil)
+    (async-storage/set-item! :selected-stack-id nil)))

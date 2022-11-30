@@ -113,13 +113,6 @@
      (when config/quo-preview-enabled?
        [quo/list-item
         {:icon                :main-icons/appearance
-         :title               "Quo Preview"
-         :accessibility-label :appearance-settings-button
-         :chevron             true
-         :on-press            #(re-frame/dispatch [:navigate-to :quo-preview])}])
-     (when config/quo-preview-enabled?
-       [quo/list-item
-        {:icon                :main-icons/appearance
          :title               "Quo2.0 Preview"
          :accessibility-label :appearance-settings-button
          :chevron             true
