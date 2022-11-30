@@ -7,47 +7,34 @@
             [quo2.components.buttons.button :as quo2-button]
             [taoensso.timbre :as log]))
 
-(def qr-final-url (reagent/atom "https://media.qrtiger.com/blog/2021/01/imgpsh_fullsize_anim_800.jpeg"))
-
 (defn playground-view []
-
+  (let [port @(re-frame/subscribe [:mediaserver/port])
+        url "https://github.com/yeqown/go-qrcode/"
+        multiaccount @(re-frame/subscribe [:multiaccount])
+        keyuid (get multiaccount :key-uid)
+        media-server-url (str "https://localhost:" port "/QRImagesWithLogo?qrurl=" (js/btoa url) "&keyUid=" keyuid "&imageName=thumbnail")
+        ]
   [:<>
-  [rn/view
-   [quo2-button/button
-    {:style {:margin-vertical 8}
-     :on-press #(re-frame/dispatch [:get-qr-from-media-server])}
-    "get QR from status-go"
-    ]
+  [rn/view {:style {:padding 20}}
+   [rn/text (str "Displaying QR code for " url)]
    ]
    [rn/view {:style {:flex-direction :row
                      :justify-content :center}}
-       [rn/image {:source {:uri           @qr-final-url}
+       [rn/image {:source {:uri           media-server-url}
                   :style  {:width         303
                            :height        303
-                           :margin-top    50
+                           :margin-top    30
                            :border-radius 4
                            :margin-right  4}}
         ]
-   ]
 
    ]
+   [rn/view {:style {:padding 20}}
+    [rn/text (str "Fetched from media server url of " media-server-url)]
+    ]
+   ])
 )
 
-(fx/defn get-qr-from-media-server
-  {:events [:get-qr-from-media-server]}
-  [{:keys [db]}]
-     (let [port (get db :mediaserver/port)
-           url "https://github.com/yeqown/go-qrcode/"
-           multiaccount (get db :multiaccount)
-           keyuid (get multiaccount :key-uid)
-           qr-hardcoded-url (str "https://localhost:" port "/QRImagesWithLogo?qrurl=" (js/btoa url) "&keyUid=" keyuid "&imageName=thumbnail")
-           ]
-
-       (reset! qr-final-url qr-hardcoded-url)
-       (log/info "qr-url from media server " qr-hardcoded-url)
-       )
-
-)
 
 
 
