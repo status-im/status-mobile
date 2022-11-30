@@ -6,15 +6,11 @@
 
 (defn community-card-view-item
   [{:keys [name description locked
-           status tokens cover tags featured]} on-press]
+           status tokens cover tags width]} on-press]
   [rn/touchable-opacity {:on-press on-press}
-   [rn/view {:style (merge (style/community-card 20)
-                           {:margin-bottom 16}
-                           (if featured
-                             {:margin-right 12}
-                             {:flex              1
-                              :margin-horizontal 20}))}
-    [rn/view {:style    {:height        230
+   [rn/view {:style (style/community-card 20)}
+    [rn/view {:style    {:width         width
+                         :height        230
                          :border-radius 20}
               :on-press on-press}
      [rn/view
