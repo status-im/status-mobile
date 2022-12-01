@@ -752,7 +752,7 @@
                     (when (or mentioned pinned last-in-group?) {:margin-top 8})
                     {:margin-horizontal 8})}
 
-     (when pinned
+     (when (and pinned (not (or deleted? deleted-for-me?)))
        [rn/view {:style (style/pin-indicator-container)}
         [pinned-by-indicator pinned-by]])
      [->message message {:ref           on-long-press

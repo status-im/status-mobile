@@ -1,9 +1,11 @@
 (ns status-im.chat.models.delete-message
   (:require [re-frame.core :as re-frame]
             [status-im.chat.models.message-list :as message-list]
+            [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
+            [taoensso.encore :as enc]
             [taoensso.timbre :as log]))
 
 (defn- update-db-clear-undo-timer
@@ -70,13 +72,16 @@
 (fx/defn delete-and-send
   {:events [:chat.ui/delete-message-and-send]}
   [{:keys [db]} {:keys [message-id chat-id]}]
-  (when (get-in db [:messages chat-id message-id])
-    {:db             (update-db-clear-undo-timer db chat-id message-id)
-     ::json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
-                       :params      [message-id]
-                       :js-response true
-                       :on-error    #(log/error "failed to delete message " {:message-id message-id :error %})
-                       :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
+  (when-let [message (get-in db [:messages chat-id message-id])]
+    (enc/assoc-when
+     {:db             (update-db-clear-undo-timer db chat-id message-id)
+      ::json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
+                        :params      [message-id]
+                        :js-response true
+                        :on-error    #(log/error "failed to delete message " {:message-id message-id :error %})
+                        :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
+     :dispatch (and (get-in db [:pin-messages chat-id message-id])
+                    [::models.pin-message/send-pin-message {:chat-id chat-id :message-id message-id :pinned false}]))))
 
 (defn- filter-pending-send-messages
   "traverse all messages find not yet synced deleted? messages"
