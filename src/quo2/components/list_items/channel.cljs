@@ -1,14 +1,14 @@
 (ns quo2.components.list-items.channel
-  (:require [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.components.avatars.channel-avatar :as channel-avatar]
             [quo2.components.counter.counter :as quo2.counter]
             [quo2.components.icon :as quo2.icons]
-            [quo2.components.avatars.channel-avatar :as channel-avatar]
             [quo2.components.markdown.text :as quo2.text]
-            [quo2.theme :as theme]))
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]))
 
 (defn list-item [{:keys [name locked? mentions-count unread-messages?
-                         muted? is-active-channel? emoji channel-color]
+                         muted? is-active-channel? emoji channel-color on-press]
                   :or   {channel-color colors/primary-50}}]
   [rn/view {:style (merge {:height          48
                            :display         :flex
@@ -20,7 +20,8 @@
                            :padding-left    12
                            :padding-right   12}
                           (when is-active-channel?
-                            {:background-color (colors/theme-alpha channel-color 0.05 0.05)}))}
+                            {:background-color (colors/theme-alpha channel-color 0.05 0.05)}))
+            :on-press on-press}
    [rn/view {:display         :flex
              :flex-direction  :row
              :justify-content :flex-start

@@ -179,3 +179,5 @@ test/appium/tests/users.py
 
 ## visual tests
 /artifacts
+
+/.calva/

@@ -69,10 +69,12 @@
        :style               {:margin-top (if (= size :large) 8 2)}}
       description])])
 
-(defn permission-tag-container [{:keys [locked? tokens]}]
+(defn permission-tag-container [{:keys [locked? tokens on-press]}]
   [permission/tag {:background-color (colors/theme-colors
                                       colors/neutral-10
                                       colors/neutral-80)
                    :locked?          locked?
                    :tokens           tokens
-                   :size             24}])
+
+                   :size             24
+                   :on-press         on-press}])
