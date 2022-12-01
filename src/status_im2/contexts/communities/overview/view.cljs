@@ -14,7 +14,6 @@
    [react-native.platform :as platform]
    [status-im2.contexts.communities.requests.actions.view :as requests.actions]
    [status-im2.contexts.communities.home.actions.view :as home.actions]
-   [quo2.components.community.token-gating :as token-gating]
    [status-im.constants :as constants]
    [status-im.react-native.resources :as resources]
    [status-im.utils.utils :as utils]))
@@ -45,7 +44,7 @@
   #(rf/dispatch
     [:bottom-sheet/show-sheet
      {:content
-      (constantly [token-gating/token-gating
+      (constantly [quo/token-gating
                    {:channel {:name name
                               :community-color (colors/custom-color :pink 50)
                               :emoji emoji
@@ -193,7 +192,7 @@
                              [:bottom-sheet/show-sheet
                               {:content-height 210
                                :content
-                               (constantly [token-gating/token-gating
+                               (constantly [quo/token-gating
                                             {:community {:name name
                                                          :community-color colors/primary-50
                                                          :community-avatar (cond
@@ -213,8 +212,7 @@
                                                                         {:token "RARE"
                                                                          :token-img-src rare-token-img
                                                                          :amount 10
-                                                                         :is-sufficient? false}]}}}])
-                               }])}]])
+                                                                         :is-sufficient? false}]}}}])}])}]])
         (when joined
           [rn/view {:position         :absolute
                     :top              12
@@ -253,35 +251,7 @@
              :margin-right :auto}
             :before :i/communities}
            (i18n/label :t/join-open-community)])]
-       [channel-list-component channel-heights first-channel-height]]))
-
-  [quo/text
-   {:accessibility-label :community-description-text
-    :number-of-lines     2
-    :ellipsize-mode      :tail
-    :weight  :regular
-    :size    :paragraph-1
-    :style {:margin-top 8 :margin-bottom 12}}
-   description]
-  [quo/community-stats-column :card-view]
-  [rn/view {:margin-top 12}]
-  [quo/community-tags tags]
-  [preview-user-list]
-  (when-not joined
-    [quo/button
-     {:on-press  #(rf/dispatch [:bottom-sheet/show-sheet
-                                {:content (constantly [requests.actions/request-to-join community])
-                                 :content-height 300}])
-      :override-background-color community-color
-      :style
-      {:width "100%"
-       :margin-top 20
-       :margin-left :auto
-       :margin-right :auto}
-      :before :i/communities}
-     (i18n/label :t/join-open-community)])
-
-  [channel-list-component channel-heights first-channel-height])
+       [channel-list-component channel-heights first-channel-height]])))
 
 (defn render-sticky-header [channel-heights first-channel-height]
   (fn [scroll-height] (when (>= scroll-height @first-channel-height)
@@ -315,7 +285,7 @@
            page-component))))))
 
 (defn overview []
-  (let [community-mock (rf/sub [:get-screen-params :community-overview]) ;;TODO stop using mock data and only pass community id
+  (let [community-mock (rf/sub [:get-screen-params :community-overview]) ;TODO stop using mock data and only pass community id
         community (rf/sub [:communities/community (:id community-mock)])]
 
     [rn/view {:style
