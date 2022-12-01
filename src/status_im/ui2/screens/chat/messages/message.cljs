@@ -6,6 +6,7 @@
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.messages.system-message :as system-message]
+            [quo2.core :as quo2]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
             [re-frame.core :as re-frame]
@@ -42,7 +43,6 @@
             [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
             [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
-            [quo2.core :as quo2]
             [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -84,10 +84,12 @@
          :accessibility-label :message-timestamp}
         timestamp-str]])))
 
-(defview quoted-message
-  [_ reply pin?]
-  [rn/view {:style (when-not pin? (style/quoted-message-container))}
-   [components.reply/reply-message reply false pin?]])
+(defn quoted-message
+  [{:keys [message-id chat-id]} reply pin?]
+  (let [{:keys [deleted? deleted-for-me?]} (get @(re-frame/subscribe [:chats/chat-messages chat-id]) message-id)
+        reply                              (assoc reply :deleted? deleted? :deleted-for-me? deleted-for-me?)]
+    [rn/view {:style (when-not pin? (style/quoted-message-container))}
+     [components.reply/reply-message reply false pin?]]))
 
 (defn system-text? [content-type]
   (= content-type constants/content-type-system-text))
@@ -306,7 +308,7 @@
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
   [{:keys [last-in-group? timestamp-str timestamp deleted? deleted-undoable-till
-           deleted-for-me? deleted-for-me-undoable-till pinned from]
+           deleted-for-me? deleted-for-me-undoable-till pinned from chat-id]
     :as   message} content]
   (let [response-to  (:response-to (:content message))
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
@@ -330,7 +332,7 @@
                 :pointer-events      :box-none
                 :accessibility-label :chat-item}
        (when (and (seq response-to) (:quoted-message message))
-         [quoted-message response-to (:quoted-message message)])
+         [quoted-message {:message-id response-to :chat-id chat-id} (:quoted-message message)])
        [rn/view {:style          (style/message-body)
                  :pointer-events :box-none}
         [rn/view {:style {:width 40}}
@@ -858,7 +860,7 @@
                                (style/message-timestamp-text))
          :accessibility-label :message-timestamp}
         timestamp-str]]
-      [quoted-message response-to (:quoted-message message) true]]]))
+      [quoted-message {:message-id response-to :chat-id chat-id} (:quoted-message message) true]]]))
 
 (defmethod ->message constants/content-type-system-text [{:keys [content quoted-message] :as message}]
   (if quoted-message
