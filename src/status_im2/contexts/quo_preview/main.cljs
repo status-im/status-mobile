@@ -53,6 +53,7 @@
             [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
             [status-im2.contexts.quo-preview.navigation.page-nav :as page-nav]
             [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
+            [status-im2.contexts.quo-preview.community.token-gating :as token-gating]
             [re-frame.core :as re-frame]))
 
 (def screens-categories
@@ -94,7 +95,10 @@
                 :component community-membership-list-view/preview-community-list-view}
                {:name      :discover-card
                 :insets    {:top false}
-                :component discover-card/preview-discoverd-card}]
+                :component discover-card/preview-discoverd-card}
+               {:name      :token-gating
+                :insets    {:top false}
+                :component token-gating/preview-token-gating}]
    :counter [{:name      :counter
               :insets    {:top false}
               :component counter/preview-counter}]

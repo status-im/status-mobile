@@ -12,11 +12,19 @@
    [reagent.core :as reagent]
    [quo.platform :as platform]
    [status-im2.contexts.communities.requests.actions.view :as requests.actions]
-   [status-im2.contexts.communities.home.actions.view :as home.actions]))
+   [status-im2.contexts.communities.home.actions.view :as home.actions]
+   [quo2.components.community.token-gating :as token-gating]
+   [status-im.constants :as constants]
+   [status-im.react-native.resources :as resources]
+   [status-im.utils.utils :as utils]))
+
+(def knc-token-img (js/require "../resources/images/tokens/mainnet/KNC.png"))
+(def mana-token-img (js/require "../resources/images/tokens/mainnet/MANA.png"))
+(def rare-token-img (js/require "../resources/images/tokens/mainnet/RARE.png"))
+(def eth-token-img (js/require "../resources/images/tokens/mainnet/ETH.png"))
+(def dai-token-img (js/require "../resources/images/tokens/mainnet/DAI.png"))
 
 ;; Mocked list items
-
-
 (def user-list
   [{:full-name "Alicia K"}
    {:full-name "Marcus C"}
@@ -32,16 +40,69 @@
               :size                :label}
     "Join Alicia, Marcus and 2 more"]]) ;; TODO remove mocked data and use from contacts list/communities members
 
+(defn open-token-gating-mocked [name emoji channel-color]
+  #(rf/dispatch
+    [:bottom-sheet/show-sheet
+     {:content
+      (constantly [token-gating/token-gating
+                   {:channel {:name name
+                              :community-color (colors/custom-color :pink 50)
+                              :emoji emoji
+                              :emoji-background-color channel-color
+                              :on-enter-channel (fn [] (utils/show-popup "Entered channel" "Wuhuu!! You successfully entered the channel :)"))
+                              :gates {:read [{:token "KNC"
+                                              :token-img-src knc-token-img
+                                              :amount 200
+                                              :is-sufficient? true}
+                                             {:token "MANA"
+                                              :token-img-src mana-token-img
+                                              :amount 10
+                                              :is-sufficient? false
+                                              :is-purchasable true}
+                                             {:token "RARE"
+                                              :token-img-src rare-token-img
+                                              :amount 10
+                                              :is-sufficient? false}]
+                                      :write [{:token "KNC"
+                                               :token-img-src knc-token-img
+                                               :amount 200
+                                               :is-sufficient? true}
+                                              {:token "DAI"
+                                               :token-img-src dai-token-img
+                                               :amount 20
+                                               :is-purchasable true
+                                               :is-sufficient? false}
+                                              {:token "ETH"
+                                               :token-img-src eth-token-img
+                                               :amount 0.5
+                                               :is-sufficient? false}]}}}])
+      :content-height 210}]))
+
 (def list-of-channels {:Welcome [{:name "welcome"
                                   :emoji "🤝"}
                                  {:name  "onboarding"
-                                  :emoji "🍑"}
+                                  :emoji "🍑"
+                                  :locked? true
+                                  :on-press #((open-token-gating-mocked
+                                               "onboarding"
+                                               "🍑"
+                                               (colors/custom-color :pink 50)))}
                                  {:name "intro"
-                                  :emoji "🦄"}]
+                                  :emoji "🦄"
+                                  :locked? true
+                                  :on-press #((open-token-gating-mocked
+                                               "intro"
+                                               "🦄"
+                                               (colors/custom-color :pink 50)))}]
                        :General [{:name  "general"
                                   :emoji "🐷"}
                                  {:name  "people-ops"
-                                  :emoji "🌏"}
+                                  :emoji "🌏"
+                                  :locked? true
+                                  :on-press #((open-token-gating-mocked
+                                               "onboarding"
+                                               "🌏"
+                                               (colors/custom-color :blue 50)))}
                                  {:name "announcements"
                                   :emoji "🎺"}]
                        :Mobile [{:name "mobile"
@@ -123,9 +184,10 @@
      (max 0)
      (min (if platform/ios? 100 124)))))
 
-(defn community-card-page-view [{:keys [name description locked joined
-                                        status tokens cover tags community-color] :as community}]
+(defn community-card-page-view [{:keys [name id description locked joined
+                                        status tokens cover images tags community-color] :as community}]
   (let [community-icon (memoize (fn [] [communities.icon/community-icon-redesign community 24]))
+        thumbnail-image (get-in images [:thumbnail])
         scroll-height (reagent/atom scroll-0)
         channel-heights (reagent/atom [])
         first-channel-height (reagent/atom 0)]
@@ -211,7 +273,32 @@
               [quo/permission-tag-container
                {:locked       locked
                 :status       status
-                :tokens       tokens}]])
+                :tokens       tokens
+                :on-press     #(rf/dispatch
+                                [:bottom-sheet/show-sheet
+                                 {:content
+                                  (constantly [token-gating/token-gating
+                                               {:community {:name name
+                                                            :community-color colors/primary-50
+                                                            :community-avatar (cond
+                                                                                (= id constants/status-community-id)
+                                                                                (resources/get-image :status-logo)
+                                                                                (seq thumbnail-image)
+                                                                                thumbnail-image)
+                                                            :gates {:join [{:token "KNC"
+                                                                            :token-img-src knc-token-img
+                                                                            :amount 200
+                                                                            :is-sufficient? true}
+                                                                           {:token "MANA"
+                                                                            :token-img-src mana-token-img
+                                                                            :amount 10
+                                                                            :is-sufficient? false
+                                                                            :is-purchasable true}
+                                                                           {:token "RARE"
+                                                                            :token-img-src rare-token-img
+                                                                            :amount 10
+                                                                            :is-sufficient? false}]}}}])
+                                  :content-height 210}])}]])
 
            (when joined
              [rn/view {:position         :absolute

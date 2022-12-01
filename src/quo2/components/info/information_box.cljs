@@ -49,11 +49,12 @@
     :closed?         true/false          ;; information box's state
     :id              :information-box-id ;; unique id (required for closable? information box)
     :icon            :main-icons/info    ;; information box icon
+    :no-icon-color?  false               ;; disable tint color for icon
     :style           style
     :button-label    \"PressMe\"         ;; add action button with label
     :on-button-press action              ;; (required for information box with button-label)
     :on-close        on-close            ;; (optional on-close call)"
-  [{:keys [type closable? closed? id icon style button-label on-button-press on-close]} message]
+  [{:keys [type closable? closed? id icon style button-label on-button-press on-close no-icon-color?]} message]
   (let [background-color (get-color-by-type type :bg)
         border-color     (get-color-by-type type :border)
         icon-color       (get-color-by-type type :icon)
@@ -73,7 +74,8 @@
         [info-message/info-message {:size        :default
                                     :icon        icon
                                     :text-color  text-color
-                                    :icon-color  icon-color} message]
+                                    :icon-color  icon-color
+                                    :no-icon-color? no-icon-color?} message]
         (when closable?
           [rn/touchable-opacity
            {:on-press            on-close

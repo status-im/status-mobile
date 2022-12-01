@@ -104,11 +104,12 @@
 
 (defn tag
   [_ _]
-  (fn [{:keys [locked tokens size background-color]
+  (fn [{:keys [locked tokens size background-color on-press]
         :or {size 24}}]
     [base-tag/base-tag {:background-color  background-color
                         :size              size
-                        :type              :permission}
+                        :type              :permission
+                        :on-press          on-press}
      [rn/view  {:flex-direction   :row
                 :align-items      :center
                 :justify-content  :flex-end}
