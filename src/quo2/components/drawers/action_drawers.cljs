@@ -6,12 +6,13 @@
 
 (defn- get-icon-color [danger?]
   (if danger?
-    (colors/theme-colors colors/danger-50 colors/danger-60)
+    colors/danger-50
     (colors/theme-colors colors/neutral-50 colors/neutral-40)))
 
 (defn divider []
   [rn/view {:style {:border-top-width 1
-                    :border-top-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
+                    :border-top-color (colors/theme-colors
+                                       colors/neutral-10 colors/neutral-90)
                     :margin-top       8
                     :margin-bottom    7
                     :align-items      :center
@@ -27,10 +28,15 @@
   (when action-props
     [:<> {:key label}
      (when add-divider? [divider])
-     [rn/touchable-opacity {:on-press on-press}
+     [rn/touchable-highlight {:style          {:border-radius     12
+                                               :height (if sub-label 58 50)
+                                               :margin-horizontal 8}
+                              :underlay-color (colors/theme-colors colors/neutral-5 colors/neutral-90)
+                              :on-press       on-press}
       [rn/view {:style
-                {:height            (if sub-label 56 47)
-                 :margin-horizontal 20
+                {:height (if sub-label 58 50)
+
+                 :margin-horizontal 12
                  :flex-direction    :row}}
        [rn/view {:style
                  {:height        20
