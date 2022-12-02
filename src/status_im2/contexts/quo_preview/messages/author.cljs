@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.messages.author
-  (:require [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
-            [status-im2.contexts.quo-preview.preview :as preview]
+  (:require [quo2.components.markdown.text :as text]
             [quo2.components.messages.author.view :as quo2]
-            [reagent.core :as reagent]))
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor [{:label "Profile name"
                   :key   :profile-name
@@ -49,9 +50,14 @@
          [preview/customizer state descriptor]]
         [rn/view {:padding-vertical    60
                   :padding--horizontal 15
-                  :flex-direction      :row
                   :justify-content     :center}
-         [quo2/author @state]]]])))
+         [rn/view
+          [text/text "Author:"]
+          [quo2/author @state]]
+         [rn/view {:height 50}]
+         [rn/view
+          [text/text "Display Name:"]
+          [quo2/display-name @state]]]]])))
 
 (defn preview-author []
   [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-90)

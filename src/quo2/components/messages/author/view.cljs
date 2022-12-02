@@ -9,6 +9,28 @@
 
 (def middle-dot "·")
 
+(defn display-name [{:keys [profile-name nickname ens-name text-style]}]
+  (let [ens?      (-> ens-name string/blank? not)
+        nickname? (-> nickname string/blank? not)]
+    (if ens?
+      [text/text (merge {:weight :semi-bold
+                         :size   :paragraph-2
+                         :style  (style/ens-text)}
+                        text-style)
+       ens-name]
+      [:<>
+       (if nickname?
+         [text/text (merge {:weight :semi-bold
+                            :size   :paragraph-2
+                            :style  (style/nickname-text)}
+                           text-style)
+          nickname]
+         [text/text (merge {:weight :semi-bold
+                            :size   :paragraph-2
+                            :style  (style/profile-name-text nickname?)}
+                           text-style)
+          profile-name])])))
+
 (defn author [{:keys [profile-name nickname chat-key ens-name time-str contact? verified? untrustworthy?]}]
   [:f>
    (fn []
