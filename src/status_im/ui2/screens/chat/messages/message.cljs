@@ -450,15 +450,15 @@
         :label    (i18n/label (if pinned (if community? :t/unpin-from-channel :t/unpin-from-chat) (if community? :t/pin-to-channel :t/pin-to-chat)))
         :icon     :i/pin
         :id       (if pinned :unpin :pin)}])
-    [{:type     :danger
-      :on-press (fn []
-                  (when pinned (pin-message message))
-                  (re-frame/dispatch
-                   [:chat.ui/delete-message-for-me message
-                    config/delete-message-for-me-undo-time-limit-ms]))
-      :label    (i18n/label :t/delete-for-me)
-      :icon     :i/delete
-      :id       :delete-for-me}]
+    (when-not pinned
+      [{:type     :danger
+        :on-press (fn []
+                    (re-frame/dispatch
+                     [:chat.ui/delete-message-for-me message
+                      config/delete-message-for-me-undo-time-limit-ms]))
+        :label    (i18n/label :t/delete-for-me)
+        :icon     :i/delete
+        :id       :delete-for-me}])
     (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
       [{:type     :danger
         :on-press #(re-frame/dispatch [:chat.ui/delete-message
