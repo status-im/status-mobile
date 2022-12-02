@@ -416,7 +416,7 @@
         (re-frame/dispatch [::models.pin-message/show-pin-limit-modal chat-id]))
       (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
-(defn on-long-press-fn [on-long-press {:keys [pinned message-pin-enabled outgoing edit-enabled show-input? community?] :as message} content]
+(defn on-long-press-fn [on-long-press {:keys [pinned message-pin-enabled outgoing edit-enabled show-input? community? can-delete-message-for-everyone?] :as message} content]
   (on-long-press
    (concat
     (when (and outgoing edit-enabled)
@@ -453,7 +453,7 @@
       :label    (i18n/label :t/delete-for-me)
       :icon     :i/delete
       :id       :delete-for-me}]
-    (when (and outgoing config/delete-message-enabled?)
+    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
       [{:type     :danger
         :on-press (fn []
                     (when pinned (pin-message message))

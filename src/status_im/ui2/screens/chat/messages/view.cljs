@@ -50,9 +50,9 @@
                              :height 12}]]])
 
 (defn on-scroll [^js ev]
-  (let [y (-> ev .-nativeEvent .-contentOffset .-y)
-        layout-height (-> ev .-nativeEvent .-layoutMeasurement .-height)
-        threshold-height (* (/ layout-height 100) threshold-percentage-to-show-floating-scroll-down-button)
+  (let [y                  (-> ev .-nativeEvent .-contentOffset .-y)
+        layout-height      (-> ev .-nativeEvent .-layoutMeasurement .-height)
+        threshold-height   (* (/ layout-height 100) threshold-percentage-to-show-floating-scroll-down-button)
         reached-threshold? (> y threshold-height)]
     (when (not= reached-threshold? @show-floating-scroll-down-button)
       (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
@@ -65,8 +65,8 @@
 
 (defn list-footer [{:keys [chat-id] :as chat}]
   (let [loading-messages? (<sub [:chats/loading-messages? chat-id])
-        no-messages? (<sub [:chats/chat-no-messages? chat-id])
-        all-loaded? (<sub [:chats/all-loaded? chat-id])]
+        no-messages?      (<sub [:chats/chat-no-messages? chat-id])
+        all-loaded?       (<sub [:chats/all-loaded? chat-id])]
     [rn/view {:style (when platform/android? {:scaleY -1})}
      (if (or loading-messages? (not chat-id) (not all-loaded?))
        [messages-skeleton/messages-skeleton @messages-view-height]
@@ -81,7 +81,7 @@
                  idx
                  _
                  {:keys [group-chat public? community? current-public-key
-                         chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
+                         chat-id show-input? message-pin-enabled edit-enabled in-pinned-view? can-delete-message-for-everyone?]}]
   [rn/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
      [message-datemark/chat-datemark (:value message)]
@@ -97,13 +97,14 @@
                :current-public-key current-public-key
                :show-input? show-input?
                :message-pin-enabled message-pin-enabled
-               :edit-enabled edit-enabled)]))])
+               :edit-enabled edit-enabled
+               :can-delete-message-for-everyone? can-delete-message-for-everyone?)]))])
 
 (defn on-viewable-items-changed [^js e]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
             (when-let [^js last-visible-element (aget (.-viewableItems e) (dec (.-length ^js (.-viewableItems e))))]
-              (let [index (.-index last-visible-element)
+              (let [index             (.-index last-visible-element)
                     ;; Get first not visible element, if it's a datemark/gap
                     ;; we might unnecessarely add messages on receiving as
                     ;; they do not have a clock value, but most of the times
@@ -123,25 +124,26 @@
                        (if platform/low-device? 700 200))))
 
 (defn get-render-data [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled in-pinned-view?]}]
-  (let [current-public-key (<sub [:multiaccount/public-key])
-        community (<sub [:communities/community community-id])
-        group-admin? (get admins current-public-key)
-        community-admin? (when community (community :admin))
+  (let [current-public-key  (<sub [:multiaccount/public-key])
+        {:keys [can-delete-message-for-everyone?] :as community} (<sub [:communities/community community-id])
+        group-admin?        (get admins current-public-key)
+        community-admin?    (when community (community :admin))
         message-pin-enabled (and (not public?)
                                  (or (not group-chat)
                                      (and group-chat
                                           (or group-admin?
                                               community-admin?))))]
-    {:group-chat          group-chat
-     :public?             public?
-     :community?          (not (nil? community-id))
-     :current-public-key  current-public-key
-     :space-keeper        space-keeper
-     :chat-id             chat-id
-     :show-input?         show-input?
-     :message-pin-enabled message-pin-enabled
-     :edit-enabled        edit-enabled
-     :in-pinned-view?     in-pinned-view?}))
+    {:group-chat                       group-chat
+     :public?                          public?
+     :community?                       (not (nil? community-id))
+     :current-public-key               current-public-key
+     :space-keeper                     space-keeper
+     :chat-id                          chat-id
+     :show-input?                      show-input?
+     :message-pin-enabled              message-pin-enabled
+     :edit-enabled                     edit-enabled
+     :in-pinned-view?                  in-pinned-view?
+     :can-delete-message-for-everyone? can-delete-message-for-everyone?}))
 
 (defn messages-view [{:keys [chat
                              bottom-space
@@ -149,8 +151,8 @@
                              mutual-contact-requests-enabled?
                              show-input?]}]
   (let [{:keys [group-chat chat-type chat-id public? community-id admins]} chat
-        messages (<sub [:chats/raw-chat-messages-stream chat-id])
-        one-to-one? (= chat-type constants/one-to-one-chat-type)
+        messages       (<sub [:chats/raw-chat-messages-stream chat-id])
+        one-to-one?    (= chat-type constants/one-to-one-chat-type)
         contact-added? (when one-to-one? (<sub [:contacts/contact-added? chat-id]))
         should-send-contact-request?
         (and
@@ -179,17 +181,17 @@
         :render-fn                    render-fn
         :on-viewable-items-changed    on-viewable-items-changed
         :on-end-reached               list-on-end-reached
-        :on-scroll-to-index-failed    identity              ;;don't remove this
+        :on-scroll-to-index-failed    identity ;;don't remove this
         :content-container-style      {:padding-top    (+ bottom-space 16)
                                        :padding-bottom 16}
-        :scroll-indicator-insets      {:top bottom-space}   ;;ios only
+        :scroll-indicator-insets      {:top bottom-space} ;;ios only
         :keyboard-dismiss-mode        :interactive
         :keyboard-should-persist-taps :handled
         :onMomentumScrollBegin        state/start-scrolling
         :onMomentumScrollEnd          state/stop-scrolling
         :scrollEventThrottle          16
         :on-scroll                    on-scroll
-        ;;TODO https://github.com/facebook/react-native/issues/30034
+         ;;TODO https://github.com/facebook/react-native/issues/30034
         :inverted                     (when platform/ios? true)
         :style                        (when platform/android? {:scaleY -1})
         :on-layout                    on-messages-view-layout})]
