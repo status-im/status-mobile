@@ -115,6 +115,10 @@
              :Rendezvous (if wakuv2-enabled false (boolean (seq rendezvous-nodes)))
              :ClusterConfig {:Enabled         true
                              :Fleet           (name current-fleet-key)
+                             :DiscV5BootstrapNodes
+                             (if wakuv2-enabled
+                               waku-nodes
+                               [])
                              :BootNodes
                              (if wakuv2-enabled [] (pick-nodes 4 (vals (:boot current-fleet))))
                              :TrustedMailServers
@@ -138,7 +142,11 @@
               :BloomFilterMode waku-bloom-filter-mode
               :LightClient     true
               :MinimumPoW      0.000001}
-             :WakuV2Config (assoc wakuv2-config :Enabled wakuv2-enabled :Host "0.0.0.0")
+             :WakuV2Config (assoc wakuv2-config
+                                  :DiscoveryLimit 20
+                                  :EnableDiscV5 true
+                                  :Enabled wakuv2-enabled
+                                  :Host "0.0.0.0")
              :ShhextConfig
              {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
               :InstallationID             installation-id
