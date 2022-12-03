@@ -20,18 +20,14 @@
             [status-im.ui2.screens.chat.composer.edit.view :as edit]
             [reagent.core :as reagent]))
 
-(defn calculate-y [context keyboard-shown min-y max-y added-value number-of-lines]
-  (if keyboard-shown
-    (if (= (:state @context) :max)
-      max-y
-      (if (< (:y @context) max-y)
-        (+ (:y @context) added-value)
-        (do
-          (swap! context assoc :state :max)
-          max-y)))
-    (do
-      (swap! context assoc :state :min)
-      min-y)))
+(defn calculate-y [context max-y added-value]
+  (if (= (:state @context) :max)
+    max-y
+    (if (< (:y @context) max-y)
+      (+ (:y @context) added-value)
+      (do
+        (swap! context assoc :state :max)
+        max-y))))
 
 (defn calculate-y-with-mentions [y max-y max-height chat-id suggestions reply number-of-lines]
   (let [input-text               (:input-text (get (<sub [:chat/inputs]) chat-id))
@@ -44,8 +40,8 @@
         mentions-translate-value (if should-translate? (min min-value (- mentions-height (- max-height text-height))) mentions-height)]
     (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
-(defn get-y-value [context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply number-of-lines]
-  (let [y               (calculate-y context keyboard-shown min-y max-y added-value number-of-lines)
+(defn get-y-value [context max-y added-value max-height chat-id suggestions reply number-of-lines]
+  (let [y               (calculate-y context max-y added-value)
         y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply number-of-lines)]
     (+ y (when (seq suggestions) y-with-mentions))))
 
@@ -103,6 +99,7 @@
                   (set-bg-opacity 1)
                   (swap! context assoc :state :custom-chat-unavailable)))
               (swap! context assoc :y new-y)
+              
               (when keyboard-shown
                 (reanimated/set-shared-value
                  translate-y
@@ -125,9 +122,9 @@
      (let [min-y              112
            context            (reagent/atom {:y     min-y ;current y value
                                              :min-y min-y ;minimum y value
-                                             :dy    0 ;used for gesture
-                                             :pdy   0 ;used for gesture
-                                             :state :min ;:min, :custom-chat-available, :custom-chat-unavailable, :max
+                                             :dy    0     ;used for gesture
+                                             :pdy   0     ;used for gesture
+                                             :state :min  ;:min, :custom-chat-available, :custom-chat-unavailable, :max
                                              :clear false})
            keyboard-was-shown (reagent/atom false)
            text-input-ref     (quo.react/create-ref)
@@ -145,15 +142,15 @@
                   max-y                                    (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets) (:status-bar-height @navigation-const)) ; 360 - default height
                   max-height                               (Math/abs (- max-y 56 (:bottom insets))) ; 56 - top-bar height
                   added-value                              (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
-                  min-y                                    (+ min-y (when (or edit reply) 38))
                   number-of-lines                          (-> (get @input/input-texts chat-id)
                                                                frequencies
                                                                (get "\n"))
-                  y                                        (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply number-of-lines)
+                  min-y                                    (+ min-y (when (or edit reply) 38))
+                  y                                        (get-y-value context max-y added-value max-height chat-id suggestions reply number-of-lines)
                   translate-y                              (reanimated/use-shared-value 0)
                   shared-height                            (reanimated/use-shared-value min-y)
                   bg-opacity                               (reanimated/use-shared-value 0)
-                  more-than-three-lines?                   (<= 3 number-of-lines)
+                  more-than-or=-three-lines?               (<= 3 number-of-lines)
                   input-content-change                     (get-input-content-change context translate-y shared-height max-height
                                                                                      bg-opacity keyboard-shown min-y max-y number-of-lines)
                   bottom-sheet-gesture                     (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
@@ -180,7 +177,7 @@
                ;;INPUT MESSAGE bottom sheet
                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                 [reanimated/view {:style (reanimated/apply-animations-to-style
-                                          {:transform [{:translateY (if more-than-three-lines?
+                                          {:transform [{:translateY (if more-than-or=-three-lines?
                                                                       #js{:value (->> (* 2 number-of-lines)
                                                                                       (- (.-value translate-y)))}
                                                                       translate-y)}]}
