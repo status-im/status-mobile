@@ -176,7 +176,7 @@
                              :on-text-input            (partial on-text-input mentionable-users chat-id)}
         input-with-mentions (<sub [:chat/input-with-mentions])
         children          (fn []
-                            (if mentions-enabled
+                            (if mentions-enabled?
                               (map-indexed
                                (fn [index [item text]]
                                  [index [item]]

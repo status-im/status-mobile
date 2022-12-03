@@ -99,7 +99,6 @@
                   (set-bg-opacity 1)
                   (swap! context assoc :state :custom-chat-unavailable)))
               (swap! context assoc :y new-y)
-              
               (when keyboard-shown
                 (reanimated/set-shared-value
                  translate-y
