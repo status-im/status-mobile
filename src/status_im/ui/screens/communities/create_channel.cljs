@@ -5,7 +5,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.communities.core :as communities]
-            [status-im.utils.debounce :as debounce]
+            [utils.debounce :as debounce]
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.ui.screens.communities.create :as create]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]

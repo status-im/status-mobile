@@ -20,7 +20,7 @@
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.utils.debounce :as debounce]
+            [utils.debounce :as debounce]
             [clojure.string :as string]
             [status-im.ethereum.tokens :as tokens]
             [quo.core :as quo]

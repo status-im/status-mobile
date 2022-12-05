@@ -3,7 +3,8 @@
             ["react-native" :as react-native]
             ["@react-native-community/blur" :as blur]
             [react-native.flat-list :as flat-list]
-            [react-native.section-list :as section-list]))
+            [react-native.section-list :as section-list]
+            [react-native.platform :as platform]))
 
 (def app-state ^js (.-AppState ^js react-native))
 (def blur-view (reagent/adapt-react-class (.-BlurView blur)))
@@ -55,3 +56,17 @@
   (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))
 
 (def status-bar (.-StatusBar ^js react-native))
+
+(defn hw-back-add-listener [callback]
+  (.addEventListener (.-BackHandler ^js react-native) "hardwareBackPress" callback))
+
+(defn hw-back-remove-listener [callback]
+  (.removeEventListener (.-BackHandler ^js react-native) "hardwareBackPress" callback))
+
+(def keyboard-avoiding-view-class (reagent/adapt-react-class (.-KeyboardAvoidingView react-native)))
+
+(defn keyboard-avoiding-view [props & children]
+  (into [keyboard-avoiding-view-class
+         (merge (when platform/ios? {:behavior :padding})
+                props)]
+        children))

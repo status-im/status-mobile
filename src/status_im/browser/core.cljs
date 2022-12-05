@@ -22,7 +22,7 @@
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.browser.webview-ref :as webview-ref]
             ["eth-phishing-detect" :as eth-phishing-detect]
-            [status-im.utils.debounce :as debounce]
+            [utils.debounce :as debounce]
             [status-im.browser.eip3085 :as eip3085]
             [status-im.browser.eip3326 :as eip3326]))
 

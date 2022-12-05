@@ -4,9 +4,9 @@
             [status-im2.contexts.communities.overview.view :as communities.overview]
             [status-im2.contexts.shell.view :as shell]
             [status-im2.contexts.quo-preview.main :as quo.preview]
+            [status-im2.contexts.chat.messages.view :as chat]
 
-            ;; TODO remove when not used anymore\
-            [status-im.ui2.screens.chat.view :as chat]
+            ;; TODO remove when not used anymore
             [status-im.ui.screens.screens :as old-screens]))
 
 (def components

@@ -1,4 +1,4 @@
-(ns status-im.utils.debounce
+(ns utils.debounce
   (:require [re-frame.core :as re-frame]))
 
 (def timeout (atom {}))

@@ -7,7 +7,7 @@
             [status-im.ui.components.topbar :as topbar]
             [quo.core :as quo]
             [quo.design-system.colors :as colors]
-            [status-im.utils.debounce :as debounce]
+            [utils.debounce :as debounce]
             [status-im.ui.components.search-input.view :as search-input]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.ui.components.icons.icons :as icons]
