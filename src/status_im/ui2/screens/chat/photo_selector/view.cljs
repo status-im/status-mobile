@@ -9,7 +9,8 @@
             [quo2.components.notifications.info-count :as info-count]
             [react-native.linear-gradient :as linear-gradient]
             [status-im.ui2.screens.chat.photo-selector.style :as style]
-            [status-im.utils.core :as utils]))
+            [status-im.utils.core :as utils]
+            [oops.core :refer [oget]]))
 
 (def selected (reagent/atom []))
 
@@ -78,14 +79,35 @@
    (when (some #{item} @selected)
      [info-count/info-count (+ (utils/first-index #(= item %) @selected) 1) (style/image-count)])])
 
+(defn is-close-to-bottom [e]
+  (let [content-height    (oget e "contentSize.height")
+        layout-height     (oget e "layoutMeasurement.height")
+        padding-to-bottom 300
+        threshold         (- content-height layout-height padding-to-bottom)
+        content-offset    (oget e "contentOffset.y")]
+    (< threshold content-offset)))
+
+(defn on-scroll [e end-cursor]
+  (when (is-close-to-bottom (oget e "nativeEvent"))
+    (rf/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor])))
+
+
+(defn on-end-reached [end-cursor]
+  (let [is-loading    (rf/sub [:camera-roll-loading-more])
+        has-next-page (rf/sub [:camera-roll-has-next-page])]
+    (println "asdf" is-loading has-next-page)
+    (when (and (not is-loading) has-next-page)
+      (rf/dispatch [:chat.ui/camera-roll-loading-more true])
+      (rf/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor]))))
+
 (defn photo-selector []
   (rf/dispatch [:chat.ui/camera-roll-get-photos 20])
   [:f>
    (fn []
-     (let [{window-height :height
-            window-width  :width} (rn/use-window-dimensions)
+     (let [{window-height :height window-width :width} (rn/use-window-dimensions)
            safe-area          (safe-area/use-safe-area)
-           camera-roll-photos (rf/sub [:camera-roll-photos])]
+           camera-roll-photos (rf/sub [:camera-roll-photos])
+           end-cursor         (rf/sub [:camera-roll-end-cursor])]
        [rn/view {:style {:height (- window-height (:top safe-area))}}
         [rn/touchable-opacity
          {:on-press #(js/alert "Camera: not implemented")
@@ -104,5 +126,9 @@
                        :num-columns             3
                        :content-container-style {:width          "100%"
                                                  :padding-bottom (+ (:bottom safe-area) 100)}
-                       :style                   {:border-radius 20}}]
+                       :style                   {:border-radius 20}
+                       ;:on-scroll               (fn [e]
+                       ;                           (on-scroll e end-cursor))
+                       :on-end-reached          (fn []
+                                                  (on-end-reached end-cursor))}]
         [bottom-gradient]]))])
