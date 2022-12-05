@@ -14,8 +14,6 @@
 
 (def ^:private align-left (assoc centrify-style :align-items :flex-start))
 
-(def ^:private icon-styles (assoc centrify-style :width 32 :height 32 :border-radius 10))
-
 (defn- big? [size] (= size :big))
 
 (defn- icon-props [color size]
@@ -41,10 +39,9 @@
 (defn- mid-section-comp
   [{:keys [description-img description-user-icon horizontal-description?
            text-secondary-color align-mid? text-color icon main-text type description]}]
-  [rn/view {:style (assoc
-                    centrify-style
-                     :flex-direction :row
-                     :margin-horizontal 2)}
+  [rn/view {:style (assoc centrify-style
+                          :flex-direction :row
+                          :margin-horizontal 2)}
    (when (or (and (not horizontal-description?)
                   align-mid?
                   (not= :text-with-description type))
@@ -72,7 +69,7 @@
                   :style  (cond-> {:padding-right 4
                                    :color         text-secondary-color
                                    :line-height   18}
-                                  horizontal-description? (assoc :margin-left 4 :margin-top 2))}
+                            horizontal-description? (assoc :margin-left 4 :margin-top 2))}
        description])]])
 
 (defn- mid-section-view
@@ -128,11 +125,10 @@
         :text-with-description component-instance)]]))
 
 (defn- right-section-view [right-section-buttons]
-  [rn/view {:style (assoc
-                    centrify-style
-                     :flex-direction :row
-                     :flex 1
-                     :justify-content :flex-end)}
+  [rn/view {:style (assoc centrify-style
+                          :flex-direction :row
+                          :flex 1
+                          :justify-content :flex-end)}
    (let [last-icon-index (-> right-section-buttons count dec)]
      (map-indexed (fn [index {:keys [icon on-press type] :or {type :grey}}]
                     ^{:key index}
