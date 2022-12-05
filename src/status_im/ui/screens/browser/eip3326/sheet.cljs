@@ -5,7 +5,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.browser.styles :as styles]
-            [status-im.utils.debounce :as debounce]
+            [utils.debounce :as debounce]
             [status-im.network.core :as network]
             [quo.design-system.colors :as colors]
             [quo.core :as quo])

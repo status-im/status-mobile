@@ -8,7 +8,7 @@
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [status-im.ui.screens.chat.stickers.styles :as styles]
-            [status-im.utils.debounce :as debounce]
+            [utils.debounce :as debounce]
             [status-im.ui.components.fast-image :as fast-image]))
 
 (def icon-size 28)

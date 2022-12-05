@@ -200,7 +200,7 @@ status-im.utils.platform/isMacOs?
 status-im.utils.platform/isNix?
 status-im.utils.platform/isWin?
 status-im.utils.platform/android-version>=
-status-im.utils.debounce/clear-all
+utils.debounce/clear-all
 status-im.transport.db/create-chat
 status-im.utils.priority-map/priority-map
 status-im.utils.priority-map/priority-map-by

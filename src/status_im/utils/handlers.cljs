@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect]]
             [taoensso.timbre :as log]
-            [status-im.utils.debounce :as debounce]))
+            [utils.debounce :as debounce]))
 
 (defn- pretty-print-event [ctx]
   (let [[first _] (get-coeffect ctx :event)]

@@ -15,7 +15,7 @@
             [status-im.add-new.core :as new-chat]
             [status-im.ui.components.search-input.view :as search-input]
             [status-im.add-new.db :as db]
-            [status-im.utils.debounce :as debounce]
+            [utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]

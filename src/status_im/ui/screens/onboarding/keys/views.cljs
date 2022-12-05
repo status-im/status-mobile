@@ -7,7 +7,7 @@
             [status-im.ui.screens.onboarding.styles :as styles]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.identicon :as identicon]
-            [status-im.utils.debounce :refer [dispatch-and-chill]]
+            [utils.debounce :refer [dispatch-and-chill]]
             [quo.core :as quo]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.onboarding.views :as ui]
