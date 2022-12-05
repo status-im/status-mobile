@@ -4,7 +4,6 @@
             [re-frame.core :as re-frame]
             [quo.components.safe-area :as safe-area]
             [quo.react-native :as rn :refer [navigation-const]]
-            [status-im.ui2.screens.chat.composer.style :as styles]
             [status-im.ui2.screens.chat.composer.reply :as reply]
             [quo2.components.buttons.button :as quo2.button]
             [status-im.utils.handlers :refer [<sub]]
@@ -17,7 +16,11 @@
             [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
             [status-im.utils.utils :as utils]
             [i18n.i18n :as i18n]
-            [status-im.ui2.screens.chat.composer.edit.view :as edit]))
+            [status-im.ui2.screens.chat.composer.edit.view :as edit]
+            [utils.re-frame :as rf]
+            [quo2.core :as quo2]
+            [quo2.foundations.colors :as colors]
+            [status-im.ui2.screens.chat.composer.style :as style]))
 
 (defn calculate-y [context keyboard-shown min-y max-y added-value]
   (if keyboard-shown
@@ -117,6 +120,27 @@
                  translate-y
                  (reanimated/with-timing (- max-y)))))))))))
 
+(defn small-image [item]
+  [rn/view
+   [rn/image {:source {:uri (first item)}
+              :style  {:width         56
+                       :height        56
+                       :border-radius 8
+                       :margin-bottom 20}}]
+   [rn/touchable-opacity
+    {:on-press (fn [] (rf/dispatch [:chat.ui/image-unselected (first item)]))
+     :style    (style/remove-photo-container)}
+    [quo2/icon :i/close {:color colors/white :size 12}]]])
+
+(defn images-list [images]
+  [rn/flat-list {:key-fn     (fn [item] (first item))
+                 :render-fn  small-image
+                 :data       images
+                 :horizontal true
+                 :style {:bottom 50 :position :absolute :z-index 5}
+                 :content-container-style {:padding-horizontal 20 :margin-top 12}
+                 :separator [rn/view {:style {:width 12}}]}])
+
 (defn composer [chat-id]
   [safe-area/consumer
    (fn [insets]
@@ -138,6 +162,7 @@
             (let [reply                (<sub [:chats/reply-message])
                   edit                 (<sub [:chats/edit-message])
                   suggestions          (<sub [:chat/mention-suggestions])
+                  images               (get-in (rf/sub [:chat/inputs]) [chat-id :metadata :sending-image])
                   {window-height :height} (rn/use-window-dimensions)
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
                   max-y                (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets) (:status-bar-height @navigation-const)) ; 360 - default height
@@ -145,6 +170,7 @@
                   added-value          (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
                   min-y                (+ min-y (when (or edit reply) 38))
                   y                    (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply)
+                  y                    (+ y (when (seq images) 80))
                   translate-y          (reanimated/use-shared-value 0)
                   shared-height        (reanimated/use-shared-value min-y)
                   bg-opacity           (reanimated/use-shared-value 0)
@@ -175,9 +201,9 @@
                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                 [reanimated/view {:style (reanimated/apply-animations-to-style
                                           {:transform [{:translateY translate-y}]}
-                                          (styles/input-bottom-sheet window-height))}
+                                          (style/input-bottom-sheet window-height))}
                  ;handle
-                 [rn/view {:style (styles/bottom-sheet-handle)}]
+                 [rn/view {:style (style/bottom-sheet-handle)}]
                  [edit/edit-message-auto-focus-wrapper (:text-input-ref refs) edit]
                  [reply/reply-message-auto-focus-wrapper (:text-input-ref refs) reply]
                  [rn/view {:style {:height (- max-y 80 added-value)}}
@@ -188,7 +214,7 @@
                                      :set-active-panel       #()}]]]]
                ;CONTROLS
                (when-not (seq suggestions)
-                 [rn/view {:style (styles/bottom-sheet-controls insets)}
+                 [rn/view {:style (style/bottom-sheet-controls insets)}
                   [quo2.button/button {:on-press (fn []
                                                    (permissions/request-permissions
                                                     {:permissions [:read-external-storage :write-external-storage]
@@ -212,5 +238,6 @@
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
                                          {:opacity bg-opacity}
-                                         (styles/bottom-sheet-background window-height))}]
+                                         (style/bottom-sheet-background window-height))}]
+               [images-list images]
                [mentions/autocomplete-mentions suggestions]]))])))])
