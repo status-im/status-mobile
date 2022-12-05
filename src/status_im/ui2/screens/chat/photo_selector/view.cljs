@@ -9,22 +9,9 @@
             [quo2.components.notifications.info-count :as info-count]
             [react-native.linear-gradient :as linear-gradient]
             [status-im.ui2.screens.chat.photo-selector.style :as style]
-            [status-im.utils.core :as utils]
-            [oops.core :refer [oget]]))
+            [status-im.utils.core :as utils]))
 
 (def selected (reagent/atom []))
-
-(defn small-image [item]
-  [rn/view
-   [rn/image {:source {:uri item}
-              :style  {:width         56
-                       :height        56
-                       :border-radius 8
-                       :margin-bottom 20}}]
-   [rn/touchable-opacity
-    {:on-press (fn [] (reset! selected (vec (remove #(= % item) @selected))))
-     :style    (style/remove-photo-container)}
-    [quo2/icon :i/close {:color colors/white :size 12}]]])
 
 (defn bottom-gradient []
   [:f>
@@ -36,24 +23,13 @@
            :start  {:x 0 :y 1}
            :end    {:x 0 :y 0}
            :style  (style/gradient-container safe-area)}
-          [rn/flat-list {:key-fn                  (fn [item] item)
-                         :render-fn               small-image
-                         :data                    @selected
-                         :horizontal              true
-                         :content-container-style {:padding-horizontal 20 :margin-top 12}
-                         :separator               [rn/view {:style {:width 12}}]}]
-          [rn/view {:style (style/buttons-container safe-area)}
-           [quo2/button {:type     :grey
-                         :style    {:flex 0.48}
-                         :on-press #(js/alert "Add text: to be implemented")}
-            (i18n/label :t/add-text)]
-           [quo2/button {:style    {:flex 0.48}
-                         :before   :send
-                         :on-press #(do
-                                      (rf/dispatch [:chat.ui/send-current-message])
-                                      (reset! selected [])
-                                      (rf/dispatch [:bottom-sheet/hide]))}
-            (str (i18n/label :t/send) " " (when (> (count @selected) 1) (count @selected)))]]])))])
+          [quo2/button {:style    {:width "95%"
+                                   :align-self :center}
+                        :on-press #(do
+                                     ;(rf/dispatch [:chat.ui/send-current-message])
+                                     (reset! selected [])
+                                     (rf/dispatch [:bottom-sheet/hide]))}
+           (i18n/label :t/confirm-selection)]])))])
 
 (defn clear-button []
   (when (pos? (count @selected))
@@ -79,23 +55,9 @@
    (when (some #{item} @selected)
      [info-count/info-count (+ (utils/first-index #(= item %) @selected) 1) (style/image-count)])])
 
-(defn is-close-to-bottom [e]
-  (let [content-height    (oget e "contentSize.height")
-        layout-height     (oget e "layoutMeasurement.height")
-        padding-to-bottom 300
-        threshold         (- content-height layout-height padding-to-bottom)
-        content-offset    (oget e "contentOffset.y")]
-    (< threshold content-offset)))
-
-(defn on-scroll [e end-cursor]
-  (when (is-close-to-bottom (oget e "nativeEvent"))
-    (rf/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor])))
-
-
 (defn on-end-reached [end-cursor]
   (let [is-loading    (rf/sub [:camera-roll-loading-more])
         has-next-page (rf/sub [:camera-roll-has-next-page])]
-    (println "asdf" is-loading has-next-page)
     (when (and (not is-loading) has-next-page)
       (rf/dispatch [:chat.ui/camera-roll-loading-more true])
       (rf/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor]))))
@@ -127,8 +89,6 @@
                        :content-container-style {:width          "100%"
                                                  :padding-bottom (+ (:bottom safe-area) 100)}
                        :style                   {:border-radius 20}
-                       ;:on-scroll               (fn [e]
-                       ;                           (on-scroll e end-cursor))
                        :on-end-reached          (fn []
                                                   (on-end-reached end-cursor))}]
         [bottom-gradient]]))])

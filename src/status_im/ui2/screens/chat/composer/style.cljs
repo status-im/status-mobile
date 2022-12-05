@@ -79,3 +79,14 @@
          (when-not pin? {:position :absolute
                          :left     34
                          :top      3})))
+
+(defn remove-photo-container []
+  {:width            14
+   :height           14
+   :border-radius    7
+   :background-color colors/neutral-50
+   :position         :absolute
+   :top              -7
+   :right            -7
+   :justify-content  :center
+   :align-items      :center})

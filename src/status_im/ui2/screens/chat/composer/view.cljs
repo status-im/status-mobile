@@ -4,7 +4,6 @@
             [re-frame.core :as re-frame]
             [quo.components.safe-area :as safe-area]
             [quo.react-native :as rn :refer [navigation-const]]
-            [status-im.ui2.screens.chat.composer.style :as styles]
             [status-im.ui2.screens.chat.composer.reply :as reply]
             [quo2.components.buttons.button :as quo2.button]
             [status-im.utils.handlers :refer [<sub]]
@@ -17,7 +16,11 @@
             [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
             [status-im.utils.utils :as utils]
             [i18n.i18n :as i18n]
-            [status-im.ui2.screens.chat.composer.edit.view :as edit]))
+            [status-im.ui2.screens.chat.composer.edit.view :as edit]
+            [utils.re-frame :as rf]
+            [quo2.core :as quo2]
+            [quo2.foundations.colors :as colors]
+            [status-im.ui2.screens.chat.composer.style :as style]))
 
 (defn calculate-y [context min-y max-y added-value chat-id]
   (let [input-text               (:input-text (get (<sub [:chat/inputs]) chat-id))
@@ -125,6 +128,27 @@
                  translate-y
                  (reanimated/with-timing (- max-y)))))))))))
 
+(defn small-image [item]
+  [rn/view
+   [rn/image {:source {:uri (first item)}
+              :style  {:width         56
+                       :height        56
+                       :border-radius 8
+                       :margin-bottom 20}}]
+   [rn/touchable-opacity
+    {:on-press (fn [] (rf/dispatch [:chat.ui/image-unselected (first item)]))
+     :style    (style/remove-photo-container)}
+    [quo2/icon :i/close {:color colors/white :size 12}]]])
+
+(defn images-list [images]
+  [rn/flat-list {:key-fn     (fn [item] (first item))
+                 :render-fn  small-image
+                 :data       images
+                 :horizontal true
+                 :style {:bottom 50 :position :absolute :z-index 5}
+                 :content-container-style {:padding-horizontal 20 :margin-top 12}
+                 :separator [rn/view {:style {:width 12}}]}])
+
 (defn composer [chat-id]
   [safe-area/consumer
    (fn [insets]
@@ -143,6 +167,7 @@
        (fn []
          [:f>
           (fn []
+<<<<<<< HEAD
             (let [reply                                    (<sub [:chats/reply-message])
                   edit                                     (<sub [:chats/edit-message])
                   suggestions                              (<sub [:chat/mention-suggestions])
@@ -167,6 +192,32 @@
                   bottom-sheet-gesture                     (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
                                                                                      min-y max-y shared-height max-height set-bg-opacity)
                   initial-value                            (or (get @input/input-texts chat-id) nil)]
+=======
+            (let [reply                (<sub [:chats/reply-message])
+                  edit                 (<sub [:chats/edit-message])
+                  suggestions          (<sub [:chat/mention-suggestions])
+                  images               (get-in (rf/sub [:chat/inputs]) [chat-id :metadata :sending-image])
+                  {window-height :height} (rn/use-window-dimensions)
+                  {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
+                  max-y                (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets) (:status-bar-height @navigation-const)) ; 360 - default height
+                  max-height           (Math/abs (- max-y 56 (:bottom insets))) ; 56 - top-bar height
+                  added-value          (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
+                  min-y                (+ min-y (when (or edit reply) 38))
+                  y                    (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply)
+                  y                    (+ y (when (seq images) 80))
+                  translate-y          (reanimated/use-shared-value 0)
+                  shared-height        (reanimated/use-shared-value min-y)
+                  bg-opacity           (reanimated/use-shared-value 0)
+                  bg-bottom            (reanimated/use-shared-value (- window-height))
+
+                  set-bg-opacity       (fn [value]
+                                         (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
+                                         (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
+                  input-content-change (get-input-content-change context translate-y shared-height max-height
+                                                                 set-bg-opacity keyboard-shown min-y max-y)
+                  bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
+                                                                 min-y max-y shared-height max-height set-bg-opacity)]
+>>>>>>> ea730ed53... lint
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown? (not keyboard-shown))
                                       (swap! context assoc :state :min))
@@ -185,11 +236,17 @@
                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                 [reanimated/view {:style (reanimated/apply-animations-to-style
                                           {:transform [{:translateY translate-y}]}
-                                          (styles/input-bottom-sheet window-height))}
+                                          (style/input-bottom-sheet window-height))}
                  ;handle
+<<<<<<< HEAD
                  [rn/view {:style (styles/bottom-sheet-handle)}]
                  [edit/edit-message-auto-focus-wrapper text-input-ref edit clean-and-minimize-composer-fn]
                  [reply/reply-message-auto-focus-wrapper text-input-ref reply]
+=======
+                 [rn/view {:style (style/bottom-sheet-handle)}]
+                 [edit/edit-message-auto-focus-wrapper (:text-input-ref refs) edit]
+                 [reply/reply-message-auto-focus-wrapper (:text-input-ref refs) reply]
+>>>>>>> ea730ed53... lint
                  [rn/view {:style {:height (- max-y 80 added-value)}}
                   [input/text-input {:chat-id                chat-id
                                      :on-content-size-change input-content-change
@@ -199,7 +256,7 @@
                                      :set-active-panel       #()}]]]]
                ;CONTROLS
                (when-not (seq suggestions)
-                 [rn/view {:style (styles/bottom-sheet-controls insets)}
+                 [rn/view {:style (style/bottom-sheet-controls insets)}
                   [quo2.button/button {:on-press (fn []
                                                    (permissions/request-permissions
                                                     {:permissions [:read-external-storage :write-external-storage]
@@ -229,7 +286,20 @@
                     :i/arrow-up]]])
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
+<<<<<<< HEAD
                                          {:opacity   bg-opacity
                                           :transform [{:translateY bg-bottom}]}
                                          (styles/bottom-sheet-background window-height))}]
                [mentions/autocomplete-mentions suggestions text-input-ref]]))])))])
+=======
+<<<<<<< HEAD
+                                         {:opacity bg-opacity
+                                          :transform [{:translateY bg-bottom}]}
+                                         (styles/bottom-sheet-background window-height))}]
+=======
+                                         {:opacity bg-opacity}
+                                         (style/bottom-sheet-background window-height))}]
+               [images-list images]
+>>>>>>> 775d9e545... lint
+               [mentions/autocomplete-mentions suggestions]]))])))])
+>>>>>>> ea730ed53... lint

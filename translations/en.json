@@ -1894,5 +1894,6 @@
     "unmute-group": "Unmute group",
     "remove-user-from-group": "Remove {{username}} from the group",
     "edit-name-image": "Edit name and image",
-    "owner": "Owner"
+    "owner": "Owner",
+    "confirm-selection": "Confirm selection"
 }
