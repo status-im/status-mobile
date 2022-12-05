@@ -259,7 +259,7 @@ class HomeView(BaseView):
         self.driver.info("Looking for chat: '%s'" % username)
         chat_element = ChatElement(self.driver, username[:25], community=community)
         if not chat_element.is_element_displayed(10):
-            if self.notifications_unread_badge.is_element_displayed(30):
+            if self.notifications_unread_badge.is_element_displayed(60):
                 self.open_activity_center_button.click()
             chat_in_ac = ActivityCenterChatElement(self.driver, username[:25])
             chat_in_ac.wait_for_element(20)
