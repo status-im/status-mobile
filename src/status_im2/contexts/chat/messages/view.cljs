@@ -6,7 +6,7 @@
             [utils.re-frame :as rf]
             [utils.debounce :as debounce]
             [quo2.core :as quo]
-
+            [status-im.constants :as constants]
             [status-im2.navigation.state :as navigation.state]
 
             ;;TODO move to status-im2
@@ -22,8 +22,10 @@
     (rf/dispatch [:navigate-back])))
 
 (defn page-nav []
-  (let [{:keys [group-chat chat-id chat-name emoji]} (rf/sub [:chats/current-chat])
-        display-name (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+  (let [{:keys [group-chat chat-id chat-name emoji chat-type]} (rf/sub [:chats/current-chat])
+        display-name (if (= chat-type constants/one-to-one-chat-type)
+                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                       (str emoji " " chat-name))
         online? (rf/sub [:visibility-status-updates/online? chat-id])
         contact (when-not group-chat (rf/sub [:contacts/contact-by-address chat-id]))
         photo-path (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path chat-id]))]
@@ -33,7 +35,7 @@
       :mid-section
       (if group-chat
         {:type      :text-only
-         :main-text (str emoji " " chat-name)}
+         :main-text display-name}
         {:type      :user-avatar
          :avatar    {:full-name       display-name
                      :online?         online?
