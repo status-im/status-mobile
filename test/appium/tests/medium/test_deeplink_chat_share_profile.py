@@ -1,12 +1,11 @@
 import pytest
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, test_dapp_url
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from tests.users import dummy_user, transaction_senders, basic_user, \
     ens_user_message_sender, ens_user
 from views.sign_in_view import SignInView
-from views.chat_view import ChatView
 
 
 @pytest.mark.xdist_group(name="two_1")
@@ -377,9 +376,12 @@ class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
         deep_link = 'status-im://%s' % chat_name
         self.sign_in.open_weblink_and_login(deep_link)
         chat = self.sign_in.get_chat_view()
-        if not chat.user_name_text_new_UI.text == '#' + chat_name:
-            self.errors.append("Public chat '%s' is not opened" % chat_name)
-        self.errors.verify_no_errors()
+        # ToDo: change to the next line when accessibility id is added for user_name_text_new_UI
+        # if not chat.user_name_text_new_UI.text == '#' + chat_name:
+        try:
+            chat.element_by_text(text=" #" + chat_name, element_type="text").wait_for_visibility_of_element()
+        except TimeoutException:
+            self.drivers[0].fail("Public chat '%s' is not opened" % chat_name)
 
     @marks.testrail_id(702775)
     @marks.xfail(reason="Profile is often not opened in e2e builds for some reason. Needs to be investigated.")
@@ -393,8 +395,7 @@ class TestDeeplinkOneDeviceNewUI(MultipleSharedDeviceTestCase):
 
             for text in ens_user['username'], self.sign_in.get_translation_by_key("add-to-contacts"):
                 if not chat.element_by_text(text).scroll_to_element(10):
-                    self.driver.fail("User profile screen is not opened")
-            self.errors.verify_no_errors()
+                    self.drivers[0].fail("User profile screen is not opened")
 
     # @marks.testrail_id(702777)
     # @marks.skip(reason="Skipping until chat names are implemented in new UI")

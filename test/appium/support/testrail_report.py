@@ -22,7 +22,7 @@ class TestrailReport(BaseTestReport):
         self.user = environ.get('TESTRAIL_USER')
 
         self.run_id = None
-        #self.suite_id = 48
+        # self.suite_id = 48
         self.suite_id = 5274
         self.project_id = 14
 
@@ -124,6 +124,7 @@ class TestrailReport(BaseTestReport):
         test_cases['pr']['critical'] = 50955
         test_cases['pr']['one_to_one_chat'] = 50956
         test_cases['pr']['deep_links'] = 50967
+        test_cases['pr']['group_chat'] = 50964
 
         ## Nightly e2e
         # test_cases['nightly']['medium'] = 736
@@ -144,8 +145,6 @@ class TestrailReport(BaseTestReport):
         # test_cases['nightly']['mutual_contact_requests'] = 50857
         # test_cases['nightly']['keycard'] = 50850
         # test_cases['nightly']['wallet'] = 50851
-
-        test_cases['nightly']['group_chat'] = 50964
 
         ## Upgrade e2e
         # test_cases['upgrade']['general'] = 881
