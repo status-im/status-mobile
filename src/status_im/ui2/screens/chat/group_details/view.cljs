@@ -11,7 +11,11 @@
             [status-im.ui2.screens.common.contact-list.view :as contact-list]
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im2.common.home.actions.view :as actions]
+<<<<<<< HEAD
             [utils.re-frame :as rf]))
+=======
+            [status-im.ui2.screens.common.contact-list.view :as contact-list]))
+>>>>>>> 7ce2b16e0... group details screen 3
 
 (defn back-button
   []
@@ -68,8 +72,18 @@
 
 (def added (reagent/atom ()))
 
+<<<<<<< HEAD
 (defn contact-requests-sheet
   [group]
+=======
+(def removed (reagent/atom ()))
+
+(defn remove-members [chat-id]
+  (doseq [member-key @removed]
+    (rf/dispatch [:group-chats.ui/remove-member-pressed chat-id member-key true])))
+
+(defn add-members-sheet [{:keys [chat-id] :as group} admin?]
+>>>>>>> 7ce2b16e0... group details screen 3
   (let [added (reagent/atom ())]
     (fn []
       [:f>
@@ -81,6 +95,7 @@
              {:on-press #(rf/dispatch [:bottom-sheet/hide])
               :style    (style/close-icon)}
              [quo2/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
+<<<<<<< HEAD
             [quo2/text
              {:size   :heading-1
               :weight :semi-bold
@@ -103,6 +118,26 @@
               {:style    {:flex 1}
                :on-press #(rf/dispatch [:bottom-sheet/hide])
                :disabled (zero? (count @added))}
+=======
+            [quo2/text {:size   :heading-1
+                        :weight :semi-bold
+                        :style  {:margin-left 20}}
+             (i18n/label (if admin? :t/manage-members :t/add-members))]
+            [contact-list/contact-list {:icon    :check
+                                        :group   group
+                                        :added   added
+                                        :removed removed
+                                        :search? true}]
+            [rn/view {:style style/bottom-container}
+             [quo2/button {:style    {:flex 1}
+                           :on-press #(do
+                                        (rf/dispatch [:group-chats.ui/add-members-pressed])
+                                        (remove-members chat-id)
+                                        (reset! removed ())
+                                        (reset! added ())
+                                        (rf/dispatch [:bottom-sheet/hide]))
+                           :disabled (and (zero? (count @added)) (zero? (count @removed)))}
+>>>>>>> 7ce2b16e0... group details screen 3
               (i18n/label :t/save)]]]))])))
 
 (defn group-details
@@ -144,6 +179,7 @@
                  :justify-content :space-between}}
         [quo2/icon :i/pin {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
         [count-container (count pinned-messages)]]
+<<<<<<< HEAD
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium}
         (i18n/label :t/pinned-messages)]]
       [rn/touchable-opacity
@@ -161,6 +197,19 @@
        [rn/view
         {:style {:flex-direction  :row
                  :justify-content :space-between}}
+=======
+       [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label :t/pinned-messages)]]
+      [rn/touchable-opacity {:style    (style/action-container color)
+                             :on-press #(rf/dispatch [::chat.models/mute-chat-toggled chat-id (not muted)])}
+       [quo2/icon (if muted :i/muted :i/activity-center) {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
+       [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if muted :unmute-group :mute-group))]]
+      [rn/touchable-opacity {:style    (style/action-container color)
+                             :on-press #(rf/dispatch
+                                         [:bottom-sheet/show-sheet
+                                          {:content (fn [] [add-members-sheet group admin?])} :add-participants-toggle-list])}
+       [rn/view {:style {:flex-direction  :row
+                         :justify-content :space-between}}
+>>>>>>> 7ce2b16e0... group details screen 3
         [quo2/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
         [count-container (count contacts)]]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium}

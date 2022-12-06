@@ -18,6 +18,7 @@
   (fn [{:keys [color size]}]
     (let [container-size (get-in sizes [:container size])
           icon-size      (get-in sizes [:icon size])]
+<<<<<<< HEAD
       [rn/view
        {:width            container-size
         :height           container-size
@@ -28,3 +29,13 @@
        [icon/icon :i/group
         {:size  icon-size
          :color colors/white-opa-70}]])))
+=======
+      [rn/view {:width            container-size
+                :height           container-size
+                :align-items      :center
+                :justify-content  :center
+                :border-radius    (/ container-size 2)
+                :background-color (colors/custom-hex-color color 50 60)}
+       [icon/icon :i/group {:size  icon-size
+                            :color colors/white-opa-70}]])))
+>>>>>>> 7ce2b16e0... group details screen 3

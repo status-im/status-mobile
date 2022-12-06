@@ -212,6 +212,23 @@
       (let [base-color (get-in colors-map [(keyword color) suffix])]
         (if opacity (alpha base-color (/ opacity 100)) base-color))))))
 
+(defn- opacity->hex [opacity]
+  (case opacity
+    0 "00"
+    10 "1A"
+    20 "33"
+    30 "4d"
+    40 "66"
+    50 "80"
+    60 "99"
+    70 "B3"
+    80 "CC"
+    90 "E6"
+    "FF"))
+
+(defn custom-hex-color [color light-opacity dark-opacity]
+  (str color (opacity->hex (if (theme/dark?) dark-opacity light-opacity))))
+
 (defn custom-color-by-theme
   "(custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark)
    color         :primary/:purple/...

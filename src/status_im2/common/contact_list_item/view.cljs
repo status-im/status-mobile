@@ -18,6 +18,7 @@
         (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))
       (rf/dispatch [:search/home-filter-changed nil]))))
 
+<<<<<<< HEAD
 (defn action-icon
   [{:keys [public-key] :as item} {:keys [icon group added] :as extra-data}]
   (let [{:keys [contacts]} group
@@ -35,6 +36,34 @@
                              (if selected
                                (swap! added conj public-key)
                                (reset! added (remove #(= % public-key) @added))))}])]))
+=======
+(defn action-icon [{:keys [public-key] :as item} {:keys [icon group added removed] :as extra-data}]
+  (let [{:keys [contacts admins]} group
+        member?           (contains? contacts public-key)
+        current-pk        (rf/sub [:multiaccount/public-key])
+        admin?            (get admins current-pk)
+        contact-selected? (rf/sub [:is-participant-selected? public-key])]
+    [rn/touchable-opacity {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                                    {:content (fn [] [actions/actions item extra-data])}])
+                           :style    {:position :absolute
+                                      :right    20}}
+     (if (= icon :options)
+       [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+       [quo/checkbox {:default-checked? member?
+                      :disabled?        (and member? (not admin?))
+                      :on-change        (fn [selected]
+                                          (if-not member?
+                                            (if contact-selected?
+                                              (do
+                                                (reset! added (remove #(= % public-key) @added))
+                                                (rf/dispatch [:deselect-participant public-key true]))
+                                              (do
+                                                (swap! added conj public-key)
+                                                (rf/dispatch [:select-participant public-key true])))
+                                            (if selected
+                                              (reset! removed (remove #(= % public-key) @removed))
+                                              (swap! removed conj public-key))))}])]))
+>>>>>>> 7ce2b16e0... group details screen 3
 
 (defn contact-list-item
   [item _ _ extra-data]
