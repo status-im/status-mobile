@@ -1,4 +1,4 @@
-(ns status-im2.common.toasts.subs
+(ns status-im2.subs.toasts
   (:require
    [re-frame.core :as re-frame]))
 

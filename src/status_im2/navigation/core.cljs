@@ -280,9 +280,8 @@
 
    (navigation/register-component
     "toasts"
-    ;; DON'T wrap this with gesture-handler-root-hoc, it makes it unable to click through toasts
     (fn [] views/toasts-comp)
-    (fn [] views/toasts-comp))
+    js/undefined)
 
    (navigation/register-component
     "visibility-status-popover"

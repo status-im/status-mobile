@@ -19,6 +19,7 @@
             status-im2.subs.search
             status-im2.subs.stickers
             status-im2.subs.shell
+            status-im2.subs.toasts
             status-im2.subs.wallet.signing
             status-im2.subs.wallet.transactions
             status-im2.subs.wallet.wallet))
