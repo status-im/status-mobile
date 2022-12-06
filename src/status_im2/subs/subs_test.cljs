@@ -1,9 +1,7 @@
 (ns status-im2.subs.subs-test
   (:require [cljs.test :refer [deftest is testing]]
             [status-im2.subs.wallet.transactions :as wallet.transactions]
-            [status-im2.subs.onboarding :as onboarding]
-            [status-im.utils.money :as money]
-            [status-im2.subs.wallet.wallet :as wallet]))
+            [status-im2.subs.onboarding :as onboarding]))
 
 (def transactions [{:timestamp "1505912551000"}
                    {:timestamp "1505764322000"}
@@ -40,17 +38,3 @@
                 {"0x1" {:keycard-pairing "keycard-pairing-code"}}}
                {})]
       (is (= res "keycard-pairing-code")))))
-
-(deftest test-balance-total-value
-  (is (= (wallet/get-balance-total-value
-          {:ETH (money/bignumber 1000000000000000000)
-           :SNT (money/bignumber 100000000000000000000)
-           :AST (money/bignumber 10000)}
-          {:ETH {:USD {:from "ETH", :to "USD", :price 677.91, :last-day 658.688}}
-           :SNT {:USD {:from "SNT", :to "USD", :price 0.1562, :last-day 0.15}}
-           :AST {:USD {:from "AST", :to "USD", :price 4,      :last-day 3}}}
-          :USD
-          {:ETH 18
-           :SNT 18
-           :AST 4})
-         697.53)))

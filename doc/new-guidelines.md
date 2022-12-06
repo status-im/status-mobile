@@ -346,6 +346,53 @@ keywords and concatenating them into a single string.
 (i18n/label :t/biometric-auth-error {:code error-code})
 ```
 
+### Tests
+#### Subscription tests
+
+Test [layer-3 subscriptions](https://day8.github.io/re-frame/subscriptions/) by
+actually subscribing to them, so reframe's signal graph gets validated too.
+
+```clojure
+;; bad
+(defn user-recipes
+  [[current-user all-recipes location]]
+  ...)
+
+(re-frame/reg-sub
+ :user/recipes
+ :<- [:current-user]
+ :<- [:all-recipes]
+ :<- [:location]
+ user-recipes)
+
+(deftest user-recipes-test
+  (testing "builds list of recipes"
+    (let [current-user {...}
+          all-recipes  {...}
+          location     [...]]
+      (is (= expected (recipes [current-user all-recipes location]))))))
+
+;; good
+(require '[status-im.test-helpers :as h])
+
+(re-frame/reg-sub
+ :user/recipes
+ :<- [:current-user]
+ :<- [:all-recipes]
+ :<- [:location]
+ (fn [[current-user all-recipes location]]
+   ...))
+
+(h/deftest-sub :user/recipes
+  [sub-name]
+  (testing "builds list of recipes"
+    (swap! rf-db/app-db assoc
+           :current-user {...}
+           :all-recipes {...}
+           :location [...])
+    (is (= expected (rf/sub [sub-name])))))
+```
+
 ## Project Structure
 
 First, the bird's-eye view with some example ClojureScript files:
