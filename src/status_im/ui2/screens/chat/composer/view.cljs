@@ -29,7 +29,7 @@
         (swap! context assoc :state :max)
         max-y))))
 
-(defn calculate-y-with-mentions [y max-y max-height chat-id suggestions reply number-of-lines]
+(defn calculate-y-with-mentions [y max-y max-height chat-id suggestions reply]
   (let [input-text               (:input-text (get (<sub [:chat/inputs]) chat-id))
         num-lines                (count (string/split input-text "\n"))
         text-height              (* num-lines 22)
@@ -40,9 +40,9 @@
         mentions-translate-value (if should-translate? (min min-value (- mentions-height (- max-height text-height))) mentions-height)]
     (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
-(defn get-y-value [context max-y added-value max-height chat-id suggestions reply number-of-lines]
+(defn get-y-value [context max-y added-value max-height chat-id suggestions reply]
   (let [y               (calculate-y context max-y added-value)
-        y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply number-of-lines)]
+        y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
     (+ y (when (seq suggestions) y-with-mentions))))
 
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height set-bg-opacity]
@@ -118,18 +118,18 @@
 (defn composer [chat-id]
   [safe-area/consumer
    (fn [insets]
-     (let [min-y              112
-           context            (reagent/atom {:y     min-y ;current y value
-                                             :min-y min-y ;minimum y value
-                                             :dy    0     ;used for gesture
-                                             :pdy   0     ;used for gesture
-                                             :state :min  ;:min, :custom-chat-available, :custom-chat-unavailable, :max
-                                             :clear false})
-           keyboard-was-shown (reagent/atom false)
-           text-input-ref     (quo.react/create-ref)
-           send-ref           (quo.react/create-ref)
-           refs               {:send-ref       send-ref
-                               :text-input-ref text-input-ref}]
+     (let [min-y               112
+           context             (atom {:y     min-y ;current y value
+                                      :min-y min-y ;minimum y value
+                                      :dy    0     ;used for gesture
+                                      :pdy   0     ;used for gesture
+                                      :state :min  ;:min, :custom-chat-available, :custom-chat-unavailable, :max
+                                      :clear false})
+           keyboard-was-shown? (atom false)
+           text-input-ref      (quo.react/create-ref)
+           send-ref            (quo.react/create-ref)
+           refs                {:send-ref       send-ref
+                                :text-input-ref text-input-ref}]
        (fn []
          [:f>
           (fn []
@@ -145,7 +145,7 @@
                                                                frequencies
                                                                (get "\n"))
                   min-y                                    (+ min-y (when (or edit reply) 38))
-                  y                                        (get-y-value context max-y added-value max-height chat-id suggestions reply number-of-lines)
+                  y                                        (get-y-value context max-y added-value max-height chat-id suggestions reply)
                   translate-y                              (reanimated/use-shared-value 0)
                   shared-height                            (reanimated/use-shared-value min-y)
                   bg-opacity                               (reanimated/use-shared-value 0)
@@ -155,9 +155,9 @@
                   bottom-sheet-gesture                     (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
                                                                                      min-y max-y shared-height max-height bg-opacity)]
               (quo.react/effect! #(do
-                                    (when (and @keyboard-was-shown (not keyboard-shown))
+                                    (when (and @keyboard-was-shown? (not keyboard-shown))
                                       (swap! context assoc :state :min))
-                                    (reset! keyboard-was-shown keyboard-shown)
+                                    (reset! keyboard-was-shown? keyboard-shown)
                                     (if (#{:max :custom-chat-unavailable} (:state @context))
                                       (set-bg-opacity 1)
                                       (set-bg-opacity 0))

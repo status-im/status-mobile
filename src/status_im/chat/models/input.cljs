@@ -49,9 +49,9 @@
         cursor      (+ at-sign-idx (count name) 2)]
     (fx/merge
      cofx
-     {:db (-> db
-              (assoc-in [:chats/cursor chat-id] cursor)
-              (assoc-in [:chats/mention-suggestions chat-id] nil))
+     {:db             (-> db
+                          (assoc-in [:chats/cursor chat-id] cursor)
+                          (assoc-in [:chats/mention-suggestions chat-id] nil))
       :set-input-text [chat-id new-text]}
      ;; NOTE(rasom): Some keyboards do not react on selection property passed to
      ;; text input (specifically Samsung keyboard with predictive text set on).
@@ -126,7 +126,6 @@
 
         text (get-in message [:content :text])]
     {:dispatch [:chat.ui.input/set-chat-input-text text current-chat-id]
-     :set-input-text [current-chat-id text]
      :db (-> db
              (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
                        message)
