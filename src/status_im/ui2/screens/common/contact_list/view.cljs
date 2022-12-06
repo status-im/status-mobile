@@ -8,9 +8,14 @@
   [{:keys [title]}]
   [quo/divider-label {:label title}])
 
+<<<<<<< HEAD
 (defn contact-list
   [data]
   (let [contacts (rf/sub [:contacts/filtered-active-sections])]
+=======
+(defn contact-list [data]
+  (let [contacts (if (:group data) (rf/sub [:contacts/add-members-sections]) (rf/sub [:contacts/filtered-active-sections]))]
+>>>>>>> 7ce2b16e0... group details screen 3
     [rn/section-list
      {:key-fn                         :title
       :sticky-section-headers-enabled false

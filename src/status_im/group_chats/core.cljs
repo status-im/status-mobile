@@ -80,10 +80,17 @@
   "Add members to a group chat"
   {:events [:group-chats.ui/add-members-pressed]}
   [{{:keys [current-chat-id selected-participants]} :db :as cofx}]
+<<<<<<< HEAD
   {:json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
                     :params      [nil current-chat-id selected-participants]
                     :js-response true
                     :on-success  #(re-frame/dispatch [:chat-updated %])}]})
+=======
+  {::json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
+                     :params      [nil current-chat-id selected-participants]
+                     :js-response true
+                     :on-success  #(re-frame/dispatch [:chat-updated % true])}]})
+>>>>>>> ebb7affef... group details screen 3
 
 (fx/defn add-members-from-invitation
   "Add members to a group chat"
