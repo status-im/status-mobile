@@ -10,6 +10,8 @@
            status-im.test-helpers/deftest-sub clojure.core/defn
            taoensso.tufte/defnp               clojure.core/defn}
  :linters {:invalid-arity     {:skip-args [status-im.utils.fx/defn utils.re-frame/defn]}
-           ;;TODO remove number when this is fixed
-           ;;https://github.com/borkdude/clj-kondo/issues/867
-           :unresolved-symbol {:exclude [PersistentPriorityMap.EMPTY number]}}}
+           ;; TODO remove number when this is fixed
+           ;; https://github.com/borkdude/clj-kondo/issues/867
+           :unresolved-symbol {:exclude [PersistentPriorityMap.EMPTY
+                                         number
+                                         status-im.test-helpers/restore-app-db]}}}

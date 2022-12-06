@@ -12,22 +12,10 @@
        (map #(string/replace % #"\." "-"))
        (string/join "-")))
 
-(defmacro ^:private restore-app-db
-  "Saves app db, executes `body` and restores to original app-db.
-
-  Also clears the subscription cache for good measure."
-  [& body]
-  `(do (re-frame.subs/clear-subscription-cache!)
-       (let [original-db# (deref re-frame.db/app-db)]
-         (try
-           ~@body
-           (finally
-             (reset! re-frame.db/app-db original-db#))))))
-
 (defmacro ^:private testing-subscription
   [description & body]
   `(cljs.test/testing ~description
-     (restore-app-db ~@body)))
+     (restore-app-db (fn [] ~@body))))
 
 (s/fdef deftest-sub
   :args (s/cat :sub-name keyword?
@@ -60,9 +48,10 @@
   [sub-name args & body]
   `(let [sub-name# ~sub-name]
      (cljs.test/deftest ~(symbol (subscription-name->test-name sub-name))
-       (restore-app-db
-        (let [~args [sub-name#]]
-          ~@(clojure.walk/postwalk-replace
-             {'cljs.test/testing `testing-subscription
-              'testing           `testing-subscription}
-             body))))))
+       (let [~args [sub-name#]]
+         (restore-app-db
+          (fn []
+            ~@(clojure.walk/postwalk-replace
+               {'cljs.test/testing `testing-subscription
+                'testing           `testing-subscription}
+               body)))))))

@@ -10,6 +10,7 @@
             [re-frame.db :as rf-db]
             [re-frame.events :as rf-events]
             [re-frame.registrar :as rf-registrar]
+            [re-frame.subs :as rf-subs]
             [taoensso.timbre :as log]))
 
 (defn db
@@ -101,3 +102,15 @@
                                       :fn       (fn [{:keys [vargs level]}]
                                                   (swap! logs conj {:args vargs :level level}))})]
       (f logs))))
+
+(defn restore-app-db
+  "Saves current app DB, calls `f` and restores the original app DB.
+
+  Always clears the subscription cache after calling `f`."
+  [f]
+  (rf-subs/clear-subscription-cache!)
+  (let [original-db @rf-db/app-db]
+    (try
+      (f)
+      (finally
+        (reset! rf-db/app-db original-db)))))
