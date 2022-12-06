@@ -254,13 +254,14 @@
        [channel-list-component channel-heights first-channel-height]])))
 
 (defn render-sticky-header [channel-heights first-channel-height]
-  (fn [scroll-height] (when (>= scroll-height @first-channel-height)
-                        [rn/blur-view style/blur-channel-header
-                         [quo/divider-label
-                          {:label (:label (last (filter (fn [{:keys [height]}]
-                                                          (>= scroll-height (+ height @first-channel-height)))
-                                                        @channel-heights)))
-                           :chevron-position :left}]])))
+  (fn [scroll-height]
+    (when (> scroll-height @first-channel-height)
+      [rn/blur-view style/blur-channel-header
+       [quo/divider-label
+        {:label (:label (last (filter (fn [{:keys [height]}]
+                                        (>= scroll-height (+ height @first-channel-height)))
+                                      @channel-heights)))
+         :chevron-position :left}]])))
 
 (defn community-card-page-view [{:keys [name cover] :as community}]
   (let [channel-heights (reagent/atom [])

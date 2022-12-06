@@ -65,7 +65,7 @@
             :position :absolute
             :style    (style/image-slider (get-header-size @scroll-height))}]
           [rn/blur-view (style/blur-slider (get-header-size @scroll-height))]]
-         [rn/view {:style {:z-index 6 :margin-top (if ios? 56 12)}}
+         [rn/view {:style {:z-index 6 :margin-top (if ios? 56 6)}}
           [quo/page-nav
            {:horizontal-description? true
             :one-icon-align-left?    true

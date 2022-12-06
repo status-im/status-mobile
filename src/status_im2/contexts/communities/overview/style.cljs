@@ -11,7 +11,7 @@
                           :blur-type :xlight
                           :overlay-color (if platform/ios? colors/white-opa-70 :transparent)
                           :style {:position :absolute
-                                  :top (if platform/ios? 44 48)
+                                  :top (if platform/ios? 44 54)
                                   :height 34
                                   :width "100%"
                                   :flex 1}})
