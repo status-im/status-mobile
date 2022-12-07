@@ -122,7 +122,6 @@
   [safe-area/consumer
    (fn [insets]
      (let [min-y              112
-           bg-visible         (reagent/atom false)
            context            (atom {:y     min-y ;current y value
                                      :min-y min-y ;minimum y value
                                      :dy    0 ;used for gesture
@@ -150,9 +149,10 @@
                   translate-y          (reanimated/use-shared-value 0)
                   shared-height        (reanimated/use-shared-value min-y)
                   bg-opacity           (reanimated/use-shared-value 0)
+                  bg-bottom            (reanimated/use-shared-value (- window-height))
 
                   set-bg-opacity       (fn [value]
-                                         (reset! bg-visible (= value 1))
+                                         (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
                                          (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   input-content-change (get-input-content-change context translate-y shared-height max-height
                                                                  set-bg-opacity keyboard-shown min-y max-y)
@@ -216,6 +216,7 @@
                     :i/arrow-up]]])
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
-                                         {:opacity bg-opacity}
-                                         (styles/bottom-sheet-background window-height @bg-visible))}]
+                                         {:opacity bg-opacity
+                                          :transform [{:translateY bg-bottom}]}
+                                         (styles/bottom-sheet-background window-height))}]
                [mentions/autocomplete-mentions suggestions]]))])))])
