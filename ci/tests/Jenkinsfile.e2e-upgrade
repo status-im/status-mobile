@@ -1,0 +1,107 @@
+pipeline {
+
+  agent { label 'linux' }
+
+  parameters {
+    string(
+      name: 'APK_NAME',
+      description: 'Filename of APK uploaded to SauceLabs (base for upgrade, usually release build)',
+    )
+     string(
+      name: 'APK_NAME_UPGRADE',
+      description: 'Filename of APK of upgraded application (installed on top of base)',
+    )
+     string(
+      name: 'KEYWORD_EXPRESSION',
+      description: 'This will run tests which contain names that match the given string expression  (Optional)',
+      defaultValue: '',
+    )
+     string(
+      name: 'TR_CASE_IDS',
+      description: 'IDs of the TestRail case, separated by a comma (Optional)',
+      defaultValue: '',
+    )
+  }
+
+  options {
+    disableConcurrentBuilds()
+  }
+
+
+  stages {
+    stage('Setup') {
+      steps { script {
+        dir('test/appium') {
+          sh 'pip3 install --user -r requirements.txt'
+        }
+      } }
+    }
+    stage('Test') {
+      steps { script {
+       /* for managing optional arguments */
+        def extraPytestOpts = ''
+        if (params.TR_CASE_IDS != '') {
+          extraPytestOpts = "--run_testrail_ids='${params.TR_CASE_IDS}'"
+        }
+        withCredentials([
+          usernamePassword(
+            credentialsId:  'test-rail-api',
+            usernameVariable: 'TESTRAIL_USER',
+            passwordVariable: 'TESTRAIL_PASS'
+          ),
+          usernamePassword(
+            credentialsId:  'sauce-labs-api',
+            usernameVariable: 'SAUCE_USERNAME',
+            passwordVariable: 'SAUCE_ACCESS_KEY'
+          ),
+          string(
+            credentialsId: 'etherscan-api-key',
+            variable: 'ETHERSCAN_API_KEY'
+          ),
+          string(
+            credentialsId: 'infura-e2e-token',
+            variable: 'WEB3_INFURA_PROJECT_ID'
+          ),
+          file(
+            credentialsId: "mobile-tests-eth-accounts",
+            variable: 'TEST_ETH_ACCOUNTS_FILE'
+          ),
+        ]) {
+          dir('test/appium/tests') {
+            /* Provide Eth test accounts secrets. */
+            sh 'cp -f $TEST_ETH_ACCOUNTS_FILE users.py'
+            sh """
+              python3 -m pytest \
+                -m "upgrade" \
+                -k \"${params.KEYWORD_EXPRESSION}\" \
+                --numprocesses 15 \
+                --rerun_count=2 \
+                --testrail_report=True \
+                --apk=${params.APK_NAME} \
+                --apk_upgrade=${params.APK_NAME_UPGRADE} \
+                 ${extraPytestOpts}
+            """
+          }
+        }
+      }
+    } }
+  }
+
+  post {
+    always {
+      script {
+        sauce('sauce-labs-cred') {
+          saucePublisher()
+        }
+      }
+    }
+    success {
+      script {
+        junit(
+          testDataPublishers: [[$class: 'SauceOnDemandReportPublisher', jobVisibility: 'public']],
+          testResults: 'test/appium/tests/*.xml'
+        )
+      }
+    }
+  }
+}
