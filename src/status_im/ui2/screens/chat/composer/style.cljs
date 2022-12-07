@@ -58,12 +58,11 @@
    :padding-bottom     (+ 12 (:bottom insets))
    :bottom             (- 2 (:bottom insets))})
 
-(defn bottom-sheet-background [window-height]
-  {:pointer-events   :none
-   :position         :absolute
+(defn bottom-sheet-background [window-height bg-visible]
+  {:position         :absolute
    :left             0
    :right            0
-   :bottom           0
+   :bottom           (if bg-visible 0 window-height)
    :height           window-height
    :background-color colors/neutral-95-opa-70
    :z-index          1})
