@@ -18,8 +18,7 @@
             [i18n.i18n :as i18n]
             [status-im.ui2.screens.chat.composer.edit.view :as edit]
             [utils.re-frame :as rf]
-            [quo2.core :as quo2]
-            [quo2.foundations.colors :as colors]
+            [status-im.ui2.screens.chat.composer.composer-images.composer-images :as composer-images]
             [status-im.ui2.screens.chat.composer.style :as style]))
 
 (defn calculate-y [context keyboard-shown min-y max-y added-value]
@@ -46,41 +45,42 @@
         mentions-translate-value (if should-translate (min min-value (- mentions-height (- max-height text-height))) mentions-height)]
     (when (or (< y max-y) should-translate) mentions-translate-value)))
 
-(defn get-y-value [context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply]
-  (let [y (calculate-y context keyboard-shown min-y max-y added-value)]
+(defn get-y-value [context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply images]
+  (let [y (calculate-y context keyboard-shown min-y max-y added-value)
+        y (+ y (when (seq images) 80))]
     y (+ y (when (seq suggestions) (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)))))
 
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height bg-opacity]
   (-> (gesture/gesture-pan)
       (gesture/on-start
-       (fn [_]
-         (if keyboard-shown
-           (swap! context assoc :pan-y (reanimated/get-shared-value translate-y))
-           (input/input-focus text-input-ref))))
+        (fn [_]
+          (if keyboard-shown
+            (swap! context assoc :pan-y (reanimated/get-shared-value translate-y))
+            (input/input-focus text-input-ref))))
       (gesture/on-update
-       (fn [evt]
-         (when keyboard-shown
-           (swap! context assoc :dy (- (.-translationY evt) (:pdy @context)))
-           (swap! context assoc :pdy (.-translationY evt))
-           (reanimated/set-shared-value
-            translate-y
-            (max (min (+ (.-translationY evt) (:pan-y @context)) (- min-y)) (- max-y))))))
+        (fn [evt]
+          (when keyboard-shown
+            (swap! context assoc :dy (- (.-translationY evt) (:pdy @context)))
+            (swap! context assoc :pdy (.-translationY evt))
+            (reanimated/set-shared-value
+              translate-y
+              (max (min (+ (.-translationY evt) (:pan-y @context)) (- min-y)) (- max-y))))))
       (gesture/on-end
-       (fn [_]
-         (when keyboard-shown
-           (if (< (:dy @context) 0)
-             (do
-               (swap! context assoc :state :max)
-               (input/input-focus text-input-ref)
-               (reanimated/set-shared-value translate-y (reanimated/with-timing (- max-y)))
-               (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
-               (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1)))
-             (do
-               (swap! context assoc :state :min)
-               (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
-               (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
-               (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
-               (re-frame/dispatch [:dismiss-keyboard]))))))))
+        (fn [_]
+          (when keyboard-shown
+            (if (< (:dy @context) 0)
+              (do
+                (swap! context assoc :state :max)
+                (input/input-focus text-input-ref)
+                (reanimated/set-shared-value translate-y (reanimated/with-timing (- max-y)))
+                (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
+                (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1)))
+              (do
+                (swap! context assoc :state :min)
+                (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
+                (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
+                (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
+                (re-frame/dispatch [:dismiss-keyboard]))))))))
 
 (defn get-input-content-change [context translate-y shared-height max-height bg-opacity keyboard-shown min-y max-y]
   (fn [evt]
@@ -106,40 +106,19 @@
               (swap! context assoc :y new-y)
               (when keyboard-shown
                 (reanimated/set-shared-value
-                 translate-y
-                 (reanimated/with-timing (- new-y)))
+                  translate-y
+                  (reanimated/with-timing (- new-y)))
                 (reanimated/set-shared-value
-                 shared-height
-                 (reanimated/with-timing (min new-y max-height)))))
+                  shared-height
+                  (reanimated/with-timing (min new-y max-height)))))
             (do
               (swap! context assoc :state :max)
               (swap! context assoc :y max-y)
               (when keyboard-shown
                 (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1))
                 (reanimated/set-shared-value
-                 translate-y
-                 (reanimated/with-timing (- max-y)))))))))))
-
-(defn small-image [item]
-  [rn/view
-   [rn/image {:source {:uri (first item)}
-              :style  {:width         56
-                       :height        56
-                       :border-radius 8
-                       :margin-bottom 20}}]
-   [rn/touchable-opacity
-    {:on-press (fn [] (rf/dispatch [:chat.ui/image-unselected (first item)]))
-     :style    (style/remove-photo-container)}
-    [quo2/icon :i/close {:color colors/white :size 12}]]])
-
-(defn images-list [images]
-  [rn/flat-list {:key-fn     (fn [item] (first item))
-                 :render-fn  small-image
-                 :data       images
-                 :horizontal true
-                 :style {:bottom 50 :position :absolute :z-index 5}
-                 :content-container-style {:padding-horizontal 20 :margin-top 12}
-                 :separator [rn/view {:style {:width 12}}]}])
+                  translate-y
+                  (reanimated/with-timing (- max-y)))))))))))
 
 (defn composer [chat-id]
   [safe-area/consumer
@@ -169,8 +148,7 @@
                   max-height           (Math/abs (- max-y 56 (:bottom insets))) ; 56 - top-bar height
                   added-value          (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
                   min-y                (+ min-y (when (or edit reply) 38))
-                  y                    (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply)
-                  y                    (+ y (when (seq images) 80))
+                  y                    (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply images)
                   translate-y          (reanimated/use-shared-value 0)
                   shared-height        (reanimated/use-shared-value min-y)
                   bg-opacity           (reanimated/use-shared-value 0)
@@ -195,13 +173,13 @@
                                     (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
                                     (re-frame/dispatch [:dismiss-keyboard])) edit)
               [reanimated/view {:style (reanimated/apply-animations-to-style
-                                        {:height shared-height}
-                                        {:z-index 2})}
+                                         {:height shared-height}
+                                         {:z-index 2})}
                ;;INPUT MESSAGE bottom sheet
                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                 [reanimated/view {:style (reanimated/apply-animations-to-style
-                                          {:transform [{:translateY translate-y}]}
-                                          (style/input-bottom-sheet window-height))}
+                                           {:transform [{:translateY translate-y}]}
+                                           (style/input-bottom-sheet window-height))}
                  ;handle
                  [rn/view {:style (style/bottom-sheet-handle)}]
                  [edit/edit-message-auto-focus-wrapper (:text-input-ref refs) edit]
@@ -217,13 +195,13 @@
                  [rn/view {:style (style/bottom-sheet-controls insets)}
                   [quo2.button/button {:on-press (fn []
                                                    (permissions/request-permissions
-                                                    {:permissions [:read-external-storage :write-external-storage]
-                                                     :on-allowed  #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                                       {:content [photo-selector/photo-selector]}])
-                                                     :on-denied   (fn []
-                                                                    (utils/set-timeout
-                                                                     #(utils/show-popup (i18n/label :t/error)
-                                                                                        (i18n/label :t/external-storage-denied)) 50))}))
+                                                     {:permissions [:read-external-storage :write-external-storage]
+                                                      :on-allowed  #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                                        {:content [photo-selector/photo-selector]}])
+                                                      :on-denied   (fn []
+                                                                     (utils/set-timeout
+                                                                       #(utils/show-popup (i18n/label :t/error)
+                                                                                          (i18n/label :t/external-storage-denied)) 50))}))
                                        :icon     true :type :outline :size 32} :i/image]
                   [rn/view {:width 12}]
                   [quo2.button/button {:icon true :type :outline :size 32} :i/reaction]
@@ -237,7 +215,7 @@
                     :i/arrow-up]]])
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
-                                         {:opacity bg-opacity}
-                                         (style/bottom-sheet-background window-height))}]
-               [images-list images]
+                                          {:opacity bg-opacity}
+                                          (style/bottom-sheet-background window-height))}]
+               [composer-images/images-list images]
                [mentions/autocomplete-mentions suggestions]]))])))])

@@ -23,10 +23,9 @@
            :start  {:x 0 :y 1}
            :end    {:x 0 :y 0}
            :style  (style/gradient-container safe-area)}
-          [quo2/button {:style    {:width "95%"
-                                   :align-self :center}
+          [quo2/button {:style    {:align-self :stretch
+                                   :margin-horizontal 20}
                         :on-press #(do
-                                     ;(rf/dispatch [:chat.ui/send-current-message])
                                      (reset! selected [])
                                      (rf/dispatch [:bottom-sheet/hide]))}
            (i18n/label :t/confirm-selection)]])))])
@@ -56,9 +55,9 @@
      [info-count/info-count (+ (utils/first-index #(= item %) @selected) 1) (style/image-count)])])
 
 (defn on-end-reached [end-cursor]
-  (let [is-loading    (rf/sub [:camera-roll-loading-more])
-        has-next-page (rf/sub [:camera-roll-has-next-page])]
-    (when (and (not is-loading) has-next-page)
+  (let [loading?    (rf/sub [:camera-roll-loading-more])
+        has-next-page? (rf/sub [:camera-roll-has-next-page])]
+    (when (and (not loading?) has-next-page?)
       (rf/dispatch [:chat.ui/camera-roll-loading-more true])
       (rf/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor]))))
 
