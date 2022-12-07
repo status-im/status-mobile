@@ -82,12 +82,13 @@
   []
   (let [screen-padding 20]
     [rn/view
-     [quo2/button {:icon           true
-                   :type           :blur-bg
-                   :size           32
-                   :override-theme :dark
-                   :style          style/header-button
-                   :on-press       #(rf/dispatch [:hide-popover])}
+     [quo2/button {:icon                true
+                   :type                :blur-bg
+                   :size                32
+                   :accessibility-label :close-activity-center
+                   :override-theme      :dark
+                   :style               style/header-button
+                   :on-press            #(rf/dispatch [:hide-popover])}
       :i/close]
      [quo2/text {:size   :heading-1
                  :weight :semi-bold
