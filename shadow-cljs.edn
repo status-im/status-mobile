@@ -82,6 +82,7 @@
            :output-dir       "target/test"
            :optimizations    :simple
            :target           :node-test
+           :ns-regexp        "status-im.chat.models-test$"
            :main             status-im.test-runner/main
            ;; set :ui-driven to true to let shadow-cljs inject node-repl
            :ui-driven        true
