@@ -1,10 +1,12 @@
 (ns quo2.components.community.community-card-view
-  (:require [quo2.components.community.community-view :as community-view]
-            [quo2.components.community.style :as style]
-            [react-native.core :as rn]))
+  (:require
+   [quo2.components.community.icon :as icon]
+   [quo2.components.community.community-view :as community-view]
+   [quo2.components.community.style :as style]
+   [react-native.core :as rn]))
 
 (defn community-card-view-item
-  [{:keys [name description locked
+  [{:keys [name description locked images
            status tokens cover tags width]} on-press]
   [rn/touchable-opacity {:on-press on-press}
    [rn/view {:style (style/community-card 20)}
@@ -22,9 +24,9 @@
          {:flex          1
           :border-radius 20}}]]
       [rn/view (style/card-view-content-container 12)
-       [rn/view (style/card-view-chat-icon 48)]
-       ;;TODO new pure component based on quo2 should be implemented without status-im usage
-       ;[communities.icon/community-icon-redesign community 48]]
+       [rn/view (style/card-view-chat-icon 48)
+        [icon/community-icon {:images images} 48]]
+
        (when (= status :gated)
          [rn/view (style/permission-tag-styles)
           [community-view/permission-tag-container

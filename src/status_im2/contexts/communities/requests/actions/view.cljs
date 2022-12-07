@@ -38,8 +38,13 @@
     :title   "No offensive names and profile pictures"
     :content "You will be asked to change your name or picture if the staff deems them inappropriate."}])
 
-(defn community-rule-item
-  [{:keys [title content index]}]
+(def request-to-join-text (memoize
+                           (fn [is-open?]
+                             (if is-open?
+                               (i18n/label :t/join-open-community)
+                               (i18n/label :t/request-to-join)))))
+
+(defn community-rule-item [{:keys [title content index]}]
   [rn/view
    {:style {:flex 1 :margin-top 16}}
    [rn/view
@@ -87,41 +92,38 @@
     :separator                         [rn/view {:margin-top 1}]
     :render-fn                         community-rule-item}])
 
-(defn request-to-join
-  [community]
-  (let [agreed-to-rules? (reagent/atom false)]
+(defn request-to-join [{:keys [permissions name id]}]
+  (let [agreed-to-rules? (reagent/atom false)
+        is-open? (not= 3 (:access permissions))]
     (fn []
       [rn/scroll-view {:style {:margin-left 20 :margin-right 20 :margin-bottom 20}}
        [rn/view
         {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :space-between}}
 
-        [text/text
-         {:accessibility-label :communities-join-community
-          :weight              :semi-bold
-          :size                :heading-1}
-         (i18n/label :t/join-open-community)]
-        [rn/view
-         {:style {:height           32
-                  :width            32
-                  :align-items      :center
-                  :background-color colors/white
-                  :border-color     colors/neutral-20
-                  :border-width     1
-                  :border-radius    8
-                  :display          :flex
-                  :justify-content  :center}}
-         [icon/icon :i/info]]]
+        [text/text {:accessibility-label :communities-join-community
+                    :weight              :semi-bold
+                    :size                :heading-1}
+         (request-to-join-text is-open?)]
+        [rn/view {:style {:height 32
+                          :width 32
+                          :align-items :center
+                          :background-color colors/white
+                          :border-color colors/neutral-20
+                          :border-width 1
+                          :border-radius 8
+                          :display :flex
+                          :justify-content :center}}
+         [icon/icon  :i/info]]]
        ;; TODO get tag image from community data
        [context-tags/context-tag
         {:style
          {:margin-right :auto
-          :margin-top   8}}
-        (resources/get-image :status-logo) (:name community)]
-       [text/text
-        {:style               {:margin-top 24}
-         :accessibility-label :communities-rules-title
-         :weight              :semi-bold
-         :size                :paragraph-1}
+          :margin-top 8}}
+        (resources/get-image :status-logo) name]
+       [text/text {:style {:margin-top 24}
+                   :accessibility-label :communities-rules-title
+                   :weight              :semi-bold
+                   :size                :paragraph-1}
         (i18n/label :t/community-rules)]
        [community-rules-list community-rules]
 
@@ -130,21 +132,19 @@
          :on-change       #(swap! agreed-to-rules? not)}
         (i18n/label :t/accept-community-rules)]
 
-       [rn/view
-        {:style {:width           "100%"
-                 :margin-top      32
-                 :margin-bottom   16
-                 :flex            1
-                 :flex-direction  :row
-                 :align-items     :center
-                 :justify-content :space-evenly}}
-        [button/button
-         {:on-press #(rf/dispatch [:bottom-sheet/hide])
-          :type     :grey
-          :style    {:flex 1 :margin-right 12}} (i18n/label :t/cancel)]
+       [rn/view {:style {:width "100%"
+                         :margin-top 32 :margin-bottom 16
+                         :flex 1
+                         :flex-direction :row
+                         :align-items :center
+                         :justify-content :space-evenly}}
+        [button/button {:on-press #(rf/dispatch [:bottom-sheet/hide])
+                        :type     :grey
+                        :style    {:flex         1
+                                   :margin-right 12}} (i18n/label :t/cancel)]
         [button/button
          {:on-press (fn []
-                      (rf/dispatch [::communities/join (:id community)])
-                      (rf/dispatch [:bottom-sheet/hide]))
-          :disabled (not @agreed-to-rules?)
-          :style    {:flex 1}} (i18n/label :t/join-open-community)]]])))
+                      (rf/dispatch [::communities/join id])
+                      (rf/dispatch [:bottom-sheet/hide])) 
+          :disabled  (not @agreed-to-rules?) :style {:flex 1}} (request-to-join-text is-open?)]]])))
+

@@ -1,5 +1,7 @@
 (ns status-im2.contexts.communities.overview.style
-  (:require [react-native.platform :as platform]))
+  (:require [react-native.platform :as platform]
+            [quo2.foundations.colors :as colors]
+            ))
 
 (def preview-user
   {:flex-direction :row
@@ -18,3 +20,14 @@
    :margin-top   20
    :margin-left  :auto
    :margin-right :auto})
+
+(defn scroll-view-container [border-radius] {:position :absolute
+                                             :top  -48
+                                             :overflow :scroll
+                                             :border-radius border-radius
+                                             :height "100%"})
+
+(def review-notice {:color colors/neutral-50
+                    :margin-top 12
+                    :margin-left :auto
+                    :margin-right :auto})

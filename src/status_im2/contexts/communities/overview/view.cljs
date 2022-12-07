@@ -1,21 +1,20 @@
 (ns status-im2.contexts.communities.overview.view
-  (:require [i18n.i18n :as i18n]
-            [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.platform :as platform]
-            [reagent.core :as reagent]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.screens.communities.icon :as communities.icon]
-            [status-im.utils.utils :as utils]
-            [status-im2.common.constants :as constants]
-            [status-im2.common.scroll-page.view :as scroll-page]
-            [status-im2.contexts.communities.home.actions.view :as home.actions]
-            [status-im2.contexts.communities.overview.style :as style] ;; TODO move to status-im2 when
-                                                                       ;; reimplemented
-            [status-im2.contexts.communities.requests.actions.view :as requests.actions]
-            [utils.re-frame :as rf]))
+  (:require
+   [i18n.i18n :as i18n]
+   [react-native.core :as rn]
+   [quo2.core :as quo]
+   [utils.re-frame :as rf]
+   [quo2.foundations.colors :as colors]
+   [status-im2.contexts.communities.overview.style :as style] 
+   [status-im2.common.scroll-page.view :as scroll-page]
+   [oops.core :as oops]
+   [reagent.core :as reagent]
+   [react-native.platform :as platform]
+   [status-im2.contexts.communities.requests.actions.view :as requests.actions]
+   [status-im2.contexts.communities.home.actions.view :as home.actions]
+   [status-im2.common.constants :as constants]
+   [status-im.react-native.resources :as resources]
+   [status-im.utils.utils :as utils]))
 
 (def knc-token-img (js/require "../resources/images/tokens/mainnet/KNC.png"))
 (def mana-token-img (js/require "../resources/images/tokens/mainnet/MANA.png"))

@@ -94,8 +94,8 @@
                     :width          "100%"
                     :margin-bottom  24}
         :on-layout #(swap! view-size
-                      (fn []
-                        (oops/oget % "nativeEvent.layout.width")))}
+                           (fn []
+                             (oops/oget % "nativeEvent.layout.width")))}
        (when-not (= @view-size 0)
          [rn/flat-list
           {:key-fn                            :id
@@ -111,7 +111,6 @@
 
 (defn other-communities-list
   [communities view-type]
-  (println view-type)
   [rn/flat-list
    {:key-fn                            :id
     :keyboard-should-persist-taps      :always
@@ -127,10 +126,9 @@
   []
   (let [view-type (reagent/atom :card-view)]
     (fn []
-      (let [communities        (rf/sub [:communities/communities])
-            communities-count  (count communities)
-            ; TODO move sorting to subscription
-            sorted-communities (sort-by :name communities)]
+      (let [communities (sort-by :name (rf/sub [:communities/communities]))
+            featured-communities (rf/sub [:communities/featured-communities])
+            featured-communities-count (count featured-communities)]
         [safe-area/consumer
          (fn []
            [rn/view
@@ -148,6 +146,6 @@
               :on-press #(rf/dispatch [:navigate-back])}
              :i/close]
             [screen-title]
-            [featured-communities-header communities-count]
-            [featured-list communities @view-type]
-            [other-communities-list sorted-communities @view-type]])]))))
+            [featured-communities-header featured-communities-count]
+            [featured-list featured-communities @view-type]
+            [other-communities-list communities @view-type]])]))))
