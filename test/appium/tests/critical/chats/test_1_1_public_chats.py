@@ -1238,11 +1238,20 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.public_key_2, self.default_username_2 = users[1]
 
         self.profile_1.switch_push_notifications()
-        self.profile_1.chats_tab.click()
-        self.chat_1 = self.home_1.add_contact(self.public_key_2)
+
+        self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
+        self.profile_1.click_system_back_button_until_element_is_shown(self.profile_1.contacts_button)
+        self.profile_1.add_contact_via_contacts_list(self.public_key_2)
+        self.chat_1 = self.profile_1.open_contact_from_profile(self.default_username_2)
+
+        self.home_2.just_fyi("Accepting contact request from activity centre")
+        self.home_2.chats_tab.click()
+        self.home_2.handle_contact_request(self.default_username_1)
+
+        self.profile_1.just_fyi("Sending message to contact via Profile > Contacts > Send message")
+        self.chat_1.profile_send_message.click()
         self.chat_1.send_message('hey')
         self.home_2.click_system_back_button_until_element_is_shown()
-        self.home_2.chats_tab.click()
         self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
         self.message_1, self.message_2, self.message_3, self.message_4 = \
             "Message 1", "Message 2", "Message 3", "Message 4"
@@ -1383,9 +1392,10 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         message = 'profile_photo'
         self.chat_1.send_message(message)
         self.chat_2.chat_element_by_text(message).wait_for_visibility_of_element(30)
-        if not self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member2.png",
-                                                                                                       diff=5):
-            self.errors.append("Image of user in 1-1 chat is updated even when user is not added to contacts!")
+        # Should be checked in CR flow, as for now no way to start chat with user until he is added to contacts
+        # if not self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member2.png",
+        #                                                                                                diff=5):
+        #     self.errors.append("Image of user in 1-1 chat is updated even when user is not added to contacts!")
 
         self.chat_1.just_fyi("Users add to contacts each other")
         [home.click_system_back_button_until_element_is_shown() for home in (self.home_1, self.home_2)]

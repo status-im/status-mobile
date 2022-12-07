@@ -93,54 +93,15 @@ class ChatElement(SilentButton):
         return ChatImage(self.driver)
 
 
-class ActivityCenterChatElement(SilentButton):
-    def __init__(self, driver, chat_name):
-        self.chat_name = chat_name
+class ActivityCenterElement(SilentButton):
+    def __init__(self, driver, username):
+        self.chat_name = username
         super().__init__(driver,
-                         xpath="//*[@content-desc='chat-name-or-sender-text'][starts-with(@text,'%s')]/../.." % chat_name)
-
-    def navigate(self):
-        from views.chat_view import ChatView
-        return ChatView(self.driver)
-
-    def click(self):
-        from views.chat_view import ChatView
-        desired_element = ChatView(self.driver).chat_message_input
-        self.click_until_presence_of_element(desired_element=desired_element)
-
-        return self.navigate()
-
-    @property
-    def chat_image(self):
-        class ChatImage(BaseElement):
-            def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, xpath="%s//*[@content-desc='current-account-photo']" % parent_locator)
-
-        return ChatImage(self.driver, self.locator)
-
-    @property
-    def chat_message_preview(self):
-        class ChatMessagePreview(BaseElement):
-            def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, xpath="%s//*[@content-desc='chat-message-text']" % parent_locator)
-
-        return ChatMessagePreview(self.driver, self.locator).text
-
-    @property
-    def chat_name_indicator_text(self):
-        class ChatNameIndicatorText(BaseElement):
-            def __init__(self, driver, parent_locator: str):
-                super().__init__(driver,
-                                 xpath="(%s//*[@content-desc='chat-name-container']//android.widget.TextView)[last()]" % parent_locator)
-
-        try:
-            return ChatNameIndicatorText(self.driver, self.locator).text
-        except NoSuchElementException:
-            return ''
+                         xpath="//*[contains(@text, '%s')]/ancestor::*[@content-desc='activity']" % username)
 
     def accept_contact_request(self):
         try:
-            accept_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="accept-cr"]').find_element()
+            accept_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="accept-contact-request"]').find_element()
         except NoSuchElementException:
             return ''
         if accept_element:
@@ -148,11 +109,107 @@ class ActivityCenterChatElement(SilentButton):
 
     def decline_contact_request(self):
         try:
-            decline_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="decline-cr"]').find_element()
+            decline_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="decline-contact-request"]').find_element()
         except NoSuchElementException:
             return ''
         if decline_element:
             decline_element.click()
+
+
+#    Old UI
+#     def __init__(self, driver, chat_name):
+#         self.chat_name = chat_name
+#         super().__init__(driver,
+#                          xpath="//*[@content-desc='chat-name-or-sender-text'][starts-with(@text,'%s')]/../.." % chat_name)
+
+#     def navigate(self):
+#         from views.chat_view import ChatView
+#         return ChatView(self.driver)
+#
+#     def click(self):
+#         from views.chat_view import ChatView
+#         desired_element = ChatView(self.driver).chat_message_input
+#         self.click_until_presence_of_element(desired_element=desired_element)
+#
+#         return self.navigate()
+#
+#     @property
+#     def chat_image(self):
+#         class ChatImage(BaseElement):
+#             def __init__(self, driver, parent_locator: str):
+#                 super().__init__(driver, xpath="%s//*[@content-desc='current-account-photo']" % parent_locator)
+#
+#         return ChatImage(self.driver, self.locator)
+#
+#     @property
+#     def chat_message_preview(self):
+#         class ChatMessagePreview(BaseElement):
+#             def __init__(self, driver, parent_locator: str):
+#                 super().__init__(driver, xpath="%s//*[@content-desc='chat-message-text']" % parent_locator)
+#
+#         return ChatMessagePreview(self.driver, self.locator).text
+#
+#     @property
+#     def chat_name_indicator_text(self):
+#         class ChatNameIndicatorText(BaseElement):
+#             def __init__(self, driver, parent_locator: str):
+#                 super().__init__(driver,
+#                                  xpath="(%s//*[@content-desc='chat-name-container']//android.widget.TextView)[last()]" % parent_locator)
+#
+#         try:
+#             return ChatNameIndicatorText(self.driver, self.locator).text
+#         except NoSuchElementException:
+#             return ''
+#
+#     def accept_contact_request(self):
+#         try:
+#             accept_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="accept-cr"]').find_element()
+#         except NoSuchElementException:
+#             return ''
+#         if accept_element:
+#             accept_element.click()
+#
+#     def decline_contact_request(self):
+#         try:
+#             decline_element = Button(self.driver, xpath=self.locator + '/*[@content-desc="decline-cr"]').find_element()
+#         except NoSuchElementException:
+#             return ''
+#         if decline_element:
+#             decline_element.click()
+#
+#
+# class PushNotificationElement(SilentButton):
+#     def __init__(self, driver, pn_text):
+#         self.pn_text = pn_text
+#         super().__init__(driver, xpath="//*[@text='%s']" % pn_text)
+#
+#     @property
+#     def icon(self):
+#         class PnIconElement(BaseElement):
+#             def __init__(self, driver, parent_locator):
+#                 super().__init__(driver,
+#                                  xpath="%s/../../../../*/*[@resource-id='android:id/message_icon']" % parent_locator)
+#
+#         return PnIconElement(self.driver, self.locator)
+#
+#     @property
+#     def username(self):
+#         class PnUsername(BaseElement):
+#             def __init__(self, driver, parent_locator):
+#                 super().__init__(driver,
+#                                  xpath="%s/../../*[@resource-id='android:id/message_name']" % parent_locator)
+#
+#         return PnUsername(self.driver, self.locator).text
+#
+#     @property
+#     def group_chat_icon(self):
+#         class GroupChatIconElement(BaseElement):
+#             def __init__(self, driver, parent_locator):
+#                 super().__init__(driver,
+#                                  xpath="%s/../../../../*[@resource-id='android:id/right_icon_container']" % parent_locator)
+#
+#         return GroupChatIconElement(self.driver, self.locator)
+
 
 
 class PushNotificationElement(SilentButton):
@@ -209,6 +266,7 @@ class HomeView(BaseView):
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
         self.notifications_unread_badge = BaseElement(self.driver, accessibility_id="notifications-unread-badge") 
         self.open_activity_center_button = Button(self.driver, accessibility_id="open-activity-center-button")
+        self.close_activity_centre = Button(self.driver, xpath="//*[@text='Notifications']/preceding-sibling::android.view.ViewGroup//android.widget.ImageView")
         
         self.notifications_select_button = Button(self.driver, translation_id="select")
         self.notifications_reject_and_delete_button = Button(self.driver, accessibility_id="reject-and-delete"
@@ -261,7 +319,7 @@ class HomeView(BaseView):
         if not chat_element.is_element_displayed(10):
             if self.notifications_unread_badge.is_element_displayed(60):
                 self.open_activity_center_button.click()
-            chat_in_ac = ActivityCenterChatElement(self.driver, username[:25])
+            chat_in_ac = ActivityCenterElement(self.driver, username[:25])
             chat_in_ac.wait_for_element(20)
             chat_in_ac.click()
         return chat_element
@@ -273,20 +331,21 @@ class HomeView(BaseView):
 
     def get_chat_from_activity_center_view(self, chat_name):
         self.driver.info("Looking for chat: '%s'" % chat_name)
-        chat_element = ActivityCenterChatElement(self.driver, chat_name[:25])
+        chat_element = ActivityCenterElement(self.driver, chat_name[:25])
         return chat_element
 
     def handle_contact_request(self, username: str, accept=True):
         if self.notifications_unread_badge.is_element_displayed(30):
             self.open_activity_center_button.click()
-        chat_element = ActivityCenterChatElement(self.driver, username[:25])
+        chat_element = ActivityCenterElement(self.driver, username[:25])
         if accept:
             self.driver.info("Accepting contact request for %s" % username)
             chat_element.accept_contact_request()
-            chat_element.click()
         else:
             self.driver.info("Rejecting contact request for %s" % username)
             chat_element.decline_contact_request()
+        self.close_activity_centre.click()
+        self.chats_tab.wait_for_visibility_of_element()
 
     def get_username_below_start_new_chat_button(self, username_part):
         return Text(self.driver,

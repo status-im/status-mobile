@@ -58,14 +58,16 @@ class TestPairingMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         if self.home_2.notifications_unread_badge.is_element_displayed():
             self.home_2.notifications_unread_badge.click()
             for chat in activity_centre.keys():
-                from views.home_view import ActivityCenterChatElement
-                chat_in_ac = ActivityCenterChatElement(self.driver, chat_name=chat)
+                from views.home_view import ActivityCenterElement
+                chat_in_ac = ActivityCenterElement(self.driver, username=chat)
                 if not chat_in_ac.is_element_displayed():
                     self.errors.append('No chat "%s" in activity centre' % chat)
                 else:
-                    if not chat_in_ac.chat_message_preview != activity_centre[chat]:
-                        self.errors.append('No chat preview  for "%s" in activity centre, "%s" instead' %
-                                           chat, chat_in_ac.chat_message_preview)
+                    pass
+                    # Old UI
+                    # if not chat_in_ac.chat_message_preview != activity_centre[chat]:
+                    #     self.errors.append('No chat preview  for "%s" in activity centre, "%s" instead' %
+                    #                        chat, chat_in_ac.chat_message_preview)
         else:
             self.home_2.driver.fail("No unread messages in Activity centre!")
         self.errors.verify_no_errors()
