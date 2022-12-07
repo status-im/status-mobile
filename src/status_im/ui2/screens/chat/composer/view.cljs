@@ -17,8 +17,7 @@
             [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
             [status-im.utils.utils :as utils]
             [i18n.i18n :as i18n]
-            [status-im.ui2.screens.chat.composer.edit.view :as edit]
-            [reagent.core :as reagent]))
+            [status-im.ui2.screens.chat.composer.edit.view :as edit]))
 
 (defn calculate-y [context keyboard-shown min-y max-y added-value]
   (if keyboard-shown
