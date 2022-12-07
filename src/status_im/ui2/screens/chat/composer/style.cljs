@@ -59,8 +59,7 @@
    :bottom             (- 2 (:bottom insets))})
 
 (defn bottom-sheet-background [window-height]
-  {:pointer-events   :none
-   :position         :absolute
+  {:position         :absolute
    :left             0
    :right            0
    :bottom           0

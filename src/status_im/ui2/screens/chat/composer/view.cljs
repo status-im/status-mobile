@@ -47,7 +47,7 @@
   (let [y (calculate-y context keyboard-shown min-y max-y added-value)]
     y (+ y (when (seq suggestions) (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)))))
 
-(defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height bg-opacity]
+(defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height set-bg-opacity]
   (-> (gesture/gesture-pan)
       (gesture/on-start
        (fn [_]
@@ -71,15 +71,15 @@
                (input/input-focus text-input-ref)
                (reanimated/set-shared-value translate-y (reanimated/with-timing (- max-y)))
                (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
-               (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1)))
+               (set-bg-opacity 1))
              (do
                (swap! context assoc :state :min)
                (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
                (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
-               (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
+               (set-bg-opacity 0)
                (re-frame/dispatch [:dismiss-keyboard]))))))))
 
-(defn get-input-content-change [context translate-y shared-height max-height bg-opacity keyboard-shown min-y max-y]
+(defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y]
   (fn [evt]
     (if (:clear @context)
       (do
@@ -88,7 +88,7 @@
         (swap! context assoc :y min-y)
         (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
         (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
-        (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0)))
+        (set-bg-opacity 0))
       (when (not= (:state @context) :max)
         (let [new-y (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") 22) 22))]
           (if (< new-y max-y)
@@ -96,9 +96,9 @@
               (if (> (- max-y new-y) 120)
                 (do
                   (swap! context assoc :state :custom-chat-available)
-                  (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0)))
+                  (set-bg-opacity 0))
                 (do
-                  (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1))
+                  (set-bg-opacity 1)
                   (swap! context assoc :state :custom-chat-unavailable)))
               (swap! context assoc :y new-y)
               (when keyboard-shown
@@ -112,7 +112,7 @@
               (swap! context assoc :state :max)
               (swap! context assoc :y max-y)
               (when keyboard-shown
-                (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1))
+                (set-bg-opacity 1)
                 (reanimated/set-shared-value
                  translate-y
                  (reanimated/with-timing (- max-y)))))))))))
@@ -148,25 +148,29 @@
                   translate-y          (reanimated/use-shared-value 0)
                   shared-height        (reanimated/use-shared-value min-y)
                   bg-opacity           (reanimated/use-shared-value 0)
+                  bg-bottom            (reanimated/use-shared-value (- window-height))
 
+                  set-bg-opacity       (fn [value]
+                                         (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
+                                         (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   input-content-change (get-input-content-change context translate-y shared-height max-height
-                                                                 bg-opacity keyboard-shown min-y max-y)
+                                                                 set-bg-opacity keyboard-shown min-y max-y)
                   bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
-                                                                 min-y max-y shared-height max-height bg-opacity)]
+                                                                 min-y max-y shared-height max-height set-bg-opacity)]
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown (not keyboard-shown))
                                       (swap! context assoc :state :min))
                                     (reset! keyboard-was-shown keyboard-shown)
                                     (if (#{:max :custom-chat-unavailable} (:state @context))
-                                      (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1))
-                                      (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0)))
+                                      (set-bg-opacity 1)
+                                      (set-bg-opacity 0))
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
               (quo.react/effect! #(when (and (not edit) (= (:state @context) :max))
                                     (swap! context assoc :state :min)
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
-                                    (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
+                                    (set-bg-opacity 0)
                                     (re-frame/dispatch [:dismiss-keyboard])) edit)
               [reanimated/view {:style (reanimated/apply-animations-to-style
                                         {:height shared-height}
@@ -211,6 +215,7 @@
                     :i/arrow-up]]])
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
-                                         {:opacity bg-opacity}
+                                         {:opacity bg-opacity
+                                          :transform [{:translateY bg-bottom}]}
                                          (styles/bottom-sheet-background window-height))}]
                [mentions/autocomplete-mentions suggestions]]))])))])
