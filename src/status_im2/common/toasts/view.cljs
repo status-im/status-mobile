@@ -28,19 +28,20 @@
 
 (defn container
   [id]
-  (let [toast-opts         (rf/sub [:toasts/toast id])
-        duration           (get toast-opts :duration 3000)
-        on-dismissed       (get toast-opts :on-dismissed identity)
-        dismissed-locally? (reagent/atom false)
+  (let [dismissed-locally? (reagent/atom false)
         close!             #(rf/dispatch [:toasts/close id])
-        new-timer          #(utils.utils/set-timeout close! duration)
-        timer              (reagent/atom (new-timer))
+        timer              (reagent/atom nil)
         clear-timer        #(utils.utils/clear-timeout @timer)]
     (fn []
       [:f>
        (fn []
-         (rn/use-unmount #(do (clear-timer) (on-dismissed id)))
-         (let [translate-y (reanimated/use-shared-value 0)
+         (let [toast-opts   (rf/sub [:toasts/toast id])
+               duration     (get toast-opts :duration 3000)
+               on-dismissed #((get toast-opts :on-dismissed identity) id)
+               translate-y  (reanimated/use-shared-value 0)
+               create-timer (fn []
+                              (reset! timer (utils.utils/set-timeout #(do (close!) (on-dismissed))
+                                                                     duration)))
                pan
                (->
                 (gesture/gesture-pan)
@@ -71,7 +72,10 @@
                 (gesture/on-end (fn [_]
                                   (when-not dismissed-locally?
                                     (reanimated/set-shared-value translate-y 0)
-                                    (reset! timer (new-timer))))))]
+                                    (create-timer)))))]
+           ;; create auto dismiss timer, clear timer when unmount or duration changed
+           (rn/use-effect (fn [] (create-timer) clear-timer) [duration])
+           (rn/use-unmount on-dismissed)
            [gesture/gesture-detector {:gesture pan}
             [reanimated/view
              {:entering slide-in-up-animation

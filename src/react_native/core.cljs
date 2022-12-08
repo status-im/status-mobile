@@ -1,6 +1,7 @@
 (ns react-native.core
   (:require ["react" :as react]
             ["react-native" :as react-native]
+            [cljs-bean.core :as bean]
             ["@react-native-community/blur" :as blur]
             [oops.core :as oops]
             [react-native.flat-list :as flat-list]
@@ -76,9 +77,13 @@
                 props)]
         children))
 
-(def use-effect react/useEffect)
+(defn use-effect
+  ([effect] (use-effect effect []))
+  ([effect deps]
+   (react/useEffect effect  (bean/->js deps))))
+
 (def use-ref react/useRef)
-(defn use-effect-once [effect] (use-effect effect #js []))
+(defn use-effect-once [effect] (use-effect effect))
 (defn use-unmount [f]
   (let [fn-ref (use-ref f)]
     (oops/oset! fn-ref "current" f)

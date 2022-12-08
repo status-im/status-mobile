@@ -39,7 +39,7 @@
   [{:keys [db]} id]
   (when (get-in db [:toasts/toasts id])
     (let [{:toasts/keys [toasts index]} db
-          toast                         (dissoc toasts id)
+          toasts                        (dissoc toasts id)
           index                         (remove #{id} index)
           empty-index?                  (not (seq index))
           db                            (assoc db :toasts/index index :toasts/toasts toasts)]
