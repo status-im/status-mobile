@@ -59,10 +59,10 @@
                                                                      :damping   20
                                                                      :stiffness 300})
                         ;; dismiss on pan up
-                       (< evt-translation-y -50)
+                       (< evt-translation-y -30)
                        (do (reanimated/animate-shared-value-with-spring
                             translate-y
-                            -1000
+                            -500
                             {:mass 1 :damping 20 :stiffness 300})
                            (reset! dismissed-locally? true)
                            (close!))
@@ -70,7 +70,7 @@
                        (reanimated/set-shared-value translate-y
                                                     evt-translation-y)))))
                 (gesture/on-end (fn [_]
-                                  (when-not dismissed-locally?
+                                  (when-not @dismissed-locally?
                                     (reanimated/set-shared-value translate-y 0)
                                     (create-timer)))))]
            ;; create auto dismiss timer, clear timer when unmount or duration changed
