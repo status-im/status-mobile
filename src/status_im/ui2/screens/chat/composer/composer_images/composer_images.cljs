@@ -5,7 +5,6 @@
             [quo2.foundations.colors :as colors]
             [re-frame.core :as rf]))
 
-
 (defn image [item]
   [rn/view
    [rn/image {:source {:uri (first item)}
