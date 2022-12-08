@@ -64,7 +64,8 @@
                       (map (fn [s]
                              [rn/view {:style {:margin-right 4
                                                :margin-top   0}}
-                              [text/text {:size :paragraph-2}
+                              [text/text {:size  :paragraph-2
+                                          :style {:color colors/white}}
                                s]])
                            (string/split detail #"\s+"))
                       [[rn/view {:margin-right 4
