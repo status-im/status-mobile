@@ -94,7 +94,7 @@
         (is (nil? (get-in res [:db :pagination-info chat-id :all-loaded?])))))))
 
 
-
 (deftest camera-roll-loading-more
   (let [cofx {:db {:camera-roll-loading-more false}}]
-    (is (= true (images/camera-roll-loading-more cofx true)))))
+    (is (= {:db {:camera-roll-loading-more true}}
+           (images/camera-roll-loading-more cofx true)))))
