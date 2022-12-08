@@ -130,12 +130,12 @@
                                         :search? true}]
             [rn/view {:style style/bottom-container}
              [quo2/button {:style    {:flex 1}
-                           :on-press #(do
-                                        (rf/dispatch [:group-chats.ui/add-members-pressed])
-                                        (remove-members chat-id)
-                                        (reset! removed ())
-                                        (reset! added ())
-                                        (rf/dispatch [:bottom-sheet/hide]))
+                           :on-press (fn []
+                                       (rf/dispatch [:group-chats.ui/add-members-pressed])
+                                       (remove-members chat-id)
+                                       (reset! removed ())
+                                       (reset! added ())
+                                       (rf/dispatch [:bottom-sheet/hide]))
                            :disabled (and (zero? (count @added)) (zero? (count @removed)))}
 >>>>>>> 7ce2b16e0... group details screen 3
               (i18n/label :t/save)]]]))])))

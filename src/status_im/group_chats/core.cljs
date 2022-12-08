@@ -35,11 +35,19 @@
 (fx/defn remove-member
   "Format group update message and sign membership"
   {:events [:group-chats.ui/remove-member-pressed]}
+<<<<<<< HEAD
   [_ chat-id member do-not-navigate?]
   {:json-rpc/call [{:method      "wakuext_removeMemberFromGroupChat"
                     :params      [nil chat-id member]
                     :js-response true
                     :on-success  #(re-frame/dispatch [:chat-updated % do-not-navigate?])}]})
+=======
+  [{{:keys [current-chat-id selected-participants]} :db :as cofx} chat-id member do-not-navigate?]
+  {::json-rpc/call [{:method      "wakuext_removeMemberFromGroupChat"
+                     :params      [nil chat-id member]
+                     :js-response true
+                     :on-success  #(re-frame/dispatch [:chat-updated % do-not-navigate?])}]})
+>>>>>>> bc7bcd83f... refactor
 
 (fx/defn join-chat
   {:events [:group-chats.ui/join-pressed]}
