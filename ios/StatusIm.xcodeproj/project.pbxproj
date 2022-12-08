@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -818,7 +818,7 @@
 				BUNDLE_ID_SUFFIX = .debug;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CUSTOM_PRODUCT_NAME = "Status Debug";
@@ -888,7 +888,7 @@
 				BUNDLE_ID_SUFFIX = "";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CUSTOM_PRODUCT_NAME = Status;
@@ -996,7 +996,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum.pr;
 				PRODUCT_NAME = "Status PR";
-				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc im.status.ethereum.pr";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development im.status.ethereum.pr";
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -1013,7 +1013,7 @@
 				BUNDLE_ID_SUFFIX = "";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = StatusImPR/StatusImPR.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CUSTOM_PRODUCT_NAME = Status;
