@@ -102,6 +102,7 @@
             [status-im.ui.screens.backup-settings.view :as backup-settings]
             [status-im.ui.screens.reset-password.views :as reset-password]
             [status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
+            [status-im.ui.screens.peers-stats :as peers-stats]
             [status-im.ui.screens.status.new.views :as status.new]
             [status-im.ui.screens.stickers.views :as stickers]
             [status-im.ui.screens.sync-settings.views :as sync-settings]
@@ -541,6 +542,9 @@
    {:name      :rpc-usage-info
     :options   {:topBar {:title {:text (i18n/label :t/rpc-usage-info)}}}
     :component rpc-usage-info/usage-info}
+   {:name      :peers-stats
+    :options   {:topBar {:title {:text (i18n/label :t/peers-stats)}}}
+    :component peers-stats/peers-stats}
    {:name      :edit-network
     :options   {:topBar {:title {:text (i18n/label :t/add-network)}}}
     :component edit-network/edit-network}

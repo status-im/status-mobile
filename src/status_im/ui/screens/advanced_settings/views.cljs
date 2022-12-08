@@ -69,6 +69,13 @@
      :on-press
      #(re-frame/dispatch [:navigate-to :rpc-usage-info])
      :chevron              true}
+    {:size                 :small
+     :title                (i18n/label :t/peers-stats)
+     :accessibility-label  :peers-stats
+     :container-margin-top 8
+     :on-press
+     #(re-frame/dispatch [:navigate-to :peers-stats])
+     :chevron              true}
     ;; If it's enabled in the config, we don't show the option
     (when (not config/communities-enabled?)
       {:size                   :small

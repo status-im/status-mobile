@@ -1049,6 +1049,8 @@
     "paste-json": "Paste JSON",
     "pay-to-chat": "Pay to chat",
     "peers": "Peers",
+    "peers-count": "Peers count",
+    "peers-stats": "Peers stats",
     "pending": "Pending",
     "pending-confirmation": "Pending confirmation...",
     "permissions": "Permissions",
