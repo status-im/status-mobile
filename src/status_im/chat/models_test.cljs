@@ -93,7 +93,6 @@
       (let [res (chat/navigate-to-chat-nav2 {:db db} chat-id false)]
         (is (nil? (get-in res [:db :pagination-info chat-id :all-loaded?])))))))
 
-
 (deftest camera-roll-loading-more
   (let [cofx {:db {:camera-roll-loading-more false}}]
     (is (= {:db {:camera-roll-loading-more true}}
