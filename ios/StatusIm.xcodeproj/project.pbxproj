@@ -401,12 +401,12 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = DTX7Z4U3YA;
+						DevelopmentTeam = 8B5X2M6H2Y;
 						ProvisioningStyle = Manual;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = DTX7Z4U3YA;
+						DevelopmentTeam = 8B5X2M6H2Y;
 						LastSwiftMigration = 1140;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
@@ -425,7 +425,7 @@
 						};
 					};
 					3AAD2AB924A3A60E0075D594 = {
-						DevelopmentTeam = DTX7Z4U3YA;
+						DevelopmentTeam = 8B5X2M6H2Y;
 						ProvisioningStyle = Manual;
 					};
 				};
