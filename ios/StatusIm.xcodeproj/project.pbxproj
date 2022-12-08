@@ -757,7 +757,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -791,7 +791,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -823,7 +823,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CUSTOM_PRODUCT_NAME = "Status Debug";
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphoneos*]" = x86_64;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -893,7 +893,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CUSTOM_PRODUCT_NAME = Status;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../modules/react-native-status/ios/RCTStatus",
@@ -953,7 +953,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CUSTOM_PRODUCT_NAME = "Status Debug";
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../modules/react-native-status/ios/RCTStatus",
 					"$(inherited)",
@@ -1018,7 +1018,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CUSTOM_PRODUCT_NAME = Status;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../modules/react-native-status/ios/RCTStatus",
 					"$(inherited)",
@@ -1096,7 +1096,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1179,7 +1179,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = YES;
-				DEVELOPMENT_TEAM = DTX7Z4U3YA;
+				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
