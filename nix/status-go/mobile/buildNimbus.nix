@@ -91,7 +91,7 @@ let
 
 
   compilerFlags = if isAndroid then
-    "--sysroot ${androidToolchain}/sysroot -fPIC -I${ANDROID_NDK_HOME}/sources/cxx-stl/llvm-libc++/include/ -I${PROJECT_ROOT}/vendor/nimbus-build-system/vendor/Nim-csources-v1/c_code -I${androidToolchain}/sysroot/usr/include/${androidTargetArch}"
+    "--sysroot ${androidToolchain}/sysroot -fPIC -I${ANDROID_NDK_HOME}/sources/cxx-stl/llvm-libc++/include/ -I${PROJECT_ROOT}/vendor/nimbus-build-system/vendor/Nim-csources-v1/c_code -target ${androidTargetArch}${api} -I${androidToolchain}/sysroot/usr/include/${androidTargetArch}"
     else if isIOS then
     # TODO The conditional for -miphoneos-version-min=8.0 is required,
     # otherwise Nim will complain that thread-local storage is not supported for the current target
@@ -100,7 +100,7 @@ let
     else throw "Unsupported platform!";
 
   linkerFlags = if isAndroid then
-  "--sysroot ${androidToolchain}/sysroot"
+  "--sysroot ${androidToolchain}/sysroot -target ${androidTargetArch}${api}"
   else if isIOS then
   "--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"
   else throw "Unsupported platform!";
@@ -116,12 +116,14 @@ let
     "-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=${api} -DCMAKE_ANDROID_ARCH_ABI=${lib.getAttr arch ldDirMap} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME}"
   else if isIOS then ""
   else throw "Unsupported platform!";
+  #clangPath = if isAndroid then "${androidToolchain}/bin" else "";
+  #clangName = if isAndroid then "${androidTargetArch}${api}-clang" else "";
 
   compilerVars = if isAndroid then
     ''
       export PATH=${androidToolchain}/bin:$PATH
-      export CC=${androidToolchain}/bin/${androidTargetArch}${api}-clang
-      export CXX=${androidToolchain}/bin/${androidTargetArch}${api}-clang++
+      export CC=clang
+      export CXX=clang++
       export AR=${androidToolchain}/bin/llvm-ar
       export NM=${androidToolchain}/bin/llvm-nm
       export RANLIB=${androidToolchain}/bin/llvm-ranlib
@@ -135,8 +137,8 @@ let
       mkdir bin
       ln -s $AR bin/ar
       ln -s $AS bin/as
-      ln -s $CC bin/gcc
-      ln -s $CC bin/clang
+      #ln -s $CC bin/gcc
+      #ln -s $CC bin/clang
       ln -s $RANLIB bin/ranlib
 
       touch bin/git
@@ -225,14 +227,14 @@ in stdenv.mkDerivation rec {
   phases = [ "unpackPhase" "preBuildPhase" "buildPhase" "installPhase" ];
 
   preBuildPhase = ''
-    sed -E -i 's|^(.*)(-C vendor/nim-nat-traversal/vendor/miniupnp/miniupnpc)(.*)|\1 \2 CFLAGS="$(CFLAGS)" CC="$(CC)"\3|g' vendor/nimbus-build-system/makefiles/targets.mk
+    #sed -E -i 's|^(.*)(-C vendor/nim-nat-traversal/vendor/miniupnp/miniupnpc)(.*)|\1 \2 CFLAGS="$(CFLAGS)" CC="$(CC)"\3|g' vendor/nimbus-build-system/makefiles/targets.mk
     sed -E -i 's|^(LIBBACKTRACE_SED := true.*)|\1\nCMAKE_ARGS := ${cmakeArgs}|g' vendor/nim-libbacktrace/Makefile
-    sed -E -i 's|^(.*)(-C vendor/nim-libbacktrace --no-print-directory BUILD_CXX_LIB=0)|\1 \2 CFLAGS="$(CFLAGS)"|g' Makefile
-    sed -E -i 's|^CC :=.*|CC := $(CC)|g' vendor/nim-libbacktrace/Makefile
-    sed -E -i 's|^CXX :=.*|CXX := $(CXX)|g' vendor/nim-libbacktrace/Makefile
-    sed -E -i 's|--host=arm| |g' vendor/nim-libbacktrace/Makefile
-    sed -E -i 's|--build=\$\(\./config.guess\)| |g' vendor/nim-libbacktrace/Makefile
-    sed -E -i 's|^(.*\./configure --prefix="/usr")(.*)|\1 --host=${androidTargetArch} --target=${androidTargetArch} CC="$(CC)" \2|g' vendor/nim-libbacktrace/Makefile
+    #sed -E -i 's|^(.*)(-C vendor/nim-libbacktrace --no-print-directory BUILD_CXX_LIB=0)|\1 \2 CFLAGS="$(CFLAGS)"|g' Makefile
+    #sed -E -i 's|^CC :=.*|CC := $(CC)|g' vendor/nim-libbacktrace/Makefile
+    #sed -E -i 's|^CXX :=.*|CXX := $(CXX)|g' vendor/nim-libbacktrace/Makefile
+    #sed -E -i 's|--host=arm| |g' vendor/nim-libbacktrace/Makefile
+    #sed -E -i 's|--build=\$\(\./config.guess\)| |g' vendor/nim-libbacktrace/Makefile
+    #sed -E -i 's|^(.*\./configure --prefix="/usr")(.*)|\1 --host=${androidTargetArch} --target=${androidTargetArch} CC="$(CC)" \2|g' vendor/nim-libbacktrace/Makefile
     sed -E -i 's|^(.*)(useNews\* = )(.*)|\1\2 false|g' vendor/nim-json-rpc/json_rpc/clients/config.nim
 
 
@@ -242,16 +244,29 @@ in stdenv.mkDerivation rec {
     echo 'switch("passL", "${linkerFlags}")' >> config.nims
     echo 'switch("cpu", "${nimCpu}")' >> config.nims
     echo 'switch("os", "${nimPlatform}")' >> config.nims
+    echo 'switch("cc", "clang")' >> config.nims
 
-    echo 'switch("passC", "${compilerFlags}")' >> vendor/nimbus-eth2/config.nims
-    echo 'switch("passL", "${linkerFlags}")' >> vendor/nimbus-eth2/config.nims
-    echo 'switch("cpu", "${nimCpu}")' >> vendor/nimbus-eth2/config.nims
-    echo 'switch("os", "${nimPlatform}")' >> vendor/nimbus-eth2/config.nims
+    # echo 'switch("${nimCpu}.${nimPlatform}.clang.path", "{clangPath}")' >> config.nims
+    # echo 'switch("${nimCpu}.${nimPlatform}.clang.exe", "{clangName}")' >> config.nims
+    # echo 'switch("${nimCpu}.${nimPlatform}.clang.linkerexe", "{clangName}")' >> config.nims
 
-    echo 'switch("passC", "${compilerFlags}")' >> vendor/nim-sqlite3-abi/config.nims
-    echo 'switch("passL", "${linkerFlags}")' >> vendor/nim-sqlite3-abi/config.nims
-    echo 'switch("cpu", "${nimCpu}")' >> vendor/nim-sqlite3-abi/config.nims
-    echo 'switch("os", "${nimPlatform}")' >> vendor/nim-sqlite3-abi/config.nims
+    # echo 'switch("passC", "${compilerFlags}")' >> vendor/nimbus-eth2/config.nims
+    # echo 'switch("passL", "${linkerFlags}")' >> vendor/nimbus-eth2/config.nims
+    # echo 'switch("cpu", "${nimCpu}")' >> vendor/nimbus-eth2/config.nims
+    # echo 'switch("os", "${nimPlatform}")' >> vendor/nimbus-eth2/config.nims
+    # echo 'switch("cc", "clang")' >> vendor/nimbus-eth2/config.nims
+    # echo 'switch("${nimCpu}.${nimPlatform}.clang.path", "{clangPath}")' >> vendor/nimbus-eth2/config.nims
+    # echo 'switch("${nimCpu}.${nimPlatform}.clang.exe", "{clangName}")' >> vendor/nimbus-eth2/config.nims
+    # echo 'switch("${nimCpu}.${nimPlatform}.clang.linkerexe", "{clangName}")' >> vendor/nimbus-eth2/config.nims
+
+    # echo 'switch("passC", "${compilerFlags}")' >> vendor/nim-sqlite3-abi/config.nims
+    # echo 'switch("passL", "${linkerFlags}")' >> vendor/nim-sqlite3-abi/config.nims
+    # echo 'switch("cpu", "${nimCpu}")' >> vendor/nim-sqlite3-abi/config.nims
+    # echo 'switch("os", "${nimPlatform}")' >> vendor/nim-sqlite3-abi/config.nims
+    # echo 'switch("cc", "clang")' >> vendor/nim-sqlite3-abi/config.nims
+    # echo 'switch("${nimCpu}.${nimPlatform}.clang.path", "{clangPath}")' >> vendor/nim-sqlite3-abi/config.nims
+    # echo 'switch("${nimCpu}.${nimPlatform}.clang.exe", "{clangName}")' >> vendor/nim-sqlite3-abi/config.nims
+    # echo 'switch("${nimCpu}.${nimPlatform}.clang.linkerexe", "{clangName}")' >> vendor/nim-sqlite3-abi/config.nims
 
 
     ${createNimbleLink}
@@ -264,9 +279,7 @@ in stdenv.mkDerivation rec {
 
 
   buildPhase = ''
-    ulimit -l unlimited
-    ulimit -n 10240
-    make -e V=3 OS=${nimHostOs} USE_SYSTEM_NIM=1 NIMFLAGS="--threads:on" liblcproxy
+    make V=3 OS=${nimHostOs} CC=clang USE_SYSTEM_NIM=1 NIMFLAGS="--threads:on" liblcproxy
 
    '';
 
