@@ -54,47 +54,45 @@
        (max  min-image-size)
        (min max-image-size)))
 
-(defn scroll-page-fn [ios?]
-  (fn  [icon cover page-nav name]
-    (let [scroll-height (reagent/atom negative-scroll-position-0)]
-      (fn [sticky-header children]
-        [:<>
-         [:<>
-          [rn/image
-           {:source   cover
-            :position :absolute
-            :style    (style/image-slider (get-header-size @scroll-height))}]
-          [rn/blur-view (style/blur-slider (get-header-size @scroll-height))]]
-         [rn/view {:style {:z-index 6 :margin-top (if ios? 56 6)}}
-          [quo/page-nav
-           {:horizontal-description? true
-            :one-icon-align-left?    true
-            :align-mid?              false
-            :page-nav-color          :transparent
-            :page-nav-background-uri ""
-            :mid-section             {:type            :text-with-description
-                                      :main-text       (when (>= @scroll-height scroll-position-1) name)
-                                      :description-img (when (>= @scroll-height scroll-position-1) icon)}
-            :right-section-buttons   (:right-section-buttons page-nav)
-            :left-section            {:icon                  :i/close
-                                      :icon-background-color (icon-color)
-                                      :on-press              #(rf/dispatch [:navigate-back])}}]
-          (when sticky-header [sticky-header @scroll-height])]
-         [rn/scroll-view {:style (style/scroll-view-container (diff-with-max-min @scroll-height 16 0))
-                          :shows-vertical-scroll-indicator false
-                          :scroll-event-throttle 4
-                          :on-scroll #(swap! scroll-height (fn [] (int (oops/oget % "nativeEvent.contentOffset.y"))))}
-          [rn/view {:style {:height 151}}
-           [rn/image
-            {:source      cover
-             :style  {:overflow :visible
-                      :flex 1}}]]
-          (when children
-            [rn/view {:flex 1
-                      :border-radius (diff-with-max-min @scroll-height 16 0)
-                      :background-color (colors/theme-colors
-                                         colors/white
-                                         colors/neutral-90)}
-             [children @scroll-height icon-top-fn icon-size-fn]])]]))))
+(defn scroll-page [icon cover page-nav name]
+  (let [scroll-height (reagent/atom negative-scroll-position-0)]
+    (fn [sticky-header children]
+      [:<>
+       [:<>
+        [rn/image
+         {:source   cover
+          :position :absolute
+          :style    (style/image-slider (get-header-size @scroll-height))}]
+        [rn/blur-view (style/blur-slider (get-header-size @scroll-height))]]
+       [rn/view {:style {:z-index 6 :margin-top (if platform/ios? 44 0)}}
+        [quo/page-nav
+         {:horizontal-description? true
+          :one-icon-align-left?    true
+          :align-mid?              false
+          :page-nav-color          :transparent
+          :page-nav-background-uri ""
+          :mid-section             {:type            :text-with-description
+                                    :main-text       (when (>= @scroll-height scroll-position-1) name)
+                                    :description-img (when (>= @scroll-height scroll-position-1) icon)}
+          :right-section-buttons   (:right-section-buttons page-nav)
+          :left-section            {:icon                  :i/close
+                                    :icon-background-color (icon-color)
+                                    :on-press              #(rf/dispatch [:navigate-back])}}]
+        (when sticky-header [sticky-header @scroll-height])]
+       [rn/scroll-view {:style (style/scroll-view-container (diff-with-max-min @scroll-height 16 0))
+                        :shows-vertical-scroll-indicator false
+                        :scroll-event-throttle 4
+                        :on-scroll #(swap! scroll-height (fn [] (int (oops/oget % "nativeEvent.contentOffset.y"))))}
+        [rn/view {:style {:height 151}}
+         [rn/image
+          {:source      cover
+           :style  {:overflow :visible
+                    :flex 1}}]]
+        (when children
+          [rn/view {:flex 1
+                    :border-radius (diff-with-max-min @scroll-height 16 0)
+                    :background-color (colors/theme-colors
+                                       colors/white
+                                       colors/neutral-90)}
+           [children @scroll-height icon-top-fn icon-size-fn]])]])))
 
-(def scroll-page (scroll-page-fn  platform/ios?))
