@@ -132,7 +132,8 @@
              [quo2/button {:style    {:flex 1}
                            :on-press (fn []
                                        (rf/dispatch [:group-chats.ui/add-members-pressed])
-                                       (remove-members chat-id)
+                                       (rf/dispatch [:group-chats.ui/remove-members-pressed])
+                                       ;(remove-members chat-id)
                                        (reset! removed ())
                                        (reset! added ())
                                        (rf/dispatch [:bottom-sheet/hide]))

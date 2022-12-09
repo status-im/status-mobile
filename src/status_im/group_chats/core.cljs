@@ -36,6 +36,7 @@
   "Format group update message and sign membership"
   {:events [:group-chats.ui/remove-member-pressed]}
 <<<<<<< HEAD
+<<<<<<< HEAD
   [_ chat-id member do-not-navigate?]
   {:json-rpc/call [{:method      "wakuext_removeMemberFromGroupChat"
                     :params      [nil chat-id member]
@@ -43,11 +44,24 @@
                     :on-success  #(re-frame/dispatch [:chat-updated % do-not-navigate?])}]})
 =======
   [{{:keys [current-chat-id selected-participants]} :db :as cofx} chat-id member do-not-navigate?]
+=======
+  [_ chat-id member do-not-navigate?]
+>>>>>>> a6b87d0ee... refactor
   {::json-rpc/call [{:method      "wakuext_removeMemberFromGroupChat"
                      :params      [nil chat-id member]
                      :js-response true
                      :on-success  #(re-frame/dispatch [:chat-updated % do-not-navigate?])}]})
 >>>>>>> bc7bcd83f... refactor
+
+
+(fx/defn remove-members
+  "remove members from a group chat"
+  {:events [:group-chats.ui/remove-members-pressed]}
+  [{{:keys [current-chat-id deselected-members]} :db :as cofx}]
+  {::json-rpc/call [{:method      "wakuext_removeMembersFromGroupChat"
+                     :params      [nil current-chat-id deselected-members]
+                     :js-response true
+                     :on-success  #(re-frame/dispatch [:chat-updated % true])}]})
 
 (fx/defn join-chat
   {:events [:group-chats.ui/join-pressed]}
@@ -193,6 +207,17 @@
        first
        :type
        (= constants/invitation-state-removed)))
+
+(fx/defn deselect-member
+  {:events [:deselect-member]}
+  [{:keys [db]} id]
+  (println "DESELECTING MEMBER " id)
+  {:db (update db :deselected-members conj id)})
+
+(fx/defn undo-deselect-member
+  {:events [:undo-deselect-member]}
+  [{:keys [db]} id]
+  {:db (update db :deselected-members disj id)})
 
 (fx/defn deselect-contact
   {:events [:deselect-contact]}

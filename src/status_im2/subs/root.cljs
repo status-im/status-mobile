@@ -99,6 +99,7 @@
 (reg-root-key-sub :group-chat-profile/editing? :group-chat-profile/editing?)
 (reg-root-key-sub :group-chat-profile/profile :group-chat-profile/profile)
 (reg-root-key-sub :selected-participants :selected-participants)
+(reg-root-key-sub :deselected-members :deselected-members)
 (reg-root-key-sub :chat/inputs :chat/inputs)
 (reg-root-key-sub :chat/memberships :chat/memberships)
 (reg-root-key-sub :camera-roll/photos :camera-roll/photos)
