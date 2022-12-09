@@ -42,6 +42,7 @@
 (def two-minutes-syncing? (enabled? (get-config :TWO_MINUTES_SYNCING "0")))
 (def swap-enabled? (enabled? (get-config :SWAP_ENABLED "0")))
 (def stickers-test-enabled? (enabled? (get-config :STICKERS_TEST_ENABLED "0")))
+(def local-pairing-mode-enabled? (enabled? (get-config :LOCAL_PAIRING_ENABLED "1")))
 
 ;; CONFIG VALUES
 (def log-level (string/upper-case (get-config :LOG_LEVEL "")))
@@ -138,3 +139,7 @@
 
 ;;TODO for development only should be removed in status 2.0
 (def new-ui-enabled? true)
+
+;; TODO: Remove this (highly) temporary flag once the new Activity Center is
+;; usable enough to replace the old one **in the new UI**.
+(def new-activity-center-enabled? true)

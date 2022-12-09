@@ -10,6 +10,7 @@
             [i18n.i18n :as i18n]
 
             status-im2.setup.events
+            status-im2.contexts.syncing.events
             status-im2.subs.root
             status-im2.navigation.core
 

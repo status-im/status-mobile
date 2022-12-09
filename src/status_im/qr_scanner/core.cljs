@@ -9,7 +9,8 @@
             [status-im.add-new.db :as new-chat.db]
             [status-im.utils.fx :as fx]
             [status-im.group-chats.core :as group-chats]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [taoensso.timbre :as log]))
 
 (fx/defn scan-qr-code
   {:events [::scan-code]}
@@ -87,6 +88,11 @@
       {:dispatch [:wallet-connect-legacy/pair data]}
       {:dispatch [:wallet-connect/pair data]})))
 
+(fx/defn handle-local-pairing
+  {:events [::handle-local-pairing-uri]}
+  [_ data]
+  {:dispatch [:syncing/input-connection-string-for-bootstrapping data]})
+
 (fx/defn match-scan
   {:events [::match-scanned-value]}
   [cofx {:keys [type] :as data}]
@@ -98,9 +104,14 @@
     :browser        (handle-browse cofx data)
     :eip681         (handle-eip681 cofx data)
     :wallet-connect (handle-wallet-connect cofx data)
-    {:dispatch [:navigate-back]
-     :utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
-                        :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}}))
+    :localpairing   (handle-local-pairing cofx data)
+    (do
+      (log/info "Unable to find matcher for scanned value"
+                {:type  type
+                 :event ::match-scanned-value})
+      {:dispatch [:navigate-back]
+       :utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
+                          :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :chat-stack])}})))
 
 (fx/defn on-scan
   {:events [::on-scan-success]}

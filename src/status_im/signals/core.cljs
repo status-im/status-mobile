@@ -50,6 +50,10 @@
     {:db (assoc db :peer-stats peer-stats
                 :peers-count (count (:peers peer-stats)))}))
 
+(defn handle-local-pairing-signals [signal-type]
+  (log/info "local pairing signal received"
+            {:signal-type signal-type}))
+
 (fx/defn process
   {:events [:signals/signal-received]}
   [{:keys [db] :as cofx} event-str]
@@ -77,4 +81,5 @@
       "local-notifications" (local-notifications/process cofx (js->clj event-js :keywordize-keys true))
       "community.found" (link.preview/cache-community-preview-data (js->clj event-js :keywordize-keys true))
       "status.updates.timedout" (visibility-status-updates/handle-visibility-status-updates cofx (js->clj event-js :keywordize-keys true))
+      "localPairing" (handle-local-pairing-signals event-str)
       (log/debug "Event " type " not handled"))))

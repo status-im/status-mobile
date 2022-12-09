@@ -5,7 +5,8 @@
             [status-im2.contexts.shell.view :as shell]
             [status-im2.contexts.quo-preview.main :as quo.preview]
             [status-im2.contexts.chat.messages.view :as chat]
-
+            [status-im2.contexts.syncing.view :as settings-syncing]
+            [i18n.i18n :as i18n]
             ;; TODO remove when not used anymore
             [status-im.ui.screens.screens :as old-screens]))
 
@@ -29,7 +30,12 @@
 
            {:name      :community-overview
             :options   {:topBar {:visible false}}
-            :component communities.overview/overview}]
+            :component communities.overview/overview}
+
+           {:name      :settings-syncing
+            :insets    {:bottom true}
+            :options   {:topBar {:title {:text (i18n/label :t/syncing)}}}
+            :component settings-syncing/views}]
 
           (when config/quo-preview-enabled?
             quo.preview/screens)
