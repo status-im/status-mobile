@@ -19,6 +19,7 @@
       (rf/dispatch [:search/home-filter-changed nil]))))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 (defn action-icon
   [{:keys [public-key] :as item} {:keys [icon group added] :as extra-data}]
   (let [{:keys [contacts]} group
@@ -38,11 +39,13 @@
                                (reset! added (remove #(= % public-key) @added))))}])]))
 =======
 (defn action-icon [{:keys [public-key] :as item} {:keys [icon group added removed] :as extra-data}]
+=======
+(defn action-icon [{:keys [public-key] :as item} {:keys [icon group] :as extra-data}]
+>>>>>>> ced1d37cd... refactor
   (let [{:keys [contacts admins]} group
         member?           (contains? contacts public-key)
         current-pk        (rf/sub [:multiaccount/public-key])
-        admin?            (get admins current-pk)
-        contact-selected? (rf/sub [:is-participant-selected? public-key])]
+        admin?            (get admins current-pk)]
     [rn/touchable-opacity {:on-press #(rf/dispatch [:bottom-sheet/show-sheet
                                                     {:content (fn [] [actions/actions item extra-data])}])
                            :style    {:position :absolute
@@ -53,14 +56,8 @@
                       :disabled?        (and member? (not admin?))
                       :on-change        (fn [selected]
                                           (if-not member?
-                                            (if contact-selected?
-                                              (do
-                                                (reset! added (remove #(= % public-key) @added))
-                                                (rf/dispatch [:deselect-participant public-key true]))
-                                              (do
-                                                (swap! added conj public-key)
-                                                (rf/dispatch [:select-participant public-key true])))
                                             (if selected
+<<<<<<< HEAD
 <<<<<<< HEAD
                                               (reset! removed (remove #(= % public-key) @removed))
                                               (swap! removed conj public-key))))}])]))
@@ -73,6 +70,13 @@
                                                 (rf/dispatch [:deselect-member public-key true])
                                                 (swap! removed conj public-key)))))}])]))
 >>>>>>> 4b386e4d0... refactor
+=======
+                                              (rf/dispatch [:select-participant public-key true])
+                                              (rf/dispatch [:deselect-participant public-key true]))
+                                            (if selected
+                                              (rf/dispatch [:undo-deselect-member public-key true])
+                                              (rf/dispatch [:deselect-member public-key true]))))}])]))
+>>>>>>> ced1d37cd... refactor
 
 (defn contact-list-item
   [item _ _ extra-data]
