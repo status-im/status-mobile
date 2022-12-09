@@ -13,6 +13,12 @@
    (:notifications activity-center)))
 
 (re-frame/reg-sub
+ :activity-center/unread-count
+ :<- [:activity-center]
+ (fn [activity-center]
+   (:unread-count activity-center)))
+
+(re-frame/reg-sub
  :activity-center/filter-status
  :<- [:activity-center]
  (fn [activity-center]

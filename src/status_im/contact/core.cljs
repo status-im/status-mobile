@@ -48,7 +48,7 @@
                (and blocked (not was-blocked))
                (conj [::contact.block/contact-blocked contact chats]))))
          [[:offload-messages constants/timeline-chat-id]
-          [:get-activity-center-notifications-count]]
+          [:activity-center.notifications/fetch-unread-count]]
          contacts)]
     (merge
      {:db (update db :contacts/contacts

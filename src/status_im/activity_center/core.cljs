@@ -236,3 +236,16 @@
   [{:keys [db]} filter-type filter-status error]
   (log/warn "Failed to load Activity Center notifications" error)
   {:db (update-in db [:activity-center :notifications filter-type filter-status] dissoc :loading?)})
+
+(fx/defn notifications-fetch-unread-count
+  {:events [:activity-center.notifications/fetch-unread-count]}
+  [_]
+  {::json-rpc/call [{:method     "wakuext_unreadActivityCenterNotificationsCount"
+                     :params     []
+                     :on-success #(rf/dispatch [:activity-center.notifications/fetch-unread-count-success %])
+                     :on-error   #()}]})
+
+(fx/defn notifications-fetch-unread-count-success
+  {:events [:activity-center.notifications/fetch-unread-count-success]}
+  [{:keys [db]} result]
+  {:db (assoc-in db [:activity-center :unread-count] result)})

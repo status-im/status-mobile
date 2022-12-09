@@ -7,7 +7,7 @@
             [status-im.chat.models.message-list :as message-list]
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.notifications-center.core :as notification-center]))
+            [status-im.activity-center.core :as activity-center]))
 
 (defn cursor->clock-value
   [^js cursor]
@@ -67,14 +67,14 @@
 (fx/defn handle-mark-all-read-successful
   {:events [::mark-all-read-successful]}
   [cofx]
-  (notification-center/get-activity-center-notifications-count cofx))
+  (activity-center/notifications-fetch-unread-count cofx))
 
 (fx/defn handle-mark-all-read-in-community-successful
   {:events [::mark-all-read-in-community-successful]}
   [{:keys [db] :as cofx} chat-ids]
   (fx/merge cofx
             {:db (reduce mark-chat-all-read db chat-ids)}
-            (notification-center/get-activity-center-notifications-count)))
+            (activity-center/notifications-fetch-unread-count)))
 
 (fx/defn handle-mark-all-read
   {:events [:chat.ui/mark-all-read-pressed :chat/mark-all-as-read]}

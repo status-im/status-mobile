@@ -206,7 +206,7 @@
                                  removed-messages)
         remove-messages-fx (fn [{:keys [db]}]
                              {:dispatch-n [[:get-activity-center-notifications]
-                                           [:get-activity-center-notifications-count]]})]
+                                           [:activity-center.notifications/fetch-unread-count]]})]
     (apply fx/merge cofx (-> mark-as-deleted-fx
                              (concat mark-as-seen-fx)
                              (conj remove-messages-fx)))))

@@ -51,7 +51,7 @@
   "
   [{:keys [type open-profile style avatar hide-search]}]
   (let [button-common-props (get-button-common-props type)
-        notif-count (rf/sub [:activity.center/notifications-count])
+        notif-count (rf/sub [:activity-center/unread-count])
         new-notifications? (pos? notif-count)
         notification-indicator :unread-dot
         counter-label "0"]

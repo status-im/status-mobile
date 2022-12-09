@@ -10,19 +10,6 @@
   #{types/contact-request
     types/contact-request-retracted})
 
-(fx/defn get-activity-center-notifications-count
-  {:events [:get-activity-center-notifications-count]}
-  [_]
-  {::json-rpc/call [{:method     "wakuext_unreadActivityCenterNotificationsCount"
-                     :params     []
-                     :on-success #(re-frame/dispatch [:get-activity-center-notifications-count-success %])
-                     :on-error   #()}]})
-
-(fx/defn get-activity-center-notifications-count-success
-  {:events [:get-activity-center-notifications-count-success]}
-  [{:keys [db]} result]
-  {:db (assoc db :activity.center/notifications-count result)})
-
 (fx/defn accept-all-activity-center-notifications-from-chat
   {:events [:accept-all-activity-center-notifications-from-chat]}
   [{:keys [db]} chat-id]
@@ -42,7 +29,8 @@
                             (filter
                              #(not (contains? ids (:id %)))
                              items)))
-               (update :activity.center/notifications-count - (min (db :activity.center/notifications-count) (count notifications-from-chat-not-read))))
+               (update-in [:activity-center :unread-count] - (min (get-in db [:activity-center :unread-count])
+                                                                  (count notifications-from-chat-not-read))))
        ::json-rpc/call [{:method     "wakuext_acceptActivityCenterNotifications"
                          :params     [ids]
                          :js-response true
@@ -52,7 +40,7 @@
 (fx/defn mark-all-activity-center-notifications-as-read
   {:events [:mark-all-activity-center-notifications-as-read]}
   [{:keys [db]}]
-  {:db (assoc db :activity.center/notifications-count 0)
+  {:db             (assoc-in db [:activity-center :unread-count] 0)
    ::json-rpc/call [{:method     "wakuext_markAllActivityCenterNotificationsRead"
                      :params     []
                      :on-success #()

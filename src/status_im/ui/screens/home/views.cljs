@@ -248,7 +248,7 @@
       :accessibility-label :new-chat-button}]))
 
 (views/defview notifications-button []
-  (views/letsubs [notif-count [:activity.center/notifications-count]]
+  (views/letsubs [notif-count [:activity-center/unread-count]]
     [react/view
      [quo2.button/button {:type :grey
                           :size 32
@@ -268,7 +268,7 @@
                      :accessibility-label :notifications-unread-badge}]])]))
 
 (views/defview notifications-button-old []
-  (views/letsubs [notif-count [:activity.center/notifications-count]]
+  (views/letsubs [notif-count [:activity-center/unread-count]]
     [react/view
      [quo/button {:type     :icon
                   :style {:margin-left 10}
