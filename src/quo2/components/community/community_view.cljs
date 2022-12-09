@@ -28,13 +28,9 @@
      [community-stats {:icon       :i/group
                        :members-count "629.2K" ;;TODO here should be formatted value, use money/format-members from outside this component
                        :icon-color icon-color}]
-     [community-stats {:icon       :i/lightning
+     [community-stats {:icon          :i/lightning
                        :members-count "112.1K"
-                       :icon-color icon-color}]
-     (when (= type :card-view)
-       [community-stats {:icon       :i/placeholder
-                         :count      4
-                         :icon-color icon-color}])]))
+                       :icon-color    icon-color}]]))
 
 (defn community-tags [tags]
   [rn/view (style/community-tags-container)
