@@ -34,13 +34,12 @@
                     (get mock-community-item-data :data)
                     {:featured featured?})]
     (if (= view-type :card-view)
-      [quo/community-card-view-item (assoc item :width width)
-       #(rf/dispatch [:navigate-to :community-overview item])]
+      [quo/community-card-view-item (assoc item :width width) #(rf/dispatch [:navigate-to :community-overview (:id item)])]
       [quo/communities-list-view-item
        {:on-press      (fn []
                          (rf/dispatch [:communities/load-category-states (:id item)])
                          (rf/dispatch [:dismiss-keyboard])
-                         (rf/dispatch [:navigate-to :community {:community-id (:id item)}]))
+                         (rf/dispatch [:navigate-to :community  (:id item)]))
         :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
                                       {:content (fn []
                                                   ;; TODO implement with quo2
@@ -126,7 +125,7 @@
   []
   (let [view-type (reagent/atom :card-view)]
     (fn []
-      (let [communities (sort-by :name (rf/sub [:communities/communities]))
+      (let [communities (rf/sub [:communities/sorted-communities])
             featured-communities (rf/sub [:communities/featured-communities])
             featured-communities-count (count featured-communities)]
         [safe-area/consumer

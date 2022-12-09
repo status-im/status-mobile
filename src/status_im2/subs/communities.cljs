@@ -78,14 +78,18 @@
  :<- [:communities]
  (fn [[communities-enabled? search-filter communities]]
    (filterv
-    (fn [{:keys [name featured id]}]
-      (and (or featured (= name "Status")) ;; TO DO: remove once featured communities
-                                           ;; exist
-           (or communities-enabled?
+    (fn [{:keys [name id]}]
+      (and (or communities-enabled?
                (= id constants/status-community-id))
            (or (empty? search-filter)
                (string/includes? (string/lower-case (str name)) search-filter))))
     (vals communities))))
+
+(re-frame/reg-sub
+ :communities/sorted-communities
+ :<- [:communities]
+ (fn [communities]
+   (sort-by :name (vals communities))))
 
 (re-frame/reg-sub
  :communities/communities
