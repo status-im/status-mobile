@@ -61,9 +61,18 @@
                                                 (swap! added conj public-key)
                                                 (rf/dispatch [:select-participant public-key true])))
                                             (if selected
+<<<<<<< HEAD
                                               (reset! removed (remove #(= % public-key) @removed))
                                               (swap! removed conj public-key))))}])]))
 >>>>>>> 7ce2b16e0... group details screen 3
+=======
+                                              (do
+                                                (rf/dispatch [:undo-deselect-member public-key true])
+                                                (reset! removed (remove #(= % public-key) @removed)))
+                                              (do
+                                                (rf/dispatch [:deselect-member public-key true])
+                                                (swap! removed conj public-key)))))}])]))
+>>>>>>> 4b386e4d0... refactor
 
 (defn contact-list-item
   [item _ _ extra-data]

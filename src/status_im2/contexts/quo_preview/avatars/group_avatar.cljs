@@ -5,6 +5,7 @@
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
+<<<<<<< HEAD
 (def descriptor
   [{:label   "Size"
     :key     :size
@@ -24,6 +25,26 @@
        {:key   c
         :value c})
      (keys colors/customization))}])
+=======
+(def descriptor [{:label "Size"
+                  :key :size
+                  :type :select
+                  :options [{:key :small
+                             :value "Small"}
+                            {:key :medium
+                             :value "Medium"}
+                            {:key :large
+                             :value "Large"}]}
+                 {:label "Color"
+                  :key   :color
+                  :type  :select
+                  :options
+                  (map
+                   (fn [c]
+                     {:key   c
+                      :value c})
+                   ["#ff0000" "#0000ff"])}])
+>>>>>>> 4b386e4d0... refactor
 
 (defn cool-preview
   []

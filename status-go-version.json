@@ -3,7 +3,25 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
+<<<<<<< HEAD
     "version": "v0.117.1a",
     "commit-sha1": "b4bdfd3df6cf5fb91ab2d0e9f3b38e8d1b9703e5",
     "src-sha256": "1s50q53p1j5ysnbj88c52zb2rh1ms21pnf6bjc7wja8gzcpih2wl"
+=======
+<<<<<<< HEAD
+    "version": "v0.117.1",
+    "commit-sha1": "8593866862175eeab6f30765e5f0b813f3b1b4db",
+    "src-sha256": "1ml22627jadj150y9yj7p9z91vx49min6hzvsg88i3nhx4153nia"
+=======
+<<<<<<< HEAD
+    "version": "v0.115.6",
+    "commit-sha1": "a97b5527305b9f23b15246c5489726f8cd758edd",
+    "src-sha256": "18x506xrxbpabfy0vn82bzyd0f6zmr5khclqbzfwymi5d1m35cjm"
+=======
+    "version": "3745ec03efdf16c231e3df74da0c51af2480107e",
+    "commit-sha1": "3745ec03efdf16c231e3df74da0c51af2480107e",
+    "src-sha256": "1hikww0y1p70pr5ga3jnz72zc27k0zqjp9vk79ww9fw0165yi1h0"
+>>>>>>> 0658974a7... refactor
+>>>>>>> 2a158b89a... refactor
+>>>>>>> 6cbb8fb7e... refactor
 }
