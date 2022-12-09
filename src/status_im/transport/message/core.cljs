@@ -72,13 +72,10 @@
       (do
         (js-delete response-js "activityCenterNotifications")
         (fx/merge cofx
-                  (if config/new-activity-center-enabled?
-                    (->> activity-notifications
-                         types/js->clj
-                         (map data-store.activities/<-rpc)
-                         activity-center/notifications-reconcile)
-                    (notifications-center/handle-activities (map data-store.activities/<-rpc
-                                                                 (types/js->clj activity-notifications))))
+                  (->> activity-notifications
+                       types/js->clj
+                       (map data-store.activities/<-rpc)
+                       activity-center/notifications-reconcile)
                   (process-next response-js sync-handler)))
 
       (seq installations)

@@ -10,50 +10,6 @@
   #{types/contact-request
     types/contact-request-retracted})
 
-(fx/defn handle-activities [{:keys [db]} activities]
-  (let [{:keys [unread-count notifications]}
-        (reduce (fn [acc {:keys [read dismissed accepted chat-id] :as notification}]
-                  (if (= "" chat-id)
-                    ;; TODO(rasom): sometimes messages come with empty `chat-id`s
-                    ;; (specifically it happens on `SyncActivityCenterRead` message).
-                    ;; In result, if notification is received with notification center
-                    ;; screen opened, and there is another paired device online, the
-                    ;; last notification disappear from the screen and is shown only
-                    ;; after reopening. It likely makes sense to fix it on status-go
-                    ;; side, but I got lost a bit.
-                    acc
-                    (let [index-existing (->> (map-indexed vector (:notifications acc))
-                                              (filter (fn [[idx {:keys [id]}]] (= id (:id notification))))
-                                              first
-                                              first)]
-                      (as-> acc a
-                        (if read
-                          (update a :unread-count dec)
-                          (update a :unread-count inc))
-
-                        (if index-existing
-                          (if (or dismissed accepted)
-                            ;; Remove at specific location
-                            (assoc a :notifications
-                                   (into (subvec (:notifications a) 0 index-existing) (subvec (:notifications a) (inc index-existing))))
-                            ;; Replace element
-                            (do
-                              (assoc-in a [:notifications index-existing] notification)))
-                          (update a :notifications conj notification))))))
-                {:unread-count (get db :activity.center/notifications-count 0)
-                 :notifications (into [] (get-in db [:activity.center/notifications :notifications]))}
-                activities)]
-    (merge
-     {:db (-> db
-              (assoc-in [:activity.center/notifications :notifications] notifications)
-              (assoc :activity.center/notifications-count (max 0 unread-count)))}
-     (cond
-       (= (:view-id db) :notifications-center)
-       {:dispatch [:mark-all-activity-center-notifications-as-read]}
-
-       (= (:view-id db) :chat)
-       {:dispatch [:accept-all-activity-center-notifications-from-chat (:current-chat-id db)]}))))
-
 (fx/defn get-activity-center-notifications-count
   {:events [:get-activity-center-notifications-count]}
   [_]
