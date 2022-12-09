@@ -2,11 +2,16 @@
   (:require [quo.core :as quo]
             [quo.design-system.colors :as quo.colors]
             [quo.react-native :as rn]
+            [quo2.components.avatars.user-avatar :as user-avatar]
+            [quo2.components.icon :as icons]
+            [quo2.components.markdown.text :as text]
             [quo2.components.messages.system-message :as system-message]
+            [quo2.core :as quo2]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [status-im.chat.models.delete-message]
             [status-im.chat.models.delete-message-for-me]
             [status-im.chat.models.images :as images]
             [status-im.chat.models.pin-message :as models.pin-message]
@@ -19,7 +24,6 @@
             [status-im.ui.components.fast-image :as fast-image]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui2.screens.chat.components.reaction-drawer :as reaction-drawer]
             [status-im.ui.screens.chat.image.preview.views :as preview]
             [status-im.ui.screens.chat.message.audio :as message.audio]
             [status-im.ui.screens.chat.message.command :as message.command]
@@ -32,17 +36,14 @@
             [status-im.ui.screens.chat.styles.photos :as photos.style]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.ui.screens.communities.icon :as communities.icon]
+            [status-im.ui2.screens.chat.components.reaction-drawer :as reaction-drawer]
             [status-im.ui2.screens.chat.components.reply :as components.reply]
             [status-im.utils.config :as config]
-            [utils.re-frame :as rf]
-            [status-im.utils.security :as security]
-            [quo2.components.icon :as icons]
             [status-im.utils.datetime :as time]
-            [quo2.components.avatars.user-avatar :as user-avatar]
-            [quo2.components.markdown.text :as text]
+            [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
             [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
-            [quo2.core :as quo2])
+            [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
@@ -83,10 +84,12 @@
          :accessibility-label :message-timestamp}
         timestamp-str]])))
 
-(defview quoted-message
-  [_ reply pin?]
-  [rn/view {:style (when-not pin? (style/quoted-message-container))}
-   [components.reply/reply-message reply false pin?]])
+(defn quoted-message
+  [{:keys [message-id chat-id]} reply pin?]
+  (let [{:keys [deleted? deleted-for-me?]} (get @(re-frame/subscribe [:chats/chat-messages chat-id]) message-id)
+        reply                              (assoc reply :deleted? deleted? :deleted-for-me? deleted-for-me?)]
+    [rn/view {:style (when-not pin? (style/quoted-message-container))}
+     [components.reply/reply-message reply false pin?]]))
 
 (defn system-text? [content-type]
   (= content-type constants/content-type-system-text))
@@ -251,7 +254,7 @@
 
 (defview community-content [{:keys [community-id] :as message}]
   (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]
-            communities-enabled? [:communities/enabled?]]
+            communities-enabled?                              [:communities/enabled?]]
     (when (and communities-enabled? community)
       [rn/view {:style (assoc (style/message-wrapper message)
                               :margin-vertical 10
@@ -304,29 +307,32 @@
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
-  [{:keys [last-in-group? timestamp-str timestamp
-           deleted-for-me? deleted-for-me-undoable-till pinned from]
+  [{:keys [last-in-group? timestamp-str timestamp deleted? deleted-undoable-till
+           deleted-for-me? deleted-for-me-undoable-till pinned from chat-id]
     :as   message} content]
   (let [response-to  (:response-to (:content message))
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
         contact      (rf/sub [:contacts/contact-by-address from])
         photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))
         online?      (rf/sub [:visibility-status-updates/online? from])]
-    (if deleted-for-me?
+    (if (or deleted? deleted-for-me?)
       [system-message/system-message
        {:type             :deleted
-        :label            (i18n/label :message-deleted-for-you)
-        :labels           {:pinned-a-message (i18n/label :pinned-a-message)
-                           :message-deleted  (i18n/label :message-deleted)
-                           :added            (i18n/label :added)}
+        :label            (if deleted? :message-deleted :message-deleted-for-you)
+        :labels           {:pinned-a-message        (i18n/label :pinned-a-message)
+                           :message-deleted         (i18n/label :message-deleted-for-everyone)
+                           :message-deleted-for-you (i18n/label :message-deleted-for-you)
+                           :added                   (i18n/label :added)}
         :timestamp-str    timestamp-str
         :non-pressable?   true
-        :animate-landing? (if deleted-for-me-undoable-till true false)}]
+        :animate-landing? (if (or deleted-undoable-till deleted-for-me-undoable-till)
+                            true
+                            false)}]
       [rn/view {:style               (style/message-wrapper message)
                 :pointer-events      :box-none
                 :accessibility-label :chat-item}
        (when (and (seq response-to) (:quoted-message message))
-         [quoted-message response-to (:quoted-message message)])
+         [quoted-message {:message-id response-to :chat-id chat-id} (:quoted-message message)])
        [rn/view {:style          (style/message-body)
                  :pointer-events :box-none}
         [rn/view {:style {:width 40}}
@@ -444,20 +450,20 @@
         :label    (i18n/label (if pinned (if community? :t/unpin-from-channel :t/unpin-from-chat) (if community? :t/pin-to-channel :t/pin-to-chat)))
         :icon     :i/pin
         :id       (if pinned :unpin :pin)}])
-    [{:type     :danger
-      :on-press (fn []
-                  (when pinned (pin-message message))
-                  (re-frame/dispatch
-                   [:chat.ui/delete-message-for-me message
-                    constants/delete-message-for-me-undo-time-limit-ms]))
-      :label    (i18n/label :t/delete-for-me)
-      :icon     :i/delete
-      :id       :delete-for-me}]
-    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
+    (when-not pinned
       [{:type     :danger
         :on-press (fn []
-                    (when pinned (pin-message message))
-                    (re-frame/dispatch [:chat.ui/soft-delete-message message]))
+                    (re-frame/dispatch
+                     [:chat.ui/delete-message-for-me message
+                      config/delete-message-for-me-undo-time-limit-ms]))
+        :label    (i18n/label :t/delete-for-me)
+        :icon     :i/delete
+        :id       :delete-for-me}])
+    (when (and (or outgoing can-delete-message-for-everyone?) config/delete-message-enabled?)
+      [{:type     :danger
+        :on-press #(re-frame/dispatch [:chat.ui/delete-message
+                                       message
+                                       config/delete-message-undo-time-limit-ms])
         :label    (i18n/label :t/delete-for-everyone)
         :icon     :i/delete
         :id       :delete-for-all}]))))
@@ -600,13 +606,15 @@
                                  [{:type     :danger
                                    :on-press #(re-frame/dispatch
                                                [:chat.ui/delete-message-for-me message
-                                                constants/delete-message-for-me-undo-time-limit-ms])
+                                                config/delete-message-undo-time-limit-ms])
                                    :label    (i18n/label :t/delete-for-me)
                                    :icon     :i/delete
                                    :id       :delete-for-me}]
                                  (when (and outgoing config/delete-message-enabled?)
                                    [{:type     :danger
-                                     :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
+                                     :on-press #(re-frame/dispatch [:chat.ui/delete-message
+                                                                    message
+                                                                    config/delete-message-undo-time-limit-ms])
                                      :label    (i18n/label :t/delete-for-everyone)
                                      :icon     :i/delete
                                      :id       :delete}]))))]
@@ -637,13 +645,15 @@
                                                  {:type     :danger
                                                   :on-press #(re-frame/dispatch
                                                               [:chat.ui/delete-message-for-me message
-                                                               constants/delete-message-for-me-undo-time-limit-ms])
+                                                               config/delete-message-for-me-undo-time-limit-ms])
                                                   :label    (i18n/label :t/delete-for-me)
                                                   :icon     :i/delete
                                                   :id       :delete-for-me}
                                                  (when (and outgoing config/delete-message-enabled?)
                                                    {:type     :danger
-                                                    :on-press #(re-frame/dispatch [:chat.ui/soft-delete-message message])
+                                                    :on-press #(re-frame/dispatch [:chat.ui/delete-message
+                                                                                   message
+                                                                                   config/delete-message-undo-time-limit-ms])
                                                     :label    (i18n/label :t/delete-for-everyone)
                                                     :icon     :i/delete
                                                     :id       :delete})]))]
@@ -708,7 +718,7 @@
   [message-content-wrapper message
    [unknown-content-type message]])
 
-(defn chat-message [{:keys [pinned pinned-by mentioned in-pinned-view? last-in-group?] :as message}]
+(defn chat-message [{:keys [pinned pinned-by mentioned in-pinned-view? last-in-group? deleted? deleted-for-me?] :as message}]
   (let [reactions      @(re-frame/subscribe [:chats/message-reactions (:message-id message) (:chat-id message)])
         own-reactions  (reduce (fn [acc {:keys [emoji-id own]}]
                                  (if own (conj acc emoji-id) acc))
@@ -742,13 +752,14 @@
                     (when (or mentioned pinned last-in-group?) {:margin-top 8})
                     {:margin-horizontal 8})}
 
-     (when pinned
+     (when (and pinned (not (or deleted? deleted-for-me?)))
        [rn/view {:style (style/pin-indicator-container)}
         [pinned-by-indicator pinned-by]])
      [->message message {:ref           on-long-press
                          :modal         false
                          :on-long-press on-open-drawer}]
-     [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press]])) ;; TODO: pass on-open-drawer function
+     (when-not (or deleted? deleted-for-me?)
+       [reaction-row/message-reactions message reactions nil on-emoji-press on-long-press])])) ;; TODO: pass on-open-drawer function
 
 (defn message-render-fn
   [{:keys [outgoing whisper-timestamp] :as message}
@@ -849,7 +860,7 @@
                                (style/message-timestamp-text))
          :accessibility-label :message-timestamp}
         timestamp-str]]
-      [quoted-message response-to (:quoted-message message) true]]]))
+      [quoted-message {:message-id response-to :chat-id chat-id} (:quoted-message message) true]]]))
 
 (defmethod ->message constants/content-type-system-text [{:keys [content quoted-message] :as message}]
   (if quoted-message

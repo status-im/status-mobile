@@ -1,10 +1,10 @@
 (ns status-im2.subs.chat.messages
   (:require [re-frame.core :as re-frame]
-            [status-im.chat.models.reactions :as models.reactions]
-            [status-im.chat.models.message-list :as models.message-list]
             [status-im.chat.db :as chat.db]
-            [status-im.utils.datetime :as datetime]
-            [status-im.constants :as constants]))
+            [status-im.chat.models.message-list :as models.message-list]
+            [status-im.chat.models.reactions :as models.reactions]
+            [status-im.constants :as constants]
+            [status-im.utils.datetime :as datetime]))
 
 (re-frame/reg-sub
  :chats/chat-messages
@@ -14,18 +14,26 @@
 
 (re-frame/reg-sub
  :chats/pinned
- :<- [:messages/pin-messages]
- (fn [pin-messages [_ chat-id]]
-   (get pin-messages chat-id {})))
+ (fn [[_ chat-id] _]
+   [(re-frame/subscribe [:messages/pin-messages])
+    (re-frame/subscribe [:chats/chat-messages chat-id])])
+ (fn [[pin-messages messages] [_ chat-id]]
+   (let [pin-messages (get pin-messages chat-id {})]
+     (reduce-kv (fn [acc message-id message]
+                  (let [{:keys [deleted? deleted-for-me?]} (get messages message-id)]
+                    (if (or deleted? deleted-for-me?)
+                      acc
+                      (assoc acc message-id message))))
+                {} pin-messages))))
 
 (re-frame/reg-sub
  :chats/pinned-sorted-list
- :<- [:messages/pin-messages]
- (fn [pin-messages [_ chat-id]]
-   (->>
-    (get pin-messages chat-id {})
-    vals
-    (sort-by :pinned-at <))))
+ (fn [[_ chat-id] _]
+   (re-frame/subscribe [:chats/pinned chat-id]))
+ (fn [pin-messages _]
+   (->> pin-messages
+        vals
+        (sort-by :pinned-at <))))
 
 (re-frame/reg-sub
  :chats/pin-modal

@@ -1,11 +1,11 @@
 (ns quo2.components.messages.system-message
-  (:require [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [quo2.theme :as theme]
-            [quo2.components.avatars.icon-avatar :as icon-avatar]
+  (:require [quo2.components.avatars.icon-avatar :as icon-avatar]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]
+            [react-native.reanimated :as reanimated]
             [utils.string :as utils]))
 
 (def themes-landed {:pinned  colors/primary-50-opa-5
@@ -60,19 +60,19 @@
             :flex-direction  :row}
    [rn/view {:align-items    :center
              :flex-direction :row}
-    [sm-icon {:icon    :main-icons/delete16
+    [sm-icon {:icon    :main-icons/delete
               :color   :danger
               :opacity 5}]
     [text/text {:size  :paragraph-2
                 :style {:color        (get-color :text)
                         :margin-right 5}}
-     (or label (:message-deleted labels))]
+     (or (get labels label) label (:message-deleted labels))]
     [sm-timestamp timestamp-str]]])
 
 (defmethod sm-render :added [{:keys [state mentions timestamp-str labels]}]
   [rn/view {:align-items    :center
             :flex-direction :row}
-   [sm-icon {:icon    :main-icons/add-user16
+   [sm-icon {:icon    :main-icons/add-user
              :color   :primary
              :opacity (if (= state :landed) 0 5)}]
    [sm-user-avatar (:image (first mentions))]
@@ -94,7 +94,7 @@
   [rn/view {:flex-direction :row
             :flex           1
             :align-items    :center}
-   [sm-icon {:icon    :main-icons/pin16
+   [sm-icon {:icon    :main-icons/pin
              :color   :primary
              :opacity (if (= state :landed) 0 5)}]
    [rn/view {:flex-direction :column

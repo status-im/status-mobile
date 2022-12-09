@@ -1,9 +1,7 @@
 (ns status-im.chat.models.message-test
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.chat.models.message :as message]
-            [status-im.chat.models.message-list :as models.message-list]
             [status-im.chat.models.loading :as loading]
-            [status-im.utils.datetime :as time]
             [status-im.ui.screens.chat.state :as view.state]))
 
 (deftest add-received-message-test
@@ -130,54 +128,3 @@
          {:chats {"a" {:deleted-at-clock-value 1}}}
          "a"
          0))))
-
-(deftest delete-message
-  (with-redefs [time/day-relative (constantly "day-relative")
-                time/timestamp->time (constantly "timestamp")]
-    (let [cofx1     {:db {:messages      {"chat-id" {0 {:message-id  0
-                                                        :content     "a"
-                                                        :clock-value 0
-                                                        :whisper-timestamp 0
-                                                        :timestamp   0}
-                                                     1 {:message-id  1
-                                                        :content     "b"
-                                                        :clock-value 1
-                                                        :whisper-timestamp 1
-                                                        :timestamp   1}}}
-                          :message-lists {"chat-id" [{:something :something}]}
-                          :chats {"chat-id" {}}}}
-          cofx2     {:db {:messages   {"chat-id"   {0 {:message-id  0
-                                                       :content     "a"
-                                                       :clock-value 0
-                                                       :whisper-timestamp 1
-                                                       :timestamp   1}}}
-                          :message-list {"chat-id" [{:something :something}]}
-                          :chats {"chat-id" {}}}}
-          fx1       (message/delete-message cofx1 "chat-id" 1)
-          fx2       (message/delete-message cofx2 "chat-id" 0)]
-      (testing "Deleting message deletes it along with all references"
-        (is (= '(0)
-               (keys (get-in fx1 [:db :messages "chat-id"]))))
-        (is (= [{:one-to-one? false
-                 :message-id 0
-                 :whisper-timestamp 0
-                 :type :message
-                 :display-photo? true
-                 :system-message? false
-                 :last-in-group? true
-                 :datemark "day-relative"
-                 :clock-value 0
-                 :first-in-group? true
-                 :from nil
-                 :first-outgoing? false
-                 :outgoing-seen? false
-                 :timestamp-str "timestamp"
-                 :first? true
-                 :display-username? true
-                 :outgoing false}]
-               (models.message-list/->seq
-                (get-in fx1 [:db :message-lists "chat-id"]))))
-        (is (= {}
-               (get-in fx2 [:db :messages "chat-id"])))
-        (is (= nil
-               (get-in fx2 [:db :message-lists "chat-id"])))))))

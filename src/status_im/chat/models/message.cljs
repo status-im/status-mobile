@@ -1,20 +1,21 @@
 (ns status-im.chat.models.message
-  (:require [status-im.chat.models :as chat-model]
+  (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.chat.models :as chat-model]
+            [status-im.chat.models.delete-message :as delete-message]
+            [status-im.chat.models.loading :as chat.loading]
+            [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message-list :as message-list]
             [status-im.constants :as constants]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.transport.message.protocol :as protocol]
-            [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]
-            [status-im.chat.models.mentions :as mentions]
-            [clojure.string :as string]
-            [status-im.utils.types :as types]
             [status-im.ui.screens.chat.state :as view.state]
-            [status-im.chat.models.loading :as chat.loading]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
-            [status-im.utils.gfycat.core :as gfycat]))
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (defn- message-loaded?
   [db chat-id message-id]
@@ -181,15 +182,6 @@
                                :on-error #(log/error "failed to re-send message" %)}]}
             (update-message-status chat-id message-id :sending)))
 
-(fx/defn delete-message
-  "Deletes chat message, rebuild message-list"
-  {:events [:chat.ui/delete-message]}
-  [{:keys [db] :as cofx} chat-id message-id]
-  (fx/merge cofx
-            {:db            (update-in db [:messages chat-id] dissoc message-id)}
-            (data-store.messages/delete-message message-id)
-            (message-list/rebuild-message-list chat-id)))
-
 (fx/defn send-message
   [cofx message]
   (protocol/send-chat-messages cofx [message]))
@@ -201,19 +193,23 @@
 (fx/defn handle-removed-messages
   {:events [::handle-removed-messages]}
   [{:keys [db] :as cofx} removed-messages]
-  (let [mark-as-seen-fx (mapv (fn [removed-message]
-                                (let [chat-id (:chatId removed-message)
-                                      message-id (:messageId removed-message)]
-                                  (data-store.messages/mark-messages-seen chat-id
-                                                                          [message-id]
-                                                                          #(re-frame/dispatch [:chat/decrease-unviewed-count chat-id %3])))) removed-messages)
+  (let [mark-as-deleted-fx (->> removed-messages
+                                (map #(assoc % :message-id (:messageId %)))
+                                (group-by :chatId)
+                                (mapv (fn [[chat-id messages]] (delete-message/delete-messages-localy messages chat-id))))
+        mark-as-seen-fx    (mapv (fn [removed-message]
+                                   (let [chat-id    (:chatId removed-message)
+                                         message-id (:messageId removed-message)]
+                                     (data-store.messages/mark-messages-seen chat-id
+                                                                             [message-id]
+                                                                             #(re-frame/dispatch [:chat/decrease-unviewed-count chat-id %3]))))
+                                 removed-messages)
         remove-messages-fx (fn [{:keys [db]}]
-                             {:db (reduce (fn [acc current]
-                                            (update-in acc [:messages (:chatId current)] dissoc (:messageId current)))
-                                          db removed-messages)
-                              :dispatch-n [[:get-activity-center-notifications]
+                             {:dispatch-n [[:get-activity-center-notifications]
                                            [:get-activity-center-notifications-count]]})]
-    (apply fx/merge cofx (conj mark-as-seen-fx remove-messages-fx))))
+    (apply fx/merge cofx (-> mark-as-deleted-fx
+                             (concat mark-as-seen-fx)
+                             (conj remove-messages-fx)))))
 
 (comment
   (handle-removed-messages
