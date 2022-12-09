@@ -93,8 +93,8 @@ figwheel_server.log
 out
 doo-index.html
 
-# Bundler
-.bundle
+## Bundler
+#.bundle
 
 # Status
 Statusgo.framework
@@ -105,7 +105,7 @@ Statusgo.xcframework
 /ios/StatusIm.xcworkspace
 /ios/react-native-xcode.log
 /ios/set_xcode_version.log
-.ruby-version
+#.ruby-version
 status-e2e/
 
 #python
