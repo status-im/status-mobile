@@ -240,11 +240,11 @@ in stdenv.mkDerivation rec {
 
 
     export HOME=$PWD
-    echo 'switch("passC", "${compilerFlags}")' > config.nims
-    echo 'switch("passL", "${linkerFlags}")' >> config.nims
-    echo 'switch("cpu", "${nimCpu}")' >> config.nims
-    echo 'switch("os", "${nimPlatform}")' >> config.nims
-    echo 'switch("cc", "clang")' >> config.nims
+    # echo 'switch("passC", "${compilerFlags}")' >> config.nims
+    # echo 'switch("passL", "${linkerFlags}")' >> config.nims
+    # echo 'switch("cpu", "${nimCpu}")' >> config.nims
+    # echo 'switch("os", "${nimPlatform}")' >> config.nims
+    # echo 'switch("cc", "clang")' >> config.nims
 
     # echo 'switch("${nimCpu}.${nimPlatform}.clang.path", "{clangPath}")' >> config.nims
     # echo 'switch("${nimCpu}.${nimPlatform}.clang.exe", "{clangName}")' >> config.nims
@@ -279,7 +279,16 @@ in stdenv.mkDerivation rec {
 
 
   buildPhase = ''
-    make V=3 OS=${nimHostOs} CC=clang USE_SYSTEM_NIM=1 NIMFLAGS="--threads:on" liblcproxy
+    make V=3 OS=${nimHostOs} \
+      CC=clang USE_SYSTEM_NIM=1 \
+      NIMFLAGS="\
+      --passC:\"${compilerFlags}\" \
+      --passL:\"${linkerFlags}\" \
+      --cc:clang \
+      --cpu:${nimCpu} \
+      --os:${nimPlatform} \
+      -d:disableMarchNative" \
+    liblcproxy
 
    '';
 
