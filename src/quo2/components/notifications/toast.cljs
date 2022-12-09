@@ -9,12 +9,12 @@
    [react-native.core                               :as rn]))
 
 (def ^:private themes
-  {:container        {:light {:background-color colors/neutral-80-opa-80}
-                      :dark  {:background-color colors/white-opa-70}}
-   :text             {:light {:color colors/white}
-                      :dark  {:color colors/neutral-100}}
-   :icon             {:light {:color colors/white}
-                      :dark  {:color colors/neutral-100}}
+  {:container        {:light {:background-color colors/white-opa-70}
+                      :dark  {:background-color colors/neutral-80-opa-70}}
+   :text             {:light {:color colors/neutral-100}
+                      :dark  {:color colors/white}}
+   :icon             {:light {:color colors/neutral-100}
+                      :dark  {:color colors/white}}
    :action-container {:light {:background-color :colors/neutral-80-opa-5}
                       :dark  {:background-color :colors/white-opa-5}}})
 
@@ -32,10 +32,12 @@
                :padding-vertical   3
                :padding-horizontal 8
                :align-items        :center
+               :border-radius      8
                :background-color   (get-in themes
                                            [:action-container (theme/get-theme)
                                             :background-color])}
-              style)}] children]])
+              style)}]
+    children]])
 
 (defn toast-undo-action
   [duration on-press]
