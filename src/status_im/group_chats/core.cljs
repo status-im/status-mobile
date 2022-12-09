@@ -53,7 +53,6 @@
                      :on-success  #(re-frame/dispatch [:chat-updated % do-not-navigate?])}]})
 >>>>>>> bc7bcd83f... refactor
 
-
 (fx/defn remove-members
   "remove members from a group chat"
   {:events [:group-chats.ui/remove-members-pressed]}
@@ -211,7 +210,6 @@
 (fx/defn deselect-member
   {:events [:deselect-member]}
   [{:keys [db]} id]
-  (println "DESELECTING MEMBER " id)
   {:db (update db :deselected-members conj id)})
 
 (fx/defn undo-deselect-member
@@ -239,10 +237,15 @@
   [{:keys [db]} id]
   {:db (update db :selected-participants conj id)})
 
-(fx/defn add-participants-toggle-list
-  {:events [:group/add-participants-toggle-list]}
+(fx/defn reset-add-participants
+  {:events [:group/reset-add-participants]}
   [{db :db}]
   {:db (assoc db :selected-participants #{})})
+
+(fx/defn reset-remove-members
+  {:events [:group/reset-remove-members]}
+  [{db :db}]
+  {:db (assoc db :deselected-members #{})})
 
 (fx/defn show-group-chat-profile
   {:events [:show-group-chat-profile]}

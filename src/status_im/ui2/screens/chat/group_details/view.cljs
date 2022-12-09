@@ -10,6 +10,10 @@
             [status-im.ui2.screens.chat.group-details.style :as style]
             [status-im.ui2.screens.common.contact-list.view :as contact-list]
             [status-im2.common.contact-list-item.view :as contact-list-item]
+<<<<<<< HEAD
+=======
+            [quo.components.safe-area :as safe-area]
+>>>>>>> ced1d37cd... refactor
             [status-im2.common.home.actions.view :as actions]
 <<<<<<< HEAD
             [utils.re-frame :as rf]))
@@ -70,6 +74,7 @@
      :weight :medium
      :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}} title]])
 
+<<<<<<< HEAD
 (def added (reagent/atom ()))
 
 <<<<<<< HEAD
@@ -140,6 +145,35 @@
                            :disabled (and (zero? (count @added)) (zero? (count @removed)))}
 >>>>>>> 7ce2b16e0... group details screen 3
               (i18n/label :t/save)]]]))])))
+=======
+(defn add-members-sheet [group admin?]
+  [:f>
+   (fn []
+     (let [{window-height :height} (rn/use-window-dimensions)
+           safe-area             (safe-area/use-safe-area)
+           selected-participants (rf/sub [:selected-participants])
+           deselected-members    (rf/sub [:deselected-members])]
+       [rn/view {:style {:height (- window-height (:top safe-area))}}
+        [rn/touchable-opacity
+         {:on-press #(rf/dispatch [:bottom-sheet/hide])
+          :style    (style/close-icon)}
+         [quo2/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
+        [quo2/text {:size   :heading-1
+                    :weight :semi-bold
+                    :style  {:margin-left 20}}
+         (i18n/label (if admin? :t/manage-members :t/add-members))]
+        [contact-list/contact-list {:icon    :check
+                                    :group   group
+                                    :search? true}]
+        [rn/view {:style style/bottom-container}
+         [quo2/button {:style    {:flex 1}
+                       :on-press (fn []
+                                   (rf/dispatch [:group-chats.ui/add-members-pressed])
+                                   (rf/dispatch [:group-chats.ui/remove-members-pressed])
+                                   (rf/dispatch [:bottom-sheet/hide]))
+                       :disabled (and (zero? (count selected-participants)) (zero? (count deselected-members)))}
+          (i18n/label :t/save)]]]))])
+>>>>>>> ced1d37cd... refactor
 
 (defn group-details
   []
@@ -205,9 +239,12 @@
        [quo2/icon (if muted :i/muted :i/activity-center) {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
        [quo2/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium} (i18n/label (if muted :unmute-group :mute-group))]]
       [rn/touchable-opacity {:style    (style/action-container color)
-                             :on-press #(rf/dispatch
-                                         [:bottom-sheet/show-sheet
-                                          {:content (fn [] [add-members-sheet group admin?])} :add-participants-toggle-list])}
+                             :on-press (fn []
+                                         (rf/dispatch [:group/reset-add-participants])
+                                         (rf/dispatch [:group/reset-remove-members])
+                                         (rf/dispatch
+                                          [:bottom-sheet/show-sheet
+                                           {:content (fn [] [add-members-sheet group admin?])}]))}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
 >>>>>>> 7ce2b16e0... group details screen 3
