@@ -100,11 +100,12 @@ doo-index.html
 Statusgo.framework
 Statusgo.xcframework
 
-#ios
+#Ruby / CocoaPods
 /ios/Pods/
 /ios/StatusIm.xcworkspace
 /ios/react-native-xcode.log
 /ios/set_xcode_version.log
+/vendor/bundle/
 #.ruby-version
 status-e2e/
 

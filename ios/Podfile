@@ -1,4 +1,5 @@
 platform :ios, '11.0'
+install! 'cocoapods', :deterministic_uuids => false
 
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
@@ -7,7 +8,16 @@ abstract_target 'Status' do
   # Pods for StatusQuo
   config = use_native_modules!
 
-  use_react_native!(:path => config[:reactNativePath])
+  # Flags change depending on the env values.
+  flags = get_default_flags()
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # to enable hermes on iOS, change `false` to `true` and then install pods
+    :hermes_enabled => flags[:hermes_enabled],
+    :fabric_enabled => flags[:fabric_enabled],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/..")
 
   pod 'react-native-image-resizer', :path => '../node_modules/react-native-image-resizer'
   pod 'react-native-config', :path => '../node_modules/react-native-config'
