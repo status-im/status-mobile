@@ -6,6 +6,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "version": "v0.117.1a",
     "commit-sha1": "b4bdfd3df6cf5fb91ab2d0e9f3b38e8d1b9703e5",
     "src-sha256": "1s50q53p1j5ysnbj88c52zb2rh1ms21pnf6bjc7wja8gzcpih2wl"
@@ -14,6 +15,8 @@
 >>>>>>> d60d66248... refactor
 =======
 >>>>>>> 78113d47e... refactor
+=======
+>>>>>>> 7c96559a1... update status-go version
 <<<<<<< HEAD
     "version": "v0.117.1",
     "commit-sha1": "8593866862175eeab6f30765e5f0b813f3b1b4db",
@@ -50,5 +53,13 @@
     "commit-sha1": "a97b5527305b9f23b15246c5489726f8cd758edd",
     "src-sha256": "18x506xrxbpabfy0vn82bzyd0f6zmr5khclqbzfwymi5d1m35cjm"
 >>>>>>> 3ae5dc0cc... refactor
+<<<<<<< HEAD
 >>>>>>> 78113d47e... refactor
+=======
+=======
+    "version": "53ccf5344c088242474fb1ad429013be5788e8e1",
+    "commit-sha1": "53ccf5344c088242474fb1ad429013be5788e8e1",
+    "src-sha256": "1qr5r30h347k950z38ifg2mc4mqz3dj6rj2b15150x0cfb2lvbjq"
+>>>>>>> 3d0f52ba2... update status-go version
+>>>>>>> 7c96559a1... update status-go version
 }
