@@ -158,7 +158,7 @@
                                                                        :on-press       (fn [id]
                                                                                          (reset! active-tab-id id)
                                                                                          (when scroll-on-press?
-                                                                                           (.scrollToIndex @flat-list-ref
+                                                                                           (.scrollToIndex ^js @flat-list-ref
                                                                                                            #js {:animated     true
                                                                                                                 :index        index
                                                                                                                 :viewPosition 0.5}))
