@@ -155,7 +155,7 @@ pod-install: ##@prepare Run 'pod install' to install podfiles and update Podfile
 
 update-fleets: ##@prepare Download up-to-date JSON file with current fleets state
 	curl -s https://fleets.status.im/ \
-		| jq --indent 4 --sort-keys . \
+		| sed 's/"warning": "/"warning": "DO NOT EDIT! /' \
 		> resources/config/fleets.json
 
 $(KEYSTORE_PATH): export TARGET := keytool
