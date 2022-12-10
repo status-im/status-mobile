@@ -141,19 +141,24 @@
                   max-y                                    (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets) (:status-bar-height @navigation-const)) ; 360 - default height
                   max-height                               (Math/abs (- max-y 56 (:bottom insets))) ; 56 - top-bar height
                   added-value                              (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
-                  number-of-lines                          (-> (get @input/input-texts chat-id)
-                                                               frequencies
-                                                               (get "\n"))
                   min-y                                    (+ min-y (when (or edit reply) 38))
                   y                                        (get-y-value context max-y added-value max-height chat-id suggestions reply)
                   translate-y                              (reanimated/use-shared-value 0)
                   shared-height                            (reanimated/use-shared-value min-y)
-                  bg-opacity                               (reanimated/use-shared-value 0)
+                  number-of-lines                          (-> (get @input/input-texts chat-id)
+                                                               frequencies
+                                                               (get "\n"))
                   more-than-or=-three-lines?               (<= 3 number-of-lines)
+                  bg-opacity                               (reanimated/use-shared-value 0)
+                  bg-bottom                                (reanimated/use-shared-value (- window-height))
+
+                  set-bg-opacity                           (fn [value]
+                                                             (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
+                                                             (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   input-content-change                     (get-input-content-change context translate-y shared-height max-height
-                                                                                     bg-opacity keyboard-shown min-y max-y number-of-lines)
-                  bottom-sheet-gesture                     (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
-                                                                                     min-y max-y shared-height max-height bg-opacity)]
+                                                                                     set-bg-opacity keyboard-shown min-y max-y)
+                  bottom-sheet-gesture                     (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
+                                                                                     min-y max-y shared-height max-height set-bg-opacity)]
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown? (not keyboard-shown))
                                       (swap! context assoc :state :min))
