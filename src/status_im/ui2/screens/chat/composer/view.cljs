@@ -208,13 +208,9 @@
                                                                     (utils/set-timeout
                                                                      #(utils/show-popup (i18n/label :t/error)
                                                                                         (i18n/label :t/external-storage-denied)) 50))}))
-                                       :icon     true
-                                       :type     :outline
-                                       :size     32} :i/image]
+                                       :icon     true :type :outline :size 32} :i/image]
                   [rn/view {:width 12}]
-                  [quo2.button/button {:icon true
-                                       :type :outline
-                                       :size 32} :i/reaction]
+                  [quo2.button/button {:icon true :type :outline :size 32} :i/reaction]
                   [rn/view {:flex 1}]
                   ;;SEND button
                   [rn/view {:ref   send-ref
