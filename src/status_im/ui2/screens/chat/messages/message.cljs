@@ -43,12 +43,9 @@
             [utils.re-frame :as rf]
             [status-im.utils.security :as security]
             [status-im.utils.handlers :refer [>evt]]
-            [quo2.components.icon :as icons]
             [status-im.utils.datetime :as time]
-            [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
-            [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
-            [utils.re-frame :as rf])
+            [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
