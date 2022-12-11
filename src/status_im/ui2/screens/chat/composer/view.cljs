@@ -165,7 +165,7 @@
                                       (set-bg-opacity 1)
                                       (set-bg-opacity 0))
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
-                                    (reanimated/set-shared-value shared-height (reanimated/with-timing (+ (* num-lines 3) (min y max-height))))))
+                                    (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
               [reanimated/view {:style (reanimated/apply-animations-to-style
                                         {:height shared-height}
                                         {:z-index 2})}
@@ -178,7 +178,7 @@
                  [rn/view {:style (styles/bottom-sheet-handle)}]
                  [edit/edit-message-auto-focus-wrapper text-input-ref edit]
                  [reply/reply-message-auto-focus-wrapper text-input-ref reply]
-                 [rn/view {:style {:height (+ (* num-lines -3) (- max-y 80 added-value))}}
+                 [rn/view {:style {:height (- max-y 80 added-value)}}
                   [input/text-input {:chat-id                chat-id
                                      :on-content-size-change input-content-change
                                      :sending-image          false
@@ -208,8 +208,8 @@
                                         :size                32
                                         :accessibility-label :send-message-button
                                         :on-press            #(do (swap! context assoc :clear true)
-                                                                  (swap! context assoc :state :min)
                                                                   (input/clear-input chat-id refs)
+                                                                  (swap! context assoc :y min-y)
                                                                   (re-frame/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
                ;black background

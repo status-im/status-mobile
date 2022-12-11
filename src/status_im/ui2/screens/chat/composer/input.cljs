@@ -159,7 +159,7 @@
                              :multiline                true
                              :editable                 (not cooldown-enabled?)
                              :blur-on-submit           false
-                             :auto-focus               true
+                             :auto-focus               false
                              :on-focus                 #(set-active-panel nil)
                              :max-length               chat.constants/max-text-size
                              :placeholder-text-color   (:text-02 @quo.colors/theme)
