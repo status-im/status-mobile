@@ -25,7 +25,7 @@
     (if (= (:state @context) :max)
       (do (swap! context assoc :state :max) max-y)
       (if (< (:y @context) max-y)
-        (+ (:y @context) added-value)
+         (+ (:y @context) added-value)
         (if (<= 5 num-lines)
           (do (swap! context assoc :state :max) max-y)
           (do (swap! context assoc :state :min) min-y))))))
@@ -45,6 +45,16 @@
   (let [y               (calculate-y context min-y max-y added-value chat-id)
         y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
     (+ y (when (seq suggestions) y-with-mentions))))
+
+(defn- reset-composer
+  ([context chat-id refs min-y]
+   (reset-composer context chat-id refs min-y false))
+  ([context chat-id refs min-y edit?]
+   (input/clear-input chat-id refs)
+   (swap! context assoc :y (if edit?
+                             (- min-y 38)
+                             min-y))
+   (swap! context assoc :state min)))
 
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height set-bg-opacity]
   (-> (gesture/gesture-pan)
@@ -88,7 +98,7 @@
         (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
         (set-bg-opacity 0))
       (when (not= (:state @context) :max)
-        (let [new-y (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") 30) 30))]
+        (let [new-y (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") 40) 40))]
           (if (< new-y max-y)
             (do
               (if (> (- max-y new-y) 120)
@@ -146,6 +156,7 @@
                   translate-y                              (reanimated/use-shared-value 0)
                   shared-height                            (reanimated/use-shared-value min-y)
                   bg-opacity                               (reanimated/use-shared-value 0)
+                  reset-composer-fn                        #(reset-composer context chat-id refs min-y %)
                   bg-bottom                                (reanimated/use-shared-value (- window-height))
                   set-bg-opacity                           (fn [value]
                                                              (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
@@ -173,7 +184,7 @@
                                           (styles/input-bottom-sheet window-height))}
                  ;handle
                  [rn/view {:style (styles/bottom-sheet-handle)}]
-                 [edit/edit-message-auto-focus-wrapper text-input-ref edit]
+                 [edit/edit-message-auto-focus-wrapper text-input-ref edit reset-composer-fn]
                  [reply/reply-message-auto-focus-wrapper text-input-ref reply]
                  [rn/view {:style {:height (- max-y 80 added-value)}}
                   [input/text-input {:chat-id                chat-id
@@ -193,9 +204,13 @@
                                                                     (utils/set-timeout
                                                                      #(utils/show-popup (i18n/label :t/error)
                                                                                         (i18n/label :t/external-storage-denied)) 50))}))
-                                       :icon     true :type :outline :size 32} :i/image]
+                                       :icon     true
+                                       :type     :outline
+                                       :size     32} :i/image]
                   [rn/view {:width 12}]
-                  [quo2.button/button {:icon true :type :outline :size 32} :i/reaction]
+                  [quo2.button/button {:icon true
+                                       :type :outline
+                                       :size 32} :i/reaction]
                   [rn/view {:flex 1}]
                   ;;SEND button
                   [rn/view {:ref   send-ref
@@ -204,9 +219,7 @@
                    [quo2.button/button {:icon                true
                                         :size                32
                                         :accessibility-label :send-message-button
-                                        :on-press            #(do (swap! context assoc :clear true)
-                                                                  (input/clear-input chat-id refs)
-                                                                  (swap! context assoc :y min-y)
+                                        :on-press            #(do (reset-composer-fn false)
                                                                   (re-frame/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
                ;black background

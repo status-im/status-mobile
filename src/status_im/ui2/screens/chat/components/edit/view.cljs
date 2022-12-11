@@ -7,7 +7,7 @@
             [quo2.core :as quo]
             [quo.gesture-handler :as gesture-handler]))
 
-(defn edit-message []
+(defn edit-message [reset-composer-callback]
   [rn/view {:style               style/container
             :accessibility-label :edit-message}
    [rn/view {:style style/content-container}
@@ -20,7 +20,8 @@
       (i18n/label :t/editing-message)]]]
    [gesture-handler/touchable-without-feedback
     {:accessibility-label :reply-cancel-button
-     :on-press            #(rf/dispatch [:chat.ui/cancel-message-edit])}
+     :on-press            #(do (reset-composer-callback true)
+                               (rf/dispatch [:chat.ui/cancel-message-edit]))}
     [quo/button {:width               24
                  :size                24
                  :type                :outline}
