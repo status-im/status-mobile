@@ -147,9 +147,6 @@
                   shared-height                            (reanimated/use-shared-value min-y)
                   bg-opacity                               (reanimated/use-shared-value 0)
                   bg-bottom                                (reanimated/use-shared-value (- window-height))
-                  num-lines                                (-> (get @input/input-texts chat-id)
-                                                               frequencies
-                                                               (get "\n"))
                   set-bg-opacity                           (fn [value]
                                                              (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
                                                              (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
