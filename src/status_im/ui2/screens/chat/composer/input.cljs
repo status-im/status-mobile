@@ -204,15 +204,17 @@
   (.setNativeProps ^js text-input (clj->js {:text text})))
 
 (re-frame/reg-fx
- :set-input-text
- (fn [[chat-id text]]
+ :set-text-input-value
+ (fn [[chat-id text local-text-input-ref]]
+   (when local-text-input-ref
+    (reset! text-input-ref local-text-input-ref))
    (if platform/ios?
-     (.setNativeProps ^js (quo.react/current-ref @text-input-ref) (clj->js {:text text}))
+     (.setNativeProps ^js (quo.react/current-ref  @text-input-ref) (clj->js {:text text}))
      (do
        (on-text-change text chat-id)
        (if (string/blank? text)
-         (.clear ^js (quo.react/current-ref @text-input-ref))
-         (.setNativeProps ^js (quo.react/current-ref @text-input-ref) (clj->js {:text text})))))))
+         (.clear ^js (quo.react/current-ref  @text-input-ref))
+         (.setNativeProps ^js (quo.react/current-ref  @text-input-ref) (clj->js {:text text})))))))
 
 (defn calculate-input-text [{:keys [full-text selection-start selection-end]} content]
   (let [head (subs full-text 0 selection-start)

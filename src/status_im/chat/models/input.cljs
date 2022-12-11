@@ -2,6 +2,7 @@
   (:require ["emojilib" :as emojis]
             [clojure.string :as string]
             [goog.object :as object]
+            [quo.react :as quo.react]
             [re-frame.core :as re-frame]
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.models :as chat]
@@ -52,7 +53,8 @@
      {:db             (-> db
                           (assoc-in [:chats/cursor chat-id] cursor)
                           (assoc-in [:chats/mention-suggestions chat-id] nil))
-      :set-input-text [chat-id new-text]}
+      :set-text-input-value [chat-id new-text text-input-ref]}
+     (set-chat-input-text new-text chat-id)
      ;; NOTE(rasom): Some keyboards do not react on selection property passed to
      ;; text input (specifically Samsung keyboard with predictive text set on).
      ;; In this case, if the user continues typing after the programmatic change,
@@ -195,7 +197,7 @@
   [{:keys [db] :as cofx}]
   (let [current-chat-id (:current-chat-id db)]
     (fx/merge cofx
-              {:set-input-text [current-chat-id ""]}
+              {:set-text-input-value [current-chat-id ""]}
               (clean-input current-chat-id)
               (mentions/clear-mentions)
               (mentions/clear-cursor))))

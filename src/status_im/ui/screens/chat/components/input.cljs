@@ -208,7 +208,7 @@
                                   e)) text-with-mentions)
         info                 (mentions/->info hydrated-mentions)
         new-text             (string/join (map second hydrated-mentions))]
-    {:set-input-text [chat-id new-text]
+    {:set-text-input-value [chat-id new-text]
      :db
      (-> db
          (assoc-in [:chats/cursor chat-id] (:mention-end info))
