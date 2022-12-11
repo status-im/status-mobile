@@ -17,17 +17,18 @@
             [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
             [status-im.utils.utils :as utils]
             [i18n.i18n :as i18n]
-            [status-im.ui2.screens.chat.composer.edit.view :as edit]
-            [reagent.core :as reagent]))
+            [status-im.ui2.screens.chat.composer.edit.view :as edit]))
 
-(defn calculate-y [context max-y added-value]
-  (if (= (:state @context) :max)
-    max-y
-    (if (< (:y @context) max-y)
-      (+ (:y @context) added-value)
-      (do
-        (swap! context assoc :state :max)
-        max-y))))
+(defn calculate-y [context min-y max-y added-value chat-id]
+  (let [input-text               (:input-text (get (<sub [:chat/inputs]) chat-id))
+        num-lines                (count (string/split input-text "\n"))]
+    (if (= (:state @context) :max)
+      (do (swap! context assoc :state :max) max-y)
+      (if (< (:y @context) max-y)
+        (+ (:y @context) added-value)
+        (if (<= 5 num-lines)
+          (do (swap! context assoc :state :max) max-y)
+          (do (swap! context assoc :state :min) min-y))))))
 
 (defn calculate-y-with-mentions [y max-y max-height chat-id suggestions reply]
   (let [input-text               (:input-text (get (<sub [:chat/inputs]) chat-id))
@@ -40,8 +41,8 @@
         mentions-translate-value (if should-translate? (min min-value (- mentions-height (- max-height text-height))) mentions-height)]
     (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
-(defn get-y-value [context max-y added-value max-height chat-id suggestions reply]
-  (let [y               (calculate-y context max-y added-value)
+(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply]
+  (let [y               (calculate-y context min-y max-y added-value chat-id)
         y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
     (+ y (when (seq suggestions) y-with-mentions))))
 
@@ -63,7 +64,6 @@
       (gesture/on-end
        (fn [_]
          (when keyboard-shown
-           (prn (< (:dy @context) 0))
            (if (< (:dy @context) 0)
              (do
                (swap! context assoc :state :max)
@@ -88,7 +88,7 @@
         (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
         (set-bg-opacity 0))
       (when (not= (:state @context) :max)
-        (let [new-y (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") 22) 22))]
+        (let [new-y (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") 30) 30))]
           (if (< new-y max-y)
             (do
               (if (> (- max-y new-y) 120)
@@ -142,12 +142,14 @@
                   max-height                               (Math/abs (- max-y 56 (:bottom insets))) ; 56 - top-bar height
                   added-value                              (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
                   min-y                                    (+ min-y (when (or edit reply) 38))
-                  y                                        (get-y-value context max-y added-value max-height chat-id suggestions reply)
+                  y                                        (get-y-value context min-y max-y added-value max-height chat-id suggestions reply)
                   translate-y                              (reanimated/use-shared-value 0)
                   shared-height                            (reanimated/use-shared-value min-y)
                   bg-opacity                               (reanimated/use-shared-value 0)
                   bg-bottom                                (reanimated/use-shared-value (- window-height))
-
+                  num-lines                                (-> (get @input/input-texts chat-id)
+                                                               frequencies
+                                                               (get "\n"))
                   set-bg-opacity                           (fn [value]
                                                              (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
                                                              (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
@@ -163,7 +165,7 @@
                                       (set-bg-opacity 1)
                                       (set-bg-opacity 0))
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
-                                    (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
+                                    (reanimated/set-shared-value shared-height (reanimated/with-timing (+ (* num-lines 3) (min y max-height))))))
               [reanimated/view {:style (reanimated/apply-animations-to-style
                                         {:height shared-height}
                                         {:z-index 2})}
@@ -176,7 +178,7 @@
                  [rn/view {:style (styles/bottom-sheet-handle)}]
                  [edit/edit-message-auto-focus-wrapper text-input-ref edit]
                  [reply/reply-message-auto-focus-wrapper text-input-ref reply]
-                 [rn/view {:style {:height (- max-y 80 added-value)}}
+                 [rn/view {:style {:height (+ (* num-lines -3) (- max-y 80 added-value))}}
                   [input/text-input {:chat-id                chat-id
                                      :on-content-size-change input-content-change
                                      :sending-image          false
@@ -206,6 +208,7 @@
                                         :size                32
                                         :accessibility-label :send-message-button
                                         :on-press            #(do (swap! context assoc :clear true)
+                                                                  (swap! context assoc :state :min)
                                                                   (input/clear-input chat-id refs)
                                                                   (re-frame/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
