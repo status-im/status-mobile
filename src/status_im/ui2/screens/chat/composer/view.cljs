@@ -63,6 +63,7 @@
       (gesture/on-end
        (fn [_]
          (when keyboard-shown
+           (prn (< (:dy @context) 0))
            (if (< (:dy @context) 0)
              (do
                (swap! context assoc :state :max)
@@ -71,13 +72,12 @@
                (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
                (set-bg-opacity 1))
              (do
-               (swap! context assoc :state :min)
                (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
                (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
                (set-bg-opacity 0)
                (re-frame/dispatch [:dismiss-keyboard]))))))))
 
-(defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y number-of-lines]
+(defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y]
   (fn [evt]
     (if (:clear @context)
       (do
@@ -145,10 +145,6 @@
                   y                                        (get-y-value context max-y added-value max-height chat-id suggestions reply)
                   translate-y                              (reanimated/use-shared-value 0)
                   shared-height                            (reanimated/use-shared-value min-y)
-                  number-of-lines                          (-> (get @input/input-texts chat-id)
-                                                               frequencies
-                                                               (get "\n"))
-                  more-than-or=-three-lines?               (<= 3 number-of-lines)
                   bg-opacity                               (reanimated/use-shared-value 0)
                   bg-bottom                                (reanimated/use-shared-value (- window-height))
 
@@ -156,8 +152,8 @@
                                                              (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
                                                              (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   input-content-change                     (get-input-content-change context translate-y shared-height max-height
-                                                                                     set-bg-opacity keyboard-shown min-y max-y number-of-lines)
-                  bottom-sheet-gesture                     (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
+                                                                                     set-bg-opacity keyboard-shown min-y max-y)
+                  bottom-sheet-gesture                     (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
                                                                                      min-y max-y shared-height max-height set-bg-opacity)]
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown? (not keyboard-shown))
@@ -168,23 +164,13 @@
                                       (set-bg-opacity 0))
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
-              (quo.react/effect! #(when (and (not edit) (= (:state @context) :max))
-                                    (swap! context assoc :state :min)
-                                    (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
-                                    (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
-                                    (set-bg-opacity 0)
-                                    (re-frame/dispatch [:dismiss-keyboard])) edit)
               [reanimated/view {:style (reanimated/apply-animations-to-style
-                                        {:height #js{:value (+ (.-value shared-height)
-                                                               (* 2 number-of-lines))}}
+                                        {:height shared-height}
                                         {:z-index 2})}
                ;;INPUT MESSAGE bottom sheet
                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                 [reanimated/view {:style (reanimated/apply-animations-to-style
-                                          {:transform [{:translateY (if more-than-or=-three-lines?
-                                                                      #js{:value (->> (* 2 number-of-lines)
-                                                                                      (- (.-value translate-y)))}
-                                                                      translate-y)}]}
+                                          {:transform [{:translateY translate-y}]}
                                           (styles/input-bottom-sheet window-height))}
                  ;handle
                  [rn/view {:style (styles/bottom-sheet-handle)}]

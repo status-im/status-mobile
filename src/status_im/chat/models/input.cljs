@@ -2,7 +2,6 @@
   (:require ["emojilib" :as emojis]
             [clojure.string :as string]
             [goog.object :as object]
-            [quo.react :as quo.react]
             [re-frame.core :as re-frame]
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.models :as chat]
