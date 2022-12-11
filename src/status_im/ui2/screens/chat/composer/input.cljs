@@ -207,7 +207,7 @@
  :set-text-input-value
  (fn [[chat-id text local-text-input-ref]]
    (when local-text-input-ref
-    (reset! text-input-ref local-text-input-ref))
+     (reset! text-input-ref local-text-input-ref))
    (if platform/ios?
      (.setNativeProps ^js (quo.react/current-ref @text-input-ref) (clj->js {:text text}))
      (do

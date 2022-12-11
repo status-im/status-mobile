@@ -25,7 +25,7 @@
     (if (= (:state @context) :max)
       (do (swap! context assoc :state :max) max-y)
       (if (< (:y @context) max-y)
-         (+ (:y @context) added-value)
+        (+ (:y @context) added-value)
         (if (<= 5 num-lines)
           (do (swap! context assoc :state :max) max-y)
           (do (swap! context assoc :state :min) min-y))))))
