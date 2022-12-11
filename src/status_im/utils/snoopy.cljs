@@ -1,5 +1,5 @@
 (ns status-im.utils.snoopy
-  (:require [clojure.string :as clojure.string]
+  (:require [clojure.string :as string]
             [status-im.utils.config :as config]
             ["react-native/Libraries/vendor/emitter/EventEmitter" :refer [EventEmitter]]
             ["rn-snoopy" :default snoopy]
@@ -25,7 +25,7 @@
            (= first-arg "gethEvent"))
       (and
        (string? method)
-       (clojure.string/starts-with? method "<callback for Status."))))
+       (string/starts-with? method "<callback for Status."))))
 
 (defn timer-filter [{:keys [method]}]
   (contains? #{"callTimers" "createTimer"} method))
@@ -46,7 +46,7 @@
   (or (= module "NativeAnimatedModule")
       (and
        (string? method)
-       (clojure.string/starts-with? method "<callback for NativeAnimatedModule."))))
+       (string/starts-with? method "<callback for NativeAnimatedModule."))))
 
 (defn keyboard-observer-filter [{:keys [module]}]
   ;; mostly all calls to KeyboardObserver are done by FlatList

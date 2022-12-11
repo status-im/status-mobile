@@ -9,7 +9,10 @@
            status-im.utils.styles/defn        clojure.core/defn
            status-im.test-helpers/deftest-sub clojure.core/defn
            taoensso.tufte/defnp               clojure.core/defn}
- :linters {:invalid-arity     {:skip-args [status-im.utils.fx/defn utils.re-frame/defn]}
+ :linters {:consistent-alias  {:level   :error
+                               :aliases {clojure.string  string
+                                         taoensso.timbre log}}
+           :invalid-arity     {:skip-args [status-im.utils.fx/defn utils.re-frame/defn]}
            ;; TODO remove number when this is fixed
            ;; https://github.com/borkdude/clj-kondo/issues/867
            :unresolved-symbol {:exclude [PersistentPriorityMap.EMPTY

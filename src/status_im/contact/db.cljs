@@ -1,6 +1,6 @@
 (ns status-im.contact.db
   (:require [clojure.set :as clojure.set]
-            [clojure.string :as clojure.string]
+            [clojure.string :as string]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
@@ -40,8 +40,8 @@
   (sort (fn [c1 c2]
           (let [name1 (or (:name c1) (:address c1) (:public-key c1))
                 name2 (or (:name c2) (:address c2) (:public-key c2))]
-            (compare (clojure.string/lower-case name1)
-                     (clojure.string/lower-case name2))))
+            (compare (string/lower-case name1)
+                     (string/lower-case name2))))
         (vals contacts)))
 
 (defn filter-dapps
@@ -71,7 +71,7 @@
     (->> members
          (map #(or (get all-contacts %)
                    (public-key->new-contact %)))
-         (sort-by (comp clojure.string/lower-case #(or (:name %) (:alias %))))
+         (sort-by (comp string/lower-case #(or (:name %) (:alias %))))
          (map #(if (get admins (:public-key %))
                  (assoc % :admin? true)
                  %)))))

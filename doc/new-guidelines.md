@@ -274,15 +274,6 @@ test macros `deftest` and `is`, which are ubiquitous in the Clojure community.
   (:require [cljs-time.coerce :as time.coerce]))
 ```
 
-### Namespace aliases
-
-Prefer the following namespace aliases:
-
-```clojure
-[clojure.string :as string]
-[taoensso.timbre :as log]
-```
-
 ### Javascript interop
 
 Use [binaryage/oops](https://github.com/binaryage/cljs-oops) macros instead of

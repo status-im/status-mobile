@@ -12,7 +12,7 @@
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
             [cljs-bean.core :as bean]
-            [clojure.string :as clojure.string]
+            [clojure.string :as string]
             [status-im.chat.models :as chat.models]
             [status-im.utils.react-native :as react-native-utils]))
 
@@ -65,7 +65,7 @@
     :as notification}]
   (let [token       (if erc20
                       (get-in db
-                              [:wallet/all-tokens (clojure.string/lower-case contract)]
+                              [:wallet/all-tokens (string/lower-case contract)]
                               default-erc20-token)
                       (tokens/native-currency network))
         amount      (money/wei->ether (decode/uint value))

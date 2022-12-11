@@ -2,7 +2,7 @@
   {:dev/always true}
   (:require
    [cljs.test :as ct]
-   [clojure.string :as str]
+   [clojure.string :as string]
    [shadow.test :as st]
    [shadow.test.env :as env]))
 
@@ -32,10 +32,10 @@
        (= "--repl" arg)
        (assoc opts :repl true)
 
-       (str/starts-with? arg "--test=")
+       (string/starts-with? arg "--test=")
        (let [test-arg (subs arg 7)
              test-syms
-             (->> (str/split test-arg ",")
+             (->> (string/split test-arg ",")
                   (map symbol))]
          (update opts :test-syms into test-syms))
 

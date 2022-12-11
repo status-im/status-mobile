@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.activity-center.notification.contact-verification.view
-  (:require [clojure.string :as str]
+  (:require [clojure.string :as string]
             [quo2.core :as quo2]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
@@ -20,7 +20,7 @@
      (when (or (= contact-verification-status constants/contact-verification-status-accepted)
                (= contact-verification-status constants/contact-verification-status-trusted)
                (= contact-verification-status constants/contact-verification-status-untrustworthy))
-       (str (str/lower-case (i18n/label :t/replied)) ":"))
+       (str (string/lower-case (i18n/label :t/replied)) ":"))
      (when (or (= contact-verification-status constants/contact-verification-status-accepted)
                (= contact-verification-status constants/contact-verification-status-pending)
                (= contact-verification-status constants/contact-verification-status-declined))

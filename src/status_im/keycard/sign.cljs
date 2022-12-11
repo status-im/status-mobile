@@ -7,7 +7,7 @@
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
             [status-im.keycard.common :as common]
-            [clojure.string :as clojure.string]))
+            [clojure.string :as string]))
 
 (fx/defn sign
   {:events [:keycard/sign]}
@@ -50,8 +50,8 @@
 
 (defn normalize-signature [signature]
   (-> signature
-      (clojure.string/replace-first #"00$", "1b")
-      (clojure.string/replace-first #"01$", "1c")
+      (string/replace-first #"00$", "1b")
+      (string/replace-first #"01$", "1c")
       ethereum/normalized-hex))
 
 (fx/defn sign-message

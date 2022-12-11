@@ -7,7 +7,7 @@
             [status-im.ui.screens.activity-center.notification.mentions.style :as style]
             [status-im.utils.datetime :as datetime]
             [utils.re-frame :as rf]
-            [clojure.string :as str]))
+            [clojure.string :as string]))
 
 (defn message-body [message]
   (let [parsed-text          (get-in message [:content :parsed-text])
@@ -36,10 +36,10 @@
      :timestamp (datetime/timestamp->relative (:timestamp notification))
      :unread?   (not (:read notification))
      :context   [[common/user-avatar-tag author]
-                 [quo2/text {:style style/tag-text} (str/lower-case (i18n/label :t/on))]
-                 ;; TODO (@smohamedjavid): The `group-avatar-tag` component 
+                 [quo2/text {:style style/tag-text} (string/lower-case (i18n/label :t/on))]
+                 ;; TODO (@smohamedjavid): The `group-avatar-tag` component
                  ;; does NOT support displaying channel name along with community/chat name.
-                 ;; Need to update the component to support it. 
+                 ;; Need to update the component to support it.
                  [quo2/group-avatar-tag chat-name {:size           :small
                                                    :override-theme :dark
                                                    :color          colors/primary-50
