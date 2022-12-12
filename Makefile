@@ -290,7 +290,6 @@ lint: ##@test Run code style checks
 	sh scripts/lint-re-frame-in-quo-components.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
 	TARGETS=$$(git diff --diff-filter=d --cached --name-only | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn$$ || echo shadow-cljs.edn) && \
-	clojure-lsp clean-ns --dry --filenames $$(echo $$TARGETS | xargs | sed -e 's/ /,/g') && \
 	zprint '{:search-config? true}' -fc $$TARGETS
 
 lint-fix: export TARGET := default
