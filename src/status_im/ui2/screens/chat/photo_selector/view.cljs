@@ -55,8 +55,8 @@
      [info-count/info-count (+ (utils/first-index #(= item %) @selected) 1) (style/image-count)])])
 
 (defn on-end-reached [end-cursor]
-  (let [loading?    (rf/sub [:camera-roll-loading-more])
-        has-next-page? (rf/sub [:camera-roll-has-next-page])]
+  (let [loading?    (rf/sub [:camera-roll/loading-more])
+        has-next-page? (rf/sub [:camera-roll/has-next-page])]
     (when (and (not loading?) has-next-page?)
       (rf/dispatch [:chat.ui/camera-roll-loading-more true])
       (rf/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor]))))
@@ -67,8 +67,8 @@
    (fn []
      (let [{window-height :height window-width :width} (rn/use-window-dimensions)
            safe-area          (safe-area/use-safe-area)
-           camera-roll-photos (rf/sub [:camera-roll-photos])
-           end-cursor         (rf/sub [:camera-roll-end-cursor])]
+           camera-roll-photos (rf/sub [:camera-roll/photos])
+           end-cursor         (rf/sub [:camera-roll/end-cursor])]
        [rn/view {:style {:height (- window-height (:top safe-area))}}
         [rn/touchable-opacity
          {:on-press #(js/alert "Camera: not implemented")

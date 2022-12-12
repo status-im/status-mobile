@@ -107,31 +107,9 @@
                     (-> (if end-cursor
                           (.getPhotos CameraRoll #js {:first num :after end-cursor :assetType "Photos" :groupTypes "All"})
                           (.getPhotos CameraRoll #js {:first num :assetType "Photos" :groupTypes "All"}))
-                        (.then #(re-frame/dispatch [:on-camera-roll-get-photos (:edges (types/js->clj %)) (:page_info (types/js->clj %)) end-cursor]))
+                        (.then #(let [response (types/js->clj %)]
+                                  (re-frame/dispatch [:on-camera-roll-get-photos (:edges response) (:page_info response) end-cursor])))
                         (.catch #(log/warn "could not get camera roll photos"))))})))
-
-;(re-frame/reg-fx
-;  :camera-roll/get-photos
-;  (fn [{:keys [num end-cursor on-success on-failure]}]
-;    (-> (permissions/request-permissions
-;          {:permissions [:read-external-storage]
-;           :on-allowed  (fn []
-;                          (-> (if end-cursor
-;                                (.getPhotos CameraRoll #js {:first      num
-;                                                            :after      end-cursor
-;                                                            :assetType  "Photos"
-;                                                            :groupTypes "All"})
-;                                (.getPhotos CameraRoll #js {:first      num
-;                                                            :assetType  "Photos"
-;                                                            :groupTypes "All"}))))})
-;        (.then (fn [^js js-result]
-;                 (when on-success
-;                   (let [result (types/js->clj js-result)]
-;                     (re-frame/dispatch (conj on-success {:edges     (:edges result)
-;                                                          :page-info (:page_info result)}))))))
-;        (.catch (fn [error]
-;                  (when on-failure
-;                    (re-frame/dispatch (conj on-failure error)))) ))))
 
 (fx/defn image-captured
   {:events [:chat.ui/image-captured]}
@@ -150,17 +128,17 @@
 (fx/defn camera-roll-loading-more
   {:events [:chat.ui/camera-roll-loading-more]}
   [{:keys [db]} is-loading]
-  {:db (assoc db :camera-roll-loading-more is-loading)})
+  {:db (assoc db :camera-roll/loading-more is-loading)})
 
 (fx/defn on-camera-roll-get-photos
   {:events [:on-camera-roll-get-photos]}
   [{:keys [db] :as cofx} photos page-info end-cursor]
-  (let [photos_x (when end-cursor (:camera-roll-photos db))]
+  (let [photos_x (when end-cursor (:camera-roll/photos db))]
     {:db (-> db
-             (assoc :camera-roll-photos (concat photos_x (map #(get-in % [:node :image :uri]) photos)))
-             (assoc :camera-roll-end-cursor (:end_cursor page-info))
-             (assoc :camera-roll-has-next-page (:has_next_page page-info))
-             (assoc :camera-roll-loading-more false))}))
+             (assoc :camera-roll/photos (concat photos_x (map #(get-in % [:node :image :uri]) photos)))
+             (assoc :camera-roll/end-cursor (:end_cursor page-info))
+             (assoc :camera-roll/has-next-page (:has_next_page page-info))
+             (assoc :camera-roll/loading-more false))}))
 
 (fx/defn clear-sending-images
   {:events [:chat.ui/clear-sending-images]}

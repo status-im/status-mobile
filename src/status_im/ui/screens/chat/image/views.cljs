@@ -80,7 +80,7 @@
          [quo/radio {:value true}]])]]))
 
 (defview photos []
-  (letsubs [camera-roll-photos [:camera-roll-photos]
+  (letsubs [camera-roll-photos [:camera-roll/photos]
             selected [:chats/sending-image]
             panel-height (reagent/atom nil)]
     [react/view {:style     {:flex           1
