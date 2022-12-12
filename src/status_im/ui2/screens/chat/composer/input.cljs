@@ -337,7 +337,7 @@
                                                              :chat-id           chat-id
                                                              :selection-event   selection-event})))
               props               (merge props {:ref                 ref
-                                                :style               style
+                                                :style               (dissoc style :margin-horizontal)
                                                 :on-selection-change on-selection-change
                                                 :on-selection        on-selection})]
           [rn-selectable-text-input {:menuItems @menu-items :style style}
