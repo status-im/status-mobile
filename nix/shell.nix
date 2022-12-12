@@ -17,6 +17,8 @@ in mkShell {
     lsof # used in start-react-native.sh
     # build specific utilities
     clojure maven watchman
+    # lint specific utilities
+    clj-kondo zprint clojure-lsp
     # other nice to have stuff
     yarn nodejs python27
   ] # and some special cases
