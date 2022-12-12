@@ -33,6 +33,7 @@
 
  :cache-blockers #{status-im.utils.js-resources status-im.ui.components.icons.icons}
 
+<<<<<<< HEAD
  :builds
  {:mobile
   {:target     :react-native
@@ -100,6 +101,72 @@
     :static-fns    false
     :optimizations :simple
     :infer-externs true}}
+=======
+ :builds {:mobile
+          {:target :react-native
+           :output-dir "app"
+           :init-fn status-im2.setup.core/init
+           ;; When false, the Shadow-CLJS watcher won't automatically refresh
+           ;; the target files (a.k.a hot reload). When false, you can manually
+           ;; reload by calling `shadow.cljs.devtools.api/watch-compile-all!`.
+           :devtools {:autobuild #shadow/env ["SHADOW_AUTOBUILD_ENABLED" :default true :as :bool]}
+           :dev {:devtools {:after-load status-im2.setup.hot-reload/reload
+                            :build-notify status-im2.setup.hot-reload/build-notify
+                            :preloads [re-frisk-remote.preload]}
+                 :closure-defines
+                 {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
+                  status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
+                 :compiler-options {:output-feature-set :es5
+                                    :closure-defines
+                                    {re-frame.trace/trace-enabled? true}
+                                    :source-map false
+                                    :infer-externs true}
+                 ;; if you want to use a real device, set your local ip
+                 ;; in the SHADOW_HOST env variable to make sure that
+                 ;; it will use the right interface
+                 :local-ip #shadow/env "SHADOW_HOST"}
+           :chunks {:fleets status-im.fleet.default-fleet/default-fleets
+                    :chats status-im.chat.default-chats/default-chats}
+           :release
+           {:closure-defines
+            {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
+             status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
+            :compiler-options {:output-feature-set :es6
+                                        ;;disable for android build as there
+                                        ;;is an intermittent warning with deftype
+                               :warnings-as-errors false
+                               :infer-externs :auto
+                               :static-fns true
+                               :fn-invoke-direct true
+                               :optimizations :advanced
+                               :js-options {:js-provider :closure}}}}
+          ;; the tests are ran with node, react-native dependencies are mocked
+          ;; by using node --require override.js, which uses the node-library
+          ;; produced by the target :mocks below and redefines node require
+          ;; function to use the mocks instead of the rn libraries
+          :test
+          {:output-to        "target/test/test.js"
+           :output-dir       "target/test"
+           :optimizations    :simple
+           :target           :node-test
+           ;; When running tests without a REPL you can uncomment the below line to `make test-watch` a specific file
+           ;:ns-regexp        "status-im.chat.models-test$"
+           :main             status-im.test-runner/main
+           :ns-regexp        "status-im2.subs.contact-test"
+           ;; set :ui-driven to true to let shadow-cljs inject node-repl
+           :ui-driven        true
+           :closure-defines
+           {status-im.utils.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
+            status-im.utils.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"}
+           :compiler-options {;; needed because we override require and it
+                              ;; messes with source-map which reports callstack
+                              ;; exceeded exceptions instead of real issues
+                              :source-map    false
+                              ;; needed because we use deref in tests
+                              :static-fns    false
+                              :optimizations :simple
+                              :infer-externs true}}
+>>>>>>> 643650b78... refactor
 
   ;; mock.js-dependencies is mocking the react-native libraries
   ;; we build it as a node library so that it can be required by
