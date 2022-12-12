@@ -33,7 +33,7 @@
                  :source {:uri uri}}]])
 
 (defview photos []
-  (letsubs [camera-roll-photos [:camera-roll-photos]]
+  (letsubs [camera-roll-photos [:camera-roll/photos]]
     {:component-did-mount #(re-frame/dispatch [:chat.ui/camera-roll-get-photos 20])}
     [react/scroll-view {:horizontal                   true
                         :style                        {:max-height 88}
