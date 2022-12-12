@@ -197,7 +197,7 @@
                                          (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
                                          (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   input-content-change (get-input-content-change context translate-y shared-height max-height
-                                                                 bg-opacity keyboard-shown min-y max-y)
+                                                                 set-bg-opacity keyboard-shown min-y max-y)
                   bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
 <<<<<<< HEAD
 <<<<<<< HEAD
