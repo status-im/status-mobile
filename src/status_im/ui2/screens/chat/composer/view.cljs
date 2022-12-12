@@ -192,16 +192,23 @@
                   translate-y          (reanimated/use-shared-value 0)
                   shared-height        (reanimated/use-shared-value min-y)
                   bg-opacity           (reanimated/use-shared-value 0)
-
+                  bg-bottom            (reanimated/use-shared-value (- window-height))
+                  set-bg-opacity       (fn [value]
+                                         (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
+                                         (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   input-content-change (get-input-content-change context translate-y shared-height max-height
                                                                  bg-opacity keyboard-shown min-y max-y)
                   bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
+<<<<<<< HEAD
 <<<<<<< HEAD
                                                                  min-y max-y shared-height max-height set-bg-opacity)]
 >>>>>>> ea730ed53... lint
 =======
                                                                  min-y max-y shared-height max-height bg-opacity)]
 >>>>>>> 40e3ab29c... lint
+=======
+                                                                 min-y max-y shared-height max-height set-bg-opacity)]
+>>>>>>> 538490620... refactor
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown? (not keyboard-shown))
                                       (swap! context assoc :state :min))
@@ -209,8 +216,8 @@
                                       (clean-and-minimize-composer-fn false))
                                     (reset! keyboard-was-shown? keyboard-shown)
                                     (if (#{:max :custom-chat-unavailable} (:state @context))
-                                      (reanimated/set-shared-value bg-opacity (reanimated/with-timing 1))
-                                      (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0)))
+                                      (set-bg-opacity 1)
+                                      (set-bg-opacity 0))
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
 <<<<<<< HEAD
@@ -219,7 +226,7 @@
                                     (swap! context assoc :state :min)
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
-                                    (reanimated/set-shared-value bg-opacity (reanimated/with-timing 0))
+                                    (set-bg-opacity 0)
                                     (re-frame/dispatch [:dismiss-keyboard])) edit)
 >>>>>>> 40e3ab29c... lint
               [reanimated/view {:style (reanimated/apply-animations-to-style
