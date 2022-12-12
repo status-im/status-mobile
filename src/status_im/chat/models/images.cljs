@@ -110,6 +110,29 @@
                         (.then #(re-frame/dispatch [:on-camera-roll-get-photos (:edges (types/js->clj %)) (:page_info (types/js->clj %)) end-cursor]))
                         (.catch #(log/warn "could not get camera roll photos"))))})))
 
+;(re-frame/reg-fx
+;  :camera-roll/get-photos
+;  (fn [{:keys [num end-cursor on-success on-failure]}]
+;    (-> (permissions/request-permissions
+;          {:permissions [:read-external-storage]
+;           :on-allowed  (fn []
+;                          (-> (if end-cursor
+;                                (.getPhotos CameraRoll #js {:first      num
+;                                                            :after      end-cursor
+;                                                            :assetType  "Photos"
+;                                                            :groupTypes "All"})
+;                                (.getPhotos CameraRoll #js {:first      num
+;                                                            :assetType  "Photos"
+;                                                            :groupTypes "All"}))))})
+;        (.then (fn [^js js-result]
+;                 (when on-success
+;                   (let [result (types/js->clj js-result)]
+;                     (re-frame/dispatch (conj on-success {:edges     (:edges result)
+;                                                          :page-info (:page_info result)}))))))
+;        (.catch (fn [error]
+;                  (when on-failure
+;                    (re-frame/dispatch (conj on-failure error)))) ))))
+
 (fx/defn image-captured
   {:events [:chat.ui/image-captured]}
   [{:keys [db]} chat-id uri]
