@@ -144,7 +144,7 @@
     (when platform/android?
       (>evt [::mentions/calculate-suggestions mentionable-users]))))
 
-(defn text-input [{:keys [set-active-panel refs chat-id sending-image on-content-size-change]}]
+(defn text-input [{:keys [set-active-panel refs chat-id sending-image on-content-size-change initial-value]}]
   (let [_                   (reset! text-input-ref (:text-input-ref refs))
         cooldown-enabled?   (<sub [:chats/current-chat-cooldown-enabled?])
         mentionable-users   (<sub [:chats/mentionable-users])
@@ -160,6 +160,7 @@
                              :editable                 (not cooldown-enabled?)
                              :blur-on-submit           false
                              :auto-focus               false
+                             :default-value            initial-value
                              :on-focus                 #(set-active-panel nil)
                              :max-length               chat.constants/max-text-size
                              :placeholder-text-color   (:text-02 @quo.colors/theme)
@@ -336,7 +337,7 @@
                                                              :chat-id           chat-id
                                                              :selection-event   selection-event})))
               props               (merge props {:ref                 ref
-                                                :style               nil
+                                                :style               style
                                                 :on-selection-change on-selection-change
                                                 :on-selection        on-selection})]
           [rn-selectable-text-input {:menuItems @menu-items :style style}

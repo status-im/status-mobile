@@ -54,7 +54,7 @@
    (swap! context assoc :y (if edit?
                              (- min-y 38)
                              min-y))
-   (swap! context assoc :state min)))
+   (swap! context assoc :clear true)))
 
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height set-bg-opacity]
   (-> (gesture/gesture-pan)
@@ -164,7 +164,8 @@
                   input-content-change                     (get-input-content-change context translate-y shared-height max-height
                                                                                      set-bg-opacity keyboard-shown min-y max-y)
                   bottom-sheet-gesture                     (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
-                                                                                     min-y max-y shared-height max-height set-bg-opacity)]
+                                                                                     min-y max-y shared-height max-height set-bg-opacity)
+                  initial-value                            (or (get @input/input-texts chat-id) nil)]
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown? (not keyboard-shown))
                                       (swap! context assoc :state :min))
@@ -190,6 +191,7 @@
                   [input/text-input {:chat-id                chat-id
                                      :on-content-size-change input-content-change
                                      :sending-image          false
+                                     :initial-value          initial-value
                                      :refs                   refs
                                      :set-active-panel       #()}]]]]
                ;CONTROLS
