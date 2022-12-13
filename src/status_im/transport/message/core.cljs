@@ -22,7 +22,6 @@
             [status-im.constants :as constants]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
-            [status-im.notifications-center.core :as notifications-center]
             [status-im.visibility-status-updates.core :as models.visibility-status-updates]
             [status-im.browser.core :as browser]
             [clojure.string :as string]))

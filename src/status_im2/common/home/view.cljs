@@ -5,14 +5,7 @@
             [status-im2.common.plus-button.view :as components.plus-button]
             [status-im2.common.home.style :as style]
             [react-native.hole-view :as hole-view]
-            [status-im2.setup.config :as config]
             [utils.re-frame :as rf]))
-
-(defn navigate-to-activity-center []
-  (if config/new-activity-center-enabled?
-    (rf/dispatch [:activity-center/open])
-    (do (rf/dispatch [:mark-all-activity-center-notifications-as-read])
-        (rf/dispatch [:navigate-to :notifications-center]))))
 
 (defn title-column [{:keys [label handler accessibility-label]}]
   [rn/view style/title-column
@@ -90,7 +83,7 @@
 
                                       :else
                                       [{:x 33 :y -7 :width 18 :height 18 :borderRadius 7}])}
-        [base-button :i/activity-center navigate-to-activity-center
+        [base-button :i/activity-center #(rf/dispatch [:activity-center/open])
          :open-activity-center-button button-common-props]]
        (when new-notifications?
          (if (= notification-indicator :counter)
