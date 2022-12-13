@@ -127,6 +127,7 @@
         (reduce reduce-js-messages
                 {:db db :chats #{} :senders {} :transactions #{}}
                 messages-js)]
+    (println "MMMM" response-js)
     ;;we want to render new messages as soon as possible
     ;;so we dispatch later all other events which can be handled async
     {:db db

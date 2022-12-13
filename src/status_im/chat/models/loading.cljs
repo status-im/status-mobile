@@ -101,6 +101,7 @@
   "Loads more messages for current chat"
   {:events [::messages-loaded]}
   [{db :db} chat-id session-id {:keys [cursor messages]}]
+  (println "ASDF" messages)
   (when-not (and (get-in db [:pagination-info chat-id :messages-initialized?])
                  (not= session-id
                        (get-in db [:pagination-info chat-id :messages-initialized?])))

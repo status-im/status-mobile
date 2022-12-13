@@ -43,6 +43,7 @@
       (assoc :content {:chat-id (:chatId message)
                        :text (:text message)
                        :image (:image message)
+                       :album-id (:albumId message)
                        :sticker (:sticker message)
                        :ens-name (:ensName message)
                        :line-count (:lineCount message)

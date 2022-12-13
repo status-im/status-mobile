@@ -207,7 +207,6 @@
   (let [image-messages (build-image-messages cofx current-chat-id)
         text-message (build-text-message cofx input-text current-chat-id)
         messages (keep identity (conj image-messages text-message))]
-    (println "mmm to be sent" messages)
     (when (seq messages)
       (fx/merge cofx
                 (clean-input (:current-chat-id db))
