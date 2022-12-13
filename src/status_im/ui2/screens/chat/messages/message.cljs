@@ -5,7 +5,6 @@
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
-            [quo2.components.messages.system-message :as system-message]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
             [re-frame.core :as re-frame]
@@ -34,6 +33,7 @@
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.ui2.screens.chat.components.reaction-drawer :as reaction-drawer]
             [status-im.ui2.screens.chat.components.reply :as components.reply]
+            [status-im.ui2.screens.chat.messages.deleted-message :as deleted-message]
             [status-im.utils.config :as config]
             [status-im.utils.datetime :as time]
             [utils.security.core :as security]
@@ -303,8 +303,8 @@
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
-  [{:keys [last-in-group? timestamp-str timestamp deleted? deleted-undoable-till
-           deleted-for-me? deleted-for-me-undoable-till pinned from chat-id]
+  [{:keys [last-in-group? timestamp-str deleted? deleted-for-me? timestamp
+           pinned from chat-id]
     :as   message} content]
   (let [response-to  (:response-to (:content message))
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
@@ -312,18 +312,7 @@
         photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))
         online?      (rf/sub [:visibility-status-updates/online? from])]
     (if (or deleted? deleted-for-me?)
-      [system-message/system-message
-       {:type             :deleted
-        :label            (if deleted? :message-deleted :message-deleted-for-you)
-        :labels           {:pinned-a-message        (i18n/label :pinned-a-message)
-                           :message-deleted         (i18n/label :message-deleted-for-everyone)
-                           :message-deleted-for-you (i18n/label :message-deleted-for-you)
-                           :added                   (i18n/label :added)}
-        :timestamp-str    timestamp-str
-        :non-pressable?   true
-        :animate-landing? (if (or deleted-undoable-till deleted-for-me-undoable-till)
-                            true
-                            false)}]
+      [deleted-message/message message]
       [rn/view {:style               (style/message-wrapper message)
                 :pointer-events      :box-none
                 :accessibility-label :chat-item}
