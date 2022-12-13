@@ -214,9 +214,9 @@
   (when-let [chat-id (:current-chat-id db)]
     (chat.state/reset-visible-item)
     (fx/merge cofx
+              {:db (dissoc db :current-chat-id)}
               (delete-for-me/sync-all)
               (delete-message/send-all)
-              {:db (dissoc db :current-chat-id)}
               (offload-messages chat-id))))
 
 (fx/defn force-close-chat
