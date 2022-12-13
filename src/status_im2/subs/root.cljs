@@ -228,7 +228,6 @@
 (reg-root-key-sub :communities/enabled? :communities/enabled?)
 (reg-root-key-sub :communities/resolve-community-info :communities/resolve-community-info)
 
-(reg-root-key-sub :activity.center/notifications :activity.center/notifications)
 (reg-root-key-sub :activity-center :activity-center)
 
 (reg-root-key-sub :bug-report/description-error :bug-report/description-error)
