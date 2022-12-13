@@ -2,6 +2,7 @@
   (:require [cljs.test :refer [deftest is testing]]
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
+            [status-im.activity-center.core :as activity-center]
             [status-im.activity-center.notification-types :as types]
             [status-im.constants :as constants]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -509,6 +510,23 @@
                :unread
                :fake-error]
               (:args (last @spy-queue))))))))
+
+(deftest notifications-fetch-unread-contact-requests-test
+  (testing "fetches latest unread contact requests"
+    (let [actual   (activity-center/notifications-fetch-unread-contact-requests {:db {}})
+          per-page 20]
+      (is (= {:activity-center
+              {:notifications
+               {types/contact-request
+                {:unread {:loading? true}}}}}
+             (:db actual)))
+
+      (is (= {:method "wakuext_activityCenterNotificationsBy"
+              :params ["" per-page types/contact-request activity-center/status-unread]}
+             (-> actual
+                 ::json-rpc/call
+                 first
+                 (select-keys [:method :params])))))))
 
 (deftest notifications-fetch-unread-count-test
   (testing "fetches total notification count and store in db"

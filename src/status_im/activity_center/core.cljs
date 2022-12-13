@@ -233,6 +233,13 @@
                           #(concat %1 processed))))}))
 
 (fx/defn notifications-fetch-unread-contact-requests
+  "Unread contact requests are, in practical terms, the same as pending contact
+  requests in the new Activity Center, because pending contact requests are
+  always marked as unread, and once the user declines/accepts the request, they
+  are marked as read.
+
+  If this relationship ever changes, we will probably need to change the backend
+  to explicitly support fetching notifications for 'pending' contact requests."
   {:events [:activity-center.notifications/fetch-latest-unread-contact-requests]}
   [cofx]
   (notifications-fetch cofx {:cursor        start-or-end-cursor
