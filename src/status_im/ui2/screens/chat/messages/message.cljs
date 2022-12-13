@@ -6,7 +6,6 @@
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.messages.system-message :as system-message]
-            [quo2.core :as quo2]
             [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
             [re-frame.core :as re-frame]
@@ -14,15 +13,12 @@
             [status-im.chat.models.delete-message]
             [status-im.chat.models.delete-message-for-me]
             [status-im.chat.models.images :as images]
-            [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.chat.models.reactions :as models.reactions]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.fast-image :as fast-image]
-            [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.image.preview.views :as preview]
             [status-im.ui.screens.chat.message.audio :as message.audio]
@@ -419,8 +415,8 @@
     (if (and (not pinned) (> (count pinned-messages) 2))
       (do
         (js/setTimeout (fn [] (re-frame/dispatch [:dismiss-keyboard])) 500)
-        (re-frame/dispatch [::models.pin-message/show-pin-limit-modal chat-id]))
-      (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
+        (re-frame/dispatch [:pin-message/show-pin-limit-modal chat-id]))
+      (re-frame/dispatch [:pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
 (defn on-long-press-fn [on-long-press {:keys [pinned message-pin-enabled outgoing edit-enabled show-input? community? can-delete-message-for-everyone?] :as message} content]
   (on-long-press
@@ -779,61 +775,9 @@
           :timestamp-str (time/timestamp->time whisper-timestamp)
           :edit-enabled edit-enabled)])
 
-(def list-key-fn #(or (:message-id %) (:value %)))
-
-(defn pinned-messages-list [chat-id]
-  (let [pinned-messages (vec (vals (rf/sub [:chats/pinned chat-id])))
-        current-chat    (rf/sub [:chats/current-chat])
-        community       (rf/sub [:communities/community (:community-id current-chat)])]
-    [rn/view {:accessibility-label :pinned-messages-list}
-     [quo2/text {:size   :heading-1
-                 :weight :semi-bold
-                 :style  {:margin-horizontal 20}}
-      (i18n/label :t/pinned-messages)]
-     (when community
-       [rn/view {:style {:flex-direction    :row
-                         :background-color  (colors/theme-colors colors/neutral-10 colors/neutral-80)
-                         :border-radius     20
-                         :align-items       :center
-                         :align-self        :flex-start
-                         :margin-horizontal 20
-                         :padding           4
-                         :margin-top        8}}
-        [chat-icon/chat-icon-view-toolbar chat-id (:group-chat current-chat) (:chat-name current-chat) (:color current-chat) (:emoji current-chat) 22]
-        [rn/text {:style {:margin-left 6 :margin-right 4 :color (colors/theme-colors colors/neutral-100 colors/white)}} (:name community)]
-        [icons/icon
-         :i/chevron-right
-         {:color  (colors/theme-colors colors/neutral-50 colors/neutral-40)
-          :width  12
-          :height 12}]
-        [rn/text {:style {:margin-left  4
-                          :margin-right 8
-                          :color        (colors/theme-colors colors/neutral-100 colors/white)}} (str "# " (:chat-name current-chat))]])
-     (if (> (count pinned-messages) 0)
-       [list/flat-list
-        {:data      pinned-messages
-         :render-fn message-render-fn
-         :key-fn    list-key-fn
-         :separator [rn/view {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80) :height 1 :margin-top 8}]}]
-       [rn/view {:style {:justify-content :center
-                         :align-items     :center
-                         :margin-top      20}}
-        [rn/view {:style {:width           120
-                          :height          120
-                          :justify-content :center
-                          :align-items     :center
-                          :border-width    1}} [icons/icon :i/placeholder]]
-        [quo2/text {:weight :semi-bold
-                    :style  {:margin-top 20}}
-         (i18n/label :t/no-pinned-messages)]
-        [quo2/text {:size :paragraph-2}
-         (i18n/label (if community :t/no-pinned-messages-community-desc :t/no-pinned-messages-desc))]])]))
-
 (defn pin-system-message [{:keys [from in-popover? timestamp-str chat-id] :as message} {:keys [modal close-modal]}]
   (let [response-to (:response-to (:content message))]
-    [rn/touchable-opacity {:on-press       (fn []
-                                             (rf/dispatch [:bottom-sheet/show-sheet
-                                                           {:content #(pinned-messages-list chat-id)}]))
+    [rn/touchable-opacity {:on-press       #(rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list chat-id])
                            :active-opacity 1
                            :style          (merge {:flex-direction :row :margin-vertical 8} (style/message-wrapper message))}
      [rn/view {:style               {:width            photos.style/default-size
@@ -870,36 +814,3 @@
       [rn/view (style/message-view message)
        [rn/view (style/message-view-content)
         [render-parsed-text message (:parsed-text content)]]]]]))
-
-(defn pinned-banner [chat-id]
-  (let [pinned-messages (rf/sub [:chats/pinned chat-id])
-        latest-pin-text (get-in (last (vals pinned-messages)) [:content :text])
-        pins-count      (count (seq pinned-messages))]
-    (when (> pins-count 0)
-      [rn/touchable-opacity
-       {:accessibility-label :pinned-banner
-        :style               {:height             50
-                              :background-color   colors/primary-50-opa-20
-                              :flex-direction     :row
-                              :align-items        :center
-                              :padding-horizontal 20
-                              :padding-vertical   10}
-        :active-opacity      1
-        :on-press            (fn []
-                               (re-frame/dispatch [:bottom-sheet/show-sheet
-                                                   {:content #(pinned-messages-list chat-id)}]))}
-       [pin-icon (colors/theme-colors colors/neutral-100 colors/white) 20]
-       [rn/text {:number-of-lines 1
-                 :style           (merge typography/paragraph-2 {:margin-left  10
-                                                                 :margin-right 50
-                                                                 :color        (colors/theme-colors colors/neutral-100 colors/white)})} latest-pin-text]
-       [rn/view {:accessibility-label :pins-count
-                 :style               {:position         :absolute
-                                       :right            22
-                                       :height           20
-                                       :width            20
-                                       :border-radius    8
-                                       :justify-content  :center
-                                       :align-items      :center
-                                       :background-color colors/neutral-80-opa-5}}
-        [rn/text {:style (merge typography/label typography/font-medium {:color (colors/theme-colors colors/neutral-100 colors/white)})} pins-count]]])))

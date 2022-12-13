@@ -2,7 +2,7 @@
  status-im.transport.message.core
   (:require [status-im.activity-center.core :as activity-center]
             [status-im.chat.models.message :as models.message]
-            [status-im.chat.models.pin-message :as models.pin-message]
+            [status-im2.contexts.chat.messages.pin.events :as messages.pin]
             [status-im.chat.models :as models.chat]
             [status-im.chat.models.reactions :as models.reactions]
             [status-im2.setup.config :as config]
@@ -117,7 +117,7 @@
         (js-delete response-js "pinMessages")
         (fx/merge cofx
                   (process-next response-js sync-handler)
-                  (models.pin-message/receive-signal (map data-store.messages/<-rpc pin-messages))))
+                  (messages.pin/receive-signal (map data-store.messages/<-rpc pin-messages))))
 
       (seq removed-chats)
       (let [removed-chats-clj (types/js->clj removed-chats)]

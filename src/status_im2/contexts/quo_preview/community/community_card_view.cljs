@@ -2,7 +2,7 @@
   (:require [react-native.core :as rn]
             [status-im2.contexts.quo-preview.preview :as preview]
             [reagent.core :as reagent]
-            [status-im.constants :as constants]
+            [status-im2.common.constants :as constants]
             [quo2.foundations.colors :as colors]
             [quo.design-system.colors :as quo.colors]
             [quo2.components.community.community-card-view :as community-card-view]

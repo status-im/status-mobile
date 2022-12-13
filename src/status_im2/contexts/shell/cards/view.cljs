@@ -10,7 +10,7 @@
 
 (defn content-container [{:keys [content-type data new-notifications? color-50]}]
   [rn/view {:style (style/content-container new-notifications?)}
-   ;; TODO - Use status-im.constants for content type
+   ;; TODO - Use status-im2.common.constants for content type
    (case content-type
      :text [quo/text style/last-message-text-props data]
      :photo [quo/preview-list {:type               :photo

@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-            [status-im.constants :as constants]))
+            [status-im2.common.constants :as constants]))
 
 (re-frame/reg-sub
  :communities

@@ -7,7 +7,6 @@
             [i18n.i18n :as i18n]
             [status-im.chat.models :as chat.models]
             [status-im2.common.contact-list-item.view :as contact-list-item]
-            [status-im.ui2.screens.chat.messages.message :as message]
             [quo.components.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.common.home.actions.view :as actions]
@@ -109,8 +108,7 @@
      [rn/view {:style (style/actions-view)}
       [rn/touchable-opacity {:style    (style/action-container color)
                              :on-press (fn []
-                                         (rf/dispatch [:bottom-sheet/show-sheet
-                                                       {:content #(message/pinned-messages-list chat-id)}]))}
+                                         (rf/dispatch [:bottom-sheet/show-sheet :pinned-messages-list chat-id]))}
        [rn/view {:style {:flex-direction  :row
                          :justify-content :space-between}}
         [quo2/icon :i/pin {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]

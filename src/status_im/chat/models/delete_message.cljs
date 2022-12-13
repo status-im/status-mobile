@@ -1,7 +1,6 @@
 (ns status-im.chat.models.delete-message
   (:require [re-frame.core :as re-frame]
             [status-im.chat.models.message-list :as message-list]
-            [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
@@ -81,7 +80,7 @@
                         :on-error    #(log/error "failed to delete message " {:message-id message-id :error %})
                         :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
      :dispatch (and (get-in db [:pin-messages chat-id message-id])
-                    [::models.pin-message/send-pin-message {:chat-id chat-id :message-id message-id :pinned false}]))))
+                    [:pin-message/send-pin-message {:chat-id chat-id :message-id message-id :pinned false}]))))
 
 (defn- filter-pending-send-messages
   "traverse all messages find not yet synced deleted? messages"

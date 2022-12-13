@@ -7,7 +7,6 @@
             [status-im.chat.models.message-list :as message-list]
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.notifications-center.core :as notification-center]))
 
 (defn cursor->clock-value
@@ -176,5 +175,5 @@
               {:db (assoc-in db [:pagination-info chat-id :messages-initialized?] now)
                :utils/dispatch-later [{:ms 50 :dispatch [:chat.ui/mark-all-read-pressed chat-id]}
                                       (when-not (get-in cofx [:db :chats chat-id :public?])
-                                        {:ms 100 :dispatch [::models.pin-message/load-pin-messages chat-id]})]}
+                                        {:ms 100 :dispatch [:pin-message/load-pin-messages chat-id]})]}
               (load-more-messages chat-id true))))

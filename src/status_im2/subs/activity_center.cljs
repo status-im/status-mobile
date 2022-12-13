@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.utils.datetime :as datetime]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.constants :as constants]
+            [status-im2.common.constants :as constants]
             [status-im.activity-center.notification-types :as types]
             [clojure.string :as string]))
 
