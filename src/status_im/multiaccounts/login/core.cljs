@@ -392,7 +392,7 @@
               (get-node-config)
               (communities/fetch)
               (logging/set-log-level (:log-level multiaccount))
-              (activity-center/notifications-fetch-unread-contact-requests {:per-page 20})
+              (activity-center/notifications-fetch-unread-contact-requests)
               (activity-center/notifications-fetch-unread-count))))
 
 (re-frame/reg-fx
