@@ -9,14 +9,16 @@
     colors/danger-50
     (colors/theme-colors colors/neutral-50 colors/neutral-40)))
 
-(defn divider []
+(def divider
   [rn/view {:style {:border-top-width 1
                     :border-top-color (colors/theme-colors
                                        colors/neutral-10 colors/neutral-90)
                     :margin-top       8
                     :margin-bottom    7
                     :align-items      :center
-                    :flex-direction   :row}}])
+                    :flex-direction   :row}
+            :accessible true
+            :accessibility-label :divider}])
 
 (defn action [{:keys [icon
                       label
@@ -24,21 +26,24 @@
                       right-icon
                       danger?
                       on-press
-                      add-divider?] :as action-props}]
+                      add-divider?
+                      accessibility-label] :as action-props}]
   (when action-props
     [:<> {:key label}
-     (when add-divider? [divider])
-     [rn/touchable-highlight {:style          {:border-radius     12
+     (when add-divider? divider)
+     [rn/touchable-highlight {:accessibility-label accessibility-label
+                              :style          {:border-radius     12
                                                :height (if sub-label 58 50)
                                                :margin-horizontal 8}
                               :underlay-color (colors/theme-colors colors/neutral-5 colors/neutral-90)
                               :on-press       on-press}
       [rn/view {:style
                 {:height (if sub-label 58 50)
-
                  :margin-horizontal 12
                  :flex-direction    :row}}
-       [rn/view {:style
+       [rn/view {:accessibility-label :left-icon-for-action
+                 :accessible true
+                 :style
                  {:height        20
                   :margin-top    :auto
                   :margin-bottom :auto
@@ -69,7 +74,9 @@
                    {:height        20
                     :margin-top    :auto
                     :margin-bottom :auto
-                    :width         20}}
+                    :width         20}
+                   :accessible true
+                   :accessibility-label :right-icon-for-action}
           [icon/icon right-icon
            {:color (get-icon-color danger?)
             :size  20}]])]]]))

@@ -181,3 +181,6 @@ test/appium/tests/users.py
 /artifacts
 
 /.calva/
+
+## component-tests
+*.log
