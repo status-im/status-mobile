@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.home.contact-request.view
   (:require [react-native.core :as rn]
-            [status-im2.setup.config :as config]
             [quo2.core :as quo]
             [i18n.i18n :as i18n]
             [utils.re-frame :as rf]

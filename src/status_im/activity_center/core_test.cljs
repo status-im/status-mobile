@@ -6,8 +6,7 @@
             [status-im.constants :as constants]
             [status-im.ethereum.json-rpc :as json-rpc]
             status-im.events
-            [status-im.test-helpers :as h]
-            [status-im2.setup.config :as config]))
+            [status-im.test-helpers :as h]))
 
 (def notification-id "0x1")
 
