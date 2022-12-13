@@ -1,7 +1,7 @@
 (ns status-im2.subs.general
   (:require [re-frame.core :as re-frame]
             [status-im.utils.build :as build]
-            [status-im.constants :as constants]
+            [status-im2.common.constants :as constants]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]

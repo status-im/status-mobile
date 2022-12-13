@@ -1,4 +1,4 @@
-(ns status-im.ui2.screens.chat.messages.style
+(ns status-im.ui2.screens.chat.pin-limit-popover.style
   (:require [quo2.foundations.colors :as colors]))
 
 (defn pin-popover [width]
@@ -18,7 +18,7 @@
    :justify-content  :center
    :align-items      :center})
 
-(defn pin-alert-circle []
+(def pin-alert-circle
   {:width           18
    :height          18
    :border-radius   9
@@ -27,7 +27,7 @@
    :justify-content :center
    :align-items     :center})
 
-(defn view-pinned-messages []
+(def view-pinned-messages
   {:background-color   colors/primary-60
    :border-radius      8
    :justify-content    :center

@@ -25,7 +25,6 @@
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.ui.components.animation :as animation]
             [status-im.chat.models.images :as images]
-            [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.ui.components.fast-image :as fast-image])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -428,8 +427,8 @@
     (if (and (not pinned) (> (count pinned-messages) 2))
       (do
         (js/setTimeout (fn [] (re-frame/dispatch [:dismiss-keyboard])) 500)
-        (re-frame/dispatch [::models.pin-message/show-pin-limit-modal chat-id]))
-      (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
+        (re-frame/dispatch [:pin-message/show-pin-limit-modal chat-id]))
+      (re-frame/dispatch [:pin-message/send-pin-message (assoc message :pinned (not pinned))]))))
 
 (defn on-long-press-fn [on-long-press {:keys [pinned message-pin-enabled outgoing edit-enabled show-input?] :as message} content]
   (on-long-press

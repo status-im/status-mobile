@@ -14,7 +14,7 @@
    [react-native.platform :as platform]
    [status-im2.contexts.communities.requests.actions.view :as requests.actions]
    [status-im2.contexts.communities.home.actions.view :as home.actions]
-   [status-im.constants :as constants]
+   [status-im2.common.constants :as constants]
    [status-im.react-native.resources :as resources]
    [status-im.utils.utils :as utils]))
 

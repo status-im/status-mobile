@@ -1,6 +1,6 @@
 (ns status-im2.subs.shell
   (:require [re-frame.core :as re-frame]
-            [status-im.constants :as status-constants]
+            [status-im2.common.constants :as status-constants]
             [status-im.react-native.resources :as resources]))
 
 (defn get-card-content [chat]

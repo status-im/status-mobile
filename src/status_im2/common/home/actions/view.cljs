@@ -4,10 +4,9 @@
             [quo2.components.drawers.action-drawers :as drawer]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
 
-    ;;TODO move to status-im2
-            [status-im.constants :as constants]
-            [status-im.chat.models :as chat.models]
-            [status-im.chat.models.pin-message :as models.pin-message]))
+            ;;TODO move to status-im2
+            [status-im2.common.constants :as constants]
+            [status-im.chat.models :as chat.models]))
 
 (defn- entry [{:keys [icon label on-press danger? sub-label chevron? add-divider?]}]
   {:pre [(keyword? icon)
@@ -29,7 +28,7 @@
 
 (defn show-profile-action [chat-id]
   (hide-sheet-and-dispatch [:chat.ui/show-profile chat-id])
-  (rf/dispatch [::models.pin-message/load-pin-messages chat-id]))
+  (rf/dispatch [:pin-message/load-pin-messages chat-id]))
 
 (defn mark-all-read-action [chat-id]
   (hide-sheet-and-dispatch [:chat/mark-all-as-read chat-id]))

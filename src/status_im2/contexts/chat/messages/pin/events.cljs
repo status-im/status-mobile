@@ -1,4 +1,4 @@
-(ns status-im.chat.models.pin-message
+(ns status-im2.contexts.chat.messages.pin.events
   (:require [status-im.chat.models.message-list :as message-list]
             [status-im.constants :as constants]
             [status-im.data-store.pin-messages :as data-store.pin-messages]
@@ -8,20 +8,19 @@
             [re-frame.core :as re-frame]))
 
 (fx/defn handle-failed-loading-pin-messages
-  {:events [::failed-loading-pin-messages]}
+  {:events [:pin-message/failed-loading-pin-messages]}
   [{:keys [db]} current-chat-id _ err]
   (log/error "failed loading pin messages" current-chat-id err)
   (when current-chat-id
     {:db (assoc-in db [:pagination-info current-chat-id :loading-pin-messages?] false)}))
 
 (fx/defn pin-messages-loaded
-  {:events [::pin-messages-loaded]}
+  {:events [:pin-message/pin-messages-loaded]}
   [{db :db} chat-id {:keys [cursor pinned-messages]}]
   (let [all-messages (reduce (fn [acc {:keys [message-id] :as message}]
                                (assoc acc message-id message))
                              {}
-                             pinned-messages)
-        messages-id-list (map :message-id pinned-messages)]
+                             pinned-messages)]
     {:db (-> db
              (assoc-in [:pagination-info chat-id :loading-pin-messages?] false)
              (assoc-in [:pin-messages chat-id] all-messages)
@@ -30,7 +29,7 @@
                        (empty? cursor)))}))
 
 (fx/defn receive-signal
-  [{:keys [db] :as cofx} pin-messages]
+  [{:keys [db]} pin-messages]
   (let [{:keys [chat-id]} (first pin-messages)]
     (when (= chat-id (db :current-chat-id))
       (let [{:keys [chat-id]} (first pin-messages)
@@ -55,23 +54,9 @@
                  (assoc-in [:pin-message-lists chat-id]
                            (message-list/add-many nil (vals all-messages))))}))))
 
-(fx/defn load-more-pin-messages
-  [{:keys [db]} chat-id first-request]
-  (let [not-all-loaded? (not (get-in db [:pagination-info chat-id :all-loaded?]))
-        not-loading-pin-messages? (not (get-in db [:pagination-info chat-id :loading-pin-messages?]))]
-    (when not-loading-pin-messages?
-      (fx/merge
-       {:db (assoc-in db [:pagination-info chat-id :loading-pin-messages?] true)}
-       (data-store.pin-messages/pinned-message-by-chat-id-rpc
-        chat-id
-        nil
-        constants/default-number-of-pin-messages
-        #(re-frame/dispatch [::pin-messages-loaded chat-id %])
-        #(re-frame/dispatch [::failed-loading-pin-messages chat-id %]))))))
-
 (fx/defn send-pin-message
   "Pin message, rebuild pinned messages list"
-  {:events [::send-pin-message]}
+  {:events [:pin-message/send-pin-message]}
   [{:keys [db] :as cofx} {:keys [chat-id message-id pinned] :as pin-message}]
   (let [current-public-key (get-in db [:multiaccount :public-key])
         message (merge pin-message {:pinned-by current-public-key})
@@ -97,19 +82,25 @@
                                                :ens-name preferred-name}])))))
 
 (fx/defn load-pin-messages
-  {:events [::load-pin-messages]}
-  [{:keys [db] :as cofx} chat-id]
-  (load-more-pin-messages cofx chat-id true))
+  {:events [:pin-message/load-pin-messages]}
+  [{:keys [db]} chat-id]
+  (let [not-loading-pin-messages? (not (get-in db [:pagination-info chat-id :loading-pin-messages?]))]
+    (when not-loading-pin-messages?
+      (fx/merge
+       {:db (assoc-in db [:pagination-info chat-id :loading-pin-messages?] true)}
+       (data-store.pin-messages/pinned-message-by-chat-id-rpc
+        chat-id
+        nil
+        constants/default-number-of-pin-messages
+        #(re-frame/dispatch [:pin-message/pin-messages-loaded chat-id %])
+        #(re-frame/dispatch [:pin-message/failed-loading-pin-messages chat-id %]))))))
 
 (fx/defn show-pin-limit-modal
-  {:events [::show-pin-limit-modal]}
-  [{:keys [db] :as cofx} chat-id]
-  (fx/merge
-   {:db (assoc-in db [:pin-modal chat-id] true)}))
+  {:events [:pin-message/show-pin-limit-modal]}
+  [{:keys [db]} chat-id]
+  {:db (assoc-in db [:pin-modal chat-id] true)})
 
 (fx/defn hide-pin-limit-modal
-  {:events [::hide-pin-limit-modal]}
-  [{:keys [db] :as cofx} chat-id]
-  (fx/merge
-   {:db (assoc-in db [:pin-modal chat-id] false)}))
-
+  {:events [:pin-message/hide-pin-limit-modal]}
+  [{:keys [db]} chat-id]
+  {:db (assoc-in db [:pin-modal chat-id] false)})

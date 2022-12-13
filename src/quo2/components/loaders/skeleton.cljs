@@ -1,6 +1,6 @@
-(ns status-im.ui.screens.chat.components.messages-skeleton
-  (:require [status-im.ui.components.react :as react]
-            [react-native.core :as rn]
+(ns quo2.components.loaders.skeleton
+  (:require [react-native.core :as rn]
+            [react-native.masked-view :as masked-view]
             [reagent.core :as reagent]
             [react-native.reanimated :as reanimated]
             [quo2.foundations.colors :as colors]))
@@ -34,7 +34,7 @@
                                     {:width     window-width
                                      :height    "100%"})]
        (reanimated/animate-shared-value-with-repeat translate-x window-width 1000 :linear (- 1) false)
-       [react/masked-view
+       [masked-view/masked-view
         {:style {:height message-skeleton-height}
          :maskElement (reagent/as-element
                        [rn/view {:style {:height           message-skeleton-height
@@ -67,7 +67,7 @@
                                       :end      {:x 1 :y 0}
                                       :style    animated-gradient-style}]]]))])
 
-(defn messages-skeleton [parent-height]
+(defn skeleton [parent-height]
   (let [number-of-skeletons (int (Math/floor (/ parent-height message-skeleton-height)))]
     [rn/view {:style {:background-color (colors/theme-colors
                                          colors/white
