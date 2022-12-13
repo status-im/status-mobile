@@ -173,9 +173,11 @@
 
 (defn build-image-messages
   [{db :db} chat-id]
-  (let [images (get-in db [:chat/inputs chat-id :metadata :sending-image])]
+  (let [images (get-in db [:chat/inputs chat-id :metadata :sending-image])
+        album-id (str (random-uuid))]
     (mapv (fn [[_ {:keys [uri]}]]
             {:chat-id      chat-id
+             :album-id     album-id
              :content-type constants/content-type-image
              :image-path   (utils/safe-replace uri #"file://" "")
              :text         (i18n/label :t/update-to-see-image {"locale" "en"})})
@@ -205,6 +207,7 @@
   (let [image-messages (build-image-messages cofx current-chat-id)
         text-message (build-text-message cofx input-text current-chat-id)
         messages (keep identity (conj image-messages text-message))]
+    (println "mmm to be sent" messages)
     (when (seq messages)
       (fx/merge cofx
                 (clean-input (:current-chat-id db))

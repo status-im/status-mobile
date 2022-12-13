@@ -332,6 +332,7 @@
                                        :size 32} :i/reaction]
                   [rn/view {:flex 1}]
                   ;;SEND button
+<<<<<<< HEAD
                   [rn/view {:ref   send-ref
                             :style (when-not (seq (get @input/input-texts chat-id)) {:width 0
                                                                                      :right -100})}
@@ -340,6 +341,13 @@
                                         :accessibility-label :send-message-button
                                         :on-press            #(do (clean-and-minimize-composer-fn false)
                                                                   (re-frame/dispatch [:chat.ui/send-current-message]))}
+=======
+                  [rn/view {:ref send-ref :style (when-not (or (seq (get @input/input-texts chat-id)) (seq images)) {:width 0 :right -100})}
+                   [quo2.button/button {:icon     true :size 32 :accessibility-label :send-message-button
+                                        :on-press #(do (swap! context assoc :clear true)
+                                                       (input/clear-input chat-id refs)
+                                                       (re-frame/dispatch [:chat.ui/send-current-message]))}
+>>>>>>> 00c162d2a... updates
                     :i/arrow-up]]])
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
