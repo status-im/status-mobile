@@ -85,6 +85,14 @@ class ChatElement(SilentButton):
         return UnreadMessagesPublicChat(self.driver)
 
     @property
+    def new_messages_community(self):
+        class UnreadMessagesCommunity(BaseElement):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="%s/android.view.ViewGroup" % parent_locator)
+
+        return UnreadMessagesCommunity(self.driver, self.locator)
+
+    @property
     def chat_image(self):
         class ChatImage(BaseElement):
             def __init__(self, driver):

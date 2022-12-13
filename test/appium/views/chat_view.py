@@ -171,7 +171,7 @@ class ChatElementByText(Text):
     def username(self):
         class Username(Text):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="/*[2]/android.widget.TextView")
+                super().__init__(driver, prefix=parent_locator, xpath="/android.widget.TextView[1]")
 
         return Username(self.driver, self.locator)
 
@@ -209,7 +209,7 @@ class ChatElementByText(Text):
         class RepliedMessageText(Text):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, prefix=parent_locator,
-                                 xpath="/preceding-sibling::*[1]/android.widget.TextView[2]")
+                                 xpath="/preceding::android.widget.TextView[@content-desc='quoted-message']")
 
         try:
             return RepliedMessageText(self.driver, self.message_locator).text
@@ -334,6 +334,7 @@ class CommunityView(HomeView):
         self.channel_descripton = ChatView(self.driver).community_description_edit_box
         self.community_options_button = Button(self.driver, accessibility_id="community-menu-button")
         self.community_info_button = Button(self.driver, translation_id="community-info")
+        self.invite_button = Button(self.driver, accessibility_id="invite-button")
 
         # Community info page
         self.community_membership_request_value = Text(self.driver, translation_id="members-label",
@@ -346,6 +347,7 @@ class CommunityView(HomeView):
         # Members
         self.invite_people_button = Button(self.driver, accessibility_id="community-invite-people")
         self.membership_requests_button = Button(self.driver, translation_id="membership-requests")
+        self.share_invite_button = Button(self.driver, accessibility_id="share-community-link")
 
         # Requesting access to community / joining community
         self.request_access_button = Button(self.driver, translation_id="request-access")
@@ -390,6 +392,16 @@ class CommunityView(HomeView):
             Button(self.driver, xpath="//*[starts-with(@text,'%s')]%s" % (username, decline_suffix)).click()
         self.close_button.click()
 
+    def send_invite_to_community(self, user_names_to_invite):
+        self.driver.info("Send %s invite to community" % ', '.join(map(str, user_names_to_invite)))
+        self.community_options_button.click()
+        self.community_info_button.click()
+        self.invite_button.click()
+        user_contact = self.element_by_text_part(user_names_to_invite)
+        user_contact.scroll_to_element()
+        user_contact.click()
+        self.share_invite_button.click_until_presence_of_element(self.invite_button)
+        self.back_button.click_until_presence_of_element(self.plus_button)
 
 class PreviewMessage(ChatElementByText):
     def __init__(self, driver, text: str):
@@ -415,7 +427,7 @@ class PreviewMessage(ChatElementByText):
     def preview_title(self):
         class PreviewTitle(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="/android.widget.TextView[1]")
+                super().__init__(driver, prefix=parent_locator, xpath="//android.widget.ImageView[@content-desc='member-photo']/following-sibling::android.widget.TextView[1]")
 
         return PreviewMessage.return_element_or_empty(PreviewTitle(self.driver, self.locator))
 
@@ -870,7 +882,7 @@ class ChatView(BaseView):
     def edit_message_in_chat(self, message_to_edit, message_to_update):
         self.driver.info("Looking for message '%s' to edit it" % message_to_edit)
         self.element_by_text_part(message_to_edit).long_press_element()
-        self.element_by_translation_id("edit").click()
+        self.element_by_translation_id("edit-message").click()
         self.chat_message_input.clear()
         self.chat_message_input.send_keys(message_to_update)
         self.send_message_button.click()
@@ -885,7 +897,7 @@ class ChatView(BaseView):
     def copy_message_text(self, message_text):
         self.driver.info("Copying '%s' message via long press" % message_text)
         self.element_by_text_part(message_text).long_press_element()
-        self.element_by_translation_id("copy-to-clipboard").click()
+        self.element_by_translation_id("copy-text").click()
 
     def quote_message(self, message=str):
         self.driver.info("Quoting '%s' message" % message)
