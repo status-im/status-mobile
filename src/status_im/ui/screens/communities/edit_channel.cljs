@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.communities.edit-channel
-  (:require [clojure.string :as str]
+  (:require [clojure.string :as string]
             [quo.core :as quo]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
@@ -9,7 +9,7 @@
             [status-im.ui.screens.communities.create-channel :as create-channel]))
 
 (defn valid? [community-name]
-  (not (str/blank? community-name)))
+  (not (string/blank? community-name)))
 
 (defn view []
   (let [{:keys [name]} (<sub [:communities/create-channel])]

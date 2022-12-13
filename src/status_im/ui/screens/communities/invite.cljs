@@ -10,7 +10,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.multiaccounts.core :as multiaccounts]
-            [clojure.string :as str]))
+            [clojure.string :as string]))
 
 (defn header [user-pk]
   [:<>
@@ -71,7 +71,7 @@
          [toolbar/toolbar
           {:show-border? true
            :center
-           [quo/button {:disabled (and (str/blank? @user-pk)
+           [quo/button {:disabled (and (string/blank? @user-pk)
                                        (zero? (count selected)))
                         :accessibility-label :share-community-link
                         :type     :secondary

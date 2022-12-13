@@ -2,7 +2,7 @@
   (:require [quo.react-native :as rn]
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.communities.core :as communities]
             [status-im.ui.components.toolbar :as toolbar]
@@ -17,8 +17,8 @@
 (def max-description-length 140)
 
 (defn valid? [community-name community-description]
-  (and (not (str/blank? community-name))
-       (not (str/blank? community-description))
+  (and (not (string/blank? community-name))
+       (not (string/blank? community-description))
        (<= (count community-name) max-name-length)
        (<= (count community-description) max-description-length)))
 

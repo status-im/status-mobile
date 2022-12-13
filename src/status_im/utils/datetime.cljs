@@ -7,7 +7,7 @@
                                       unparse]]
             [status-im.i18n.i18n :refer [label label-pluralize]]
             [status-im.native-module.core :as status]
-            [clojure.string :as s]
+            [clojure.string :as string]
             [status-im.goog.i18n :as goog.18n]))
 
 ;;;; Datetime constants
@@ -36,7 +36,7 @@
 (defn- is24Hour-locsym
   "Detects if given locale symbols timeformat generates AM/PM ('a')."
   [^js locsym]
-  (not (s/includes?
+  (not (string/includes?
         (nth (.-TIMEFORMATS locsym) 2)
         "a")))
 
@@ -151,7 +151,7 @@
       (.format ^js (time-fmt) datetime)
 
       (within-last-n-days? datetime 1)
-      (str (s/capitalize (label :t/datetime-yesterday))
+      (str (string/capitalize (label :t/datetime-yesterday))
            " "
            (.format ^js (time-fmt) datetime))
 

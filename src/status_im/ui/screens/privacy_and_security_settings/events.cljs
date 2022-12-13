@@ -6,12 +6,12 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
-            [clojure.string :as clojure.string]
+            [clojure.string :as string]
             [status-im.i18n.i18n :as i18n]))
 
 (defn safe-blank? [s]
   (or (not s)
-      (clojure.string/blank? s)))
+      (string/blank? s)))
 
 (re-frame/reg-fx
  ::delete-profile

@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.communities.community-emoji-thumbnail-picker
   (:require [quo.react-native :as rn]
             [quo.core :as quo]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [status-im.ui.components.react :as react]
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.communities.core :as communities]
@@ -21,7 +21,7 @@
   (let [{:keys [color]} (<sub [:communities/create-channel])
         item-color (:color item)
         key (:key key)
-        color-selected?  (= (str/lower-case item-color) (str/lower-case color))]
+        color-selected?  (= (string/lower-case item-color) (string/lower-case color))]
     [react/touchable-opacity {:key                 key
                               :accessibility-label :color-circle
                               :on-press            #(>evt  [::communities/create-channel-field :color item-color])}
@@ -29,7 +29,7 @@
       [rn/view {:style (styles/emoji-picker-color item-color)}]]]))
 
 (defn update-emoji [emoji]
-  (when-not (str/blank? emoji)
+  (when-not (string/blank? emoji)
     (>evt [::communities/create-channel-field :emoji emoji])))
 
 (defn emoji-keyboard-section []
@@ -45,4 +45,3 @@
     [thumbnail-preview-section]
     [color-picker/color-picker-section color-circle]
     [emoji-keyboard-section]]])
-

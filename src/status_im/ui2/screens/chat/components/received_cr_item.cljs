@@ -4,14 +4,14 @@
             [status-im.utils.handlers :refer [<sub >evt]]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.foundations.typography :as typography]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [status-im.utils.utils :as utils.utils]
             [status-im.utils.datetime :as time]
             [status-im.i18n.i18n :as i18n]
             [quo2.components.notifications.notification-dot :refer [notification-dot]]))
 
 (defn received-cr-item [{:keys [chat-id message timestamp read]}]
-  (let [no-ens-name  (str/blank? (get-in message [:content :ens-name]))
+  (let [no-ens-name  (string/blank? (get-in message [:content :ens-name]))
         display-name (first (<sub [:contacts/contact-two-names-by-identity chat-id]))]
     [rn/view {:style {:flex-direction :row
                       :padding-top    8
@@ -73,5 +73,3 @@
                                                     :padding-horizontal 8
                                                     :margin-left        8}}
         [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color colors/white})} (i18n/label :t/accept)]]]]]))
-
-

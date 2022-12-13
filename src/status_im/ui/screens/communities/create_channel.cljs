@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.communities.create-channel
-  (:require [clojure.string :as str]
+  (:require [clojure.string :as string]
             [quo.react-native :as rn]
             [quo.core :as quo]
             [status-im.i18n.i18n :as i18n]
@@ -13,8 +13,8 @@
             [status-im.ui.components.emoji-thumbnail.preview :as emoji-thumbnail-preview]))
 
 (defn valid? [channel-name channel-description]
-  (and (not (str/blank? channel-name))
-       (not (str/blank? channel-description))
+  (and (not (string/blank? channel-name))
+       (not (string/blank? channel-description))
        (<= (count channel-name) create/max-name-length)
        (<= (count channel-description) create/max-description-length)))
 
