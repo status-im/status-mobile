@@ -129,15 +129,15 @@
        ; message content
        [message/chat-message
         (assoc message
-          :incoming-group (and group-chat (not outgoing))
-          :group-chat group-chat
-          :public? public?
-          :community? community?
-          :current-public-key current-public-key
-          :show-input? show-input?
-          :message-pin-enabled message-pin-enabled
-          :edit-enabled edit-enabled
-          :can-delete-message-for-everyone? can-delete-message-for-everyone?)]))])
+               :incoming-group (and group-chat (not outgoing))
+               :group-chat group-chat
+               :public? public?
+               :community? community?
+               :current-public-key current-public-key
+               :show-input? show-input?
+               :message-pin-enabled message-pin-enabled
+               :edit-enabled edit-enabled
+               :can-delete-message-for-everyone? can-delete-message-for-everyone?)]))])
 
 (defn messages-list [{:keys [chat
                              bottom-space
