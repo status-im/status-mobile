@@ -16,10 +16,14 @@
 (defn contact-list [data]
   (let [contacts (if (:group data) (rf/sub [:contacts/add-members-sections]) (rf/sub [:contacts/filtered-active-sections]))]
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 7ce2b16e0... group details screen 3
 =======
     (println "QQQ" contacts)
 >>>>>>> 643650b78... refactor
+=======
+    (println "aaa" contacts)
+>>>>>>> 8d6824bd0... tests
     [rn/section-list
      {:key-fn                         :title
       :sticky-section-headers-enabled false
