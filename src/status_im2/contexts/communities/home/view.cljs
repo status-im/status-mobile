@@ -46,20 +46,25 @@
     :render-fn                         render-fn}])
 
 (defn segments-community-lists [selected-tab]
-  (let [communities (rf/sub [:communities/community-ids])
+  (let [ids-by-user-involvement (rf/sub [:communities/community-ids-by-user-involvement])
         tab @selected-tab]
     [rn/view {:style {:padding-left     20
                       :padding-right    8
                       :padding-vertical 12}}
      (case tab
        :joined
-       [communities-list communities]
+       [communities-list (:joined ids-by-user-involvement)]
 
        :pending
-       [communities-list communities]
+       [communities-list (:pending ids-by-user-involvement)]
 
        :opened
-       [communities-list communities])]))
+       [communities-list (:opened ids-by-user-involvement)]
+
+       [quo/information-box
+        {:type :error
+         :icon :i/info}
+        (i18n/label :t/error)])]))
 
 (defn home []
   (let [selected-tab (reagent/atom :joined)]

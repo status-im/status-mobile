@@ -91,12 +91,12 @@
  :<- [:communities]
  (fn [[communities-enabled? search-filter communities]]
    (filterv
-    (fn [{:keys [name joined id]}]
-      (and joined
-           (or communities-enabled?
-               (= id constants/status-community-id))
-           (or (empty? search-filter)
-               (string/includes? (string/lower-case (str name)) search-filter))))
+    (fn [{:keys [name id]}]
+      (and
+       (or communities-enabled?
+           (= id constants/status-community-id))
+       (or (empty? search-filter)
+           (string/includes? (string/lower-case (str name)) search-filter))))
     (vals communities))))
 
 (re-frame/reg-sub
@@ -104,6 +104,25 @@
  :<- [:communities/communities]
  (fn [communities]
    (map :id communities)))
+
+(re-frame/reg-sub
+ :communities/community-ids-by-user-involvement
+ :<- [:communities/communities]
+ ;; Return communities splitted by level of user participation. Some communities user
+ ;; already joined, to some of them join request sent and others were opened one day
+ ;; and their data remained in app-db.
+ ;; Result map has form: {:joined [id1, id2] :pending [id3, id5] :opened [id4]}"
+ (fn [communities]
+   (reduce (fn [acc community]
+             (let [joined? (:joined community)
+                   requested? (pos? (:requested-to-join-at community))
+                   id (:id community)]
+               (cond
+                 joined?    (update acc :joined conj id)
+                 requested? (update acc :pending conj id)
+                 :else      (update acc :opened conj id))))
+           {:joined [] :pending [] :opened []}
+           communities)))
 
 (defn community->home-item [community counts]
   {:name                  (:name community)
