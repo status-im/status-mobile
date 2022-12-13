@@ -240,7 +240,7 @@
 
   If this relationship ever changes, we will probably need to change the backend
   to explicitly support fetching notifications for 'pending' contact requests."
-  {:events [:activity-center.notifications/fetch-latest-unread-contact-requests]}
+  {:events [:activity-center.notifications/fetch-unread-contact-requests]}
   [cofx]
   (notifications-fetch cofx {:cursor        start-or-end-cursor
                              :filter-status :unread
