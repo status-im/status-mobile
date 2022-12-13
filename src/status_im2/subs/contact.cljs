@@ -100,6 +100,7 @@
  :<- [:contacts/current-chat-contacts]
  :<- [:contacts/active]
  (fn [[members contacts]]
+   (println "mmm" members contacts)
    (-> (reduce
         (fn [acc contact]
           (let [first-char (first (:alias contact))]
