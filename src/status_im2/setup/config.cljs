@@ -138,7 +138,3 @@
 
 ;;TODO for development only should be removed in status 2.0
 (def new-ui-enabled? true)
-
-;; TODO: Remove this (highly) temporary flag once the new Activity Center is
-;; usable enough to replace the old one **in the new UI**.
-(def new-activity-center-enabled? true)
