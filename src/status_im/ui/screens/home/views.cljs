@@ -133,8 +133,7 @@
                        (if config/new-ui-enabled?
                          (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                          (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
-                       (re-frame/dispatch [:search/home-filter-changed nil])
-                       (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
+                       (re-frame/dispatch [:search/home-filter-changed nil]))
       :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                           {:content (fn []
                                                       [sheets/actions home-item])}])}]
@@ -150,8 +149,7 @@
                        (if config/new-ui-enabled?
                          (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                          (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
-                       (re-frame/dispatch [:search/home-filter-changed nil])
-                       (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
+                       (re-frame/dispatch [:search/home-filter-changed nil]))
       :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                           {:content (fn []
                                                       [sheets/actions home-item])}])}]
