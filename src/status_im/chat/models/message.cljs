@@ -205,7 +205,7 @@
                                                                              #(re-frame/dispatch [:chat/decrease-unviewed-count chat-id %3]))))
                                  removed-messages)
         remove-messages-fx (fn [{:keys [db]}]
-                             {:dispatch-n [[:get-activity-center-notifications]
+                             {:dispatch-n [[:activity-center.notifications/fetch-latest-unread-contact-requests]
                                            [:activity-center.notifications/fetch-unread-count]]})]
     (apply fx/merge cofx (-> mark-as-deleted-fx
                              (concat mark-as-seen-fx)

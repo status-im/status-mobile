@@ -56,7 +56,7 @@
 (defn tabs []
   (let [selected-tab (reagent/atom :recent)]
     (fn []
-      (let [contact-requests (rf/sub [:activity.center/notifications-contact-requests])]
+      (let [contact-requests (rf/sub [:activity-center/pending-contact-requests])]
         [:<>
          [quo/discover-card {:title       (i18n/label :t/invite-friends-to-status)
                              :description (i18n/label :t/share-invite-link)}]

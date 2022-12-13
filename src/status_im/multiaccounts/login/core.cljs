@@ -32,7 +32,6 @@
             [status-im.chat.models.link-preview :as link-preview]
             [status-im.utils.mobile-sync :as utils.mobile-sync]
             [status-im.async-storage.core :as async-storage]
-            [status-im.notifications-center.core :as notifications-center]
             [status-im.activity-center.core :as activity-center]
             [status-im2.navigation.events :as navigation]
             [status-im.signing.eip1559 :as eip1559]
@@ -393,7 +392,7 @@
               (get-node-config)
               (communities/fetch)
               (logging/set-log-level (:log-level multiaccount))
-              (notifications-center/get-activity-center-notifications)
+              (activity-center/notifications-fetch-unread-contact-requests {:per-page 20})
               (activity-center/notifications-fetch-unread-count))))
 
 (re-frame/reg-fx
