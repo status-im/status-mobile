@@ -19,6 +19,7 @@
             [status-im2.contexts.quo-preview.community.community-membership-list-view :as community-membership-list-view]
             [status-im2.contexts.quo-preview.community.discover-card :as discover-card]
             [status-im2.contexts.quo-preview.dividers.divider-label :as divider-label]
+            [status-im2.contexts.quo-preview.dividers.date :as divider-date]
             [status-im2.contexts.quo-preview.dividers.new-messages :as new-messages]
             [status-im2.contexts.quo-preview.drawers.action-drawers :as drawers]
             [status-im2.contexts.quo-preview.dropdowns.dropdown :as dropdown]
@@ -107,7 +108,10 @@
                :component divider-label/preview-divider-label}
               {:name      :new-messages
                :insets    {:top false}
-               :component new-messages/preview-new-messages}]
+               :component new-messages/preview-new-messages}
+              {:name      :divider-date
+               :insets    {:top false}
+               :component divider-date/preview-divider-date}]
    :drawers [{:name      :action-drawers
               :insets    {:top false}
               :component drawers/preview-action-drawers}]

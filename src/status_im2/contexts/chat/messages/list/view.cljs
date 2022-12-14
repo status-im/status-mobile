@@ -8,7 +8,6 @@
             [oops.core :as oops]
             [react-native.background-timer :as background-timer]
             [status-im2.common.constants :as constants]
-            [quo2.components.dividers.date :as divider-date]
 
             ;;TODO move to status-im2
             [status-im.ui2.screens.chat.messages.message :as message]
@@ -121,7 +120,7 @@
                          chat-id show-input? message-pin-enabled edit-enabled in-pinned-view? can-delete-message-for-everyone?]}]
   [rn/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
-     [divider-date/date (:value message)]
+     [quo/divider-date (:value message)]
      (if (= type :gap)
        ;; TODO (flexsurfer) new gap functionality is not implemented yet
        [gap/gap message idx messages-list-ref false chat-id]
