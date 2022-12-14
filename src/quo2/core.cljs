@@ -40,7 +40,8 @@
             quo2.components.tags.status-tags
             quo2.components.navigation.page-nav
             quo2.components.selectors.disclaimer
-            quo2.components.selectors.selectors))
+            quo2.components.selectors.selectors
+            quo2.components.loaders.skeleton))
 
 (def button quo2.components.buttons.button/button)
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
@@ -68,6 +69,8 @@
 (def page-nav quo2.components.navigation.page-nav/page-nav)
 (def disclaimer quo2.components.selectors.disclaimer/disclaimer)
 (def checkbox quo2.components.selectors.selectors/checkbox)
+(def skeleton quo2.components.loaders.skeleton/skeleton)
+
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
 (def channel-avatar quo2.components.avatars.channel-avatar/channel-avatar)
@@ -88,10 +91,7 @@
 (def discover-card quo2.components.community.discover-card/discover-card)
 (def token-gating quo2.components.community.token-gating/token-gating)
 
-
 ;;;; DIVIDERS
-
-
 (def divider-label quo2.components.dividers.divider-label/divider-label)
 (def new-messages quo2.components.dividers.new-messages/new-messages)
 

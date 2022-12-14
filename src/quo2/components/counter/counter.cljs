@@ -38,7 +38,8 @@
                      1     16
                      2     20
                      28)]
-    [rn/view {:accessible true
+    [rn/view {:test-ID :counter-component
+              :accessible true
               :accessibility-label accessibility-label
               :style (cond-> (merge
                               {:align-items     :center

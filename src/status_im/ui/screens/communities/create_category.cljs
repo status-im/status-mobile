@@ -6,14 +6,14 @@
             [quo.core :as quo]
             [utils.debounce :as debounce]
             [status-im.i18n.i18n :as i18n]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.communities.core :as communities]
             [reagent.core :as reagent]))
 
 (defn valid? [category-name]
-  (and (not (str/blank? category-name))
+  (and (not (string/blank? category-name))
        (<= (count category-name) 30)))
 
 (def selected-items (reagent/atom #{}))

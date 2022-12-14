@@ -4,8 +4,8 @@
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
-            [status-im.ui.screens.chat.components.messages-skeleton :as messages-skeleton]
-            [status-im.ui.screens.chat.styles.input.gap :as style]))
+            [status-im.ui.screens.chat.styles.input.gap :as style]
+            [quo2.core :as quo2]))
 
 (defn on-press
   [chat-id gap-ids]
@@ -29,7 +29,7 @@
          :style    {:height (if in-progress? window-height 48)}}
         [react/view {:style style/label-container}
          (if in-progress?
-           [messages-skeleton/messages-skeleton window-height]
+           [quo2/skeleton window-height]
            [react/nested-text
             {:style (style/gap-text (and connected? use-status-nodes?))}
             (i18n/label (if first-gap? :t/load-more-messages :t/fetch-messages))

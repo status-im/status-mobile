@@ -5,7 +5,6 @@
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
             [reagent.core :as reagent]
-            [status-im.chat.models.pin-message :as models.pin-message]
             [status-im.ui.components.list.views :as list]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.ui.screens.chat.message.message :as message]))
@@ -76,10 +75,10 @@
        (i18n/label :t/cancel)]
       [quo/button
        {:on-press #(do
-                     (re-frame/dispatch [::models.pin-message/send-pin-message {:chat-id    (message :chat-id)
-                                                                                :message-id @selected-unpin
-                                                                                :pinned    false}])
-                     (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned true)])
+                     (re-frame/dispatch [:pin-message/send-pin-message {:chat-id    (message :chat-id)
+                                                                        :message-id @selected-unpin
+                                                                        :pinned    false}])
+                     (re-frame/dispatch [:pin-message/send-pin-message (assoc message :pinned true)])
                      (re-frame/dispatch [:hide-popover])
                      (reset! selected-unpin nil))
         :type :secondary

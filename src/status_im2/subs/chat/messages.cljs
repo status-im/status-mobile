@@ -3,7 +3,7 @@
             [status-im.chat.db :as chat.db]
             [status-im.chat.models.message-list :as models.message-list]
             [status-im.chat.models.reactions :as models.reactions]
-            [status-im.constants :as constants]
+            [status-im2.common.constants :as constants]
             [status-im.utils.datetime :as datetime]))
 
 (re-frame/reg-sub

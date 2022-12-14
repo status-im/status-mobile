@@ -18,7 +18,7 @@
             [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.wallet.utils :as wallet.utils]
-            [clojure.string :as str]))
+            [clojure.string :as string]))
 
 (defn render-asset [{{:keys
                       [icon decimals amount color value]
@@ -378,7 +378,7 @@
                                              :ignore-offset true}
      [topbar/topbar
       {:title    name
-       :subtitle (str/upper-case (i18n/label :t/powered-by-paraswap))
+       :subtitle (string/upper-case (i18n/label :t/powered-by-paraswap))
        :modal?   true}]
 
      [react/view (merge {:padding-horizontal 16
@@ -430,4 +430,3 @@
       {:show-border? true
        :right        [quo/button {:theme :accent}
                       (i18n/label :t/swap)]}]]))
-

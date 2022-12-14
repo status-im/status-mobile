@@ -2,7 +2,7 @@
   (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [quo2.components.markdown.text :as text]
-            [clojure.string :as clojure-string]))
+            [clojure.string :as string]))
 
 (def circle-sizes {:small 20
                    :medium 32
@@ -29,10 +29,10 @@
   (let [circle-size    (size circle-sizes)
         small?         (= size :small)
         f-name-initial (-> f-name
-                           clojure-string/upper-case
+                           string/upper-case
                            (subs 0 1))
         l-name-initial (-> l-name
-                           clojure-string/upper-case
+                           string/upper-case
                            (subs 0 1))
         circle-color   (colors/custom-color color 50 20)
         text-color     (colors/custom-color-by-theme color 50 60)]

@@ -30,10 +30,12 @@
 
 (defn left-section-view [{:keys [on-press icon accessibility-label type] :or {type :grey}}
                          put-middle-section-on-left?]
-  [rn/view {:style (merge
-                    {:accessibility-label accessibility-label}
-                    (when put-middle-section-on-left? {:margin-right 5}))}
-   [button/button {:on-press on-press :icon true :type type :size 32}
+  [rn/view {:style (when put-middle-section-on-left? {:margin-right 5})}
+   [button/button {:on-press            on-press
+                   :icon                true
+                   :type                type
+                   :size                32
+                   :accessibility-label accessibility-label}
     icon]])
 
 (defn- mid-section-comp

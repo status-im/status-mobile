@@ -1,7 +1,7 @@
 (ns quo2.components.code.snippet
   (:require ["react-native" :as react-native]
             [cljs-bean.core :as bean]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [oops.core :as oops]
             [react-native.core :as rn]
             [quo2.theme :as theme]
@@ -52,7 +52,7 @@
                              :style (text-style (get-in node [:properties :className]))}]
                  (render-nodes children))
            ;; Remove newlines as we already render each line separately.
-           (-> value str/trim-newline)))
+           (-> value string/trim-newline)))
        nodes))
 
 (defn- code-block [{:keys [rows line-number-width]}]

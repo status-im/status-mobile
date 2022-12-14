@@ -7,7 +7,7 @@
             [quo.design-system.colors :as colors]
             [status-im.utils.money :as money]
             [status-im.ui.components.icons.icons :as icons]
-            [clojure.string :as clojure.string]
+            [clojure.string :as string]
             [status-im.signing.gas :as gas]
             [reagent.core :as reagent]))
 
@@ -211,7 +211,7 @@
       [react/text {:style {:margin-top 12}
                    :accessibility-label :slow-fee
                    :on-press #(re-frame/dispatch [:signing.edit-fee.ui/set-option :slow])}
-       (clojure.string/join
+       (string/join
         " "
         [(str (i18n/label :t/slow) ":")
          (str (:base-fee slow) " gwei")
@@ -221,7 +221,7 @@
       [react/text {:style {:margin-top 12}
                    :accessibility-label :normal-fee
                    :on-press #(re-frame/dispatch [:signing.edit-fee.ui/set-option :normal])}
-       (clojure.string/join
+       (string/join
         " "
         [(str (i18n/label :t/normal) ":")
          (str (:base-fee normal) " gwei")
@@ -232,7 +232,7 @@
       [react/text {:style {:margin-top 12}
                    :accessibility-label :fast-fee
                    :on-press #(re-frame/dispatch [:signing.edit-fee.ui/set-option :fast])}
-       (clojure.string/join
+       (string/join
         " "
         [(str (i18n/label :t/fast) ":")
          (str (:base-fee fast) " gwei")
@@ -241,7 +241,7 @@
            "<- selected")])]
       (when (= :custom option)
         [react/text {:style {:margin-top 12}}
-         (clojure.string/join
+         (string/join
           " "
           [(str (i18n/label :t/custom) ":")
            (str (-> fee-edit

@@ -6,14 +6,14 @@
             [utils.re-frame :as rf]
             [utils.debounce :as debounce]
             [quo2.core :as quo]
-            [status-im.constants :as constants]
+            [status-im2.common.constants :as constants]
             [status-im2.navigation.state :as navigation.state]
+            [status-im2.contexts.chat.messages.list.view :as messages.list]
+            [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
 
             ;;TODO move to status-im2
-            [status-im.ui2.screens.chat.composer.view :as composer]
-            [status-im.ui2.screens.chat.messages.view :as messages]
-            [status-im.ui2.screens.chat.messages.pinned-message :as pinned-message]
-            [status-im.ui2.screens.chat.messages.message :as message]))
+            [status-im.ui2.screens.chat.pin-limit-popover.view :as pin-limit-popover]
+            [status-im.ui2.screens.chat.composer.view :as composer]))
 
 (defn navigate-back-handler []
   (when (and (not @navigation.state/curr-modal) (= (get @re-frame.db/app-db :view-id) :chat))
@@ -52,7 +52,7 @@
        :accessibility-label :back-button}
 
       :right-section-buttons
-      [{:on-press            #() ;; TODO not implemented
+      [{:on-press            #()                            ;; TODO not implemented
         :icon                :i/options
         :accessibility-label :options-button}]}]))
 
@@ -62,10 +62,11 @@
         mutual-contact-requests-enabled? (rf/sub [:mutual-contact-requests/enabled?])]
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [page-nav]
-     [pinned-message/pin-limit-popover chat-id message/pinned-messages-list]
-     [message/pinned-banner chat-id]
+     ;; TODO (flexsurfer) this should be in-app notification component in quo2 https://github.com/status-im/status-mobile/issues/14527
+     [pin-limit-popover/pin-limit-popover chat-id]
+     [pin.banner/banner chat-id]
      ;;MESSAGES LIST
-     [messages/messages-view
+     [messages.list/messages-list
       {:chat                             chat
        :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
        :show-input?                      show-input?

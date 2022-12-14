@@ -1123,6 +1123,7 @@
     "repeat-pin": "Repeat new 6-digit passcode",
     "repeat-puk": "Repeat new 12-digit PUK",
     "report-bug-email-template": "1. Issue Description\n{{description}}\n\n\n2. Steps to reproduce\n{{steps}}\n\n\n3. Attach screenshots that can demo the problem, please\n",
+    "request-processed-after-node-online": "Your request will be processed once the community owner node is back online.",
     "request-transaction": "Request transaction",
     "required-field": "Required field",
     "resend-message": "Resend",

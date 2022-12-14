@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.collectibles.views
   (:require [re-frame.core :as re-frame]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
             [status-im.utils.handlers :refer [<sub]]
@@ -22,12 +22,12 @@
 
 (defn is-image? [nft]
   (and (seq (:image_url nft))
-       (not (str/ends-with? (:image_url nft) ".svg"))
-       (not (str/ends-with? (:image_url nft) ".mp4"))))
+       (not (string/ends-with? (:image_url nft) ".svg"))
+       (not (string/ends-with? (:image_url nft) ".mp4"))))
 
 (defn is-vector? [nft]
   (and (seq (:image_url nft))
-       (str/ends-with? (:image_url nft) ".svg")))
+       (string/ends-with? (:image_url nft) ".svg")))
 
 (defn missing-image-placeholder []
   [react/view {:style {:width            "100%"

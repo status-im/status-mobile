@@ -1,6 +1,6 @@
 (ns quo2.components.icons.icons
   (:require [clojure.java.io :as io]
-            [clojure.string :as cstr]))
+            [clojure.string :as string]))
 
 (def icon-path "./resources/images/icons2/")
 
@@ -13,17 +13,17 @@
   (fn [el]
     (let [s (combine-path path el)
           k (-> el
-                (cstr/replace "_" "-")
-                (cstr/replace " " "-")
-                (cstr/lower-case)
+                (string/replace "_" "-")
+                (string/replace " " "-")
+                (string/lower-case)
                 (str size))]
       [k `(js/require ~s)])))
 
 (defn get-files [path]
   (->> (io/file path)
        file-seq
-       (filter #(cstr/ends-with? % "png"))
-       (map #(first (cstr/split (.getName %) #"@")))
+       (filter #(string/ends-with? % "png"))
+       (map #(first (string/split (.getName %) #"@")))
        distinct))
 
 (defn get-icons [size]

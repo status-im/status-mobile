@@ -1,10 +1,10 @@
 (ns status-im.ethereum.macros
   (:require [clojure.java.io :as io]
-            [clojure.string :as cstr]))
+            [clojure.string :as string]))
 
 (defn token-icon-path [path]
   (fn [el]
-    (let [el    (cstr/replace el ".png" "")
+    (let [el    (string/replace el ".png" "")
           s     (str path el ".png")
           s-js  (str "." s)]
       (when (.exists (io/file s))
@@ -17,8 +17,8 @@
   (let [path (str "./resources/images/tokens/" (name network) "/")
         files (->> (io/file path)
                    file-seq
-                   (filter #(cstr/ends-with? % "png"))
-                   (map #(first (cstr/split (.getName %) #"@")))
+                   (filter #(string/ends-with? % "png"))
+                   (map #(first (string/split (.getName %) #"@")))
                    distinct)]
     (into {} (map (token-icon-path path) files))))
 

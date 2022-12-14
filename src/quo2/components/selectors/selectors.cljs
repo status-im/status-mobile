@@ -43,7 +43,8 @@
                                        (colors/alpha colors/neutral-20 (if disabled? 0.3 1))
                                        (colors/alpha colors/neutral-70 (if disabled? 0.3 1))))})
          :accessibility-label (str "checkbox-" (if @checked? "on" "off"))
-         :accessibility-role  :checkbox}
+         :accessibility-role  :checkbox
+         :testID "checkbox-prefill-component"}
         (when @checked?
           [rn/view {:style
                     {:height 20
@@ -82,7 +83,8 @@
                   :border-color     (if @checked? :none
                                         (get-color @checked? disabled? blurred-background?))}
           :accessibility-label (str "checkbox-" (if @checked? "on" "off"))
-          :accessibility-role  :checkbox}
+          :accessibility-role  :checkbox
+          :testID "checkbox-component"}
          (when @checked?
            [rn/view {:style
                      {:height 20
@@ -108,7 +110,8 @@
                                       (colors/theme-colors colors/white
                                                            (colors/alpha colors/neutral-80 0.4)))})
          :accessibility-label (str "radio-" (if @checked? "on" "off"))
-         :accessibility-role  :checkbox}
+         :accessibility-role  :checkbox
+         :testID "radio-component"}
 
         [rn/view {:style
                   {:margin-left :auto

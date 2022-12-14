@@ -8,8 +8,7 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]
-            [quo.core :as quo]
-            [status-im.chat.models.pin-message :as models.pin-message]))
+            [quo.core :as quo]))
 
 (defn hide-sheet-and-dispatch [event]
   (re-frame/dispatch [:bottom-sheet/hide])
@@ -28,7 +27,7 @@
        :chevron             true
        :on-press            #(do
                                (hide-sheet-and-dispatch  [:chat.ui/show-profile chat-id])
-                               (re-frame/dispatch [::models.pin-message/load-pin-messages chat-id]))}]
+                               (re-frame/dispatch [:pin-message/load-pin-messages chat-id]))}]
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/mark-all-read)
@@ -89,7 +88,7 @@
        :accessibility-label :view-community-channel-details
        :on-press            #(do
                                (hide-sheet-and-dispatch [:navigate-to :community-channel-details {:chat-id chat-id}])
-                               (re-frame/dispatch [::models.pin-message/load-pin-messages chat-id]))}]
+                               (re-frame/dispatch [:pin-message/load-pin-messages chat-id]))}]
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/mark-all-read)
@@ -118,7 +117,7 @@
            :chevron  true
            :on-press #(do
                         (hide-sheet-and-dispatch [:show-group-chat-profile chat-id])
-                        (re-frame/dispatch [::models.pin-message/load-pin-messages chat-id]))}]
+                        (re-frame/dispatch [:pin-message/load-pin-messages chat-id]))}]
          [quo/list-item
           {:theme               :accent
            :title               (i18n/label :t/mark-all-read)

@@ -1,7 +1,7 @@
 (ns status-im2.subs.chat.chats
   (:require [re-frame.core :as re-frame]
             [clojure.string :as string]
-            [status-im.constants :as constants]
+            [status-im2.common.constants :as constants]
             [quo.design-system.colors :as colors]
             [status-im.chat.models :as chat.models]
             [status-im.communities.core :as communities]
