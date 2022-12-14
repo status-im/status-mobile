@@ -4,7 +4,6 @@
             [i18n.i18n :as i18n]
             [react-native.core :as rn]
             [quo2.core :as quo]
-            [quo.react :as react]
             [utils.re-frame :as rf]
             [status-im2.common.home.view :as common.home]
             [status-im2.contexts.chat.home.contact-request.view :as contact-request]
@@ -56,29 +55,27 @@
 
 (defn tabs []
   (let [selected-tab (reagent/atom :recent)]
-    [:f>
-     (fn []
-       (react/effect! #(rf/dispatch [:activity-center.notifications/fetch-unread-contact-requests]))
-       (let [contact-requests (rf/sub [:activity-center/pending-contact-requests])]
-         [:<>
-          [quo/discover-card {:title       (i18n/label :t/invite-friends-to-status)
-                              :description (i18n/label :t/share-invite-link)}]
-          [quo/tabs {:style          {:margin-left   20
-                                      :margin-bottom 20
-                                      :margin-top    24}
-                     :size           32
-                     :on-change      #(reset! selected-tab %)
-                     :default-active @selected-tab
-                     :data           [{:id    :recent
-                                       :label (i18n/label :t/recent)}
-                                      {:id    :groups
-                                       :label (i18n/label :t/groups)}
-                                      {:id                :contacts
-                                       :label             (i18n/label :t/contacts)
-                                       :notification-dot? (pos? (count contact-requests))}]}]
-          (if (= @selected-tab :contacts)
-            [contacts contact-requests]
-            [chats @selected-tab])]))]))
+    (fn []
+      (let [contact-requests (rf/sub [:activity-center/pending-contact-requests])]
+        [:<>
+         [quo/discover-card {:title       (i18n/label :t/invite-friends-to-status)
+                             :description (i18n/label :t/share-invite-link)}]
+         [quo/tabs {:style          {:margin-left   20
+                                     :margin-bottom 20
+                                     :margin-top    24}
+                    :size           32
+                    :on-change      #(reset! selected-tab %)
+                    :default-active @selected-tab
+                    :data           [{:id    :recent
+                                      :label (i18n/label :t/recent)}
+                                     {:id    :groups
+                                      :label (i18n/label :t/groups)}
+                                     {:id                :contacts
+                                      :label             (i18n/label :t/contacts)
+                                      :notification-dot? (pos? (count contact-requests))}]}]
+         (if (= @selected-tab :contacts)
+           [contacts contact-requests]
+           [chats @selected-tab])]))))
 
 (defn home []
   [:<>
