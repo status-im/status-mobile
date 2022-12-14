@@ -229,6 +229,7 @@
 (defn custom-hex-color [color light-opacity dark-opacity]
   (str color (opacity->hex (if (theme/dark?) dark-opacity light-opacity))))
 
+;; TODO (OmarBasem): custom-color-by-theme supports only string colors, so maybe we can get rid of it.
 (defn custom-color-by-theme
   "(custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark)
    color         :primary/:purple/...
