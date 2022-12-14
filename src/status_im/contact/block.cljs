@@ -6,7 +6,7 @@
             [status-im.data-store.contacts :as contacts-store]
             [status-im2.navigation.events :as navigation]
             [status-im.utils.types :as types]
-            [status-im.notifications-center.core :as notification-center]
+            [status-im.activity-center.core :as activity-center]
             [status-im.utils.fx :as fx]))
 
 (fx/defn clean-up-chat
@@ -47,7 +47,7 @@
                     (assoc-in [:contacts/contacts public-key :added] false))
             :clear-message-notifications
             [[public-key] (get-in db [:multiaccount :remote-push-notifications-enabled?])]}
-           (notification-center/get-activity-center-notifications-count)
+           (activity-center/notifications-fetch-unread-count)
            fxs)))
 
 (fx/defn block-contact

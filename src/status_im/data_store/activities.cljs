@@ -1,10 +1,8 @@
 (ns status-im.data-store.activities
   (:require [clojure.set :as set]
-            [quo.design-system.colors :as colors]
             [status-im.constants :as constants]
             [status-im.activity-center.notification-types :as notification-types]
-            [status-im.data-store.messages :as messages]
-            [status-im2.setup.config :as config]))
+            [status-im.data-store.messages :as messages]))
 
 (defn- rpc->type [{:keys [type name] :as chat}]
   (case type
@@ -35,15 +33,13 @@
     chat))
 
 (defn <-rpc [item]
-  (cond-> (-> item
-              rpc->type
-              (set/rename-keys {:lastMessage               :last-message
-                                :replyMessage              :reply-message
-                                :chatId                    :chat-id
-                                :contactVerificationStatus :contact-verification-status})
-              (update :last-message #(when % (messages/<-rpc %)))
-              (update :message #(when % (messages/<-rpc %)))
-              (update :reply-message #(when % (messages/<-rpc %)))
-              (dissoc :chatId))
-    (not config/new-activity-center-enabled?)
-    (assoc :color (rand-nth colors/chat-colors))))
+  (-> item
+      rpc->type
+      (set/rename-keys {:lastMessage               :last-message
+                        :replyMessage              :reply-message
+                        :chatId                    :chat-id
+                        :contactVerificationStatus :contact-verification-status})
+      (update :last-message #(when % (messages/<-rpc %)))
+      (update :message #(when % (messages/<-rpc %)))
+      (update :reply-message #(when % (messages/<-rpc %)))
+      (dissoc :chatId)))

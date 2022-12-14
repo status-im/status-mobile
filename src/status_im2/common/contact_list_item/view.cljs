@@ -15,8 +15,7 @@
       (if platform/android?
         (rf/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
         (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))
-      (rf/dispatch [:search/home-filter-changed nil])
-      (rf/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))))
+      (rf/dispatch [:search/home-filter-changed nil]))))
 
 (defn action-icon [{:keys [public-key] :as item} {:keys [icon group added] :as extra-data}]
   (let [{:keys [contacts]} group
@@ -62,4 +61,3 @@
        (utils.address/get-shortened-address public-key)]]
      (when-not (= current-pk public-key)
        [action-icon item extra-data])]))
-

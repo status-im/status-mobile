@@ -178,13 +178,14 @@
     99))
 
 (fx/defn notifications-fetch
-  [{:keys [db]} {:keys [cursor filter-type filter-status reset-data?]}]
+  [{:keys [db]} {:keys [cursor per-page filter-type filter-status reset-data?]}]
   (when-not (get-in db [:activity-center :notifications filter-type filter-status :loading?])
-    {:db             (assoc-in db [:activity-center :notifications filter-type filter-status :loading?] true)
-     ::json-rpc/call [{:method     "wakuext_activityCenterNotificationsBy"
-                       :params     [cursor (defaults :notifications-per-page) filter-type (status filter-status)]
-                       :on-success #(rf/dispatch [:activity-center.notifications/fetch-success filter-type filter-status reset-data? %])
-                       :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error filter-type filter-status %])}]}))
+    (let [per-page (or per-page (defaults :notifications-per-page))]
+      {:db             (assoc-in db [:activity-center :notifications filter-type filter-status :loading?] true)
+       ::json-rpc/call [{:method     "wakuext_activityCenterNotificationsBy"
+                         :params     [cursor per-page filter-type (status filter-status)]
+                         :on-success #(rf/dispatch [:activity-center.notifications/fetch-success filter-type filter-status reset-data? %])
+                         :on-error   #(rf/dispatch [:activity-center.notifications/fetch-error filter-type filter-status %])}]})))
 
 (fx/defn notifications-fetch-first-page
   {:events [:activity-center.notifications/fetch-first-page]}
@@ -230,6 +231,35 @@
                         (if reset-data?
                           (constantly processed)
                           #(concat %1 processed))))}))
+
+(fx/defn notifications-fetch-unread-contact-requests
+  "Unread contact requests are, in practical terms, the same as pending contact
+  requests in the new Activity Center, because pending contact requests are
+  always marked as unread, and once the user declines/accepts the request, they
+  are marked as read.
+
+  If this relationship ever changes, we will probably need to change the backend
+  to explicitly support fetching notifications for 'pending' contact requests."
+  {:events [:activity-center.notifications/fetch-unread-contact-requests]}
+  [cofx]
+  (notifications-fetch cofx {:cursor        start-or-end-cursor
+                             :filter-status :unread
+                             :filter-type   types/contact-request
+                             :per-page      20
+                             :reset-data?   true}))
+
+(fx/defn notifications-fetch-unread-count
+  {:events [:activity-center.notifications/fetch-unread-count]}
+  [_]
+  {::json-rpc/call [{:method     "wakuext_unreadActivityCenterNotificationsCount"
+                     :params     []
+                     :on-success #(rf/dispatch [:activity-center.notifications/fetch-unread-count-success %])
+                     :on-error   #()}]})
+
+(fx/defn notifications-fetch-unread-count-success
+  {:events [:activity-center.notifications/fetch-unread-count-success]}
+  [{:keys [db]} result]
+  {:db (assoc-in db [:activity-center :unread-count] result)})
 
 (fx/defn notifications-fetch-error
   {:events [:activity-center.notifications/fetch-error]}

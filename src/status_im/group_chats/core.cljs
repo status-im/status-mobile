@@ -9,7 +9,7 @@
             [status-im.utils.fx :as fx]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
-            [status-im.notifications-center.core :as notification-center]))
+            [status-im.activity-center.core :as activity-center]))
 
 (fx/defn navigate-chat-updated
   {:events [:navigate-chat-updated]}
@@ -24,7 +24,7 @@
             {:db         (dissoc (:db cofx) :current-chat-id)
              :dispatch-n [[:sanitize-messages-and-process-response response]
                           [:pop-to-root-tab :chat-stack]]}
-            (notification-center/get-activity-center-notifications-count)))
+            (activity-center/notifications-fetch-unread-count)))
 
 (fx/defn handle-chat-update
   {:events [:chat-updated]}
@@ -62,8 +62,7 @@
 (fx/defn create-from-link
   [cofx {:keys [chat-id invitation-admin chat-name]}]
   (if (get-in cofx [:db :chats chat-id])
-    {:dispatch-n [[:accept-all-activity-center-notifications-from-chat chat-id]
-                  [:chat.ui/navigate-to-chat chat-id]]}
+    {:dispatch [:chat.ui/navigate-to-chat chat-id]}
     {::json-rpc/call [{:method      "wakuext_createGroupChatFromInvitation"
                        :params      [chat-name chat-id invitation-admin]
                        :js-response true

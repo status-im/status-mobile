@@ -3,16 +3,13 @@
             [status-im2.navigation.events :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.chat.models :as chat]
-            [status-im.contact.core :as contact]
-            [status-im.notifications-center.core :as notification-center]))
+            [status-im.contact.core :as contact]))
 
 (fx/defn send-message-pressed
   {:events       [:contact.ui/send-message-pressed]
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [cofx {:keys [public-key ens-name]}]
-  (fx/merge cofx
-            (chat/start-chat public-key ens-name)
-            (notification-center/accept-all-activity-center-notifications-from-chat public-key)))
+  (chat/start-chat cofx public-key ens-name))
 
 (fx/defn contact-code-submitted
   {:events       [:contact.ui/contact-code-submitted]

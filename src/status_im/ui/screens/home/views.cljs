@@ -133,8 +133,7 @@
                        (if config/new-ui-enabled?
                          (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                          (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
-                       (re-frame/dispatch [:search/home-filter-changed nil])
-                       (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
+                       (re-frame/dispatch [:search/home-filter-changed nil]))
       :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                           {:content (fn []
                                                       [sheets/actions home-item])}])}]
@@ -150,8 +149,7 @@
                        (if config/new-ui-enabled?
                          (re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 chat-id])
                          (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id]))
-                       (re-frame/dispatch [:search/home-filter-changed nil])
-                       (re-frame/dispatch [:accept-all-activity-center-notifications-from-chat chat-id]))
+                       (re-frame/dispatch [:search/home-filter-changed nil]))
       :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                           {:content (fn []
                                                       [sheets/actions home-item])}])}]
@@ -248,36 +246,15 @@
       :accessibility-label :new-chat-button}]))
 
 (views/defview notifications-button []
-  (views/letsubs [notif-count [:activity.center/notifications-count]]
+  (views/letsubs [notif-count [:activity-center/unread-count]]
     [react/view
      [quo2.button/button {:type :grey
                           :size 32
                           :width 32
                           :style {:margin-left 12}
                           :accessibility-label :notifications-button
-                          :on-press #(do (if config/new-activity-center-enabled?
-                                           (re-frame/dispatch [:activity-center/open])
-                                           (do
-                                             (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
-                                             (re-frame/dispatch [:navigate-to :notifications-center]))))}
+                          :on-press #(re-frame/dispatch [:activity-center/open])}
       [icons/icon :main-icons/notification2 {:color (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)}]]
-     (when (pos? notif-count)
-       [react/view {:style (merge (styles/counter-public-container) {:top 5 :right 5})
-                    :pointer-events :none}
-        [react/view {:style               styles/counter-public
-                     :accessibility-label :notifications-unread-badge}]])]))
-
-(views/defview notifications-button-old []
-  (views/letsubs [notif-count [:activity.center/notifications-count]]
-    [react/view
-     [quo/button {:type     :icon
-                  :style {:margin-left 10}
-                  :accessibility-label "notifications-button"
-                  :on-press #(do
-                               (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
-                               (re-frame/dispatch [:navigate-to :notifications-center]))
-                  :theme    :icon}
-      :main-icons/notification]
      (when (pos? notif-count)
        [react/view {:style (merge (styles/counter-public-container) {:top 5 :right 5})
                     :pointer-events :none}
@@ -341,7 +318,6 @@
    [topbar/topbar {:title           (i18n/label :t/chat)
                    :navigation      :none
                    :right-component [react/view {:flex-direction :row :margin-right 16}
-                                     [connectivity/connectivity-button]
-                                     [notifications-button-old]]}]
+                                     [connectivity/connectivity-button]]}]
    [chats-list-old]
    [plus-button-old]])

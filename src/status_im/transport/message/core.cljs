@@ -5,7 +5,6 @@
             [status-im2.contexts.chat.messages.pin.events :as messages.pin]
             [status-im.chat.models :as models.chat]
             [status-im.chat.models.reactions :as models.reactions]
-            [status-im2.setup.config :as config]
             [status-im.contact.core :as models.contact]
             [status-im.communities.core :as models.communities]
             [status-im.pairing.core :as models.pairing]
@@ -22,7 +21,6 @@
             [status-im.constants :as constants]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
-            [status-im.notifications-center.core :as notifications-center]
             [status-im.visibility-status-updates.core :as models.visibility-status-updates]
             [status-im.browser.core :as browser]
             [clojure.string :as string]))
@@ -72,13 +70,10 @@
       (do
         (js-delete response-js "activityCenterNotifications")
         (fx/merge cofx
-                  (if config/new-activity-center-enabled?
-                    (->> activity-notifications
-                         types/js->clj
-                         (map data-store.activities/<-rpc)
-                         activity-center/notifications-reconcile)
-                    (notifications-center/handle-activities (map data-store.activities/<-rpc
-                                                                 (types/js->clj activity-notifications))))
+                  (->> activity-notifications
+                       types/js->clj
+                       (map data-store.activities/<-rpc)
+                       activity-center/notifications-reconcile)
                   (process-next response-js sync-handler)))
 
       (seq installations)

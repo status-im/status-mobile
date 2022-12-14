@@ -15,7 +15,7 @@
    [status-im2.navigation.events :as navigation]
    [status-im.utils.handlers :refer [>evt]]
    [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
-   [status-im.notifications-center.core :as notification-center]))
+   [status-im.activity-center.core :as activity-center]))
 
 (def crop-size 1000)
 
@@ -105,7 +105,7 @@
   (fx/merge cofx
             (handle-response cofx response-js)
             (navigation/pop-to-root-tab :chat-stack)
-            (notification-center/get-activity-center-notifications-count)))
+            (activity-center/notifications-fetch-unread-count)))
 
 (fx/defn joined
   {:events [::joined ::requested-to-join]}
@@ -457,7 +457,7 @@
   (fx/merge cofx
             (bottom-sheet/hide-bottom-sheet)
             (handle-response response-js)
-            (notification-center/get-activity-center-notifications-count)))
+            (activity-center/notifications-fetch-unread-count)))
 
 (fx/defn member-ban
   {:events [::member-ban]}
