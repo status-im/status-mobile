@@ -34,7 +34,8 @@
                      :js-response true
                      :on-success #(do
                                     (println "MESSAGESENTXXX" %)
-                                    (re-frame/dispatch [:transport/message-sent %]))
+                                    ;(re-frame/dispatch [:transport/message-sent %])
+                                    )
                      :on-error #(do
                                   (log/warn "failed to send a message" %)
                                   (js/alert (str "failed to send a message: " %)))}]})

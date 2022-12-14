@@ -4,6 +4,7 @@
     "owner": "status-im",
     "repo": "status-go",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "version": "v0.117.1",
     "commit-sha1": "8593866862175eeab6f30765e5f0b813f3b1b4db",
     "src-sha256": "1ml22627jadj150y9yj7p9z91vx49min6hzvsg88i3nhx4153nia"
@@ -12,4 +13,9 @@
     "commit-sha1": "c6d254a8007fea614c8fd726f2b283ddaf0028d4",
     "src-sha256": "12aypwjxq3jwgflzhlmdzdzpagbvmrqkkw678ifvxb4p7v4rlpj6"
 >>>>>>> 9bf04e47a... updates
+=======
+    "version": "bc582dea5862fb5af55b8bd1b55434ab6f8a1970",
+    "commit-sha1": "bc582dea5862fb5af55b8bd1b55434ab6f8a1970",
+    "src-sha256": "0qdr3mmy04hga51w93l9iyf1aa7mq3mf70py46lw8770pxqj765m"
+>>>>>>> 287ce6602... lint
 }
