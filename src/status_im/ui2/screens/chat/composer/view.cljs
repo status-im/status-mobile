@@ -46,9 +46,9 @@
         y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
     (+ y (when (seq suggestions) y-with-mentions))))
 
-(defn- reset-composer
+(defn- clean-and-minimize-composer
   ([context chat-id refs min-y]
-   (reset-composer context chat-id refs min-y false))
+   (clean-and-minimize-composer context chat-id refs min-y false))
   ([context chat-id refs min-y edit?]
    (input/clear-input chat-id refs)
    (swap! context assoc :y (if edit?
@@ -156,19 +156,22 @@
                   translate-y                              (reanimated/use-shared-value 0)
                   shared-height                            (reanimated/use-shared-value min-y)
                   bg-opacity                               (reanimated/use-shared-value 0)
-                  reset-composer-fn                        #(reset-composer context chat-id refs min-y %)
+                  clean-and-minimize-composer-fn           #(clean-and-minimize-composer context chat-id refs min-y %)
                   bg-bottom                                (reanimated/use-shared-value (- window-height))
                   set-bg-opacity                           (fn [value]
                                                              (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
                                                              (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   input-content-change                     (get-input-content-change context translate-y shared-height max-height
                                                                                      set-bg-opacity keyboard-shown min-y max-y)
+                  blank-composer?                          (string/blank? (get @input/input-texts chat-id))
                   bottom-sheet-gesture                     (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
                                                                                      min-y max-y shared-height max-height set-bg-opacity)
                   initial-value                            (or (get @input/input-texts chat-id) nil)]
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown? (not keyboard-shown))
                                       (swap! context assoc :state :min))
+                                    (when blank-composer?
+                                      (clean-and-minimize-composer-fn false))
                                     (reset! keyboard-was-shown? keyboard-shown)
                                     (if (#{:max :custom-chat-unavailable} (:state @context))
                                       (set-bg-opacity 1)
@@ -185,7 +188,7 @@
                                           (styles/input-bottom-sheet window-height))}
                  ;handle
                  [rn/view {:style (styles/bottom-sheet-handle)}]
-                 [edit/edit-message-auto-focus-wrapper text-input-ref edit reset-composer-fn]
+                 [edit/edit-message-auto-focus-wrapper text-input-ref edit clean-and-minimize-composer-fn]
                  [reply/reply-message-auto-focus-wrapper text-input-ref reply]
                  [rn/view {:style {:height (- max-y 80 added-value)}}
                   [input/text-input {:chat-id                chat-id
@@ -221,7 +224,7 @@
                    [quo2.button/button {:icon                true
                                         :size                32
                                         :accessibility-label :send-message-button
-                                        :on-press            #(do (reset-composer-fn false)
+                                        :on-press            #(do (clean-and-minimize-composer-fn false)
                                                                   (re-frame/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
                ;black background
