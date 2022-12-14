@@ -5,6 +5,7 @@
     "repo": "status-go",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "version": "v0.117.1",
     "commit-sha1": "8593866862175eeab6f30765e5f0b813f3b1b4db",
     "src-sha256": "1ml22627jadj150y9yj7p9z91vx49min6hzvsg88i3nhx4153nia"
@@ -18,4 +19,9 @@
     "commit-sha1": "bc582dea5862fb5af55b8bd1b55434ab6f8a1970",
     "src-sha256": "0qdr3mmy04hga51w93l9iyf1aa7mq3mf70py46lw8770pxqj765m"
 >>>>>>> 287ce6602... lint
+=======
+    "version": "1544442347f8f86bdafce63b7c35835b1d7c9dfe",
+    "commit-sha1": "1544442347f8f86bdafce63b7c35835b1d7c9dfe",
+    "src-sha256": "15nwd0v1330dx324rlbx23xm8j91908j6phc1fiv9mk6zva4350g"
+>>>>>>> 8cb5b4fc3... updates
 }

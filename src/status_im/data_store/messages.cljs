@@ -16,7 +16,6 @@
                               :clock-value :clock})))
 
 (defn <-rpc [message]
-  (println "CALLEDXXXX" message)
   (-> message
       (clojure.set/rename-keys {:id :message-id
                                 :whisperTimestamp :whisper-timestamp
@@ -63,7 +62,6 @@
   {::json-rpc/call [{:method     "wakuext_chatMessages"
                      :params     [chat-id cursor limit]
                      :on-success (fn [result]
-                                   (println "RESULTXXX" result)
                                    (on-success (update result :messages #(map <-rpc %))))
                      :on-error on-error}]})
 

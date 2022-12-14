@@ -398,8 +398,7 @@
                                    :on-load  (image-set-size dimensions)
                                    :on-error #(swap! dimensions assoc :error true)
                                    :source   {:uri uri}}]
-           [rn/view {:style (style/image-message-border style-opts)}
-            [rn/text (str "album-id: " (:album-id content))]]]]]))))
+           [rn/view {:style (style/image-message-border style-opts)}]]]]))))
 
 (defmulti ->message :content-type)
 

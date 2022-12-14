@@ -32,10 +32,7 @@
   {::json-rpc/call [{:method     "wakuext_sendChatMessages"
                      :params     [(mapv build-message messages)]
                      :js-response true
-                     :on-success #(do
-                                    (println "MESSAGESENTXXX" %)
-                                    ;(re-frame/dispatch [:transport/message-sent %])
-                                    )
+                     :on-success #(re-frame/dispatch [:transport/message-sent %])
                      :on-error #(do
                                   (log/warn "failed to send a message" %)
                                   (js/alert (str "failed to send a message: " %)))}]})

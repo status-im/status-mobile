@@ -97,11 +97,24 @@
                        :params     [community-id]
                        :on-success #(re-frame/dispatch [::mark-all-read-in-community-successful %])}]}))
 
+
+(defn find-albums [messages]
+  (let [last-album-id (atom nil)
+        album-count (atom 0)]
+  (doseq [message messages]
+    (if (and (:album-id (:content (val message))) (= (:album-id (:content (val message))) @last-album-id))
+      (swap! album-count inc 1)
+      (reset! album-count 1))
+    (reset! last-album-id (:album-id (:content (val message))))
+    (if (> @album-count 3)
+      (println "COMPLETED AN ALBUMXXXX" @album-count)
+      (println "NO ALBUMXX" @album-count (:album-id (:content (val message)))))))
+  messages)
+
 (fx/defn messages-loaded
   "Loads more messages for current chat"
   {:events [::messages-loaded]}
   [{db :db} chat-id session-id {:keys [cursor messages]}]
-  (println "ASDF" messages)
   (when-not (and (get-in db [:pagination-info chat-id :messages-initialized?])
                  (not= session-id
                        (get-in db [:pagination-info chat-id :messages-initialized?])))
@@ -109,7 +122,7 @@
           ;; We remove those messages that are already loaded, as we might get some duplicates
           {:keys [all-messages new-messages senders contacts]}
           (reduce (fn [{:keys [all-messages] :as acc}
-                       {:keys [message-id from]
+                       {:keys [message-id from content]
                         :as   message}]
                     (cond-> acc
                       (not (get-in db [:chats chat-id :users from]))
@@ -125,8 +138,10 @@
                    :contacts     {}
                    :new-messages []}
                   messages)
+          result (find-albums all-messages)
           current-clock-value (get-in db [:pagination-info chat-id :cursor-clock-value])
           clock-value (when cursor (cursor->clock-value cursor))]
+      ;(println "ccc222" (count all-messages) (count new-messages) (count already-loaded-messages))
       {:dispatch [:chat/add-senders-to-chat-users (vals senders)]
        :db       (-> db
                      (update-in [:pagination-info chat-id :cursor-clock-value]
