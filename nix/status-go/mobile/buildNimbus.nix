@@ -91,7 +91,7 @@ let
 
 
   compilerFlags = if isAndroid then
-    "--sysroot ${androidToolchain}/sysroot -fPIC -I${ANDROID_NDK_HOME}/sources/cxx-stl/llvm-libc++/include/ -I${PROJECT_ROOT}/vendor/nimbus-build-system/vendor/Nim-csources-v1/c_code -target ${androidTargetArch}${api} -I${androidToolchain}/sysroot/usr/include/${androidTargetArch}"
+    "--sysroot ${androidToolchain}/sysroot -fPIC -target ${androidTargetArch}${api}"
     else if isIOS then
     # TODO The conditional for -miphoneos-version-min=8.0 is required,
     # otherwise Nim will complain that thread-local storage is not supported for the current target
@@ -284,6 +284,7 @@ in stdenv.mkDerivation rec {
       NIMFLAGS="\
       --passC:\"${compilerFlags}\" \
       --passL:\"${linkerFlags}\" \
+      --debuginfo:off \
       --cc:clang \
       --cpu:${nimCpu} \
       --os:${nimPlatform} \
