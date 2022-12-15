@@ -121,7 +121,7 @@
   [rn/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
      [rn/touchable-without-feedback
-      {:on-press #(rn/dismiss-keyboard!)}
+      {:on-press rn/dismiss-keyboard!}
       [quo/divider-date (:value message)]]
      (if (= type :gap)
        ;; TODO (flexsurfer) new gap functionality is not implemented yet
