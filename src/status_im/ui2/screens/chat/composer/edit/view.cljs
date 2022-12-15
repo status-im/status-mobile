@@ -14,8 +14,8 @@
 
 (defn edit-message-auto-focus-wrapper [text-input-ref _]
   (let [had-edit (atom nil)]
-    (fn [_ edit]
+    (fn [_ edit cleanup-composer-callback]
       (focus-input-on-edit edit had-edit text-input-ref)
       (when edit
         [rn/view {:style style/container}
-         [edit/edit-message]]))))
+         [edit/edit-message cleanup-composer-callback]]))))

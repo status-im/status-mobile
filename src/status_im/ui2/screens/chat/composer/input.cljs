@@ -19,7 +19,7 @@
             [oops.core :as oops]))
 
 (defonce input-texts (atom {}))
-(defonce mentions-enabled (reagent/atom {}))
+(defonce mentions-enabled? (reagent/atom {}))
 (defonce chat-input-key (reagent/atom 1))
 (defonce text-input-ref (reagent/atom nil))
 
@@ -29,7 +29,7 @@
  :chat.ui/clear-inputs
  (fn []
    (reset! input-texts {})
-   (reset! mentions-enabled {})
+   (reset! mentions-enabled? {})
    (reset! chat-input-key 1)))
 
 (defn input-focus [text-input-ref]
@@ -51,14 +51,14 @@
 
 (defn reset-input [refs chat-id]
   (some-> ^js (quo.react/current-ref (:text-input-ref refs)) .clear)
-  (swap! mentions-enabled update :render not)
+  (swap! mentions-enabled? update :render not)
   (swap! input-texts dissoc chat-id))
 
 (defn clear-input [chat-id refs]
   (hide-send refs)
-  (if (get @mentions-enabled chat-id)
+  (if (get @mentions-enabled? chat-id)
     (do
-      (swap! mentions-enabled dissoc chat-id)
+      (swap! mentions-enabled? dissoc chat-id)
       ;;we need this timeout, because if we clear text input and first index was a mention object with blue color,
       ;;after clearing text will be typed with this blue color, so we render white text first and then clear it
       (js/setTimeout #(reset-input refs chat-id) 50))
@@ -105,8 +105,8 @@
     (when (and (empty? prev-text) (seq text))
       (show-send refs))
 
-    (when (and (not (get @mentions-enabled chat-id)) (string/index-of text "@"))
-      (swap! mentions-enabled assoc chat-id true))
+    (when (and (not (get @mentions-enabled? chat-id)) (string/index-of text "@"))
+      (swap! mentions-enabled? assoc chat-id true))
 
     ;; NOTE(rasom): on iOS `on-selection-change` is canceled in case if it
     ;; happens during typing because it is not needed for mention
@@ -129,8 +129,8 @@
         range         (.-range ^js native-event)
         start         (.-start ^js range)
         end           (.-end ^js range)]
-    (when (and (not (get @mentions-enabled chat-id)) (string/index-of text "@"))
-      (swap! mentions-enabled assoc chat-id true))
+    (when (and (not (get @mentions-enabled? chat-id)) (string/index-of text "@"))
+      (swap! mentions-enabled? assoc chat-id true))
 
     (>evt
      [::mentions/on-text-input
@@ -144,38 +144,40 @@
     (when platform/android?
       (>evt [::mentions/calculate-suggestions mentionable-users]))))
 
-(defn text-input [{:keys [set-active-panel refs chat-id sending-image on-content-size-change]}]
-  (let [cooldown-enabled? (<sub [:chats/current-chat-cooldown-enabled?])
-        mentionable-users (<sub [:chats/mentionable-users])
-        timeout-id        (atom nil)
-        last-text-change  (atom nil)
-        mentions-enabled  (get @mentions-enabled chat-id)
-        props             {:style                    (style/text-input)
-                           :ref                      (:text-input-ref refs)
-                           :max-font-size-multiplier 1
-                           :accessibility-label      :chat-message-input
-                           :text-align-vertical      :center
-                           :multiline                true
-                           :editable                 (not cooldown-enabled?)
-                           :blur-on-submit           false
-                           :auto-focus               false
-                           :on-focus                 #(set-active-panel nil)
-                           :max-length               chat.constants/max-text-size
-                           :placeholder-text-color   (:text-02 @quo.colors/theme)
-                           :placeholder              (if cooldown-enabled?
-                                                       (i18n/label :cooldown/text-input-disabled)
-                                                       (i18n/label :t/type-a-message))
-                           :underline-color-android  :transparent
-                           :auto-capitalize          :sentences
-                           :auto-correct             false
-                           :spell-check              false
-                           :on-content-size-change   on-content-size-change
-                           :on-selection-change      (partial on-selection-change timeout-id last-text-change mentionable-users)
-                           :on-change                (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
-                           :on-text-input            (partial on-text-input mentionable-users chat-id)}
+(defn text-input [{:keys [set-active-panel refs chat-id sending-image on-content-size-change initial-value]}]
+  (let [_                   (reset! text-input-ref (:text-input-ref refs))
+        cooldown-enabled?   (<sub [:chats/current-chat-cooldown-enabled?])
+        mentionable-users   (<sub [:chats/mentionable-users])
+        timeout-id          (reagent/atom nil)
+        last-text-change    (reagent/atom nil)
+        mentions-enabled?    (get @mentions-enabled? chat-id)
+        props               {:style                    (style/text-input)
+                             :ref                      (:text-input-ref refs)
+                             :max-font-size-multiplier 1
+                             :accessibility-label      :chat-message-input
+                             :text-align-vertical      :center
+                             :multiline                true
+                             :editable                 (not cooldown-enabled?)
+                             :blur-on-submit           false
+                             :auto-focus               false
+                             :default-value            initial-value
+                             :on-focus                 #(set-active-panel nil)
+                             :max-length               chat.constants/max-text-size
+                             :placeholder-text-color   (:text-02 @quo.colors/theme)
+                             :placeholder              (if cooldown-enabled?
+                                                         (i18n/label :cooldown/text-input-disabled)
+                                                         (i18n/label :t/type-a-message))
+                             :underline-color-android  :transparent
+                             :auto-capitalize          :sentences
+                             :auto-correct             false
+                             :spell-check              false
+                             :on-content-size-change   on-content-size-change
+                             :on-selection-change      (partial on-selection-change timeout-id last-text-change mentionable-users)
+                             :on-change                (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
+                             :on-text-input            (partial on-text-input mentionable-users chat-id)}
         input-with-mentions (<sub [:chat/input-with-mentions])
         children          (fn []
-                            (if mentions-enabled
+                            (if mentions-enabled?
                               (map-indexed
                                (fn [index [item text]]
                                  [index [item]]
@@ -203,8 +205,10 @@
   (.setNativeProps ^js text-input (clj->js {:text text})))
 
 (re-frame/reg-fx
- :set-input-text
- (fn [[chat-id text]]
+ :set-text-input-value
+ (fn [[chat-id text local-text-input-ref]]
+   (when local-text-input-ref
+     (reset! text-input-ref local-text-input-ref))
    (if platform/ios?
      (.setNativeProps ^js (quo.react/current-ref @text-input-ref) (clj->js {:text text}))
      (do
@@ -297,7 +301,7 @@
                                 (let [text-input-handle (rn/find-node-handle @text-input-ref)]
                                   (oops/ocall manager :startActionMode text-input-handle))))
 
-      :render
+      :reagent-render
       (fn [_]
         (let [ref                 #(do (reset! text-input-ref %)
                                        (when ref
@@ -333,9 +337,9 @@
                                                              :chat-id           chat-id
                                                              :selection-event   selection-event})))
               props               (merge props {:ref                 ref
-                                                :style               nil
+                                                :style               (dissoc style :margin-horizontal)
                                                 :on-selection-change on-selection-change
                                                 :on-selection        on-selection})]
           [rn-selectable-text-input {:menuItems @menu-items :style style}
            [rn/text-input props
-            [children]]]))})))
+            children]]))})))
