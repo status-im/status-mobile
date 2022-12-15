@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.activity-center.utils)
+(ns status-im2.contexts.activity-center.utils)
 
 (defn contact-name
   [contact]

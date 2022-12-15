@@ -15,7 +15,7 @@
    [status-im2.navigation.events :as navigation]
    [status-im.utils.handlers :refer [>evt]]
    [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
-   [status-im.activity-center.core :as activity-center]))
+   [status-im2.contexts.activity-center.events :as activity-center]))
 
 (def crop-size 1000)
 

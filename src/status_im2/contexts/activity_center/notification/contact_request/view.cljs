@@ -1,10 +1,10 @@
-(ns status-im.ui.screens.activity-center.notification.contact-request.view
-  (:require [quo.components.animated.pressable :as animation]
-            [quo2.core :as quo2]
+(ns status-im2.contexts.activity-center.notification.contact-request.view
+  (:require [i18n.i18n :as i18n]
+            [quo.components.animated.pressable :as animation]
+            [quo2.core :as quo]
             [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.screens.activity-center.notification.common.view :as common]
             [status-im.utils.datetime :as datetime]
+            [status-im2.contexts.activity-center.notification.common.view :as common]
             [utils.re-frame :as rf]))
 
 (defn view
@@ -22,7 +22,7 @@
                                                       (rf/dispatch [:contact.ui/send-message-pressed {:public-key author}]))}]
                     [:<>])]
     (conj pressable
-          [quo2/activity-log
+          [quo/activity-log
            (merge {:title     (i18n/label :t/contact-request)
                    :icon      :main-icons2/add-user
                    :timestamp (datetime/timestamp->relative (:timestamp notification))

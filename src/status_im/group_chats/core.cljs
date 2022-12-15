@@ -9,7 +9,7 @@
             [status-im.utils.fx :as fx]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
-            [status-im.activity-center.core :as activity-center]))
+            [status-im2.contexts.activity-center.events :as activity-center]))
 
 (fx/defn navigate-chat-updated
   {:events [:navigate-chat-updated]}

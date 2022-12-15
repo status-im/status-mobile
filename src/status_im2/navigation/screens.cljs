@@ -3,6 +3,7 @@
             [status-im2.contexts.communities.discover.view :as communities.discover]
             [status-im2.contexts.communities.overview.view :as communities.overview]
             [status-im2.contexts.shell.view :as shell]
+            [status-im2.contexts.activity-center.view :as activity-center]
             [status-im2.contexts.quo-preview.main :as quo.preview]
             [status-im2.contexts.chat.messages.view :as chat]
             [status-im2.contexts.syncing.view :as settings-syncing]
@@ -15,8 +16,11 @@
 
 (defn screens []
   (concat (old-screens/screens)
+          [{:name      :activity-center
+            :options   {:topBar {:visible false}}
+            :component activity-center/view}
 
-          [{:name      :shell-stack
+           {:name      :shell-stack
             :insets    {:top false}
             :component shell/shell-stack}
 

@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.activity-center.style
+(ns status-im2.contexts.activity-center.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def screen-padding 20)

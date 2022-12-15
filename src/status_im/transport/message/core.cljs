@@ -1,6 +1,6 @@
 (ns ^{:doc "Definition of the StatusMessage protocol"}
  status-im.transport.message.core
-  (:require [status-im.activity-center.core :as activity-center]
+  (:require [status-im2.contexts.activity-center.events :as activity-center]
             [status-im.chat.models.message :as models.message]
             [status-im2.contexts.chat.messages.pin.events :as messages.pin]
             [status-im.chat.models :as models.chat]

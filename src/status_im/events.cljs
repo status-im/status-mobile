@@ -32,7 +32,7 @@
             status-im.multiaccounts.update.core
             [status-im.native-module.core :as status]
             [status-im2.navigation.events :as navigation]
-            status-im.activity-center.core
+            status-im2.contexts.activity-center.events
             status-im.pairing.core
             status-im.profile.core
             status-im.search.core

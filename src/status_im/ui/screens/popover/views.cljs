@@ -20,7 +20,7 @@
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
             [status-im.ui.screens.chat.message.pinned-message :as pinned-message]
             [status-im.ui.screens.signing.sheets :as signing-sheets]
-            [status-im.ui.screens.activity-center.views :as activity-center]))
+            [status-im2.contexts.activity-center.view :as activity-center]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -176,7 +176,7 @@
                   [signing-sheets/fees-warning]
 
                   (= :activity-center view)
-                  [activity-center/activity-center]
+                  [activity-center/view]
 
                   :else
                   [view])]]]])))})))
