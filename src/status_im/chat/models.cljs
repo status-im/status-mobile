@@ -214,7 +214,8 @@
   (when-let [chat-id (:current-chat-id db)]
     (chat.state/reset-visible-item)
     (fx/merge cofx
-              {:db (dissoc db :current-chat-id)}
+              {:db (dissoc db :current-chat-id)
+               :shell/navigate-from-chat-stack-fx nil}
               (delete-for-me/sync-all)
               (delete-message/send-all)
               (offload-messages chat-id))))
@@ -271,7 +272,8 @@
   {:events [:chat.ui/navigate-to-chat-nav2]}
   [{db :db :as cofx} chat-id from-shell?]
   (fx/merge cofx
-            {:dispatch [:navigate-to-nav2 :chat chat-id from-shell?]}
+;;            {:dispatch [:navigate-to-nav2 :chat chat-id from-shell?]}
+            {:shell/navigate-to-chat-stack-fx nil}
             (when-not (= (:view-id db) :community)
               (navigation/pop-to-root-tab :shell-stack))
             (close-chat)

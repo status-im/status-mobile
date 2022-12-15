@@ -1,4 +1,4 @@
-(ns status-im2.contexts.shell.home-stack
+(ns status-im2.contexts.shell.stacks.home-stack
   (:require [react-native.reanimated :as reanimated]
             [react-native.core :as rn]
             [status-im2.contexts.shell.style :as styles]

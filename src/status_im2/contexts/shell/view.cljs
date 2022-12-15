@@ -8,9 +8,10 @@
             [status-im2.common.home.view :as common.home]
             [status-im2.contexts.shell.constants :as constants]
             [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.home-stack :as home-stack]
             [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]
-            [status-im2.contexts.shell.cards.view :as switcher-cards]))
+            [status-im2.contexts.shell.cards.view :as switcher-cards]
+            [status-im2.contexts.shell.stacks.chat-stack :as chat-stack]
+            [status-im2.contexts.shell.stacks.home-stack :as home-stack]))
 
 ;; TODO
 ;; 1 : Update Placeholder screen as per new designs
@@ -109,6 +110,7 @@
         [shell]
         [bottom-tabs/bottom-tabs]
         [home-stack/home-stack]
+        [chat-stack/chat-stack]
         [quo/floating-shell-button
          {:jump-to {:on-press #(animation/close-home-stack true)
                     :label (i18n/label :t/jump-to)}}

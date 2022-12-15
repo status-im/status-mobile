@@ -46,7 +46,7 @@
 
       :left-section
       {:on-press            #(do
-                               (rf/dispatch [:close-chat])
+                               (rf/dispatch [:shell/close-chat-stack])
                                (rf/dispatch [:navigate-back]))
        :icon                :i/arrow-left
        :accessibility-label :back-button}
