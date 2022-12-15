@@ -18,6 +18,7 @@
             quo2.components.community.token-gating
             quo2.components.counter.counter
             quo2.components.dividers.divider-label
+            quo2.components.dividers.date
             quo2.components.dividers.new-messages
             quo2.components.drawers.action-drawers
             quo2.components.dropdowns.dropdown
@@ -94,6 +95,7 @@
 ;;;; DIVIDERS
 (def divider-label quo2.components.dividers.divider-label/divider-label)
 (def new-messages quo2.components.dividers.new-messages/new-messages)
+(def divider-date quo2.components.dividers.date/date)
 
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)

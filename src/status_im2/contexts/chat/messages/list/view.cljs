@@ -12,7 +12,6 @@
             ;;TODO move to status-im2
             [status-im.ui2.screens.chat.messages.message :as message]
             [status-im.ui.screens.chat.group :as chat.group]
-            [status-im.ui.screens.chat.message.datemark :as message-datemark]
             [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.screens.chat.state :as state]
             [quo.react-native :as quo.react]))
@@ -121,8 +120,7 @@
                          chat-id show-input? message-pin-enabled edit-enabled in-pinned-view? can-delete-message-for-everyone?]}]
   [rn/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
-     ;; TODO (flexsurfer) implement and use date divider component https://github.com/status-im/status-mobile/issues/14523
-     [message-datemark/chat-datemark (:value message)]
+     [quo/divider-date (:value message)]
      (if (= type :gap)
        ;; TODO (flexsurfer) new gap functionality is not implemented yet
        [gap/gap message idx messages-list-ref false chat-id]
