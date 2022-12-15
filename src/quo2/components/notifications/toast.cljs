@@ -65,15 +65,17 @@
     [rn/view {:style {:padding 4 :flex 1}}
      [text/text
       {:size :paragraph-2 :weight :medium :style (merge-theme-style :text {})}
-      middle]] (when right right)]])
+      middle]]
+    (when right right)]])
 
 (defn toast
   [{:keys [icon icon-color text action undo-duration undo-on-press]}]
   [toast-container
-   {:left   [icon/icon icon
-             {:container-style {:width 20 :height 20}
-              :color           (or icon-color
-                                   (get-in themes [:icon (theme/get-theme) :color]))}]
+   {:left   (when icon
+              [icon/icon icon
+               {:container-style {:width 20 :height 20}
+                :color           (or icon-color
+                                     (get-in themes [:icon (theme/get-theme) :color]))}])
     :middle text
     :right  (if undo-duration
               [toast-undo-action undo-duration undo-on-press]
