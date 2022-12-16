@@ -89,21 +89,22 @@ let
 
   androidTargetArch = lib.getAttr arch androidTargetArchMap;
 
-  iosVersion = "8.0";
+  iosVersion = "9.0";
 
+  sysroot = if isAndroid then "${androidToolchain}/sysroot" else "$(xcrun --sdk ${iosSdk} --show-sdk-path)";  
   compilerFlags = if isAndroid then
-    "--sysroot ${androidToolchain}/sysroot -fPIC -target ${androidTargetArch}${api}"
+    "--sysroot ${sysroot} -fPIC -target ${androidTargetArch}${api}"
     else if isIOS then
     # TODO The conditional for -miphoneos-version-min=8.0 is required,
     # otherwise Nim will complain that thread-local storage is not supported for the current target
     # when expanding 'NIM_THREADVAR' macro
-    "-isysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -target ${iosArch}-apple-ios${iosVersion} ${if arch == "arm" then "" else "-miphoneos-version-min=${iosVersion}"} -I${iosIncludes}"
+    "-isysroot ${sysroot} -fembed-bitcode -target ${iosArch}-apple-ios${iosVersion} ${if arch == "arm" then "" else "-miphoneos-version-min=${iosVersion}"} -I${iosIncludes}"
     else throw "Unsupported platform!";
 
   linkerFlags = if isAndroid then
-  "--sysroot ${androidToolchain}/sysroot -target ${androidTargetArch}${api}"
+  "--sysroot ${sysroot} -target ${androidTargetArch}${api}"
   else if isIOS then
-  "--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -target ${iosArch}-apple-ios${iosVersion} ${if arch == "arm" then "" else "-miphoneos-version-min=${iosVersion}"} -v"
+  "--sysroot ${sysroot} -fembed-bitcode -target ${iosArch}-apple-ios${iosVersion} ${if arch == "arm" then "" else "-miphoneos-version-min=${iosVersion}"} -v"
   else throw "Unsupported platform!";
   
   ldDirMap = {
@@ -112,10 +113,11 @@ let
     "arm" = "armeabi-v7a"; 
     "arm64" = "arm64-v8a";
   };
+  sysroot1 = builtins.replaceStrings ["\$"] ["\\\$"] sysroot;
 
   cmakeArgs = if isAndroid then
     "-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=${api} -DCMAKE_ANDROID_ARCH_ABI=${lib.getAttr arch ldDirMap} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME}"
-  else if isIOS then "-DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_ARCHITECTURES=${iosArch} -DCMAKE_OSX_DEPLOYMENT_TARGET=9.3 -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO -DCMAKE_IOS_INSTALL_COMBINED=YES"
+  else if isIOS then "-DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=\"$(CMAKE_SYSROOT)\" -DCMAKE_OSX_ARCHITECTURES=${iosArch} -DCMAKE_OSX_DEPLOYMENT_TARGET=9.3 -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO -DCMAKE_IOS_INSTALL_COMBINED=YES"
   else throw "Unsupported platform!";
   #clangPath = if isAndroid then "${androidToolchain}/bin" else "";
   #clangName = if isAndroid then "${androidTargetArch}${api}-clang" else "";
@@ -159,6 +161,8 @@ let
       touch bin/git
       chmod +x bin/git
       export PATH=./bin:$PATH
+
+      export CMAKE_SYSROOT=${sysroot}
     ''
     else throw "Unsupported platform!";
  

@@ -45,14 +45,28 @@ in rec {
     srcRaw = nimbusSource;
   };
 
-  liblcproxy = callPackage ./mobile/buildNimbus.nix {
+  liblcproxy-android-arm64 = callPackage ./mobile/buildNimbus.nix {
     srcRaw = nimbusSource;
     nimCompiler = nimCompiler;
     platform = "android";
     arch = "arm64";
   };
 
-  liblcproxy-ios = callPackage ./mobile/buildNimbus.nix {
+  liblcproxy-android-x86 = callPackage ./mobile/buildNimbus.nix {
+    srcRaw = nimbusSource;
+    nimCompiler = nimCompiler;
+    platform = "android";
+    arch = "x86";
+  };
+
+  liblcproxy-ios-x86 = callPackage ./mobile/buildNimbus.nix {
+    srcRaw = nimbusSource;
+    nimCompiler = nimCompiler;
+    platform = "ios";
+    arch = "x86";
+  };
+
+  liblcproxy-ios-arm64 = callPackage ./mobile/buildNimbus.nix {
     srcRaw = nimbusSource;
     nimCompiler = nimCompiler;
     platform = "ios";
