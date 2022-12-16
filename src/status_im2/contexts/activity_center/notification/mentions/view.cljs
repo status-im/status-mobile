@@ -1,9 +1,9 @@
 (ns status-im2.contexts.activity-center.notification.mentions.view
   (:require [clojure.string :as string]
             [i18n.i18n :as i18n]
-            [quo.components.animated.pressable :as animation]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
             [status-im.utils.datetime :as datetime]
             [status-im2.contexts.activity-center.notification.common.view :as common]
             [status-im2.contexts.activity-center.notification.mentions.style :as style]
@@ -26,7 +26,7 @@
 
 (defn view
   [{:keys [author chat-name chat-id message] :as notification}]
-  [animation/pressable
+  [rn/touchable-without-feedback
    {:on-press (fn []
                 (rf/dispatch [:hide-popover])
                 (rf/dispatch [:chat.ui/navigate-to-chat chat-id]))}
