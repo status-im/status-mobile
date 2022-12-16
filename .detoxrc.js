@@ -14,7 +14,7 @@ module.exports = {
     "ios.release": {
       "name": "StatusIm",
       "type": "ios.app",
-      "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/StatusIm.app",
+      "binaryPath": "build/Build/Products/Release-iphonesimulator/StatusIm.app",
       "build": "make run-ios"
     },
     "ios.debug": {
