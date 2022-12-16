@@ -49,19 +49,6 @@ let
 
   PROJECT_ROOT = srcRaw.src;
 
-  # androidIncludes = stdenv.mkDerivation {
-  #   name = "nim-status-android-includes";
-  #   buildInputs = [ pkgs.coreutils pkgs.gnused ];
-  #   builder = writeScript "nim-android-includes.sh"
-  #   ''
-  #     export PATH=${pkgs.coreutils}/bin:${pkgs.patch}/bin
-  #     mkdir $out
-  #     cd $out
-  #     cp ${ANDROID_NDK_HOME}/sysroot/usr/include/stdio.h .
-  #     patch -u stdio.h -i ${stdioPatch}
-  #   '';
-  # };
-
   iosIncludes = stdenv.mkDerivation {
     name = "nim-status-ios-includes";
     buildInputs = [ pkgs.coreutils ];
@@ -113,7 +100,6 @@ let
     "arm" = "armeabi-v7a"; 
     "arm64" = "arm64-v8a";
   };
-  sysroot1 = builtins.replaceStrings ["\$"] ["\\\$"] sysroot;
 
   cmakeArgs = if isAndroid then
     "-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=${api} -DCMAKE_ANDROID_ARCH_ABI=${lib.getAttr arch ldDirMap} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME}"
@@ -135,14 +121,7 @@ let
       export CFLAGS="${compilerFlags}"
       export LDFLAGS="${linkerFlags}"
 
-      # This is important, otherwise Nim might not use proper tooling
       mkdir bin
-      ln -s $AR bin/ar
-      ln -s $AS bin/as
-      #ln -s $CC bin/gcc
-      #ln -s $CC bin/clang
-      ln -s $RANLIB bin/ranlib
-
       touch bin/git
       chmod +x bin/git
       export PATH=./bin:$PATH
@@ -153,7 +132,6 @@ let
       export CC=clang #$(xcrun --sdk ${iosSdk} --find clang)
       export CXX=clang++ #$(xcrun --sdk ${iosSdk} --find clang++)
       export LD=clang
-      #export CMAKE_CXX_COMPILER=$(xcrun --sdk ${iosSdk} --find clang++)
       export CFLAGS="${compilerFlags}"
       export LDFLAGS="${linkerFlags}"
 
@@ -166,38 +144,12 @@ let
     ''
     else throw "Unsupported platform!";
  
-  # src = pkgs.fetchgit {
-  #   url = "https://github.com/status-im/nim-status";
-  #   rev = "33241ee463291ed912681eff278658dc1dba1dcb";
-  #   sha256 = "1ki32s13zrwjzhbdyzfzj29mj3hkib2iwqwcwvlan9699p4v19iq";
-  #   leaveDotGit = true;
-  #   fetchSubmodules = false;
-  # };
-
   src = srcRaw;
 
 
   nimHostOs = if osId == "darwin" then "Darwin"
               else if osId == "linux" then "Linux"
               else "Windows_NT";
-  createNimbleLink1 = writeTextFile {
-    name = "createNimbleLink.sh";
-    text = ''
-      export EXCLUDED_NIM_PACKAGES=""
-      export NIMBLE_LINK_SCRIPT=$PWD/vendor/nimbus-build-system/scripts/create_nimble_link.sh
-      export NIMBLE_DIR=$PWD/vendor/.nimble
-      export PWD_CMD=$(which pwd)
-      patchShebangs scripts > /dev/null
-      patchShebangs $PWD/vendor/nimbus-build-system/scripts > /dev/null
-      for dep_dir in $(find vendor -type d -maxdepth 1); do
-          pushd "$dep_dir" >/dev/null
-          $NIMBLE_LINK_SCRIPT "$dep_dir"
-          popd >/dev/null
-      done
-    '';
-    executable = true;
-  };
-
   createNimbleLink = writeTextFile {
     name = "createNimbleLink.sh";
     text = ''
@@ -232,49 +184,13 @@ in stdenv.mkDerivation rec {
   phases = [ "unpackPhase" "preBuildPhase" "buildPhase" "installPhase" ];
 
   preBuildPhase = ''
-    #sed -E -i 's|^(.*)(-C vendor/nim-nat-traversal/vendor/miniupnp/miniupnpc)(.*)|\1 \2 CFLAGS="$(CFLAGS)" CC="$(CC)"\3|g' vendor/nimbus-build-system/makefiles/targets.mk
 
     sed -E -i 's|^(LIBBACKTRACE_SED := true.*)|\1\nCMAKE_ARGS := ${cmakeArgs}|g' vendor/nim-libbacktrace/Makefile
-    #sed -E -i 's|^CC :=.*|CC := $(CC)|g' vendor/nim-libbacktrace/Makefile
-    #sed -E -i 's|^CXX :=.*|CXX := $(CXX)|g' vendor/nim-libbacktrace/Makefile
-
-    #sed -E -i 's|^(.*)(-C vendor/nim-libbacktrace --no-print-directory BUILD_CXX_LIB=0)|\1 \2 CFLAGS="$(CFLAGS)"|g' Makefile
-    #sed -E -i 's|--host=arm| |g' vendor/nim-libbacktrace/Makefile
-    #sed -E -i 's|--build=\$\(\./config.guess\)| |g' vendor/nim-libbacktrace/Makefile
-    #sed -E -i 's|^(.*\./configure --prefix="/usr")(.*)|\1 --host=${androidTargetArch} --target=${androidTargetArch} CC="$(CC)" \2|g' vendor/nim-libbacktrace/Makefile
 
     sed -E -i 's|^(.*)(useNews\* = )(.*)|\1\2 false|g' vendor/nim-json-rpc/json_rpc/clients/config.nim
     sed -E -i 's|(.*XOPEN_SOURCE.*)|#\1|g' vendor/nim-nat-traversal/vendor/miniupnp/miniupnpc/Makefile
 
     export HOME=$PWD
-    # echo 'switch("passC", "${compilerFlags}")' >> config.nims
-    # echo 'switch("passL", "${linkerFlags}")' >> config.nims
-    # echo 'switch("cpu", "${nimCpu}")' >> config.nims
-    # echo 'switch("os", "${nimPlatform}")' >> config.nims
-    # echo 'switch("cc", "clang")' >> config.nims
-
-    # echo 'switch("${nimCpu}.${nimPlatform}.clang.path", "{clangPath}")' >> config.nims
-    # echo 'switch("${nimCpu}.${nimPlatform}.clang.exe", "{clangName}")' >> config.nims
-    # echo 'switch("${nimCpu}.${nimPlatform}.clang.linkerexe", "{clangName}")' >> config.nims
-
-    # echo 'switch("passC", "${compilerFlags}")' >> vendor/nimbus-eth2/config.nims
-    # echo 'switch("passL", "${linkerFlags}")' >> vendor/nimbus-eth2/config.nims
-    # echo 'switch("cpu", "${nimCpu}")' >> vendor/nimbus-eth2/config.nims
-    # echo 'switch("os", "${nimPlatform}")' >> vendor/nimbus-eth2/config.nims
-    # echo 'switch("cc", "clang")' >> vendor/nimbus-eth2/config.nims
-    # echo 'switch("${nimCpu}.${nimPlatform}.clang.path", "{clangPath}")' >> vendor/nimbus-eth2/config.nims
-    # echo 'switch("${nimCpu}.${nimPlatform}.clang.exe", "{clangName}")' >> vendor/nimbus-eth2/config.nims
-    # echo 'switch("${nimCpu}.${nimPlatform}.clang.linkerexe", "{clangName}")' >> vendor/nimbus-eth2/config.nims
-
-    # echo 'switch("passC", "${compilerFlags}")' >> vendor/nim-sqlite3-abi/config.nims
-    # echo 'switch("passL", "${linkerFlags}")' >> vendor/nim-sqlite3-abi/config.nims
-    # echo 'switch("cpu", "${nimCpu}")' >> vendor/nim-sqlite3-abi/config.nims
-    # echo 'switch("os", "${nimPlatform}")' >> vendor/nim-sqlite3-abi/config.nims
-    # echo 'switch("cc", "clang")' >> vendor/nim-sqlite3-abi/config.nims
-    # echo 'switch("${nimCpu}.${nimPlatform}.clang.path", "{clangPath}")' >> vendor/nim-sqlite3-abi/config.nims
-    # echo 'switch("${nimCpu}.${nimPlatform}.clang.exe", "{clangName}")' >> vendor/nim-sqlite3-abi/config.nims
-    # echo 'switch("${nimCpu}.${nimPlatform}.clang.linkerexe", "{clangName}")' >> vendor/nim-sqlite3-abi/config.nims
-
 
     ${createNimbleLink}
 
