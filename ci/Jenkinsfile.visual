@@ -1,5 +1,7 @@
 library 'status-jenkins-lib@v1.6.3'
 
+def isPRBuild = utils.isPRBuild()
+
 pipeline {
 
   agent { label 'macos && x86_64 && nix-2.11 && xcode-13.4' }
@@ -7,7 +9,7 @@ pipeline {
   options {
     timestamps()
     /* Prevent Jenkins jobs from running forever */
-    timeout(time: 10, unit: 'MINUTES')
+    timeout(time: 30, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '10',
@@ -41,34 +43,23 @@ pipeline {
   }
 
   stages {
-    stage('Checks') {
-      steps { script {
-        if (params.PR_ID == null) { error("PR_ID parameter not set!") }
-      } }
+   stage('Prep') {
+      steps {
+        script {
+          utils.doGitRebasePR()
+          utils.symlinkEnv()
+          println("Build Number: ${utils.genBuildNumber()}")
+        }
+      }
     }
     
     stage('Test') {
       steps { script {
-        currentBuild.displayName = "PR-${params.PR_ID}"
-        /* for managing optional arguments */
+        currentBuild.displayName = "PR-${params.PR_ID}" 
+        sh 'make run-visual-test-ios-release'          
         
-        withCredentials([
-          usernamePassword(
-            credentialsId: 'status-im-auto',
-            usernameVariable: 'GIT_HUB_USER', /* ignored */
-            passwordVariable: 'GIT_HUB_TOKEN'
-          ),
-          string(
-            credentialsId: 'etherscan-api-key',
-            variable: 'ETHERSCAN_API_KEY'
-          ),
-        ]) {
-          dir('') {
-            /* Provide Eth test account secrets. */
-            sh 'make run-visual-test-ios-release'
-          }
-        }
       } }
     }
   }
+  
 }

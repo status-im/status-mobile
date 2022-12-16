@@ -1,10 +1,18 @@
 library 'status-jenkins-lib@v1.6.3'
 
+/* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
 
 pipeline {
-
   agent { label 'macos && x86_64 && nix-2.11 && xcode-13.4' }
+
+  parameters {
+    string(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / e2e / nightly / release',
+      defaultValue: 'pr',
+    )
+  }
 
   options {
     timestamps()
@@ -16,17 +24,11 @@ pipeline {
       daysToKeepStr: '20',
       artifactNumToKeepStr: '10',
     ))
+    /* Allows combined build to copy */
+    copyArtifactPermission('/status-mobile/*')
     /* Abort old PR builds. */
     disableConcurrentBuilds(
       abortPrevious: isPRBuild
-    )
-  }
-
-  parameters {
-    string(
-      name: 'BUILD_TYPE',
-      description: 'Specify build type. Values: pr / e2e / nightly / release',
-      defaultValue: 'pr',
     )
   }
 
@@ -43,7 +45,7 @@ pipeline {
   }
 
   stages {
-   stage('Prep') {
+    stage('Prep') {
       steps {
         script {
           utils.doGitRebasePR()
@@ -52,7 +54,38 @@ pipeline {
         }
       }
     }
-    
+    stage('JSBundle') {
+      steps {
+        script { ios.jsbundle() }
+      }
+    }
+    stage('Bundle') {
+      steps {
+        script { api = ios.bundle() }
+      }
+    }
+    stage('Parallel Upload') {
+      parallel {
+        stage('Archive') {
+          steps {
+            archiveArtifacts api
+          }
+        }
+        stage('Upload') {
+          steps { script {
+            env.PKG_URL = s3.uploadArtifact(api)
+            jenkins.setBuildDesc(IPA: env.PKG_URL)
+            /* e2e builds get tested in SauceLabs */
+            if (utils.isE2EBuild()) {
+              env.SAUCE_URL = ios.uploadToSauceLabs()
+            } else if (!utils.isReleaseBuild()) {
+              env.DIAWI_URL = ios.uploadToDiawi()
+            }
+          } }
+        }
+      }
+    }
+
     stage('Test') {
       steps { script {
         currentBuild.displayName = "PR-${params.PR_ID}" 
@@ -60,6 +93,11 @@ pipeline {
         
       } }
     }
+
   }
-  
+  post {
+    success { script { github.notifyPR(true) } }
+    failure { script { github.notifyPR(false) } }
+    always  { sh 'make purge' }
+  }
 }
