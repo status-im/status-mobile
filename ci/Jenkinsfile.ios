@@ -43,11 +43,7 @@ pipeline {
   }
 
   stages {
-    stage('Checks') {
-      steps { script {
-        if (params.PR_ID == null) { error("PR_ID parameter not set!") }
-      } }
-    }
+   
     
     stage('Test') {
       steps { script {
