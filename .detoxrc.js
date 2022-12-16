@@ -15,7 +15,7 @@ module.exports = {
       "name": "StatusIm",
       "type": "ios.app",
       "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/StatusIm.app",
-      "build": "make run-ios SIMULATOR='iPhone 11 Pro'"
+      "build": "make run-ios"
     },
     "ios.debug": {
       "name": "StatusIm",
