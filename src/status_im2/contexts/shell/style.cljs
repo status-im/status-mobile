@@ -1,7 +1,7 @@
 (ns status-im2.contexts.shell.style
   (:require [quo2.foundations.colors :as colors]
-            [status-im2.contexts.shell.constants :as constants]
-            [react-native.platform :as platform]))
+            [react-native.platform :as platform]
+            [status-im2.contexts.shell.constants :as shell.constants]))
 
 ;; Bottom Tabs
 (defn bottom-tabs-container [pass-through?]
@@ -9,7 +9,7 @@
    :flex                1
    :align-items         :center
    :flex-direction      :column
-   :height              (constants/bottom-tabs-container-height)
+   :height              (shell.constants/bottom-tabs-container-height)
    :position            :absolute
    :bottom              -1
    :right               0
@@ -25,11 +25,48 @@
 
 ;; Home Stack
 (defn home-stack []
-  (let [{:keys [width height]} (constants/dimensions)]
+  (let [{:keys [width height]} (shell.constants/dimensions)]
     {:border-bottom-left-radius  20
      :border-bottom-right-radius 20
      :background-color           (colors/theme-colors colors/neutral-5 colors/neutral-95)
      :overflow                   :hidden
      :position                   :absolute
      :width                      width
-     :height                     (- height (constants/bottom-tabs-container-height))}))
+     :height                     (- height (shell.constants/bottom-tabs-container-height))}))
+
+;; Placeholder
+(defn placeholder-container [status-bar-height]
+  {:position            :absolute
+   :top                 (+ 112 status-bar-height)
+   :left                0
+   :right               0
+   :bottom              (shell.constants/bottom-tabs-container-height)
+   :align-items         :center
+   :accessibility-label :shell-placeholder-view})
+
+(def placeholder-image
+  {:margin-top 186
+   :width      120
+   :height     120})
+
+(def placeholder-title
+  {:size   :paragraph-1
+   :weight :semi-bold
+   :style  {:margin-top 20
+            :color      colors/white}})
+
+(def placeholder-subtitle
+  {:size   :paragraph-2
+   :weight :regular
+   :align  :center
+   :style  {:margin-top 4
+            :color      colors/white}})
+
+;; Shell
+(defn jump-to-text [status-bar-height]
+  {:size   :heading-1
+   :weight :semi-bold
+   :style  {:color         colors/white
+            :margin-top    (+ 68 status-bar-height)
+            :margin-bottom 20
+            :margin-left   20}})

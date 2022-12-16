@@ -3,7 +3,7 @@
             [react-native.core :as rn]
             [status-im2.contexts.shell.style :as styles]
             [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.constants :as constants]
+            [status-im2.contexts.shell.constants :as shell.constants]
             [status-im2.contexts.communities.home.view :as communities]
             [status-im2.contexts.chat.home.view :as chat]
 
@@ -25,8 +25,8 @@
      (fn []
        [reanimated/view
         {:style (reanimated/apply-animations-to-style
-                 {:opacity        (get shared-values (get constants/stacks-opacity-keywords stack-id))
-                  :pointer-events (get shared-values (get constants/stacks-pointer-keywords stack-id))}
+                 {:opacity        (get shared-values (get shell.constants/stacks-opacity-keywords stack-id))
+                  :pointer-events (get shared-values (get shell.constants/stacks-pointer-keywords stack-id))}
                  {:position :absolute
                   :top                 0
                   :bottom              0

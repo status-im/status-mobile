@@ -16,6 +16,11 @@
    :border-radius    16
    :background-color (colors/alpha background-color 0.4)})
 
+(defn empty-card []
+  (merge
+   (base-container nil)
+   {:background-color colors/neutral-95}))
+
 (def secondary-container
   {:width            160
    :height           120

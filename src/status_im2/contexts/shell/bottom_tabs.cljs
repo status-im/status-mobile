@@ -2,8 +2,8 @@
   (:require [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.shell.style :as styles]
-            [status-im2.contexts.shell.constants :as constants]
             [status-im2.contexts.shell.animation :as animation]
+            [status-im2.contexts.shell.constants :as shell.constants]
             [quo2.components.navigation.bottom-nav-tab :as bottom-nav-tab]))
 
 (defn bottom-tab [icon stack-id shared-values]
@@ -12,7 +12,7 @@
     :icon                icon
     :icon-color-anim     (get
                           shared-values
-                          (get constants/tabs-icon-color-keywords stack-id))
+                          (get shell.constants/tabs-icon-color-keywords stack-id))
     :on-press            #(animation/bottom-tab-on-press stack-id)
     :accessibility-label (str (name stack-id) "-tab")}])
 
