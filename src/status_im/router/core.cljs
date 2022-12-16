@@ -12,6 +12,7 @@
             [status-im.utils.http :as http]
             [status-im.utils.security :as security]
             [status-im.utils.wallet-connect :as wallet-connect]
+            [status-im.constants :as constants]
             [taoensso.timbre :as log]))
 
 (def ethereum-scheme "ethereum:")
@@ -222,6 +223,9 @@
 
       (wallet-connect/url? uri)
       (cb {:type :wallet-connect :data uri})
+
+      (string/starts-with? uri constants/local-pairing-connection-string-identifier)
+      (cb {:type :localpairing :data uri})
 
       :else
       (cb {:type :undefined

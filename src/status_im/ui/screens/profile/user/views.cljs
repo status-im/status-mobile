@@ -11,7 +11,7 @@
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.user.styles :as styles]
-            [status-im.utils.config :as config]
+            [status-im2.setup.config :as config]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.universal-links.utils :as universal-links]
             [status-im.ui.components.profile-header.view :as profile-header]
@@ -67,7 +67,8 @@
         @(re-frame/subscribe [:multiaccount])
         active-contacts-count @(re-frame/subscribe [:contacts/active-count])
         chain @(re-frame/subscribe [:chain-keyword])
-        registrar (stateofus/get-cached-registrar chain)]
+        registrar (stateofus/get-cached-registrar chain)
+        local-pairing-mode-enabled? config/local-pairing-mode-enabled?]
     [:<>
      [visibility-status/visibility-status-button
       visibility-status/calculate-button-height-and-dispatch-popover]
@@ -160,6 +161,13 @@
        :accessibility-label :about-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :about-app])}]
+     (when local-pairing-mode-enabled?
+       [quo/list-item
+        {:icon                :i/mobile
+         :title               (i18n/label :t/syncing)
+         :accessibility-label :syncing
+         :chevron             true
+         :on-press            #(re-frame/dispatch [:navigate-to :settings-syncing])}])
      [react/view {:padding-vertical 24}
       [quo/list-item
        {:icon                :main-icons/log-out

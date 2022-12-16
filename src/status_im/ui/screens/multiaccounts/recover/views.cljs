@@ -6,10 +6,11 @@
             [status-im.multiaccounts.key-storage.core :as multiaccounts.key-storage]
             [status-im.keycard.recovery :as keycard]
             [status-im.i18n.i18n :as i18n]
-            [status-im.utils.config :as config]
+            [status-im2.setup.config :as config]
             [status-im.utils.security]
             [quo.design-system.colors :as colors]
             [quo.core :as quo]
+            [status-im.qr-scanner.core :as qr-scanner]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.icons :as icons]))
 
@@ -89,7 +90,17 @@
         [quo/list-item {:theme               :accent
                         :on-press            #(hide-sheet-and-dispatch [:multiaccounts.login.ui/export-db-submitted])
                         :icon                :main-icons/send
-                        :title               "Export unencrypted"}])]]))
+                        :title               "Export unencrypted"}])
+      (when config/local-pairing-mode-enabled?
+        [:<>
+         [quo/list-item {:theme               :accent
+                         :on-press            #(hide-sheet-and-dispatch [::qr-scanner/scan-code {:handler ::qr-scanner/on-scan-success}])
+                         :icon                :i/key
+                         :title               (i18n/label :t/scan-sync-code)}]
+         [quo/list-item {:theme               :accent
+                         :on-press            #(hide-sheet-and-dispatch [:navigate-to :multiaccounts])
+                         :icon                :i/key
+                         :title               (i18n/label :t/show-existing-keys)}]])]]))
 
 (def bottom-sheet
   {:content bottom-sheet-view})

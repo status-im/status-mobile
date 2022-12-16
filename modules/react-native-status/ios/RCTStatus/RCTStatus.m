@@ -318,6 +318,42 @@ RCT_EXPORT_METHOD(hashMessage:(NSString *)message
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// getConnectionStringForBootstrappingAnotherDevice
+RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)configJSON
+                  callback:(RCTResponseSenderBlock)callback) {
+
+    NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
+    NSString *keyUID = [configDict objectForKey:@"keyUID"];
+    NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
+    NSString *keystoreDir = multiaccountKeystoreDir.path;
+
+    [configDict setValue:keystoreDir forKey:@"keystorePath"];
+    NSString *modifiedConfigJSON = [configDict bv_jsonStringWithPrettyPrint:NO];
+
+    NSString *result = StatusgoGetConnectionStringForBootstrappingAnotherDevice(modifiedConfigJSON);
+    callback(@[result]);
+}
+
+//////////////////////////////////////////////////////////////////// inputConnectionStringForBootstrapping
+RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
+                  configJSON:(NSString *)configJSON
+                  callback:(RCTResponseSenderBlock)callback) {
+
+    NSData *configData = [configJSON dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *configDict = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *multiaccountKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
+    NSString *keystoreDir = multiaccountKeystoreDir.path;
+
+    [configDict setValue:keystoreDir forKey:@"keystorePath"];
+    NSString *modifiedConfigJSON = [configDict bv_jsonStringWithPrettyPrint:NO];
+
+    NSString *result = StatusgoInputConnectionStringForBootstrapping(cs,modifiedConfigJSON);
+    callback(@[result]);
+}
+
 //////////////////////////////////////////////////////////////////// hashTypedData
 RCT_EXPORT_METHOD(hashTypedData:(NSString *)data
                   callback:(RCTResponseSenderBlock)callback) {
@@ -502,11 +538,11 @@ RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)multiaccountData
 - (NSString *) getExportDbFilePath {
     NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"export.db"];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    
+
     if ([fileManager fileExistsAtPath:filePath]) {
         [fileManager removeItemAtPath:filePath error:nil];
     }
-    
+
     return filePath;
 }
 
@@ -957,10 +993,10 @@ RCT_EXPORT_METHOD(exportUnencryptedDatabase:(NSString *)accountData
 #if DEBUG
     NSLog(@"exportUnencryptedDatabase() method called");
 #endif
-    
+
     NSString *filePath = [self getExportDbFilePath];
     StatusgoExportUnencryptedDatabase(accountData, password, filePath);
-    
+
     callback(@[filePath]);
 }
 

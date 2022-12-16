@@ -1894,5 +1894,20 @@
     "unmute-group": "Unmute group",
     "remove-user-from-group": "Remove {{username}} from the group",
     "edit-name-image": "Edit name and image",
-    "owner": "Owner"
+    "owner": "Owner",
+    "local-pairing-experimental-mode": "Local Pairing Mode (alpha)",
+    "syncing": "Syncing",
+    "synced-devices": "Synced Devices",
+    "sync-new-device": "Sync a new device",
+    "sync-instructions-text": "You own your data. Synchronize it among all your devices.",
+    "sync-instruction-step-1": "1.  Verify login with password",
+    "sync-instruction-step-2": "2.  Reveal a temporary QR and Sync Code",
+    "sync-instruction-step-3": "3.  Share that info with your new device",
+    "setup-syncing": "Setup Syncing",
+    "sync-code-generated": "Sync code generated",
+    "generate-scan-sync-code": "Generate Scan Sync Code",
+    "try-your-luck-again": "Try your luck again!",
+    "instruction-after-qr-generated": "On your other device, navigate to the Syncing screen and select “Scan sync”",
+    "show-existing-keys": "Show Existing Keys",
+    "scan-sync-code": "Scan Sync Code"
 }

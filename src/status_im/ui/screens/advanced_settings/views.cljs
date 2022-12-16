@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
-            [status-im.utils.config :as config]
+            [status-im2.setup.config :as config]
             [status-im.ui.components.list.views :as list])
   (:require-macros [status-im.utils.views :as views]))
 

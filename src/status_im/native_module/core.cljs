@@ -239,6 +239,23 @@
   (log/debug "[native-module] hash-message")
   (.hashMessage ^js (status) message callback))
 
+(defn get-connection-string-for-bootstrapping-another-device
+  "Generates connection string form status-go for the purpose of local pairing on the sender end"
+  [config-json callback]
+  (log/info "[native-module] Fetching Connection String"
+            {:fn :get-connection-string-for-bootstrapping-another-device
+             :config-json config-json})
+  (.getConnectionStringForBootstrappingAnotherDevice ^js (status) config-json callback))
+
+(defn input-connection-string-for-bootstrapping
+  "Provides connection string to status-go for the purpose of local pairing on the receiver end"
+  [connection-string config-json callback]
+  (log/info "[native-module] Sending Connection String"
+            {:fn :input-connection-string-for-bootstrapping
+             :config-json config-json
+             :connection-string connection-string})
+  (.inputConnectionStringForBootstrapping ^js (status) connection-string config-json callback))
+
 (defn hash-typed-data
   "used for keycard"
   [data callback]
