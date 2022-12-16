@@ -1,7 +1,7 @@
 (ns status-im.data-store.activities
   (:require [clojure.set :as set]
             [status-im.constants :as constants]
-            [status-im.activity-center.notification-types :as notification-types]
+            [status-im2.contexts.activity-center.notification-types :as notification-types]
             [status-im.data-store.messages :as messages]))
 
 (defn- rpc->type [{:keys [type name] :as chat}]

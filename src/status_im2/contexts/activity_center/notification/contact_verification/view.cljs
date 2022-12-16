@@ -1,10 +1,10 @@
-(ns status-im.ui.screens.activity-center.notification.contact-verification.view
+(ns status-im2.contexts.activity-center.notification.contact-verification.view
   (:require [clojure.string :as string]
-            [quo2.core :as quo2]
+            [i18n.i18n :as i18n]
+            [quo2.core :as quo]
             [status-im.constants :as constants]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.screens.activity-center.notification.common.view :as common]
             [status-im.utils.datetime :as datetime]
+            [status-im2.contexts.activity-center.notification.common.view :as common]
             [utils.re-frame :as rf]))
 
 (defn- hide-bottom-sheet-and-dispatch
@@ -60,7 +60,7 @@
         ;; challengee, not the challenger.
         ;; https://github.com/status-im/status-mobile/issues/14354
         (when-not (and challenger? (= contact-verification-status constants/contact-verification-status-declined))
-          [quo2/activity-log
+          [quo/activity-log
            (merge {:title           (i18n/label :t/identity-verification-request)
                    :icon            :i/friend
                    :timestamp       (datetime/timestamp->relative (:timestamp notification))
@@ -101,7 +101,8 @@
                                    {:label               (i18n/label :t/message-reply)
                                     :accessibility-label :send-reply-to-contact-verification
                                     :type                :primary
-                                    :on-press            #(rf/dispatch [:bottom-sheet/show-sheet
-                                                                        :activity-center.contact-verification/reply
-                                                                        {:notification notification
-                                                                         :replying?    true}])})})))])))))
+                                    :on-press            (fn []
+                                                           (rf/dispatch [:bottom-sheet/show-sheet
+                                                                         {:content view}
+                                                                         {:notification notification
+                                                                          :replying?    true}]))})})))])))))

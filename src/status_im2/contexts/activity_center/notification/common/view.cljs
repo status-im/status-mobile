@@ -1,13 +1,13 @@
-(ns status-im.ui.screens.activity-center.notification.common.view
-  (:require [utils.re-frame :as rf]
-            [quo2.core :as quo2]
+(ns status-im2.contexts.activity-center.notification.common.view
+  (:require [quo2.core :as quo]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.screens.activity-center.notification.common.style :as style]
-            [status-im.ui.screens.activity-center.utils :as activity-center.utils]))
+            [status-im2.contexts.activity-center.notification.common.style :as style]
+            [status-im2.contexts.activity-center.utils :as activity-center.utils]
+            [utils.re-frame :as rf]))
 
 (defn user-avatar-tag [user]
   (let [contact (rf/sub [:contacts/contact-by-identity user])]
-    [quo2/user-avatar-tag
+    [quo/user-avatar-tag
      {:color          :purple
       :override-theme :dark
       :size           :small

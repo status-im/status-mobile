@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.activity-center.notification.common.style
+(ns status-im2.contexts.activity-center.notification.common.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def user-avatar-tag

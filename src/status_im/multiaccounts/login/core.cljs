@@ -32,7 +32,7 @@
             [status-im.chat.models.link-preview :as link-preview]
             [status-im.utils.mobile-sync :as utils.mobile-sync]
             [status-im.async-storage.core :as async-storage]
-            [status-im.activity-center.core :as activity-center]
+            [status-im2.contexts.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]
             [status-im.signing.eip1559 :as eip1559]
             [status-im.data-store.chats :as data-store.chats]

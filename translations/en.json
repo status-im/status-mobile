@@ -1889,6 +1889,8 @@
     "bold": "Bold",
     "italic": "Italic",
     "strikethrough": "Strikethrough",
+    "empty-notifications-title": "No notifications",
+    "empty-notifications-subtitle": "Your notifications will be here",
     "add-text": "Add text",
     "send": "Send",
     "unmute-group": "Unmute group",

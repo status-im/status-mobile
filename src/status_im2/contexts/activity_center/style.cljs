@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.activity-center.style
+(ns status-im2.contexts.activity-center.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def screen-padding 20)
@@ -26,3 +26,25 @@
 
 (def tabs
   {:padding-left screen-padding})
+
+(def tabs-container
+  {:flex       1
+   :align-self :stretch})
+
+(def filter-toggle-container
+  {:flex-grow     0
+   :margin-left   16
+   :padding-right screen-padding})
+
+(def tabs-and-filter-container
+  {:flex-direction   :row
+   :padding-vertical 12})
+
+(def empty-container
+  {:align-items      :center
+   :flex             1
+   :justify-content  :center
+   :padding-vertical 12})
+
+(def empty-title
+  {:padding-bottom 2})

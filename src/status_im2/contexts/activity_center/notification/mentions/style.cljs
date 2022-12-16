@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.activity-center.notification.mentions.style
+(ns status-im2.contexts.activity-center.notification.mentions.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def tag

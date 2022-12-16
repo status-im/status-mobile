@@ -1,13 +1,13 @@
-(ns status-im.activity-center.core-test
+(ns status-im2.contexts.activity-center.events-test
   (:require [cljs.test :refer [deftest is testing]]
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
-            [status-im.activity-center.core :as activity-center]
-            [status-im.activity-center.notification-types :as types]
             [status-im.constants :as constants]
             [status-im.ethereum.json-rpc :as json-rpc]
             status-im.events
-            [status-im.test-helpers :as h]))
+            [status-im.test-helpers :as h]
+            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.contexts.activity-center.notification-types :as types]))
 
 (def notification-id "0x1")
 

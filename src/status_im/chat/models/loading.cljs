@@ -7,7 +7,7 @@
             [status-im.chat.models.message-list :as message-list]
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.activity-center.core :as activity-center]))
+            [status-im2.contexts.activity-center.events :as activity-center]))
 
 (defn cursor->clock-value
   [^js cursor]
