@@ -43,24 +43,21 @@ pipeline {
   }
 
   stages {
-   
+   stage('Prep') {
+      steps {
+        script {
+          utils.doGitRebasePR()
+          utils.symlinkEnv()
+          println("Build Number: ${utils.genBuildNumber()}")
+        }
+      }
+    }
     
     stage('Test') {
       steps { script {
         currentBuild.displayName = "PR-${params.PR_ID}"
-        /* for managing optional arguments */
         
-        withCredentials([
-          usernamePassword(
-            credentialsId: 'status-im-auto',
-            usernameVariable: 'GIT_HUB_USER', /* ignored */
-            passwordVariable: 'GIT_HUB_TOKEN'
-          ),
-          string(
-            credentialsId: 'etherscan-api-key',
-            variable: 'ETHERSCAN_API_KEY'
-          ),
-        ]) {
+      {
           dir('') {
             /* Provide Eth test account secrets. */
             sh 'make run-visual-test-ios-release'
@@ -68,5 +65,10 @@ pipeline {
         }
       } }
     }
+  }
+  post {
+    success { script { github.notifyPR(true) } }
+    failure { script { github.notifyPR(false) } }
+    always  { sh 'make purge' }
   }
 }
