@@ -1,9 +1,9 @@
 (ns status-im2.contexts.activity-center.view
   (:require [i18n.i18n :as i18n]
-            [quo.components.safe-area :as safe-area]
             [quo.react :as react]
             [quo2.core :as quo]
             [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
             [status-im2.contexts.activity-center.notification-types :as types]
             [status-im2.contexts.activity-center.notification.contact-request.view :as contact-request]
             [status-im2.contexts.activity-center.notification.contact-verification.view :as contact-verification]
@@ -109,16 +109,17 @@
   []
   [:f>
    (fn []
-     (let [notifications        (rf/sub [:activity-center/filtered-notifications])
-           window-width         (rf/sub [:dimensions/window-width])
-           {:keys [top bottom]} (safe-area/use-safe-area)]
-       (react/effect! #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
-       [rn/view {:style (style/screen-container window-width top bottom)}
-        [header]
-        [rn/flat-list {:data                      notifications
-                       :content-container-style   {:flex-grow 1}
-                       :empty-component           [empty-tab]
-                       :key-fn                    :id
-                       :on-scroll-to-index-failed identity
-                       :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-                       :render-fn                 render-notification}]]))])
+     (react/effect! #(rf/dispatch [:activity-center.notifications/fetch-first-page]))
+     [safe-area/consumer
+      (fn [{:keys [top bottom]}]
+        (let [notifications (rf/sub [:activity-center/filtered-notifications])
+              window-width  (rf/sub [:dimensions/window-width])]
+          [rn/view {:style (style/screen-container window-width top bottom)}
+           [header]
+           [rn/flat-list {:data                      notifications
+                          :content-container-style   {:flex-grow 1}
+                          :empty-component           [empty-tab]
+                          :key-fn                    :id
+                          :on-scroll-to-index-failed identity
+                          :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
+                          :render-fn                 render-notification}]]))])])

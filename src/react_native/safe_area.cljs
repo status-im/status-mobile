@@ -7,7 +7,7 @@
 
 (defn consumer [component]
   [consumer-raw
-   (fn [insets]
+   (fn [^js insets]
      (reagent/as-element
       [component (js->clj insets :keywordize-keys true)]))])
 
