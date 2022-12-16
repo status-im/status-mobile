@@ -3,7 +3,7 @@
             [status-im.utils.security :as security]
             [taoensso.timbre :as log]
             [status-im.native-module.core :as status]
-            [status-im2.contexts.syncing.sheets.enter-password.views.qr-code-view-with-connection-string :as qr-code-view-with-connection-string]))
+            [status-im2.contexts.syncing.sheets.enter-password.view :as sheet]))
 
 (rf/defn initiate-local-pairing-with-connection-string
   {:events [:syncing/input-connection-string-for-bootstrapping]}
@@ -27,4 +27,4 @@
        (rf/dispatch [:bottom-sheet/show-sheet
                      {:show-handle? false
                       :content (fn []
-                                 [qr-code-view-with-connection-string connection-string])}])))))
+                                 [sheet/qr-code-view-with-connection-string connection-string])}])))))
