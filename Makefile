@@ -318,7 +318,7 @@ run-visual-test-ios-release: ##@test Run tests once in NodeJS
 	yarn install
 	detox build --configuration ios.sim.release && \
 	detox test --configuration ios.sim.release
-
+	
 run-visual-test-ios: export TARGET := clojure
 run-visual-test-ios: XCODE_DERIVED_DATA := $(HOME)/Library/Developer/Xcode/DerivedData
 run-visual-test-ios: APPLICATION_NAME := $(shell ls $(XCODE_DERIVED_DATA) | grep -E '\bStatusIm-')
