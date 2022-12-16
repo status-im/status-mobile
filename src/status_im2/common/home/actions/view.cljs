@@ -7,8 +7,12 @@
             [status-im2.common.constants :as constants]
             [utils.re-frame :as rf]))
 
+<<<<<<< HEAD
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider?]}]
+=======
+(defn- entry [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
+>>>>>>> fb4f3352e... refactor
   {:pre [(keyword? icon)
          (string? label)
          (fn? on-press)
@@ -20,7 +24,8 @@
    :danger?      danger?
    :sub-label    sub-label
    :right-icon   (when chevron? :i/chevron-right)
-   :add-divider? add-divider?})
+   :add-divider? add-divider?
+   :accessibility-label accessibility-label})
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -298,6 +303,7 @@
   [chat-id]
   (entry {:icon      :i/members
           :label     (i18n/label :t/group-details)
+          :accessibility-label :group-details
           :on-press  #(hide-sheet-and-dispatch [:show-group-chat-profile chat-id])
           :danger?   false
           :sub-label nil

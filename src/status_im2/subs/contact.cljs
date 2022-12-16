@@ -7,7 +7,14 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
             [status-im.utils.gfycat.core :as gfycat]
+<<<<<<< HEAD
             [status-im.utils.image-server :as image-server]))
+=======
+            [status-im.ethereum.core :as ethereum]
+            [clojure.string :as string]
+            [utils.collection]
+            [i18n.i18n :as i18n]))
+>>>>>>> fb4f3352e... refactor
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -91,10 +98,6 @@
        sort
        vals)))
 
-(defn distinct-by [f coll]
-  (let [groups (group-by f coll)]
-    (map #(first (groups %)) (distinct (map f coll)))))
-
 (re-frame/reg-sub
  :contacts/add-members-sections
  :<- [:contacts/current-chat-contacts]
@@ -107,7 +110,7 @@
               (update-in acc [first-char :data] #(conj % contact))
               (assoc acc first-char {:title first-char :data [contact]}))))
         {}
-        (distinct-by :public-key  (concat members contacts)))
+        (utils.collection/distinct-by :public-key  (concat members contacts)))
        sort
        vals)))
 

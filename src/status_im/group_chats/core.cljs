@@ -54,13 +54,13 @@
 >>>>>>> bc7bcd83f... refactor
 
 (fx/defn remove-members
-  "remove members from a group chat"
   {:events [:group-chats.ui/remove-members-pressed]}
   [{{:keys [current-chat-id deselected-members]} :db :as cofx}]
   {::json-rpc/call [{:method      "wakuext_removeMembersFromGroupChat"
                      :params      [nil current-chat-id deselected-members]
                      :js-response true
-                     :on-success  #(re-frame/dispatch [:chat-updated % true])}]})
+                     :on-success  #(re-frame/dispatch [:chat-updated % true])
+                     :on-error #()}]})
 
 (fx/defn join-chat
   {:events [:group-chats.ui/join-pressed]}
@@ -110,8 +110,14 @@
   {::json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
                      :params      [nil current-chat-id selected-participants]
                      :js-response true
+<<<<<<< HEAD
                      :on-success  #(re-frame/dispatch [:chat-updated % true])}]})
 >>>>>>> ebb7affef... group details screen 3
+=======
+                     :on-success  #(do
+                                     (println "SUCCESSADDMEMBERS" selected-participants)
+                                     (re-frame/dispatch [:chat-updated % true]))}]})
+>>>>>>> b1975a6e4... refactor
 
 (fx/defn add-members-from-invitation
   "Add members to a group chat"
@@ -237,13 +243,13 @@
   [{:keys [db]} id]
   {:db (update db :selected-participants conj id)})
 
-(fx/defn reset-add-participants
-  {:events [:group/reset-add-participants]}
+(fx/defn clear-added-participants
+  {:events [:group/clear-added-participants]}
   [{db :db}]
   {:db (assoc db :selected-participants #{})})
 
-(fx/defn reset-remove-members
-  {:events [:group/reset-remove-members]}
+(fx/defn clear-removed-members
+  {:events [:group/clear-removed-members]}
   [{db :db}]
   {:db (assoc db :deselected-members #{})})
 
