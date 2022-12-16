@@ -33,7 +33,7 @@
           {:on-press #(rf/dispatch [:preparations-for-connection-string])}
           (i18n/label :t/try-your-luck-again)]]])]))
 
-(defn enter-password []
+(defn sheet []
   (let [entered-password (atom "")]
     [:<>
      [rn/view {:margin 20}

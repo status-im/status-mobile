@@ -50,5 +50,5 @@
                  :on-press #(rf/dispatch [:bottom-sheet/show-sheet
                                           {:show-handle? false
                                            :content (fn []
-                                                      [enter-password/enter-password])}])}
+                                                      [enter-password/sheet])}])}
      (i18n/label :t/setup-syncing)]]])
