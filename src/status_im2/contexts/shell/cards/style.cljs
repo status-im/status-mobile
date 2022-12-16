@@ -2,15 +2,16 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def colors-map
-  {:secondary-container-bg-color   colors/neutral-95
-   :title-color                    colors/white
-   :subtitle-color                 colors/neutral-40
-   :last-message-text-color        colors/white
-   :close-button-bg-color          colors/neutral-80-opa-40
-   :close-button-icon-color        colors/white
-   :community-channel              colors/white})
+  {:secondary-container-bg-color colors/neutral-95
+   :title-color                  colors/white
+   :subtitle-color               colors/neutral-40
+   :last-message-text-color      colors/white
+   :close-button-bg-color        colors/neutral-80-opa-40
+   :close-button-icon-color      colors/white
+   :community-channel            colors/white})
 
-(defn base-container [background-color]
+(defn base-container
+  [background-color]
   {:width            160
    :height           160
    :border-radius    16
@@ -44,17 +45,18 @@
    :color             (:subtitle-color colors-map)})
 
 (def subtitle-props
-  {:size            :paragraph-2
-   :weight          :medium
-   :style           subtitle})
+  {:size   :paragraph-2
+   :weight :medium
+   :style  subtitle})
 
-(defn content-container [new-notifications?]
-  {:position          :absolute
-   :max-width         (if new-notifications? 108 136)
-   :flex-shrink       1
-   :bottom            12
-   :margin-left       12
-   :margin-right      (if new-notifications? 8 12)})
+(defn content-container
+  [new-notifications?]
+  {:position     :absolute
+   :max-width    (if new-notifications? 108 136)
+   :flex-shrink  1
+   :bottom       12
+   :margin-left  12
+   :margin-right (if new-notifications? 8 12)})
 
 (def notification-container
   {:position        :absolute
@@ -82,7 +84,8 @@
    :background-color (:close-button-bg-color colors-map)
    :icon-color       (:close-button-icon-color colors-map)})
 
-(defn close-button-props [on-press]
+(defn close-button-props
+  [on-press]
   {:size           24
    :type           :grey
    :icon           true
@@ -102,7 +105,8 @@
    :align-items     :center
    :position        :absolute})
 
-(defn unread-dot [background-color]
+(defn unread-dot
+  [background-color]
   {:width            8
    :height           8
    :border-radius    4
@@ -119,7 +123,8 @@
    :height        24
    :border-radius 8})
 
-(defn community-avatar [customization-color]
+(defn community-avatar
+  [customization-color]
   {:width            48
    :height           48
    :border-radius    24

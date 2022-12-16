@@ -8,7 +8,8 @@
    :padding-vertical   8
    :align-items        :center})
 
-(defn contact-requests-icon []
+(defn contact-requests-icon
+  []
   {:justify-content :center
    :align-items     :center
    :width           32
@@ -17,7 +18,8 @@
    :border-width    1
    :border-color    (colors/theme-colors colors/neutral-20 colors/neutral-80)})
 
-(defn contact-requests-sheet []
+(defn contact-requests-sheet
+  []
   {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
    :width            32
    :height           32

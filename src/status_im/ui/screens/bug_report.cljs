@@ -5,18 +5,20 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.topbar :as topbar]))
 
-(defn bug-report []
+(defn bug-report
+  []
   (let [{:keys [description steps]} @(re-frame/subscribe [:bug-report/details])]
     [react-native/view {:style {:flex 1}}
      [topbar/topbar
       {:title  (i18n/label :t/bug-report)
        :modal? true}]
-     [react-native/view {:style {:flex               1
-                                 :padding-top        8
-                                 :padding-horizontal 16}}
+     [react-native/view
+      {:style {:flex               1
+               :padding-top        8
+               :padding-horizontal 16}}
       [quo/text-input
        {:label               (i18n/label :t/bug-report-description)
-        :default-value               description
+        :default-value       description
         :placeholder         (i18n/label :t/bug-report-description-placeholder)
         :style               {:margin-bottom 8}
         :multiline           true
@@ -39,7 +41,7 @@
        (i18n/label :t/bug-report-submit-email)]
       [react-native/view
        {:style {:margin-vertical 16
-                :align-items :center}}
+                :align-items     :center}}
        [quo/text (i18n/label :t/or)]]
       [quo/button
        {:type                :primary

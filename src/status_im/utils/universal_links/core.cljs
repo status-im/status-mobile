@@ -1,58 +1,66 @@
 (ns status-im.utils.universal-links.core
-  (:require [goog.string :as gstring]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
+            [goog.string :as gstring]
             [re-frame.core :as re-frame]
-            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.add-new.db :as new-chat.db]
             [status-im.chat.models :as chat]
             [status-im.constants :as constants]
-            [status-im.router.core :as router]
-            [status-im.i18n.i18n :as i18n]
             [status-im.ethereum.core :as ethereum]
+            [status-im.group-chats.core :as group-chats]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.router.core :as router]
             [status-im.ui.components.react :as react]
-            [status-im.add-new.db :as new-chat.db]
-            [status-im2.navigation.events :as navigation]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]
             [status-im.wallet.choose-recipient.core :as choose-recipient]
-            [status-im.group-chats.core :as group-chats]))
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
 
 ;; domains should be without the trailing slash
-(def domains {:external "https://join.status.im"
-              :internal "status-im:/"})
+(def domains
+  {:external "https://join.status.im"
+   :internal "status-im:/"})
 
-(def links {:public-chat        "%s/%s"
-            :private-chat       "%s/p/%s"
-            :community-requests "%s/cr/%s"
-            :community          "%s/c/%s"
-            :group-chat         "%s/g/%s"
-            :user               "%s/u/%s"
-            :browse             "%s/b/%s"})
+(def links
+  {:public-chat        "%s/%s"
+   :private-chat       "%s/p/%s"
+   :community-requests "%s/cr/%s"
+   :community          "%s/c/%s"
+   :group-chat         "%s/g/%s"
+   :user               "%s/u/%s"
+   :browse             "%s/b/%s"})
 
-(defn generate-link [link-type domain-type param]
+(defn generate-link
+  [link-type domain-type param]
   (gstring/format (get links link-type)
                   (get domains domain-type)
                   param))
 
-(defn universal-link? [url]
+(defn universal-link?
+  [url]
   (boolean
    (re-matches constants/regx-universal-link url)))
 
-(defn deep-link? [url]
+(defn deep-link?
+  [url]
   (boolean
    (re-matches constants/regx-deep-link url)))
 
-(fx/defn handle-browse [cofx {:keys [url]}]
+(fx/defn handle-browse
+  [cofx {:keys [url]}]
   (log/info "universal-links: handling browse" url)
   {:browser/show-browser-selection url})
 
-(fx/defn handle-group-chat [cofx params]
+(fx/defn handle-group-chat
+  [cofx params]
   (log/info "universal-links: handling group" params)
   (group-chats/create-from-link cofx params))
 
-(fx/defn handle-private-chat [{:keys [db] :as cofx} {:keys [chat-id]}]
+(fx/defn handle-private-chat
+  [{:keys [db] :as cofx} {:keys [chat-id]}]
   (log/info "universal-links: handling private chat" chat-id)
   (when chat-id
     (if-not (new-chat.db/own-public-key? db chat-id)
@@ -60,19 +68,23 @@
       {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
                           :content (i18n/label :t/can-not-add-yourself)}})))
 
-(fx/defn handle-community-requests [cofx {:keys [community-id]}]
+(fx/defn handle-community-requests
+  [cofx {:keys [community-id]}]
   (log/info "universal-links: handling community request  " community-id)
   (navigation/navigate-to-cofx cofx :community-requests-to-join {:community-id community-id}))
 
-(fx/defn handle-community [cofx {:keys [community-id]}]
+(fx/defn handle-community
+  [cofx {:keys [community-id]}]
   (log/info "universal-links: handling community" community-id)
   (navigation/navigate-to-cofx cofx :community {:community-id community-id}))
 
-(fx/defn handle-community-chat [cofx {:keys [chat-id]}]
+(fx/defn handle-community-chat
+  [cofx {:keys [chat-id]}]
   (log/info "universal-links: handling community chat" chat-id)
   {:dispatch [:chat.ui/navigate-to-chat chat-id]})
 
-(fx/defn handle-public-chat [cofx {:keys [topic]}]
+(fx/defn handle-public-chat
+  [cofx {:keys [topic]}]
   (log/info "universal-links: handling public chat" topic)
   (when (seq topic)
     (chat/start-public-chat cofx topic)))
@@ -82,7 +94,7 @@
   (log/info "universal-links: handling view profile" public-key)
   (cond
     (and public-key (new-chat.db/own-public-key? db public-key))
-    {:change-tab-fx :profile
+    {:change-tab-fx      :profile
      :pop-to-root-tab-fx :profile-stack}
 
     public-key
@@ -92,24 +104,29 @@
                                  :profile
                                  {})))
 
-(fx/defn handle-eip681 [cofx data]
+(fx/defn handle-eip681
+  [cofx data]
   (fx/merge cofx
             (choose-recipient/parse-eip681-uri-and-resolve-ens data true)
             (navigation/navigate-to-cofx :wallet nil)))
 
-(defn existing-account? [{:keys [db]} address]
+(defn existing-account?
+  [{:keys [db]} address]
   (when address
     (some #(when (= (string/lower-case (:address %))
-                    (string/lower-case address)) %)
+                    (string/lower-case address))
+             %)
           (:multiaccount/accounts db))))
 
-(fx/defn handle-wallet-account [cofx {address :account}]
+(fx/defn handle-wallet-account
+  [cofx {address :account}]
   (when-let [account (existing-account? cofx address)]
     (navigation/navigate-to-cofx cofx
                                  :wallet-account
                                  account)))
 
-(defn handle-not-found [full-url]
+(defn handle-not-found
+  [full-url]
   (log/info "universal-links: no handler for " full-url))
 
 (defn dispatch-url
@@ -166,7 +183,8 @@
               {:db (dissoc db :universal-links/url)}
               (handle-url url))))
 
-(defn unwrap-js-url [e]
+(defn unwrap-js-url
+  [e]
   (-> e
       (js->clj :keywordize-keys true)
       :url))

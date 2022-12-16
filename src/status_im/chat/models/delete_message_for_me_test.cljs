@@ -1,7 +1,6 @@
 (ns status-im.chat.models.delete-message-for-me-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.chat.models.delete-message-for-me :as
-             delete-message-for-me]
+            [status-im.chat.models.delete-message-for-me :as delete-message-for-me]
             [status-im.utils.datetime :as datetime]))
 
 (def mid "message-id")
@@ -30,7 +29,7 @@
         (let [db             (update-in db
                                         [:messages cid mid]
                                         assoc
-                                        :deleted-for-me? true
+                                        :deleted-for-me?              true
                                         :deleted-for-me-undoable-till
                                         (+ (datetime/timestamp) 1000))
               result-message (get-in (delete-message-for-me/undo {:db db} message)
@@ -43,9 +42,10 @@
         (let [db             (update-in db
                                         [:messages cid mid]
                                         assoc
-                                        :deleted-for-me? true
+                                        :deleted-for-me?              true
                                         :deleted-for-me-undoable-till (- (datetime/timestamp) 1000))
-              result-message (get-in (delete-message-for-me/undo {:db db} message) [:db :messages cid mid])]
+              result-message (get-in (delete-message-for-me/undo {:db db} message)
+                                     [:db :messages cid mid])]
           (is (= (:id result-message) mid))
           (is (nil? (:deleted-for-me-undoable-till result-message)))
           (is (true? (:deleted-for-me? result-message)))))

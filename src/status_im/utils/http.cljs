@@ -1,16 +1,19 @@
 (ns status-im.utils.http
-  (:require [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]
+  (:require ["react-native-fetch-polyfill" :default fetch]
             [clojure.string :as string]
-            ["react-native-fetch-polyfill" :default fetch])
+            [status-im.utils.utils :as utils]
+            [taoensso.timbre :as log])
   (:refer-clojure :exclude [get]))
 
 ;; Default HTTP request timeout ms
 (def http-request-default-timeout-ms 3000)
 
-(defn- response-headers [^js response]
+(defn- response-headers
+  [^js response]
   (let [entries (es6-iterator-seq (.entries ^js (.-headers response)))]
-    (reduce #(assoc %1 (string/trim (string/lower-case (first %2))) (string/trim (second %2))) {} entries)))
+    (reduce #(assoc %1 (string/trim (string/lower-case (first %2))) (string/trim (second %2)))
+            {}
+            entries)))
 
 (defn raw-post
   "Performs an HTTP POST request and returns raw results :status :headers :body."
@@ -26,11 +29,11 @@
                   :timeout (or timeout-ms http-request-default-timeout-ms)}))
        (.then (fn [^js response]
                 (->
-                 (.text response)
-                 (.then (fn [body]
-                          (on-success {:status  (.-status response)
-                                       :headers (response-headers response)
-                                       :body    body}))))))
+                  (.text response)
+                  (.then (fn [body]
+                           (on-success {:status  (.-status response)
+                                        :headers (response-headers response)
+                                        :body    body}))))))
        (.catch (or on-error
                    (fn [error]
                      (utils/show-popup "Error" url (str error))))))))
@@ -71,7 +74,7 @@
                   (and on-error (not ok?))
                   (on-error data)
 
-                  :else false)))
+                  :else                    false)))
        (.catch (fn [error]
                  (if on-error
                    (on-error {:response-body error})
@@ -93,13 +96,13 @@
                   :timeout (or timeout-ms http-request-default-timeout-ms)}))
        (.then (fn [^js response]
                 (->
-                 (.text response)
-                 (.then (fn [response-body]
-                          (let [ok?  (.-ok response)
-                                ok?' (if valid-response?
-                                       (and ok? (valid-response? response))
-                                       ok?)]
-                            [response-body ok?']))))))
+                  (.text response)
+                  (.then (fn [response-body]
+                           (let [ok?  (.-ok response)
+                                 ok?' (if valid-response?
+                                        (and ok? (valid-response? response))
+                                        ok?)]
+                             [response-body ok?']))))))
        (.then (fn [[response ok?]]
                 (cond
                   (and on-success ok?)
@@ -108,10 +111,11 @@
                   (and on-error (not ok?))
                   (on-error response)
 
-                  :else false)))
+                  :else                    false)))
        (.catch (or on-error #())))))
 
-(defn normalize-url [url]
+(defn normalize-url
+  [url]
   (str (when (and (string? url)
                   (not (re-find #"^[a-zA-Z-_]+:/" url)))
          "https://")
@@ -119,40 +123,49 @@
 
 (def normalize-and-decode-url (comp js/decodeURI normalize-url))
 
-(defn url-host [url]
+(defn url-host
+  [url]
   (try
     (when-let [host (.getDomain ^js (goog.Uri. url))]
       (when-not (string/blank? host)
         (string/replace host #"www." "")))
     (catch :default _ nil)))
 
-(defn url? [str]
+(defn url?
+  [str]
   (try
     (when-let [host (.getDomain ^js (goog.Uri. str))]
       (not (string/blank? host)))
     (catch :default _ nil)))
 
-(defn parse-payload [o]
+(defn parse-payload
+  [o]
   (when o
     (try
       (js->clj (js/JSON.parse o)
-               :keywordize-keys true)
+               :keywordize-keys
+               true)
       (catch :default _
         (log/debug (str "Failed to parse " o))))))
 
-(defn url-sanitized? [uri]
+(defn url-sanitized?
+  [uri]
   (not (nil? (re-find #"^(https:)([/|.|\w|\s|-])*\.(?:jpg|svg|png)$" uri))))
 
-(defn- split-param [param]
+(defn- split-param
+  [param]
   (->
-   (string/split param #"=")
-   (concat (repeat ""))
-   (->>
-    (take 2))))
+    (string/split param #"=")
+    (concat (repeat ""))
+    (->>
+     (take 2))))
 
 (defn- url-decode
   [string]
-  (some-> string str (string/replace #"\+" "%20") (js/decodeURIComponent)))
+  (some-> string
+          str
+          (string/replace #"\+" "%20")
+          (js/decodeURIComponent)))
 
 (defn query->map
   [qstr]
@@ -173,5 +186,6 @@
           (= cc 46)
           "-")))
 
-(defn topic-from-url [url]
+(defn topic-from-url
+  [url]
   (string/lower-case (apply str (map filter-letters-numbers-and-replace-dot-on-dash (url-host url)))))

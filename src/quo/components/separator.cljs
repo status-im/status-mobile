@@ -1,8 +1,9 @@
 (ns quo.components.separator
-  (:require [quo.react-native :as react]
-            [quo.design-system.colors :as colors]))
+  (:require [quo.design-system.colors :as colors]
+            [quo.react-native :as react]))
 
-(defn separator [{:keys [color style]}]
+(defn separator
+  [{:keys [color style]}]
   [react/view
    {:style
     (merge

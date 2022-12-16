@@ -1,10 +1,10 @@
 (ns react-native.core
-  (:require [reagent.core :as reagent]
+  (:require ["@react-native-community/blur" :as blur]
             ["react-native" :as react-native]
-            ["@react-native-community/blur" :as blur]
             [react-native.flat-list :as flat-list]
+            [react-native.platform :as platform]
             [react-native.section-list :as section-list]
-            [react-native.platform :as platform]))
+            [reagent.core :as reagent]))
 
 (def app-state ^js (.-AppState ^js react-native))
 (def blur-view (reagent/adapt-react-class (.-BlurView blur)))
@@ -17,7 +17,8 @@
 
 (def touchable-opacity (reagent/adapt-react-class (.-TouchableOpacity ^js react-native)))
 (def touchable-highlight (reagent/adapt-react-class (.-TouchableHighlight ^js react-native)))
-(def touchable-without-feedback (reagent/adapt-react-class (.-TouchableWithoutFeedback ^js react-native)))
+(def touchable-without-feedback
+  (reagent/adapt-react-class (.-TouchableWithoutFeedback ^js react-native)))
 
 (def flat-list flat-list/flat-list)
 
@@ -31,41 +32,50 @@
 
 (def dismiss-keyboard! #(.dismiss keyboard))
 
-(defn use-window-dimensions []
+(defn use-window-dimensions
+  []
   (let [window ^js (react-native/useWindowDimensions)]
     {:font-scale (.-fontScale window)
      :height     (.-height window)
      :scale      (.-scale window)
      :width      (.-width window)}))
 
-(defn hide-splash-screen []
+(defn hide-splash-screen
+  []
   (.hide ^js (-> react-native .-NativeModules .-SplashScreen)))
 
-(defn alert [title message buttons options]
+(defn alert
+  [title message buttons options]
   (.alert (.-Alert ^js react-native) title message (clj->js buttons) (clj->js options)))
 
 (def appearance ^js (.-Appearance ^js react-native))
 
-(defn get-color-scheme []
+(defn get-color-scheme
+  []
   (.getColorScheme appearance))
 
-(defn appearance-add-change-listener [handler]
+(defn appearance-add-change-listener
+  [handler]
   (.addChangeListener appearance handler))
 
-(defn get-window []
+(defn get-window
+  []
   (js->clj (.get (.-Dimensions ^js react-native) "window") :keywordize-keys true))
 
 (def status-bar (.-StatusBar ^js react-native))
 
-(defn hw-back-add-listener [callback]
+(defn hw-back-add-listener
+  [callback]
   (.addEventListener (.-BackHandler ^js react-native) "hardwareBackPress" callback))
 
-(defn hw-back-remove-listener [callback]
+(defn hw-back-remove-listener
+  [callback]
   (.removeEventListener (.-BackHandler ^js react-native) "hardwareBackPress" callback))
 
 (def keyboard-avoiding-view-class (reagent/adapt-react-class (.-KeyboardAvoidingView react-native)))
 
-(defn keyboard-avoiding-view [props & children]
+(defn keyboard-avoiding-view
+  [props & children]
   (into [keyboard-avoiding-view-class
          (merge (when platform/ios? {:behavior :padding})
                 props)]

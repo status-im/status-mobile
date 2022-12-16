@@ -1,21 +1,21 @@
 (ns status-im.multiaccounts.recover.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.mnemonic :as mnemonic]
-            [status-im.keycard.nfc :as nfc]
             [status-im.i18n.i18n :as i18n]
+            [status-im.keycard.nfc :as nfc]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.native-module.core :as status]
             [status-im.popover.core :as popover]
-            [status-im2.navigation.events :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
 (defn existing-account?
@@ -23,7 +23,8 @@
   {:pre [(not (nil? key-uid))]}
   (contains? multiaccounts key-uid))
 
-(defn check-phrase-warnings [recovery-phrase]
+(defn check-phrase-warnings
+  [recovery-phrase]
   (cond (string/blank? recovery-phrase) :t/required-field))
 
 (fx/defn set-phrase
@@ -31,16 +32,18 @@
   [{:keys [db]} masked-recovery-phrase]
   (let [recovery-phrase (security/safe-unmask-data masked-recovery-phrase)]
     (fx/merge
-     {:db (update db :intro-wizard assoc
-                  :passphrase (string/lower-case recovery-phrase)
-                  :passphrase-error nil
+     {:db (update db
+                  :intro-wizard          assoc
+                  :passphrase            (string/lower-case recovery-phrase)
+                  :passphrase-error      nil
                   :next-button-disabled? (or (empty? recovery-phrase)
                                              (not (mnemonic/valid-length? recovery-phrase))))})))
 
 (fx/defn validate-phrase-for-warnings
   [{:keys [db]}]
   (let [recovery-phrase (get-in db [:intro-wizard :passphrase])]
-    {:db (update db :intro-wizard assoc
+    {:db (update db
+                 :intro-wizard     assoc
                  :passphrase-error (check-phrase-warnings recovery-phrase))}))
 
 (fx/defn on-store-multiaccount-success
@@ -54,15 +57,18 @@
                           :content    (i18n/label :t/multiaccount-exists-title)
                           :on-dismiss #(re-frame/dispatch [:pop-to-root-tab :multiaccounts])}}
       (let [{:keys [key-uid] :as multiaccount} (get-in db [:intro-wizard :root-key])
-            keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
+            keycard-multiaccount?              (boolean (get-in db
+                                                                [:multiaccounts/multiaccounts key-uid
+                                                                 :keycard-pairing]))]
         (if keycard-multiaccount?
           ;; trying to recover multiaccount created with keycard
-          {:db        (-> db
-                          (update :intro-wizard assoc
-                                  :processing? false
-                                  :passphrase-error :recover-keycard-multiaccount-not-supported)
-                          (update :intro-wizard dissoc
-                                  :passphrase-valid?))}
+          {:db (-> db
+                   (update :intro-wizard     assoc
+                           :processing?      false
+                           :passphrase-error :recover-keycard-multiaccount-not-supported)
+                   (update :intro-wizard
+                           dissoc
+                           :passphrase-valid?))}
           (let [multiaccount (assoc multiaccount :derived (get-in db [:intro-wizard :derived]))]
             (multiaccounts.create/on-multiaccount-created cofx
                                                           multiaccount
@@ -72,11 +78,11 @@
 (fx/defn store-multiaccount
   {:events [::recover-multiaccount-confirmed]}
   [{:keys [db]} password]
-  (let [{:keys [root-key]} (:intro-wizard db)
+  (let [{:keys [root-key]}   (:intro-wizard db)
         {:keys [id key-uid]} root-key
-        callback #(re-frame/dispatch [::store-multiaccount-success % password])
-        hashed-password (ethereum/sha3 (security/safe-unmask-data password))]
-    {:db (assoc-in db [:intro-wizard :processing?] true)
+        callback             #(re-frame/dispatch [::store-multiaccount-success % password])
+        hashed-password      (ethereum/sha3 (security/safe-unmask-data password))]
+    {:db                                       (assoc-in db [:intro-wizard :processing?] true)
      ::multiaccounts.create/store-multiaccount [id key-uid hashed-password callback]}))
 
 (re-frame/reg-fx
@@ -99,14 +105,15 @@
          (fn [result]
            (let [derived-data (multiaccounts.create/normalize-derived-data-keys
                                (types/json->clj result))
-                 public-key (get-in derived-data [constants/path-whisper-keyword :public-key])]
+                 public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
              (status/gfycat-identicon-async
               public-key
               (fn [name identicon]
                 (let [derived-data-extended
                       (update derived-data
                               constants/path-whisper-keyword
-                              merge {:name name :identicon identicon})]
+                              merge
+                              {:name name :identicon identicon})]
                   (re-frame/dispatch [success-event root-data derived-data-extended]))))))))))))
 
 (fx/defn show-existing-multiaccount-alert
@@ -127,10 +134,12 @@
   (let [multiaccounts (:multiaccounts/multiaccounts db)]
     (fx/merge
      cofx
-     {:db (update db :intro-wizard
-                  assoc :root-key root-data
-                  :derived derived-data
-                  :step :recovery-success)}
+     {:db (update db
+                  :intro-wizard
+                  assoc
+                  :root-key     root-data
+                  :derived      derived-data
+                  :step         :recovery-success)}
      (when (existing-account? multiaccounts key-uid)
        (show-existing-multiaccount-alert key-uid))
      (navigation/navigate-to-cofx :recover-multiaccount-success nil))))
@@ -169,7 +178,9 @@
   {:events [:multiaccounts.recover/enter-phrase-next-pressed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [passphrase]} (:intro-wizard db)]
-    {::multiaccounts/validate-mnemonic [passphrase #(re-frame/dispatch [:multiaccounts.recover/phrase-validated %])]}))
+    {::multiaccounts/validate-mnemonic [passphrase
+                                        #(re-frame/dispatch [:multiaccounts.recover/phrase-validated
+                                                             %])]}))
 
 (fx/defn continue-to-import-mnemonic
   {:events [::continue-pressed]}
@@ -187,13 +198,15 @@
   (let [step (get-in db [:intro-wizard :step])]
     (if (= step :enter-phrase)
       {:db (dissoc db :intro-wizard)}
-      {:db (update db :intro-wizard assoc :step
+      {:db (update db
+                   :intro-wizard     assoc
+                   :step
                    (case step
-                     :recovery-success :enter-phrase
+                     :recovery-success   :enter-phrase
                      :select-key-storage :recovery-success
-                     :create-code :select-key-storage)
+                     :create-code        :select-key-storage)
                    :confirm-failure? false
-                   :key-code nil)})))
+                   :key-code         nil)})))
 
 (fx/defn cancel-pressed
   {:events [:multiaccounts.recover/cancel-pressed]}
@@ -227,15 +240,17 @@
   {:events [:multiaccounts.recover/re-encrypt-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (update db :intro-wizard
-                         assoc :step :select-key-storage
+            {:db (update db
+                         :intro-wizard
+                         assoc
+                         :step                  :select-key-storage
                          :selected-storage-type :default)}
             (if (nfc/nfc-supported?)
               (navigation/navigate-to-cofx :select-key-storage nil)
               (select-storage-next-pressed))))
 
 (fx/defn confirm-password-next-button-pressed
-  {:events [:multiaccounts.recover/enter-password-next-pressed]
+  {:events       [:multiaccounts.recover/enter-password-next-pressed]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
   [cofx key-code]
   (store-multiaccount cofx key-code))
@@ -243,8 +258,9 @@
 (fx/defn count-words
   [{:keys [db]}]
   (let [passphrase (get-in db [:intro-wizard :passphrase])]
-    {:db (assoc-in db [:intro-wizard :passphrase-word-count]
-                   (mnemonic/words-count passphrase))}))
+    {:db (assoc-in db
+          [:intro-wizard :passphrase-word-count]
+          (mnemonic/words-count passphrase))}))
 
 (fx/defn run-validation
   [{:keys [db] :as cofx}]
@@ -264,6 +280,7 @@
 (fx/defn enter-passphrase-input-changed
   {:events [:multiaccounts.recover/enter-passphrase-input-changed]}
   [{:keys [db]} masked-passphrase]
-  {:db (update db :intro-wizard assoc
-               :password masked-passphrase
+  {:db (update db
+               :intro-wizard   assoc
+               :password       masked-passphrase
                :password-error nil)})

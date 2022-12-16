@@ -2,7 +2,8 @@
   (:require [quo.design-system.colors :as colors]
             [status-im.ui.components.animation :as animation]))
 
-(defn card [window-width color]
+(defn card
+  [window-width color]
   {:width            (- window-width 30)
    :height           161
    :background-color color
@@ -16,7 +17,8 @@
    :border-radius    8
    :justify-content  :space-between})
 
-(defn divider []
+(defn divider
+  []
   {:height           52
    :width            1
    :background-color colors/black-transparent-20
@@ -27,20 +29,22 @@
                        "rgba(0, 0, 0, 0.75)"
                        "rgba(0, 9, 26, 0.12)")})
 
-(defn bottom-send-recv-buttons-raise [anim-y]
+(defn bottom-send-recv-buttons-raise
+  [anim-y]
   (animation/timing
    anim-y
-   {:toValue 0
-    :duration 200
-    :easing (.-ease ^js animation/easing)
+   {:toValue         0
+    :duration        200
+    :easing          (.-ease ^js animation/easing)
     :useNativeDriver true}))
 
-(defn bottom-send-recv-buttons-lower [anim-y y]
+(defn bottom-send-recv-buttons-lower
+  [anim-y y]
   (animation/timing
    anim-y
-   {:toValue y
-    :duration 200
-    :easing (.-ease ^js animation/easing)
+   {:toValue         y
+    :duration        200
+    :easing          (.-ease ^js animation/easing)
     :useNativeDriver true}))
 
 (def round-action-button

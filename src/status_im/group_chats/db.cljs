@@ -21,5 +21,6 @@
                  from)))
        first))
 
-(defn group-chat? [chat]
+(defn group-chat?
+  [chat]
   (and (:group-chat chat) (not (:public? chat))))

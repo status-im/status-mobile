@@ -1,20 +1,20 @@
 (ns status-im.notifications.local
-  (:require [status-im.async-storage.core :as async-storage]
-            [status-im.utils.fx :as fx]
-            [status-im.ethereum.decode :as decode]
-            ["@react-native-community/push-notification-ios" :default pn-ios]
-            [status-im.notifications.android :as pn-android]
-            [status-im.ethereum.tokens :as tokens]
-            [status-im.utils.utils :as utils]
-            [status-im.utils.types :as types]
-            [status-im.utils.money :as money]
-            [status-im.i18n.i18n :as i18n]
-            [quo.platform :as platform]
-            [re-frame.core :as re-frame]
+  (:require ["@react-native-community/push-notification-ios" :default pn-ios]
             [cljs-bean.core :as bean]
             [clojure.string :as string]
+            [quo.platform :as platform]
+            [re-frame.core :as re-frame]
+            [status-im.async-storage.core :as async-storage]
             [status-im.chat.models :as chat.models]
-            [status-im.utils.react-native :as react-native-utils]))
+            [status-im.ethereum.decode :as decode]
+            [status-im.ethereum.tokens :as tokens]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.notifications.android :as pn-android]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.money :as money]
+            [status-im.utils.react-native :as react-native-utils]
+            [status-im.utils.types :as types]
+            [status-im.utils.utils :as utils]))
 
 (def default-erc20-token
   {:symbol   :ERC20
@@ -24,34 +24,39 @@
 (def notification-event-ios "localNotification")
 (def notification-event-android "remoteNotificationReceived")
 
-(defn local-push-ios [{:keys [title message user-info body-type]}]
+(defn local-push-ios
+  [{:keys [title message user-info body-type]}]
   (when (not= body-type "message")
     (.presentLocalNotification
      pn-ios
-     #js {:alertBody  message
-          :alertTitle title
-          ;; NOTE: Use a special type to hide in Obj-C code other notifications
-          :userInfo   (bean/->js (merge user-info
-                                        {:notificationType "local-notification"}))})))
+     #js
+      {:alertBody  message
+       :alertTitle title
+       ;; NOTE: Use a special type to hide in Obj-C code other notifications
+       :userInfo   (bean/->js (merge user-info
+                                     {:notificationType "local-notification"}))})))
 
 (defn local-push-android
   [notification]
   (pn-android/present-local-notification notification))
 
-(defn handle-notification-press [{{deep-link :deepLink} :userInfo
-                                  interaction           :userInteraction}]
+(defn handle-notification-press
+  [{{deep-link :deepLink} :userInfo
+    interaction           :userInteraction}]
   (async-storage/set-item! (str :chat-id) nil)
   (when (and deep-link
              (or platform/ios?
                  (and platform/android? interaction)))
     (re-frame/dispatch [:universal-links/handle-url deep-link])))
 
-(defn listen-notifications []
+(defn listen-notifications
+  []
   (if platform/ios?
     (.addEventListener ^js pn-ios
                        notification-event-ios
                        (fn [notification]
-                         (handle-notification-press {:userInfo (bean/bean (.getData ^js notification))})))
+                         (handle-notification-press {:userInfo (bean/bean (.getData ^js
+                                                                                    notification))})))
     (.addListener ^js react-native-utils/device-event-emitter
                   notification-event-android
                   (fn [^js data]
@@ -72,21 +77,27 @@
         to          (or (:name toAccount) (utils/get-shortened-address to))
         from        (or (:name fromAccount) (utils/get-shortened-address from))
         title       (case state
-                      "inbound"  (i18n/label :t/push-inbound-transaction {:value    amount
-                                                                          :currency (:symbol token)})
-                      "outbound" (i18n/label :t/push-outbound-transaction {:value    amount
-                                                                           :currency (:symbol token)})
-                      "failed"   (i18n/label :t/push-failed-transaction {:value    amount
-                                                                         :currency (:symbol token)})
+                      "inbound"  (i18n/label :t/push-inbound-transaction
+                                             {:value    amount
+                                              :currency (:symbol token)})
+                      "outbound" (i18n/label :t/push-outbound-transaction
+                                             {:value    amount
+                                              :currency (:symbol token)})
+                      "failed"   (i18n/label :t/push-failed-transaction
+                                             {:value    amount
+                                              :currency (:symbol token)})
                       nil)
         description (case state
-                      "inbound"  (i18n/label :t/push-inbound-transaction-body {:from from
-                                                                               :to   to})
-                      "outbound" (i18n/label :t/push-outbound-transaction-body {:from from
-                                                                                :to   to})
-                      "failed"   (i18n/label :t/push-failed-transaction-body {:value    amount
-                                                                              :currency (:symbol token)
-                                                                              :to       to})
+                      "inbound"  (i18n/label :t/push-inbound-transaction-body
+                                             {:from from
+                                              :to   to})
+                      "outbound" (i18n/label :t/push-outbound-transaction-body
+                                             {:from from
+                                              :to   to})
+                      "failed"   (i18n/label :t/push-failed-transaction-body
+                                             {:value    amount
+                                              :currency (:symbol token)
+                                              :to       to})
                       nil)]
     {:title     title
      :icon      (get-in token [:icon :source])
@@ -113,7 +124,8 @@
       "message"     (when (show-message-pn? cofx notification) notification)
       "transaction" (create-transfer-notification cofx notification)
       nil)
-    :body-type bodyType)))
+    :body-type
+    bodyType)))
 
 (re-frame/reg-fx
  ::local-push-ios

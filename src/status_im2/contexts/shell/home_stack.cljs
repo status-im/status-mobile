@@ -1,25 +1,25 @@
 (ns status-im2.contexts.shell.home-stack
-  (:require [react-native.reanimated :as reanimated]
-            [react-native.core :as rn]
-            [status-im2.contexts.shell.style :as styles]
-            [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.constants :as constants]
-            [status-im2.contexts.communities.home.view :as communities]
-            [status-im2.contexts.chat.home.view :as chat]
-
-            ;; TODO move to status-im2
+  (:require [react-native.core :as rn]
+            [react-native.reanimated :as reanimated]
+            [react-native.safe-area :as safe-area]
             [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
-            [react-native.safe-area :as safe-area]))
+            [status-im2.contexts.chat.home.view :as chat] ;; TODO move to status-im2
+            [status-im2.contexts.communities.home.view :as communities]
+            [status-im2.contexts.shell.animation :as animation]
+            [status-im2.contexts.shell.constants :as constants]
+            [status-im2.contexts.shell.style :as styles]))
 
-(defn load-stack? [stack-id]
+(defn load-stack?
+  [stack-id]
   (case stack-id
     :communities-stack @animation/load-communities-stack?
     :chats-stack       @animation/load-chats-stack?
     :browser-stack     @animation/load-browser-stack?
     :wallet-stack      @animation/load-wallet-stack?))
 
-(defn stack-view [stack-id shared-values]
+(defn stack-view
+  [stack-id shared-values]
   (when (load-stack? stack-id)
     [:f>
      (fn []
@@ -27,7 +27,7 @@
         {:style (reanimated/apply-animations-to-style
                  {:opacity        (get shared-values (get constants/stacks-opacity-keywords stack-id))
                   :pointer-events (get shared-values (get constants/stacks-pointer-keywords stack-id))}
-                 {:position :absolute
+                 {:position            :absolute
                   :top                 0
                   :bottom              0
                   :left                0
@@ -39,7 +39,8 @@
           :wallet-stack      [wallet.accounts/accounts-overview]
           :browser-stack     [profile.user/my-profile])])]))
 
-(defn home-stack []
+(defn home-stack
+  []
   [safe-area/consumer
    (fn [insets]
      [:f>

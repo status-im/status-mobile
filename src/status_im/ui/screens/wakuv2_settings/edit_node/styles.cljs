@@ -13,11 +13,11 @@
    :margin-horizontal 16})
 
 (styles/def button
-  {:height           52
-   :align-items      :center
-   :justify-content  :center
-   :border-radius    8
-   :ios              {:opacity 0.9}})
+  {:height          52
+   :align-items     :center
+   :justify-content :center
+   :border-radius   8
+   :ios             {:opacity 0.9}})
 
 (def button-label
   {:color     colors/white-persist
@@ -25,4 +25,5 @@
 
 (def delete-button
   (assoc button
-         :background-color colors/red))
+         :background-color
+         colors/red))

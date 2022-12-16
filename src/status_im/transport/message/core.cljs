@@ -1,29 +1,28 @@
-(ns ^{:doc "Definition of the StatusMessage protocol"}
- status-im.transport.message.core
-  (:require [status-im.activity-center.core :as activity-center]
-            [status-im.chat.models.message :as models.message]
-            [status-im2.contexts.chat.messages.pin.events :as messages.pin]
+(ns ^{:doc "Definition of the StatusMessage protocol"} status-im.transport.message.core
+  (:require [clojure.string :as string]
+            [status-im.activity-center.core :as activity-center]
+            [status-im.browser.core :as browser]
             [status-im.chat.models :as models.chat]
+            [status-im.chat.models.message :as models.message]
             [status-im.chat.models.reactions :as models.reactions]
-            [status-im.contact.core :as models.contact]
             [status-im.communities.core :as models.communities]
-            [status-im.pairing.core :as models.pairing]
-            [status-im.data-store.reactions :as data-store.reactions]
-            [status-im.data-store.contacts :as data-store.contacts]
-            [status-im.data-store.chats :as data-store.chats]
-            [status-im.data-store.invitations :as data-store.invitations]
+            [status-im.constants :as constants]
+            [status-im.contact.core :as models.contact]
             [status-im.data-store.activities :as data-store.activities]
+            [status-im.data-store.chats :as data-store.chats]
+            [status-im.data-store.contacts :as data-store.contacts]
+            [status-im.data-store.invitations :as data-store.invitations]
             [status-im.data-store.messages :as data-store.messages]
+            [status-im.data-store.reactions :as data-store.reactions]
             [status-im.group-chats.core :as models.group]
+            [status-im.multiaccounts.login.core :as multiaccounts.login]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.update.core :as update.core]
+            [status-im.pairing.core :as models.pairing]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
-            [status-im.constants :as constants]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.visibility-status-updates.core :as models.visibility-status-updates]
-            [status-im.browser.core :as browser]
-            [clojure.string :as string]))
+            [status-im2.contexts.chat.messages.pin.events :as messages.pin]))
 
 (fx/defn process-next
   [cofx ^js response-js sync-handler]
@@ -85,13 +84,14 @@
 
       (seq contacts)
       (let [contacts-clj (types/js->clj contacts)
-            ^js chats (.-chatsForContacts response-js)]
+            ^js chats    (.-chatsForContacts response-js)]
         (js-delete response-js "contacts")
         (js-delete response-js "chatsForContacts")
         (fx/merge cofx
                   (process-next response-js sync-handler)
                   (models.contact/ensure-contacts
-                   (map data-store.contacts/<-rpc contacts-clj) chats)))
+                   (map data-store.contacts/<-rpc contacts-clj)
+                   chats)))
 
       (seq communities)
       (let [communities-clj (types/js->clj communities)]
@@ -195,19 +195,21 @@
 (defn group-by-and-update-unviewed-counts
   "group messages by current chat, profile updates, transactions and update unviewed counters in db for not curent chats"
   [{:keys [current-chat-id db] :as acc} ^js message-js]
-  (let [chat-id (.-localChatId message-js)
-        message-type (.-messageType message-js)
-        from (.-from message-js)
-        mentioned (.-mentioned message-js)
-        profile (models.chat/profile-chat? {:db db} chat-id)
-        new (.-new message-js)
-        current (= current-chat-id chat-id)
+  (let [chat-id                 (.-localChatId message-js)
+        message-type            (.-messageType message-js)
+        from                    (.-from message-js)
+        mentioned               (.-mentioned message-js)
+        profile                 (models.chat/profile-chat? {:db db} chat-id)
+        new                     (.-new message-js)
+        current                 (= current-chat-id chat-id)
         should-update-unviewed? (and (not current)
                                      new
                                      (not profile)
-                                     (not (= message-type constants/message-type-private-group-system-message))
+                                     (not (= message-type
+                                             constants/message-type-private-group-system-message))
                                      (not (= from (multiaccounts.model/current-public-key {:db db}))))
-        tx-hash (and (.-commandParameters message-js) (.-commandParameters.transactionHash message-js))]
+        tx-hash                 (and (.-commandParameters message-js)
+                                     (.-commandParameters.transactionHash message-js))]
     (cond-> acc
       current
       (update :messages conj message-js)
@@ -235,9 +237,9 @@
   [response-js messages]
   (if (seq messages)
     (set! (.-messages response-js)
-          (.sort (to-array messages)
-                 (fn [a b]
-                   (- (.-clock b) (.-clock a)))))
+      (.sort (to-array messages)
+             (fn [a b]
+               (- (.-clock b) (.-clock a)))))
     (js-delete response-js "messages")))
 
 (fx/defn sanitize-messages-and-process-response
@@ -245,21 +247,26 @@
   {:events [:sanitize-messages-and-process-response]}
   [{:keys [db] :as cofx} ^js response-js process-async]
   (when response-js
-    (let [current-chat-id (:current-chat-id db)
+    (let [current-chat-id                                   (:current-chat-id db)
           {:keys [db messages transactions chats statuses]}
           (reduce group-by-and-update-unviewed-counts
-                  {:db db :chats #{} :transactions #{} :statuses [] :messages []
+                  {:db              db
+                   :chats           #{}
+                   :transactions    #{}
+                   :statuses        []
+                   :messages        []
                    :current-chat-id current-chat-id}
                   (.-messages response-js))]
       (sort-js-messages! response-js messages)
       (fx/merge cofx
-                {:db db
+                {:db                   db
                  :utils/dispatch-later (concat []
                                                (when (seq statuses)
                                                  [{:ms 100 :dispatch [:process-statuses statuses]}])
                                                (when (seq transactions)
                                                  (for [transaction-hash transactions]
-                                                   {:ms 100 :dispatch [:watch-tx nil transaction-hash]})))}
+                                                   {:ms       100
+                                                    :dispatch [:watch-tx nil transaction-hash]})))}
                 (process-response response-js process-async)))))
 
 (fx/defn remove-hash
@@ -274,7 +281,8 @@
       (fx/merge cofx
                 {:db (update db
                              :transport/message-ids->confirmations
-                             dissoc message-id)}
+                             dissoc
+                             message-id)}
                 (models.message/update-message-status chat-id
                                                       message-id
                                                       (if not-sent
@@ -282,11 +290,11 @@
                                                         status))
                 (remove-hash message-id))
       (let [confirmations {:pending-confirmations (dec pending-confirmations)
-                           :not-sent  (or not-sent
-                                          (= :not-sent status))}]
+                           :not-sent              (or not-sent
+                                                      (= :not-sent status))}]
         {:db (assoc-in db
-                       [:transport/message-ids->confirmations message-id]
-                       confirmations)}))))
+              [:transport/message-ids->confirmations message-id]
+              confirmations)}))))
 
 (fx/defn update-envelope-status
   [{:keys [db] :as cofx} message-id status]
@@ -308,19 +316,19 @@
   "message-type is used for tracking"
   [{:keys [db] :as cofx} chat-id message-id message-type]
   ;; Check first if the confirmation has already arrived
-  (let [statuses (get-in db [:transport/message-confirmations message-id])
+  (let [statuses               (get-in db [:transport/message-confirmations message-id])
         check-confirmations-fx (map
                                 #(check-confirmations % chat-id message-id)
                                 statuses)
 
-        add-envelope-data (fn [{:keys [db]}]
-                            {:db (-> db
-                                     (update :transport/message-confirmations dissoc message-id)
-                                     (assoc-in [:transport/message-envelopes message-id]
-                                               {:chat-id      chat-id
-                                                :message-type message-type})
-                                     (update-in [:transport/message-ids->confirmations message-id]
-                                                #(or % {:pending-confirmations 1})))})]
+        add-envelope-data      (fn [{:keys [db]}]
+                                 {:db (-> db
+                                          (update :transport/message-confirmations dissoc message-id)
+                                          (assoc-in [:transport/message-envelopes message-id]
+                                                    {:chat-id      chat-id
+                                                     :message-type message-type})
+                                          (update-in [:transport/message-ids->confirmations message-id]
+                                                     #(or % {:pending-confirmations 1})))})]
     (apply fx/merge cofx (conj check-confirmations-fx add-envelope-data))))
 
 (fx/defn transport-message-sent
@@ -329,6 +337,7 @@
   (let [set-hash-fxs (map (fn [{:keys [localChatId id messageType]}]
                             (set-message-envelope-hash localChatId id messageType))
                           (types/js->clj (.-messages response-js)))]
-    (apply fx/merge cofx
+    (apply fx/merge
+           cofx
            (conj set-hash-fxs
                  #(sanitize-messages-and-process-response % response-js false)))))

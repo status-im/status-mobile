@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.status.styles
   (:require [quo.design-system.colors :as colors]))
 
-(defn descr-container []
+(defn descr-container
+  []
   {:border-width               1
    :border-color               colors/gray-lighter
    :border-top-right-radius    16

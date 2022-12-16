@@ -1,13 +1,13 @@
 (ns status-im.chat.models-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.clocks :as utils.clocks]
-            [status-im.chat.models :as chat]))
+            [status-im.chat.models :as chat]
+            [status-im.utils.clocks :as utils.clocks]))
 
 (deftest clear-history-test
   (let [chat-id "1"
         cofx    {:db {:message-lists {chat-id [{:something "a"}]}
-                      :chats {chat-id {:last-message            {:clock-value 10}
-                                       :unviewed-messages-count 1}}}}]
+                      :chats         {chat-id {:last-message            {:clock-value 10}
+                                               :unviewed-messages-count 1}}}}]
     (testing "it deletes all the messages"
       (let [actual (chat/clear-history cofx chat-id true)]
         (is (= {} (get-in actual [:db :messages chat-id])))))
@@ -24,7 +24,7 @@
       (let [actual (chat/clear-history (update-in cofx
                                                   [:db :chats chat-id]
                                                   assoc
-                                                  :last-message nil
+                                                  :last-message           nil
                                                   :deleted-at-clock-value 100)
                                        chat-id
                                        true)]
@@ -34,7 +34,8 @@
         (let [actual (chat/clear-history (update-in cofx
                                                     [:db :chats chat-id]
                                                     assoc
-                                                    :last-message nil)
+                                                    :last-message
+                                                    nil)
                                          chat-id
                                          true)]
           (is (= 42 (get-in actual [:db :chats chat-id :deleted-at-clock-value]))))))))
@@ -44,7 +45,7 @@
         cofx    {:db {:messages {chat-id {"1" {:clock-value 1}
                                           "2" {:clock-value 10}
                                           "3" {:clock-value 2}}}
-                      :chats {chat-id {:last-message {:clock-value 10}}}}}]
+                      :chats    {chat-id {:last-message {:clock-value 10}}}}}]
     (testing "it deletes all the messages"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (= nil (get-in actual [:db :messages chat-id])))))
@@ -79,11 +80,11 @@
 (def test-db
   {:multiaccount {:public-key "me"}
 
-   :messages {"status" {"4" {} "5" {} "6" {}}}
-   :chats {"status" {:public? true
-                     :group-chat true}
-           "opened" {}
-           "1-1"    {}}})
+   :messages     {"status" {"4" {} "5" {} "6" {}}}
+   :chats        {"status" {:public?    true
+                            :group-chat true}
+                  "opened" {}
+                  "1-1"    {}}})
 
 (deftest navigate-to-chat-nav2
   (let [chat-id "test_chat"

@@ -5,7 +5,8 @@
             [quo.react-native :as rn]
             [reagent.core :as reagent]))
 
-(defn text-style [{:keys [size align weight monospace color style]}]
+(defn text-style
+  [{:keys [size align weight monospace color style]}]
   ;; NOTE(Ferossgo): or in destructoring will keep nil as a value
   (merge (if monospace
            ;; TODO(Ferossgp): Add all weights for monospace
@@ -38,12 +39,15 @@
          {:text-align (or align :auto)}
          style))
 
-(defn text []
+(defn text
+  []
   (let [this      (reagent/current-component)
         props     (reagent/props this)
         component (if (:animated? props) animated/text rn/text)]
-    (into [component (merge {:style (text-style props)}
-                            (dissoc props
-                                    :style :size :weight :color
-                                    :align :animated?))]
+    (into [component
+           (merge {:style (text-style props)}
+                  (dissoc props
+                          :style  :size
+                          :weight :color
+                          :align  :animated?))]
           (reagent/children this))))

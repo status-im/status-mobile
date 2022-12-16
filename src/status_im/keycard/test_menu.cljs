@@ -1,8 +1,9 @@
 (ns status-im.keycard.test-menu
-  (:require [status-im.ui.components.react :as react]
-            [status-im.keycard.simulated-keycard :as simulated-keycard]))
+  (:require [status-im.keycard.simulated-keycard :as simulated-keycard]
+            [status-im.ui.components.react :as react]))
 
-(defn button [label accessibility-label handler]
+(defn button
+  [label accessibility-label handler]
   [react/view
    {:style {:width           20
             :height          30
@@ -14,7 +15,8 @@
      :accessibility-label accessibility-label}
     label]])
 
-(defn test-menu []
+(defn test-menu
+  []
   [react/view
    {:style {:position        :absolute
             :top             70
@@ -26,4 +28,4 @@
    [button "conn sell" :connect-selected-card simulated-keycard/connect-selected-card]
    [button "pair" :connect-pairing-card simulated-keycard/connect-pairing-card]
    [button "disc" :disconnect-card simulated-keycard/disconnect-card]
-   [button "res"  :keycard-reset-state simulated-keycard/reset-state]])
+   [button "res" :keycard-reset-state simulated-keycard/reset-state]])

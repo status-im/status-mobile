@@ -1,20 +1,21 @@
 (ns status-im.ui.screens.advanced-settings.views
-  (:require [re-frame.core :as re-frame]
+  (:require [quo.core :as quo]
+            [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
-            [quo.core :as quo]
-            [status-im.utils.config :as config]
-            [status-im.ui.components.list.views :as list])
+            [status-im.ui.components.list.views :as list]
+            [status-im.utils.config :as config])
   (:require-macros [status-im.utils.views :as views]))
 
-(defn- normal-mode-settings-data [{:keys [network-name
-                                          current-log-level
-                                          waku-bloom-filter-mode
-                                          communities-enabled?
-                                          transactions-management-enabled?
-                                          wakuv2-flag
-                                          current-fleet
-                                          webview-debug
-                                          mutual-contact-requests-enabled?]}]
+(defn- normal-mode-settings-data
+  [{:keys [network-name
+           current-log-level
+           waku-bloom-filter-mode
+           communities-enabled?
+           transactions-management-enabled?
+           wakuv2-flag
+           current-fleet
+           webview-debug
+           mutual-contact-requests-enabled?]}]
   (keep
    identity
    [{:size                 :small
@@ -78,7 +79,7 @@
      :chevron              true}
     ;; If it's enabled in the config, we don't show the option
     (when (not config/communities-enabled?)
-      {:size                   :small
+      {:size                    :small
        :title                   (i18n/label :t/communities-enabled)
        :accessibility-label     :communities-enabled
        :container-margin-bottom 8
@@ -87,16 +88,17 @@
          [:multiaccounts.ui/switch-communities-enabled (not communities-enabled?)])
        :accessory               :switch
        :active                  communities-enabled?})
-    {:size                   :small
+    {:size                    :small
      :title                   (i18n/label :t/transactions-management-enabled)
      :accessibility-label     :transactions-management-enabled
      :container-margin-bottom 8
      :on-press
      #(re-frame/dispatch
-       [:multiaccounts.ui/switch-transactions-management-enabled (not transactions-management-enabled?)])
+       [:multiaccounts.ui/switch-transactions-management-enabled
+        (not transactions-management-enabled?)])
      :accessory               :switch
      :active                  transactions-management-enabled?}
-    {:size                   :small
+    {:size                    :small
      :title                   "Webview debug"
      :accessibility-label     :webview-debug-switch
      :container-margin-bottom 8
@@ -120,19 +122,23 @@
      :container-margin-bottom 8
      :on-press
      #(re-frame/dispatch
-       [:multiaccounts.ui/switch-mutual-contact-requests-enabled (not mutual-contact-requests-enabled?)])
+       [:multiaccounts.ui/switch-mutual-contact-requests-enabled
+        (not mutual-contact-requests-enabled?)])
      :accessory               :switch
      :active                  mutual-contact-requests-enabled?}]))
 
-(defn- flat-list-data [options]
+(defn- flat-list-data
+  [options]
   (normal-mode-settings-data options))
 
-(defn- render-item [props]
+(defn- render-item
+  [props]
   (if (= (:type props) :section-header)
     [quo/list-header (:title props)]
     [quo/list-item props]))
 
-(views/defview advanced-settings []
+(views/defview advanced-settings
+  []
   (views/letsubs [{:keys [webview-debug]}          [:multiaccount]
                   network-name                     [:network-name]
                   waku-bloom-filter-mode           [:waku/bloom-filter-mode]

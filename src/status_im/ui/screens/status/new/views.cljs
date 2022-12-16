@@ -1,43 +1,50 @@
 (ns status-im.ui.screens.status.new.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.ui.components.react :as react]
-            [status-im.i18n.i18n :as i18n]
-            [re-frame.core :as re-frame]
-            [status-im.ui.components.toolbar :as toolbar]
+  (:require [clojure.string :as string]
+            [quo.components.animated.pressable :as pressable]
             [quo.core :as quo]
             [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [clojure.string :as string]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.icons.icons :as icons]
-            [quo.components.animated.pressable :as pressable]
-            [status-im.ui.screens.status.views :as status.views]
+            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.status.new.styles :as styles]
+            [status-im.ui.screens.status.views :as status.views]
             [status-im.utils.platform :as platform]))
 
-(defn buttons []
+(defn buttons
+  []
   [react/view styles/buttons
-   [pressable/pressable {:type                :scale
-                         :accessibility-label :take-picture
-                         :on-press  #(re-frame/dispatch [:chat.ui/show-image-picker-camera-timeline])}
+   [pressable/pressable
+    {:type                :scale
+     :accessibility-label :take-picture
+     :on-press            #(re-frame/dispatch [:chat.ui/show-image-picker-camera-timeline])}
     [icons/icon :main-icons/camera]]
    [react/view {:style {:padding-top 8}}
-    [pressable/pressable {:on-press            #(re-frame/dispatch [:chat.ui/open-image-picker-timeline])
-                          :accessibility-label :open-gallery
-                          :type                :scale}
+    [pressable/pressable
+     {:on-press            #(re-frame/dispatch [:chat.ui/open-image-picker-timeline])
+      :accessibility-label :open-gallery
+      :type                :scale}
      [icons/icon :main-icons/gallery]]]])
 
-(defn image-preview [uri]
+(defn image-preview
+  [uri]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/camera-roll-pick-timeline uri])}
-   [react/image {:style  styles/image
-                 :source {:uri uri}}]])
+   [react/image
+    {:style  styles/image
+     :source {:uri uri}}]])
 
-(defview photos []
+(defview photos
+  []
   (letsubs [camera-roll-photos [:camera-roll-photos]]
     {:component-did-mount #(re-frame/dispatch [:chat.ui/camera-roll-get-photos 20])}
-    [react/scroll-view {:horizontal                   true
-                        :style                        {:max-height 88}
-                        :keyboard-should-persist-taps :handled}
+    [react/scroll-view
+     {:horizontal                   true
+      :style                        {:max-height 88}
+      :keyboard-should-persist-taps :handled}
      [react/view (styles/photos-buttons)
       [buttons]
       (for [img camera-roll-photos]
@@ -46,23 +53,25 @@
 
 (def message-max-length 600)
 
-(defn my-status []
+(defn my-status
+  []
   (let [images-opened (reagent/atom false)
-        scroll (reagent/atom nil)
-        autoscroll? (reagent/atom false)
+        scroll        (reagent/atom nil)
+        autoscroll?   (reagent/atom false)
         scroll-height (reagent/atom nil)
-        input-text (re-frame/subscribe [:chats/timeline-chat-input-text])
+        input-text    (re-frame/subscribe [:chats/timeline-chat-input-text])
         sending-image (re-frame/subscribe [:chats/timeline-sending-image])]
     (fn []
       (let [{:keys [uri]} (first (vals @sending-image))
-            text-length (count @input-text)]
+            text-length   (count @input-text)]
         [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
          [:<>
-          [react/scroll-view {:style                        {:flex 1}
-                              :ref                          #(reset! scroll %)
-                              :on-layout                    #(reset! scroll-height
-                                                                     (.-nativeEvent.layout.height ^js %))
-                              :keyboard-should-persist-taps :handled}
+          [react/scroll-view
+           {:style                        {:flex 1}
+            :ref                          #(reset! scroll %)
+            :on-layout                    #(reset! scroll-height
+                                             (.-nativeEvent.layout.height ^js %))
+            :keyboard-should-persist-taps :handled}
            [react/text-input
             {:style                  {:margin 16}
              :scroll-enabled         false
@@ -75,7 +84,7 @@
              :multiline              true
              :on-selection-change    (fn [args]
                                        (let [selection (.-selection ^js (.-nativeEvent ^js args))
-                                             end (.-end ^js selection)]
+                                             end       (.-end ^js selection)]
                                          (reset! autoscroll? (< (- (count @input-text) end) 10))))
              :on-content-size-change #(when (and @autoscroll? @scroll @scroll-height)
                                         (when-let [height (- (.-nativeEvent.contentSize.height ^js %)
@@ -112,7 +121,8 @@
                                         (re-frame/dispatch [:navigate-back]))}
                (i18n/label :t/wallet-send)]}]
             [react/view styles/count-container
-             [react/text {:style {:color (if (> text-length message-max-length)
-                                           colors/red
-                                           colors/gray)}}
+             [react/text
+              {:style {:color (if (> text-length message-max-length)
+                                colors/red
+                                colors/gray)}}
               (str text-length " / " message-max-length)]]]]]]))))

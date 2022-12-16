@@ -15,9 +15,9 @@
 
 (def animation-duration 150)
 
-(def scale         0.8)
-(def translate-x   27)
-(def translate-y   -24)
+(def scale 0.8)
+(def translate-x 27)
+(def translate-y -24)
 
 (def id-icon
   {"edit"   :main-icons/edit
@@ -25,35 +25,40 @@
    "unpin"  :main-icons/pin
    "copy"   :main-icons/copy
    "reply"  :main-icons/reply
-   "save"  :main-icons/download
+   "save"   :main-icons/download
    "share"  :main-icons/share-default
    "delete" :main-icons/delete})
 
-(defn picker [{:keys [outgoing actions own-reactions on-close send-emoji timeline]}]
+(defn picker
+  [{:keys [outgoing actions own-reactions on-close send-emoji timeline]}]
   [rn/view {:style (styles/container-style {:outgoing outgoing :timeline timeline})}
    [rn/view {:style (styles/reactions-picker-row)}
     (doall
      (for [[id resource] constants/reactions-old
            :let          [active (own-reactions id)]]
        ^{:key id}
-       [rn/touchable-opacity {:accessibility-label (str "pick-emoji-" id)
-                              :on-press            #(send-emoji id)}
+       [rn/touchable-opacity
+        {:accessibility-label (str "pick-emoji-" id)
+         :on-press            #(send-emoji id)}
         [rn/view {:style (styles/reaction-button active)}
-         [rn/image {:source resource
-                    :style  {:height 32
-                             :width  32}}]]]))]
+         [rn/image
+          {:source resource
+           :style  {:height 32
+                    :width  32}}]]]))]
    (when (seq actions)
      [rn/view {:style (styles/quick-actions-container)}
       (doall
        (for [action actions
              :let   [{:keys [id label on-press]} (bean/bean action)]]
          ^{:key id}
-         [rn/touchable-opacity {:on-press (fn []
-                                            (on-close)
-                                            (js/setTimeout on-press animation-duration))}
+         [rn/touchable-opacity
+          {:on-press (fn []
+                       (on-close)
+                       (js/setTimeout on-press animation-duration))}
           [rn/view {:style (styles/quick-actions-row)}
-           [quo/text {:color  (if (= id "delete") :negative :link)
-                      :weight :medium} label]
+           [quo/text
+            {:color  (if (= id "delete") :negative :link)
+             :weight :medium} label]
            (when-let [icon (get id-icon id)]
              [icons/icon icon
               {:color (if (= id "delete") :red :blue)}])]]))])])
@@ -74,52 +79,59 @@
             children       :children
             timeline       :timeline}
            (bean/bean props)
-           {bottom-inset :bottom}  (safe-area/use-safe-area)
+           {bottom-inset :bottom} (safe-area/use-safe-area)
            {window-height :height} (rn/use-window-dimensions)
 
            {picker-height    :height
-            on-picker-layout :on-layout} (rn/use-layout)
+            on-picker-layout :on-layout}
+           (rn/use-layout)
 
-           full-height   (+ message-height picker-height top)
-           max-height    (- window-height bottom-inset tabbar-height text-input-height)
-           top-delta     (max 0 (- full-height max-height))
+           full-height (+ message-height picker-height top)
+           max-height (- window-height bottom-inset tabbar-height text-input-height)
+           top-delta (max 0 (- full-height max-height))
            translation-x (if (and outgoing (not timeline))
                            translate-x
                            (* -1 translate-x))]
        (reagent/as-element
         [:<>
-         [rn/view {:style {:position :absolute
-                           :flex     1
-                           :top      0
-                           :bottom   0
-                           :left     0
-                           :right    0}}
+         [rn/view
+          {:style {:position :absolute
+                   :flex     1
+                   :top      0
+                   :bottom   0
+                   :left     0
+                   :right    0}}
           [rn/touchable-without-feedback
            {:on-press on-close}
-           [animated/view {:style {:flex             1
-                                   :opacity          animation
-                                   :background-color "rgba(0,0,0,0.5)"}}]]]
-         [animated/view {:pointer-events :box-none
-                         :style          {:top       (- top top-delta)
-                                          :left      0
-                                          :right     0
-                                          :position  :absolute
-                                          :opacity   animation
-                                          :transform [{:translateY (animated/mix animation top-delta 0)}]}}
+           [animated/view
+            {:style {:flex             1
+                     :opacity          animation
+                     :background-color "rgba(0,0,0,0.5)"}}]]]
+         [animated/view
+          {:pointer-events :box-none
+           :style          {:top       (- top top-delta)
+                            :left      0
+                            :right     0
+                            :position  :absolute
+                            :opacity   animation
+                            :transform [{:translateY (animated/mix animation top-delta 0)}]}}
           (into [:<>] (react/get-children children))
-          [animated/view {:on-layout      on-picker-layout
-                          :pointer-events :box-none
-                          :style          (merge (styles/picker-wrapper-style {:display-photo? display-photo
-                                                                               :timeline       timeline
-                                                                               :outgoing       (and outgoing (not timeline))})
-                                                 {:opacity   animation
-                                                  :transform [{:translateX (animated/mix spring translation-x 0)}
-                                                              {:translateY (animated/mix spring translate-y 0)}
-                                                              {:scale (animated/mix spring scale 1)}]})}
-           [picker {:outgoing      (and outgoing (not timeline))
-                    :timeline      timeline
-                    :actions       actions
-                    :on-close      on-close
-                    :own-reactions (into #{} (js->clj own-reactions))
-                    :send-emoji    send-emoji
-                    :animation     animation}]]]])))))
+          [animated/view
+           {:on-layout      on-picker-layout
+            :pointer-events :box-none
+            :style          (merge (styles/picker-wrapper-style
+                                    {:display-photo? display-photo
+                                     :timeline       timeline
+                                     :outgoing       (and outgoing (not timeline))})
+                                   {:opacity   animation
+                                    :transform [{:translateX (animated/mix spring translation-x 0)}
+                                                {:translateY (animated/mix spring translate-y 0)}
+                                                {:scale (animated/mix spring scale 1)}]})}
+           [picker
+            {:outgoing      (and outgoing (not timeline))
+             :timeline      timeline
+             :actions       actions
+             :on-close      on-close
+             :own-reactions (into #{} (js->clj own-reactions))
+             :send-emoji    send-emoji
+             :animation     animation}]]]])))))

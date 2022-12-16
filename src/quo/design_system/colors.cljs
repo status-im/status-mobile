@@ -1,6 +1,6 @@
 (ns quo.design-system.colors
-  (:require [reagent.core :as reagent]
-            [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [reagent.core :as reagent]))
 
 ;; Colors mapping from figma to code, note that theme is more extended and
 ;; one can follow the comments from the light theme to choose what to use in a component.
@@ -19,14 +19,17 @@
 
 (def light-theme
   {:positive-01    "rgba(68,208,88,1)"     ; Primary Positive, text, icons color
-   :positive-02    "rgba(78,188,96,0.1)"   ; Secondary Positive, Supporting color for success illustrations
+   :positive-02    "rgba(78,188,96,0.1)"   ; Secondary Positive, Supporting color for success
+                                           ; illustrations
    :positive-03    "rgba(78,188,96,1)"     ; Lighter Positive, Supporting color for success illustrations
    :negative-01    "rgba(255,45,85,1)"     ; Primary Negative, text, icons color
-   :negative-02    "rgba(255,45,85,0.1))"  ; Secondary Negative, Supporting color for errors illustrations
+   :negative-02    "rgba(255,45,85,0.1))"  ; Secondary Negative, Supporting color for errors
+                                           ; illustrations
    :warning-01     "rgba(255, 202, 15, 1)"
    :warning-02     "rgba(255, 202, 15, 0.1)"
    :interactive-01 "rgba(67,96,223,1)"     ; Accent color, buttons, own message, actions,active state
-   :interactive-02 "rgba(236,239,252,1)"   ; Light Accent, buttons background, actions background, messages
+   :interactive-02 "rgba(236,239,252,1)"   ; Light Accent, buttons background, actions background,
+                                           ; messages
    :interactive-03 "rgba(255,255,255,0.1)" ; Background for interactive above accent
    :interactive-04 "rgba(147,155,161,1)"   ; Disabled state
    :ui-background  "rgba(255,255,255,1)"   ; Default view background
@@ -85,12 +88,14 @@
 
 (def theme (reagent/atom light-theme))
 
-(defn get-color [color]
+(defn get-color
+  [color]
   (get @theme color))
 
 ;; LEGACY COLORS
 
-(defn alpha [value opacity]
+(defn alpha
+  [value opacity]
   (if (string/starts-with? value "#")
     (let [hex (string/replace value #"#" "")
           r   (js/parseInt (subs hex 0 2) 16)
@@ -100,13 +105,15 @@
     (let [rgb (string/split value #",")]
       (str (string/join "," (butlast rgb)) "," opacity ")"))))
 
-(def old-colors-mapping-light {:mentioned-background "#def6fc"
-                               :mentioned-border     "#b8ecf9"
-                               :pin-background         "#FFEECC"})
+(def old-colors-mapping-light
+  {:mentioned-background "#def6fc"
+   :mentioned-border     "#b8ecf9"
+   :pin-background       "#FFEECC"})
 
-(def old-colors-mapping-dark {:mentioned-background "#2a4046"
-                              :mentioned-border     "#2a4046"
-                              :pin-background         "#34232B"})
+(def old-colors-mapping-dark
+  {:mentioned-background "#2a4046"
+   :mentioned-border     "#2a4046"
+   :pin-background       "#34232B"})
 
 (def old-colors-mapping-themes {:dark old-colors-mapping-dark :light old-colors-mapping-light})
 
@@ -127,7 +134,8 @@
 ;; BLACK
 (def black (:text-01 light-theme))                                  ;; Used as the default text color
 (def black-persist (:ui-background dark-theme))                           ;; this doesn't with theme
-(def black-transparent (:ui-02 light-theme))                   ;; Used as background color for rounded button on dark background and as background color for containers like "Backup recovery phrase"
+(def black-transparent (:ui-02 light-theme))                   ;; Used as background color for rounded button on dark background and as background
+                   ;; color for containers like "Backup recovery phrase"
 (def black-transparent-20 (:backdrop light-theme))                ; accounts divider
 (def black-transparent-40 (:backdrop light-theme))
 (def black-transparent-40-persist (:backdrop light-theme))
@@ -136,7 +144,8 @@
 (def black-transparent-86 (:ui-03 light-theme))
 
 ;; DARK GREY
-(def gray (:text-02 light-theme))                                    ;; Dark grey, used as a background for a light foreground and as section header and secondary text color
+(def gray (:text-02 light-theme))                                    ;; Dark grey, used as a background for a light foreground and as
+                                    ;; section header and secondary text color
 (def gray-transparent-10 (alpha gray 0.1))
 (def gray-transparent-40 (alpha gray 0.4))
 ;; LIGHT GREY
@@ -164,20 +173,22 @@
 (def purple "#887af9")
 (def orange "#FE8F59")
 
-(def chat-colors ["#fa6565"
-                  "#7cda00"
-                  purple
-                  "#51d0f0"
-                  orange
-                  "#d37ef4"])
+(def chat-colors
+  ["#fa6565"
+   "#7cda00"
+   purple
+   "#51d0f0"
+   orange
+   "#d37ef4"])
 
-(def account-colors ["#9B832F"
-                     "#D37EF4"
-                     "#1D806F"
-                     "#FA6565"
-                     "#7CDA00"
-                     purple
-                     "#8B3131"])
+(def account-colors
+  ["#9B832F"
+   "#D37EF4"
+   "#1D806F"
+   "#FA6565"
+   "#7CDA00"
+   purple
+   "#8B3131"])
 
 (def mention-incoming "#0DA4C9")
 (def mention-outgoing "#9EE8FA")
@@ -191,10 +202,12 @@
 
 (def theme-type (reagent/atom :light))
 
-(defn dark? []
+(defn dark?
+  []
   (= :dark @theme-type))
 
-(defn set-legacy-theme-type [type]
+(defn set-legacy-theme-type
+  [type]
   (when-not (= type @theme-type)
     (let [old-colors-mapping-colors (get old-colors-mapping-themes type)]
       (set! white (:ui-background @theme))

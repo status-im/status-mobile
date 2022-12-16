@@ -22,7 +22,7 @@
     (update-in db
                [:messages chat-id message-id]
                assoc
-               :deleted? true
+               :deleted?              true
                :deleted-undoable-till (+ (datetime/timestamp)
                                          undo-time-limit-ms))))
 
@@ -55,10 +55,11 @@
      (message-list/rebuild-message-list
       {:db (update-db-delete-locally db chat-id message-id undo-time-limit-ms)}
       chat-id)
-     :utils/dispatch-later [{:dispatch [:chat.ui/delete-message-and-send
-                                        {:chat-id    chat-id
-                                         :message-id message-id}]
-                             :ms       undo-time-limit-ms}])))
+     :utils/dispatch-later
+     [{:dispatch [:chat.ui/delete-message-and-send
+                  {:chat-id    chat-id
+                   :message-id message-id}]
+       :ms       undo-time-limit-ms}])))
 
 (fx/defn undo
   {:events [:chat.ui/undo-delete-message]}
@@ -77,10 +78,12 @@
       ::json-rpc/call [{:method      "wakuext_deleteMessageAndSend"
                         :params      [message-id]
                         :js-response true
-                        :on-error    #(log/error "failed to delete message " {:message-id message-id :error %})
+                        :on-error    #(log/error "failed to delete message "
+                                                 {:message-id message-id :error %})
                         :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}
-     :dispatch (and (get-in db [:pin-messages chat-id message-id])
-                    [:pin-message/send-pin-message {:chat-id chat-id :message-id message-id :pinned false}]))))
+     :dispatch
+     (and (get-in db [:pin-messages chat-id message-id])
+          [:pin-message/send-pin-message {:chat-id chat-id :message-id message-id :pinned false}]))))
 
 (defn- filter-pending-send-messages
   "traverse all messages find not yet synced deleted? messages"
@@ -103,6 +106,7 @@
   [{:keys [db]} messages chat-id]
   (let [new-db (->> messages
                     (filter #(get-in db [:messages chat-id (:message-id %)]))
-                    (reduce #(update-db-delete-locally-without-time-limit %1 chat-id (:message-id %2)) db))]
+                    (reduce #(update-db-delete-locally-without-time-limit %1 chat-id (:message-id %2))
+                            db))]
     (when new-db
       (message-list/rebuild-message-list {:db new-db} chat-id))))

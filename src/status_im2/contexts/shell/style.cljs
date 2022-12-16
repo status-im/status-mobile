@@ -1,10 +1,11 @@
 (ns status-im2.contexts.shell.style
   (:require [quo2.foundations.colors :as colors]
-            [status-im2.contexts.shell.constants :as constants]
-            [react-native.platform :as platform]))
+            [react-native.platform :as platform]
+            [status-im2.contexts.shell.constants :as constants]))
 
 ;; Bottom Tabs
-(defn bottom-tabs-container [pass-through?]
+(defn bottom-tabs-container
+  [pass-through?]
   {:background-color    (if pass-through? colors/neutral-100-opa-70 colors/neutral-100)
    :flex                1
    :align-items         :center
@@ -16,7 +17,8 @@
    :left                0
    :accessibility-label :bottom-tabs-container})
 
-(defn bottom-tabs []
+(defn bottom-tabs
+  []
   {:flex-direction      :row
    :position            :absolute
    :bottom              (if platform/android? 8 34)
@@ -24,7 +26,8 @@
    :accessibility-label :bottom-tabs})
 
 ;; Home Stack
-(defn home-stack []
+(defn home-stack
+  []
   (let [{:keys [width height]} (constants/dimensions)]
     {:border-bottom-left-radius  20
      :border-bottom-right-radius 20

@@ -1,37 +1,44 @@
 (ns status-im.ui.screens.keycard.frozen-card.view
   (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.components.react :as react]
+  (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
-            [status-im.ui.components.icons.icons :as icons]
-            [quo.core :as quo]
-            [status-im.keycard.login :as login]
+            [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
-            [re-frame.core :as re-frame]))
+            [status-im.keycard.login :as login]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]))
 
 (views/defview frozen-card
   [{:keys [show-dismiss-button?]
     :or   {show-dismiss-button? true}}]
-  [react/view {:style (when-not show-dismiss-button?
-                        {:flex 1})}
-   [react/view {:margin-top        24
-                :margin-horizontal 24
-                :align-items       :center}
-    [react/view {:background-color colors/blue-light
-                 :width            32 :height 32
-                 :border-radius    16
-                 :align-items      :center
-                 :justify-content  :center}
+  [react/view
+   {:style (when-not show-dismiss-button?
+             {:flex 1})}
+   [react/view
+    {:margin-top        24
+     :margin-horizontal 24
+     :align-items       :center}
+    [react/view
+     {:background-color colors/blue-light
+      :width            32
+      :height           32
+      :border-radius    16
+      :align-items      :center
+      :justify-content  :center}
      [icons/icon :main-icons/warning {:color colors/blue}]]
-    [react/text {:style {:typography    :title-bold
-                         :margin-top    16
-                         :margin-bottom 8}}
+    [react/text
+     {:style {:typography    :title-bold
+              :margin-top    16
+              :margin-bottom 8}}
      (i18n/label :t/keycard-is-frozen-title)]
-    [react/text {:style {:color      colors/gray
-                         :text-align :center}}
+    [react/text
+     {:style {:color      colors/gray
+              :text-align :center}}
      (i18n/label :t/keycard-is-frozen-details)]]
-   [react/view {:margin-bottom     24
-                :margin-horizontal 24
-                :align-items       :center}
+   [react/view
+    {:margin-bottom     24
+     :margin-horizontal 24
+     :align-items       :center}
     [react/view {:style {:margin-top 24}}
      [quo/button
       {:on-press #(re-frame/dispatch [::login/reset-pin])}

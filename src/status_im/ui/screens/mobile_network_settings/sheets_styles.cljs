@@ -16,8 +16,8 @@
    :margin-bottom 10})
 
 (def details-text
-  {:color       colors/gray
-   :text-align  :center})
+  {:color      colors/gray
+   :text-align :center})
 
 (def separator
   {:background-color colors/gray-lighter

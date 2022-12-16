@@ -1,9 +1,9 @@
 (ns status-im2.subs.keycard
-  (:require [re-frame.core :as re-frame]
-            [status-im.keycard.common :as common]
-            [status-im.utils.datetime :as utils.datetime]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
-            [clojure.string :as string]))
+            [status-im.keycard.common :as common]
+            [status-im.utils.datetime :as utils.datetime]))
 
 (re-frame/reg-sub
  :keycard/nfc-enabled?
@@ -45,9 +45,10 @@
 (re-frame/reg-sub
  :keycard-recovery-phrase-word
  (fn [db]
-   (get-in db [:keycard
-               :recovery-phrase
-               (get-in db [:keycard :recovery-phrase :step])])))
+   (get-in db
+           [:keycard
+            :recovery-phrase
+            (get-in db [:keycard :recovery-phrase :step])])))
 
 (re-frame/reg-sub
  :keycard-recovery-phrase-input-word
@@ -87,9 +88,10 @@
  (fn [db]
    (map-indexed vector
                 (partition 3
-                           (map-indexed vector (string/split
-                                                (get-in db [:keycard :secrets :mnemonic])
-                                                #" "))))))
+                           (map-indexed vector
+                                        (string/split
+                                         (get-in db [:keycard :secrets :mnemonic])
+                                         #" "))))))
 
 (re-frame/reg-sub
  :keycard-application-info

@@ -1,10 +1,10 @@
 (ns status-im2.contexts.shell.events
-  (:require [utils.re-frame :as rf]
-            [re-frame.core :as re-frame]
-            [status-im2.navigation.events :as navigation]
+  (:require [re-frame.core :as re-frame]
             [status-im2.common.constants :as constants]
             [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.constants :as shell.constants]))
+            [status-im2.contexts.shell.constants :as shell.constants]
+            [status-im2.navigation.events :as navigation]
+            [utils.re-frame :as rf]))
 
 ;; Effects
 
@@ -39,7 +39,8 @@
         constants/one-to-one-chat-type
         {:shell/navigate-from-shell-fx :chats-stack
          :db                           (assoc-in
-                                        db [:shell/switcher-cards id]
+                                        db
+                                        [:shell/switcher-cards id]
                                         {:type  shell.constants/one-to-one-chat-card
                                          :id    id
                                          :clock now})}
@@ -47,7 +48,8 @@
         constants/private-group-chat-type
         {:shell/navigate-from-shell-fx :chats-stack
          :db                           (assoc-in
-                                        db [:shell/switcher-cards id]
+                                        db
+                                        [:shell/switcher-cards id]
                                         {:type  shell.constants/private-group-chat-card
                                          :id    id
                                          :clock now})}
@@ -55,21 +57,24 @@
         constants/community-chat-type
         {:shell/navigate-from-shell-fx :communities-stack
          :db                           (assoc-in
-                                        db [:shell/switcher-cards (:community-id chat)]
+                                        db
+                                        [:shell/switcher-cards (:community-id chat)]
                                         {:type    shell.constants/community-card
                                          :id      (:community-id chat)
                                          :clock   now
                                          :content {:content-type :channel
                                                    :data         {:emoji        (:emoji chat)
                                                                   :channel-id   (:chat-id chat)
-                                                                  :channel-name (:chat-name chat)}}})}
+                                                                  :channel-name (:chat-name
+                                                                                 chat)}}})}
 
         nil))
 
     :community
     {:shell/navigate-from-shell-fx :communities-stack
      :db                           (assoc-in
-                                    db [:shell/switcher-cards (:community-id id)]
+                                    db
+                                    [:shell/switcher-cards (:community-id id)]
                                     {:type  shell.constants/community-card
                                      :id    (:community-id id)
                                      :clock now})}

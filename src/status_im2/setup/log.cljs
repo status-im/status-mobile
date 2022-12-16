@@ -1,21 +1,23 @@
 (ns status-im2.setup.log
-  (:require [taoensso.timbre :as log]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im2.setup.config :as config]
+            [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 
-(def logs-queue (atom #queue[]))
+(def logs-queue (atom #queue []))
 (def max-log-entries 1000)
 
 (defn get-logs-queue [] @logs-queue)
 
-(defn add-log-entry [entry]
+(defn add-log-entry
+  [entry]
   (swap! logs-queue conj entry)
   (when (>= (count @logs-queue) max-log-entries)
     (swap! logs-queue pop)))
 
-(defn setup [level]
+(defn setup
+  [level]
   (when-not (string/blank? level)
     (log/set-level! (-> level
                         string/lower-case

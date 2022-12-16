@@ -21,7 +21,7 @@
     (update-in db
                [:messages chat-id message-id]
                assoc
-               :deleted-for-me? true
+               :deleted-for-me?              true
                :deleted-for-me-undoable-till (+ (datetime/timestamp)
                                                 undo-time-limit-ms))))
 
@@ -48,10 +48,11 @@
      (message-list/rebuild-message-list
       {:db (update-db-delete-locally db chat-id message-id undo-time-limit-ms)}
       chat-id)
-     :utils/dispatch-later [{:dispatch [:chat.ui/delete-message-for-me-and-sync
-                                        {:chat-id    chat-id
-                                         :message-id message-id}]
-                             :ms       undo-time-limit-ms}])))
+     :utils/dispatch-later
+     [{:dispatch [:chat.ui/delete-message-for-me-and-sync
+                  {:chat-id    chat-id
+                   :message-id message-id}]
+       :ms       undo-time-limit-ms}])))
 
 (fx/defn undo
   {:events [:chat.ui/undo-delete-message-for-me]}
@@ -69,14 +70,16 @@
      ::json-rpc/call [{:method      "wakuext_deleteMessageForMeAndSync"
                        :params      [chat-id message-id]
                        :js-response true
-                       :on-error    #(log/error "failed to delete message for me, message id: " {:message-id message-id :error %})
+                       :on-error    #(log/error "failed to delete message for me, message id: "
+                                                {:message-id message-id :error %})
                        :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
 
 (defn- filter-pending-sync-messages
   "traverse all messages find not yet synced deleted-for-me? messages"
   [acc chat-id messages]
   (->> messages
-       (filter (fn [[_ {:keys [deleted-for-me? deleted-for-me-undoable-till]}]] (and deleted-for-me? deleted-for-me-undoable-till)))
+       (filter (fn [[_ {:keys [deleted-for-me? deleted-for-me-undoable-till]}]]
+                 (and deleted-for-me? deleted-for-me-undoable-till)))
        (map (fn [message] {:chat-id chat-id :message-id (first message)}))
        (concat acc)))
 

@@ -1,10 +1,11 @@
 (ns status-im.data-store.activities
   (:require [clojure.set :as set]
-            [status-im.constants :as constants]
             [status-im.activity-center.notification-types :as notification-types]
+            [status-im.constants :as constants]
             [status-im.data-store.messages :as messages]))
 
-(defn- rpc->type [{:keys [type name] :as chat}]
+(defn- rpc->type
+  [{:keys [type name] :as chat}]
   (case type
     notification-types/reply
     (assoc chat
@@ -18,21 +19,22 @@
 
     notification-types/private-group-chat
     (assoc chat
-           :chat-type constants/private-group-chat-type
-           :chat-name name
-           :public? false
+           :chat-type  constants/private-group-chat-type
+           :chat-name  name
+           :public?    false
            :group-chat true)
 
     notification-types/one-to-one-chat
     (assoc chat
-           :chat-type constants/one-to-one-chat-type
-           :chat-name name
-           :public? false
+           :chat-type  constants/one-to-one-chat-type
+           :chat-name  name
+           :public?    false
            :group-chat false)
 
     chat))
 
-(defn <-rpc [item]
+(defn <-rpc
+  [item]
   (-> item
       rpc->type
       (set/rename-keys {:lastMessage               :last-message

@@ -1,30 +1,31 @@
 (ns status-im.ui.screens.profile.user.views
-  (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.i18n.i18n :as i18n]
-            [quo.core :as quo]
+  (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
+            [quo.design-system.spacing :as spacing]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.ethereum.stateofus :as stateofus]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
+            [status-im.ui.screens.profile.user.edit-picture :as edit]
             [status-im.ui.screens.profile.user.styles :as styles]
+            [status-im.ui.screens.profile.visibility-status.views :as visibility-status]
             [status-im.utils.config :as config]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.universal-links.utils :as universal-links]
-            [status-im.ui.components.profile-header.view :as profile-header]
-            [status-im.ui.screens.profile.user.edit-picture :as edit]
-            [status-im.utils.utils :as utils]
-            [status-im.ethereum.stateofus :as stateofus]
-            [quo.design-system.spacing :as spacing]
-            [status-im.ui.screens.profile.visibility-status.views :as visibility-status])
+            [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :as views]))
 
-(views/defview share-chat-key []
+(views/defview share-chat-key
+  []
   (views/letsubs [{:keys [address ens-name]} [:popover/popover]
-                  width (reagent/atom nil)]
+                  width                      (reagent/atom nil)]
     (let [link (universal-links/generate-link :user :external (or ens-name address))]
       [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
        [react/view {:style {:padding-top 16 :padding-horizontal 16}}
@@ -40,27 +41,33 @@
              {:monospace           true
               :accessibility-label :ens-username}
              ens-name]]
-           [react/view {:height           1 :margin-top 12 :margin-horizontal -16
-                        :background-color colors/gray-lighter}]])
+           [react/view
+            {:height            1
+             :margin-top        12
+             :margin-horizontal -16
+             :background-color  colors/gray-lighter}]])
         [copyable-text/copyable-text-view
          {:label           :t/chat-key
           :container-style {:margin-top 12 :margin-bottom 4}
           :copied-text     address}
-         [quo/text {:number-of-lines     1
-                    :ellipsize-mode      :middle
-                    :accessibility-label :chat-key
-                    :monospace           true}
+         [quo/text
+          {:number-of-lines     1
+           :ellipsize-mode      :middle
+           :accessibility-label :chat-key
+           :monospace           true}
           address]]]
        [react/view styles/share-link-button
         [quo/button
          {:on-press            (fn []
                                  (re-frame/dispatch [:hide-popover])
                                  (js/setTimeout
-                                  #(list-selection/open-share {:message link}) 250))
+                                  #(list-selection/open-share {:message link})
+                                  250))
           :accessibility-label :share-my-contact-code-button}
          (i18n/label :t/share-link)]]])))
 
-(defn content []
+(defn content
+  []
   (let [{:keys [preferred-name
                 mnemonic
                 keycard-pairing]}
@@ -71,7 +78,7 @@
     [:<>
      [visibility-status/visibility-status-button
       visibility-status/calculate-button-height-and-dispatch-popover]
-     [quo/separator {:style {:margin-top  (:tiny spacing/spacing)}}]
+     [quo/separator {:style {:margin-top (:tiny spacing/spacing)}}]
      [quo/list-item
       (cond-> {:title                (or (when registrar preferred-name)
                                          (i18n/label :t/ens-usernames))
@@ -169,15 +176,17 @@
         :on-press
         #(re-frame/dispatch [:multiaccounts.logout.ui/logout-pressed])}]]]))
 
-(defn my-profile []
+(defn my-profile
+  []
   (fn []
     (let [{:keys [public-key ens-verified preferred-name]
-           :as   account} @(re-frame/subscribe [:profile/multiaccount])
-          on-share        #(re-frame/dispatch [:show-popover
-                                               {:view     :share-chat-key
-                                                :address  public-key
-                                                :ens-name preferred-name}])
-          has-picture     @(re-frame/subscribe [:profile/has-picture])]
+           :as   account}
+          @(re-frame/subscribe [:profile/multiaccount])
+          on-share #(re-frame/dispatch [:show-popover
+                                        {:view     :share-chat-key
+                                         :address  public-key
+                                         :ens-name preferred-name}])
+          has-picture @(re-frame/subscribe [:profile/has-picture])]
       [react/view {:flex 1}
        [quo/animated-header
         {:right-accessories [{:accessibility-label :share-header-button
@@ -187,7 +196,8 @@
          :extended-header   (profile-header/extended-header
                              {:on-press  on-share
                               :on-edit   #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                              {:content (edit/bottom-sheet has-picture)}])
+                                                              {:content (edit/bottom-sheet
+                                                                         has-picture)}])
                               :title     (multiaccounts/displayed-name account)
                               :photo     (multiaccounts/displayed-photo account)
                               :monospace (not ens-verified)

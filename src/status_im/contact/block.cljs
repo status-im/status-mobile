@@ -1,13 +1,13 @@
 (ns status-im.contact.block
   (:require [re-frame.core :as re-frame]
+            [status-im.activity-center.core :as activity-center]
             [status-im.chat.models.message-list :as message-list]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]
-            [status-im2.navigation.events :as navigation]
+            [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
-            [status-im.activity-center.core :as activity-center]
-            [status-im.utils.fx :as fx]))
+            [status-im2.navigation.events :as navigation]))
 
 (fx/defn clean-up-chat
   [{:keys [db] :as cofx}
@@ -21,30 +21,32 @@
                                 (when (= from public-key)
                                   message-id))
                               (get-in db [:messages chat-id]))
-        db (-> db
-               ;; remove messages
-               (update-in [:messages chat-id]
-                          #(apply dissoc % removed-messages-ids))
-               (update-in [:chats chat-id]
-                          assoc
-                          :unviewed-messages-count unviewed-messages-count
-                          :unviewed-mentions-count unviewed-mentions-count
-                          :last-message last-message))]
-    {:db (assoc-in db [:message-lists chat-id]
-                   (message-list/add-many nil (vals (get-in db [:messages chat-id]))))}))
+        db                   (-> db
+                                 ;; remove messages
+                                 (update-in [:messages chat-id]
+                                            #(apply dissoc % removed-messages-ids))
+                                 (update-in [:chats chat-id]
+                                            assoc
+                                            :unviewed-messages-count unviewed-messages-count
+                                            :unviewed-mentions-count unviewed-mentions-count
+                                            :last-message            last-message))]
+    {:db (assoc-in db
+          [:message-lists chat-id]
+          (message-list/add-many nil (vals (get-in db [:messages chat-id]))))}))
 
 (fx/defn contact-blocked
   {:events [::contact-blocked]}
   [{:keys [db] :as cofx} {:keys [public-key]} chats]
   (let [fxs (when chats
               (map #(->> (chats-store/<-rpc %)
-                         (clean-up-chat public-key)) (types/js->clj chats)))]
+                         (clean-up-chat public-key))
+                   (types/js->clj chats)))]
     (apply fx/merge
            cofx
-           {:db (-> db
-                    (update :chats dissoc public-key)
-                    (update :chats-home-list disj public-key)
-                    (assoc-in [:contacts/contacts public-key :added] false))
+           {:db                          (-> db
+                                             (update :chats dissoc public-key)
+                                             (update :chats-home-list disj public-key)
+                                             (assoc-in [:contacts/contacts public-key :added] false))
             :clear-message-notifications
             [[public-key] (get-in db [:multiaccount :remote-push-notifications-enabled?])]}
            (activity-center/notifications-fetch-unread-count)
@@ -53,11 +55,11 @@
 (fx/defn block-contact
   {:events [:contact.ui/block-contact-confirmed]}
   [{:keys [db] :as cofx} public-key]
-  (let [contact (-> (contact.db/public-key->contact
-                     (:contacts/contacts db)
-                     public-key)
-                    (assoc :blocked true
-                           :added false))
+  (let [contact               (-> (contact.db/public-key->contact
+                                   (:contacts/contacts db)
+                                   public-key)
+                                  (assoc :blocked true
+                                         :added   false))
         from-one-to-one-chat? (not (get-in db [:chats (:current-chat-id db) :group-chat]))]
     (fx/merge cofx
               {:db (-> db
@@ -66,9 +68,10 @@
                        ;; update the contact in contacts list
                        (assoc-in [:contacts/contacts public-key] contact))}
               (contacts-store/block
-               public-key #(do (re-frame/dispatch [::contact-blocked contact (.-chats %)])
-                               (re-frame/dispatch [:sanitize-messages-and-process-response %])
-                               (re-frame/dispatch [:hide-popover])))
+               public-key
+               #(do (re-frame/dispatch [::contact-blocked contact (.-chats %)])
+                    (re-frame/dispatch [:sanitize-messages-and-process-response %])
+                    (re-frame/dispatch [:hide-popover])))
               ;; reset navigation to avoid going back to non existing one to one chat
               (if from-one-to-one-chat?
                 (navigation/pop-to-root-tab :chat-stack)

@@ -1,5 +1,4 @@
-(ns status-im.utils.build
-  (:require-macros [status-im.utils.build :as build]))
+(ns status-im.utils.build (:require-macros [status-im.utils.build :as build]))
 
 (def commit-hash (build/get-current-sha))
 (def version (build/git-short-version))

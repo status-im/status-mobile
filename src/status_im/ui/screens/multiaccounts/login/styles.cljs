@@ -36,17 +36,17 @@
                 :padding-top 13}})
 
 (def save-password-unavailable-android
-  {:margin-top 8
-   :width "100%"
-   :color colors/text-gray
-   :text-align :center
+  {:margin-top     8
+   :width          "100%"
+   :color          colors/text-gray
+   :text-align     :center
    :flex-direction :row
-   :align-items :center})
+   :align-items    :center})
 
 (def biometric-button
-  {:justify-content  :center
-   :align-items      :center
-   :height           40
-   :width            40
-   :border-radius    20
-   :margin-left      16})
+  {:justify-content :center
+   :align-items     :center
+   :height          40
+   :width           40
+   :border-radius   20
+   :margin-left     16})

@@ -1,6 +1,6 @@
 (ns status-im.wallet.swap.core
-  (:require [status-im.utils.fx :as fx]
-            [re-frame.db :as re-frame.db]
+  (:require [re-frame.db :as re-frame.db]
+            [status-im.utils.fx :as fx]
             [status-im2.navigation.events :as navigation]))
 
 (fx/defn open-asset-selector-modal
@@ -35,7 +35,7 @@
   [{:keys [db]}]
   {:db (assoc db
               :wallet/swap-from-token (:wallet/swap-to-token db)
-              :wallet/swap-to-token (:wallet/swap-from-token db))})
+              :wallet/swap-to-token   (:wallet/swap-from-token db))})
 
 (fx/defn set-advanced-mode
   {:events [::set-advanced-mode]}

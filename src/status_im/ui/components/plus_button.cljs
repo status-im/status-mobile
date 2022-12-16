@@ -1,8 +1,8 @@
 (ns status-im.ui.components.plus-button
-  (:require [quo.design-system.colors :as colors]
-            [quo.core :as quo]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.icons :as icons]))
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.components.react :as react]))
 
 (def action-button-container-old
   {:position        :absolute
@@ -14,7 +14,8 @@
    :bottom          16
    :height          40})
 
-(defn action-button-old []
+(defn action-button-old
+  []
   {:width            40
    :height           40
    :background-color colors/blue
@@ -29,13 +30,16 @@
                        "rgba(0, 12, 63, 0.2)")
    :elevation        2})
 
-(defn plus-button-old [{:keys [on-press loading accessibility-label]}]
+(defn plus-button-old
+  [{:keys [on-press loading accessibility-label]}]
   [react/view action-button-container-old
-   [quo/button {:type                :scale
-                :accessibility-label (or accessibility-label :plus-button)
-                :on-press            on-press}
+   [quo/button
+    {:type                :scale
+     :accessibility-label (or accessibility-label :plus-button)
+     :on-press            on-press}
     [react/view (action-button-old)
      (if loading
-       [react/activity-indicator {:color     colors/white-persist
-                                  :animating true}]
+       [react/activity-indicator
+        {:color     colors/white-persist
+         :animating true}]
        [icons/icon :main-icons/add {:color colors/white-persist}])]]])

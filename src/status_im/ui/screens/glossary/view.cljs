@@ -1,45 +1,53 @@
 (ns status-im.ui.screens.glossary.view
-  (:require [status-im.ui.components.react :as react]
+  (:require [quo.design-system.colors :as colors]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
-            [quo.design-system.colors :as colors]
-            [status-im.i18n.i18n :as i18n]))
+            [status-im.ui.components.react :as react]))
 
-(def messages [{:title   :t/account-title
-                :content :t/account-content}
-               {:title   :t/wallet-key-title
-                :content :t/wallet-key-content}
-               {:title   :t/chat-key-title
-                :content :t/chat-key-content}
-               {:title   :t/chat-name-title
-                :content :t/chat-name-content}
-               {:title   :t/ens-name-title
-                :content :t/ens-name-content}
-               {:title   :t/mailserver-title
-                :content :t/mailserver-content}
-               {:title   :t/peer-title
-                :content :t/peer-content}
-               {:title   :t/seed-phrase-title
-                :content :t/seed-phrase-content}])
+(def messages
+  [{:title   :t/account-title
+    :content :t/account-content}
+   {:title   :t/wallet-key-title
+    :content :t/wallet-key-content}
+   {:title   :t/chat-key-title
+    :content :t/chat-key-content}
+   {:title   :t/chat-name-title
+    :content :t/chat-name-content}
+   {:title   :t/ens-name-title
+    :content :t/ens-name-content}
+   {:title   :t/mailserver-title
+    :content :t/mailserver-content}
+   {:title   :t/peer-title
+    :content :t/peer-content}
+   {:title   :t/seed-phrase-title
+    :content :t/seed-phrase-content}])
 
-(defn render-section-header [{:keys [title]}]
-  [react/view {:style {:position         "absolute"
-                       :width            24
-                       :padding-vertical 16
-                       :background-color colors/white}}
-   [react/text {:style {:color       colors/blue
-                        :font-weight "700"}}
+(defn render-section-header
+  [{:keys [title]}]
+  [react/view
+   {:style {:position         "absolute"
+            :width            24
+            :padding-vertical 16
+            :background-color colors/white}}
+   [react/text
+    {:style {:color       colors/blue
+             :font-weight "700"}}
     title]])
 
-(defn render-element [{:keys [title content]}]
-  [react/view {:style {:margin-left 24
-                       :margin-top  16}}
-   [react/text {:style {:font-weight   "700"
-                        :margin-bottom 6}}
+(defn render-element
+  [{:keys [title content]}]
+  [react/view
+   {:style {:margin-left 24
+            :margin-top  16}}
+   [react/text
+    {:style {:font-weight   "700"
+             :margin-bottom 6}}
     (i18n/label title)]
    [react/text
     (i18n/label content)]])
 
-(defn glossary []
+(defn glossary
+  []
   (let [sections (->> messages
                       (group-by (comp first i18n/label :title))
                       seq

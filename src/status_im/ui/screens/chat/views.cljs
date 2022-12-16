@@ -1,47 +1,48 @@
 (ns status-im.ui.screens.chat.views
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [quo.animated :as animated]
+            [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [quo.react :as quo.react]
+            [quo.react-native :as rn]
+            [re-frame.core :as re-frame]
             re-frame.db
             [reagent.core :as reagent]
+            [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [quo.design-system.colors :as colors]
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.screens.chat.components.reply :as reply]
-            [status-im.ui.screens.chat.components.edit :as edit]
-            [status-im.ui.screens.chat.components.contact-request :as contact-request]
             [status-im.ui.components.react :as react]
-            [quo.animated :as animated]
-            [quo.react-native :as rn]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.chat.audio-message.views :as audio-message]
-            [quo.react :as quo.react]
+            [status-im.ui.screens.chat.components.accessory :as accessory]
+            [status-im.ui.screens.chat.components.contact-request :as contact-request]
+            [status-im.ui.screens.chat.components.edit :as edit]
+            [status-im.ui.screens.chat.components.input :as components]
+            [status-im.ui.screens.chat.components.reply :as reply]
+            [status-im.ui.screens.chat.extensions.views :as extensions]
+            [status-im.ui.screens.chat.group :as chat.group]
+            [status-im.ui.screens.chat.image.views :as image]
+            [status-im.ui.screens.chat.message.datemark :as message-datemark]
+            [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.screens.chat.message.message :as message]
+            [status-im.ui.screens.chat.sheets :as sheets]
+            [status-im.ui.screens.chat.state :as state]
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.styles.main :as style]
             [status-im.ui.screens.chat.toolbar-content :as toolbar-content]
-            [status-im.ui.screens.chat.image.views :as image]
-            [status-im.ui.screens.chat.state :as state]
-            [status-im.ui.screens.chat.extensions.views :as extensions]
-            [status-im.ui.screens.chat.group :as chat.group]
-            [status-im.ui.screens.chat.message.gap :as gap]
-            [status-im.ui.screens.chat.components.accessory :as accessory]
-            [status-im.ui.screens.chat.components.input :as components]
-            [status-im.ui.screens.chat.message.datemark :as message-datemark]
-            [status-im.ui.components.toolbar :as toolbar]
-            [quo.core :as quo]
-            [clojure.string :as string]
-            [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
-            [status-im.ui.screens.chat.sheets :as sheets]
-            [utils.debounce :as debounce]
             [status-im2.navigation.state :as navigation.state]
-            [status-im.react-native.resources :as resources]))
+            [utils.debounce :as debounce]))
 
-(defn invitation-requests [chat-id admins]
+(defn invitation-requests
+  [chat-id admins]
   (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])
-        admin? (get admins current-pk)]
+        admin?     (get admins current-pk)]
     (when admin?
       (let [invitations @(re-frame/subscribe [:group-chat/pending-invitations-by-chat-id chat-id])]
         (when (seq invitations)
@@ -52,7 +53,8 @@
             [react/text {:style style/add-contact-text}
              (i18n/label :t/group-membership-request)]]])))))
 
-(defn add-contact-bar [public-key]
+(defn add-contact-bar
+  [public-key]
   (when-not (or @(re-frame/subscribe [:contacts/contact-added? public-key])
                 @(re-frame/subscribe [:contacts/contact-blocked? public-key]))
     [react/touchable-highlight
@@ -64,46 +66,54 @@
        {:color colors/blue}]
       [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]]))
 
-(defn contact-request []
+(defn contact-request
+  []
   (let [contact-request @(re-frame/subscribe [:chats/sending-contact-request])]
     [react/view {:style style/contact-request}
-     [react/image {:source (resources/get-image :hand-wave)
-                   :style  {:width      112
-                            :height     96.71
-                            :margin-top 17}}]
-     [quo/text {:style  {:margin-top 14}
-                :weight :bold
-                :size   :large}
+     [react/image
+      {:source (resources/get-image :hand-wave)
+       :style  {:width      112
+                :height     96.71
+                :margin-top 17}}]
+     [quo/text
+      {:style  {:margin-top 14}
+       :weight :bold
+       :size   :large}
       (i18n/label :t/say-hi)]
-     [quo/text {:style {:margin-top    2
-                        :margin-bottom 14}}
+     [quo/text
+      {:style {:margin-top    2
+               :margin-bottom 14}}
       (i18n/label :t/send-contact-request-message)]
      (when-not contact-request
-       [react/view {:style {:padding-horizontal 16
-                            :padding-bottom     8}}
+       [react/view
+        {:style {:padding-horizontal 16
+                 :padding-bottom     8}}
         [quo/button
          {:style               {:width "100%"}
           :accessibility-label :contact-request--button
           :on-press            #(re-frame/dispatch [:chat.ui/send-contact-request])}
          (i18n/label :t/contact-request)]])]))
 
-(defn chat-intro [{:keys [chat-id
-                          chat-name
-                          chat-type
-                          group-chat
-                          invitation-admin
-                          mutual-contact-requests-enabled?
-                          contact-name
-                          color
-                          loading-messages?
-                          no-messages?
-                          contact-request-state
-                          emoji]}]
-  [react/view {:style               (style/intro-header-container loading-messages? no-messages?)
-               :accessibility-label :history-chat}
+(defn chat-intro
+  [{:keys [chat-id
+           chat-name
+           chat-type
+           group-chat
+           invitation-admin
+           mutual-contact-requests-enabled?
+           contact-name
+           color
+           loading-messages?
+           no-messages?
+           contact-request-state
+           emoji]}]
+  [react/view
+   {:style               (style/intro-header-container loading-messages? no-messages?)
+    :accessibility-label :history-chat}
    ;; Icon section
-   [react/view {:style {:margin-top    52
-                        :margin-bottom 24}}
+   [react/view
+    {:style {:margin-top    52
+             :margin-bottom 24}}
     [chat-icon.screen/emoji-chat-intro-icon-view
      chat-name chat-id group-chat emoji
      {:default-chat-icon      (style/intro-header-icon 120 color)
@@ -116,12 +126,13 @@
     (if group-chat chat-name contact-name)]
    ;; Description section
    (if group-chat
-     [chat.group/group-chat-description-container {:chat-id           chat-id
-                                                   :invitation-admin  invitation-admin
-                                                   :loading-messages? loading-messages?
-                                                   :chat-name         chat-name
-                                                   :chat-type         chat-type
-                                                   :no-messages?      no-messages?}]
+     [chat.group/group-chat-description-container
+      {:chat-id           chat-id
+       :invitation-admin  invitation-admin
+       :loading-messages? loading-messages?
+       :chat-name         chat-name
+       :chat-type         chat-type
+       :no-messages?      no-messages?}]
      [react/text {:style (assoc style/intro-header-description :margin-bottom 32)}
       (str (i18n/label :t/empty-chat-description-one-to-one) contact-name)])
    (when (and mutual-contact-requests-enabled?
@@ -131,14 +142,17 @@
                   (= contact-request-state constants/contact-request-state-dismissed)))
      [contact-request])])
 
-(defn chat-intro-one-to-one [{:keys [chat-id] :as opts}]
-  (let [contact @(re-frame/subscribe [:contacts/contact-by-identity chat-id])
+(defn chat-intro-one-to-one
+  [{:keys [chat-id] :as opts}]
+  (let [contact                          @(re-frame/subscribe [:contacts/contact-by-identity chat-id])
         mutual-contact-requests-enabled? @(re-frame/subscribe [:mutual-contact-requests/enabled?])
-        contact-names @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])]
-    [chat-intro (assoc opts
-                       :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
-                       :contact-name (first contact-names)
-                       :contact-request-state (or (:contact-request-state contact)
+        contact-names                    @(re-frame/subscribe [:contacts/contact-two-names-by-identity
+                                                               chat-id])]
+    [chat-intro
+     (assoc opts
+            :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
+            :contact-name                     (first contact-names)
+            :contact-request-state            (or (:contact-request-state contact)
                                                   constants/contact-request-state-none))]))
 
 (defn chat-intro-header-container
@@ -170,21 +184,24 @@
 
 (defonce messages-list-ref (atom nil))
 
-(defn on-viewable-items-changed [^js e]
+(defn on-viewable-items-changed
+  [^js e]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
-            (when-let [^js last-visible-element (aget (.-viewableItems e) (dec (.-length ^js (.-viewableItems e))))]
-              (let [index (.-index last-visible-element)
-                    ;; Get first not visible element, if it's a datemark/gap
-                    ;; we might unnecessarely add messages on receiving as
-                    ;; they do not have a clock value, but most of the times
-                    ;; it will be a message
-                    first-not-visible (aget (.-data ^js (.-props ^js @messages-list-ref)) (inc index))]
-                (when (and first-not-visible
-                           (= :message (:type first-not-visible)))
-                  first-not-visible))))))
+      (when-let [^js last-visible-element (aget (.-viewableItems e)
+                                                (dec (.-length ^js (.-viewableItems e))))]
+        (let [index             (.-index last-visible-element)
+              ;; Get first not visible element, if it's a datemark/gap
+              ;; we might unnecessarely add messages on receiving as
+              ;; they do not have a clock value, but most of the times
+              ;; it will be a message
+              first-not-visible (aget (.-data ^js (.-props ^js @messages-list-ref)) (inc index))]
+          (when (and first-not-visible
+                     (= :message (:type first-not-visible)))
+            first-not-visible))))))
 
-(defn bottom-sheet [input-bottom-sheet]
+(defn bottom-sheet
+  [input-bottom-sheet]
   (case input-bottom-sheet
     :stickers
     [stickers/stickers-view]
@@ -196,47 +213,52 @@
     [audio-message/audio-message-view]
     nil))
 
-(defn invitation-bar [chat-id]
+(defn invitation-bar
+  [chat-id]
   (let [{:keys [state chat-id] :as invitation}
         (first @(re-frame/subscribe [:group-chat/invitations-by-chat-id chat-id]))
-        {:keys [retry? message]} @(re-frame/subscribe [:chats/current-chat-membership])
-        message-length (count message)]
+        {:keys [retry? message]}               @(re-frame/subscribe [:chats/current-chat-membership])
+        message-length                         (count message)]
     [react/view {:margin-horizontal 16 :margin-top 10}
      (cond
        (and invitation (= constants/invitation-state-requested state) (not retry?))
-       [toolbar/toolbar {:show-border? true
-                         :center
-                         [quo/button
-                          {:type     :secondary
-                           :disabled true}
-                          (i18n/label :t/request-pending)]}]
+       [toolbar/toolbar
+        {:show-border? true
+         :center
+         [quo/button
+          {:type     :secondary
+           :disabled true}
+          (i18n/label :t/request-pending)]}]
 
        (and invitation (= constants/invitation-state-rejected state) (not retry?))
-       [toolbar/toolbar {:show-border? true
-                         :right
-                         [quo/button
-                          {:type                :secondary
-                           :accessibility-label :retry-button
-                           :on-press            #(re-frame/dispatch [:group-chats.ui/membership-retry])}
-                          (i18n/label :t/mailserver-retry)]
-                         :left
-                         [quo/button
-                          {:type                :secondary
-                           :accessibility-label :remove-group-button
-                           :on-press            #(re-frame/dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}
-                          (i18n/label :t/remove-group)]}]
+       [toolbar/toolbar
+        {:show-border? true
+         :right
+         [quo/button
+          {:type                :secondary
+           :accessibility-label :retry-button
+           :on-press            #(re-frame/dispatch [:group-chats.ui/membership-retry])}
+          (i18n/label :t/mailserver-retry)]
+         :left
+         [quo/button
+          {:type                :secondary
+           :accessibility-label :remove-group-button
+           :on-press            #(re-frame/dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}
+          (i18n/label :t/remove-group)]}]
        :else
-       [toolbar/toolbar {:show-border? true
-                         :center
-                         [quo/button
-                          {:type                :secondary
-                           :accessibility-label :introduce-yourself-button
-                           :disabled            (or (string/blank? message)
-                                                    (> message-length chat.group/message-max-length))
-                           :on-press            #(re-frame/dispatch [:send-group-chat-membership-request])}
-                          (i18n/label :t/request-membership)]}])]))
+       [toolbar/toolbar
+        {:show-border? true
+         :center
+         [quo/button
+          {:type                :secondary
+           :accessibility-label :introduce-yourself-button
+           :disabled            (or (string/blank? message)
+                                    (> message-length chat.group/message-max-length))
+           :on-press            #(re-frame/dispatch [:send-group-chat-membership-request])}
+          (i18n/label :t/request-membership)]}])]))
 
-(defn get-space-keeper-ios [bottom-space panel-space active-panel text-input-ref]
+(defn get-space-keeper-ios
+  [bottom-space panel-space active-panel text-input-ref]
   (fn [state]
     ;; NOTE: Only iOs now because we use soft input resize screen on android
     (when platform/ios?
@@ -249,11 +271,13 @@
         (and (not state)
              (< @panel-space @bottom-space))
         (do
-          (some-> ^js (quo.react/current-ref text-input-ref) .focus)
+          (some-> ^js (quo.react/current-ref text-input-ref)
+                  .focus)
           (reset! panel-space @bottom-space)
           (reset! bottom-space 0))))))
 
-(defn get-set-active-panel [active-panel]
+(defn get-set-active-panel
+  [active-panel]
   (fn [panel]
     (rn/configure-next
      (:ease-opacity-200 rn/custom-animations))
@@ -262,26 +286,29 @@
     (when panel
       (js/setTimeout #(react/dismiss-keyboard!) 100))))
 
-(defn list-footer [{:keys [chat-id] :as chat}]
+(defn list-footer
+  [{:keys [chat-id] :as chat}]
   (let [loading-messages? @(re-frame/subscribe [:chats/loading-messages? chat-id])
-        no-messages? @(re-frame/subscribe [:chats/chat-no-messages? chat-id])
-        all-loaded? @(re-frame/subscribe [:chats/all-loaded? chat-id])]
+        no-messages?      @(re-frame/subscribe [:chats/chat-no-messages? chat-id])
+        all-loaded?       @(re-frame/subscribe [:chats/all-loaded? chat-id])]
     [react/view {:style (when platform/android? {:scaleY -1})}
      (if (or loading-messages? (not chat-id) (not all-loaded?))
        [react/view {:height 324 :align-items :center :justify-content :center}
         [react/activity-indicator {:animating true}]]
        [chat-intro-header-container chat no-messages?])]))
 
-(defn list-header [{:keys [chat-id chat-type invitation-admin]}]
+(defn list-header
+  [{:keys [chat-id chat-type invitation-admin]}]
   (when (= chat-type constants/private-group-chat-type)
     [react/view {:style (when platform/android? {:scaleY -1})}
      [chat.group/group-chat-footer chat-id invitation-admin]]))
 
-(defn render-fn [{:keys [outgoing type] :as message}
-                 idx
-                 _
-                 {:keys [group-chat public? community? current-public-key space-keeper
-                         chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
+(defn render-fn
+  [{:keys [outgoing type] :as message}
+   idx
+   _
+   {:keys [group-chat public? community? current-public-key space-keeper
+           chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
   [react/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
      [message-datemark/chat-datemark (:value message)]
@@ -290,33 +317,39 @@
        ; message content
        [message/chat-message
         (assoc message
-               :incoming-group (and group-chat (not outgoing))
-               :group-chat group-chat
-               :public? public?
-               :community? community?
-               :current-public-key current-public-key
-               :show-input? show-input?
+               :incoming-group      (and group-chat (not outgoing))
+               :group-chat          group-chat
+               :public?             public?
+               :community?          community?
+               :current-public-key  current-public-key
+               :show-input?         show-input?
                :message-pin-enabled message-pin-enabled
-               :edit-enabled edit-enabled)
+               :edit-enabled        edit-enabled)
         space-keeper]))])
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 (def list-ref #(reset! messages-list-ref %))
 
-;;TODO this is not really working in pair with inserting new messages because we stop inserting new messages
-;;if they outside the viewarea, but we load more here because end is reached,so its slowdown UI because we
-;;load and render 20 messages more, but we can't prevent this , because otherwise :on-end-reached will work wrong
-(defn list-on-end-reached []
+;;TODO this is not really working in pair with inserting new messages because we stop inserting new
+;;messages
+;;if they outside the viewarea, but we load more here because end is reached,so its slowdown UI because
+;;we
+;;load and render 20 messages more, but we can't prevent this , because otherwise :on-end-reached will
+;;work wrong
+(defn list-on-end-reached
+  []
   (if @state/scrolling
     (re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat])
     (utils/set-timeout #(re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat])
                        (if platform/low-device? 700 200))))
 
-(defn get-render-data [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled in-pinned-view?]}]
-  (let [current-public-key @(re-frame/subscribe [:multiaccount/public-key])
-        community @(re-frame/subscribe [:communities/community community-id])
-        group-admin? (get admins current-public-key)
-        community-admin? (when community (community :admin))
+(defn get-render-data
+  [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled
+           in-pinned-view?]}]
+  (let [current-public-key  @(re-frame/subscribe [:multiaccount/public-key])
+        community           @(re-frame/subscribe [:communities/community community-id])
+        group-admin?        (get admins current-public-key)
+        community-admin?    (when community (community :admin))
         message-pin-enabled (and (not public?)
                                  (or (not group-chat)
                                      (and group-chat
@@ -333,16 +366,17 @@
      :edit-enabled        edit-enabled
      :in-pinned-view?     in-pinned-view?}))
 
-(defn messages-view [{:keys [chat
-                             bottom-space
-                             pan-responder
-                             mutual-contact-requests-enabled?
-                             space-keeper
-                             show-input?]}]
+(defn messages-view
+  [{:keys [chat
+           bottom-space
+           pan-responder
+           mutual-contact-requests-enabled?
+           space-keeper
+           show-input?]}]
   (let [{:keys [group-chat chat-type chat-id public? community-id admins]} chat
 
         messages @(re-frame/subscribe [:chats/raw-chat-messages-stream chat-id])
-        one-to-one?   (= chat-type constants/one-to-one-chat-type)
+        one-to-one? (= chat-type constants/one-to-one-chat-type)
         contact-added? (when one-to-one? @(re-frame/subscribe [:contacts/contact-added? chat-id]))
         should-send-contact-request?
         (and
@@ -373,62 +407,78 @@
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               list-on-end-reached
        :on-scroll-to-index-failed    identity              ;;don't remove this
-       :content-container-style      {:padding-top (+ bottom-space 16)
+       :content-container-style      {:padding-top    (+ bottom-space 16)
                                       :padding-bottom 16}
        :scroll-indicator-insets      {:top bottom-space}    ;;ios only
        :keyboard-dismiss-mode        :interactive
        :keyboard-should-persist-taps :handled
        :onMomentumScrollBegin        state/start-scrolling
        :onMomentumScrollEnd          state/stop-scrolling
-        ;;TODO https://github.com/facebook/react-native/issues/30034
+       ;;TODO https://github.com/facebook/react-native/issues/30034
        :inverted                     (when platform/ios? true)
        :style                        (when platform/android? {:scaleY -1})})]))
 
-(defn navigate-back-handler []
+(defn navigate-back-handler
+  []
   (when (and (not @navigation.state/curr-modal) (= (get @re-frame.db/app-db :view-id) :chat))
     (react/hw-back-remove-listener navigate-back-handler)
     (re-frame/dispatch [:close-chat])
     (re-frame/dispatch [:navigate-back])))
 
-(defn topbar-content []
-  (let [window-width @(re-frame/subscribe [:dimensions/window-width])
+(defn topbar-content
+  []
+  (let [window-width                               @(re-frame/subscribe [:dimensions/window-width])
         {:keys [group-chat chat-id] :as chat-info} @(re-frame/subscribe [:chats/current-chat])]
-    [react/touchable-highlight {:on-press #(when-not group-chat
-                                             (debounce/dispatch-and-chill [:chat.ui/show-profile chat-id] 1000))
-                                :style    {:flex 1 :width (- window-width 120)}}
+    [react/touchable-highlight
+     {:on-press #(when-not group-chat
+                   (debounce/dispatch-and-chill [:chat.ui/show-profile chat-id] 1000))
+      :style    {:flex 1 :width (- window-width 120)}}
      [toolbar-content/toolbar-content-view-inner chat-info]]))
 
-(defn topbar []
+(defn topbar
+  []
   ;;we don't use topbar component, because we want chat view as simple (fast) as possible
   [react/view {:height 56}
-   [react/touchable-highlight {:on-press-in         navigate-back-handler
-                               :accessibility-label :back-button
-                               :style               {:height       56 :width 40 :align-items :center :justify-content :center
-                                                     :padding-left 16}}
+   [react/touchable-highlight
+    {:on-press-in         navigate-back-handler
+     :accessibility-label :back-button
+     :style               {:height          56
+                           :width           40
+                           :align-items     :center
+                           :justify-content :center
+                           :padding-left    16}}
     [icons/icon :main-icons/arrow-left {:color colors/black}]]
    [react/view {:flex 1 :left 52 :right 52 :top 0 :bottom 0 :position :absolute}
     [topbar-content]]
-   [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                 {:content (fn [] [sheets/current-chat-actions])
-                                                                  :height  256}])
-                               :accessibility-label :chat-menu-button
-                               :style               {:right         0 :top 0 :bottom 0 :position :absolute
-                                                     :height        56 :width 40 :align-items :center :justify-content :center
-                                                     :padding-right 16}}
+   [react/touchable-highlight
+    {:on-press-in         #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                               {:content (fn [] [sheets/current-chat-actions])
+                                                :height  256}])
+     :accessibility-label :chat-menu-button
+     :style               {:right           0
+                           :top             0
+                           :bottom          0
+                           :position        :absolute
+                           :height          56
+                           :width           40
+                           :align-items     :center
+                           :justify-content :center
+                           :padding-right   16}}
     [icons/icon :main-icons/more {:color colors/black}]]])
 
-(defn chat-render []
-  (let [bottom-space (reagent/atom 0)
-        panel-space (reagent/atom 52)
-        active-panel (reagent/atom nil)
-        position-y (animated/value 0)
-        pan-state (animated/value 0)
-        text-input-ref (quo.react/create-ref)
-        on-update #(when-not (zero? %) (reset! panel-space %))
-        pan-responder (accessory/create-pan-responder position-y pan-state)
-        space-keeper (get-space-keeper-ios bottom-space panel-space active-panel text-input-ref)
+(defn chat-render
+  []
+  (let [bottom-space     (reagent/atom 0)
+        panel-space      (reagent/atom 52)
+        active-panel     (reagent/atom nil)
+        position-y       (animated/value 0)
+        pan-state        (animated/value 0)
+        text-input-ref   (quo.react/create-ref)
+        on-update        #(when-not (zero? %) (reset! panel-space %))
+        pan-responder    (accessory/create-pan-responder position-y pan-state)
+        space-keeper     (get-space-keeper-ios bottom-space panel-space active-panel text-input-ref)
         set-active-panel (get-set-active-panel active-panel)
-        on-close #(set-active-panel nil)]
+        on-close         #(set-active-panel nil)]
     (fn []
       (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as chat}
             ;;we want to react only on these fields, do not use full chat map here
@@ -443,24 +493,27 @@
              [invitation-requests chat-id admins]
              (when-not mutual-contact-requests-enabled? [add-contact-bar chat-id])))
          ;;MESSAGES LIST
-         [messages-view {:chat          chat
-                         :bottom-space  max-bottom-space
-                         :pan-responder pan-responder
-                         :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
-                         :space-keeper  space-keeper
-                         :show-input?   show-input?}]
+         [messages-view
+          {:chat                             chat
+           :bottom-space                     max-bottom-space
+           :pan-responder                    pan-responder
+           :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
+           :space-keeper                     space-keeper
+           :show-input?                      show-input?}]
          (when (and group-chat invitation-admin)
-           [accessory/view {:y               position-y
-                            :on-update-inset on-update}
+           [accessory/view
+            {:y               position-y
+             :on-update-inset on-update}
             [invitation-bar chat-id]])
          [components/autocomplete-mentions text-input-ref max-bottom-space]
          (when show-input?
            ;; NOTE: this only accepts two children
-           [accessory/view {:y               position-y
-                            :pan-state       pan-state
-                            :has-panel       (boolean @active-panel)
-                            :on-close        on-close
-                            :on-update-inset on-update}
+           [accessory/view
+            {:y               position-y
+             :pan-state       pan-state
+             :has-panel       (boolean @active-panel)
+             :on-close        on-close
+             :on-update-inset on-update}
             [react/view
              [edit/edit-message-auto-focus-wrapper text-input-ref]
              [reply/reply-message-auto-focus-wrapper text-input-ref]
@@ -475,10 +528,11 @@
              [contact-request/contact-request-message-auto-focus-wrapper text-input-ref]]
             [bottom-sheet @active-panel]])]))))
 
-(defn chat []
+(defn chat
+  []
   (reagent/create-class
-   {:component-did-mount (fn []
-                           (react/hw-back-remove-listener navigate-back-handler)
-                           (react/hw-back-add-listener navigate-back-handler))
+   {:component-did-mount    (fn []
+                              (react/hw-back-remove-listener navigate-back-handler)
+                              (react/hw-back-add-listener navigate-back-handler))
     :component-will-unmount (fn [] (react/hw-back-remove-listener navigate-back-handler))
-    :reagent-render chat-render}))
+    :reagent-render         chat-render}))

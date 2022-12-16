@@ -1,28 +1,36 @@
 (ns status-im.chat.models.reactions
-  (:require [status-im.constants :as constants]
-            [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]
+  (:require [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
+            [status-im.data-store.reactions :as data-store.reactions]
             [status-im.transport.message.protocol :as message.protocol]
-            [status-im.data-store.reactions :as data-store.reactions]))
+            [status-im.utils.fx :as fx]
+            [taoensso.timbre :as log]))
 
-(defn update-reaction [acc retracted chat-id message-id emoji-id emoji-reaction-id reaction]
+(defn update-reaction
+  [acc retracted chat-id message-id emoji-id emoji-reaction-id reaction]
   ;; NOTE(Ferossgp): For a better performance, better to not keep in db all retracted reactions
   ;; retraction will always come after the reaction so there shouldn't be a conflict
   (if retracted
     (update-in acc [chat-id message-id emoji-id] dissoc emoji-reaction-id)
     (assoc-in acc [chat-id message-id emoji-id emoji-reaction-id] reaction)))
 
-(defn process-reactions [chats]
+(defn process-reactions
+  [chats]
   (fn [reactions new-reactions]
     ;; TODO(Ferossgp): handling own reaction in subscription could be expensive,
     ;; for better performance we can here separate own reaction into 2 maps
     (reduce
-     (fn [acc {:keys [chat-id message-id emoji-id emoji-reaction-id retracted]
-               :as   reaction}]
+     (fn [acc
+          {:keys [chat-id message-id emoji-id emoji-reaction-id retracted]
+           :as   reaction}]
        (cond-> (update-reaction acc retracted chat-id message-id emoji-id emoji-reaction-id reaction)
          (get-in chats [chat-id :profile-public-key])
-         (update-reaction retracted constants/timeline-chat-id message-id emoji-id emoji-reaction-id reaction)))
+         (update-reaction retracted
+                          constants/timeline-chat-id
+                          message-id
+                          emoji-id
+                          emoji-reaction-id
+                          reaction)))
      reactions
      new-reactions)))
 
@@ -81,16 +89,19 @@
   [{:keys [db]} reaction]
   {:db (update db :reactions (process-reactions (:chats db)) [reaction])})
 
-(defn message-reactions [current-public-key reactions]
+(defn message-reactions
+  [current-public-key reactions]
   (reduce
    (fn [acc [emoji-id reactions]]
      (if (pos? (count reactions))
        (let [own (first (filter (fn [[_ {:keys [from]}]]
-                                  (= from current-public-key)) reactions))]
-         (conj acc {:emoji-id          emoji-id
-                    :own               (boolean (seq own))
-                    :emoji-reaction-id (:emoji-reaction-id (second own))
-                    :quantity          (count reactions)}))
+                                  (= from current-public-key))
+                                reactions))]
+         (conj acc
+               {:emoji-id          emoji-id
+                :own               (boolean (seq own))
+                :emoji-reaction-id (:emoji-reaction-id (second own))
+                :quantity          (count reactions)}))
        acc))
    []
    reactions))

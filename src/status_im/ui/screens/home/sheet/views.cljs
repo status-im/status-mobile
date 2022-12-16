@@ -1,32 +1,37 @@
 (ns status-im.ui.screens.home.sheet.views
-  (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.react :as react]
-            [status-im.qr-scanner.core :as qr-scanner]
-            [quo.core :as quo]
+  (:require [quo.core :as quo]
+            [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
-            [status-im.utils.config :as config]
-            [status-im.ui.components.invite.views :as invite]))
+            [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.ui.components.invite.views :as invite]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.config :as config]))
 
-(defn hide-sheet-and-dispatch [event]
+(defn hide-sheet-and-dispatch
+  [event]
   (re-frame/dispatch [:bottom-sheet/hide])
   (re-frame/dispatch event))
 
-(defn add-new-view []
+(defn add-new-view
+  []
   [react/view
-   [react/view {:style {:flex-direction  :row
-                        :padding-left    16
-                        :padding-right   8
-                        :justify-content :space-between
-                        :align-items     :center}}
-    [quo/text {:size   :large
-               :weight :bold}
+   [react/view
+    {:style {:flex-direction  :row
+             :padding-left    16
+             :padding-right   8
+             :justify-content :space-between
+             :align-items     :center}}
+    [quo/text
+     {:size   :large
+      :weight :bold}
      (i18n/label :t/open-home)]
-    [quo/button {:type                :icon
-                 :theme               :icon
-                 :accessibility-label :universal-qr-scanner
-                 :on-press            #(hide-sheet-and-dispatch
-                                        [::qr-scanner/scan-code
-                                         {:handler ::qr-scanner/on-scan-success}])}
+    [quo/button
+     {:type                :icon
+      :theme               :icon
+      :accessibility-label :universal-qr-scanner
+      :on-press            #(hide-sheet-and-dispatch
+                             [::qr-scanner/scan-code
+                              {:handler ::qr-scanner/on-scan-success}])}
      :main-icons/qr]]
    [quo/list-item
     {:theme               :accent

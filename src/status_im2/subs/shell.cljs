@@ -1,9 +1,10 @@
 (ns status-im2.subs.shell
   (:require [re-frame.core :as re-frame]
-            [status-im2.common.constants :as status-constants]
-            [status-im.react-native.resources :as resources]))
+            [status-im.react-native.resources :as resources]
+            [status-im2.common.constants :as status-constants]))
 
-(defn get-card-content [chat]
+(defn get-card-content
+  [chat]
   (let [last-message (:last-message chat)]
     (case (:content-type last-message)
       status-constants/content-type-text
@@ -13,7 +14,8 @@
       {:content-type :text
        :data         "Todo: Implement"})))
 
-(defn one-to-one-chat-card [contact names chat id]
+(defn one-to-one-chat-card
+  [contact names chat id]
   (let [images          (:images contact)
         profile-picture (:uri (or (:thumbnail images) (:large images) (first images)))]
     {:title               (first names)
@@ -25,7 +27,8 @@
      :on-press            #(re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 id true])
      :content             (get-card-content chat)}))
 
-(defn private-group-chat-card [chat id]
+(defn private-group-chat-card
+  [chat id]
   {:title               (:chat-name chat)
    :avatar-params       {}
    :customization-color (or (:customization-color chat) :primary)
@@ -33,7 +36,8 @@
    :on-press            #(re-frame/dispatch [:chat.ui/navigate-to-chat-nav2 id true])
    :content             (get-card-content chat)})
 
-(defn community-card [community id content]
+(defn community-card
+  [community id content]
   (let [images          (:images community)
         profile-picture (if (= id status-constants/status-community-id)
                           (resources/get-image :status-logo)
@@ -49,10 +53,12 @@
      :on-close            #(re-frame/dispatch [:shell/close-switcher-card id])
      :on-press            #(re-frame/dispatch [:navigate-to-nav2 :community
                                                {:community-id id} true])
-     :content             (or content {:content-type :community-info
-                                       :data         {:type :permission}})}))
+     :content             (or content
+                              {:content-type :community-info
+                               :data         {:type :permission}})}))
 
-(defn community-channel-card [community community-id _ channel-id content]
+(defn community-channel-card
+  [community community-id _ channel-id content]
   (merge
    (community-card community community-id content)
    {:on-press (fn []
