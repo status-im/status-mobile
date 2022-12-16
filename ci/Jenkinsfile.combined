@@ -43,18 +43,6 @@ pipeline {
         stage('iOS') { steps { script {
           ios = jenkins.Build('status-mobile/platforms/ios')
         } } }
-        stage('Android') { steps { script {
-          apk = jenkins.Build('status-mobile/platforms/android')
-        } } }
-        stage('Android e2e') { steps { script {
-          apke2e = jenkins.Build('status-mobile/platforms/android-e2e')
-        } } }
-        stage('iOS Visual') { steps { script {
-          apke2e = jenkins.Build('status-mobile/platforms/visual')
-        } } }
-        stage('Tests') { steps { script {
-          jenkins.Build('status-mobile/platforms/tests')
-        } } }
       }
     }
     stage('Archive') {
