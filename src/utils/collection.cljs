@@ -15,8 +15,8 @@
   [key coll]
   (into {} (map #(vector (key %) %) coll)))
 
-
-(defn distinct-by [key coll]
+(defn distinct-by
   "Given a key and a collection returns a unique collection by that key"
+  [key coll]
   (let [groups (group-by key coll)]
     (map #(first (groups %)) (distinct (map key coll)))))
