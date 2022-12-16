@@ -26,3 +26,25 @@
 
 (def tabs
   {:padding-left screen-padding})
+
+(def tabs-container
+  {:flex       1
+   :align-self :stretch})
+
+(def filter-toggle-container
+  {:flex-grow     0
+   :margin-left   16
+   :padding-right screen-padding})
+
+(def tabs-and-filter-container
+  {:flex-direction   :row
+   :padding-vertical 12})
+
+(def empty-container
+  {:align-items      :center
+   :flex             1
+   :justify-content  :center
+   :padding-vertical 12})
+
+(def empty-title
+  {:padding-bottom 2})

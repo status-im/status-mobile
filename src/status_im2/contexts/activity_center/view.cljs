@@ -28,14 +28,11 @@
 
 (defn empty-tab
   []
-  [rn/view {:style {:align-items         :center
-                    :flex                1
-                    :justify-content     :center
-                    :accessibility-label :empty-notifications
-                    :padding-vertical    12}}
+  [rn/view {:style               style/empty-container
+            :accessibility-label :empty-notifications}
    [quo/icon :i/placeholder]
    [quo/text {:size   :paragraph-1
-              :style  {:padding-bottom 2}
+              :style  style/empty-title
               :weight :semi-bold}
     (i18n/label :t/empty-notifications-title)]
    [quo/text {:size :paragraph-2}
@@ -74,29 +71,24 @@
 
 (defn header
   []
-  (let [screen-padding 20]
-    [rn/view
-     [quo/button {:icon                true
-                  :type                :blur-bg
-                  :size                32
-                  :accessibility-label :close-activity-center
-                  :override-theme      :dark
-                  :style               style/header-button
-                  :on-press            #(rf/dispatch [:hide-popover])}
-      :i/close]
-     [quo/text {:size   :heading-1
-                :weight :semi-bold
-                :style  style/header-heading}
-      (i18n/label :t/notifications)]
-     [rn/view {:flex-direction   :row
-               :padding-vertical 12}
-      [rn/view {:flex       1
-                :align-self :stretch}
-       [tabs]]
-      [rn/view {:flex-grow     0
-                :margin-left   16
-                :padding-right screen-padding}
-       [filter-selector-read-toggle]]]]))
+  [rn/view
+   [quo/button {:icon                true
+                :type                :blur-bg
+                :size                32
+                :accessibility-label :close-activity-center
+                :override-theme      :dark
+                :style               style/header-button
+                :on-press            #(rf/dispatch [:hide-popover])}
+    :i/close]
+   [quo/text {:size   :heading-1
+              :weight :semi-bold
+              :style  style/header-heading}
+    (i18n/label :t/notifications)]
+   [rn/view {:style style/tabs-and-filter-container}
+    [rn/view {:style style/tabs-container}
+     [tabs]]
+    [rn/view {:style style/filter-toggle-container}
+     [filter-selector-read-toggle]]]])
 
 (defn render-notification
   [notification index]
