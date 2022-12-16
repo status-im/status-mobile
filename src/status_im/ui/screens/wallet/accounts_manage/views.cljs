@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.accounts-manage.views
-  (:require [status-im.utils.handlers :refer [>evt <sub]]
+  (:require [utils.re-frame :as rf]
             [status-im.ui.components.list.views :as list]
             [reagent.core :as reagent]
             [quo.core :as quo]
@@ -24,10 +24,10 @@
         :disabled            wallet
         :title               name
         :subtitle            (utils/get-shortened-checksum-address address)
-        :on-press            #(>evt [:wallet.accounts/save-account account {:hidden (not hidden)}])}])}))
+        :on-press            #(rf/dispatch [:wallet.accounts/save-account account {:hidden (not hidden)}])}])}))
 
 (defn manage []
-  (let [accounts (<sub [:multiaccount/accounts])]
+  (let [accounts (rf/sub [:multiaccount/accounts])]
     [list/flat-list
      {:key-fn    :address
       :data      accounts

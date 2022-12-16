@@ -13,7 +13,7 @@
    [status-im.ui.components.icons.icons :as icons]
    [status-im.ui.components.react :as react]
    [status-im.ui.screens.views :as views]
-   [status-im.utils.fx :as fx]
+   [utils.re-frame :as rf]
    [status-im.utils.platform :as platform]
    [taoensso.timbre :as log]))
 
@@ -182,7 +182,7 @@
    (reset! state/root-id @state/root-comp-id)
    (.setRoot Navigation (clj->js (get (roots/roots) new-root-id)))))
 
-(fx/defn set-multiaccount-root
+(rf/defn set-multiaccount-root
   {:events [::set-multiaccount-root]}
   [{:keys [db]}]
   (log/debug :set-multiaccounts-root)
@@ -426,7 +426,7 @@
 
 ;; change view-id if it is still same after component is disappeared
 ;; https://github.com/wix/react-native-navigation/issues/5744#issuecomment-563226820
-(fx/defn view-disappeared
+(rf/defn view-disappeared
   {:events [::view-disappeared]}
   [{:keys [db]} view-id]
   (when (= view-id (:view-id db))

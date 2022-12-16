@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.communities.channel-details
   (:require [quo.core :as quo]
-            [status-im.utils.handlers :refer [>evt <sub]]
+            [utils.re-frame :as rf]
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.i18n.i18n :as i18n]
             [clojure.string :as string]
@@ -8,28 +8,28 @@
             [re-frame.core :as re-frame]))
 
 (defn view []
-  (let [{:keys [chat-id]} (<sub [:get-screen-params])]
+  (let [{:keys [chat-id]} (rf/sub [:get-screen-params])]
     (fn []
-      (let [current-chat (<sub [:chat-by-id chat-id])
+      (let [current-chat (rf/sub [:chat-by-id chat-id])
             {:keys [chat-name color description community-id emoji]} current-chat
-            {:keys [position]} (<sub [:chats/community-chat-by-id community-id chat-id])
-            category (<sub [:chats/category-by-chat-id community-id chat-id])
-            {:keys [admin]} (<sub [:communities/community community-id])
-            pinned-messages (<sub [:chats/pinned chat-id])]
+            {:keys [position]} (rf/sub [:chats/community-chat-by-id community-id chat-id])
+            category (rf/sub [:chats/category-by-chat-id community-id chat-id])
+            {:keys [admin]} (rf/sub [:communities/community community-id])
+            pinned-messages (rf/sub [:chats/pinned chat-id])]
         [quo/animated-header {:left-accessories  [{:icon                :main-icons/arrow-left
                                                    :accessibility-label :back-button
-                                                   :on-press            #(>evt [:navigate-back])}]
+                                                   :on-press            #(rf/dispatch [:navigate-back])}]
                               :right-accessories (when admin [{:icon                :edit
                                                                :accessibility-label :invite-button
-                                                               :on-press            #(>evt [::communities/edit-channel-pressed
-                                                                                            community-id
-                                                                                            chat-name
-                                                                                            description
-                                                                                            color
-                                                                                            emoji
-                                                                                            chat-id
-                                                                                            (:id category)
-                                                                                            position])}])
+                                                               :on-press            #(rf/dispatch [::communities/edit-channel-pressed
+                                                                                                   community-id
+                                                                                                   chat-name
+                                                                                                   description
+                                                                                                   color
+                                                                                                   emoji
+                                                                                                   chat-id
+                                                                                                   (:id category)
+                                                                                                   position])}])
                               :extended-header   (profile-header/extended-header
                                                   {:title    chat-name
                                                    :color    color
@@ -43,9 +43,9 @@
             [quo/separator {:style {:margin-vertical 8}}]
             (when admin
               [quo/list-item {:title          (i18n/label :t/category)
-                              :on-press       #(>evt [:open-modal :select-category {:chat current-chat
-                                                                                    :category category
-                                                                                    :community-id community-id}])
+                              :on-press       #(rf/dispatch [:open-modal :select-category {:chat current-chat
+                                                                                           :category category
+                                                                                           :community-id community-id}])
                               :chevron        true
                               :accessory      :text
                               :accessory-text (if category

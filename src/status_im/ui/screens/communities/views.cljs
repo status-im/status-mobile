@@ -5,7 +5,7 @@
    [status-im.utils.core :as utils]
    [status-im.constants :as constants]
    [status-im.communities.core :as communities]
-   [status-im.utils.handlers :refer [>evt <sub]]
+   [utils.re-frame :as rf]
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.copyable-text :as copyable-text]
    [status-im.ui.components.topbar :as topbar]
@@ -17,11 +17,11 @@
    [quo.design-system.colors :as quo.colors]))
 
 (defn hide-sheet-and-dispatch [event]
-  (>evt [:bottom-sheet/hide])
-  (>evt event))
+  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch event))
 
 (defn community-unviewed-count [id]
-  (let [{:keys [unviewed-messages-count unviewed-mentions-count]} (<sub [:communities/unviewed-counts id])]
+  (let [{:keys [unviewed-messages-count unviewed-mentions-count]} (rf/sub [:communities/unviewed-counts id])]
     (cond
       (pos? unviewed-mentions-count)
       [badge/message-counter unviewed-mentions-count]
@@ -41,12 +41,12 @@
                                                     {:border-bottom-color (quo.colors/get-color :ui-01)
                                                      :border-bottom-width 1}))
                             :on-press      (fn []
-                                             (>evt [:communities/load-category-states id])
-                                             (>evt [:dismiss-keyboard])
-                                             (>evt [:navigate-to :community {:community-id id}]))
-                            :on-long-press #(>evt [:bottom-sheet/show-sheet
-                                                   {:content (fn []
-                                                               [community/community-actions community])}])}
+                                             (rf/dispatch [:communities/load-category-states id])
+                                             (rf/dispatch [:dismiss-keyboard])
+                                             (rf/dispatch [:navigate-to :community {:community-id id}]))
+                            :on-long-press #(rf/dispatch [:bottom-sheet/show-sheet
+                                                          {:content (fn []
+                                                                      [community/community-actions community])}])}
    [:<>
     [react/view {:top 12 :left 16 :position :absolute}
      [communities.icon/community-icon community]]
@@ -95,8 +95,8 @@
                                      (i18n/label-pluralize members-count :t/community-members {:count members-count})
                                      (i18n/label :t/open-membership))]]
       :on-press                  #(do
-                                    (>evt [:dismiss-keyboard])
-                                    (>evt [:navigate-to :community {:community-id id}]))}]))
+                                    (rf/dispatch [:dismiss-keyboard])
+                                    (rf/dispatch [:navigate-to :community {:community-id id}]))}]))
 
 (defn communities-actions []
   [:<>
@@ -124,28 +124,28 @@
     :render-fn                      community-list-item}])
 
 (defn communities []
-  (let [communities (<sub [:communities/section-list])
-        communities-enabled? (<sub [:communities/enabled?])]
+  (let [communities (rf/sub [:communities/section-list])
+        communities-enabled? (rf/sub [:communities/enabled?])]
     [:<>
      [topbar/topbar (cond-> {:title (i18n/label :t/communities)}
                       communities-enabled?
                       (assoc :right-accessories [{:icon                :main-icons/more
                                                   :accessibility-label :chat-menu-button
                                                   :on-press
-                                                  #(>evt [:bottom-sheet/show-sheet
-                                                          {:content (fn []
-                                                                      [communities-actions])
-                                                           :height  256}])}]))]
+                                                  #(rf/dispatch [:bottom-sheet/show-sheet
+                                                                 {:content (fn []
+                                                                             [communities-actions])
+                                                                  :height  256}])}]))]
      [communities-list communities]
      (when communities-enabled?
        [toolbar/toolbar
         {:show-border? true
-         :center       [quo/button {:on-press #(>evt [::communities/open-create-community])
+         :center       [quo/button {:on-press #(rf/dispatch [::communities/open-create-community])
                                     :type     :secondary}
                         (i18n/label :t/create-community)]}])]))
 
 (defn export-community []
-  (let [{:keys [community-key]} (<sub [:popover/popover])]
+  (let [{:keys [community-key]} (rf/sub [:popover/popover])]
     [react/view {:style {:padding-top        16
                          :padding-horizontal 16}}
      [quo/text {:size  :x-large

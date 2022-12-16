@@ -6,7 +6,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.i18n.i18n :as i18n]
-            [status-im.utils.handlers :refer [<sub]]
+            [utils.re-frame :as rf]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
@@ -266,10 +266,10 @@
          (i18n/label :t/confirm)]}]]]))
 
 (defn recovery-phrase-confirm-word []
-  (let [word (<sub [:keycard-recovery-phrase-word])]
+  (let [word (rf/sub [:keycard-recovery-phrase-word])]
     (fn []
-      (let [input-word   (<sub [:keycard-recovery-phrase-input-word])
-            error        (<sub [:keycard-recovery-phrase-confirm-error])
+      (let [input-word   (rf/sub [:keycard-recovery-phrase-input-word])
+            error        (rf/sub [:keycard-recovery-phrase-confirm-error])
             {:keys [idx]} word]
         [react/keyboard-avoiding-view {:style styles/container
                                        :ignore-offset true}

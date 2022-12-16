@@ -4,7 +4,7 @@
             [quo2.components.drawers.action-drawers :as quo2]
             [quo2.components.buttons.button :as button]
             [quo2.foundations.colors :as colors]
-            [status-im.utils.handlers :refer [>evt]]
+            [utils.re-frame :as rf]
             [reagent.core :as reagent]))
 
 (def descriptor [{:label   "Muted?"
@@ -54,9 +54,9 @@
         [preview/customizer state descriptor]
         [button/button
          {:style {:margin-horizontal 40}
-          :on-press  #(>evt [:bottom-sheet/show-sheet
-                             {:content (constantly  (render-action-sheet state))
-                              :content-height 300}])}
+          :on-press  #(rf/dispatch [:bottom-sheet/show-sheet
+                                    {:content (constantly  (render-action-sheet state))
+                                     :content-height 300}])}
          "See in bottom sheet"]
         [rn/view {:padding-vertical 60}
          (render-action-sheet state)]]])))

@@ -1,7 +1,7 @@
 (ns status-im.ui2.screens.chat.components.received-cr-item
   (:require [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [utils.re-frame :as rf]
             [quo2.components.avatars.user-avatar :as user-avatar]
             [quo2.foundations.typography :as typography]
             [clojure.string :as string]
@@ -12,7 +12,7 @@
 
 (defn received-cr-item [{:keys [chat-id message timestamp read]}]
   (let [no-ens-name  (string/blank? (get-in message [:content :ens-name]))
-        display-name (first (<sub [:contacts/contact-two-names-by-identity chat-id]))]
+        display-name (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))]
     [rn/view {:style {:flex-direction :row
                       :padding-top    8
                       :margin-top     4
@@ -51,7 +51,7 @@
       [rn/view {:style {:margin-top     12
                         :flex-direction :row}}
        [rn/touchable-opacity {:accessibility-label :decline-cr
-                              :on-press            #(>evt [:contact-requests.ui/decline-request (:message-id message)])
+                              :on-press            #(rf/dispatch [:contact-requests.ui/decline-request (:message-id message)])
                               :active-opacity      1
                               :style               {:background-color   (colors/theme-colors colors/danger-50 colors/danger-60)
                                                     :justify-content    :center
@@ -62,7 +62,7 @@
                                                     :padding-horizontal 8}}
         [rn/text {:style (merge typography/font-medium typography/paragraph-2 {:color colors/white})} (i18n/label :t/decline)]]
        [rn/touchable-opacity {:accessibility-label :accept-cr
-                              :on-press            #(>evt [:contact-requests.ui/accept-request (:message-id message)])
+                              :on-press            #(rf/dispatch [:contact-requests.ui/accept-request (:message-id message)])
                               :active-opacity      1
                               :style               {:background-color   (colors/theme-colors colors/success-50 colors/success-60)
                                                     :justify-content    :center

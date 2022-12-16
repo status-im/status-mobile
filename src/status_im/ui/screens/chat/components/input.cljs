@@ -6,7 +6,7 @@
             [quo.components.text :as text]
             [quo.design-system.colors :as colors]
             [status-im.ui.screens.chat.components.style :as styles]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.ui.screens.chat.components.reply :as reply]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.chat.constants :as chat.constants]
@@ -187,7 +187,7 @@
     (when platform/ios?
       (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
-(fx/defn set-input-text
+(rf/defn set-input-text
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
   {:events [:chat.ui.input/set-chat-input-text]}

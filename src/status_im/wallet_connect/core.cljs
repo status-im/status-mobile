@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.signing.core :as signing]
             [status-im.utils.wallet-connect :as wallet-connect]
             [status-im.browser.core :as browser]
@@ -11,7 +11,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.types :as types]))
 
-(fx/defn proposal-handler
+(rf/defn proposal-handler
   {:events [:wallet-connect/proposal]}
   [{:keys [db] :as cofx} request-event]
   (let [proposal (types/js->clj request-event)
@@ -20,7 +20,7 @@
     {:db (assoc db :wallet-connect/proposal proposal :wallet-connect/proposal-metadata metadata)
      :show-wallet-connect-sheet nil}))
 
-(fx/defn session-connected
+(rf/defn session-connected
   {:events [:wallet-connect/created]}
   [{:keys [db]} session]
   (let [session (merge (types/js->clj session) {:wc-version 2})
@@ -29,14 +29,14 @@
     {:show-wallet-connect-success-sheet nil
      :db (assoc db :wallet-connect/session-connected session :wallet-connect/sessions (types/js->clj (.-values (.-session client))))}))
 
-(fx/defn manage-app
+(rf/defn manage-app
   {:events [:wallet-connect/manage-app]}
   [{:keys [db]} session]
   (let [session (types/js->clj session)]
     {:db (assoc db :wallet-connect/session-managed session :wallet-connect/showing-app-management-sheet? true)
      :show-wallet-connect-app-management-sheet nil}))
 
-(fx/defn request-handler
+(rf/defn request-handler
   {:events [:wallet-connect/request]}
   [{:keys [db] :as cofx} request-event]
   (let [request (types/js->clj request-event)
@@ -48,7 +48,7 @@
     {:db (assoc db :wallet-connect/pending-requests new-pending-requests)
      :dispatch [:wallet-connect/request-received request]}))
 
-(fx/defn request-handler-test
+(rf/defn request-handler-test
   {:events [:wallet-connect/request-test]}
   [{:keys [db] :as cofx}]
   {:show-wallet-connect-sheet nil})
@@ -115,7 +115,7 @@
  (fn [[client response]]
    (.respond client (clj->js response))))
 
-(fx/defn approve-proposal
+(rf/defn approve-proposal
   {:events [:wallet-connect/approve-proposal]}
   [{:keys [db]} account]
   (let [client (get db :wallet-connect/client)
@@ -135,7 +135,7 @@
     {:hide-wallet-connect-sheet nil
      :wc-2-client-approve-proposal [client proposal response]}))
 
-(fx/defn reject-proposal
+(rf/defn reject-proposal
   {:events [:wallet-connect/reject-proposal]}
   [{:keys [db]} account]
   (let [client (get db :wallet-connect/client)
@@ -143,7 +143,7 @@
     {:hide-wallet-connect-sheet nil
      :wc-2-client-reject-proposal client}))
 
-(fx/defn change-session-account
+(rf/defn change-session-account
   {:events [:wallet-connect/change-session-account]}
   [{:keys [db]} topic account]
   (let [client (get db :wallet-connect/client)
@@ -160,7 +160,7 @@
      :hide-wallet-connect-app-management-sheet nil
      :wc-2-change-session [client topic accounts]}))
 
-(fx/defn disconnect-session
+(rf/defn disconnect-session
   {:events [:wallet-connect/disconnect]}
   [{:keys [db]} topic]
   (let [client (get db :wallet-connect/client)]
@@ -171,7 +171,7 @@
              (assoc :wallet-connect/sessions (types/js->clj (.-values (.-session client))))
              (dissoc :wallet-connect/session-managed))}))
 
-(fx/defn pair-session
+(rf/defn pair-session
   {:events [:wallet-connect/pair]}
   [{:keys [db]} {:keys [data]}]
   (let [client (get db :wallet-connect/client)]
@@ -179,13 +179,13 @@
      :dispatch [:navigate-back]
      :wc-2-pair [client data]}))
 
-(fx/defn wallet-connect-client-initate
+(rf/defn wallet-connect-client-initate
   {:events [:wallet-connect/client-init]}
   [{:keys [db] :as cofx} client]
   {:db (assoc db :wallet-connect/client client :wallet-connect/sessions (types/js->clj (.-values (.-session client))))
    :wc-2-subscribe-to-events client})
 
-(fx/defn update-sessions
+(rf/defn update-sessions
   {:events [:wallet-connect/update-sessions]}
   [{:keys [db] :as cofx}]
   (let [client (get db :wallet-connect/client)]
@@ -193,7 +193,7 @@
              (assoc :wallet-connect/sessions (types/js->clj (.-values (.-session client))))
              (dissoc :wallet-connect/session-managed))}))
 
-(fx/defn wallet-connect-complete-transaction
+(rf/defn wallet-connect-complete-transaction
   {:events [:wallet-connect.dapp/transaction-on-result]}
   [{:keys [db]} message-id topic result]
   (let [client (get db :wallet-connect/client)
@@ -204,7 +204,7 @@
     {:db (assoc db :wallet-connect/response response)
      :wc-2-respond [client response]}))
 
-(fx/defn wallet-connect-send-async
+(rf/defn wallet-connect-send-async
   [cofx {:keys [method params id] :as payload} message-id topic]
   (let [message?      (browser/web3-sign-message? method)
         dapps-address (get-in cofx [:db :multiaccount :dapps-address])
@@ -235,11 +235,11 @@
       (when (#{"eth_accounts" "eth_coinbase"} method)
         (wallet-connect-complete-transaction cofx message-id topic (if (= method "eth_coinbase") dapps-address [dapps-address]))))))
 
-(fx/defn wallet-connect-send-async-read-only
+(rf/defn wallet-connect-send-async-read-only
   [{:keys [db] :as cofx} {:keys [method] :as payload} message-id topic]
   (wallet-connect-send-async cofx payload message-id topic))
 
-(fx/defn process-request
+(rf/defn process-request
   {:events [:wallet-connect/request-received]}
   [{:keys [db] :as cofx} session-request]
   (let [pending-requests (get db :wallet-connect/pending-requests)

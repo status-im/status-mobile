@@ -1,7 +1,7 @@
 (ns status-im.chat.models.reactions
   (:require [status-im.constants :as constants]
             [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]
             [status-im.transport.message.protocol :as message.protocol]
             [status-im.data-store.reactions :as data-store.reactions]))
@@ -32,12 +32,12 @@
         (get-in db [:chats chat-id])]
     (>= deleted-at-clock-value clock-value)))
 
-(fx/defn receive-signal
+(rf/defn receive-signal
   [{:keys [db] :as cofx} reactions]
   (let [reactions (filter (partial earlier-than-deleted-at? cofx) reactions)]
     {:db (update db :reactions (process-reactions (:chats db)) reactions)}))
 
-(fx/defn load-more-reactions
+(rf/defn load-more-reactions
   {:events [:load-more-reactions]}
   [{:keys [db]} cursor chat-id]
   (when-let [session-id (get-in db [:pagination-info chat-id :messages-initialized?])]
@@ -48,7 +48,7 @@
      #(re-frame/dispatch [::reactions-loaded chat-id session-id %])
      #(log/error "failed loading reactions" chat-id %))))
 
-(fx/defn reactions-loaded
+(rf/defn reactions-loaded
   {:events [::reactions-loaded]}
   [{db :db}
    chat-id
@@ -64,19 +64,19 @@
 ;; Send reactions
 
 
-(fx/defn send-emoji-reaction
+(rf/defn send-emoji-reaction
   {:events [::send-emoji-reaction]}
   [{{:keys [current-chat-id]} :db :as cofx} reaction]
   (message.protocol/send-reaction cofx
                                   (update reaction :chat-id #(or % current-chat-id))))
 
-(fx/defn send-retract-emoji-reaction
+(rf/defn send-retract-emoji-reaction
   {:events [::send-emoji-reaction-retraction]}
   [{{:keys [current-chat-id]} :db :as cofx} reaction]
   (message.protocol/send-retract-reaction cofx
                                           (update reaction :chat-id #(or % current-chat-id))))
 
-(fx/defn receive-one
+(rf/defn receive-one
   {:events [::receive-one]}
   [{:keys [db]} reaction]
   {:db (update db :reactions (process-reactions (:chats db)) [reaction])})

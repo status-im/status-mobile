@@ -1,7 +1,7 @@
 (ns status-im.ui2.screens.chat.composer.input
   (:require [quo.react-native :as rn]
             [status-im.i18n.i18n :as i18n]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [utils.re-frame :as rf]
             [quo.design-system.colors :as quo.colors]
             [status-im.utils.utils :as utils.utils]
             [status-im.utils.platform :as platform]
@@ -67,7 +67,7 @@
 (defn on-text-change [val chat-id]
   (swap! input-texts assoc chat-id val)
   ;;we still store it in app-db for mentions, we don't have reactions in views
-  (>evt [:chat.ui/set-chat-input-text val]))
+  (rf/dispatch [:chat.ui/set-chat-input-text val]))
 
 (defn on-selection-change [timeout-id last-text-change mentionable-users args]
   (let [selection (.-selection ^js (.-nativeEvent ^js args))
@@ -80,10 +80,10 @@
       (reset!
        timeout-id
        (utils.utils/set-timeout
-        #(>evt [::mentions/on-selection-change
-                {:start start
-                 :end   end}
-                mentionable-users])
+        #(rf/dispatch [::mentions/on-selection-change
+                       {:start start
+                        :end   end}
+                       mentionable-users])
         50)))
     ;; NOTE(rasom): on Android we dispatch event only in case if there
     ;; was no text changes during last 50ms. `on-selection-change` is
@@ -92,10 +92,10 @@
     (when (and platform/android?
                (or (not @last-text-change)
                    (< 50 (- (js/Date.now) @last-text-change))))
-      (>evt [::mentions/on-selection-change
-             {:start start
-              :end   end}
-             mentionable-users]))))
+      (rf/dispatch [::mentions/on-selection-change
+                    {:start start
+                     :end   end}
+                    mentionable-users]))))
 
 (defn on-change [last-text-change timeout-id mentionable-users refs chat-id sending-image args]
   (let [text      (.-text ^js (.-nativeEvent ^js args))
@@ -120,7 +120,7 @@
     ;; NOTE(rasom): on iOS `on-change` is dispatched after `on-text-input`,
     ;; that's why mention suggestions are calculated on `on-change`
     (when platform/ios?
-      (>evt [::mentions/calculate-suggestions mentionable-users]))))
+      (rf/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
 (defn on-text-input [mentionable-users chat-id args]
   (let [native-event  (.-nativeEvent ^js args)
@@ -132,7 +132,7 @@
     (when (and (not (get @mentions-enabled? chat-id)) (string/index-of text "@"))
       (swap! mentions-enabled? assoc chat-id true))
 
-    (>evt
+    (rf/dispatch
      [::mentions/on-text-input
       {:new-text      text
        :previous-text previous-text
@@ -142,12 +142,12 @@
     ;; `on-change`, that's why mention suggestions are calculated
     ;; on `on-change`
     (when platform/android?
-      (>evt [::mentions/calculate-suggestions mentionable-users]))))
+      (rf/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
 (defn text-input [{:keys [set-active-panel refs chat-id sending-image on-content-size-change initial-value]}]
   (let [_                   (reset! text-input-ref (:text-input-ref refs))
-        cooldown-enabled?   (<sub [:chats/current-chat-cooldown-enabled?])
-        mentionable-users   (<sub [:chats/mentionable-users])
+        cooldown-enabled?   (rf/sub [:chats/current-chat-cooldown-enabled?])
+        mentionable-users   (rf/sub [:chats/mentionable-users])
         timeout-id          (reagent/atom nil)
         last-text-change    (reagent/atom nil)
         mentions-enabled?    (get @mentions-enabled? chat-id)
@@ -175,7 +175,7 @@
                              :on-selection-change      (partial on-selection-change timeout-id last-text-change mentionable-users)
                              :on-change                (partial on-change last-text-change timeout-id mentionable-users refs chat-id sending-image)
                              :on-text-input            (partial on-text-input mentionable-users chat-id)}
-        input-with-mentions (<sub [:chat/input-with-mentions])
+        input-with-mentions (rf/sub [:chat/input-with-mentions])
         children          (fn []
                             (if mentions-enabled?
                               (map-indexed
@@ -324,7 +324,7 @@
                                     (let [native-event (.-nativeEvent event)
                                           native-event (types/js->clj native-event)
                                           {:keys [eventType content selectionStart selectionEnd]} native-event
-                                          full-text    (:input-text (<sub [:chats/current-chat-inputs]))]
+                                          full-text    (:input-text (rf/sub [:chats/current-chat-inputs]))]
                                       (on-menu-item-touched {:first-level       first-level
                                                              :event-type        eventType
                                                              :content           content

@@ -8,10 +8,10 @@
             [status-im.chat.models.message :as models.message]
             [status-im.chat.models.link-preview :as link.preview]
             [status-im.visibility-status-updates.core :as visibility-status-updates]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
-(fx/defn status-node-started
+(rf/defn status-node-started
   [{db :db :as cofx} {:keys [error]}]
   (log/debug "[signals] status-node-started"
              "error" error)
@@ -34,17 +34,17 @@
       (assoc :dispatch [:navigate-to :login]))
     (login/multiaccount-login-success cofx)))
 
-(fx/defn summary
+(rf/defn summary
   [{:keys [db] :as cofx} peers-summary]
   (let [previous-summary (:peers-summary db)
         peers-count      (count peers-summary)]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (assoc db
                           :peers-summary peers-summary
                           :peers-count peers-count)}
               (visibility-status-updates/peers-summary-change peers-count))))
 
-(fx/defn wakuv2-peer-stats
+(rf/defn wakuv2-peer-stats
   [{:keys [db]} peer-stats]
   (let [previous-stats (:peer-stats db)]
     {:db (assoc db :peer-stats peer-stats
@@ -54,7 +54,7 @@
   (log/info "local pairing signal received"
             {:signal-type signal-type}))
 
-(fx/defn process
+(rf/defn process
   {:events [:signals/signal-received]}
   [{:keys [db] :as cofx} event-str]
   ;; We only convert to clojure when strictly necessary or we know it

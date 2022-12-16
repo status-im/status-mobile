@@ -11,7 +11,7 @@
             [quo.design-system.colors :as colors]
             [status-im.utils.platform :as platform]
             [status-im.communities.core :as communities]
-            [status-im.utils.handlers :refer [>evt <sub]]
+            [utils.re-frame :as rf]
             [status-im.ui.components.icons.icons :as icons]
             [quo2.components.community.style :as styles]
             [status-im.ui.components.topbar :as topbar]
@@ -28,14 +28,14 @@
    {:title               (i18n/label :t/delete-confirmation)
     :content             (i18n/label :t/delete-chat-confirmation)
     :confirm-button-text (i18n/label :t/delete)
-    :on-accept           #(>evt [:delete-community-chat community-id chat-id])}))
+    :on-accept           #(rf/dispatch [:delete-community-chat community-id chat-id])}))
 
 (defn show-delete-category-confirmation [community-id category-id]
   (utils/show-confirmation
    {:title               (i18n/label :t/delete-confirmation)
     :content             (i18n/label :t/delete-category-confirmation)
     :confirm-button-text (i18n/label :t/delete)
-    :on-accept           #(>evt [:delete-community-category community-id category-id])}))
+    :on-accept           #(rf/dispatch [:delete-community-category community-id category-id])}))
 
 (defn categories-tab? []
   (let [{:keys [tab]} @state]
@@ -117,14 +117,14 @@
         chat-id                                       (string/replace id community-id "")]
     (when-not (and (= new-position position) (= new-category categoryID))
       (update-local-atom data-js)
-      (>evt [::communities/reorder-community-category-chat
-             community-id new-category chat-id new-position]))))
+      (rf/dispatch [::communities/reorder-community-category-chat
+                    community-id new-category chat-id new-position]))))
 
 (defn on-drag-end-category [from to data-js]
   (let [{:keys [id community-id position]} (get @data from)]
     (when (and (< to (count @data)) (not= position to) (not= id ""))
       (update-local-atom data-js)
-      (>evt [::communities/reorder-community-category community-id id to]))))
+      (rf/dispatch [::communities/reorder-community-category community-id id to]))))
 
 (defn on-drag-end-fn [from to data-js]
   (if (categories-tab?)
@@ -160,10 +160,10 @@
       [tabs/tab-button state :categories (i18n/label :t/edit-categories) (= tab :categories)]]]))
 
 (defn view []
-  (let [{:keys [community-id]} (<sub [:get-screen-params])
+  (let [{:keys [community-id]} (rf/sub [:get-screen-params])
         {:keys [id name images members permissions color]}
-        (<sub [:communities/community community-id])
-        sorted-categories (<sub [:communities/sorted-categories community-id])
+        (rf/sub [:communities/community community-id])
+        sorted-categories (rf/sub [:communities/sorted-categories community-id])
         categories        (if (categories-tab?)
                             sorted-categories
                             (conj sorted-categories
@@ -171,7 +171,7 @@
                                    :position     (count sorted-categories)
                                    :name         (i18n/label :t/none)
                                    :community-id community-id}))
-        chats             (<sub [:chats/sorted-categories-by-community-id community-id])]
+        chats             (rf/sub [:chats/sorted-categories-by-community-id community-id])]
     (reset-data categories chats)
     [:<>
      [topbar/topbar

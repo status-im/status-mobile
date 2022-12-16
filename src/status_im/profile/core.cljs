@@ -1,6 +1,6 @@
 (ns status-im.profile.core
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.utils.universal-links.utils :as universal-links]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
@@ -40,19 +40,19 @@
    (let [link (universal-links/generate-link :user :external contact-code)]
      (list-selection/open-share {:message link}))))
 
-(fx/defn finish-success
+(rf/defn finish-success
   {:events [:my-profile/finish-success]}
   [{:keys [db] :as cofx}]
   {:db (update db :my-profile/seed assoc :step :finish :error nil :word nil)})
 
-(fx/defn finish
+(rf/defn finish
   {:events [:my-profile/finish]}
   [cofx]
   (multiaccounts.update/clean-seed-phrase
    cofx
    {:on-success #(re-frame/dispatch [:my-profile/finish-success])}))
 
-(fx/defn enter-two-random-words
+(rf/defn enter-two-random-words
   {:events [:my-profile/enter-two-random-words]}
   [{:keys [db]}]
   (let [{:keys [mnemonic]} (:multiaccount db)
@@ -61,22 +61,22 @@
                                      :first-word  (first shuffled-mnemonic)
                                      :second-word (second shuffled-mnemonic)})}))
 
-(fx/defn set-step
+(rf/defn set-step
   {:events [:my-profile/set-step]}
   [{:keys [db]} step]
   {:db (update db :my-profile/seed assoc :step step :error nil :word nil)})
 
-(fx/defn copy-to-clipboard
+(rf/defn copy-to-clipboard
   {:events [:copy-to-clipboard]}
   [_ value]
   {:copy-to-clipboard value})
 
-(fx/defn show-tooltip
+(rf/defn show-tooltip
   {:events [:show-tooltip]}
   [_ tooltip-id]
   {:show-tooltip tooltip-id})
 
-(fx/defn share-profile-link
+(rf/defn share-profile-link
   {:events [:profile/share-profile-link]}
   [_ value]
   {:profile/share-profile-link value})

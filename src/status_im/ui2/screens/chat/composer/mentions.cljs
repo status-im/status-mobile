@@ -6,12 +6,12 @@
             [quo.components.text :as text]
             [quo.react-native :as rn]
             [quo.react]
-            [status-im.utils.handlers :refer [>evt]]))
+            [utils.re-frame :as rf]))
 
 (defn mention-item
   [[public-key {:keys [alias name nickname] :as user}] _ _ text-input-ref]
   (let [ens-name? (not= alias name)]
-    [rn/touchable-opacity {:on-press #(>evt [:chat.ui/select-mention text-input-ref user])}
+    [rn/touchable-opacity {:on-press #(rf/dispatch [:chat.ui/select-mention text-input-ref user])}
      ;;TODO quo2 item should be used
      [list-item/list-item
       (cond-> {:icon              [photos/member-photo public-key]

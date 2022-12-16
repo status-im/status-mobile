@@ -11,7 +11,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui2.screens.chat.composer.style :as styles]
-            [status-im.utils.handlers :refer [<sub >evt]]))
+            [utils.re-frame :as rf]))
 
 (defn get-quoted-text-with-mentions [parsed-text]
   (string/join
@@ -21,7 +21,7 @@
              (get-quoted-text-with-mentions children)
 
              (= type "mention")
-             (<sub [:contacts/contact-name-by-identity literal])
+             (rf/sub [:contacts/contact-name-by-identity literal])
 
              (seq children)
              (get-quoted-text-with-mentions children)
@@ -59,8 +59,8 @@
     (i18n/label :t/message-deleted)]])
 
 (defn reply-message [{:keys [from identicon content-type contentType parsed-text content deleted? deleted-for-me?]} in-chat-input? pin?]
-  (let [contact-name       (<sub [:contacts/contact-name-by-identity from])
-        current-public-key (<sub [:multiaccount/public-key])
+  (let [contact-name       (rf/sub [:contacts/contact-name-by-identity from])
+        current-public-key (rf/sub [:multiaccount/public-key])
         content-type       (or content-type contentType)]
     [rn/view {:style {:flex-direction      :row
                       :height              (when-not pin? 24)
@@ -104,7 +104,7 @@
                             :size                24
                             :type                :outline
                             :accessibility-label :reply-cancel-button
-                            :on-press            #(>evt [:chat.ui/cancel-message-reply])}
+                            :on-press            #(rf/dispatch [:chat.ui/cancel-message-reply])}
         ;;TODO quo2 icon should be used
         [icons/icon :main-icons/close {:width  16
                                        :height 16

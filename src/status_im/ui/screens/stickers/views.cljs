@@ -6,7 +6,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.stickers.styles :as styles]
             [status-im.utils.money :as money]
-            [status-im.utils.handlers :refer [<sub]]
+            [utils.re-frame :as rf]
             [status-im.ui.components.fast-image :as fast-image])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -18,8 +18,8 @@
                           :source {:uri (cache uri)}}])
 
 (defn price-badge [_]
-  (let [chain (<sub [:ethereum/chain-keyword])
-        balance (<sub [:balance-default])]
+  (let [chain (rf/sub [:ethereum/chain-keyword])
+        balance (rf/sub [:balance-default])]
     (fn [{:keys [id price pending owned installed]}]
       (let [snt (if (= :mainnet chain) (:SNT balance) (:STT balance))
             price (money/bignumber price)

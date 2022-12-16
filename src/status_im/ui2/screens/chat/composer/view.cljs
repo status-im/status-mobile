@@ -7,7 +7,7 @@
             [status-im.ui2.screens.chat.composer.style :as styles]
             [status-im.ui2.screens.chat.composer.reply :as reply]
             [quo2.components.buttons.button :as quo2.button]
-            [status-im.utils.handlers :refer [<sub]]
+            [utils.re-frame :as rf]
             [status-im.ui2.screens.chat.composer.input :as input]
             [oops.core :refer [oget]]
             [quo.react]
@@ -20,7 +20,7 @@
             [status-im.ui2.screens.chat.composer.edit.view :as edit]))
 
 (defn calculate-y [context min-y max-y added-value chat-id]
-  (let [input-text               (:input-text (get (<sub [:chat/inputs]) chat-id))
+  (let [input-text               (:input-text (get (rf/sub [:chat/inputs]) chat-id))
         num-lines                (count (string/split input-text "\n"))]
     (if (= (:state @context) :max)
       (do (swap! context assoc :state :max) max-y)
@@ -31,7 +31,7 @@
           (do (swap! context assoc :state :min) min-y))))))
 
 (defn calculate-y-with-mentions [y max-y max-height chat-id suggestions reply]
-  (let [input-text               (:input-text (get (<sub [:chat/inputs]) chat-id))
+  (let [input-text               (:input-text (get (rf/sub [:chat/inputs]) chat-id))
         num-lines                (count (string/split input-text "\n"))
         text-height              (* num-lines 22)
         mentions-height          (min 132 (+ 16 (* 46 (- (count suggestions) 1))))
@@ -143,9 +143,9 @@
        (fn []
          [:f>
           (fn []
-            (let [reply                                    (<sub [:chats/reply-message])
-                  edit                                     (<sub [:chats/edit-message])
-                  suggestions                              (<sub [:chat/mention-suggestions])
+            (let [reply                                    (rf/sub [:chats/reply-message])
+                  edit                                     (rf/sub [:chats/edit-message])
+                  suggestions                              (rf/sub [:chat/mention-suggestions])
                   {window-height :height}                  (rn/use-window-dimensions)
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
                   max-y                                    (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets) (:status-bar-height @navigation-const)) ; 360 - default height

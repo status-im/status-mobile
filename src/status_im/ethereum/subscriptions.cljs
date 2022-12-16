@@ -3,17 +3,17 @@
             [status-im.wallet.db :as wallet]
             [status-im.wallet.core :as wallet.core]
             [status-im.ethereum.transactions.core :as transactions]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
-(fx/defn new-transfers
+(rf/defn new-transfers
   [cofx block-number accounts]
   (log/debug "[wallet-subs] new-transfers"
              "accounts" accounts
              "block" block-number)
   (transactions/check-watched-transactions cofx))
 
-(fx/defn recent-history-fetching-started
+(rf/defn recent-history-fetching-started
   [{:keys [db]} accounts]
   (log/debug "[wallet-subs] recent-history-fetching-started"
              "accounts" accounts)
@@ -25,7 +25,7 @@
       event
       (assoc :dispatch event))))
 
-(fx/defn recent-history-fetching-ended
+(rf/defn recent-history-fetching-ended
   [{:keys [db]} {:keys [accounts blockNumber]}]
   (log/debug "[wallet-subs] recent-history-fetching-ended"
              "accounts" accounts
@@ -53,18 +53,18 @@
     :before-block blockNumber
     :limit        20}})
 
-(fx/defn fetching-error
+(rf/defn fetching-error
   [{:keys [db] :as cofx} {:keys [message]}]
-  (fx/merge
+  (rf/merge
    cofx
    {:db               (assoc db :wallet/fetching-error message)}
    (wallet.core/after-checking-history)))
 
-(fx/defn non-archival-node-detected
+(rf/defn non-archival-node-detected
   [{:keys [db]} _]
   {:db (assoc db :wallet/non-archival-node true)})
 
-(fx/defn new-wallet-event
+(rf/defn new-wallet-event
   [cofx {:keys [type blockNumber accounts] :as event}]
   (log/info "[wallet-subs] new-wallet-event"
             "event-type" type

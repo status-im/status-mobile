@@ -5,7 +5,7 @@
             [re-frame.core :as re-frame]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.utils.handlers :refer [<sub >evt]]
+            [utils.re-frame :as rf]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.icons.icons :as icons]
@@ -15,8 +15,8 @@
             [quo.components.animated.pressable :as animation]))
 
 (defn hide-sheet-and-dispatch [event]
-  (>evt [:bottom-sheet/hide])
-  (>evt event))
+  (rf/dispatch [:bottom-sheet/hide])
+  (rf/dispatch event))
 
 (defn request-actions [community-id request-id]
   [react/view {:flex-direction :row}
@@ -32,7 +32,7 @@
 
 (defn render-request [{:keys [id public-key]} _ _ {:keys [community-id
                                                           can-manage-users?]}]
-  (let [member (or (<sub [:contacts/contact-by-identity public-key])
+  (let [member (or (rf/sub [:contacts/contact-by-identity public-key])
                    {:public-key public-key})]
     [quo/list-item
      {:title               (multiaccounts/displayed-name member)
@@ -46,10 +46,10 @@
       :on-press            #(re-frame/dispatch [:chat.ui/show-profile public-key])}]))
 
 (defn requests-to-join []
-  (let [{:keys [community-id]} (<sub [:get-screen-params])]
+  (let [{:keys [community-id]} (rf/sub [:get-screen-params])]
     (fn []
-      (let [requests (<sub [:communities/requests-to-join-for-community community-id])
-            {:keys [can-manage-users?]}    (<sub [:communities/community community-id])]
+      (let [requests (rf/sub [:communities/requests-to-join-for-community community-id])
+            {:keys [can-manage-users?]}    (rf/sub [:communities/community community-id])]
         [:<>
          [topbar/topbar {:title    (i18n/label :t/community-requests-to-join-title)
                          :subtitle (str (count requests))}]
@@ -63,5 +63,5 @@
   (reagent/create-class
    {:display-name "community-requests-to-join-view"
     :component-did-mount (fn []
-                           (communities/fetch-requests-to-join! (get (<sub [:get-screen-params]) :community-id)))
+                           (communities/fetch-requests-to-join! (get (rf/sub [:get-screen-params]) :community-id)))
     :reagent-render requests-to-join}))

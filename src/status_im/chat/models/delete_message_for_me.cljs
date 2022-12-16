@@ -3,7 +3,7 @@
             [status-im.chat.models.message-list :as message-list]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
 (defn- update-db-clear-undo-timer
@@ -39,7 +39,7 @@
                  :deleted-for-me-undoable-till)
       (update-db-clear-undo-timer db chat-id message-id))))
 
-(fx/defn delete
+(rf/defn delete
   "Delete message for me now locally and broadcast after undo time limit timeout"
   {:events [:chat.ui/delete-message-for-me]}
   [{:keys [db]} {:keys [chat-id message-id]} undo-time-limit-ms]
@@ -53,7 +53,7 @@
                                          :message-id message-id}]
                              :ms       undo-time-limit-ms}])))
 
-(fx/defn undo
+(rf/defn undo
   {:events [:chat.ui/undo-delete-message-for-me]}
   [{:keys [db]} {:keys [chat-id message-id]}]
   (when (get-in db [:messages chat-id message-id])
@@ -61,7 +61,7 @@
      {:db (update-db-undo-locally db chat-id message-id)}
      chat-id)))
 
-(fx/defn delete-and-sync
+(rf/defn delete-and-sync
   {:events [:chat.ui/delete-message-for-me-and-sync]}
   [{:keys [db]} {:keys [message-id chat-id]}]
   (when (get-in db [:messages chat-id message-id])
@@ -80,9 +80,9 @@
        (map (fn [message] {:chat-id chat-id :message-id (first message)}))
        (concat acc)))
 
-(fx/defn sync-all
+(rf/defn sync-all
   "Get all deleted-for-me messages that not yet synced with status-go and sync them"
   {:events [:chat.ui/sync-all-deleted-for-me-messages]}
   [{:keys [db] :as cofx}]
   (let [pending-sync-messages (reduce-kv filter-pending-sync-messages [] (:messages db))]
-    (apply fx/merge cofx (map delete-and-sync pending-sync-messages))))
+    (apply rf/merge cofx (map delete-and-sync pending-sync-messages))))

@@ -4,7 +4,7 @@
             [status-im.native-module.core :as status]
             [status-im.popover.core :as popover]
             [quo.design-system.colors :as colors]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
@@ -105,12 +105,12 @@
           (get-supported callback)
           (callback nil)))))))
 
-(fx/defn set-supported-biometric-auth
+(rf/defn set-supported-biometric-auth
   {:events [:init.callback/get-supported-biometric-auth-success]}
   [{:keys [db]} supported-biometric-auth]
   {:db (assoc db :supported-biometric-auth supported-biometric-auth)})
 
-(fx/defn authenticate
+(rf/defn authenticate
   [_ cb options]
   {:biometric-auth/authenticate [cb options]})
 
@@ -119,10 +119,10 @@
  (fn [[cb options]]
    (authenticate-fx #(cb %) options)))
 
-(fx/defn update-biometric [{db :db :as cofx} biometric-auth?]
+(rf/defn update-biometric [{db :db :as cofx} biometric-auth?]
   (let [key-uid (or (get-in db [:multiaccount :key-uid])
                     (get-in db [:multiaccounts/login :key-uid]))]
-    (fx/merge cofx
+    (rf/merge cofx
               (keychain/save-auth-method
                key-uid
                (if biometric-auth?
@@ -131,7 +131,7 @@
               #(when-not biometric-auth?
                  {:keychain/clear-user-password key-uid}))))
 
-(fx/defn biometric-auth-switched
+(rf/defn biometric-auth-switched
   {:events [:multiaccounts.ui/biometric-auth-switched]}
   [cofx biometric-auth?]
   (if biometric-auth?
@@ -141,7 +141,7 @@
      {})
     (update-biometric cofx false)))
 
-(fx/defn show-message
+(rf/defn show-message
   [cofx bioauth-message bioauth-code]
   (let [content (or (when (get #{"NOT_AVAILABLE" "NOT_ENROLLED"} bioauth-code)
                       (i18n/label :t/grant-face-id-permissions))
@@ -151,7 +151,7 @@
        {:title (i18n/label :t/biometric-auth-login-error-title)
         :content content}})))
 
-(fx/defn biometric-init-done
+(rf/defn biometric-init-done
   {:events [:biometric-init-done]}
   [cofx {:keys [bioauth-success bioauth-message bioauth-code]}]
   (if bioauth-success
@@ -161,7 +161,7 @@
       (popover/show-popover cofx {:view :enable-biometric}))
     (show-message cofx bioauth-message bioauth-code)))
 
-(fx/defn biometric-auth
+(rf/defn biometric-auth
   {:events [:biometric-authenticate]}
   [cofx]
   (authenticate
@@ -170,25 +170,25 @@
    {:reason             (i18n/label :t/biometric-auth-reason-login)
     :ios-fallback-label (i18n/label :t/biometric-auth-login-ios-fallback-label)}))
 
-(fx/defn enable
+(rf/defn enable
   {:events [:biometric/enable]}
   [cofx]
-  (fx/merge
+  (rf/merge
    cofx
    (popover/hide-popover)
    (authenticate #(re-frame/dispatch [:biometric/setup-done %]) {})))
 
-(fx/defn disable
+(rf/defn disable
   {:events [:biometric/disable]}
   [{:keys [db] :as cofx}]
-  (fx/merge
+  (rf/merge
    cofx
    {:db (-> db
             (assoc :auth-method keychain/auth-method-none)
             (assoc-in [:multiaccounts/login :save-password?] false))}
    (popover/hide-popover)))
 
-(fx/defn setup-done
+(rf/defn setup-done
   {:events [:biometric/setup-done]}
   [{:keys [db] :as cofx} {:keys [bioauth-success bioauth-message bioauth-code]}]
   (log/debug "[biometric] setup-done"

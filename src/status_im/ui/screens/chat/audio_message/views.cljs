@@ -17,7 +17,7 @@
    [status-im.ui.components.icons.icons :as icons]
    [status-im.utils.utils :as utils.utils]
    [status-im.utils.fs :as fs]
-   [status-im.utils.fx :as fx]))
+   [utils.re-frame :as rf]))
 
 ;; reference db levels
 (def total-silence-db -160)
@@ -70,7 +70,7 @@
 ;; to be called when app goes in background
 (defonce on-background-cb (atom #()))
 
-(fx/defn on-background
+(rf/defn on-background
   {:events [:audio-recorder/on-background]}
   [_]
   (when @on-background-cb

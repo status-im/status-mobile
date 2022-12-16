@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.contact.db :as contact.db]
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
@@ -489,7 +489,7 @@
               (assoc-in [last-idx :to] (dec (count text)))
               (assoc-in [last-idx :checked?] false)))))))
 
-(fx/defn on-text-input
+(rf/defn on-text-input
   {:events [::on-text-input]}
   [{:keys [db]} {:keys [previous-text start end] :as args}]
   (log/debug "[mentions] on-text-input args" args)
@@ -533,7 +533,7 @@
            [[:text (subs text 0 first-from)]]))
        idxs))))
 
-(fx/defn recheck-at-idxs
+(rf/defn recheck-at-idxs
   [{:keys [db]} mentionable-users]
   (let [chat-id  (:current-chat-id db)
         text     (get-in db [:chat/inputs chat-id :input-text])
@@ -551,7 +551,7 @@
               :at-idxs new-at-idxs)
              (assoc-in [:chat/inputs-with-mentions chat-id] calculated-input))}))
 
-(fx/defn calculate-suggestions
+(rf/defn calculate-suggestions
   {:events [::calculate-suggestions]}
   [{:keys [db]} mentionable-users]
   (let [chat-id  (:current-chat-id db)
@@ -616,31 +616,31 @@
           " "))
       (subs text mention-end)])))
 
-(fx/defn clear-suggestions
+(rf/defn clear-suggestions
   [{:keys [db]}]
   (log/debug "[mentions] clear suggestions")
   (let [chat-id (:current-chat-id db)]
     {:db (update db :chats/mention-suggestions dissoc chat-id)}))
 
-(fx/defn clear-mentions
+(rf/defn clear-mentions
   [{:keys [db] :as cofx}]
   (log/debug "[mentions] clear mentions")
   (let [chat-id (:current-chat-id db)]
-    (fx/merge
+    (rf/merge
      cofx
      {:db (-> db
               (update-in [:chats/mentions chat-id] dissoc :mentions)
               (update :chat/inputs-with-mentions dissoc chat-id))}
      (clear-suggestions))))
 
-(fx/defn clear-cursor
+(rf/defn clear-cursor
   {:events [::clear-cursor]}
   [{:keys [db]}]
   (log/debug "[mentions] clear cursor")
   {:db
    (update db :chats/cursor dissoc (:current-chat-id db))})
 
-(fx/defn check-selection
+(rf/defn check-selection
   {:events [::on-selection-change]}
   [{:keys [db] :as cofx}
    {:keys [start end] :as selection}
@@ -655,7 +655,7 @@
                         (<= (dec end) to))
                idx))
            at-idxs)
-        (fx/merge
+        (rf/merge
          cofx
          {:db (update-in db [:chats/mentions chat-id :mentions]
                          assoc
@@ -673,7 +673,7 @@
       (rn/find-node-handle (react/current-ref ref))
       cursor))))
 
-(fx/defn reset-text-input-cursor
+(rf/defn reset-text-input-cursor
   [_ ref cursor]
   {::reset-text-input-cursor [ref cursor]})
 

@@ -8,7 +8,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
@@ -54,31 +54,31 @@
 ;; RPC usage refresh interval (ms)
 (def rpc-usage-refresh-interval-ms 2000)
 
-(fx/defn handle-stats
+(rf/defn handle-stats
   {:events [::handle-stats]}
   [{:keys [db]} data]
   {:db (assoc db :rpc-usage/data data)})
 
-(fx/defn get-stats
+(rf/defn get-stats
   {:events [::get-stats]}
   [{:keys [db]}]
   (let [method-filter (get db :rpc-usage/filter "eth_")]
     {:db         (assoc db :rpc-usage/filter method-filter)
      ::get-stats nil}))
 
-(fx/defn reset
+(rf/defn reset
   {:events [::reset]}
   [{:keys [db]}]
   {:db     (dissoc db :rpc-usage/data)
    ::reset nil})
 
-(fx/defn copy
+(rf/defn copy
   {:events [::copy]}
   [{:keys [db]}]
   {:db     (dissoc db :rpc-usage/data)
    ::reset nil})
 
-(fx/defn set-filter
+(rf/defn set-filter
   {:events [::set-filter]}
   [{:keys [db]} method-filter]
   {:db (assoc db :rpc-usage/filter method-filter)})

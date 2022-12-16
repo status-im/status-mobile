@@ -5,12 +5,12 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im2.navigation.events :as navigation]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]
             [status-im.constants :as constants]
             [status-im.contact.block :as contact.block]))
 
-(fx/defn load-contacts
+(rf/defn load-contacts
   {:events [::contacts-loaded]}
   [{:keys [db] :as cofx} all-contacts]
   (let [contacts-list (map #(vector (:public-key %) (if (empty? (:address %))
@@ -29,7 +29,7 @@
     (= public-key (:public-key multiaccount))
     (assoc :name (:name multiaccount))))
 
-(fx/defn ensure-contacts
+(rf/defn ensure-contacts
   [{:keys [db]} contacts chats]
   (let [events
         (reduce
@@ -68,7 +68,7 @@
      :profile-image identicon
      :address       address}))
 
-(fx/defn send-contact-request
+(rf/defn send-contact-request
   {:events [::send-contact-request]}
   [{:keys [db] :as cofx} public-key]
   (let [{:keys [name profile-image]} (own-info db)]
@@ -76,7 +76,7 @@
                        :params [public-key name profile-image]
                        :on-success #(log/debug "contact request sent" public-key)}]}))
 
-(fx/defn add-contact
+(rf/defn add-contact
   "Add a contact and set pending to false"
   {:events [:contact.ui/add-to-contact-pressed]}
   [{:keys [db] :as cofx} public-key nickname ens-name]
@@ -90,7 +90,7 @@
         (re-frame/dispatch [:sanitize-messages-and-process-response %])
         (re-frame/dispatch [:offload-messages constants/timeline-chat-id])))))
 
-(fx/defn remove-contact
+(rf/defn remove-contact
   "Remove a contact from current account's contact list"
   {:events [:contact.ui/remove-contact-pressed]}
   [{:keys [db]} {:keys [public-key]}]
@@ -105,7 +105,7 @@
                      :on-success #(log/debug "contact removed successfully")}]
    :dispatch [:offload-messages constants/timeline-chat-id]})
 
-(fx/defn accept-contact-request
+(rf/defn accept-contact-request
   {:events [:contact-requests.ui/accept-request]}
   [{:keys [db]} id]
   {::json-rpc/call [{:method "wakuext_acceptContactRequest"
@@ -113,7 +113,7 @@
                      :js-response true
                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
-(fx/defn decline-contact-request
+(rf/defn decline-contact-request
   {:events [:contact-requests.ui/decline-request]}
   [{:keys [db]} id]
   {::json-rpc/call [{:method "wakuext_dismissContactRequest"
@@ -121,29 +121,29 @@
                      :js-response true
                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
-(fx/defn initialize-contacts [cofx]
+(rf/defn initialize-contacts [cofx]
   (contacts-store/fetch-contacts-rpc cofx #(re-frame/dispatch [::contacts-loaded %])))
 
-(fx/defn open-contact-toggle-list
+(rf/defn open-contact-toggle-list
   {:events [:contact.ui/start-group-chat-pressed]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
+  (rf/merge cofx
             {:db (assoc db
                         :group/selected-contacts #{}
                         :new-chat-name "")}
             (navigation/navigate-to-cofx :contact-toggle-list nil)))
 
-(fx/defn update-nickname
+(rf/defn update-nickname
   {:events [:contacts/update-nickname]}
   [{:keys [db] :as cofx} public-key nickname]
-  (fx/merge cofx
+  (rf/merge cofx
             (contacts-store/set-nickname
              public-key
              nickname
              #(re-frame/dispatch [:sanitize-messages-and-process-response %]))
             (navigation/navigate-back)))
 
-(fx/defn switch-mutual-contact-requests-enabled
+(rf/defn switch-mutual-contact-requests-enabled
   {:events [:multiaccounts.ui/switch-mutual-contact-requests-enabled]}
   [cofx enabled?]
   (multiaccounts.update/multiaccount-update
@@ -152,7 +152,7 @@
    enabled?
    nil))
 
-(fx/defn set-search-query
+(rf/defn set-search-query
   {:events [:contacts/set-search-query]}
   [{:keys [db] :as cofx} value]
   {:db (assoc db :contacts/search-query value)})

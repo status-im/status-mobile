@@ -7,9 +7,9 @@
             [status-im2.navigation.events :as navigation]
             [status-im.utils.types :as types]
             [status-im2.contexts.activity-center.events :as activity-center]
-            [status-im.utils.fx :as fx]))
+            [utils.re-frame :as rf]))
 
-(fx/defn clean-up-chat
+(rf/defn clean-up-chat
   [{:keys [db] :as cofx}
    public-key
    {:keys [chat-id
@@ -33,13 +33,13 @@
     {:db (assoc-in db [:message-lists chat-id]
                    (message-list/add-many nil (vals (get-in db [:messages chat-id]))))}))
 
-(fx/defn contact-blocked
+(rf/defn contact-blocked
   {:events [::contact-blocked]}
   [{:keys [db] :as cofx} {:keys [public-key]} chats]
   (let [fxs (when chats
               (map #(->> (chats-store/<-rpc %)
                          (clean-up-chat public-key)) (types/js->clj chats)))]
-    (apply fx/merge
+    (apply rf/merge
            cofx
            {:db (-> db
                     (update :chats dissoc public-key)
@@ -50,7 +50,7 @@
            (activity-center/notifications-fetch-unread-count)
            fxs)))
 
-(fx/defn block-contact
+(rf/defn block-contact
   {:events [:contact.ui/block-contact-confirmed]}
   [{:keys [db] :as cofx} public-key]
   (let [contact (-> (contact.db/public-key->contact
@@ -59,7 +59,7 @@
                     (assoc :blocked true
                            :added false))
         from-one-to-one-chat? (not (get-in db [:chats (:current-chat-id db) :group-chat]))]
-    (fx/merge cofx
+    (rf/merge cofx
               {:db (-> db
                        ;; add the contact to blocked contacts
                        (update :contacts/blocked (fnil conj #{}) public-key)
@@ -74,7 +74,7 @@
                 (navigation/pop-to-root-tab :chat-stack)
                 (navigation/navigate-back)))))
 
-(fx/defn contact-unblocked
+(rf/defn contact-unblocked
   {:events [::contact-unblocked]}
   [{:keys [db]} contact-id]
   (let [contact (-> (get-in db [:contacts/contacts contact-id])
@@ -83,7 +83,7 @@
              (update :contacts/blocked disj contact-id)
              (assoc-in [:contacts/contacts contact-id] contact))}))
 
-(fx/defn unblock-contact
+(rf/defn unblock-contact
   {:events [:contact.ui/unblock-contact-pressed]}
   [cofx contact-id]
   (contacts-store/unblock

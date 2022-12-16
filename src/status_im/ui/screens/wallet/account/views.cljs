@@ -19,7 +19,7 @@
             [status-im.ui.screens.wallet.collectibles.views :as collectibles.views]
             [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
             [quo2.foundations.colors :as quo2.colors]
-            [status-im.utils.handlers :refer [<sub]]
+            [utils.re-frame :as rf]
             [quo2.components.markdown.text :as quo2.text]
             [quo2.components.buttons.button :as quo2.button]
             [quo2.components.tabs.tabs :as quo2.tabs])
@@ -248,12 +248,12 @@
          [transactions address])])))
 
 (defn account-new [selected-account]
-  (let [;{:keys [name address] :as account} (<sub [:account-by-address selected-account])
-        currency        (<sub [:wallet/currency])
-        portfolio-value (<sub [:account-portfolio-value selected-account])
-        width (<sub [:dimensions/window-width])
+  (let [;{:keys [name address] :as account} (rf/sub [:account-by-address selected-account])
+        currency        (rf/sub [:wallet/currency])
+        portfolio-value (rf/sub [:account-portfolio-value selected-account])
+        width (rf/sub [:dimensions/window-width])
         button-width (/ (- width 40 (* 2 12)) 3)]
-    ;fetching-error (<sub [:wallet/fetching-error])]
+    ;fetching-error (rf/sub [:wallet/fetching-error])]
     [react/view {:flex                   1
                  :background-color (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
                  :border-top-left-radius 20

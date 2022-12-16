@@ -1,11 +1,11 @@
 ;reference https://eips.ethereum.org/EIPS/eip-3326 EIP-3326: Wallet Switch Ethereum Chain RPC Method (`wallet_switchEthereumChain`)
 (ns status-im.browser.eip3326
   (:require [status-im.constants :as constants]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.ethereum.core :as ethereum]
             [status-im.ui.screens.browser.eip3326.sheet :as sheet]))
 
-(fx/defn deny-permission
+(rf/defn deny-permission
   {:events [:eip3326.ui/dapp-permission-denied]}
   [{:keys [db] :as cofx} message-id _]
   {:browser/send-to-bridge {:type constants/web3-send-async-callback
@@ -14,7 +14,7 @@
                                     :message "User rejected the request."}}
    :dispatch [:bottom-sheet/hide]})
 
-(fx/defn handle-switch-ethereum-chain
+(rf/defn handle-switch-ethereum-chain
   {:events [:eip3326/handle-switch-ethereum-chain]}
   [{:keys [db] :as cofx} dapp-name id message-id {:keys [chainId] :as params}]
   (let [target-chain-id (js/parseInt chainId 16)

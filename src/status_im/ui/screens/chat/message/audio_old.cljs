@@ -4,7 +4,7 @@
             [reagent.core :as reagent]
             [goog.string :as gstring]
             [status-im.audio.core :as audio]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.ui.screens.chat.styles.message.audio-old :as style]
             [status-im.ui.components.animation :as anim]
             [quo.design-system.colors :as colors]
@@ -184,7 +184,7 @@
          :accessibility-label :play-pause-audio-message-button
          :color               color}]])))
 
-(fx/defn on-background
+(rf/defn on-background
   {:events [:audio-message/on-background]}
   [_]
   (when (and @current-active-state-ref-ref

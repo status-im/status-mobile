@@ -3,7 +3,7 @@
             [status-im.data-store.messages :as messages]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.constants :as constants]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]
             [status-im.utils.types :as types]))
 
@@ -103,7 +103,7 @@
       rpc->type
       unmarshal-members))
 
-(fx/defn fetch-chats-rpc [_ {:keys [on-success]}]
+(rf/defn fetch-chats-rpc [_ {:keys [on-success]}]
   {::json-rpc/call [{:method "wakuext_chatsPreview"
                      :params []
                      :js-response true

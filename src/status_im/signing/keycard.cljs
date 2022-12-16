@@ -1,7 +1,7 @@
 (ns status-im.signing.keycard
   (:require [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
@@ -49,7 +49,7 @@
       nonce
       (assoc :nonce nonce))))
 
-(fx/defn hash-message
+(rf/defn hash-message
   [_ {:keys [v4 data typed? on-completed]}]
   (if typed?
     {::hash-typed-data
@@ -68,7 +68,7 @@
             [:signing.keycard.callback/hash-message-completed
              data typed? %]))}}))
 
-(fx/defn hash-message-completed
+(rf/defn hash-message-completed
   {:events [:signing.keycard.callback/hash-message-completed]}
   [{:keys [db]} data typed? result]
   (let [{:keys [result error]} (types/json->clj result)]
@@ -81,7 +81,7 @@
                    :typed? typed?
                    :data data)})))
 
-(fx/defn hash-transaction
+(rf/defn hash-transaction
   [{:keys [db]}]
   (let [tx (prepare-transaction (:signing/tx db))]
     (log/debug "hash-transaction" tx)
@@ -90,7 +90,7 @@
       :on-completed #(re-frame/dispatch
                       [:signing.keycard.callback/hash-transaction-completed tx %])}}))
 
-(fx/defn hash-transaction-completed
+(rf/defn hash-transaction-completed
   {:events [:signing.keycard.callback/hash-transaction-completed]}
   [{:keys [db]} original-tx result]
   (let [{:keys [transaction hash]} (:result (types/json->clj result))]
@@ -99,11 +99,11 @@
                        (merge original-tx transaction))
              (assoc-in [:keycard :hash] hash))}))
 
-(fx/defn sign-with-keycard
+(rf/defn sign-with-keycard
   {:events [:signing.ui/sign-with-keycard-pressed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [message maxPriorityFeePerGas maxFeePerGas]} (get db :signing/tx)]
-    (fx/merge
+    (rf/merge
      cofx
      {:db (-> db
               (assoc-in [:keycard :pin :enter-step] :sign)

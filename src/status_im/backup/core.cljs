@@ -2,19 +2,19 @@
   (:require [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.utils.fx :as fx]))
+            [utils.re-frame :as rf]))
 
-(fx/defn handle-backup-failed
+(rf/defn handle-backup-failed
   {:events [::backup-failed]}
   [{:keys [db]}]
   {:db (dissoc db :backup/performing-backup)})
 
-(fx/defn handle-backup-perfomed
+(rf/defn handle-backup-perfomed
   {:events [::backup-performed]}
   [{:keys [db]}]
   {:db (dissoc db :backup/performing-backup)})
 
-(fx/defn handle-perform-backup-pressed
+(rf/defn handle-perform-backup-pressed
   {:events [:multiaccounts.ui/perform-backup-pressed]}
   [{:keys [db]}]
   {:db (assoc db :backup/performing-backup true)

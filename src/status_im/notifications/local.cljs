@@ -1,6 +1,6 @@
 (ns status-im.notifications.local
   (:require [status-im.async-storage.core :as async-storage]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.ethereum.decode :as decode]
             ["@react-native-community/push-notification-ios" :default pn-ios]
             [status-im.notifications.android :as pn-android]
@@ -120,14 +120,14 @@
  (fn [evt]
    (-> evt create-notification local-push-ios)))
 
-(fx/defn local-notification-android
+(rf/defn local-notification-android
   {:events [::local-notification-android]}
   [cofx event]
   (some->> event
            (create-notification cofx)
            local-push-android))
 
-(fx/defn process
+(rf/defn process
   [cofx evt]
   (if platform/ios?
     {::local-push-ios evt}

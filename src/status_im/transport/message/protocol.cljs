@@ -2,7 +2,7 @@
  status-im.transport.message.protocol
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [taoensso.timbre :as log]))
 
 (defn build-message [{:keys [chat-id
@@ -26,7 +26,7 @@
    :sticker         sticker
    :contentType     content-type})
 
-(fx/defn send-chat-messages [_ messages]
+(rf/defn send-chat-messages [_ messages]
   {::json-rpc/call [{:method     "wakuext_sendChatMessages"
                      :params     [(mapv build-message messages)]
                      :js-response true
@@ -35,14 +35,14 @@
                                   (log/warn "failed to send a message" %)
                                   (js/alert (str "failed to send a message: " %)))}]})
 
-(fx/defn send-reaction [_ {:keys [message-id chat-id emoji-id]}]
+(rf/defn send-reaction [_ {:keys [message-id chat-id emoji-id]}]
   {::json-rpc/call [{:method     "wakuext_sendEmojiReaction"
                      :params     [chat-id message-id emoji-id]
                      :js-response true
                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
                      :on-error #(log/error "failed to send a reaction" %)}]})
 
-(fx/defn send-retract-reaction [_ {:keys [emoji-reaction-id]}]
+(rf/defn send-retract-reaction [_ {:keys [emoji-reaction-id]}]
   {::json-rpc/call [{:method     "wakuext_sendEmojiReactionRetraction"
                      :params     [emoji-reaction-id]
                      :js-response true

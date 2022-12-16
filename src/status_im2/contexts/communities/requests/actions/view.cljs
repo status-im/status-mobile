@@ -8,7 +8,7 @@
             [quo2.components.buttons.button :as button]
             [quo2.components.selectors.disclaimer :as disclaimer]
             [quo2.components.icon :as icon]
-            [status-im.utils.handlers :refer [>evt]]
+            [utils.re-frame :as rf]
             [quo2.components.tags.context-tags :as context-tags]
             [status-im.communities.core :as communities]
             [quo2.foundations.colors :as colors]))
@@ -123,10 +123,10 @@
                          :flex-direction :row
                          :align-items :center
                          :justify-content :space-evenly}}
-        [button/button {:on-press #(>evt [:bottom-sheet/hide])
+        [button/button {:on-press #(rf/dispatch [:bottom-sheet/hide])
                         :type :grey :style {:flex 1 :margin-right 12}}   (i18n/label :t/cancel)]
         [button/button
          {:on-press (fn []
-                      (>evt [::communities/join (:id community)])
-                      (>evt [:bottom-sheet/hide]))
+                      (rf/dispatch [::communities/join (:id community)])
+                      (rf/dispatch [:bottom-sheet/hide]))
           :disabled  (not @agreed-to-rules?) :style {:flex 1}}   (i18n/label :t/join-open-community)]]])))

@@ -16,7 +16,7 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [status-im.utils.handlers :refer [<sub]]
+            [utils.re-frame :as rf]
             [status-im.wallet.utils :as wallet.utils]
             [clojure.string :as string]))
 
@@ -44,10 +44,10 @@
                 [chat-icon/custom-icon-view-list (:name token) color])}])
 
 (defn asset-selector []
-  (let [{:keys [address]} (<sub [:multiaccount/current-account])
-        {:keys [tokens]}  (<sub [:wallet/visible-assets-with-values address])
-        source?           (<sub [:wallet/modal-selecting-source-token?])
-        currency          (<sub [:wallet/currency])]
+  (let [{:keys [address]} (rf/sub [:multiaccount/current-account])
+        {:keys [tokens]}  (rf/sub [:wallet/visible-assets-with-values address])
+        source?           (rf/sub [:wallet/modal-selecting-source-token?])
+        currency          (rf/sub [:wallet/currency])]
     [:<>
      [topbar/topbar
       {:title  (if source?
@@ -104,7 +104,7 @@
 (defn token-input
   "Component to get the amount and type of tokens"
   [{:keys [amount error label token max-from source?]}]
-  (let [window-width (<sub [:dimensions/window-width])]
+  (let [window-width (rf/sub [:dimensions/window-width])]
     [react/view {:style {:justify-content :space-between
                          :flex-direction  :row
                          :align-items     :center}}
@@ -364,11 +364,11 @@
 
 (defn swap []
   (let [{:keys [name]}
-        (<sub [:multiaccount/current-account])
-        all-tokens     (<sub [:wallet/all-tokens])
-        from-symbol    (<sub [:wallet/swap-from-token])
-        to-symbol      (<sub [:wallet/swap-to-token])
-        advanced-mode? (<sub [:wallet/swap-advanced-mode?])
+        (rf/sub [:multiaccount/current-account])
+        all-tokens     (rf/sub [:wallet/all-tokens])
+        from-symbol    (rf/sub [:wallet/swap-from-token])
+        to-symbol      (rf/sub [:wallet/swap-to-token])
+        advanced-mode? (rf/sub [:wallet/swap-advanced-mode?])
         amount         "0.02"
         from-token     (tokens/symbol->token all-tokens (or from-symbol :DGX))
         to-token       (tokens/symbol->token all-tokens (or to-symbol :SNT))]

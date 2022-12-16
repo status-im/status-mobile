@@ -6,7 +6,7 @@
             [quo.core :as quo]
             [reagent.core :as reagent]
             [status-im.ui.components.list.views :as list]
-            [status-im.utils.handlers :refer [<sub]]
+            [utils.re-frame :as rf]
             [status-im.ui.screens.chat.message.message :as message]))
 
 (def selected-unpin (reagent/atom nil))
@@ -58,7 +58,7 @@
                                      :padding-top 10}}]))
 
 (defn pin-limit-popover []
-  (let [{:keys [message]} (<sub [:popover/popover])]
+  (let [{:keys [message]} (rf/sub [:popover/popover])]
     [react/view {:style {:flex-shrink 1}}
      [react/view {:style {:height 60
                           :justify-content :center}}

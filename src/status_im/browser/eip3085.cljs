@@ -3,14 +3,14 @@
   (:require [status-im.constants :as constants]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.network.core :as network]
             [taoensso.timbre :as log]
             [status-im.utils.random :as random]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ui.screens.browser.eip3085.sheet :as sheet]))
 
-(fx/defn send-success-call-to-bridge
+(rf/defn send-success-call-to-bridge
   {:events [:eip3085/send-success-call-to-bridge]}
   [_ id messageId]
   {:browser/send-to-bridge {:type constants/web3-send-async-callback
@@ -19,7 +19,7 @@
                                      :id (int id)
                                      :result nil}}})
 
-(fx/defn allow-permission
+(rf/defn allow-permission
   {:events [:eip3085.ui/dapp-permission-allowed]}
   [{:keys [db] :as cofx} message-id {:keys [new-networks id]}]
   {:db (assoc db :networks/networks new-networks)
@@ -29,7 +29,7 @@
                      :on-error   #(log/error "failed to perform settings_saveSetting" %)}]
    :dispatch [:bottom-sheet/hide]})
 
-(fx/defn deny-permission
+(rf/defn deny-permission
   {:events [:eip3085.ui/dapp-permission-denied]}
   [_ message-id _]
   {:browser/send-to-bridge {:type constants/web3-send-async-callback
@@ -38,7 +38,7 @@
                                     :message "User rejected the request."}}
    :dispatch [:bottom-sheet/hide]})
 
-(fx/defn handle-add-ethereum-chain
+(rf/defn handle-add-ethereum-chain
   {:events [:eip3085/handle-add-ethereum-chain]}
   [{{:networks/keys [networks] :as db} :db :as cofx}
    dapp-name id message-id {:keys [chainId blockExplorerUrls chainName iconUrls nativeCurrency rpcUrls] :as params}]

@@ -5,11 +5,12 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.utils.handlers :refer [<sub >evt-once]]
+            [utils.re-frame :as rf]
             [status-im.communities.core :as communities]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.multiaccounts.core :as multiaccounts]
+            [utils.debounce :as debounce]
             [clojure.string :as string]))
 
 (defn header [user-pk]
@@ -42,11 +43,11 @@
 (defn invite []
   (let [user-pk           (reagent/atom "")
         contacts-selected (reagent/atom #{})
-        {:keys [invite?]} (<sub [:get-screen-params])]
+        {:keys [invite?]} (rf/sub [:get-screen-params])]
     (fn []
-      (let [contacts-data               (<sub [:contacts/active])
+      (let [contacts-data               (rf/sub [:contacts/active])
             {:keys [permissions
-                    can-manage-users?]} (<sub [:communities/edited-community])
+                    can-manage-users?]} (rf/sub [:communities/edited-community])
             selected                    @contacts-selected
             contacts                    (map (fn [{:keys [public-key] :as contact}]
                                                (assoc contact :active (contains? selected public-key)))
@@ -75,8 +76,9 @@
                                        (zero? (count selected)))
                         :accessibility-label :share-community-link
                         :type     :secondary
-                        :on-press #(>evt-once
+                        :on-press #(debounce/dispatch-and-chill
                                     [(if can-invite?
                                        ::communities/invite-people-confirmation-pressed
-                                       ::communities/share-community-confirmation-pressed) @user-pk selected])}
+                                       ::communities/share-community-confirmation-pressed) @user-pk selected]
+                                    3000)}
             (i18n/label (if can-invite? :t/invite :t/share))]}]]))))

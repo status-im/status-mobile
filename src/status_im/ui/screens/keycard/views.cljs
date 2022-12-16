@@ -16,7 +16,7 @@
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.constants :as constants]
             [status-im.keycard.login :as keycard.login]
-            [status-im.utils.fx :as fx]
+            [utils.re-frame :as rf]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card.view]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.bottom-sheet.core :as bottom-sheet]
@@ -375,10 +375,10 @@
                        :type     :secondary}
                       (i18n/label :t/recover-key)]}])]]])))
 
-(fx/defn get-new-key
+(rf/defn get-new-key
   {:events [:multiaccounts.create.ui/get-new-key]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
+  (rf/merge cofx
             (multiaccounts.create/prepare-intro-wizard)
             (bottom-sheet/hide-bottom-sheet)
             (navigation/navigate-to-cofx :get-your-keys nil)))

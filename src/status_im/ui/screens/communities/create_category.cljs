@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.communities.create-category
   (:require [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.utils.handlers :refer [<sub]]
+            [utils.re-frame :as rf]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
@@ -32,11 +32,11 @@
        {:on-press on-change}]]]))
 
 (defn view []
-  (let [{:keys [community-id]} (<sub [:get-screen-params])
+  (let [{:keys [community-id]} (rf/sub [:get-screen-params])
         category-name (reagent/atom "")
         _ (reset! selected-items #{})]
     (fn []
-      (let [chats (<sub [:chats/with-empty-category-by-community-id community-id])]
+      (let [chats (rf/sub [:chats/with-empty-category-by-community-id community-id])]
         [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
          [react/view {:flex 1}
           [react/view {:padding-horizontal 16}

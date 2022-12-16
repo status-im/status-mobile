@@ -5,14 +5,14 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.communities.core :as communities]
             [utils.debounce :as debounce]
-            [status-im.utils.handlers :refer [<sub]]
+            [utils.re-frame :as rf]
             [status-im.ui.screens.communities.create-channel :as create-channel]))
 
 (defn valid? [community-name]
   (not (string/blank? community-name)))
 
 (defn view []
-  (let [{:keys [name]} (<sub [:communities/create-channel])]
+  (let [{:keys [name]} (rf/sub [:communities/create-channel])]
     (fn []
       [:<>
        [create-channel/form]
