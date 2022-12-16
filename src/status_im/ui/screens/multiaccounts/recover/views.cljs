@@ -7,7 +7,7 @@
             [status-im.keycard.recovery :as keycard]
             [status-im.i18n.i18n :as i18n]
             [status-im2.setup.config :as config]
-            [status-im.utils.security]
+            [utils.security.core]
             [quo.design-system.colors :as colors]
             [quo.core :as quo]
             [status-im.qr-scanner.core :as qr-scanner]
@@ -114,7 +114,7 @@
 
     ;; Enter seed phrase for Dim Venerated Yaffle
     (re-frame/dispatch [:multiaccounts.recover/enter-phrase-input-changed
-                        (status-im.utils.security/mask-data "rocket mixed rebel affair umbrella legal resemble scene virus park deposit cargo")])
+                        (utils.security.core/mask-data "rocket mixed rebel affair umbrella legal resemble scene virus park deposit cargo")])
 
     ;; Recover multiaccount
     (re-frame/dispatch [:multiaccounts.recover/enter-phrase-next-pressed])

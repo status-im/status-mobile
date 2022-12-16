@@ -10,7 +10,7 @@
             [reagent.core :as reagent]
             [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.utils.security :as security]))
+            [utils.security.core :as security]))
 
 (defn not-valid-password? [password]
   (< (count (security/safe-unmask-data password)) 6))

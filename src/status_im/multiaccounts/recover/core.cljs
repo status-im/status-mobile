@@ -12,7 +12,7 @@
             [status-im.popover.core :as popover]
             [status-im2.navigation.events :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.bottom-sheet.core :as bottom-sheet]

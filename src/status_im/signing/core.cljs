@@ -14,7 +14,7 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.wallet.prices :as prices]

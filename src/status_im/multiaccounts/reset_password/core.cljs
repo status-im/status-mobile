@@ -3,7 +3,7 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
             [clojure.string :as string]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.utils.keychain.core :as keychain]
             [status-im.popover.core :as popover]
             [status-im.native-module.core :as status]

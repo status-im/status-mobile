@@ -6,7 +6,7 @@
             [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [reagent.core :as reagent]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.ui.screens.privacy-and-security-settings.events :as delete-profile]
             status-im.keycard.delete-key))
 

@@ -20,6 +20,8 @@ printed out by mistake in a log entry (see https://github.com/status-im/status-m
 To minimize the risk of leaking passwords through logs, we should not pass
 passwords as strings in our codebase. We introduced a new type `MaskedData` in
 `status-im.utils.security`.
+update (16-Dec-2022) `status-im.utils.security` is now moved over to `utils.security.core` 
+
 We use `(security/mask-data <data to hide>` to wrap sensitive data into this
 type and then use `(security/unmask <masked-data>)` to get the plaintext back.
 

@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ethereum.core :as ethereum]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [cljs.spec.alpha :as spec]
             [status-im.fleet.core :as fleet]
             [clojure.string :as string]

@@ -8,7 +8,7 @@
             [status-im.ui.screens.multiaccounts.login.styles :as styles]
             [status-im.ui.screens.multiaccounts.styles :as ast]
             [status-im.utils.platform :as platform]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.utils.utils :as utils]
             [quo.core :as quo]
             [status-im.ui.components.icons.icons :as icons]

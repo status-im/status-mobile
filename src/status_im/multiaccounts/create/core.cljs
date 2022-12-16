@@ -10,7 +10,7 @@
             [quo.design-system.colors :as colors]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.types :as types]))
 

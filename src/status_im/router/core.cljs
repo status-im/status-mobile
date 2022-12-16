@@ -10,7 +10,7 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.utils.db :as utils.db]
             [status-im.utils.http :as http]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.utils.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
             [taoensso.timbre :as log]))

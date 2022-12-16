@@ -3,7 +3,7 @@
             [reagent.core :as reagent]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.i18n.i18n :as i18n]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [quo.react-native :as rn]
             [quo.core :as quo]))
 

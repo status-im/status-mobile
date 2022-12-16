@@ -3,7 +3,7 @@
             [quo.core :as quo]
             [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.chat.message.styles :as styles]
             [status-im.react-native.resources :as resources]

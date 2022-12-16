@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.privacy-and-security-settings.events
   (:require [status-im.utils.fx :as fx]
             [re-frame.core :as re-frame]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.native-module.core :as status]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.types :as types]

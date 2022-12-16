@@ -36,7 +36,7 @@
             [status-im.ui2.screens.chat.components.reply :as components.reply]
             [status-im.utils.config :as config]
             [status-im.utils.datetime :as time]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.utils.utils :as utils]
             [status-im2.contexts.chat.home.chat-list-item.view :as home.chat-list-item]
             [utils.re-frame :as rf])

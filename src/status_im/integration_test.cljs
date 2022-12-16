@@ -6,7 +6,7 @@
             status-im.events
             status-im2.navigation.core
             [status-im.chat.models :as chat.models]
-            [status-im.utils.security :as security]
+            [utils.security.core :as security]
             [status-im.multiaccounts.logout.core :as logout]
             [status-im.transport.core :as transport]
             status-im2.subs.root ;;so integration tests can run independently
@@ -103,7 +103,7 @@
    (initialize-app!) ; initialize app
    (rf-test/wait-for
     [:setup/initialize-view]
-    (generate-and-derive-addresses!) ; generate 5 new keys      
+    (generate-and-derive-addresses!) ; generate 5 new keys
     (rf-test/wait-for
      [:multiaccount-generate-and-derive-addresses-success]
      (assert-multiaccount-loaded) ; assert keys are generated
