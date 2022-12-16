@@ -4,27 +4,28 @@ pipeline {
 
   agent { label 'macos && x86_64 && nix-2.11 && xcode-13.4' }
 
-  parameters {
-    string(
-      name: 'BRANCH_NAME',
-      description: 'Name of the branch to checkout and build.',
-      defaultValue: 'develop',
-    )
-/* Commented to use TEST_MARKERS values from job params
-    string(
-      name: 'TEST_MARKERS',
-      description: 'Marker expression for matching tests to run.',
-      defaultValue: 'new_ui_critical',
-    ) */
-   
-    string(
-      name: 'PR_ID',
-      description: 'ID of the Pull Request triggering this build.',
+  options {
+    timestamps()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 10, unit: 'MINUTES')
+    /* Limit builds retained */
+    buildDiscarder(logRotator(
+      numToKeepStr: '10',
+      daysToKeepStr: '20',
+      artifactNumToKeepStr: '10',
+    ))
+    /* Abort old PR builds. */
+    disableConcurrentBuilds(
+      abortPrevious: isPRBuild
     )
   }
 
-  options {
-    disableConcurrentBuilds()
+  parameters {
+    string(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / e2e / nightly / release',
+      defaultValue: 'pr',
+    )
   }
 
   environment {
@@ -64,7 +65,7 @@ pipeline {
         ]) {
           dir('') {
             /* Provide Eth test account secrets. */
-            sh 'run-visual-test-ios-release'
+            sh 'make run-visual-test-ios-release'
           }
         }
       } }
