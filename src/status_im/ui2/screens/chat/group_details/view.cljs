@@ -175,7 +175,7 @@
         [contact-list/contact-list {:icon    :check
                                     :group   group
                                     :search? true}]
-        [rn/view {:style style/bottom-container}
+        [rn/view {:style (style/bottom-container safe-area)}
          [quo2/button {:style    {:flex 1}
                        :accessibility-label :save
                        :on-press (fn []

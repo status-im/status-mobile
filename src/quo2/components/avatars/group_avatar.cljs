@@ -35,6 +35,7 @@
                 :align-items      :center
                 :justify-content  :center
                 :border-radius    (/ container-size 2)
+                ;:background-color (colors/custom-color-by-theme color 50 60)
                 :background-color color}
        [icon/icon :i/group {:size  icon-size
                             :color colors/white-opa-70}]])))
