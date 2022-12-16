@@ -98,17 +98,21 @@
                        :on-success #(re-frame/dispatch [::mark-all-read-in-community-successful %])}]}))
 
 
+
 (defn find-albums [messages]
-  (let [last-album-id (atom nil)
-        album-count (atom 0)]
+  (let [albums-count (atom #{})]
   (doseq [message messages]
-    (if (and (:album-id (:content (val message))) (= (:album-id (:content (val message))) @last-album-id))
-      (swap! album-count inc 1)
-      (reset! album-count 1))
-    (reset! last-album-id (:album-id (:content (val message))))
-    (if (> @album-count 3)
-      (println "COMPLETED AN ALBUMXXXX" @album-count)
-      (println "NO ALBUMXX" @album-count (:album-id (:content (val message)))))))
+    (let [album-id (:album-id (:content (val message)))]
+      ;(println "ALBUMID" album-id (get @albums-count album-id))
+    (when album-id
+      (if (get @albums-count album-id)
+        ;(update-in albums-count album-id #(inc 1))
+        ;(assoc albums-count album-id 1)
+        ))
+    (if (> (get @albums-count album-id) 3)
+      ;(println "COMPLETED AN ALBUMXXXX" (get @albums-count album-id))
+      ;(println "NO ALBUMXX" @albums-count)
+      ))))
   messages)
 
 (fx/defn messages-loaded
@@ -138,7 +142,7 @@
                    :contacts     {}
                    :new-messages []}
                   messages)
-          result (find-albums all-messages)
+          ;result (find-albums all-messages)
           current-clock-value (get-in db [:pagination-info chat-id :cursor-clock-value])
           clock-value (when cursor (cursor->clock-value cursor))]
       ;(println "ccc222" (count all-messages) (count new-messages) (count already-loaded-messages))
