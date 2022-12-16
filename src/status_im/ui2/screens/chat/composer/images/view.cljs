@@ -1,4 +1,4 @@
-(ns status-im.ui2.screens.chat.composer.composer-images.composer-images
+(ns status-im.ui2.screens.chat.composer.images.view
   (:require [react-native.core :as rn]
             [status-im.ui2.screens.chat.composer.style :as style]
             [quo2.core :as quo2]

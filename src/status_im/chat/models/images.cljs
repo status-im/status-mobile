@@ -120,6 +120,13 @@
                (not (get images uri)))
       {::image-selected [uri current-chat-id]})))
 
+(fx/defn on-end-reached
+  {:events [:camera-roll/on-end-reached]}
+  [_ end-cursor loading? has-next-page?]
+  (when (and (not loading?) has-next-page?)
+    (re-frame/dispatch [:chat.ui/camera-roll-loading-more true])
+    (re-frame/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor])))
+
 (fx/defn camera-roll-get-photos
   {:events [:chat.ui/camera-roll-get-photos]}
   [_ num end-cursor]

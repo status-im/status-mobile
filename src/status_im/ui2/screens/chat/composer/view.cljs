@@ -18,7 +18,7 @@
             [i18n.i18n :as i18n]
             [status-im.ui2.screens.chat.composer.edit.view :as edit]
             [utils.re-frame :as rf]
-            [status-im.ui2.screens.chat.composer.composer-images.composer-images :as composer-images]
+            [status-im.ui2.screens.chat.composer.images.view :as composer-images]
             [status-im.ui2.screens.chat.composer.style :as style]))
 
 (defn calculate-y [context min-y max-y added-value chat-id]
@@ -238,107 +238,3 @@
                                          (style/bottom-sheet-background window-height))}]
                [composer-images/images-list images]
                [mentions/autocomplete-mentions suggestions text-input-ref]]))])))])
-
-;(defn composer [chat-id]
-;  [safe-area/consumer
-;   (fn [insets]
-;     (let [min-y              112
-;           context            (atom {:y     min-y ;current y value
-;                                     :min-y min-y ;minimum y value
-;                                     :dy    0 ;used for gesture
-;                                     :pdy   0 ;used for gesture
-;                                     :state :min ;:min, :custom-chat-available, :custom-chat-unavailable, :max
-;                                     :clear false})
-;           keyboard-was-shown (atom false)
-;           text-input-ref     (quo.react/create-ref)
-;           send-ref           (quo.react/create-ref)
-;           refs               {:send-ref       send-ref
-;                               :text-input-ref text-input-ref}]
-;       (fn []
-;         [:f>
-;          (fn []
-;            (let [reply                (<sub [:chats/reply-message])
-;                  edit                 (<sub [:chats/edit-message])
-;                  suggestions          (<sub [:chat/mention-suggestions])
-;                  images               (get-in (rf/sub [:chat/inputs]) [chat-id :metadata :sending-image])
-;                  {window-height :height} (rn/use-window-dimensions)
-;                  {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
-;                  max-y                (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets) (:status-bar-height @navigation-const)) ; 360 - default height
-;                  max-height           (Math/abs (- max-y 56 (:bottom insets))) ; 56 - top-bar height
-;                  added-value          (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
-;                  min-y                (+ min-y (when (or edit reply) 38))
-;                  y                    (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply images)
-;                  translate-y          (reanimated/use-shared-value 0)
-;                  shared-height        (reanimated/use-shared-value min-y)
-;                  bg-opacity           (reanimated/use-shared-value 0)
-;                  bg-bottom            (reanimated/use-shared-value (- window-height))
-;                  set-bg-opacity       (fn [value]
-;                                         (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
-;                                         (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
-;                  input-content-change (get-input-content-change context translate-y shared-height max-height
-;                                                                 set-bg-opacity keyboard-shown min-y max-y)
-;                  bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
-;                                                                 min-y max-y shared-height max-height set-bg-opacity)]
-;              (quo.react/effect! #(do
-;                                    (when (and @keyboard-was-shown (not keyboard-shown))
-;                                      (swap! context assoc :state :min))
-;                                    (reset! keyboard-was-shown keyboard-shown)
-;                                    (if (#{:max :custom-chat-unavailable} (:state @context))
-;                                      (set-bg-opacity 1)
-;                                      (set-bg-opacity 0))
-;                                    (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
-;                                    (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
-;              (quo.react/effect! #(when (and (not edit) (= (:state @context) :max))
-;                                    (swap! context assoc :state :min)
-;                                    (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
-;                                    (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
-;                                    (set-bg-opacity 0)
-;                                    (re-frame/dispatch [:dismiss-keyboard])) edit)
-;              [reanimated/view {:style (reanimated/apply-animations-to-style
-;                                        {:height shared-height}
-;                                        {:z-index 2})}
-;               ;;INPUT MESSAGE bottom sheet
-;               [gesture/gesture-detector {:gesture bottom-sheet-gesture}
-;                [reanimated/view {:style (reanimated/apply-animations-to-style
-;                                          {:transform [{:translateY translate-y}]}
-;                                          (style/input-bottom-sheet window-height))}
-;                 ;handle
-;                 [rn/view {:style (style/bottom-sheet-handle)}]
-;                 [edit/edit-message-auto-focus-wrapper (:text-input-ref refs) edit]
-;                 [reply/reply-message-auto-focus-wrapper (:text-input-ref refs) reply]
-;                 [rn/view {:style {:height (- max-y 80 added-value)}}
-;                  [input/text-input {:chat-id                chat-id
-;                                     :on-content-size-change input-content-change
-;                                     :sending-image          false
-;                                     :refs                   refs
-;                                     :set-active-panel       #()}]]]]
-;               ;CONTROLS
-;               (when-not (seq suggestions)
-;                 [rn/view {:style (style/bottom-sheet-controls insets)}
-;                  [quo2.button/button {:on-press (fn []
-;                                                   (permissions/request-permissions
-;                                                    {:permissions [:read-external-storage :write-external-storage]
-;                                                     :on-allowed  #(re-frame/dispatch [:bottom-sheet/show-sheet
-;                                                                                       {:content [photo-selector/photo-selector]}])
-;                                                     :on-denied   (fn []
-;                                                                    (utils/set-timeout
-;                                                                     #(utils/show-popup (i18n/label :t/error)
-;                                                                                        (i18n/label :t/external-storage-denied)) 50))}))
-;                                       :icon     true :type :outline :size 32} :i/image]
-;                  [rn/view {:width 12}]
-;                  [quo2.button/button {:icon true :type :outline :size 32} :i/reaction]
-;                  [rn/view {:flex 1}]
-;                  ;;SEND button
-;                  [rn/view {:ref send-ref :style (when-not (seq (get @input/input-texts chat-id)) {:width 0 :right -100})}
-;                   [quo2.button/button {:icon     true :size 32 :accessibility-label :send-message-button
-;                                        :on-press #(do (swap! context assoc :clear true)
-;                                                       (input/clear-input chat-id refs)
-;                                                       (re-frame/dispatch [:chat.ui/send-current-message]))}
-;                    :i/arrow-up]]])
-;               ;black background
-;               [reanimated/view {:style (reanimated/apply-animations-to-style
-;                                         {:opacity bg-opacity
-;                                          :transform [{:translateY bg-bottom}]}
-;                                         (style/bottom-sheet-background window-height))}]
-;               [composer-images/images-list images]
-;               [mentions/autocomplete-mentions suggestions]]))])))])

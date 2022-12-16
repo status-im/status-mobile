@@ -54,13 +54,6 @@
    (when (some #{item} @selected)
      [info-count/info-count (+ (utils/first-index #(= item %) @selected) 1) (style/image-count)])])
 
-(defn on-end-reached [end-cursor]
-  (let [loading?    (rf/sub [:camera-roll/loading-more])
-        has-next-page? (rf/sub [:camera-roll/has-next-page])]
-    (when (and (not loading?) has-next-page?)
-      (rf/dispatch [:chat.ui/camera-roll-loading-more true])
-      (rf/dispatch [:chat.ui/camera-roll-get-photos 20 end-cursor]))))
-
 (defn photo-selector []
   (rf/dispatch [:chat.ui/camera-roll-get-photos 20])
   [:f>
@@ -68,7 +61,9 @@
      (let [{window-height :height window-width :width} (rn/use-window-dimensions)
            safe-area          (safe-area/use-safe-area)
            camera-roll-photos (rf/sub [:camera-roll/photos])
-           end-cursor         (rf/sub [:camera-roll/end-cursor])]
+           end-cursor         (rf/sub [:camera-roll/end-cursor])
+           loading?    (rf/sub [:camera-roll/loading-more])
+           has-next-page? (rf/sub [:camera-roll/has-next-page])]
        [rn/view {:style {:height (- window-height (:top safe-area))}}
         [rn/touchable-opacity
          {:on-press #(js/alert "Camera: not implemented")
@@ -88,6 +83,5 @@
                        :content-container-style {:width          "100%"
                                                  :padding-bottom (+ (:bottom safe-area) 100)}
                        :style                   {:border-radius 20}
-                       :on-end-reached          (fn []
-                                                  (on-end-reached end-cursor))}]
+                       :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor loading? has-next-page?])}]
         [bottom-gradient]]))])
