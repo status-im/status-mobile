@@ -61,6 +61,7 @@ pipeline {
         //jenkins.copyArts(iose2e)
         jenkins.copyArts(apk)
         jenkins.copyArts(apke2e)
+        jenkins.copyArts(iosvisual)
         sha = "pkg/${utils.pkgFilename(ext: 'sha256')}"
         dir('pkg') {
           /* generate sha256 checksums for upload */
@@ -77,6 +78,7 @@ pipeline {
           Apk: utils.pkgUrl(apk), Apke2e: utils.pkgUrl(apke2e),
           iOS: utils.pkgUrl(ios), /*iOSe2e: utils.pkgUrl(iose2e),*/
           Diawi: utils.getEnv(ios, 'DIAWI_URL'),
+          iOSVisual:  utils.pkgUrl(iosvisual),
           /* upload the sha256 checksums file too */
           SHA: s3.uploadArtifact(sha),
         ]
