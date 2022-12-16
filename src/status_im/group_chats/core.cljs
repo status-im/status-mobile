@@ -111,6 +111,7 @@
                      :params      [nil current-chat-id selected-participants]
                      :js-response true
 <<<<<<< HEAD
+<<<<<<< HEAD
                      :on-success  #(re-frame/dispatch [:chat-updated % true])}]})
 >>>>>>> ebb7affef... group details screen 3
 =======
@@ -118,6 +119,9 @@
                                      (println "SUCCESSADDMEMBERS" selected-participants)
                                      (re-frame/dispatch [:chat-updated % true]))}]})
 >>>>>>> b1975a6e4... refactor
+=======
+                     :on-success  #(re-frame/dispatch [:chat-updated % true])}]})
+>>>>>>> 1f7aaff90... qa fixes
 
 (fx/defn add-members-from-invitation
   "Add members to a group chat"

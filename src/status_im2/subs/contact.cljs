@@ -13,8 +13,13 @@
             [status-im.ethereum.core :as ethereum]
             [clojure.string :as string]
             [utils.collection]
+<<<<<<< HEAD
             [i18n.i18n :as i18n]))
 >>>>>>> fb4f3352e... refactor
+=======
+            [i18n.i18n :as i18n]
+            [utils.re-frame :as rf]))
+>>>>>>> 71ce369a3... qa fixes
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -309,8 +314,10 @@
  :<- [:contacts/current-chat-contacts]
  (fn [members]
    (let [admins  (filter :admin? members)
-         online  (filter #(and (not (:admin? %)) (:online? %)) members)
-         offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]
+         online  (filter #(let [online (rf/sub [:visibility-status-updates/online? (:public-key %)])]
+                            (and (not (:admin? %)) online)) members)
+         offline (filter #(let [online (rf/sub [:visibility-status-updates/online? (:public-key %)])]
+                            (and (not (:admin? %)) (not online))) members)]
      (vals (cond-> {}
              (seq admins)  (assoc :owner {:title (i18n/label :t/owner) :data admins})
              (seq online)  (assoc :online {:title (i18n/label :t/online) :data online})

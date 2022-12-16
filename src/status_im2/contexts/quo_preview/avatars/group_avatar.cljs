@@ -43,8 +43,12 @@
                    (fn [c]
                      {:key   c
                       :value c})
+<<<<<<< HEAD
                    ["#ff0000" "#0000ff"])}])
 >>>>>>> 4b386e4d0... refactor
+=======
+                   ["#ff0000" "#0000ff"])}]) ; TODO: this is temporary only. Issue: https://github.com/status-im/status-mobile/issues/14566
+>>>>>>> 71ce369a3... qa fixes
 
 (defn cool-preview
   []
