@@ -43,12 +43,12 @@
         mentions-translate-value (if should-translate? (min min-value (- mentions-height (- max-height text-height))) mentions-height)]
     (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
-(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply]
+(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply images]
   (let [y               (calculate-y context min-y max-y added-value chat-id)
+        y (+ y (when (seq images) 80))
         y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
     (+ y (when (seq suggestions) y-with-mentions))))
 
-<<<<<<< HEAD
 (defn- clean-and-minimize-composer
   ([context chat-id refs min-y]
    (clean-and-minimize-composer context chat-id refs min-y false))
@@ -58,53 +58,23 @@
                              (- min-y 38)
                              min-y))
    (swap! context assoc :clear true)))
-=======
-(defn get-y-value [context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply images]
-  (let [y (calculate-y context keyboard-shown min-y max-y added-value)
-        y (+ y (when (seq images) 80))]
-    y (+ y (when (seq suggestions) (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)))))
->>>>>>> ff3badc39... tests
 
 (defn get-bottom-sheet-gesture [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height set-bg-opacity]
   (-> (gesture/gesture-pan)
       (gesture/on-start
-       (fn [_]
-         (if keyboard-shown
-           (swap! context assoc :pan-y (reanimated/get-shared-value translate-y))
-           (input/input-focus text-input-ref))))
+        (fn [_]
+          (if keyboard-shown
+            (swap! context assoc :pan-y (reanimated/get-shared-value translate-y))
+            (input/input-focus text-input-ref))))
       (gesture/on-update
-       (fn [evt]
-         (when keyboard-shown
-           (swap! context assoc :dy (- (.-translationY evt) (:pdy @context)))
-           (swap! context assoc :pdy (.-translationY evt))
-           (reanimated/set-shared-value
-            translate-y
-            (max (min (+ (.-translationY evt) (:pan-y @context)) (- min-y)) (- max-y))))))
+        (fn [evt]
+          (when keyboard-shown
+            (swap! context assoc :dy (- (.-translationY evt) (:pdy @context)))
+            (swap! context assoc :pdy (.-translationY evt))
+            (reanimated/set-shared-value
+              translate-y
+              (max (min (+ (.-translationY evt) (:pan-y @context)) (- min-y)) (- max-y))))))
       (gesture/on-end
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> d5e07b4d0... lint
-       (fn [_]
-         (when keyboard-shown
-           (if (< (:dy @context) 0)
-             (do
-               (swap! context assoc :state :max)
-               (input/input-focus text-input-ref)
-               (reanimated/set-shared-value translate-y (reanimated/with-timing (- max-y)))
-               (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
-               (set-bg-opacity 1))
-             (do
-<<<<<<< HEAD
-=======
-               (swap! context assoc :state :min)
->>>>>>> d5e07b4d0... lint
-               (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
-               (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
-               (set-bg-opacity 0)
-               (re-frame/dispatch [:dismiss-keyboard]))))))))
-<<<<<<< HEAD
-=======
         (fn [_]
           (when keyboard-shown
             (if (< (:dy @context) 0)
@@ -115,14 +85,10 @@
                 (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
                 (set-bg-opacity 1))
               (do
-                (swap! context assoc :state :min)
                 (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
                 (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
                 (set-bg-opacity 0)
                 (re-frame/dispatch [:dismiss-keyboard]))))))))
->>>>>>> e49307faa... updates
-=======
->>>>>>> d5e07b4d0... lint
 
 (defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y]
   (fn [evt]
@@ -148,19 +114,19 @@
               (swap! context assoc :y new-y)
               (when keyboard-shown
                 (reanimated/set-shared-value
-                 translate-y
-                 (reanimated/with-timing (- new-y)))
+                  translate-y
+                  (reanimated/with-timing (- new-y)))
                 (reanimated/set-shared-value
-                 shared-height
-                 (reanimated/with-timing (min new-y max-height)))))
+                  shared-height
+                  (reanimated/with-timing (min new-y max-height)))))
             (do
               (swap! context assoc :state :max)
               (swap! context assoc :y max-y)
               (when keyboard-shown
                 (set-bg-opacity 1)
                 (reanimated/set-shared-value
-                 translate-y
-                 (reanimated/with-timing (- max-y)))))))))))
+                  translate-y
+                  (reanimated/with-timing (- max-y)))))))))))
 
 (defn composer [chat-id]
   [safe-area/consumer
@@ -180,17 +146,17 @@
        (fn []
          [:f>
           (fn []
-<<<<<<< HEAD
             (let [reply                                    (<sub [:chats/reply-message])
                   edit                                     (<sub [:chats/edit-message])
                   suggestions                              (<sub [:chat/mention-suggestions])
+                  images               (get-in (rf/sub [:chat/inputs]) [chat-id :metadata :sending-image])
                   {window-height :height}                  (rn/use-window-dimensions)
                   {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
                   max-y                                    (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets) (:status-bar-height @navigation-const)) ; 360 - default height
                   max-height                               (Math/abs (- max-y 56 (:bottom insets))) ; 56 - top-bar height
                   added-value                              (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
                   min-y                                    (+ min-y (when (or edit reply) 38))
-                  y                                        (get-y-value context min-y max-y added-value max-height chat-id suggestions reply)
+                  y                                        (get-y-value context min-y max-y added-value max-height chat-id suggestions reply images)
                   translate-y                              (reanimated/use-shared-value 0)
                   shared-height                            (reanimated/use-shared-value min-y)
                   bg-opacity                               (reanimated/use-shared-value 0)
@@ -205,38 +171,6 @@
                   bottom-sheet-gesture                     (get-bottom-sheet-gesture context translate-y text-input-ref keyboard-shown
                                                                                      min-y max-y shared-height max-height set-bg-opacity)
                   initial-value                            (or (get @input/input-texts chat-id) nil)]
-=======
-            (let [reply                (<sub [:chats/reply-message])
-                  edit                 (<sub [:chats/edit-message])
-                  suggestions          (<sub [:chat/mention-suggestions])
-                  images               (get-in (rf/sub [:chat/inputs]) [chat-id :metadata :sending-image])
-                  {window-height :height} (rn/use-window-dimensions)
-                  {:keys [keyboard-shown keyboard-height]} (rn/use-keyboard)
-                  max-y                (- window-height (if (> keyboard-height 0) keyboard-height 360) (:top insets) (:status-bar-height @navigation-const)) ; 360 - default height
-                  max-height           (Math/abs (- max-y 56 (:bottom insets))) ; 56 - top-bar height
-                  added-value          (if (and (not (seq suggestions)) (or edit reply)) 38 0) ; increased height of input box needed when reply
-                  min-y                (+ min-y (when (or edit reply) 38))
-                  y                    (get-y-value context keyboard-shown min-y max-y added-value max-height chat-id suggestions reply images)
-                  translate-y          (reanimated/use-shared-value 0)
-                  shared-height        (reanimated/use-shared-value min-y)
-                  bg-opacity           (reanimated/use-shared-value 0)
-                  bg-bottom            (reanimated/use-shared-value (- window-height))
-                  set-bg-opacity       (fn [value]
-                                         (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
-                                         (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
-                  input-content-change (get-input-content-change context translate-y shared-height max-height
-                                                                 set-bg-opacity keyboard-shown min-y max-y)
-                  bottom-sheet-gesture (get-bottom-sheet-gesture context translate-y (:text-input-ref refs) keyboard-shown
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                                                 min-y max-y shared-height max-height set-bg-opacity)]
->>>>>>> ea730ed53... lint
-=======
-                                                                 min-y max-y shared-height max-height bg-opacity)]
->>>>>>> 40e3ab29c... lint
-=======
-                                                                 min-y max-y shared-height max-height set-bg-opacity)]
->>>>>>> 538490620... refactor
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown? (not keyboard-shown))
                                       (swap! context assoc :state :min))
@@ -248,33 +182,18 @@
                                       (set-bg-opacity 0))
                                     (reanimated/set-shared-value translate-y (reanimated/with-timing (- y)))
                                     (reanimated/set-shared-value shared-height (reanimated/with-timing (min y max-height)))))
-<<<<<<< HEAD
-=======
-              (quo.react/effect! #(when (and (not edit) (= (:state @context) :max))
-                                    (swap! context assoc :state :min)
-                                    (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
-                                    (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
-                                    (set-bg-opacity 0)
-                                    (re-frame/dispatch [:dismiss-keyboard])) edit)
->>>>>>> 40e3ab29c... lint
               [reanimated/view {:style (reanimated/apply-animations-to-style
-                                        {:height shared-height}
-                                        {:z-index 2})}
+                                         {:height shared-height}
+                                         {:z-index 2})}
                ;;INPUT MESSAGE bottom sheet
                [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                 [reanimated/view {:style (reanimated/apply-animations-to-style
-                                          {:transform [{:translateY translate-y}]}
-                                          (style/input-bottom-sheet window-height))}
+                                           {:transform [{:translateY translate-y}]}
+                                           (style/input-bottom-sheet window-height))}
                  ;handle
-<<<<<<< HEAD
-                 [rn/view {:style (styles/bottom-sheet-handle)}]
+                 [rn/view {:style (style/bottom-sheet-handle)}]
                  [edit/edit-message-auto-focus-wrapper text-input-ref edit clean-and-minimize-composer-fn]
                  [reply/reply-message-auto-focus-wrapper text-input-ref reply]
-=======
-                 [rn/view {:style (style/bottom-sheet-handle)}]
-                 [edit/edit-message-auto-focus-wrapper (:text-input-ref refs) edit]
-                 [reply/reply-message-auto-focus-wrapper (:text-input-ref refs) reply]
->>>>>>> ea730ed53... lint
                  [rn/view {:style {:height (- max-y 80 added-value)}}
                   [input/text-input {:chat-id                chat-id
                                      :on-content-size-change input-content-change
@@ -287,29 +206,6 @@
                  [rn/view {:style (style/bottom-sheet-controls insets)}
                   [quo2.button/button {:on-press (fn []
                                                    (permissions/request-permissions
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 40e3ab29c... lint
-=======
->>>>>>> d5e07b4d0... lint
-                                                    {:permissions [:read-external-storage :write-external-storage]
-                                                     :on-allowed  #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                                       {:content [photo-selector/photo-selector]}])
-                                                     :on-denied   (fn []
-                                                                    (utils/set-timeout
-                                                                     #(utils/show-popup (i18n/label :t/error)
-                                                                                        (i18n/label :t/external-storage-denied)) 50))}))
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                       :icon     true
-                                       :type     :outline
-                                       :size     32} :i/image]
-=======
-=======
->>>>>>> e49307faa... updates
                                                      {:permissions [:read-external-storage :write-external-storage]
                                                       :on-allowed  #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                                                         {:content [photo-selector/photo-selector]}])
@@ -317,22 +213,15 @@
                                                                      (utils/set-timeout
                                                                        #(utils/show-popup (i18n/label :t/error)
                                                                                           (i18n/label :t/external-storage-denied)) 50))}))
-<<<<<<< HEAD
-=======
->>>>>>> 40e3ab29c... lint
-=======
->>>>>>> e49307faa... updates
-=======
->>>>>>> d5e07b4d0... lint
-                                       :icon     true :type :outline :size 32} :i/image]
->>>>>>> ff3badc39... tests
+                                       :icon     true
+                                       :type     :outline
+                                       :size     32} :i/image]
                   [rn/view {:width 12}]
                   [quo2.button/button {:icon true
                                        :type :outline
                                        :size 32} :i/reaction]
                   [rn/view {:flex 1}]
                   ;;SEND button
-<<<<<<< HEAD
                   [rn/view {:ref   send-ref
                             :style (when-not (seq (get @input/input-texts chat-id)) {:width 0
                                                                                      :right -100})}
@@ -341,47 +230,11 @@
                                         :accessibility-label :send-message-button
                                         :on-press            #(do (clean-and-minimize-composer-fn false)
                                                                   (re-frame/dispatch [:chat.ui/send-current-message]))}
-=======
-                  [rn/view {:ref send-ref :style (when-not (or (seq (get @input/input-texts chat-id)) (seq images)) {:width 0 :right -100})}
-                   [quo2.button/button {:icon     true :size 32 :accessibility-label :send-message-button
-                                        :on-press #(do (swap! context assoc :clear true)
-                                                       (input/clear-input chat-id refs)
-                                                       (re-frame/dispatch [:chat.ui/send-current-message]))}
->>>>>>> 00c162d2a... updates
                     :i/arrow-up]]])
                ;black background
                [reanimated/view {:style (reanimated/apply-animations-to-style
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                         {:opacity   bg-opacity
-                                          :transform [{:translateY bg-bottom}]}
-                                         (styles/bottom-sheet-background window-height))}]
-               [mentions/autocomplete-mentions suggestions text-input-ref]]))])))])
-=======
-=======
->>>>>>> ff3badc39... tests
-<<<<<<< HEAD
-                                         {:opacity bg-opacity
-                                          :transform [{:translateY bg-bottom}]}
-                                         (styles/bottom-sheet-background window-height))}]
-=======
-=======
->>>>>>> 40e3ab29c... lint
-                                         {:opacity bg-opacity}
-                                         (style/bottom-sheet-background window-height))}]
-=======
-                                          {:opacity bg-opacity
+                                          {:opacity   bg-opacity
                                            :transform [{:translateY bg-bottom}]}
                                           (style/bottom-sheet-background window-height))}]
->>>>>>> e49307faa... updates
-=======
-                                         {:opacity bg-opacity
-                                          :transform [{:translateY bg-bottom}]}
-                                         (style/bottom-sheet-background window-height))}]
->>>>>>> d5e07b4d0... lint
                [composer-images/images-list images]
-               [mentions/autocomplete-mentions suggestions]]))])))])
->>>>>>> ea730ed53... lint
+               [mentions/autocomplete-mentions suggestions text-input-ref]]))])))])
