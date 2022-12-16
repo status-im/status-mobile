@@ -45,7 +45,7 @@
     [count-down-circle/circle-timer {:duration duration}]]
    [text/text
     {:size :paragraph-2 :weight :medium :style (merge-theme-style :text {})}
-    [i18n/label :undo]]])
+    [i18n/label :t/undo]]])
 
 (defn- toast-container
   [{:keys [left middle right]}]
