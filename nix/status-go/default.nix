@@ -52,6 +52,13 @@ in rec {
     arch = "arm64";
   };
 
+  liblcproxy-ios = callPackage ./mobile/buildNimbus.nix {
+    srcRaw = nimbusSource;
+    nimCompiler = nimCompiler;
+    platform = "ios";
+    arch = "arm64";
+  };
+
   shell = mkShell {
     inputsFrom = [ mobile.android mobile.ios ];
   };

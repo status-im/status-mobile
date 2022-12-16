@@ -89,6 +89,7 @@ let
 
   androidTargetArch = lib.getAttr arch androidTargetArchMap;
 
+  iosVersion = "8.0";
 
   compilerFlags = if isAndroid then
     "--sysroot ${androidToolchain}/sysroot -fPIC -target ${androidTargetArch}${api}"
@@ -96,13 +97,13 @@ let
     # TODO The conditional for -miphoneos-version-min=8.0 is required,
     # otherwise Nim will complain that thread-local storage is not supported for the current target
     # when expanding 'NIM_THREADVAR' macro
-    "-isysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -I${PROJECT_ROOT}/vendor/nimbus-build-system/vendor/Nim-csources-v1/c_code -fembed-bitcode -arch ${iosArch} ${if arch == "arm" then "" else "-miphoneos-version-min=8.0"} -I${iosIncludes}"
+    "-isysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -target ${iosArch}-apple-ios${iosVersion} ${if arch == "arm" then "" else "-miphoneos-version-min=${iosVersion}"} -I${iosIncludes}"
     else throw "Unsupported platform!";
 
   linkerFlags = if isAndroid then
   "--sysroot ${androidToolchain}/sysroot -target ${androidTargetArch}${api}"
   else if isIOS then
-  "--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"
+  "--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -target ${iosArch}-apple-ios${iosVersion} ${if arch == "arm" then "" else "-miphoneos-version-min=${iosVersion}"} -v"
   else throw "Unsupported platform!";
   
   ldDirMap = {
@@ -114,7 +115,7 @@ let
 
   cmakeArgs = if isAndroid then
     "-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=${api} -DCMAKE_ANDROID_ARCH_ABI=${lib.getAttr arch ldDirMap} -DCMAKE_ANDROID_NDK=${ANDROID_NDK_HOME}"
-  else if isIOS then ""
+  else if isIOS then "-DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_ARCHITECTURES=${iosArch} -DCMAKE_OSX_DEPLOYMENT_TARGET=9.3 -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO -DCMAKE_IOS_INSTALL_COMBINED=YES"
   else throw "Unsupported platform!";
   #clangPath = if isAndroid then "${androidToolchain}/bin" else "";
   #clangName = if isAndroid then "${androidTargetArch}${api}-clang" else "";
@@ -126,7 +127,6 @@ let
       export CXX=clang++
       export AR=${androidToolchain}/bin/llvm-ar
       export NM=${androidToolchain}/bin/llvm-nm
-      export RANLIB=${androidToolchain}/bin/llvm-ranlib
       export RANLIB=${androidToolchain}/bin/llvm-ranlib
       export LD=${androidToolchain}/bin/ld
       export AS=$CC
@@ -147,17 +147,18 @@ let
     ''
     else if isIOS then
     ''
+      export PATH=${xcodeWrapper}/bin:$PATH
+      export CC=clang #$(xcrun --sdk ${iosSdk} --find clang)
+      export CXX=clang++ #$(xcrun --sdk ${iosSdk} --find clang++)
+      export LD=clang
+      #export CMAKE_CXX_COMPILER=$(xcrun --sdk ${iosSdk} --find clang++)
+      export CFLAGS="${compilerFlags}"
+      export LDFLAGS="${linkerFlags}"
+
       mkdir bin
       touch bin/git
       chmod +x bin/git
-      export PATH=`pwd`/bin:$PATH
-
-      export PATH=${xcodeWrapper}/bin:$PATH
-      export CC=$(xcrun --sdk ${iosSdk} --find clang)
-      export CXX=$(xcrun --sdk ${iosSdk} --find clang++)
-      export CMAKE_CXX_COMPILER=$(xcrun --sdk ${iosSdk} --find clang++)
-      export CFLAGS="${compilerFlags}"
-      export LDFLAGS="${linkerFlags}"
+      export PATH=./bin:$PATH
     ''
     else throw "Unsupported platform!";
  
@@ -228,16 +229,18 @@ in stdenv.mkDerivation rec {
 
   preBuildPhase = ''
     #sed -E -i 's|^(.*)(-C vendor/nim-nat-traversal/vendor/miniupnp/miniupnpc)(.*)|\1 \2 CFLAGS="$(CFLAGS)" CC="$(CC)"\3|g' vendor/nimbus-build-system/makefiles/targets.mk
+
     sed -E -i 's|^(LIBBACKTRACE_SED := true.*)|\1\nCMAKE_ARGS := ${cmakeArgs}|g' vendor/nim-libbacktrace/Makefile
-    #sed -E -i 's|^(.*)(-C vendor/nim-libbacktrace --no-print-directory BUILD_CXX_LIB=0)|\1 \2 CFLAGS="$(CFLAGS)"|g' Makefile
     #sed -E -i 's|^CC :=.*|CC := $(CC)|g' vendor/nim-libbacktrace/Makefile
     #sed -E -i 's|^CXX :=.*|CXX := $(CXX)|g' vendor/nim-libbacktrace/Makefile
+
+    #sed -E -i 's|^(.*)(-C vendor/nim-libbacktrace --no-print-directory BUILD_CXX_LIB=0)|\1 \2 CFLAGS="$(CFLAGS)"|g' Makefile
     #sed -E -i 's|--host=arm| |g' vendor/nim-libbacktrace/Makefile
     #sed -E -i 's|--build=\$\(\./config.guess\)| |g' vendor/nim-libbacktrace/Makefile
     #sed -E -i 's|^(.*\./configure --prefix="/usr")(.*)|\1 --host=${androidTargetArch} --target=${androidTargetArch} CC="$(CC)" \2|g' vendor/nim-libbacktrace/Makefile
+
     sed -E -i 's|^(.*)(useNews\* = )(.*)|\1\2 false|g' vendor/nim-json-rpc/json_rpc/clients/config.nim
-
-
+    sed -E -i 's|(.*XOPEN_SOURCE.*)|#\1|g' vendor/nim-nat-traversal/vendor/miniupnp/miniupnpc/Makefile
 
     export HOME=$PWD
     # echo 'switch("passC", "${compilerFlags}")' >> config.nims
@@ -280,7 +283,7 @@ in stdenv.mkDerivation rec {
 
   buildPhase = ''
     make V=3 OS=${nimHostOs} \
-      CC=clang USE_SYSTEM_NIM=1 \
+      CC=clang CXX=clang USE_SYSTEM_NIM=1 \
       NIMFLAGS="\
       --passC:\"${compilerFlags}\" \
       --passL:\"${linkerFlags}\" \
