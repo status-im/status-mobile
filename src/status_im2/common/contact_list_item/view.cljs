@@ -53,6 +53,7 @@
      (if (= icon :options)
        [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
        [quo/checkbox {:default-checked? member?
+                      :accessibility-label :contact-toggle-check
                       :disabled?        (and member? (not admin?))
                       :on-change        (fn [selected]
                                           (if-not member?
@@ -81,6 +82,7 @@
 (defn contact-list-item
   [item _ _ extra-data]
   (let [{:keys [public-key ens-verified added? images]} item
+<<<<<<< HEAD
         display-name                                    (first (rf/sub
                                                                 [:contacts/contact-two-names-by-identity
                                                                  public-key]))
@@ -100,6 +102,23 @@
        :online?           true
        :size              :small
        :ring?             false}]
+=======
+        display-name (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
+        photo-path   (when (seq images) (rf/sub [:chats/photo-path public-key]))
+        current-pk   (rf/sub [:multiaccount/public-key])]
+    [rn/touchable-opacity (merge {:style          (style/container)
+                                  :accessibility-label :contact
+                                  :active-opacity 1
+                                  :on-press       #(open-chat public-key)
+                                  :on-long-press  #(rf/dispatch [:bottom-sheet/show-sheet
+                                                                 {:content (fn [] [actions/actions item extra-data])}])})
+     [quo/user-avatar {:full-name         display-name
+                       :profile-picture   photo-path
+                       :status-indicator? true
+                       :online?           true
+                       :size              :small
+                       :ring?             false}]
+>>>>>>> fb4f3352e... refactor
      [rn/view {:style {:margin-left 8}}
       [rn/view {:style {:flex-direction :row}}
        [quo/text {:weight :semi-bold} display-name]
