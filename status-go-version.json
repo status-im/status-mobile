@@ -8,6 +8,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "version": "v0.117.1a",
     "commit-sha1": "b4bdfd3df6cf5fb91ab2d0e9f3b38e8d1b9703e5",
     "src-sha256": "1s50q53p1j5ysnbj88c52zb2rh1ms21pnf6bjc7wja8gzcpih2wl"
@@ -73,4 +74,9 @@
     "src-sha256": "10ig1l4im6fkd7kn90ylichzpcf29m7k59w91d7p47j18icdmwv7"
 >>>>>>> be4f63a29... refactor
 >>>>>>> a9e3fba45... refactor
+=======
+    "version": "v0.117.1",
+    "commit-sha1": "8593866862175eeab6f30765e5f0b813f3b1b4db",
+    "src-sha256": "1ml22627jadj150y9yj7p9z91vx49min6hzvsg88i3nhx4153nia"
+>>>>>>> 7889555c1... lint
 }
