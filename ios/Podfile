@@ -1,0 +1,56 @@
+platform :ios, '11.0'
+
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+abstract_target 'Status' do
+  # Pods for StatusQuo
+  config = use_native_modules!
+
+  use_react_native!(:path => config["reactNativePath"])
+
+  pod 'react-native-image-resizer', :path => '../node_modules/react-native-image-resizer'
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
+  pod 'SQLCipher', '~>3.0'
+  pod 'SSZipArchive', '2.4.3'
+
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone.podspec"
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
+
+  pod "react-native-status-keycard", path: "../node_modules/react-native-status-keycard"
+  pod "react-native-status", path: "../modules/react-native-status"
+  pod "Keycard", git: "https://github.com/status-im/Keycard.swift.git"
+  pod 'secp256k1', git: "https://github.com/status-im/secp256k1.swift.git", submodules: true
+
+  target 'StatusIm' do
+
+    target 'StatusImTests' do
+      inherit! :complete
+      # Pods for testing
+    end
+  end
+
+  target 'StatusImPR' do
+  end
+
+  #commented out temporarily
+  #use_flipper!({ 'Flipper' => '0.74.0' })
+  #post_install do |installer|
+  #  flipper_post_install(installer)
+  #end
+
+  # some of libs wouldn't be build for x86_64 otherwise and that is
+  # necessary for ios simulators
+  post_install do |installer_representation|
+    installer_representation.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
+      end
+    end
+  end
+
+  use_native_modules!
+end
+
