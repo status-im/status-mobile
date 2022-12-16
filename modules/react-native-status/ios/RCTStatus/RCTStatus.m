@@ -90,26 +90,25 @@ static RCTBridge *bridge;
 
 RCT_EXPORT_MODULE();
 
-////////////////////////////////////////////////////////////////////
 #pragma mark - shouldMoveToInternalStorage
-//////////////////////////////////////////////////////////////////// shouldMoveToInternalStorage
+
 RCT_EXPORT_METHOD(shouldMoveToInternalStorage:(RCTResponseSenderBlock)onResultCallback) {
     // Android only
     onResultCallback(@[[NSNull null]]);
 }
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - moveToInternalStorage
-//////////////////////////////////////////////////////////////////// moveToInternalStorage
+
 RCT_EXPORT_METHOD(moveToInternalStorage:(RCTResponseSenderBlock)onResultCallback) {
     // Android only
     onResultCallback(@[[NSNull null]]);
 }
 
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - InitKeystore method
-//////////////////////////////////////////////////////////////////// StopNode
+
 RCT_EXPORT_METHOD(initKeystore:(NSString *)keyUID
                       callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -132,9 +131,9 @@ RCT_EXPORT_METHOD(initKeystore:(NSString *)keyUID
                    });
 }
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - SendLogs method
-//////////////////////////////////////////////////////////////////// sendLogs
+
 RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
                   jsLogs:(NSString *)jsLogs
                   callback:(RCTResponseSenderBlock)callback) {
@@ -196,7 +195,6 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     callback(@[zipFile.absoluteString]);
 }
 
-//////////////////////////////////////////////////////////////////// addPeer
 RCT_EXPORT_METHOD(exportLogs:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"exportLogs() method called");
@@ -205,7 +203,6 @@ RCT_EXPORT_METHOD(exportLogs:(RCTResponseSenderBlock)callback) {
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// addPeer
 RCT_EXPORT_METHOD(addPeer:(NSString *)enode
                   callback:(RCTResponseSenderBlock)callback) {
   NSString *result = StatusgoAddPeer(enode);
@@ -215,7 +212,6 @@ RCT_EXPORT_METHOD(addPeer:(NSString *)enode
 #endif
 }
 
-//////////////////////////////////////////////////////////////////// multiAccountImportPrivateKey
 RCT_EXPORT_METHOD(deleteMultiaccount:(NSString *)keyUID
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -226,7 +222,6 @@ RCT_EXPORT_METHOD(deleteMultiaccount:(NSString *)keyUID
     callback(@[result]);
 }
 
-////////////////////////////////////verify//////////////////////////////// multiAccountImportPrivateKey
 RCT_EXPORT_METHOD(deleteImportedKey:(NSString *)keyUID
                   address:(NSString *)address
                   password:(NSString *)password
@@ -239,7 +234,6 @@ RCT_EXPORT_METHOD(deleteImportedKey:(NSString *)keyUID
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// multiAccountGenerateAndDeriveAddresses
 RCT_EXPORT_METHOD(multiAccountGenerateAndDeriveAddresses:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -249,7 +243,6 @@ RCT_EXPORT_METHOD(multiAccountGenerateAndDeriveAddresses:(NSString *)json
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// MultiAccountStoreAccount
 RCT_EXPORT_METHOD(multiAccountStoreAccount:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -259,7 +252,6 @@ RCT_EXPORT_METHOD(multiAccountStoreAccount:(NSString *)json
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// MultiAccountLoadAccount
 RCT_EXPORT_METHOD(multiAccountLoadAccount:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -269,7 +261,6 @@ RCT_EXPORT_METHOD(multiAccountLoadAccount:(NSString *)json
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// MultiAccountReset
 RCT_EXPORT_METHOD(multiAccountReset:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"MultiAccountReset() method called");
@@ -278,7 +269,6 @@ RCT_EXPORT_METHOD(multiAccountReset:(RCTResponseSenderBlock)callback) {
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// multiAccountStoreDerived
 RCT_EXPORT_METHOD(multiAccountStoreDerived:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -288,7 +278,6 @@ RCT_EXPORT_METHOD(multiAccountStoreDerived:(NSString *)json
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// multiAccountImportPrivateKey
 RCT_EXPORT_METHOD(multiAccountImportPrivateKey:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -298,7 +287,6 @@ RCT_EXPORT_METHOD(multiAccountImportPrivateKey:(NSString *)json
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// hashTransaction
 RCT_EXPORT_METHOD(hashTransaction:(NSString *)txArgsJSON
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -308,7 +296,6 @@ RCT_EXPORT_METHOD(hashTransaction:(NSString *)txArgsJSON
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// hashMessage
 RCT_EXPORT_METHOD(hashMessage:(NSString *)message
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -318,7 +305,6 @@ RCT_EXPORT_METHOD(hashMessage:(NSString *)message
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// getConnectionStringForBootstrappingAnotherDevice
 RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)configJSON
                   callback:(RCTResponseSenderBlock)callback) {
 
@@ -335,7 +321,6 @@ RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)c
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// inputConnectionStringForBootstrapping
 RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
                   configJSON:(NSString *)configJSON
                   callback:(RCTResponseSenderBlock)callback) {
@@ -354,7 +339,6 @@ RCT_EXPORT_METHOD(inputConnectionStringForBootstrapping:(NSString *)cs
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// hashTypedData
 RCT_EXPORT_METHOD(hashTypedData:(NSString *)data
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -364,7 +348,6 @@ RCT_EXPORT_METHOD(hashTypedData:(NSString *)data
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// hashTypedDataV4
 RCT_EXPORT_METHOD(hashTypedDataV4:(NSString *)data
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -374,7 +357,6 @@ RCT_EXPORT_METHOD(hashTypedDataV4:(NSString *)data
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// sendTransactionWithSignature
 RCT_EXPORT_METHOD(sendTransactionWithSignature:(NSString *)txArgsJSON
                   signature:(NSString *)signature
                   callback:(RCTResponseSenderBlock)callback) {
@@ -385,7 +367,6 @@ RCT_EXPORT_METHOD(sendTransactionWithSignature:(NSString *)txArgsJSON
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// multiAccountImportMnemonic
 RCT_EXPORT_METHOD(multiAccountImportMnemonic:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -395,7 +376,6 @@ RCT_EXPORT_METHOD(multiAccountImportMnemonic:(NSString *)json
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// multiAccountDeriveAddresses
 RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -415,7 +395,6 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
     return [json valueForKey:@"key-uid"];
 }
 
-//////////////////////////////////////////////////////////////////// prepareDirAndUpdateConfig
 -(NSString *) prepareDirAndUpdateConfig:(NSString *)config
                              withKeyUID:(NSString *)keyUID {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -488,7 +467,6 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
 }
 
 
-//////////////////////////////////////////////////////////////////// prepareDirAndUpdateConfig
 RCT_EXPORT_METHOD(prepareDirAndUpdateConfig:(NSString *)keyUID
                                      config:(NSString *)config
                                    callback:(RCTResponseSenderBlock)callback) {
@@ -500,7 +478,6 @@ RCT_EXPORT_METHOD(prepareDirAndUpdateConfig:(NSString *)keyUID
     callback(@[updatedConfig]);
 }
 
-//////////////////////////////////////////////////////////////////// saveAccountAndLogin
 RCT_EXPORT_METHOD(saveAccountAndLogin:(NSString *)multiaccountData
                   password:(NSString *)password
                   settings:(NSString *)settings
@@ -517,7 +494,6 @@ RCT_EXPORT_METHOD(saveAccountAndLogin:(NSString *)multiaccountData
     NSLog(@"%@", result);
 }
 
-//////////////////////////////////////////////////////////////////// saveAccountAndLoginWithKeycard
 RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)multiaccountData
                   password:(NSString *)password
                   settings:(NSString *)settings
@@ -579,7 +555,6 @@ RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)multiaccountData
     }
 }
 
-//////////////////////////////////////////////////////////////////// login
 RCT_EXPORT_METHOD(login:(NSString *)accountData
                   password:(NSString *)password) {
 #if DEBUG
@@ -591,7 +566,6 @@ RCT_EXPORT_METHOD(login:(NSString *)accountData
     NSLog(@"%@", result);
 }
 
-//////////////////////////////////////////////////////////////////// loginWithConfig
 RCT_EXPORT_METHOD(loginWithConfig:(NSString *)accountData
                   password:(NSString *)password
                   configJSON:(NSString *)configJSON) {
@@ -604,7 +578,6 @@ RCT_EXPORT_METHOD(loginWithConfig:(NSString *)accountData
     NSLog(@"%@", result);
 }
 
-//////////////////////////////////////////////////////////////////// loginWithKeycard
 RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
                   password:(NSString *)password
                   chatKey:(NSString *)chatKey) {
@@ -619,7 +592,6 @@ RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
     NSLog(@"%@", result);
 }
 
-//////////////////////////////////////////////////////////////////// logout
 RCT_EXPORT_METHOD(logout) {
 #if DEBUG
     NSLog(@"Logout() method called");
@@ -629,7 +601,6 @@ RCT_EXPORT_METHOD(logout) {
     NSLog(@"%@", result);
 }
 
-//////////////////////////////////////////////////////////////////// openAccounts
 RCT_EXPORT_METHOD(openAccounts:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"OpenAccounts() method called");
@@ -643,7 +614,6 @@ RCT_EXPORT_METHOD(openAccounts:(RCTResponseSenderBlock)callback) {
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// verityAccountPassword
 RCT_EXPORT_METHOD(verify:(NSString *)address
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
@@ -660,7 +630,6 @@ RCT_EXPORT_METHOD(verify:(NSString *)address
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// verifyDatabasePassword
 RCT_EXPORT_METHOD(verifyDatabasePassword:(NSString *)keyUID
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
@@ -671,7 +640,6 @@ RCT_EXPORT_METHOD(verifyDatabasePassword:(NSString *)keyUID
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// changeDatabasePassword
 RCT_EXPORT_METHOD(reEncryptDbAndKeystore:(NSString *)keyUID
                   currentPassword:(NSString *)currentPassword
                   newPassword:(NSString *)newPassword
@@ -684,7 +652,6 @@ RCT_EXPORT_METHOD(reEncryptDbAndKeystore:(NSString *)keyUID
     callback(@[result]);
 }
 
-//////////////////////////////////////////////////////////////////// convertToKeycardAccount
 RCT_EXPORT_METHOD(convertToKeycardAccount:(NSString *)keyUID
                   accountData:(NSString *)accountData
                   settings:(NSString *)settings
@@ -699,9 +666,9 @@ RCT_EXPORT_METHOD(convertToKeycardAccount:(NSString *)keyUID
     callback(@[result]);
 }
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - SendTransaction
-//////////////////////////////////////////////////////////////////// sendTransaction
+
 RCT_EXPORT_METHOD(sendTransaction:(NSString *)txArgsJSON
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
@@ -712,9 +679,9 @@ RCT_EXPORT_METHOD(sendTransaction:(NSString *)txArgsJSON
     callback(@[result]);
 }
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - SignMessage
-//////////////////////////////////////////////////////////////////// signMessage
+
 RCT_EXPORT_METHOD(signMessage:(NSString *)message
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -724,9 +691,9 @@ RCT_EXPORT_METHOD(signMessage:(NSString *)message
     callback(@[result]);
 }
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - Recover
-//////////////////////////////////////////////////////////////////// recover
+
 RCT_EXPORT_METHOD(recover:(NSString *)message
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -736,9 +703,9 @@ RCT_EXPORT_METHOD(recover:(NSString *)message
     callback(@[result]);
 }
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - SignTypedData
-//////////////////////////////////////////////////////////////////// signTypedData
+
 RCT_EXPORT_METHOD(signTypedData:(NSString *)data
                   account:(NSString *)account
                   password:(NSString *)password
@@ -750,9 +717,9 @@ RCT_EXPORT_METHOD(signTypedData:(NSString *)data
     callback(@[result]);
 }
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - SignTypedDataV4
-//////////////////////////////////////////////////////////////////// signTypedDataV4
+
 RCT_EXPORT_METHOD(signTypedDataV4:(NSString *)data
                   account:(NSString *)account
                   password:(NSString *)password
@@ -764,9 +731,9 @@ RCT_EXPORT_METHOD(signTypedDataV4:(NSString *)data
     callback(@[result]);
 }
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - SignGroupMembership
-//////////////////////////////////////////////////////////////////// signGroupMembership
+
 RCT_EXPORT_METHOD(signGroupMembership:(NSString *)content
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -776,9 +743,9 @@ RCT_EXPORT_METHOD(signGroupMembership:(NSString *)content
     callback(@[result]);
 }
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - ExtractGroupMembershipSignatures
-//////////////////////////////////////////////////////////////////// extractGroupMembershipSignatures
+
 RCT_EXPORT_METHOD(extractGroupMembershipSignatures:(NSString *)content
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -788,9 +755,9 @@ RCT_EXPORT_METHOD(extractGroupMembershipSignatures:(NSString *)content
     callback(@[result]);
 }
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - GetNodeConfig
-//////////////////////////////////////////////////////////////////// getNodeConfig
+
 RCT_EXPORT_METHOD(getNodeConfig:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"GetNodeConfig() method called");
@@ -800,9 +767,9 @@ RCT_EXPORT_METHOD(getNodeConfig:(RCTResponseSenderBlock)callback) {
 }
 
 
-////////////////////////////////////////////////////////////////////
+
 #pragma mark - only android methods
-////////////////////////////////////////////////////////////////////
+
 RCT_EXPORT_METHOD(setAdjustResize) {
 #if DEBUG
     NSLog(@"setAdjustResize() works only on Android");
@@ -1031,7 +998,7 @@ RCT_EXPORT_METHOD(deactivateKeepAwake)
     });
 }
 
-//// deviceinfo
+#pragma mark - deviceinfo
 
 - (bool) is24Hour
 {
