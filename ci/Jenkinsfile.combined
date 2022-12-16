@@ -104,6 +104,7 @@ pipeline {
         }
       } }
     }
+
     stage('Run e2e') {
       when { expression { btype == 'nightly' && params.PUBLISH } }
       steps { script {
