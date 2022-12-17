@@ -48,12 +48,11 @@
                                    mentions-height)]
     (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
-(defn get-y-value
-  [context min-y max-y added-value max-height chat-id suggestions reply images]
+(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply edit]
   (let [y               (calculate-y context min-y max-y added-value chat-id)
         y               (+ y (when (seq images) 80))
         y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
-    (+ y (when (seq suggestions) y-with-mentions))))
+    (+ y (when (seq suggestions) y-with-mentions) (when edit 38))))
 
 (defn- clean-and-minimize-composer
   ([context chat-id refs min-y]
@@ -100,6 +99,7 @@
 (defn get-input-content-change
   [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y]
   (fn [evt]
+    (prn @context)
     (if (:clear @context)
       (do
         (swap! context dissoc :clear)
@@ -230,7 +230,7 @@
                #(do
                   (when (and @keyboard-was-shown? (not keyboard-shown))
                     (swap! context assoc :state :min))
-                  (when (and blank-composer? (not (seq images)))
+                  (when (and blank-composer? (not (seq images)) (not edit))
                     (clean-and-minimize-composer-fn false))
                   (when (seq images)
                     (input/show-send refs))
