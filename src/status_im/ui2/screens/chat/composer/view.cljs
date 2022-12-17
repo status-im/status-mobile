@@ -19,7 +19,8 @@
             [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
             [status-im.utils.handlers :refer [<sub]]
             [status-im.utils.utils :as utils]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]))
 
 (defn calculate-y
   [context min-y max-y added-value chat-id]
@@ -292,17 +293,16 @@
                     :size 32} :i/reaction]
                   [rn/view {:flex 1}]
                   ;;SEND button
-                  [rn/view
-                   {:ref   send-ref
-                    :style (when (seq images)
-                             {:width 0
-                              :right -100})}
-                   [quo2.button/button
-                    {:icon                true
-                     :size                32
-                     :accessibility-label :send-message-button
-                     :on-press            #(do (clean-and-minimize-composer-fn false)
-                                               (re-frame/dispatch [:chat.ui/send-current-message]))}
+                  [rn/view {:ref   send-ref
+                            :style (when (seq images)
+                                     {:width 0
+                                      :right -100})}
+                   [quo2.button/button {:icon                true
+                                        :size                32
+                                        :accessibility-label :send-message-button
+                                        :on-press            #(do (clean-and-minimize-composer-fn false)
+                                                                  (scroll-to-bottom)
+                                                                  (re-frame/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
                ;black background
                [reanimated/view
