@@ -26,13 +26,13 @@
   [context min-y max-y added-value chat-id]
   (let [input-text (:input-text (get (<sub [:chat/inputs]) chat-id))
         num-lines  (count (string/split input-text "\n"))]
+    (if (<= 5 num-lines)
+      (do (swap! context assoc :state :max) max-y)
+      (do (swap! context assoc :state :min) min-y))
     (if (= (:state @context) :max)
       (do (swap! context assoc :state :max) max-y)
-      (if (< (:y @context) max-y)
-        (+ (:y @context) added-value)
-        (if (<= 5 num-lines)
-          (do (swap! context assoc :state :max) max-y)
-          (do (swap! context assoc :state :min) min-y))))))
+      (when (< (:y @context) max-y)
+        (+ (:y @context) added-value)))))
 
 (defn calculate-y-with-mentions
   [y max-y max-height chat-id suggestions reply]
@@ -48,7 +48,7 @@
                                    mentions-height)]
     (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
-(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply edit]
+(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply images edit]
   (let [y               (calculate-y context min-y max-y added-value chat-id)
         y               (+ y (when (seq images) 80))
         y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
@@ -61,8 +61,8 @@
    (input/clear-input chat-id refs)
    (swap! context assoc :y (if edit?
                              (- min-y 38)
-                             min-y))
-   (swap! context assoc :state :min)))
+                             min-y)) 
+     (swap! context assoc :clear true :state :min)))
 
 (defn get-bottom-sheet-gesture
   [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height set-bg-opacity]
@@ -96,9 +96,10 @@
                (set-bg-opacity 0)
                (re-frame/dispatch [:dismiss-keyboard]))))))))
 
-(defn get-input-content-change
-  [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y]
+(defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y blank-composer?]
   (fn [evt]
+    (when-not blank-composer?
+      (swap! context assoc :clear false))
     (if (:clear @context)
       (do
         (swap! context dissoc :clear)
@@ -191,7 +192,8 @@
                                                             chat-id
                                                             suggestions
                                                             reply
-                                                            images)
+                                                            images
+                                                            edit)
                   translate-y                              (reanimated/use-shared-value 0)
                   shared-height                            (reanimated/use-shared-value min-y)
                   bg-opacity                               (reanimated/use-shared-value 0)
@@ -203,6 +205,8 @@
                   (fn [value]
                     (reanimated/set-shared-value bg-bottom (if (= value 1) 0 (- window-height)))
                     (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
+                  blank-composer?                          (string/blank? (get @input/input-texts
+                                                                               chat-id))
                   input-content-change                     (get-input-content-change
                                                             context
                                                             translate-y
@@ -211,9 +215,8 @@
                                                             set-bg-opacity
                                                             keyboard-shown
                                                             min-y
-                                                            max-y)
-                  blank-composer?                          (string/blank? (get @input/input-texts
-                                                                               chat-id))
+                                                            max-y
+                                                            blank-composer?)
                   bottom-sheet-gesture                     (get-bottom-sheet-gesture
                                                             context
                                                             translate-y
