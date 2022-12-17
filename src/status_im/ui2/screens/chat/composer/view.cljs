@@ -60,12 +60,10 @@
    (clean-and-minimize-composer context chat-id refs min-y false))
   ([context chat-id refs min-y edit?]
    (input/clear-input chat-id refs)
-   (swap! context assoc
-     :y
-     (if edit?
-       (- min-y 38)
-       min-y))
-   (swap! context assoc :clear true)))
+   (swap! context assoc :y (if edit?
+                             (- min-y 38)
+                             min-y))
+   (swap! context assoc :state :min)))
 
 (defn get-bottom-sheet-gesture
   [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height set-bg-opacity]
