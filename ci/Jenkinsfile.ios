@@ -89,7 +89,7 @@ pipeline {
     stage('Test') {
       steps { script {
         currentBuild.displayName = "PR-${params.PR_ID}" 
-        sh 'make run-visual-test-ios-release'          
+        sh "make run-visual-test-ios-release BINARY_PATH=${api}"          
         
       } }
     }

@@ -314,9 +314,11 @@ test: ##@test Run tests once in NodeJS
 	node --require ./test-resources/override.js target/test/test.js
 
 run-visual-test-ios-release: export TARGET := clojure
+run-visual-test-ios-release: export TEST_BINARY_PATH := "$(BINARY_PATH)"
 run-visual-test-ios-release: ##@test Run tests once in NodeJS
 	yarn install
-	detox build --configuration ios.sim.release && \
+	brew tap wix/brew
+	brew install applesimutils
 	detox test --configuration ios.sim.release
 	
 run-visual-test-ios: export TARGET := clojure
