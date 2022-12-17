@@ -99,7 +99,6 @@
 (defn get-input-content-change
   [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y]
   (fn [evt]
-    (prn @context)
     (if (:clear @context)
       (do
         (swap! context dissoc :clear)
