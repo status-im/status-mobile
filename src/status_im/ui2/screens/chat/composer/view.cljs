@@ -61,8 +61,8 @@
    (input/clear-input chat-id refs)
    (swap! context assoc :y (if edit?
                              (- min-y 38)
-                             min-y)) 
-     (swap! context assoc :clear true :state :min)))
+                             min-y))
+   (swap! context assoc :clear true :state :min)))
 
 (defn get-bottom-sheet-gesture
   [context translate-y text-input-ref keyboard-shown min-y max-y shared-height max-height set-bg-opacity]
