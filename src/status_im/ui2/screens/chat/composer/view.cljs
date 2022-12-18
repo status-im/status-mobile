@@ -20,7 +20,8 @@
             [status-im.utils.handlers :refer [<sub]]
             [status-im.utils.utils :as utils]
             [utils.re-frame :as rf]
-            [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]))
+            [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]
+            [status-im.utils.platform :as platform]))
 
 (defn calculate-y
   [context min-y max-y added-value chat-id]
@@ -114,7 +115,8 @@
         (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
         (set-bg-opacity 0))
       (when (not= (:state @context) :max)
-        (let [new-y (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") 40) 40))]
+        (let [offset-value (if platform/ios? 22 40)
+              new-y        (+ min-y (- (max (oget evt "nativeEvent" "contentSize" "height") offset-value) offset-value))]
           (if (< new-y max-y)
             (do
               (if (> (- max-y new-y) 120)
