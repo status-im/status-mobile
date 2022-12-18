@@ -96,9 +96,9 @@
                (set-bg-opacity 0)
                (re-frame/dispatch [:dismiss-keyboard]))))))))
 
-(defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y blank-composer?]
+(defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y blank-composer? initial-value]
   (fn [evt]
-    (when-not blank-composer?
+    (when-not (or blank-composer? initial-value)
       (swap! context assoc :clear false))
     (if (:clear @context)
       (do
@@ -207,6 +207,7 @@
                     (reanimated/set-shared-value bg-opacity (reanimated/with-timing value)))
                   blank-composer?                          (string/blank? (get @input/input-texts
                                                                                chat-id))
+                  initial-value                            (or (get @input/input-texts chat-id) nil)
                   input-content-change                     (get-input-content-change
                                                             context
                                                             translate-y
@@ -216,7 +217,8 @@
                                                             keyboard-shown
                                                             min-y
                                                             max-y
-                                                            blank-composer?)
+                                                            blank-composer?
+                                                            initial-value)
                   bottom-sheet-gesture                     (get-bottom-sheet-gesture
                                                             context
                                                             translate-y
@@ -226,8 +228,7 @@
                                                             max-y
                                                             shared-height
                                                             max-height
-                                                            set-bg-opacity)
-                  initial-value                            (or (get @input/input-texts chat-id) nil)]
+                                                            set-bg-opacity)]
               (quo.react/effect!
                #(do
                   (when (and @keyboard-was-shown? (not keyboard-shown))
