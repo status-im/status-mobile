@@ -1,7 +1,14 @@
+
 (ns status-im.ui2.screens.chat.composer.view
-  (:require [react-native.gesture :as gesture]
+  (:require [clojure.string :as string]
+            [i18n.i18n :as i18n]
+            [oops.core :refer [oget]]
+            [quo.components.safe-area :as safe-area]
+            [quo.react]
+            [quo.react-native :as rn :refer [navigation-const]]
+            [quo2.components.buttons.button :as quo2.button]
+            [react-native.gesture :as gesture]
             [react-native.reanimated :as reanimated]
-<<<<<<< HEAD
             [status-im.ui.components.permissions :as permissions]
             [status-im.ui2.screens.chat.composer.edit.view :as edit]
             [status-im.ui2.screens.chat.composer.images.view :as composer-images]
@@ -10,29 +17,9 @@
             [status-im.ui2.screens.chat.composer.reply :as reply]
             [status-im.ui2.screens.chat.composer.style :as style]
             [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
-=======
-            [re-frame.core :as re-frame]
-            [quo.components.safe-area :as safe-area]
-            [quo.react-native :as rn :refer [navigation-const]]
-            [status-im.ui2.screens.chat.composer.style :as styles]
-            [status-im.ui2.screens.chat.composer.reply :as reply]
-            [quo2.components.buttons.button :as quo2.button]
->>>>>>> 7757d93dd (clean)
             [status-im.utils.handlers :refer [<sub]]
-            [status-im.ui2.screens.chat.composer.input :as input]
-            [oops.core :refer [oget]]
-            [quo.react]
-            [clojure.string :as string]
-            [status-im.ui2.screens.chat.composer.mentions :as mentions]
-            [status-im.ui.components.permissions :as permissions]
-            [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
             [status-im.utils.utils :as utils]
-<<<<<<< HEAD
             [utils.re-frame :as rf]
-=======
-            [i18n.i18n :as i18n]
-            [status-im.ui2.screens.chat.composer.edit.view :as edit]
->>>>>>> 7757d93dd (clean)
             [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]))
 
 (defn calculate-y
@@ -40,8 +27,11 @@
   (let [input-text (:input-text (get (<sub [:chat/inputs]) chat-id))
         num-lines  (count (string/split input-text "\n"))]
     (if (<= 5 num-lines)
-      (do (swap! context assoc :state :max) max-y)
-      (do (swap! context assoc :state :min) min-y))
+      (do (when-not (:minimized-from-handlebar? @context)
+            (swap! context assoc :state :max)) max-y)
+      (when (:minimized-from-handlebar? @context)
+        (swap! context assoc :state :min :minimized-from-handlebar? false)
+        min-y))
     (if (= (:state @context) :max)
       (do (swap! context assoc :state :max) max-y)
       (when (< (:y @context) max-y)
@@ -98,16 +88,18 @@
          (when keyboard-shown
            (if (< (:dy @context) 0)
              (do
+               (swap! context assoc :minimized-from-handlebar? false)
                (swap! context assoc :state :max)
                (input/input-focus text-input-ref)
                (reanimated/set-shared-value translate-y (reanimated/with-timing (- max-y)))
                (reanimated/set-shared-value shared-height (reanimated/with-timing max-height))
                (set-bg-opacity 1))
              (do
+               (swap! context assoc :minimized-from-handlebar? true)
                (reanimated/set-shared-value translate-y (reanimated/with-timing (- min-y)))
                (reanimated/set-shared-value shared-height (reanimated/with-timing min-y))
                (set-bg-opacity 0)
-               (re-frame/dispatch [:dismiss-keyboard]))))))))
+               (rf/dispatch [:dismiss-keyboard]))))))))
 
 (defn get-input-content-change [context translate-y shared-height max-height set-bg-opacity keyboard-shown min-y max-y blank-composer? initial-value]
   (fn [evt]
@@ -154,13 +146,13 @@
   [safe-area/consumer
    (fn [insets]
      (let [min-y               112
-           context             (atom {:y     min-y ;current y value
-                                      :min-y min-y ;minimum y value
-                                      :dy    0     ;used for gesture
-                                      :pdy   0     ;used for gesture
-                                      :state :min  ;:min, :custom-chat-available,
-                                                   ;:custom-chat-unavailable, :max
-                                      :clear false})
+           context             (atom {:y                         min-y ;current y value
+                                      :min-y                     min-y ;minimum y value
+                                      :dy                        0     ;used for gesture
+                                      :pdy                       0     ;used for gesture
+                                      :state                     :min  ;:min, :custom-chat-available, :custom-chat-unavailable, :max
+                                      :clear                     false
+                                      :minimized-from-handlebar? false})
            keyboard-was-shown? (atom false)
            text-input-ref      (quo.react/create-ref)
            send-ref            (quo.react/create-ref)
@@ -287,7 +279,7 @@
                    {:on-press (fn []
                                 (permissions/request-permissions
                                  {:permissions [:read-external-storage :write-external-storage]
-                                  :on-allowed  #(re-frame/dispatch
+                                  :on-allowed  #(rf/dispatch
                                                  [:bottom-sheet/show-sheet
                                                   {:content (fn []
                                                               (photo-selector/photo-selector chat-id))}])
@@ -316,7 +308,7 @@
                                         :accessibility-label :send-message-button
                                         :on-press            #(do (clean-and-minimize-composer-fn false)
                                                                   (scroll-to-bottom)
-                                                                  (re-frame/dispatch [:chat.ui/send-current-message]))}
+                                                                  (rf/dispatch [:chat.ui/send-current-message]))}
                     :i/arrow-up]]])
                ;black background
                [reanimated/view
