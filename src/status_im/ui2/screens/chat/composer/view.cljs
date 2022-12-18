@@ -1,14 +1,7 @@
 (ns status-im.ui2.screens.chat.composer.view
-  (:require [clojure.string :as string]
-            [i18n.i18n :as i18n]
-            [oops.core :refer [oget]]
-            [quo.components.safe-area :as safe-area]
-            [quo.react]
-            [quo.react-native :as rn :refer [navigation-const]]
-            [quo2.components.buttons.button :as quo2.button]
-            [re-frame.core :as re-frame]
-            [react-native.gesture :as gesture]
+  (:require [react-native.gesture :as gesture]
             [react-native.reanimated :as reanimated]
+<<<<<<< HEAD
             [status-im.ui.components.permissions :as permissions]
             [status-im.ui2.screens.chat.composer.edit.view :as edit]
             [status-im.ui2.screens.chat.composer.images.view :as composer-images]
@@ -17,9 +10,29 @@
             [status-im.ui2.screens.chat.composer.reply :as reply]
             [status-im.ui2.screens.chat.composer.style :as style]
             [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
+=======
+            [re-frame.core :as re-frame]
+            [quo.components.safe-area :as safe-area]
+            [quo.react-native :as rn :refer [navigation-const]]
+            [status-im.ui2.screens.chat.composer.style :as styles]
+            [status-im.ui2.screens.chat.composer.reply :as reply]
+            [quo2.components.buttons.button :as quo2.button]
+>>>>>>> 7757d93dd (clean)
             [status-im.utils.handlers :refer [<sub]]
+            [status-im.ui2.screens.chat.composer.input :as input]
+            [oops.core :refer [oget]]
+            [quo.react]
+            [clojure.string :as string]
+            [status-im.ui2.screens.chat.composer.mentions :as mentions]
+            [status-im.ui.components.permissions :as permissions]
+            [status-im.ui2.screens.chat.photo-selector.view :as photo-selector]
             [status-im.utils.utils :as utils]
+<<<<<<< HEAD
             [utils.re-frame :as rf]
+=======
+            [i18n.i18n :as i18n]
+            [status-im.ui2.screens.chat.composer.edit.view :as edit]
+>>>>>>> 7757d93dd (clean)
             [status-im2.contexts.chat.messages.list.view :refer [scroll-to-bottom]]))
 
 (defn calculate-y
