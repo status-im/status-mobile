@@ -24,17 +24,22 @@
             [status-im.utils.platform :as platform]))
 
 (defn calculate-y
-  [context min-y max-y added-value chat-id]
+  [context min-y max-y added-value chat-id set-bg-opacity]
   (let [input-text (:input-text (get (<sub [:chat/inputs]) chat-id))
         num-lines  (count (string/split input-text "\n"))]
     (if (<= 5 num-lines)
       (do (when-not (:minimized-from-handlebar? @context)
-            (swap! context assoc :state :max)) max-y)
+            (swap! context assoc :state :max)
+            (set-bg-opacity 1))
+          max-y)
       (when (:minimized-from-handlebar? @context)
         (swap! context assoc :state :min :minimized-from-handlebar? false)
+        (set-bg-opacity 0)
         min-y))
     (if (= (:state @context) :max)
-      (do (swap! context assoc :state :max) max-y)
+      (do
+        (set-bg-opacity 1)
+        max-y)
       (when (< (:y @context) max-y)
         (+ (:y @context) added-value)))))
 
@@ -52,9 +57,14 @@
                                    mentions-height)]
     (when (or (< y max-y) should-translate?) mentions-translate-value)))
 
+<<<<<<< HEAD
 (defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply images edit]
   (let [y               (calculate-y context min-y max-y added-value chat-id)
         y               (+ y (when (seq images) 80))
+=======
+(defn get-y-value [context min-y max-y added-value max-height chat-id suggestions reply edit set-bg-opacity]
+  (let [y               (calculate-y context min-y max-y added-value chat-id set-bg-opacity)
+>>>>>>> 5a2716172 (Test fix for 14536)
         y-with-mentions (calculate-y-with-mentions y max-y max-height chat-id suggestions reply)]
     (+ y (when (seq suggestions) y-with-mentions) (when edit 38))))
 
@@ -137,11 +147,12 @@
             (do
               (swap! context assoc :state :max)
               (swap! context assoc :y max-y)
-              (when keyboard-shown
-                (set-bg-opacity 1)
-                (reanimated/set-shared-value
-                 translate-y
-                 (reanimated/with-timing (- max-y)))))))))))
+              (if keyboard-shown
+                (do (set-bg-opacity 1)
+                    (reanimated/set-shared-value
+                     translate-y
+                     (reanimated/with-timing (- max-y))))
+                (set-bg-opacity 0)))))))))
 
 (defn composer
   [chat-id]
