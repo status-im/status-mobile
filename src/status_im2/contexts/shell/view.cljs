@@ -22,15 +22,20 @@
     :style (style/placeholder-container (rn/status-bar-height))}
    [rn/image {:source nil ;; TODO(parvesh) - add placeholder image
               :style  style/placeholder-image}]
-   [quo/text style/placeholder-title
+   [quo/text {:size   :paragraph-1
+              :weight :semi-bold
+              :style  style/placeholder-title}
     (i18n/label :t/shell-placeholder-title)]
-   [quo/text style/placeholder-subtitle
+   [quo/text {:size   :paragraph-2
+              :weight :regular
+              :align  :center
+              :style  style/placeholder-subtitle}
     (i18n/label :t/shell-placeholder-subtitle)]])
 
 (defn jump-to-text []
-  [quo/text   {:size   :heading-1
-               :weight :semi-bold
-               :style  (style/jump-to-text (rn/status-bar-height))}
+  [quo/text {:size   :heading-1
+             :weight :semi-bold
+             :style  (style/jump-to-text (rn/status-bar-height))}
    (i18n/label :t/jump-to)])
 
 (defn render-card [{:keys [id type content] :as card}]

@@ -50,17 +50,12 @@
    :height     120})
 
 (def placeholder-title
-  {:size   :paragraph-1
-   :weight :semi-bold
-   :style  {:margin-top 20
-            :color      colors/white}})
+  {:margin-top 20
+   :color      colors/white})
 
 (def placeholder-subtitle
-  {:size   :paragraph-2
-   :weight :regular
-   :align  :center
-   :style  {:margin-top 4
-            :color      colors/white}})
+  {:margin-top 4
+   :color      colors/white})
 
 ;; Shell
 (defn jump-to-text [status-bar-height]
