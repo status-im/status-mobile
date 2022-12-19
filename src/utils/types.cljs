@@ -14,6 +14,14 @@
   [data]
   (clj->pretty-json data 0))
 
+(defn json->clj
+  [json]
+  (when-not (= json "undefined")
+    (try
+      (js->clj (.parse js/JSON json))
+      (catch js/Error _
+        (when (string? json) json)))))
+
 (defn json->js
   [json]
   (when-not (= json "undefined")

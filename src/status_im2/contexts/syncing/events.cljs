@@ -2,7 +2,7 @@
   (:require [utils.re-frame :as rf]
             [utils.security.core :as security]
             [taoensso.timbre :as log]
-            [status-im.native-module.core :as status]
+            [react-native.status :as status]
             [status-im2.contexts.syncing.sheets.enter-password.view :as sheet]))
 
 (rf/defn initiate-local-pairing-with-connection-string

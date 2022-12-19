@@ -5,11 +5,11 @@
             [status-im2.common.theme.core :as theme]
             [quo2.theme :as quo2.theme]
             [utils.re-frame :as rf]
+            [react-native.status :as status]
 
             ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
             [quo.theme :as quo.theme]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
-            [status-im.native-module.core :as status]
             [status-im.utils.keychain.core :as keychain]
             [status-im2.navigation.events :as navigation]))
 

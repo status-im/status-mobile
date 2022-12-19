@@ -7,6 +7,10 @@
             [taoensso.timbre :as log]
             ["react-native" :as react-native]))
 
+;; TODO (19/12/22 yqrashawn) this namespace has been moved to the react-native.status namespace,
+;; we keep this only for old (status 1.0) code,
+;; can be removed with old code later
+
 (defn status []
   (when (exists? (.-NativeModules react-native))
     (.-Status ^js (.-NativeModules react-native))))

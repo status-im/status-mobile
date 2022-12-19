@@ -3,6 +3,7 @@
             [re-frame.interop :as interop]
             [reagent.impl.batching :as batching]
             [react-native.core :as rn]
+            [react-native.status :as status]
             [react-native.platform :as platform]
             [react-native.shake :as react-native-shake]
             [react-native.languages :as react-native-languages]
@@ -23,7 +24,6 @@
 
             ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
             status-im.events
-            [status-im.native-module.core :as status]
             [status-im.notifications.local :as notifications]
             [status-im.async-storage.core :as async-storage]
             [status-im.utils.universal-links.core :as utils.universal-links]))
