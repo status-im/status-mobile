@@ -80,7 +80,7 @@
     (fn []
       (or @formatter
           (reset! formatter
-            (goog.18n/mk-fmt i18n/locale format))))))
+                  (goog.18n/mk-fmt i18n/locale format))))))
 
 (def date-time-fmt (get-formatter-fn medium-date-time-format))
 (def date-fmt (get-formatter-fn medium-date-format))
