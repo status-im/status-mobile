@@ -12,7 +12,13 @@
   [rn/view {:style (style/content-container new-notifications?)}
    ;; TODO - Use status-im2.common.shell.constants for content type
    (case content-type
-     :text [quo/text style/last-message-text-props data]
+     :text [quo/text
+            {:size            :paragraph-2
+             :weight          :regular
+             :number-of-lines 1
+             :ellipsize-mode  :tail
+             :style           style/last-message-text}
+            data]
      :photo [quo/preview-list {:type               :photo
                                :more-than-99-label (i18n/label :counter-99-plus)
                                :size               24
@@ -26,7 +32,13 @@
                [quo/channel-avatar
                 {:emoji                  (:emoji data)
                  :emoji-background-color (colors/alpha color-50 0.1)}]
-               [quo/text style/community-channel-props (:channel-name data)]]
+               [quo/text
+                {:size            :paragraph-2
+                 :weight          :medium
+                 :number-of-lines 1
+                 :ellipsize-mode  :tail
+                 :style           style/community-channel}
+                (:channel-name data)]]
      :community-info (case (:type data)
                        :pending      [quo/status-tag
                                       {:status         {:type :pending}
@@ -107,13 +119,30 @@
         [rn/image {:source (:source banner)
                    :style  {:width  160}}])
       [rn/view {:style style/secondary-container}
-       [quo/text style/title-props title]
-       [quo/text style/subtitle-props (subtitle content)]
+       [quo/text
+        {:size            :paragraph-1
+         :weight          :semi-bold
+         :number-of-lines 1
+         :ellipsize-mode  :tail
+         :style           style/title}
+        title]
+       [quo/text
+        {:size   :paragraph-2
+         :weight :medium
+         :style  style/subtitle}
+        (subtitle content)]
        [bottom-container (merge {:color-50 color-50 :color-60 color-60} content)]]
       (when avatar-params
         [rn/view {:style style/avatar-container}
          [avatar avatar-params type customization-color]])
-      [quo/button (style/close-button-props on-close) :i/close]]]))
+      [quo/button
+       {:size           24
+        :type           :grey
+        :icon           true
+        :on-press       on-close
+        :override-theme :dark
+        :style          style/close-button}
+       :i/close]]]))
 
 ;; browser Card
 (defn browser-card [_]
