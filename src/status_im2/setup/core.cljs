@@ -3,7 +3,7 @@
             [re-frame.interop :as interop]
             [reagent.impl.batching :as batching]
             [react-native.core :as rn]
-            [react-native.status :as status]
+            [status-im.native-module.core :as status]
             [react-native.platform :as platform]
             [react-native.shake :as react-native-shake]
             [react-native.languages :as react-native-languages]

@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [react-native.background-timer :as background-timer]
-            [react-native.status :as status]
+            [status-im.native-module.core :as status]
             [taoensso.timbre :as log]
             [utils.types :as types]))
 
