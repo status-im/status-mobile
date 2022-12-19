@@ -1,4 +1,4 @@
-(ns status-im.ui2.screens.chat.messages.deleted-message
+(ns status-im2.contexts.chat.messages.message.deleted-message.view
   (:require [i18n.i18n :as i18n]
             [quo2.components.messages.system-message :as system-message]))
 
@@ -14,6 +14,5 @@
                        :added                   (i18n/label :added)}
     :timestamp-str    timestamp-str
     :non-pressable?   true
-    :animate-landing? (if (or deleted-undoable-till deleted-for-me-undoable-till)
-                        true
-                        false)}])
+    :animate-landing?
+    (if (or deleted-undoable-till deleted-for-me-undoable-till) true false)}])

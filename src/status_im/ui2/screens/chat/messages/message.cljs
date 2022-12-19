@@ -33,7 +33,7 @@
             [status-im.ui.screens.communities.icon :as communities.icon]
             [status-im.ui2.screens.chat.components.reaction-drawer :as reaction-drawer]
             [status-im.ui2.screens.chat.components.reply :as components.reply]
-            [status-im.ui2.screens.chat.messages.deleted-message :as deleted-message]
+            [status-im2.contexts.chat.messages.message.deleted-message.view :as deleted-message]
             [status-im.utils.config :as config]
             [status-im.utils.datetime :as time]
             [utils.security.core :as security]
