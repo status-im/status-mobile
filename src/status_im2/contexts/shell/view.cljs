@@ -7,6 +7,7 @@
             [react-native.safe-area :as safe-area]
             [status-im2.contexts.shell.style :as style]
             [status-im2.common.home.view :as common.home]
+            [react-native.linear-gradient :as linear-gradient]
             [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.home-stack :as home-stack]
             [status-im2.contexts.shell.bottom-tabs :as bottom-tabs]
@@ -14,7 +15,7 @@
             [status-im2.contexts.shell.constants :as shell.constants]))
 
 (defn placeholder []
-  [rn/linear-gradient
+  [linear-gradient/linear-gradient
    {:colors [colors/neutral-100-opa-0 colors/neutral-100-opa-100]
     :start {:x 0 :y 0}
     :end   {:x 0 :y 1}
@@ -27,7 +28,9 @@
     (i18n/label :t/shell-placeholder-subtitle)]])
 
 (defn jump-to-text []
-  [quo/text (style/jump-to-text (rn/status-bar-height))
+  [quo/text   {:size   :heading-1
+               :weight :semi-bold
+               :style  (style/jump-to-text (rn/status-bar-height))}
    (i18n/label :t/jump-to)])
 
 (defn render-card [{:keys [id type content] :as card}]

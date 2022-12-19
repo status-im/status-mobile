@@ -64,9 +64,7 @@
 
 ;; Shell
 (defn jump-to-text [status-bar-height]
-  {:size   :heading-1
-   :weight :semi-bold
-   :style  {:color         colors/white
-            :margin-top    (+ 68 status-bar-height)
-            :margin-bottom 20
-            :margin-left   20}})
+  {:color         colors/white
+   :margin-top    (+ 68 status-bar-height)
+   :margin-bottom 20
+   :margin-left   20})
