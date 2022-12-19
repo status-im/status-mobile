@@ -4,8 +4,7 @@
             ["@react-native-community/blur" :as blur]
             [react-native.flat-list :as flat-list]
             [react-native.section-list :as section-list]
-            [react-native.platform :as platform]
-            ["react-native-linear-gradient" :default LinearGradient]))
+            [react-native.platform :as platform]))
 
 (def app-state ^js (.-AppState ^js react-native))
 (def blur-view (reagent/adapt-react-class (.-BlurView blur)))
@@ -19,8 +18,6 @@
 (def touchable-opacity (reagent/adapt-react-class (.-TouchableOpacity ^js react-native)))
 (def touchable-highlight (reagent/adapt-react-class (.-TouchableHighlight ^js react-native)))
 (def touchable-without-feedback (reagent/adapt-react-class (.-TouchableWithoutFeedback ^js react-native)))
-
-(def linear-gradient (reagent/adapt-react-class LinearGradient))
 
 (def flat-list flat-list/flat-list)
 
