@@ -1897,7 +1897,6 @@
     "remove-user-from-group": "Remove {{username}} from the group",
     "edit-name-image": "Edit name and image",
     "owner": "Owner",
-<<<<<<< HEAD
     "local-pairing-experimental-mode": "Local Pairing Mode (alpha)",
     "syncing": "Syncing",
     "synced-devices": "Synced Devices",
@@ -1913,6 +1912,7 @@
     "instruction-after-qr-generated": "On your other device, navigate to the Syncing screen and select “Scan sync”",
     "show-existing-keys": "Show Existing Keys",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "scan-sync-code": "Scan Sync Code",
     "confirm-selection": "Confirm selection"
 =======
@@ -1921,4 +1921,8 @@
     "online": "Online"
 >>>>>>> babab2fb0... qa fixes
 >>>>>>> 4b3899532... qa fixes
+=======
+    "scan-sync-code": "Scan Sync Code",
+    "online": "Online"
+>>>>>>> e0a0e1d3d... rebase
 }
