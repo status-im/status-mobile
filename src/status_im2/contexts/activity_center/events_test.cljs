@@ -3,7 +3,7 @@
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
             [status-im.constants :as constants]
-            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im2.common.json-rpc.events :as json-rpc]
             status-im.events
             [status-im.test-helpers :as h]
             [status-im2.contexts.activity-center.events :as activity-center]

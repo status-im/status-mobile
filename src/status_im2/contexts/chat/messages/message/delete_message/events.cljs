@@ -3,9 +3,9 @@
    ;;TODO move to status-im2
    [status-im.chat.models.message-list :as message-list]
    [status-im.chat.models.pin-message :as models.pin-message]
-   [status-im.ethereum.json-rpc :as json-rpc]
    [status-im.utils.datetime :as datetime]
 
+   [status-im2.common.json-rpc.events :as json-rpc]
    [taoensso.timbre :as log]
    [utils.re-frame :as rf]))
 
