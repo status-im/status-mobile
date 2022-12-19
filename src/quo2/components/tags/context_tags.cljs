@@ -1,5 +1,6 @@
 (ns quo2.components.tags.context-tags
   (:require [quo2.components.avatars.group-avatar :as group-avatar]
+            [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as quo2.theme]
@@ -57,20 +58,31 @@
       (trim-public-key public-key)]]))
 
 (defn context-tag
-  [params photo name]
-  (let [text-style (params :text-style)]
+  [params photo name channel-name]
+  (let [text-style (params :text-style)
+        text-params (merge {:weight :medium
+                            :size :paragraph-2}
+                           {:style (merge text-style {:justify-content :center})})
+        icon-color (colors/theme-colors colors/neutral-50 colors/neutral-40)]
     [base-tag (assoc-in params [:style :padding-left] 3)
      [rn/image
-      {:style  {:width            20
-                :border-radius    10
-                :background-color :white
-                :height           20}
+      {:style {:width 20
+               :border-radius 10
+               :background-color :white
+               :height 20}
        :source photo}]
-     [text/text
-      (merge {:weight :medium
-              :size   :paragraph-2}
-             {:style text-style})
-      (str " " name)]]))
+     [rn/view
+      {:style {:align-items :center
+               :flex-direction :row}}
+      [text/text text-params (str " " name)]
+      (when channel-name
+        [:<>
+         [icons/icon
+          :main-icons/chevron-right
+          {:color  icon-color
+           :width  16
+           :height 16}]
+         [text/text text-params (str "#" " " channel-name)]])]]))
 
 (defn user-avatar-tag
   []
