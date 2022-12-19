@@ -198,8 +198,7 @@
         children            (fn []
                               (if mentions-enabled?
                                 (map-indexed
-                                 (fn [index [item text]]
-                                   [index [item]]
+                                 (fn [index [_ text]]
                                    ^{:key (str index "_" type "_" text)}
                                    [rn/text (when (= type :mention) {:style {:color colors/primary-50}})
                                     text])
