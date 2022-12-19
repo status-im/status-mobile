@@ -59,7 +59,9 @@
   {::json-rpc/call [{:method      "wakuext_removeMembersFromGroupChat"
                      :params      [nil current-chat-id deselected-members]
                      :js-response true
-                     :on-success  #(re-frame/dispatch [:chat-updated % true])
+                     :on-success  #(do
+                                     (println "RESXX" deselected-members)
+                                     (re-frame/dispatch [:chat-updated % true]))
                      :on-error #()}]})
 
 (fx/defn join-chat
