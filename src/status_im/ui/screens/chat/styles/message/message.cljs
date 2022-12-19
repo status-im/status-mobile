@@ -104,14 +104,7 @@
   {:flex-direction :row
    :margin-top     1})
 
-(defn pin-author-text
-  []
-  (merge typography/font-medium
-         {:color  quo2.colors/primary-50
-          :bottom 2}))
-
-(defn pinned-by-text
-  []
+(defn pinned-by-text []
   {:margin-left 5})
 
 (def message-author-touchable

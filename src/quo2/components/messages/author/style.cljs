@@ -4,7 +4,6 @@
 (def container
   {:flex           1
    :flex-wrap      :wrap
-   :height         18
    :flex-direction :row
    :align-items    :center})
 

@@ -58,8 +58,7 @@
 (defn chat-render
   []
   (let [;;we want to react only on these fields, do not use full chat map here
-        {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])
-        mutual-contact-requests-enabled?       (rf/sub [:mutual-contact-requests/enabled?])]
+        {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])]
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [page-nav]
      ;; TODO (flexsurfer) this should be in-app notification component in quo2
@@ -67,11 +66,7 @@
      [pin-limit-popover/pin-limit-popover chat-id]
      [pin.banner/banner chat-id]
      ;;MESSAGES LIST
-     [messages.list/messages-list
-      {:chat                             chat
-       :mutual-contact-requests-enabled? mutual-contact-requests-enabled?
-       :show-input?                      show-input?
-       :bottom-space                     15}]
+     [messages.list/messages-list {:chat chat :show-input? show-input?}]
      ;;INPUT COMPOSER
      (when show-input?
        [composer/composer chat-id])]))

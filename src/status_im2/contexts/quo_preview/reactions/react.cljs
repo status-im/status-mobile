@@ -37,7 +37,7 @@
          {:padding-vertical 60
           :align-items      :center}
          [quo2.reaction/reaction @state]
-         [quo2.reaction/open-reactions-menu @state]]]])))
+         [quo2.reaction/add-reaction @state]]]])))
 
 (defn preview-react
   []

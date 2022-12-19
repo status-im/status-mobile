@@ -13,7 +13,7 @@
    :border-radius      8
    :height             24})
 
-(defn open-reactions-menu
+(defn add-reaction
   [{:keys [on-press]}]
   (let [dark? (theme/dark?)]
     [rn/touchable-opacity
@@ -22,7 +22,6 @@
       :style               (merge reaction-styling
                                   {:padding-horizontal 9
                                    :border-width       1
-                                   :margin-top         5
                                    :border-color       (if dark?
                                                          colors/neutral-70
                                                          colors/neutral-30)})}
@@ -35,11 +34,9 @@
 (defn reaction
   "Add your emoji as a param here"
   [{:keys [emoji clicks neutral? on-press accessibility-label]}]
-  (let [dark?            (theme/dark?)
-        text-color       (if dark?
-                           colors/white
-                           colors/neutral-100)
-        numeric-value    (int clicks)
+  (let [dark? (theme/dark?)
+        text-color (if dark? colors/white colors/neutral-100)
+        numeric-value (int clicks)
         clicks-positive? (pos? numeric-value)]
     [rn/touchable-opacity
      {:on-press            on-press
@@ -60,16 +57,14 @@
                                     (and (not dark?) (not neutral?))
                                     (assoc :border-color colors/neutral-30
                                            :border-width 1)))}
-     [icons/icon emoji
-      {:no-color true
-       :size     16}]
-     [quo2.text/text
-      {:size            :paragraph-2
-       :weight          :semi-bold
-       :color           text-color
-       :flex-direction  :row
-       :align-items     :center
-       :justify-content :center}
+     [icons/icon emoji {:no-color true
+                        :size     16}]
+     [quo2.text/text {:size            :paragraph-2
+                      :weight          :semi-bold
+                      :color           text-color
+                      :flex-direction  :row
+                      :align-items     :center
+                      :justify-content :center}
       (if clicks-positive?
         (str " " numeric-value)
         "")]]))

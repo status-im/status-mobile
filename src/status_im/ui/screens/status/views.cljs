@@ -174,12 +174,12 @@
            :picker-on-open  (fn [])
            :picker-on-close (fn [])
            :send-emoji      (fn [{:keys [emoji-id]}]
-                              (re-frame/dispatch [::models.reactions/send-emoji-reaction
+                              (re-frame/dispatch [:models.reactions/send-emoji-reaction
                                                   {:message-id (:message-id message)
                                                    :chat-id    chat-id
                                                    :emoji-id   emoji-id}]))
            :retract-emoji   (fn [{:keys [emoji-id emoji-reaction-id]}]
-                              (re-frame/dispatch [::models.reactions/send-emoji-reaction-retraction
+                              (re-frame/dispatch [:models.reactions/send-emoji-reaction-retraction
                                                   {:message-id        (:message-id message)
                                                    :chat-id           chat-id
                                                    :emoji-id          emoji-id

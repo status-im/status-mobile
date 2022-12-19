@@ -226,9 +226,10 @@
 (fx/defn handle-message-link
   {:events [:browser.ui/message-link-pressed]}
   [_ link]
-  (if (links/universal-link? link)
-    {:dispatch [:universal-links/handle-url link]}
-    {:browser/show-browser-selection link}))
+  (when (security/safe-link? link)
+    (if (links/universal-link? link)
+      {:dispatch [:universal-links/handle-url link]}
+      {:browser/show-browser-selection link})))
 
 (fx/defn update-browser-on-nav-change
   [cofx url error?]

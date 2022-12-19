@@ -73,13 +73,13 @@
 
 
 (fx/defn send-emoji-reaction
-  {:events [::send-emoji-reaction]}
+  {:events [:models.reactions/send-emoji-reaction]}
   [{{:keys [current-chat-id]} :db :as cofx} reaction]
   (message.protocol/send-reaction cofx
                                   (update reaction :chat-id #(or % current-chat-id))))
 
 (fx/defn send-retract-emoji-reaction
-  {:events [::send-emoji-reaction-retraction]}
+  {:events [:models.reactions/send-emoji-reaction-retraction]}
   [{{:keys [current-chat-id]} :db :as cofx} reaction]
   (message.protocol/send-retract-reaction cofx
                                           (update reaction :chat-id #(or % current-chat-id))))
