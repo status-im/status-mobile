@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.message.delete-message.events
   (:require
-   ;;TODO move to status-im2
+   ;; TODO move to status-im2
    [status-im.chat.models.message-list :as message-list]
    [status-im.utils.datetime :as datetime]
 

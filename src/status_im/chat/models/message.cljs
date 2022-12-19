@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.chat.models :as chat-model]
-            [status-im.chat.models.delete-message :as delete-message]
+            [status-im2.contexts.chat.messages.message.delete-message.events :as delete-message]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message-list :as message-list]

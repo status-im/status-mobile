@@ -9,8 +9,8 @@
             [quo2.foundations.typography :as typography]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.chat.models.delete-message]
-            [status-im.chat.models.delete-message-for-me]
+            [status-im2.contexts.chat.messages.message.delete-message.events]
+            [status-im2.contexts.chat.messages.message.delete-message-for-me.events]
             [status-im.chat.models.images :as images]
             [status-im.chat.models.reactions :as models.reactions]
             [status-im.constants :as constants]
@@ -303,7 +303,7 @@
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
-  [{:keys [last-in-group? timestamp-str deleted? deleted-for-me? timestamp
+  [{:keys [last-in-group? deleted? deleted-for-me? timestamp
            pinned from chat-id]
     :as   message} content]
   (let [response-to  (:response-to (:content message))

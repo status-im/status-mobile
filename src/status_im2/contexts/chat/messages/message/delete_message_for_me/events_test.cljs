@@ -1,8 +1,9 @@
-(ns status-im.chat.models.delete-message-for-me-test
+(ns status-im2.contexts.chat.messages.message.delete-message-for-me.events-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.chat.models.delete-message-for-me :as
-             delete-message-for-me]
-            [status-im.utils.datetime :as datetime]))
+            [status-im.utils.datetime :as datetime]
+            [status-im2.common.json-rpc.events :as json-rpc]
+            [status-im2.contexts.chat.messages.message.delete-message-for-me.events :as
+             delete-message-for-me]))
 
 (def mid "message-id")
 (def cid "chat-id")
@@ -30,7 +31,7 @@
         (let [db             (update-in db
                                         [:messages cid mid]
                                         assoc
-                                        :deleted-for-me? true
+                                        :deleted-for-me?              true
                                         :deleted-for-me-undoable-till
                                         (+ (datetime/timestamp) 1000))
               result-message (get-in (delete-message-for-me/undo {:db db} message)
@@ -43,9 +44,10 @@
         (let [db             (update-in db
                                         [:messages cid mid]
                                         assoc
-                                        :deleted-for-me? true
+                                        :deleted-for-me?              true
                                         :deleted-for-me-undoable-till (- (datetime/timestamp) 1000))
-              result-message (get-in (delete-message-for-me/undo {:db db} message) [:db :messages cid mid])]
+              result-message (get-in (delete-message-for-me/undo {:db db} message)
+                                     [:db :messages cid mid])]
           (is (= (:id result-message) mid))
           (is (nil? (:deleted-for-me-undoable-till result-message)))
           (is (true? (:deleted-for-me? result-message)))))
@@ -62,7 +64,7 @@
         (let [expected-db {:messages {cid {mid {:id mid}}}}
               effects     (delete-message-for-me/delete-and-sync {:db db} message)
               result-db   (:db effects)
-              rpc-calls   (:status-im.ethereum.json-rpc/call effects)]
+              rpc-calls   (::json-rpc/call effects)]
           (is (= result-db expected-db))
           (is (= (count rpc-calls) 1))
           (is (= (-> rpc-calls
