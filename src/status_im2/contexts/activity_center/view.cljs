@@ -42,8 +42,9 @@
 (defn tabs
   []
   (let [filter-type (rf/sub [:activity-center/filter-type])]
-    [quo/scrollable-tabs
+    [quo/tabs
      {:size                32
+      :scrollable?         true
       :blur?               true
       :override-theme      :dark
       :style               style/tabs

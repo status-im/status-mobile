@@ -7,7 +7,6 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]))
 
-<<<<<<< HEAD
 (defn community-stats
   [{:keys [icon members-count icon-color]}]
   [rn/view (style/stats-count-container)
@@ -22,24 +21,10 @@
     {:weight :regular
      :size   :paragraph-1}
     members-count]])
-=======
-(defn community-stats [{:keys [icon count icon-color]}]
-  [rn/view (style/stats-count-container)
-   [rn/view {:margin-right 4}
-    [icons/icon icon {:container-style {:align-items     :center
-                                        :justify-content :center}
-                      :resize-mode     :center
-                      :size            16
-                      :color           icon-color}]]
-   [text/text {:weight :regular
-               :size   :paragraph-1}
-    count]])
->>>>>>> f6cfb0aa0 (refactored scrollable-tags to share the same logic with scrollable-tabs)
 
 (defn community-stats-column
   [type]
   (let [icon-color (colors/theme-colors colors/neutral-50 colors/neutral-40)]
-<<<<<<< HEAD
     [rn/view
      (if (= type :card-view)
        (style/card-stats-container)
@@ -53,17 +38,6 @@
       {:icon          :i/lightning
        :members-count "112.1K"
        :icon-color    icon-color}]]))
-=======
-    [rn/view (if (= type :card-view)
-               (style/card-stats-container)
-               (style/list-stats-container))
-     [community-stats {:icon          :i/group
-                       :count         "629.2K" ;;TODO here should be formatted value, use money/format-members from outside this component
-                       :icon-color    icon-color}]
-     [community-stats {:icon          :i/lightning
-                       :count         "112.1K"
-                       :icon-color    icon-color}]]))
->>>>>>> f6cfb0aa0 (refactored scrollable-tags to share the same logic with scrollable-tabs)
 
 (defn community-tags
   [tags]
@@ -72,12 +46,12 @@
      ^{:key id}
      [rn/view {:margin-right 8}
       [tag/tag
-       {:id          id
-        :size        24
-        :label       tag-label
-        :type        :emoji
-        :labelled?   true
-        :resource    resource}]])])
+       {:id        id
+        :size      24
+        :label     tag-label
+        :type      :emoji
+        :labelled? true
+        :resource  resource}]])])
 
 (defn community-title
   [{:keys [title description size] :or {size :small}}]
