@@ -174,8 +174,10 @@
               (quo.react/effect! #(do
                                     (when (and @keyboard-was-shown? (not keyboard-shown))
                                       (swap! context assoc :state :min))
-                                    (when blank-composer?
+                                    (when (and blank-composer? (not (seq images)))
                                       (clean-and-minimize-composer-fn false))
+                                    (when (seq images)
+                                      (input/show-send refs))
                                     (reset! keyboard-was-shown? keyboard-shown)
                                     (if (#{:max :custom-chat-unavailable} (:state @context))
                                       (set-bg-opacity 1)
@@ -197,7 +199,7 @@
                  [rn/view {:style {:height (- max-y 80 added-value)}}
                   [input/text-input {:chat-id                chat-id
                                      :on-content-size-change input-content-change
-                                     :sending-image          false
+                                     :sending-image          (seq images)
                                      :initial-value          initial-value
                                      :refs                   refs
                                      :set-active-panel       #()}]]]]
@@ -208,7 +210,8 @@
                                                    (permissions/request-permissions
                                                     {:permissions [:read-external-storage :write-external-storage]
                                                      :on-allowed  #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                                       {:content [photo-selector/photo-selector]}])
+                                                                                       {:content (fn []
+                                                                                                   (photo-selector/photo-selector chat-id))}])
                                                      :on-denied   (fn []
                                                                     (utils/set-timeout
                                                                      #(utils/show-popup (i18n/label :t/error)
@@ -223,8 +226,8 @@
                   [rn/view {:flex 1}]
                   ;;SEND button
                   [rn/view {:ref   send-ref
-                            :style (when-not (seq (get @input/input-texts chat-id)) {:width 0
-                                                                                     :right -100})}
+                            :style (when (seq images) {:width 0
+                                                       :right -100})}
                    [quo2.button/button {:icon                true
                                         :size                32
                                         :accessibility-label :send-message-button

@@ -102,7 +102,7 @@
         prev-text (get @input-texts chat-id)]
     (when (and (seq prev-text) (empty? text) (not sending-image))
       (hide-send refs))
-    (when (and (empty? prev-text) (seq text))
+    (when (and (empty? prev-text) (or (seq text) sending-image))
       (show-send refs))
 
     (when (and (not (get @mentions-enabled? chat-id)) (string/index-of text "@"))

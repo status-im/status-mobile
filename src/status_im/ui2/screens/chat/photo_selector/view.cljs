@@ -23,9 +23,11 @@
            :start  {:x 0 :y 1}
            :end    {:x 0 :y 0}
            :style  (style/gradient-container safe-area)}
-          [quo2/button {:style    {:align-self :stretch
+          [quo2/button {:style    {:align-self        :stretch
                                    :margin-horizontal 20}
                         :on-press #(do
+                                     (doseq [item @selected]
+                                       (rf/dispatch [:chat.ui/camera-roll-pick item]))
                                      (reset! selected [])
                                      (rf/dispatch [:bottom-sheet/hide]))}
            (i18n/label :t/confirm-selection)]])))])
@@ -36,17 +38,13 @@
                            :style    (style/clear-container)}
      [quo2/text {:weight :medium} (i18n/label :t/clear)]]))
 
-(defn image [item index window-width]
+(defn image [item index _ {:keys [window-width]}]
   [rn/touchable-opacity
    {:active-opacity 1
     :on-press       (fn []
                       (if (some #{item} @selected)
-                        (do
-                          (reset! selected (vec (remove #(= % item) @selected)))
-                          (rf/dispatch [:chat.ui/image-unselected item]))
-                        (do
-                          (swap! selected conj item)
-                          (rf/dispatch [:chat.ui/camera-roll-pick item]))))}
+                        (reset! selected (vec (remove #(= % item) @selected)))
+                        (swap! selected conj item)))}
    [rn/image {:source {:uri item}
               :style  (style/image window-width index)}]
    (when (some #{item} @selected)
@@ -54,34 +52,38 @@
    (when (some #{item} @selected)
      [info-count/info-count (+ (utils/first-index #(= item %) @selected) 1) (style/image-count)])])
 
-(defn photo-selector []
+(defn photo-selector [chat-id]
   (rf/dispatch [:chat.ui/camera-roll-get-photos 20])
-  [:f>
-   (fn []
-     (let [{window-height :height window-width :width} (rn/use-window-dimensions)
-           safe-area          (safe-area/use-safe-area)
-           camera-roll-photos (rf/sub [:camera-roll/photos])
-           end-cursor         (rf/sub [:camera-roll/end-cursor])
-           loading?    (rf/sub [:camera-roll/loading-more])
-           has-next-page? (rf/sub [:camera-roll/has-next-page])]
-       [rn/view {:style {:height (- window-height (:top safe-area))}}
-        [rn/touchable-opacity
-         {:on-press #(js/alert "Camera: not implemented")
-          :style    (style/camera-button-container)}
-         [quo2/icon :i/camera {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
-        [rn/view {:style {:flex-direction :row
-                          :position       :absolute
-                          :align-self     :center}}
-         [quo2/text {:weight :medium} (i18n/label :t/recent)]
-         [rn/view {:style (style/chevron-container)}
-          [quo2/icon :i/chevron-down {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]
-        [clear-button]
-        [rn/flat-list {:key-fn                  (fn [item] item)
-                       :render-fn               (fn [item index] (image item index window-width))
-                       :data                    camera-roll-photos
-                       :num-columns             3
-                       :content-container-style {:width          "100%"
-                                                 :padding-bottom (+ (:bottom safe-area) 100)}
-                       :style                   {:border-radius 20}
-                       :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor loading? has-next-page?])}]
-        [bottom-gradient]]))])
+  (let [selected-images (keys (get-in (rf/sub [:chat/inputs]) [chat-id :metadata :sending-image]))]
+    (when selected-images
+      (reset! selected (vec selected-images)))
+    [:f>
+     (fn []
+       (let [{window-height :height window-width :width} (rn/use-window-dimensions)
+             safe-area          (safe-area/use-safe-area)
+             camera-roll-photos (rf/sub [:camera-roll/photos])
+             end-cursor         (rf/sub [:camera-roll/end-cursor])
+             loading?           (rf/sub [:camera-roll/loading-more])
+             has-next-page?     (rf/sub [:camera-roll/has-next-page])]
+         [rn/view {:style {:height (- window-height (:top safe-area))}}
+          [rn/touchable-opacity
+           {:on-press #(js/alert "Camera: not implemented")
+            :style    (style/camera-button-container)}
+           [quo2/icon :i/camera {:color (colors/theme-colors colors/neutral-100 colors/white)}]]
+          [rn/view {:style {:flex-direction :row
+                            :position       :absolute
+                            :align-self     :center}}
+           [quo2/text {:weight :medium} (i18n/label :t/recent)]
+           [rn/view {:style (style/chevron-container)}
+            [quo2/icon :i/chevron-down {:color (colors/theme-colors colors/neutral-100 colors/white)}]]]
+          [clear-button]
+          [rn/flat-list {:key-fn                  (fn [item] item)
+                         :render-fn               image
+                         :render-data             {:window-width window-width}
+                         :data                    camera-roll-photos
+                         :num-columns             3
+                         :content-container-style {:width          "100%"
+                                                   :padding-bottom (+ (:bottom safe-area) 100)}
+                         :style                   {:border-radius 20}
+                         :on-end-reached          #(rf/dispatch [:camera-roll/on-end-reached end-cursor loading? has-next-page?])}]
+          [bottom-gradient]]))]))
