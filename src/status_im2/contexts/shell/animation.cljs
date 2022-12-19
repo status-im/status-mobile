@@ -3,14 +3,14 @@
             [re-frame.core :as re-frame]
             [react-native.reanimated :as reanimated]
             [quo2.foundations.colors :as colors]
-            [status-im2.contexts.shell.constants :as constants]
+            [status-im2.contexts.shell.constants :as  shell.constants]
 
             ;;TODO remove when not used anymore
             [status-im.async-storage.core :as async-storage]))
 
 ;; Atoms
 (def selected-stack-id (atom nil))
-(def home-stack-state (atom constants/close-with-animation))
+(def home-stack-state (atom shell.constants/close-with-animation))
 (def pass-through? (atom false)) ;; TODO - Use dynamic pass-through for transparent bottom tabs
 (def shared-values-atom (atom nil))
 
@@ -23,8 +23,8 @@
 ;; Helper Functions
 (defn home-stack-open? []
   (let [state @home-stack-state]
-    (or (= state constants/open-with-animation)
-        (= state constants/open-without-animation))))
+    (or (= state shell.constants/open-with-animation)
+        (= state shell.constants/open-without-animation))))
 
 (defn load-stack [stack-id]
   (case stack-id
@@ -39,25 +39,25 @@
   (reset!
    home-stack-state
    (if (some? stack-id)
-     constants/open-with-animation
-     constants/close-with-animation)))
+     shell.constants/open-with-animation
+     shell.constants/close-with-animation)))
 
 (defn calculate-home-stack-position []
-  (let [{:keys [width height]} (constants/dimensions)
+  (let [{:keys [width height]} (shell.constants/dimensions)
         bottom-nav-tab-width   90
         minimize-scale         (/ bottom-nav-tab-width width)
         empty-space-half-scale (/ (- 1 minimize-scale) 2)
         left-margin            (/ (- width (* 4 bottom-nav-tab-width)) 2)
         left-empty-space       (* empty-space-half-scale width)
         top-empty-space        (* empty-space-half-scale
-                                  (- height (constants/bottom-tabs-container-height)))]
+                                  (- height (shell.constants/bottom-tabs-container-height)))]
     {:left  (reduce
              (fn [acc stack-id]
                (assoc acc stack-id (+ (- left-margin left-empty-space)
-                                      (* (.indexOf constants/stacks-ids stack-id)
+                                      (* (.indexOf shell.constants/stacks-ids stack-id)
                                          bottom-nav-tab-width))))
-             {:none 0} constants/stacks-ids)
-     :top   (+ top-empty-space (constants/bottom-tabs-container-height))
+             {:none 0} shell.constants/stacks-ids)
+     :top   (+ top-empty-space (shell.constants/bottom-tabs-container-height))
      :scale minimize-scale}))
 
 (def shell-worklets (js/require "../src/js/shell_worklets.js"))
@@ -74,9 +74,9 @@
     (reset! shared-values-atom
             (reduce
              (fn [acc id]
-               (let [tabs-icon-color-keyword (get constants/tabs-icon-color-keywords id)
-                     stack-opacity-keyword   (get constants/stacks-opacity-keywords id)
-                     stack-pointer-keyword   (get constants/stacks-pointer-keywords id)]
+               (let [tabs-icon-color-keyword (get shell.constants/tabs-icon-color-keywords id)
+                     stack-opacity-keyword   (get shell.constants/stacks-opacity-keywords id)
+                     stack-pointer-keyword   (get shell.constants/stacks-pointer-keywords id)]
                  (assoc
                   acc
                   stack-opacity-keyword   (.stackOpacity
@@ -111,17 +111,17 @@
                                         (:scale home-stack-position))
               :bottom-tabs-height      (.bottomTabsHeight
                                         ^js shell-worklets home-stack-state-sv
-                                        (constants/bottom-tabs-container-height)
-                                        (constants/bottom-tabs-extended-container-height))}
-             constants/stacks-ids)))
+                                        (shell.constants/bottom-tabs-container-height)
+                                        (shell.constants/bottom-tabs-extended-container-height))}
+             shell.constants/stacks-ids)))
   @shared-values-atom)
 
 ;; Animations
 
 (defn open-home-stack [stack-id animate?]
   (let [home-stack-state-value (if animate?
-                                 constants/open-with-animation
-                                 constants/open-without-animation)]
+                                 shell.constants/open-with-animation
+                                 shell.constants/open-without-animation)]
     (reanimated/set-shared-value
      (:selected-stack-id @shared-values-atom) (name stack-id))
     (reanimated/set-shared-value
@@ -129,7 +129,7 @@
     (when-not (colors/dark?)
       (js/setTimeout
        #(re-frame/dispatch [:change-root-status-bar-style :dark])
-       constants/shell-animation-time))
+       shell.constants/shell-animation-time))
     (reset! home-stack-state home-stack-state-value)
     (reset! selected-stack-id stack-id)
     (async-storage/set-item! :selected-stack-id stack-id)))
@@ -143,7 +143,7 @@
 (defn bottom-tab-on-press [stack-id]
   (when-not (= stack-id @selected-stack-id)
     (let [stack-load-delay (if (home-stack-open?)
-                             0 constants/shell-animation-time)]
+                             0 shell.constants/shell-animation-time)]
       (if (home-stack-open?)
         (change-tab stack-id)
         (open-home-stack stack-id true))
@@ -151,8 +151,8 @@
 
 (defn close-home-stack [animate?]
   (let [home-stack-state-value (if animate?
-                                 constants/close-with-animation
-                                 constants/close-without-animation)]
+                                 shell.constants/close-with-animation
+                                 shell.constants/close-without-animation)]
     (reanimated/set-shared-value
      (:animate-home-stack-left @shared-values-atom) true)
     (reanimated/set-shared-value

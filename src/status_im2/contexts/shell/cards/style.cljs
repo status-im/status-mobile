@@ -16,6 +16,11 @@
    :border-radius    16
    :background-color (colors/alpha background-color 0.4)})
 
+(defn empty-card []
+  (merge
+   (base-container nil)
+   {:background-color colors/neutral-95}))
+
 (def secondary-container
   {:width            160
    :height           120
@@ -30,23 +35,11 @@
    :margin-horizontal 12
    :color             (:title-color colors-map)})
 
-(def title-props
-  {:size            :paragraph-1
-   :weight          :semi-bold
-   :number-of-lines 1
-   :ellipsize-mode  :tail
-   :style           title})
-
 (def subtitle
   {:position          :absolute
    :top               50
    :margin-horizontal 12
    :color             (:subtitle-color colors-map)})
-
-(def subtitle-props
-  {:size            :paragraph-2
-   :weight          :medium
-   :style           subtitle})
 
 (defn content-container [new-notifications?]
   {:position          :absolute
@@ -68,27 +61,12 @@
 (def last-message-text
   {:color (:last-message-text-color colors-map)})
 
-(def last-message-text-props
-  {:size            :paragraph-2
-   :weight          :regular
-   :number-of-lines 1
-   :ellipsize-mode  :tail
-   :style           last-message-text})
-
 (def close-button
   {:position         :absolute
    :right            8
    :top              8
    :background-color (:close-button-bg-color colors-map)
    :icon-color       (:close-button-icon-color colors-map)})
-
-(defn close-button-props [on-press]
-  {:size           24
-   :type           :grey
-   :icon           true
-   :on-press       on-press
-   :override-theme :dark
-   :style          close-button})
 
 (def avatar-container
   {:width           48
@@ -133,10 +111,3 @@
 (def community-channel
   {:margin-left 8
    :color       (:community-channel colors-map)})
-
-(def community-channel-props
-  {:size            :paragraph-2
-   :weight          :medium
-   :number-of-lines 1
-   :ellipsize-mode  :tail
-   :style           community-channel})

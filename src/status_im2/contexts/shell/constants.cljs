@@ -12,7 +12,7 @@
   (if platform/android? 90 120))
 
 (defn status-bar-offset []
-  (if platform/android? (.-currentHeight ^js rn/status-bar) 0))
+  (if platform/android? (rn/status-bar-height) 0))
 
 ;; status bar height is not included in : the dimensions/window for devices with a notch
 ;; https://github.com/facebook/react-native/issues/23693#issuecomment-662860819
@@ -51,11 +51,12 @@
 (def ^:const open-without-animation 4)
 
 ;; Switcher Cards
-(def ^:const one-to-one-chat-card 0)
-(def ^:const private-group-chat-card 1)
-(def ^:const community-card 2)
-(def ^:const browser-card 3)
-(def ^:const wallet-card 4)
-(def ^:const wallet-collectible 5)
-(def ^:const wallet-graph 6)
-(def ^:const communities-discover 7)
+(def ^:const empty-card 0)
+(def ^:const one-to-one-chat-card 1)
+(def ^:const private-group-chat-card 2)
+(def ^:const community-card 3)
+(def ^:const browser-card 4)
+(def ^:const wallet-card 5)
+(def ^:const wallet-collectible 6)
+(def ^:const wallet-graph 7)
+(def ^:const communities-discover 8)

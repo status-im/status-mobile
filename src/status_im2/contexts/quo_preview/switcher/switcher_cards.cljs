@@ -1,31 +1,33 @@
 (ns status-im2.contexts.quo-preview.switcher.switcher-cards
   (:require [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.contexts.shell.constants :as constants]
-            [status-im2.contexts.quo-preview.preview :as preview]
             [quo2.foundations.colors :as colors]
             [status-im.react-native.resources :as resources]
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [status-im2.contexts.shell.constants :as shell.constants]
             [status-im2.contexts.shell.cards.view :as switcher-cards]))
 
 (def descriptor [{:label   "Type"
                   :key     :type
                   :type    :select
-                  :options [{:key   constants/communities-discover
+                  :options [{:key   shell.constants/communities-discover
                              :value "Communities Discover"}
-                            {:key   constants/one-to-one-chat-card
+                            {:key   shell.constants/one-to-one-chat-card
                              :value "Messaging"}
-                            {:key   constants/private-group-chat-card
+                            {:key   shell.constants/private-group-chat-card
                              :value "Group Messaging"}
-                            {:key   constants/community-card
+                            {:key   shell.constants/community-card
                              :value "Community Card"}
-                            {:key   constants/browser-card
+                            {:key   shell.constants/browser-card
                              :value "Browser Card"}
-                            {:key   constants/wallet-card
+                            {:key   shell.constants/wallet-card
                              :value "Wallet Card"}
-                            {:key   constants/wallet-collectible
+                            {:key   shell.constants/wallet-collectible
                              :value "Wallet Collectible"}
-                            {:key   constants/wallet-graph
-                             :value "Wallet Graph"}]}
+                            {:key   shell.constants/wallet-graph
+                             :value "Wallet Graph"}
+                            {:key   shell.constants/empty-card
+                             :value "Empty Card"}]}
                  {:label "Title"
                   :key   :title
                   :type  :text}
@@ -117,13 +119,13 @@
               :content-type           (:content-type data)
               :data                   (get-mock-content data)}}
    (case type
-     constants/one-to-one-chat-card    {:avatar-params {:full-name (:title data)}}
-     constants/private-group-chat-card {}
-     constants/community-card          {:avatar-params community-avatar}
+     shell.constants/one-to-one-chat-card    {:avatar-params {:full-name (:title data)}}
+     shell.constants/private-group-chat-card {}
+     shell.constants/community-card          {:avatar-params community-avatar}
      {})))
 
 (defn cool-preview []
-  (let [state (reagent/atom {:type                   constants/private-group-chat-card
+  (let [state (reagent/atom {:type                   shell.constants/private-group-chat-card
                              :title                  "Alisher Yakupov"
                              :customization-color    :turquoise
                              :new-notifications?     true

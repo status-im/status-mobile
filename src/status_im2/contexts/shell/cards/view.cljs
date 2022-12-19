@@ -6,13 +6,19 @@
             [quo2.foundations.colors :as colors]
             [react-native.fast-image :as fast-image]
             [status-im2.contexts.shell.cards.style :as style]
-            [status-im2.contexts.shell.constants :as constants]))
+            [status-im2.contexts.shell.constants :as shell.constants]))
 
 (defn content-container [{:keys [content-type data new-notifications? color-50]}]
   [rn/view {:style (style/content-container new-notifications?)}
-   ;; TODO - Use status-im2.common.constants for content type
+   ;; TODO - Use status-im2.common.shell.constants for content type
    (case content-type
-     :text [quo/text style/last-message-text-props data]
+     :text [quo/text
+            {:size            :paragraph-2
+             :weight          :regular
+             :number-of-lines 1
+             :ellipsize-mode  :tail
+             :style           style/last-message-text}
+            data]
      :photo [quo/preview-list {:type               :photo
                                :more-than-99-label (i18n/label :counter-99-plus)
                                :size               24
@@ -26,7 +32,13 @@
                [quo/channel-avatar
                 {:emoji                  (:emoji data)
                  :emoji-background-color (colors/alpha color-50 0.1)}]
-               [quo/text style/community-channel-props (:channel-name data)]]
+               [quo/text
+                {:size            :paragraph-2
+                 :weight          :medium
+                 :number-of-lines 1
+                 :ellipsize-mode  :tail
+                 :style           style/community-channel}
+                (:channel-name data)]]
      :community-info (case (:type data)
                        :pending      [quo/status-tag
                                       {:status         {:type :pending}
@@ -58,19 +70,19 @@
 
 (defn avatar [avatar-params type customization-color]
   (case type
-    constants/one-to-one-chat-card
+    shell.constants/one-to-one-chat-card
     [quo/user-avatar
      (merge {:ring?             false
              :size              :medium
              :status-indicator? false}
             avatar-params)]
 
-    constants/private-group-chat-card
+    shell.constants/private-group-chat-card
     [quo/group-avatar {:color          customization-color
                        :size           :large
                        :override-theme :dark}]
 
-    constants/community-card
+    shell.constants/community-card
     (if (:source avatar-params)
       [fast-image/fast-image
        {:source (:source avatar-params)
@@ -107,13 +119,30 @@
         [rn/image {:source (:source banner)
                    :style  {:width  160}}])
       [rn/view {:style style/secondary-container}
-       [quo/text style/title-props title]
-       [quo/text style/subtitle-props (subtitle content)]
+       [quo/text
+        {:size            :paragraph-1
+         :weight          :semi-bold
+         :number-of-lines 1
+         :ellipsize-mode  :tail
+         :style           style/title}
+        title]
+       [quo/text
+        {:size   :paragraph-2
+         :weight :medium
+         :style  style/subtitle}
+        (subtitle content)]
        [bottom-container (merge {:color-50 color-50 :color-60 color-60} content)]]
       (when avatar-params
         [rn/view {:style style/avatar-container}
          [avatar avatar-params type customization-color]])
-      [quo/button (style/close-button-props on-close) :i/close]]]))
+      [quo/button
+       {:size           24
+        :type           :grey
+        :icon           true
+        :on-press       on-close
+        :override-theme :dark
+        :style          style/close-button}
+       :i/close]]]))
 
 ;; browser Card
 (defn browser-card [_]
@@ -129,32 +158,39 @@
 (defn wallet-graph [_]
   [:<>])
 
+(defn empty-card []
+  [rn/view {:style (style/empty-card)}])
+
 ;; Home Card
 (defn communities-discover [_]
   [:<>])
 
 (defn card [{:keys [type] :as data}]
   (case type
-    constants/one-to-one-chat-card    ;; Screens Card
+
+    shell.constants/empty-card              ;; Placeholder
+    [empty-card]
+
+    shell.constants/one-to-one-chat-card    ;; Screens Card
     [screens-card data]
 
-    constants/private-group-chat-card ;; Screens Card
+    shell.constants/private-group-chat-card ;; Screens Card
     [screens-card data]
 
-    constants/community-card          ;; Screens Card
+    shell.constants/community-card          ;; Screens Card
     [screens-card data]
 
-    constants/browser-card            ;; Browser Card
+    shell.constants/browser-card            ;; Browser Card
     [browser-card data]
 
-    constants/wallet-card             ;; Wallet Card
+    shell.constants/wallet-card             ;; Wallet Card
     [wallet-card data]
 
-    constants/wallet-collectible      ;; Wallet Card
+    shell.constants/wallet-collectible      ;; Wallet Card
     [wallet-collectible data]
 
-    constants/wallet-graph            ;; Wallet Card
+    shell.constants/wallet-graph            ;; Wallet Card
     [wallet-graph data]
 
-    constants/communities-discover    ;; Home Card
+    shell.constants/communities-discover    ;; Home Card
     [communities-discover data]))

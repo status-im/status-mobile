@@ -57,6 +57,9 @@
 
 (def status-bar (.-StatusBar ^js react-native))
 
+(defn status-bar-height []
+  (.-currentHeight ^js status-bar))
+
 (defn hw-back-add-listener [callback]
   (.addEventListener (.-BackHandler ^js react-native) "hardwareBackPress" callback))
 

@@ -67,11 +67,13 @@
 (def neutral-95-opa-95 (alpha neutral-95 0.95))
 
 ;;100 with transparency
+(def neutral-100-opa-0 (alpha neutral-100 0))
 (def neutral-100-opa-60 (alpha neutral-100 0.6))
 (def neutral-100-opa-70 (alpha neutral-100 0.7))
 (def neutral-100-opa-80 (alpha neutral-100 0.8))
 (def neutral-100-opa-90 (alpha neutral-100 0.9))
 (def neutral-100-opa-95 (alpha neutral-100 0.95))
+(def neutral-100-opa-100 (alpha neutral-100 1))
 
 ;;;;White
 
