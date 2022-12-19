@@ -1,11 +1,12 @@
 (ns status-im.ui2.screens.chat.photo-selector.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 (defn gradient-container [safe-area]
   {:width    "100%"
    :height   (+ (:bottom safe-area) 65)
    :position :absolute
-   :bottom   0})
+   :bottom   (if platform/ios? 0 80)})
 
 (defn buttons-container [safe-area]
   {:flex-direction     :row
