@@ -58,31 +58,31 @@
       (trim-public-key public-key)]]))
 
 (defn context-tag
-  [params photo name channel-name]
-  (let [text-style (params :text-style)
-        text-params (merge {:weight :medium
-                            :size :paragraph-2}
-                           {:style (merge text-style {:justify-content :center})})
-        icon-color (colors/theme-colors colors/neutral-50 colors/neutral-40)]
-    [base-tag (assoc-in params [:style :padding-left] 3)
-     [rn/image
-      {:style {:width 20
-               :border-radius 10
-               :background-color :white
-               :height 20}
-       :source photo}]
-     [rn/view
-      {:style {:align-items :center
-               :flex-direction :row}}
-      [text/text text-params (str " " name)]
-      (when channel-name
-        [:<>
-         [icons/icon
-          :main-icons/chevron-right
-          {:color  icon-color
-           :width  16
-           :height 16}]
-         [text/text text-params (str "#" " " channel-name)]])]]))
+  [_ _]
+  (fn [params photo name channel-name]
+    (let [text-style  (params :text-style)
+          text-params {:weight :medium
+                       :size   :paragraph-2
+                       :style  (assoc text-style :justify-content :center)}
+          icon-color   (colors/theme-colors colors/neutral-50 colors/neutral-40)]
+      [base-tag (assoc-in params [:style :padding-left] 3)
+       [rn/image
+        {:style {:width 20
+                 :border-radius 10
+                 :background-color :white
+                 :height 20}
+         :source photo}]
+       [rn/view
+        {:style {:align-items :center
+                 :flex-direction :row}}
+        [text/text text-params (str " " name)]
+        (when channel-name
+          [:<>
+           [icons/icon
+            :i/chevron-right
+            {:color icon-color
+             :size  16}]
+           [text/text text-params (str "# " channel-name)]])]])))
 
 (defn user-avatar-tag
   []
