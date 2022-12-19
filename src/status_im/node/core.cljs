@@ -64,10 +64,20 @@
     (assoc :ListenAddr ":30304"
            :DataDir    (str (:DataDir config) "_dev"))))
 
+(def wakuv2-default-config
+  {:DiscoveryLimit 20
+   :EnableDiscV5   true
+   :Host           "0.0.0.0"
+   :AutoUpdate     true
+   :PeerExchange   true
+   :Port           0
+   :UDPPort        0})
+
 (def login-node-config
   {:WalletConfig (cond-> {:Enabled true}
                    (not= config/opensea-api-key "")
-                   (assoc :OpenseaAPIKey config/opensea-api-key))})
+                   (assoc :OpenseaAPIKey config/opensea-api-key))
+   :WakuV2Config wakuv2-default-config})
 
 (defn- get-login-node-config
   [config]
@@ -152,11 +162,8 @@
               :BloomFilterMode waku-bloom-filter-mode
               :LightClient     true
               :MinimumPoW      0.000001}
-             :WakuV2Config             (assoc wakuv2-config
-                                              :DiscoveryLimit 20
-                                              :EnableDiscV5   true
-                                              :Enabled        wakuv2-enabled
-                                              :Host           "0.0.0.0")
+             :WakuV2Config (merge (assoc wakuv2-config :Enabled wakuv2-enabled)
+                                  wakuv2-default-config)
              :ShhextConfig
              {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
               :InstallationID             installation-id
