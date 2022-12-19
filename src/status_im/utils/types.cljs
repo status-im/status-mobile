@@ -2,6 +2,10 @@
   (:refer-clojure :exclude [js->clj])
   (:require [cljs-bean.core :as clj-bean]))
 
+;; TODO (19/12/22 yqrashawn) this namespace has been moved to the utils.types namespace,
+;; we keep this only for old (status 1.0) code,
+;; can be removed with old code later
+
 (defn to-string [s]
   (if (keyword? s)
     (name s)

@@ -5,9 +5,9 @@
 
             ;; TODO move to status-im2
             [status-im.native-module.core :as status]
-            [status-im.utils.types :as types]
 
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.types :as types]))
 
 (defn on-error-retry
   [call-method {:keys [method number-of-retries delay on-error] :as arg}]

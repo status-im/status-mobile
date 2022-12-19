@@ -15,7 +15,7 @@
             [quo.react]
             ["react-native" :as react-native]
             [status-im.ui.components.react :as react]
-            [status-im.utils.types :as types]
+            [utils.types :as types]
             [oops.core :as oops]))
 
 (defonce input-texts (atom {}))
