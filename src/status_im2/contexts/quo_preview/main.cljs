@@ -37,6 +37,7 @@
             [status-im2.contexts.quo-preview.reactions.react :as react]
             [status-im2.contexts.quo-preview.selectors.disclaimer :as disclaimer]
             [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
+            [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
             [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
             [status-im2.contexts.quo-preview.navigation.top-nav :as top-nav]
             [status-im2.contexts.quo-preview.navigation.bottom-nav-tab :as bottom-nav-tab]
@@ -172,6 +173,9 @@
                {:name :selectors
                 :insets {:top false}
                 :component selectors/preview-selectors}]
+   :settings [{:name :privacy-option
+               :insets {:top false}
+               :component privacy-option/preview-options}]
    :tabs [{:name      :segmented
            :insets    {:top false}
            :component segmented/preview-segmented}
