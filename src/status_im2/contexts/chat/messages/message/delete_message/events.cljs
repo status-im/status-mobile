@@ -2,7 +2,6 @@
   (:require
    ;;TODO move to status-im2
    [status-im.chat.models.message-list :as message-list]
-   [status-im.chat.models.pin-message :as models.pin-message]
    [status-im.utils.datetime :as datetime]
 
    [status-im2.common.json-rpc.events :as json-rpc]
@@ -85,7 +84,7 @@
                                                            %])}]}
       (get-in db [:pin-messages chat-id message-id])
       (assoc :dispatch
-             [::models.pin-message/send-pin-message
+             [:pin-message/send-pin-message
               {:chat-id chat-id :message-id message-id :pinned false}]))))
 
 (defn- filter-pending-send-messages
