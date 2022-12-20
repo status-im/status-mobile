@@ -1,12 +1,14 @@
 (ns quo2.components.wallet.lowest-price
-  (:require [react-native.core :as rn]
-            [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [react-native.core :as rn]))
 
-(def centrify {:style {:flex-direction  :row
-                       :justify-content :center
-                       :align-items     :center}})
+(def centrify
+  {:style {:flex-direction  :row
+           :justify-content :center
+           :align-items     :center}})
 
-(defn border-alignment [value-bg-color]
+(defn border-alignment
+  [value-bg-color]
   {:style {:align-self         :flex-start
            :padding-horizontal 16
            :padding-vertical   2
@@ -34,18 +36,21 @@
 (defn dots-comp
   "Returns the dots adding their styles"
   [few-of-dots?]
-  [rn/view {:style {:align-items :center
-                    :bottom      5}}
+  [rn/view
+   {:style {:align-items :center
+            :bottom      5}}
    [rn/text line-dots-props (dots few-of-dots?)]])
 
 (defn lowest-price-value-comp
   "Component responsible for the top and bottom values"
   [top-value top-value-bg-color top-value-text-color]
   [rn/view (border-alignment top-value-bg-color)
-   [rn/text {:style {:color      top-value-text-color
-                     :text-align :center}} top-value]])
+   [rn/text
+    {:style {:color      top-value-text-color
+             :text-align :center}} top-value]])
 
-(defn lowest-price-styles [margin-top]
+(defn lowest-price-styles
+  [margin-top]
   {:style {:flex-direction  :column
            :width           "100%"
            :overflow        :hidden

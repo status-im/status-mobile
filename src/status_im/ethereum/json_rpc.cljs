@@ -16,7 +16,10 @@
       (let [updated-delay (if delay
                             (min 2000 (* 2 delay))
                             50)]
-        (log/debug "[on-error-retry]" method "number-of-retries" number-of-retries "delay" delay "error" error)
+        (log/debug "[on-error-retry]"  method
+                   "number-of-retries" number-of-retries
+                   "delay"             delay
+                   "error"             error)
         (utils/set-timeout #(call-method (-> arg
                                              (update :number-of-retries dec)
                                              (assoc :delay updated-delay)))
@@ -25,8 +28,10 @@
 
 (defn call
   [{:keys [method params on-success on-error js-response] :as arg}]
-  (let [params (or params [])
-        on-error (or on-error (on-error-retry call arg) #(log/warn :json-rpc/error method :error % :params params))]
+  (let [params   (or params [])
+        on-error (or on-error
+                     (on-error-retry call arg)
+                     #(log/warn :json-rpc/error method :error % :params params))]
     (status/call-private-rpc
      (types/clj->json {:jsonrpc "2.0"
                        :id      1

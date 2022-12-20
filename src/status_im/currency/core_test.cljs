@@ -8,7 +8,11 @@
   (is (= :aud (models/get-currency {:multiaccount {:currency :aud}}))))
 
 (deftest set-currency
-  (let [cofx (models/set-currency {:db {:multiaccount {:not-empty "would throw an error if was empty"}}} :usd)]
+  (let [cofx (models/set-currency {:db {:multiaccount {:not-empty "would throw an error if was empty"}}}
+                                  :usd)]
     (is (= :usd (get-in cofx [:db :multiaccount :currency]))))
-  (is (= :jpy (get-in (models/set-currency {:db {:multiaccount {:not-empty "would throw an error if was empty"}}} :jpy)
-                      [:db :multiaccount :currency]))))
+  (is
+   (= :jpy
+      (get-in (models/set-currency {:db {:multiaccount {:not-empty "would throw an error if was empty"}}}
+                                   :jpy)
+              [:db :multiaccount :currency]))))

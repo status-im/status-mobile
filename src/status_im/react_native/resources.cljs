@@ -65,22 +65,29 @@
    :user-picture-male4   (js/require "../resources/images/mock/user_picture_male4.png")
    :user-picture-male5   (js/require "../resources/images/mock/user_picture_male5.png")})
 
-(defn get-theme-image [k]
+(defn get-theme-image
+  [k]
   (get ui (when (colors/dark?) (keyword (str (name k) "-dark"))) (get ui k)))
 
 (def loaded-images (atom {}))
 
-(defn get-image [k]
+(defn get-image
+  [k]
   (if (contains? @loaded-images k)
     (get @loaded-images k)
-    (get (swap! loaded-images assoc k
-                (get ui k)) k)))
+    (get (swap! loaded-images assoc
+           k
+           (get ui k))
+         k)))
 
-(defn get-mock-image [k]
+(defn get-mock-image
+  [k]
   (if (contains? @loaded-images k)
     (get @loaded-images k)
-    (get (swap! loaded-images assoc k
-                (get mock-images k)) k)))
+    (get (swap! loaded-images assoc
+           k
+           (get mock-images k))
+         k)))
 
 (def reactions-old
   {:love        (js/require "../resources/images/reactions/love.png")

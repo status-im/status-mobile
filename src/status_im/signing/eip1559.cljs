@@ -6,15 +6,18 @@
 
 (defonce activated-on-current-network? (atom nil))
 
-(defn london-is-definitely-activated [network-id]
+(defn london-is-definitely-activated
+  [network-id]
   (contains? #{"1" "3"} network-id))
 
-(defn on-block [callback header]
+(defn on-block
+  [callback header]
   (let [activated? (contains? header :baseFeePerGas)]
     (reset! london-activated? activated?)
     (callback activated?)))
 
-(defn check-activation [callback]
+(defn check-activation
+  [callback]
   (json-rpc/call
    {:method     "eth_getBlockByNumber"
     :params     ["latest" false]

@@ -1,30 +1,32 @@
 (ns status-im2.contexts.quo-preview.avatars.channel-avatar
-  (:require [reagent.core :as reagent]
-            [react-native.core :as rn]
-            [status-im2.contexts.quo-preview.preview :as preview]
+  (:require [quo2.components.avatars.channel-avatar :as quo2]
             [quo2.foundations.colors :as colors]
-            [quo2.components.avatars.channel-avatar :as quo2]))
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
-(def descriptor [{:label "Big?"
-                  :key   :big?
-                  :type  :boolean}
-                 {:label "Avatar color"
-                  :key   :emoji-background-color
-                  :type  :text}
-                 {:label "Avatar color"
-                  :key   :emoji
-                  :type  :text}
-                 {:label   "is Locked?"
-                  :key     :locked?
-                  :type    :select
-                  :options [{:key   nil
-                             :value "None"}
-                            {:key  false
-                             :value "Unlocked"}
-                            {:key   true
-                             :value "Locked"}]}])
+(def descriptor
+  [{:label "Big?"
+    :key   :big?
+    :type  :boolean}
+   {:label "Avatar color"
+    :key   :emoji-background-color
+    :type  :text}
+   {:label "Avatar color"
+    :key   :emoji
+    :type  :text}
+   {:label   "is Locked?"
+    :key     :locked?
+    :type    :select
+    :options [{:key   nil
+               :value "None"}
+              {:key   false
+               :value "Unlocked"}
+              {:key   true
+               :value "Locked"}]}])
 
-(defn cool-preview []
+(defn cool-preview
+  []
   (let [state (reagent/atom {:big?                   true
                              :locked?                nil
                              :emoji                  "🍑"
@@ -34,16 +36,20 @@
        [rn/view {:padding-bottom 150}
         [rn/view {:flex 1}
          [preview/customizer state descriptor]]
-        [rn/view {:padding-vertical 60
-                  :flex-direction   :row
-                  :justify-content  :center}
+        [rn/view
+         {:padding-vertical 60
+          :flex-direction   :row
+          :justify-content  :center}
          [quo2/channel-avatar @state]]]])))
 
-(defn preview-channel-avatar []
-  [rn/view {:background-color (colors/theme-colors colors/white
-                                                   colors/neutral-90)
-            :flex             1}
-   [rn/flat-list {:flex                      1
-                  :keyboardShouldPersistTaps :always
-                  :header                    [cool-preview]
-                  :key-fn                    str}]])
+(defn preview-channel-avatar
+  []
+  [rn/view
+   {:background-color (colors/theme-colors colors/white
+                                           colors/neutral-90)
+    :flex             1}
+   [rn/flat-list
+    {:flex                      1
+     :keyboardShouldPersistTaps :always
+     :header                    [cool-preview]
+     :key-fn                    str}]])

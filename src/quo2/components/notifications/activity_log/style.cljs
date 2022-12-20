@@ -43,7 +43,8 @@
    :align-items :flex-start
    :flex        1})
 
-(defn title [replying?]
+(defn title
+  [replying?]
   {:color       colors/white
    :flex-shrink 1
    :max-width   (when-not replying? "60%")})

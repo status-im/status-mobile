@@ -1,5 +1,4 @@
-(ns ^{:doc "Mailserver events and API"}
- status-im.mailserver.constants)
+(ns ^{:doc "Mailserver events and API"} status-im.mailserver.constants)
 
 (def one-day (* 24 3600))
 (def seven-days (* 7 one-day))

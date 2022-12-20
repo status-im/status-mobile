@@ -9,7 +9,8 @@
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im2.contexts.chat.messages.pin.list.view :as pin.list]))
 
-(defn bottom-sheet []
+(defn bottom-sheet
+  []
   (let [{:keys [show? view options]} @(re-frame/subscribe [:bottom-sheet])
         {:keys [content]
          :as   opts}

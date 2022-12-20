@@ -1,7 +1,6 @@
 (ns status-im2.common.toasts.events
-  (:require
-   [taoensso.encore :as enc]
-   [utils.re-frame  :as rf]))
+  (:require [taoensso.encore :as enc]
+            [utils.re-frame :as rf]))
 
 (def ^:private next-toast-id (atom 0))
 

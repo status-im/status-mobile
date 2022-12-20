@@ -1,20 +1,20 @@
 (ns status-im2.navigation.screens
-  (:require [status-im2.setup.config :as config]
+  (:require [i18n.i18n :as i18n] ;; TODO remove when not used anymore
+            [status-im.ui.screens.screens :as old-screens]
+            [status-im2.contexts.activity-center.view :as activity-center]
+            [status-im2.contexts.chat.messages.view :as chat]
             [status-im2.contexts.communities.discover.view :as communities.discover]
             [status-im2.contexts.communities.overview.view :as communities.overview]
-            [status-im2.contexts.shell.view :as shell]
-            [status-im2.contexts.activity-center.view :as activity-center]
             [status-im2.contexts.quo-preview.main :as quo.preview]
-            [status-im2.contexts.chat.messages.view :as chat]
+            [status-im2.contexts.shell.view :as shell]
             [status-im2.contexts.syncing.view :as settings-syncing]
-            [i18n.i18n :as i18n]
-            ;; TODO remove when not used anymore
-            [status-im.ui.screens.screens :as old-screens]))
+            [status-im2.setup.config :as config]))
 
 (def components
   [])
 
-(defn screens []
+(defn screens
+  []
   (concat (old-screens/screens)
           [{:name      :activity-center
             :options   {:topBar {:visible false}}

@@ -7,17 +7,17 @@
    :justify-content :space-around})
 
 (def timer
-  {:font-size 28
+  {:font-size   28
    :line-height 38
-   :align-self :center})
+   :align-self  :center})
 
 (def buttons-container
-  {:flex            1
-   :max-height 80
-   :flex-direction  :row
-   :align-items     :center
-   :justify-content :space-around
-   :align-self :stretch
+  {:flex               1
+   :max-height         80
+   :flex-direction     :row
+   :align-items        :center
+   :justify-content    :space-around
+   :align-self         :stretch
    :padding-horizontal 80})
 
 (def rec-button-base-size 61)
@@ -27,7 +27,8 @@
    :height      rec-button-base-size
    :align-items "center"})
 
-(defn rec-outer-circle [scale-anim]
+(defn rec-outer-circle
+  [scale-anim]
   {:position      "absolute"
    :width         rec-button-base-size
    :height        rec-button-base-size
@@ -37,7 +38,8 @@
    :border-color  colors/red-audio-recorder
    :border-radius rec-button-base-size})
 
-(defn rec-inner-circle [scale-anim border-radius-anim]
+(defn rec-inner-circle
+  [scale-anim border-radius-anim]
   {:position         "absolute"
    :top              6
    :left             6

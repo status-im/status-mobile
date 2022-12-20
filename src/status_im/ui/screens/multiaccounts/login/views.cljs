@@ -1,58 +1,65 @@
 (ns status-im.ui.screens.multiaccounts.login.views
-  (:require [re-frame.core :as re-frame]
+  (:require [quo.core :as quo]
+            [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.checkbox.view :as checkbox]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage]
             [status-im.ui.screens.multiaccounts.login.styles :as styles]
             [status-im.ui.screens.multiaccounts.styles :as ast]
             [status-im.utils.platform :as platform]
-            [utils.security.core :as security]
             [status-im.utils.utils :as utils]
-            [quo.core :as quo]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.toolbar :as toolbar]
-            [quo.design-system.colors :as colors]
-            [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage])
+            [utils.security.core :as security])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn login-multiaccount [^js password-text-input]
+(defn login-multiaccount
+  [^js password-text-input]
   (.blur password-text-input)
   (re-frame/dispatch [:multiaccounts.login.ui/password-input-submitted]))
 
-(defn multiaccount-login-badge [{:keys [public-key name] :as multiaccount}]
+(defn multiaccount-login-badge
+  [{:keys [public-key name] :as multiaccount}]
   [react/view styles/login-badge
    [photos/photo
     (multiaccounts/displayed-photo multiaccount)
     {:size styles/login-badge-image-size}]
    [react/view
-    [react/text {:style          styles/login-badge-name
-                 :ellipsize-mode :middle
-                 :numberOfLines  1}
+    [react/text
+     {:style          styles/login-badge-name
+      :ellipsize-mode :middle
+      :numberOfLines  1}
      name]
-    [quo/text {:monospace true
-               :align     :center
-               :color     :secondary
-               :style     styles/login-badge-pubkey}
+    [quo/text
+     {:monospace true
+      :align     :center
+      :color     :secondary
+      :style     styles/login-badge-pubkey}
      (utils/get-shortened-address public-key)]]])
 
-(defn topbar-button []
+(defn topbar-button
+  []
   (react/dismiss-keyboard!)
   (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))
 
-(defview login []
+(defview login
+  []
   (letsubs [{:keys [error processing save-password?] :as multiaccount} [:multiaccounts/login]
-            password-text-input (atom nil)
-            sign-in-enabled? [:sign-in-enabled?]
-            auth-method [:auth-method]
-            view-id [:view-id]
-            supported-biometric-auth [:supported-biometric-auth]
-            keycard?                 [:keycard-multiaccount?]
-            banner-hidden [:keycard/banner-hidden]]
+            password-text-input                                        (atom nil)
+            sign-in-enabled?                                           [:sign-in-enabled?]
+            auth-method                                                [:auth-method]
+            view-id                                                    [:view-id]
+            supported-biometric-auth                                   [:supported-biometric-auth]
+            keycard?                                                   [:keycard-multiaccount?]
+            banner-hidden                                              [:keycard/banner-hidden]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
-     [react/scroll-view {:keyboardShouldPersistTaps :always
-                         :style                     styles/login-view}
+     [react/scroll-view
+      {:keyboardShouldPersistTaps :always
+       :style                     styles/login-view}
       [react/view styles/login-badge-container
        [multiaccount-login-badge multiaccount]
        [react/view {:style styles/password-container}
@@ -75,22 +82,26 @@
          (when (and supported-biometric-auth (= auth-method "biometric"))
            [react/touchable-highlight {:on-press #(re-frame/dispatch [:biometric-authenticate])}
             [react/view {:style styles/biometric-button}
-             [icons/icon (if (= supported-biometric-auth :FaceID)
-                           :main-icons/faceid
-                           :main-icons/print)
+             [icons/icon
+              (if (= supported-biometric-auth :FaceID)
+                :main-icons/faceid
+                :main-icons/print)
               {:color colors/blue}]]])]]
        (if (and platform/android? (not auth-method))
          ;; on Android, there is much more reasons for the password save to be unavailable,
          ;; so we don't show the checkbox whatsoever but put a label explaining why it happenned.
-         [react/i18n-text {:style styles/save-password-unavailable-android
-                           :key   :save-password-unavailable-android}]
-         [react/view {:style {:flex-direction  :row
-                              :align-items     :center
-                              :justify-content :flex-start
-                              :margin-top      19}}
-          [checkbox/checkbox {:checked?        save-password?
-                              :style           {:margin-left 3 :margin-right 10}
-                              :on-value-change #(re-frame/dispatch [:multiaccounts/save-password %])}]
+         [react/i18n-text
+          {:style styles/save-password-unavailable-android
+           :key   :save-password-unavailable-android}]
+         [react/view
+          {:style {:flex-direction  :row
+                   :align-items     :center
+                   :justify-content :flex-start
+                   :margin-top      19}}
+          [checkbox/checkbox
+           {:checked?        save-password?
+            :style           {:margin-left 3 :margin-right 10}
+            :on-value-change #(re-frame/dispatch [:multiaccounts/save-password %])}]
           [react/text (i18n/label :t/save-password)]])]]
      (if processing
        [react/view styles/processing-view
@@ -100,7 +111,7 @@
          [key-storage/keycard-upsell-banner]))
 
      [toolbar/toolbar
-      {:size :large
+      {:size   :large
        :center
        [react/view {:padding-horizontal 8}
         [quo/button

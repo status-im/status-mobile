@@ -1,26 +1,29 @@
 (ns status-im.contact.db
   (:require [clojure.set :as clojure.set]
             [clojure.string :as string]
+            [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.constants :as constants]))
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.identicon :as identicon]))
 
-(defn public-key->new-contact [public-key]
+(defn public-key->new-contact
+  [public-key]
   (let [alias (gfycat/generate-gfy public-key)]
-    {:alias       alias
-     :name        alias
-     :identicon   (identicon/identicon public-key)
-     :public-key  public-key}))
+    {:alias      alias
+     :name       alias
+     :identicon  (identicon/identicon public-key)
+     :public-key public-key}))
 
-(defn public-key-and-ens-name->new-contact [public-key ens-name]
+(defn public-key-and-ens-name->new-contact
+  [public-key ens-name]
   (let [contact (public-key->new-contact public-key)]
-    (if ens-name (-> contact
-                     (assoc :ens-name ens-name)
-                     (assoc :ens-verified true)
-                     (assoc :name ens-name))
-        contact)))
+    (if ens-name
+      (-> contact
+          (assoc :ens-name ens-name)
+          (assoc :ens-verified true)
+          (assoc :name ens-name))
+      contact)))
 
 (defn public-key->contact
   [contacts public-key]
@@ -28,11 +31,13 @@
     (or (get contacts public-key)
         (public-key->new-contact public-key))))
 
-(defn- contact-by-address [[addr contact] address]
+(defn- contact-by-address
+  [[addr contact] address]
   (when (ethereum/address= addr address)
     contact))
 
-(defn find-contact-by-address [contacts address]
+(defn find-contact-by-address
+  [contacts address]
   (some #(contact-by-address % address) contacts))
 
 (defn sort-contacts
@@ -106,10 +111,11 @@
    (cond-> (-> contact
                (dissoc :ens-verified-at :ens-verification-retries)
                (assoc :blocked? (:blocked contact)
-                      :active? (active? contact)
-                      :added? added)
+                      :active?  (active? contact)
+                      :added?   added)
                (multiaccounts/contact-with-names))
-     (and setting (not= public-key own-public-key)
+     (and setting
+          (not= public-key own-public-key)
           (or (= setting constants/profile-pictures-visibility-none)
               (and (= setting constants/profile-pictures-visibility-contacts-only)
                    (not added))))
@@ -117,10 +123,11 @@
 
 (defn enrich-contacts
   [contacts profile-pictures-visibility own-public-key]
-  (reduce-kv (fn [acc public-key contact]
-               (assoc acc public-key (enrich-contact contact profile-pictures-visibility own-public-key)))
-             {}
-             contacts))
+  (reduce-kv
+   (fn [acc public-key contact]
+     (assoc acc public-key (enrich-contact contact profile-pictures-visibility own-public-key)))
+   {}
+   contacts))
 
 (defn get-blocked-contacts
   [contacts]

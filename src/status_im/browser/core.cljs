@@ -1,30 +1,30 @@
 (ns status-im.browser.core
-  (:require [clojure.string :as string]
+  (:require ["eth-phishing-detect" :as eth-phishing-detect]
+            [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.browser.eip3085 :as eip3085]
+            [status-im.browser.eip3326 :as eip3326]
             [status-im.browser.permissions :as browser.permissions]
+            [status-im.browser.webview-ref :as webview-ref]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n.i18n :as i18n]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as status]
+            [status-im.signing.core :as signing]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im2.navigation.events :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
             [status-im.utils.platform :as platform]
             [status-im.utils.random :as random]
             [status-im.utils.types :as types]
             [status-im.utils.universal-links.utils :as links]
+            [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
-            [status-im.signing.core :as signing]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.bottom-sheet.core :as bottom-sheet]
-            [status-im.browser.webview-ref :as webview-ref]
-            ["eth-phishing-detect" :as eth-phishing-detect]
-            [utils.debounce :as debounce]
-            [status-im.browser.eip3085 :as eip3085]
-            [status-im.browser.eip3326 :as eip3326]))
+            [utils.debounce :as debounce]))
 
 (fx/defn update-browser-option
   [{:keys [db]} option-key option-value]
@@ -34,15 +34,18 @@
   [{:keys [db]} options]
   {:db (update db :browser/options merge options)})
 
-(defn get-current-browser [db]
+(defn get-current-browser
+  [db]
   (get-in db [:browser/browsers (get-in db [:browser/options :browser-id])]))
 
-(defn get-current-url [{:keys [history history-index]
-                        :or {history-index 0}}]
+(defn get-current-url
+  [{:keys [history history-index]
+    :or   {history-index 0}}]
   (when history
     (nth history history-index)))
 
-(defn secure? [{:keys [error? dapp?]} {:keys [url]}]
+(defn secure?
+  [{:keys [error? dapp?]} {:keys [url]}]
   (or dapp?
       (and (not error?)
            (when url
@@ -51,9 +54,9 @@
 (fx/defn remove-browser
   {:events [:browser.ui/remove-browser-pressed]}
   [{:keys [db]} browser-id]
-  {:db            (update-in db [:browser/browsers] dissoc browser-id)
-   ::json-rpc/call [{:method "wakuext_deleteBrowser"
-                     :params [browser-id]
+  {:db             (update-in db [:browser/browsers] dissoc browser-id)
+   ::json-rpc/call [{:method     "wakuext_deleteBrowser"
+                     :params     [browser-id]
                      :on-success #()}]})
 
 (fx/defn clear-all-browsers
@@ -65,14 +68,17 @@
                       :params     [browser-id]
                       :on-success #()})})
 
-(defn update-dapp-name [{:keys [name] :as browser}]
+(defn update-dapp-name
+  [{:keys [name] :as browser}]
   (assoc browser :dapp? false :name (or name (i18n/label :t/browser))))
 
-(defn check-if-phishing-url [{:keys [history history-index] :as browser}]
+(defn check-if-phishing-url
+  [{:keys [history history-index] :as browser}]
   (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
     (cond-> browser history-host (assoc :unsafe? (eth-phishing-detect history-host)))))
 
-(defn resolve-ens-contenthash-callback [url]
+(defn resolve-ens-contenthash-callback
+  [url]
   (if (not (string/blank? url))
     (re-frame/dispatch [:browser.callback/resolve-ens-multihash-success url])
     (re-frame/dispatch [:browser.callback/resolve-ens-multihash-error])))
@@ -81,9 +87,9 @@
   [{:keys [db]} {:keys [error? resolved-url]}]
   (when (not error?)
     (let [current-url (get-current-url (get-current-browser db))
-          host (http/url-host current-url)]
+          host        (http/url-host current-url)]
       (if (and (not resolved-url) (ens/is-valid-eth-name? host))
-        {:db                            (update db :browser/options assoc :resolving? true)
+        {:db                              (update db :browser/options assoc :resolving? true)
          :browser/resolve-ens-contenthash {:chain-id (ethereum/chain-id db)
                                            :ens-name host
                                            :cb       resolve-ens-contenthash-callback}}
@@ -95,20 +101,23 @@
   (let [updated-browser (-> browser
                             (update-dapp-name)
                             (check-if-phishing-url))]
-    {:db            (update-in db
-                               [:browser/browsers browser-id]
-                               merge updated-browser)
-     ::json-rpc/call [{:method "wakuext_addBrowser"
-                       :params [(select-keys updated-browser [:browser-id :timestamp :name :dapp? :history :history-index])]
+    {:db             (update-in db
+                                [:browser/browsers browser-id]
+                                merge
+                                updated-browser)
+     ::json-rpc/call [{:method     "wakuext_addBrowser"
+                       :params     [(select-keys updated-browser
+                                                 [:browser-id :timestamp :name :dapp? :history
+                                                  :history-index])]
                        :on-success #()}]}))
 
 (fx/defn store-bookmark
   {:events [:browser/store-bookmark]}
   [{:keys [db]}
    {:keys [url] :as bookmark}]
-  {:db            (assoc-in db [:bookmarks/bookmarks url] bookmark)
-   ::json-rpc/call [{:method "wakuext_addBookmark"
-                     :params [bookmark]
+  {:db             (assoc-in db [:bookmarks/bookmarks url] bookmark)
+   ::json-rpc/call [{:method     "wakuext_addBookmark"
+                     :params     [bookmark]
                      :on-success #()}]})
 
 (fx/defn update-bookmark
@@ -117,23 +126,26 @@
    {:keys [url] :as bookmark}]
   (let [old-bookmark (get-in db [:bookmarks/bookmarks url])
         new-bookmark (merge old-bookmark bookmark)]
-    (fx/merge cofx {:db            (assoc-in db [:bookmarks/bookmarks url] new-bookmark)
-                    ::json-rpc/call [{:method "wakuext_updateBookmark"
-                                      :params [url bookmark]
-                                      :on-success #()}]})))
+    (fx/merge cofx
+              {:db             (assoc-in db [:bookmarks/bookmarks url] new-bookmark)
+               ::json-rpc/call [{:method     "wakuext_updateBookmark"
+                                 :params     [url bookmark]
+                                 :on-success #()}]})))
 
 (fx/defn delete-bookmark
   {:events [:browser/delete-bookmark]}
   [{:keys [db] :as cofx}
    url]
-  (let [old-bookmark (get-in db [:bookmarks/bookmarks url])
+  (let [old-bookmark     (get-in db [:bookmarks/bookmarks url])
         removed-bookmark (merge old-bookmark {:removed true})]
-    (fx/merge cofx {:db            (update db :bookmarks/bookmarks dissoc url)
-                    ::json-rpc/call [{:method "wakuext_removeBookmark"
-                                      :params [url]
-                                      :on-success #()}]})))
+    (fx/merge cofx
+              {:db             (update db :bookmarks/bookmarks dissoc url)
+               ::json-rpc/call [{:method     "wakuext_removeBookmark"
+                                 :params     [url]
+                                 :on-success #()}]})))
 
-(defn can-go-back? [{:keys [history-index]}]
+(defn can-go-back?
+  [{:keys [history-index]}]
   (pos? history-index))
 
 (fx/defn navigate-to-previous-page
@@ -149,10 +161,11 @@
   {:events [:browser/ignore-unsafe]}
   [cofx]
   (let [browser (get-current-browser (:db cofx))
-        host (http/url-host (get-current-url browser))]
+        host    (http/url-host (get-current-url browser))]
     (update-browser cofx (assoc browser :ignore-unsafe host))))
 
-(defn can-go-forward? [{:keys [history-index history]}]
+(defn can-go-forward?
+  [{:keys [history-index history]}]
   (< history-index (dec (count history))))
 
 (fx/defn navigate-to-next-page
@@ -173,7 +186,7 @@
             new-index   (dec (count new-history))]
         (update-browser cofx
                         (assoc browser
-                               :history new-history
+                               :history       new-history
                                :history-index new-index))))))
 
 (fx/defn resolve-ens-multihash-success
@@ -184,18 +197,20 @@
         path        (subs current-url (+ (.indexOf ^js current-url host) (count host)))
         gateway     url]
     (fx/merge cofx
-              {:db (-> (update db :browser/options
+              {:db (-> (update db
+                               :browser/options
                                assoc
-                               :url (str gateway path)
-                               :resolving? false)
+                               :url             (str gateway path)
+                               :resolving?      false)
                        (assoc-in [:browser/options :resolved-ens host] gateway))})))
 
 (fx/defn resolve-ens-multihash-error
   {:events [:browser.callback/resolve-ens-multihash-error]}
   [{:keys [db] :as cofx}]
-  (update-browser-options cofx {:url        (get-current-url (get-current-browser db))
-                                :resolving? false
-                                :error?     true}))
+  (update-browser-options cofx
+                          {:url        (get-current-url (get-current-browser db))
+                           :resolving? false
+                           :error?     true}))
 
 (fx/defn handle-browser-error
   {:events [:browser/error-occured]}
@@ -218,15 +233,21 @@
 
 (fx/defn update-browser-on-nav-change
   [cofx url error?]
-  (let [browser (get-current-browser (:db cofx))
-        options (get-in cofx [:db :browser/options])
+  (let [browser     (get-current-browser (:db cofx))
+        options     (get-in cofx [:db :browser/options])
         current-url (:url options)]
-    (when (and browser (not (string/blank? url)) (not= "about:blank" url) (not= current-url url) (not= (str current-url "/") url))
+    (when (and browser
+               (not (string/blank? url))
+               (not= "about:blank" url)
+               (not= current-url url)
+               (not= (str current-url "/") url))
       (let [resolved-ens (first (filter (fn [v]
                                           (not= (.indexOf ^js url (second v)) -1))
                                         (:resolved-ens options)))
             resolved-url (if resolved-ens
-                           (http/normalize-url (string/replace url (second resolved-ens) (first resolved-ens)))
+                           (http/normalize-url (string/replace url
+                                                               (second resolved-ens)
+                                                               (first resolved-ens)))
                            url)]
         (fx/merge cofx
                   (update-browser-history browser resolved-url)
@@ -258,7 +279,7 @@
   origin url"
   {:events [:browser.ui/url-submitted]}
   [cofx url]
-  (let [browser (get-current-browser (:db cofx))
+  (let [browser        (get-current-browser (:db cofx))
         normalized-url (http/normalize-and-decode-url url)]
     (if (links/universal-link? normalized-url)
       {:dispatch [:universal-links/handle-url normalized-url]}
@@ -274,13 +295,14 @@
   {:events [:browser.ui/open-url]}
   [{:keys [db] :as cofx} url]
   (let [normalized-url (http/normalize-and-decode-url url)
-        browser {:browser-id    (random/id)
-                 :history-index 0
-                 :history       [normalized-url]}]
+        browser        {:browser-id    (random/id)
+                        :history-index 0
+                        :history       [normalized-url]}]
     (if (links/universal-link? normalized-url)
       {:dispatch [:universal-links/handle-url normalized-url]}
       (fx/merge cofx
-                {:db (assoc db :browser/options
+                {:db (assoc db
+                            :browser/options
                             {:browser-id (:browser-id browser)})}
                 (navigation/change-tab :browser)
                 (navigation/set-stack-root :browser-stack :browser)
@@ -293,7 +315,8 @@
   [{:keys [db] :as cofx} browser-id]
   (let [browser (get-in db [:browser/browsers browser-id])]
     (fx/merge cofx
-              {:db (assoc db :browser/options
+              {:db (assoc db
+                          :browser/options
                           {:browser-id browser-id})}
               (update-browser browser)
               (navigation/set-stack-root :browser-stack :browser)
@@ -341,16 +364,19 @@
   [_ message]
   {:browser/send-to-bridge message})
 
-(defn web3-sign-message? [method]
+(defn web3-sign-message?
+  [method]
   (#{constants/web3-sign-typed-data constants/web3-sign-typed-data-v3 constants/web3-sign-typed-data-v4
      constants/web3-personal-sign
-     constants/web3-eth-sign constants/web3-keycard-sign-typed-data} method))
+     constants/web3-eth-sign constants/web3-keycard-sign-typed-data}
+   method))
 
 (fx/defn web3-send-async
   [cofx dapp-name {:keys [method params id] :as payload} message-id]
   (let [message?      (web3-sign-message? method)
         dapps-address (get-in cofx [:db :multiaccount :dapps-address])
-        typed? (and (not= constants/web3-personal-sign method) (not= constants/web3-eth-sign method))]
+        typed?        (and (not= constants/web3-personal-sign method)
+                           (not= constants/web3-eth-sign method))]
     (if (or message? (= constants/web3-send-transaction method))
       (let [[address data] (cond (and (= method constants/web3-keycard-sign-typed-data)
                                       (not (vector? params)))
@@ -359,34 +385,38 @@
                                  message? (normalize-sign-message-params params typed?)
                                  :else [nil nil])]
         (when (or (not message?) (and address data))
-          (signing/sign cofx (merge
-                              (if message?
-                                {:message {:address address
-                                           :data data
-                                           :v4 (= constants/web3-sign-typed-data-v4 method)
-                                           :typed? typed?
-                                           :pinless? (= method constants/web3-keycard-sign-typed-data)
-                                           :from dapps-address}}
-                                {:tx-obj  (-> params
-                                              first
-                                              (update :from #(or % dapps-address))
-                                              (dissoc :gasPrice))})
-                              {:on-result [:browser.dapp/transaction-on-result message-id id]
-                               :on-error  [:browser.dapp/transaction-on-error message-id]}))))
+          (signing/sign cofx
+                        (merge
+                         (if message?
+                           {:message {:address  address
+                                      :data     data
+                                      :v4       (= constants/web3-sign-typed-data-v4 method)
+                                      :typed?   typed?
+                                      :pinless? (= method constants/web3-keycard-sign-typed-data)
+                                      :from     dapps-address}}
+                           {:tx-obj (-> params
+                                        first
+                                        (update :from #(or % dapps-address))
+                                        (dissoc :gasPrice))})
+                         {:on-result [:browser.dapp/transaction-on-result message-id id]
+                          :on-error  [:browser.dapp/transaction-on-error message-id]}))))
       (cond
         (#{"eth_accounts" "eth_coinbase"} method)
-        (send-to-bridge cofx {:type      constants/web3-send-async-callback
-                              :messageId message-id
-                              :result    {:jsonrpc "2.0"
-                                          :id      (int id)
-                                          :result  (if (= method "eth_coinbase") dapps-address [dapps-address])}})
+        (send-to-bridge
+         cofx
+         {:type      constants/web3-send-async-callback
+          :messageId message-id
+          :result    {:jsonrpc "2.0"
+                      :id      (int id)
+                      :result  (if (= method "eth_coinbase") dapps-address [dapps-address])}})
         (= method "personal_ecRecover")
-        {:signing.fx/recover-message {:params       {:message (first params)
+        {:signing.fx/recover-message {:params       {:message   (first params)
                                                      :signature (second params)}
-                                      :on-completed #(re-frame/dispatch [:browser.callback/call-rpc
-                                                                         {:type      constants/web3-send-async-callback
-                                                                          :messageId message-id
-                                                                          :result    (types/json->clj %)}])}}
+                                      :on-completed #(re-frame/dispatch
+                                                      [:browser.callback/call-rpc
+                                                       {:type      constants/web3-send-async-callback
+                                                        :messageId message-id
+                                                        :result    (types/json->clj %)}])}}
         (= method "wallet_switchEthereumChain")
         (eip3326/handle-switch-ethereum-chain cofx dapp-name id message-id (first params))
 
@@ -401,7 +431,8 @@
                                                   :error     %1
                                                   :result    %2}])]}))))
 
-(fx/defn handle-no-permissions [cofx {:keys [method id]} message-id]
+(fx/defn handle-no-permissions
+  [cofx {:keys [method id]} message-id]
   (if (= method "eth_accounts")
     ;; eth_accounts returns empty array for compatibility with meta-mask
     (send-to-bridge cofx
@@ -420,7 +451,8 @@
     "keycard_signTypedData"
     "eth_signTypedData" "personal_sign" "personal_ecRecover"})
 
-(defn has-permissions? [{:dapps/keys [permissions]} dapp-name method]
+(defn has-permissions?
+  [{:dapps/keys [permissions]} dapp-name method]
   (boolean
    (and (permissioned-method method)
         (not (some #{constants/dapp-permission-web3} (get-in permissions [dapp-name :permissions]))))))
@@ -449,12 +481,18 @@
 (fx/defn process-bridge-message
   {:events [:browser/bridge-message-received]}
   [{:keys [db] :as cofx} message]
-  (let [browser (get-current-browser db)
-        url-original (get-current-url browser)
-        data    (types/json->clj message)
+  (let [browser                                                                    (get-current-browser
+                                                                                    db)
+        url-original                                                               (get-current-url
+                                                                                    browser)
+        data                                                                       (types/json->clj
+                                                                                    message)
         {{:keys [url]} :navState :keys [type permission payload messageId params]} data
-        {:keys [dapp? name]} browser
-        dapp-name (if dapp? name (http/url-host url-original))]
+        {:keys [dapp? name]}                                                       browser
+        dapp-name                                                                  (if dapp?
+                                                                                     name
+                                                                                     (http/url-host
+                                                                                      url-original))]
     (cond
       (and (= type constants/history-state-changed)
            (not= "about:blank" url))
@@ -474,10 +512,13 @@
 (re-frame/reg-fx
  :browser/send-to-bridge
  (fn [message]
-   (let [^js webview @webview-ref/webview-ref
-         msg (str "(function() { var __send = function() { if (ReactNativeWebView.onMessage) { ReactNativeWebView.onMessage('"
-                  (types/clj->json message)
-                  "');} else {setTimeout(__send, 0)}}; __send();})();")]
+   (let
+     [^js webview @webview-ref/webview-ref
+      msg
+      (str
+       "(function() { var __send = function() { if (ReactNativeWebView.onMessage) { ReactNativeWebView.onMessage('"
+       (types/clj->json message)
+       "');} else {setTimeout(__send, 0)}}; __send();})();")]
      (when (and message webview)
        (.injectJavaScript webview msg)))))
 
@@ -508,7 +549,8 @@
  (fn []
    (status/clear-web-data)))
 
-(defn share-link [url]
+(defn share-link
+  [url]
   (let [link    (links/generate-link :browse :external url)
         message (i18n/label :t/share-dapp-text {:link link})]
     (list-selection/open-share {:message message})))
@@ -523,7 +565,8 @@
             (multiaccounts.update/multiaccount-update :dapps-address address {})
             #(when (= (:view-id db) :browser)
                (merge (navigation/navigate-back %)
-                      {:dispatch [:browser.ui/browser-item-selected (get-in db [:browser/options :browser-id])]}))))
+                      {:dispatch [:browser.ui/browser-item-selected
+                                  (get-in db [:browser/options :browser-id])]}))))
 
 (fx/defn open-empty-tab
   {:events [:browser.ui/open-empty-tab]}
@@ -562,5 +605,5 @@
                                     (assoc acc url bookmark))
                                   {}
                                   bookmarks)
-        stored-bookmarks (get-in db [:bookmarks/bookmarks])]
+        stored-bookmarks  (get-in db [:bookmarks/bookmarks])]
     {:db (assoc-in db [:bookmarks/bookmarks] (merge stored-bookmarks changed-bookmarks))}))

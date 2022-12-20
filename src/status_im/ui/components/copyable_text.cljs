@@ -1,11 +1,12 @@
 (ns status-im.ui.components.copyable-text
-  (:require [reagent.core :as reagent]
+  (:require [quo.design-system.colors :as colors]
+            [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
-            [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]))
 
-(defn hide-cue-atom [anim-opacity anim-y cue-atom]
+(defn hide-cue-atom
+  [anim-opacity anim-y cue-atom]
   (animation/start
    (animation/parallel
     [(animation/timing
@@ -24,7 +25,8 @@
        :useNativeDriver true})])
    #(reset! cue-atom false)))
 
-(defn show-cue-atom [anim-opacity anim-y cue-atom y]
+(defn show-cue-atom
+  [anim-opacity anim-y cue-atom y]
   (when @cue-atom
     (animation/start
      (animation/parallel
@@ -42,7 +44,8 @@
          :useNativeDriver true})])
      #(hide-cue-atom anim-opacity anim-y cue-atom))))
 
-(defn copy-action-visual-cue [anim-opacity anim-y width cue-atom]
+(defn copy-action-visual-cue
+  [anim-opacity anim-y width cue-atom]
   [react/animated-view
    {:style
     {:opacity          anim-opacity
@@ -80,12 +83,12 @@
 
 (defn copyable-text-view
   [{:keys [label container-style]} content]
-  (let [cue-atom     (reagent/atom false)
+  (let [cue-atom         (reagent/atom false)
         background-color (or (get container-style :background-color) colors/white)
-        width        (reagent/atom 0)
-        height       (reagent/atom 0)
-        anim-y       (animation/create-value 0)
-        anim-opacity (animation/create-value 0)]
+        width            (reagent/atom 0)
+        height           (reagent/atom 0)
+        anim-y           (animation/create-value 0)
+        anim-opacity     (animation/create-value 0)]
     (reagent/create-class
      {:reagent-render
       (fn [{:keys [copied-text]} _]
@@ -100,7 +103,7 @@
                             (- (+ 17 @height))))
                          (react/copy-to-clipboard copied-text))]
           [react/view
-           {:style (if container-style container-style {})
+           {:style     (if container-style container-style {})
             :on-layout
             #(do
                (reset! width (-> ^js % .-nativeEvent .-layout .-width))

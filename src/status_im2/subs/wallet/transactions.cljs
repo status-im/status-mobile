@@ -1,12 +1,12 @@
 (ns status-im2.subs.wallet.transactions
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.money :as money]
-            [status-im.i18n.i18n :as i18n]
             [status-im.ethereum.transactions.core :as transactions]
-            [status-im.wallet.db :as wallet.db]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.notifications.core :as notifications]
             [status-im.utils.datetime :as datetime]
-            [status-im.wallet.utils :as wallet.utils]
-            [status-im.notifications.core :as notifications]))
+            [status-im.utils.money :as money]
+            [status-im.wallet.db :as wallet.db]
+            [status-im.wallet.utils :as wallet.utils]))
 
 (re-frame/reg-sub
  :wallet/accounts
@@ -42,20 +42,22 @@
         (if (= type :inbound)
           [from :from-contact :to-wallet]
           [to :to-contact :from-wallet])
-        wallet  (i18n/label :main-wallet)
-        contact (get contacts contact-address)
+        wallet                                             (i18n/label :main-wallet)
+        contact                                            (get contacts contact-address)
         {:keys [symbol-display symbol decimals] :as asset}
         (or token native-currency)
-        amount-text   (if value
-                        (wallet.utils/format-amount value decimals)
-                        "...")
-        currency-text (when asset
-                        (clojure.core/name (or symbol-display symbol)))]
+        amount-text                                        (if value
+                                                             (wallet.utils/format-amount value decimals)
+                                                             "...")
+        currency-text                                      (when asset
+                                                             (clojure.core/name (or symbol-display
+                                                                                    symbol)))]
     (cond-> transaction
       contact (assoc key-contact (:name contact))
-      :always (assoc key-wallet wallet
-                     :amount-text    amount-text
-                     :currency-text  currency-text))))
+      :always (assoc key-wallet
+                     wallet
+                     :amount-text   amount-text
+                     :currency-text currency-text))))
 
 (re-frame/reg-sub
  :wallet.transactions/transactions
@@ -67,7 +69,11 @@
    (reduce (fn [acc [hash transaction]]
              (assoc acc
                     hash
-                    (enrich-transaction transaction contacts native-currency))) ;;TODO this doesn't look good for performance, we need to calculate this only once for each transaction
+                    (enrich-transaction transaction contacts native-currency))) ;;TODO this doesn't look
+                                                                                ;;good for performance,
+                                                                                ;;we need to calculate
+                                                                                ;;this only once for each
+                                                                                ;;transaction
            {}
            transactions)))
 
@@ -90,8 +96,8 @@
  (fn [filters]
    (map (fn [id]
           (let [checked? (filters id)]
-            {:id id
-             :label (filters-labels id)
+            {:id       id
+             :label    (filters-labels id)
              :checked? checked?
              :on-touch #(if checked?
                           (re-frame/dispatch [:wallet.transactions/remove-filter id])
@@ -103,8 +109,8 @@
  :<- [:wallet.transactions/filters]
  :<- [:wallet.transactions/all-filters?]
  (fn [[filters all-filters?]]
-   {:all-filters? all-filters?
-    :filters filters
+   {:all-filters?        all-filters?
+    :filters             filters
     :on-touch-select-all (when-not all-filters?
                            #(re-frame/dispatch
                              [:wallet.transactions/add-all-filters]))}))
@@ -114,22 +120,23 @@
    {:keys [type from-contact from to-contact to hash timestamp] :as transaction}
    address]
   (when (filters type)
-    (assoc (case type
-             :inbound
-             (assoc transaction
-                    :label (i18n/label :t/from)
-                    :contact-accessibility-label :sender-text
-                    :address-accessibility-label :sender-address-text
-                    :contact from-contact
-                    :address from)
-             (assoc transaction
-                    :label (i18n/label :t/to)
-                    :contact-accessibility-label :recipient-name-text
-                    :address-accessibility-label :recipient-address-text
-                    :contact to-contact
-                    :address to))
-           :time-formatted (datetime/timestamp->time timestamp)
-           :on-touch-fn #(re-frame/dispatch [:wallet.ui/show-transaction-details hash address]))))
+    (assoc
+     (case type
+       :inbound
+       (assoc transaction
+              :label                       (i18n/label :t/from)
+              :contact-accessibility-label :sender-text
+              :address-accessibility-label :sender-address-text
+              :contact                     from-contact
+              :address                     from)
+       (assoc transaction
+              :label                       (i18n/label :t/to)
+              :contact-accessibility-label :recipient-name-text
+              :address-accessibility-label :recipient-address-text
+              :contact                     to-contact
+              :address                     to))
+     :time-formatted (datetime/timestamp->time timestamp)
+     :on-touch-fn    #(re-frame/dispatch [:wallet.ui/show-transaction-details hash address]))))
 
 (defn group-transactions-by-date
   [transactions]
@@ -148,8 +155,8 @@
     (re-frame/subscribe [:wallet/filters])
     (re-frame/subscribe [:wallet.transactions/all-filters?])])
  (fn [[transactions filters all-filters?] [_ address]]
-   {:all-filters? all-filters?
-    :total        (count transactions)
+   {:all-filters?                 all-filters?
+    :total                        (count transactions)
     :transaction-history-sections
     (->> transactions
          vals
@@ -175,7 +182,7 @@
     (re-frame/subscribe [:chain-id])])
  (fn [[transactions native-currency chain-id] [_ hash _]]
    (let [{:keys [gas-used gas-price fee-cap tip-cap hash timestamp type]
-          :as transaction}
+          :as   transaction}
          (get transactions hash)
          native-currency-text (name (or (:symbol-display native-currency)
                                         (:symbol native-currency)))]
@@ -223,7 +230,7 @@
    (let [confirmations (wallet.db/get-confirmations transaction
                                                     current-block)]
      (assoc transaction
-            :confirmations confirmations
+            :confirmations          confirmations
             :confirmations-progress
             (if (>= confirmations transactions/confirmations-count-threshold)
               100
@@ -233,6 +240,8 @@
  :notifications/wallet-transactions
  :<- [:push-notifications/preferences]
  (fn [pref]
-   (first (filter #(notifications/preference= % {:service    "wallet"
-                                                 :event      "transaction"
-                                                 :identifier "all"}) pref))))
+   (first (filter #(notifications/preference= %
+                                              {:service    "wallet"
+                                               :event      "transaction"
+                                               :identifier "all"})
+                  pref))))

@@ -5,7 +5,8 @@
             [status-im.goog.i18n :as i18n]
             [status-im.utils.datetime :as d]))
 
-(defn match [name symbols]
+(defn match
+  [name symbols]
   (is (identical? (.-dateTimeSymbols_ (i18n/mk-fmt name #'status-im.utils.datetime/medium-date-format))
                   symbols)))
 
@@ -33,47 +34,54 @@
   (is (= (#'status-im.utils.datetime/is-24-hour-locsym (i18n/locale-symbols "nb-NO")) true)))
 
 (deftest to-short-str-today-test
-  (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
-                d/time-fmt (fn [] (i18n/mk-fmt "us" #'status-im.utils.datetime/short-time-format))
+  (with-redefs [t/*ms-fn*          (constantly epoch-plus-3d)
+                d/time-fmt         (fn []
+                                     (i18n/mk-fmt "us" #'status-im.utils.datetime/short-time-format))
                 d/time-zone-offset (t/period :hours 0)]
     (is (= (d/to-short-str epoch-plus-3d) "12:00 AM"))))
 
 #_((deftest to-short-str-today-force-24H-test
-     (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
-                   d/is-24-hour (constantly true)
-                   d/time-fmt (i18n-module/mk-fmt "us" d/short-time-format)
+     (with-redefs [t/*ms-fn*          (constantly epoch-plus-3d)
+                   d/is-24-hour       (constantly true)
+                   d/time-fmt         (i18n-module/mk-fmt "us" d/short-time-format)
                    d/time-zone-offset (t/period :hours 0)]
        (is (= (d/to-short-str epoch-plus-3d) "00:00"))))
 
    (deftest to-short-str-today-force-AMPM-test
-     (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
-                   d/is-24-hour (constantly false)
-                   d/time-fmt (i18n-module/mk-fmt "it" d/short-time-format)
+     (with-redefs [t/*ms-fn*          (constantly epoch-plus-3d)
+                   d/is-24-hour       (constantly false)
+                   d/time-fmt         (i18n-module/mk-fmt "it" d/short-time-format)
                    d/time-zone-offset (t/period :hours 0)]
        (is (= (d/to-short-str epoch-plus-3d) "12:00 AM")))))
 
 (deftest to-short-str-before-yesterday-us-test
-  (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
+  (with-redefs [t/*ms-fn*          (constantly epoch-plus-3d)
                 d/time-zone-offset (t/period :hours 0)
-                d/date-fmt (fn [] (i18n/mk-fmt "us" #'status-im.utils.datetime/medium-date-format))]
+                d/date-fmt         (fn []
+                                     (i18n/mk-fmt "us" #'status-im.utils.datetime/medium-date-format))]
     (is (= (d/to-short-str epoch) "Jan 1, 1970"))))
 
 (deftest to-short-str-before-yesterday-nb-test
   (with-redefs [d/time-zone-offset (t/period :hours 0)
-                d/date-fmt (fn [] (i18n/mk-fmt "nb-NO" #'status-im.utils.datetime/medium-date-format))
-                t/*ms-fn* (constantly epoch-plus-3d)]
+                d/date-fmt         (fn []
+                                     (i18n/mk-fmt "nb-NO" #'status-im.utils.datetime/medium-date-format))
+                t/*ms-fn*          (constantly epoch-plus-3d)]
     (is (= (d/to-short-str epoch) "1. jan. 1970"))))
 
 (deftest day-relative-before-yesterday-us-test
-  (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
+  (with-redefs [t/*ms-fn*          (constantly epoch-plus-3d)
                 d/time-zone-offset (t/period :hours 0)
-                d/date-fmt (fn [] (i18n/mk-fmt "us" #'status-im.utils.datetime/medium-date-time-format))]
+                d/date-fmt         (fn []
+                                     (i18n/mk-fmt "us"
+                                                  #'status-im.utils.datetime/medium-date-time-format))]
     (is (= (d/day-relative epoch) "Jan 1, 1970, 12:00:00 AM"))))
 
 (deftest day-relative-before-yesterday-nb-test
-  (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
+  (with-redefs [t/*ms-fn*          (constantly epoch-plus-3d)
                 d/time-zone-offset (t/period :hours 0)
-                d/date-fmt (fn [] (i18n/mk-fmt "nb-NO" #'status-im.utils.datetime/medium-date-time-format))]
+                d/date-fmt         (fn []
+                                     (i18n/mk-fmt "nb-NO"
+                                                  #'status-im.utils.datetime/medium-date-time-format))]
     (is (= (d/day-relative epoch) "1. jan. 1970, 00:00:00"))))
 
 (deftest current-year?-test
@@ -164,15 +172,19 @@
       (is (= "12:00 AM" (d/timestamp->relative 163641600000))))))
 
 #_((deftest day-relative-before-yesterday-force-24H-test
-     (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
-                   d/is-24-hour (constantly true)
+     (with-redefs [t/*ms-fn*          (constantly epoch-plus-3d)
+                   d/is-24-hour       (constantly true)
                    d/time-zone-offset (t/period :hours 0)
-                   d/date-fmt (i18n-module/mk-fmt "us" #'status-im.utils.datetime/medium-date-time-format)]
+                   d/date-fmt         (i18n-module/mk-fmt
+                                       "us"
+                                       #'status-im.utils.datetime/medium-date-time-format)]
        (is (= (d/day-relative epoch) "Jan 1, 1970, 00:00:00"))))
 
    (deftest day-relative-before-yesterday-force-AMPM-test
-     (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
-                   d/is-24-hour (constantly false)
+     (with-redefs [t/*ms-fn*          (constantly epoch-plus-3d)
+                   d/is-24-hour       (constantly false)
                    d/time-zone-offset (t/period :hours 0)
-                   d/date-fmt (i18n-module/mk-fmt "it" #'status-im.utils.datetime/medium-date-time-format)]
+                   d/date-fmt         (i18n-module/mk-fmt
+                                       "it"
+                                       #'status-im.utils.datetime/medium-date-time-format)]
        (is (= (d/day-relative epoch) "01 gen 1970, 12:00:00 AM")))))

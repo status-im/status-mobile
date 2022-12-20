@@ -15,7 +15,8 @@
    :margin-right     4
    :border-radius    4})
 
-(defn photos-buttons []
+(defn photos-buttons
+  []
   {:height           88
    :border-top-width 1
    :border-top-color colors/gray-lighter

@@ -2,7 +2,8 @@
   (:require [quo2.foundations.colors :as colors]
             [react-native.reanimated :as reanimated]))
 
-(defn animated-circle [scale opacity color]
+(defn animated-circle
+  [scale opacity color]
   (reanimated/apply-animations-to-style
    {:transform [{:scale scale}]
     :opacity   opacity}
@@ -16,11 +17,12 @@
     :align-items     :center
     :z-index         0}))
 
-(defn record-button-big-container [translate-x translate-y opacity]
+(defn record-button-big-container
+  [translate-x translate-y opacity]
   (reanimated/apply-animations-to-style
    {:transform [{:translateY translate-y}
                 {:translateX translate-x}]
-    :opacity    opacity}
+    :opacity   opacity}
    {:position        :absolute
     :bottom          0
     :right           0
@@ -30,7 +32,8 @@
     :justify-content :center
     :z-index         0}))
 
-(defn record-button-big-body [button-color]
+(defn record-button-big-body
+  [button-color]
   {:width            56
    :height           56
    :border-radius    28
@@ -39,7 +42,8 @@
    :background-color button-color
    :overflow         :hidden})
 
-(defn record-button-big-red-overlay [red-overlay-opacity]
+(defn record-button-big-red-overlay
+  [red-overlay-opacity]
   (reanimated/apply-animations-to-style
    {:opacity red-overlay-opacity}
    {:position         :absolute
@@ -49,7 +53,8 @@
     :bottom           0
     :background-color colors/danger-50}))
 
-(defn record-button-big-gray-overlay [gray-overlay-opacity]
+(defn record-button-big-gray-overlay
+  [gray-overlay-opacity]
   (reanimated/apply-animations-to-style
    {:opacity gray-overlay-opacity}
    {:position         :absolute
@@ -59,7 +64,8 @@
     :bottom           0
     :background-color (colors/theme-colors colors/neutral-80-opa-5-opaque colors/neutral-80)}))
 
-(defn record-button-big-icon-container [icon-opacity]
+(defn record-button-big-icon-container
+  [icon-opacity]
   (reanimated/apply-animations-to-style
    {:opacity icon-opacity}
    {}))
@@ -70,7 +76,8 @@
    :border-radius    4
    :background-color colors/white})
 
-(defn send-button-container [opacity]
+(defn send-button-container
+  [opacity]
   (reanimated/apply-animations-to-style
    {:opacity opacity}
    {:justify-content :center
@@ -81,7 +88,8 @@
     :top             0
     :right           20}))
 
-(defn send-button-connector [opacity width height border-radius-first-half border-radius-second-half]
+(defn send-button-connector
+  [opacity width height border-radius-first-half border-radius-second-half]
   (reanimated/apply-animations-to-style
    {:opacity                    opacity
     :width                      width
@@ -96,7 +104,8 @@
     :background-color colors/primary-50
     :z-index          0}))
 
-(defn send-button [translate-y opacity]
+(defn send-button
+  [translate-y opacity]
   (reanimated/apply-animations-to-style
    {:transform [{:translateY translate-y}]
     :opacity   opacity}
@@ -114,7 +123,8 @@
 (def send-icon-container
   {:z-index 10})
 
-(defn lock-button-container [opacity]
+(defn lock-button-container
+  [opacity]
   (reanimated/apply-animations-to-style
    {:opacity opacity}
    {:transform       [{:rotate "45deg"}]
@@ -126,7 +136,8 @@
     :top             20
     :left            20}))
 
-(defn lock-button-connector [opacity width height border-radius-first-half border-radius-second-half]
+(defn lock-button-connector
+  [opacity width height border-radius-first-half border-radius-second-half]
   (reanimated/apply-animations-to-style
    {:opacity                    opacity
     :width                      width
@@ -141,7 +152,8 @@
     :background-color (colors/theme-colors colors/neutral-80-opa-5-opaque colors/neutral-80)
     :overflow         :hidden}))
 
-(defn lock-button [translate-x-y opacity]
+(defn lock-button
+  [translate-x-y opacity]
   (reanimated/apply-animations-to-style
    {:transform [{:translateX translate-x-y}
                 {:translateY translate-x-y}]
@@ -158,7 +170,8 @@
     :overflow         :hidden
     :z-index          12}))
 
-(defn delete-button-container [opacity]
+(defn delete-button-container
+  [opacity]
   (reanimated/apply-animations-to-style
    {:opacity opacity}
    {:justify-content :center
@@ -169,7 +182,8 @@
     :bottom          20
     :left            0}))
 
-(defn delete-button-connector [opacity width height border-radius-first-half border-radius-second-half]
+(defn delete-button-connector
+  [opacity width height border-radius-first-half border-radius-second-half]
   (reanimated/apply-animations-to-style
    {:opacity                    opacity
     :width                      width
@@ -184,7 +198,8 @@
     :background-color colors/danger-50
     :z-index          0}))
 
-(defn delete-button [translate-x opacity]
+(defn delete-button
+  [translate-x opacity]
   (reanimated/apply-animations-to-style
    {:transform [{:translateX translate-x}]
     :opacity   opacity}
@@ -199,9 +214,10 @@
     :left             0
     :z-index          11}))
 
-(defn record-button-container [opacity]
+(defn record-button-container
+  [opacity]
   (reanimated/apply-animations-to-style
-   {:opacity       opacity}
+   {:opacity opacity}
    {:margin-bottom 32
     :margin-right  32}))
 

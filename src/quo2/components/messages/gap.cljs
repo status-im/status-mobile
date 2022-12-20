@@ -1,12 +1,11 @@
 (ns quo2.components.messages.gap
-  (:require
-   [oops.core :refer [oget]]
-   [react-native.core :as rn]
-   [quo2.theme :as theme]
-   [quo2.components.icon :as icon]
-   [quo2.components.markdown.text :as text]
-   [quo2.foundations.colors :as colors]
-   [reagent.core :as reagent]))
+  (:require [oops.core :refer [oget]]
+            [quo2.components.icon :as icon]
+            [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]))
 
 ;;; helpers
 (def themes
@@ -17,7 +16,8 @@
            :time       colors/neutral-40
            :background colors/neutral-95}})
 
-(defn get-color [key]
+(defn get-color
+  [key]
   (get-in themes [(theme/get-theme) key]))
 
 (def ui-images
@@ -27,45 +27,51 @@
    :dark  {:horizontal (js/require "../resources/images/ui/message-gap-hborder-dark.png")
            :circles    (js/require "../resources/images/ui/message-gap-circle-bg-dark.png")}})
 
-(defn get-image [key]
+(defn get-image
+  [key]
   (get-in ui-images [(theme/get-theme) key]))
 
 ;;; components
 ;;;; borders
-(defn hborder [{:keys [type style]}]
-  [rn/image {:source      (get-image :horizontal)
-             :resize-mode :repeat
-             :style       (merge {:position           :absolute
-                                  :left               0
-                                  :padding-horizontal 4
-                                  :overflow           :hidden
-                                  :width              "110%"
-                                  :height             8
-                                  :margin-left        -4}
-                                 (if (= type :top)
-                                   {:top 0}
-                                   {:transform [{:rotateZ "180deg"}]
-                                    :bottom    0})
-                                 style)}])
+(defn hborder
+  [{:keys [type style]}]
+  [rn/image
+   {:source      (get-image :horizontal)
+    :resize-mode :repeat
+    :style       (merge {:position           :absolute
+                         :left               0
+                         :padding-horizontal 4
+                         :overflow           :hidden
+                         :width              "110%"
+                         :height             8
+                         :margin-left        -4}
+                        (if (= type :top)
+                          {:top 0}
+                          {:transform [{:rotateZ "180deg"}]
+                           :bottom    0})
+                        style)}])
 
-(defn vborder [type body-height]
+(defn vborder
+  [type body-height]
   (let [height @body-height
         img    (get-image :vertical)]
     (when (and img height)
-      [rn/image {:source      img
-                 :resize-mode :repeat
-                 :style       (merge
-                               {:position :absolute
-                                :top      4
-                                :height   (- height 8)
-                                :width    4}
-                               (if (= type :left)
-                                 {:left 0}
-                                 {:transform [{:rotate "180deg"}]
-                                  :right     0}))}])))
+      [rn/image
+       {:source      img
+        :resize-mode :repeat
+        :style       (merge
+                      {:position :absolute
+                       :top      4
+                       :height   (- height 8)
+                       :width    4}
+                      (if (= type :left)
+                        {:left 0}
+                        {:transform [{:rotate "180deg"}]
+                         :right     0}))}])))
 
 ;;;; others
-(defn circle []
+(defn circle
+  []
   [rn/view
    {:width         9
     :height        9
@@ -75,34 +81,40 @@
     :border-color  (get-color :icon)
     :border-radius 50}])
 
-(defn timestamp [str]
-  [text/text {:size  :label
-              :style {:text-transform :none
-                      :color          (get-color :time)}} str])
+(defn timestamp
+  [str]
+  [text/text
+   {:size  :label
+    :style {:text-transform :none
+            :color          (get-color :time)}} str])
 
-(defn info-button [on-press]
+(defn info-button
+  [on-press]
   [rn/touchable-without-feedback
    {:on-press on-press}
    [icon/icon "message-gap-info" {:size 12 :no-color true :container-style {:padding 4}}]])
 
 ;;;; timeline/body
-(defn timeline []
-  [rn/view {:flex            0
-            :margin-right    20
-            :align-items     :center
-            :width           9
-            :justify-content :space-between}
+(defn timeline
+  []
+  [rn/view
+   {:flex            0
+    :margin-right    20
+    :align-items     :center
+    :width           9
+    :justify-content :space-between}
    [circle]
    [rn/image {:style {:flex 1} :source (get-image :circles) :resize-mode :repeat}]
    [circle]])
 
-(defn body [timestamp-far timestamp-near on-info-button-pressed on-press warning-label]
+(defn body
+  [timestamp-far timestamp-near on-info-button-pressed on-press warning-label]
   [rn/view {:flex 1}
    [rn/view
-    {:flex-direction    :row
-     :align-items       :center
-     :justify-content   :space-between
-     :margin-right      2}
+    {:flex-direction  :row
+     :align-items     :center
+     :justify-content :space-between
+     :margin-right    2}
     [timestamp timestamp-far]
     (when on-info-button-pressed [info-button on-info-button-pressed])]
 
@@ -131,13 +143,14 @@
         :flex      1}
        [hborder {:type :top}]
        [hborder {:type :bottom}]
-       [rn/view (merge {:width            "100%"
-                        :background-color (get-color :background)
-                        :flex-direction   :row
-                        :padding          20
-                        :padding-left     31
-                        :margin-vertical  4}
-                       style)
+       [rn/view
+        (merge {:width            "100%"
+                :background-color (get-color :background)
+                :flex-direction   :row
+                :padding          20
+                :padding-left     31
+                :margin-vertical  4}
+               style)
 
         [timeline]
         [body timestamp-far timestamp-near on-info-button-pressed on-press warning-label]]

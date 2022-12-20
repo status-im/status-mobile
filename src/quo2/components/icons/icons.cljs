@@ -4,7 +4,8 @@
 
 (def icons (icons/resolve-icons))
 
-(defn icon-source [icon]
+(defn icon-source
+  [icon]
   (if-let [icon (get icons (name icon))]
     icon
     (do

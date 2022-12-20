@@ -1,11 +1,11 @@
 (ns status-im.profile.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.utils.universal-links.utils :as universal-links]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
-            [clojure.string :as string]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.universal-links.utils :as universal-links]))
 
 (re-frame/reg-fx
  :copy-to-clipboard
@@ -30,7 +30,9 @@
                                    (swap! tooltips dissoc interval-id))
                                  (do (re-frame/dispatch [:set-in [:tooltips tooltip-id] opacity])
                                      (when (< 10 cnt)
-                                       (swap! tooltips assoc-in [tooltip-id :opacity] (- opacity 0.05)))))))
+                                       (swap! tooltips assoc-in
+                                         [tooltip-id :opacity]
+                                         (- opacity 0.05)))))))
                           100)]
          (swap! tooltips assoc tooltip-id {:opacity 1.0 :interval-id interval-id :cnt 0}))))))
 
@@ -56,10 +58,12 @@
   {:events [:my-profile/enter-two-random-words]}
   [{:keys [db]}]
   (let [{:keys [mnemonic]} (:multiaccount db)
-        shuffled-mnemonic (shuffle (map-indexed vector (string/split mnemonic #" ")))]
-    {:db (assoc db :my-profile/seed {:step        :first-word
-                                     :first-word  (first shuffled-mnemonic)
-                                     :second-word (second shuffled-mnemonic)})}))
+        shuffled-mnemonic  (shuffle (map-indexed vector (string/split mnemonic #" ")))]
+    {:db (assoc db
+                :my-profile/seed
+                {:step        :first-word
+                 :first-word  (first shuffled-mnemonic)
+                 :second-word (second shuffled-mnemonic)})}))
 
 (fx/defn set-step
   {:events [:my-profile/set-step]}

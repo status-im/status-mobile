@@ -4,9 +4,9 @@
             [quo2.components.buttons.button :as button]
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
+            [quo2.components.notifications.activity-log.style :as style]
             [quo2.components.tags.status-tags :as status-tags]
             [quo2.foundations.colors :as colors]
-            [quo2.components.notifications.activity-log.style :as style]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]))
@@ -21,17 +21,20 @@
 (defn- activity-reply-text-input
   [reply-input on-update-reply]
   [rn/view
-   [rn/view {:style {:margin-top     16
-                     :margin-bottom  8
-                     :flex-direction :row}}
-    [text/text {:weight :medium
-                :style  {:flex-grow 1
-                         :color     colors/neutral-40}}
+   [rn/view
+    {:style {:margin-top     16
+             :margin-bottom  8
+             :flex-direction :row}}
+    [text/text
+     {:weight :medium
+      :style  {:flex-grow 1
+               :color     colors/neutral-40}}
      (i18n/label :t/your-answer)]
-    [text/text {:style {:flex-shrink 1
-                        :color       (if (valid-reply? @reply-input)
-                                       colors/neutral-40
-                                       colors/danger-60)}}
+    [text/text
+     {:style {:flex-shrink 1
+              :color       (if (valid-reply? @reply-input)
+                             colors/neutral-40
+                             colors/danger-60)}}
      (str (count @reply-input) "/" max-reply-length)]]
    [rn/view
     ;; TODO(@ilmotta): Replace with quo2 component when available.
@@ -58,33 +61,39 @@
   (let [first-line-offset (if replying? 4 0)
         gap-between-lines 4]
     (into [rn/view {:style (assoc style/context-container :margin-top first-line-offset)}]
-          (mapcat (fn [detail]
-                    ^{:key (hash detail)}
-                    (if (string? detail)
-                      (map (fn [s]
-                             [rn/view {:style {:margin-right 4
-                                               :margin-top   0}}
-                              [text/text {:size  :paragraph-2
-                                          :style {:color colors/white}}
-                               s]])
-                           (string/split detail #"\s+"))
-                      [[rn/view {:margin-right 4
-                                 :margin-top   gap-between-lines}
-                        detail]]))
-                  context))))
+          (mapcat
+           (fn [detail]
+             ^{:key (hash detail)}
+             (if (string? detail)
+               (map (fn [s]
+                      [rn/view
+                       {:style {:margin-right 4
+                                :margin-top   0}}
+                       [text/text
+                        {:size  :paragraph-2
+                         :style {:color colors/white}}
+                        s]])
+                    (string/split detail #"\s+"))
+               [[rn/view
+                 {:margin-right 4
+                  :margin-top   gap-between-lines}
+                 detail]]))
+           context))))
 
 (defn- activity-message
   [{:keys [title body]}]
   [rn/view {:style style/message-container}
    (when title
-     [text/text {:size                :paragraph-2
-                 :accessibility-label :activity-message-title
-                 :style               style/message-title}
+     [text/text
+      {:size                :paragraph-2
+       :accessibility-label :activity-message-title
+       :style               style/message-title}
       title])
    (if (string? body)
-     [text/text {:style               style/message-body
-                 :accessibility-label :activity-message-body
-                 :size                :paragraph-1}
+     [text/text
+      {:style               style/message-body
+       :accessibility-label :activity-message-body
+       :size                :paragraph-1}
       body]
      body)])
 
@@ -97,44 +106,51 @@
                         :flex-basis       0})]
     [rn/view style/buttons-container
      (when button-1
-       [button/button (-> button-1
-                          (assoc :size size)
-                          (update :style merge common-style {:margin-right 8}))
+       [button/button
+        (-> button-1
+            (assoc :size size)
+            (update :style merge common-style {:margin-right 8}))
         (:label button-1)])
      (when button-2
-       [button/button (-> button-2
-                          (assoc :size size)
-                          (assoc :disabled (and replying? (not (valid-reply? @reply-input))))
-                          (update :style merge common-style))
+       [button/button
+        (-> button-2
+            (assoc :size size)
+            (assoc :disabled (and replying? (not (valid-reply? @reply-input))))
+            (update :style merge common-style))
         (:label button-2)])]))
 
 (defn- activity-status
   [status]
-  [rn/view {:style               style/status
-            :accessibility-label :activity-status}
-   [status-tags/status-tag {:size   :small
-                            :label  (:label status)
-                            :status status}]])
+  [rn/view
+   {:style               style/status
+    :accessibility-label :activity-status}
+   [status-tags/status-tag
+    {:size   :small
+     :label  (:label status)
+     :status status}]])
 
 (defn- activity-title
   [title replying?]
-  [text/text {:weight              :semi-bold
-              :accessibility-label :activity-title
-              :style               (style/title replying?)
-              :size                (if replying? :heading-2 :paragraph-1)}
+  [text/text
+   {:weight              :semi-bold
+    :accessibility-label :activity-title
+    :style               (style/title replying?)
+    :size                (if replying? :heading-2 :paragraph-1)}
    title])
 
 (defn- activity-timestamp
   [timestamp]
-  [text/text {:size                :label
-              :accessibility-label :activity-timestamp
-              :style               style/timestamp}
+  [text/text
+   {:size                :label
+    :accessibility-label :activity-timestamp
+    :style               style/timestamp}
    timestamp])
 
 (defn- activity-unread-dot
   []
-  [rn/view {:accessibility-label :activity-unread-indicator
-            :style               style/unread-dot-container}
+  [rn/view
+   {:accessibility-label :activity-unread-indicator
+    :style               style/unread-dot-container}
    [rn/view {:style style/unread-dot}]])
 
 (defn- footer
@@ -159,12 +175,14 @@
            replying?
            unread?]
     :as   props}]
-  [rn/view {:accessibility-label :activity
-            :style               style/container}
+  [rn/view
+   {:accessibility-label :activity
+    :style               style/container}
    (when-not replying?
      [activity-icon icon])
-   [rn/view {:style {:padding-left (when-not replying? 8)
-                     :flex         1}}
+   [rn/view
+    {:style {:padding-left (when-not replying? 8)
+             :flex         1}}
     [rn/view
      [rn/view {:style style/top-section-container}
       [activity-title title replying?]

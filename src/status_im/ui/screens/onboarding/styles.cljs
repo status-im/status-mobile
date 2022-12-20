@@ -5,7 +5,8 @@
   {:margin-bottom 16
    :text-align    :center})
 
-(defn wizard-text []
+(defn wizard-text
+  []
   {:color      colors/gray
    :text-align :center})
 
@@ -16,13 +17,14 @@
    :flex-direction     :row})
 
 (def multiaccount-image
-  {:width            40
-   :height           40
-   :border-radius    20
-   :border-width     1
-   :border-color     colors/black-transparent})
+  {:width         40
+   :height        40
+   :border-radius 20
+   :border-width  1
+   :border-color  colors/black-transparent})
 
-(defn list-item [selected?]
+(defn list-item
+  [selected?]
   {:flex-direction   :row
    :align-items      :center
    :justify-content  :space-between

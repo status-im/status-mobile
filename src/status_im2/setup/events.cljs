@@ -1,13 +1,11 @@
 (ns status-im2.setup.events
   (:require [clojure.string :as string]
-            [quo2.theme :as quo2.theme]
-            [re-frame.core :as re-frame]
-            ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
             [quo.theme :as quo.theme]
-            [status-im.native-module.core :as status]
+            [quo2.theme :as quo2.theme]
+            [re-frame.core :as re-frame] ;; TODO (14/11/22 flexsurfer move to status-im2 namespace
             [status-im.multiaccounts.login.core :as multiaccounts.login]
+            [status-im.native-module.core :as status]
             [status-im.utils.keychain.core :as keychain]
-
             [status-im2.common.theme.core :as theme]
             [status-im2.common.toasts.events]
             [status-im2.navigation.events :as navigation]
@@ -45,8 +43,9 @@
 (rf/defn initialize-multiaccounts
   {:events [:setup/initialize-multiaccounts]}
   [{:keys [db] :as cofx} all-multiaccounts {:keys [logout?]}]
-  (let [multiaccounts (reduce (fn [acc {:keys [key-uid keycard-pairing]
-                                        :as   multiaccount}]
+  (let [multiaccounts (reduce (fn [acc
+                                   {:keys [key-uid keycard-pairing]
+                                    :as   multiaccount}]
                                 (-> (assoc acc key-uid multiaccount)
                                     (assoc-in [key-uid :keycard-pairing]
                                               (when-not (string/blank? keycard-pairing)
@@ -65,27 +64,30 @@
 (rf/defn initialize-app-db
   "Initialize db to initial state"
   [{{:keys         [keycard supported-biometric-auth goto-key-storage?]
-     :network/keys [type] :keycard/keys [banner-hidden]} :db}]
+     :network/keys [type]
+     :keycard/keys [banner-hidden]}
+    :db}]
   {:db (assoc db/app-db
-              :network/type type
-              :keycard/banner-hidden banner-hidden
-              :keycard (dissoc keycard :secrets :pin :application-info)
+              :network/type             type
+              :keycard/banner-hidden    banner-hidden
+              :keycard                  (dissoc keycard :secrets :pin :application-info)
               :supported-biometric-auth supported-biometric-auth
-              :goto-key-storage? goto-key-storage?
-              :multiaccounts/loading true)})
+              :goto-key-storage?        goto-key-storage?
+              :multiaccounts/loading    true)})
 
 (rf/defn start-app
   {:events [:setup/app-started]}
   [cofx]
   (rf/merge cofx
-            {:setup/init-theme                      nil
-             :get-supported-biometric-auth          nil
-             :network/listen-to-network-info        nil
-             :keycard/register-card-events          nil
-             :keycard/check-nfc-support             nil
-             :keycard/check-nfc-enabled             nil
-             :keycard/retrieve-pairings             nil
-             :setup/open-multiaccounts              #(do
-                                                       (re-frame/dispatch [:setup/initialize-multiaccounts % {:logout? false}])
-                                                       (re-frame/dispatch [:get-keycard-banner-preference]))}
+            {:setup/init-theme               nil
+             :get-supported-biometric-auth   nil
+             :network/listen-to-network-info nil
+             :keycard/register-card-events   nil
+             :keycard/check-nfc-support      nil
+             :keycard/check-nfc-enabled      nil
+             :keycard/retrieve-pairings      nil
+             :setup/open-multiaccounts       #(do
+                                                (re-frame/dispatch [:setup/initialize-multiaccounts %
+                                                                    {:logout? false}])
+                                                (re-frame/dispatch [:get-keycard-banner-preference]))}
             (initialize-app-db)))

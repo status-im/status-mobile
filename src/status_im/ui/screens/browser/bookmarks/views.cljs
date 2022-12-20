@@ -1,21 +1,23 @@
 (ns status-im.ui.screens.browser.bookmarks.views
-  (:require [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.components.toolbar :as toolbar]
+  (:require [clojure.string :as string]
             [quo.core :as quo]
             [quo.design-system.colors :as colors]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [clojure.string :as string]
-            [re-frame.core :as re-frame]))
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.components.topbar :as topbar]))
 
-(defn screen [{:keys [url name new]}]
+(defn screen
+  [{:keys [url name new]}]
   (let [input-name (reagent/atom name)]
     (fn []
       (let [edit? (not new)]
-        [kb-presentation/keyboard-avoiding-view {:style {:flex 1}
-                                                 :ignore-offset true}
+        [kb-presentation/keyboard-avoiding-view
+         {:style         {:flex 1}
+          :ignore-offset true}
          [topbar/topbar
           {:modal?        true
            :border-bottom true
@@ -40,10 +42,13 @@
              :type                :secondary
              :disabled            (string/blank? @input-name)
              :on-press            #(do (if edit?
-                                         (re-frame/dispatch [:browser/update-bookmark {:url url :name @input-name}])
-                                         (re-frame/dispatch [:browser/store-bookmark {:url url :name @input-name}]))
+                                         (re-frame/dispatch [:browser/update-bookmark
+                                                             {:url url :name @input-name}])
+                                         (re-frame/dispatch [:browser/store-bookmark
+                                                             {:url url :name @input-name}]))
                                        (re-frame/dispatch [:navigate-back]))}
             (if edit? (i18n/label :t/save) (i18n/label :t/add-favourite))]}]]))))
 
-(defn new-bookmark []
+(defn new-bookmark
+  []
   [screen @(re-frame/subscribe [:get-screen-params])])

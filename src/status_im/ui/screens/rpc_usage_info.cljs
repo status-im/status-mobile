@@ -83,13 +83,14 @@
   [{:keys [db]} method-filter]
   {:db (assoc db :rpc-usage/filter method-filter)})
 
-(defn stats-table [{:keys [total filtered-total stats]}]
+(defn stats-table
+  [{:keys [total filtered-total stats]}]
   [quo.react-native/scroll-view
    {:style {:padding-horizontal 8}}
    [quo.react-native/view
     {:style {:flex-direction  :row
              :justify-content :space-between
-             :margin-bottom 2}}
+             :margin-bottom   2}}
     [quo.core/text {:style typography/font-semi-bold}
      (i18n/label :t/rpc-usage-total)]
     [quo.core/text {:style typography/font-semi-bold}
@@ -108,18 +109,21 @@
           v]]
         [quo.core/separator]]))])
 
-(defn prepare-stats [{:keys [stats]}]
+(defn prepare-stats
+  [{:keys [stats]}]
   (string/join
    "\n"
    (map (fn [[k v]]
           (str k " " v))
         stats)))
 
-(defn usage-info-render []
+(defn usage-info-render
+  []
   (let [stats          @(re-frame/subscribe [:rpc-usage/data])
         methods-filter @(re-frame/subscribe [:rpc-usage/filter])]
-    [react/view {:flex              1
-                 :margin-horizontal 8}
+    [react/view
+     {:flex              1
+      :margin-horizontal 8}
      [quo.react-native/view
       {:style {:flex-direction  :row
                :margin-vertical 8
@@ -146,12 +150,13 @@
        :auto-focus      false}]
      [stats-table stats]]))
 
-(defn usage-info []
+(defn usage-info
+  []
   (reagent/create-class
    {:component-did-mount
     (fn []
       (reset! rpc-refresh-interval
-              (utils/set-interval #(re-frame/dispatch [::get-stats]) rpc-usage-refresh-interval-ms)))
+        (utils/set-interval #(re-frame/dispatch [::get-stats]) rpc-usage-refresh-interval-ms)))
 
     :component-will-unmount (fn []
                               (utils/clear-interval @rpc-refresh-interval)

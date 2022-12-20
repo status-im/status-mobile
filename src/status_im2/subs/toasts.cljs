@@ -1,6 +1,5 @@
 (ns status-im2.subs.toasts
-  (:require
-   [re-frame.core :as re-frame]))
+  (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
  :toasts/toast

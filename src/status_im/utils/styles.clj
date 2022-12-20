@@ -1,8 +1,8 @@
-(ns status-im.utils.styles
-  (:refer-clojure :exclude [defn def]))
+(ns status-im.utils.styles (:refer-clojure :exclude [defn def]))
 
-(defn- body [style]
-  `(let [style#            ~style
+(defn- body
+  [style]
+  `(let [style#             ~style
          common#            (dissoc style# :android :ios)
          platform#          (keyword status-im.utils.platform/os)
          platform-specific# (get style# platform#)]

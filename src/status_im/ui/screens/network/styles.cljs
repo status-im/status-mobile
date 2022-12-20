@@ -3,14 +3,14 @@
             [status-im.utils.styles :as styles]))
 
 (def wrapper
-  {:flex             1})
+  {:flex 1})
 
 (def badge-name-text
   {:font-size 17})
 
 (styles/def badge-connected-text
-  {:color   colors/gray
-   :ios     {:margin-top 5}})
+  {:color colors/gray
+   :ios   {:margin-top 5}})
 
 (def connect-button-container
   {:margin-top        8
@@ -34,7 +34,8 @@
    :margin-top 8
    :height     20})
 
-(styles/defn network-config-container []
+(styles/defn network-config-container
+  []
   {:height            160
    :margin-top        8
    :padding-top       16
@@ -46,11 +47,12 @@
    :android           {:border-radius 4}})
 
 (styles/def network-config-text
-  {:font-size   17
-   :ios         {:opacity 0.8}
-   :android     {:opacity 0.4}})
+  {:font-size 17
+   :ios       {:opacity 0.8}
+   :android   {:opacity 0.4}})
 
-(defn network-icon [connected? size]
+(defn network-icon
+  [connected? size]
   {:width            size
    :height           size
    :border-radius    (/ size 2)

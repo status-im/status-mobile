@@ -1,9 +1,9 @@
 (ns status-im.chat.models.link-preview
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.communities.core :as models.communities]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
 (fx/defn enable
@@ -28,13 +28,16 @@
                #{})
              {})))
 
-(defn community-resolved [db community-id]
+(defn community-resolved
+  [db community-id]
   (update db :communities/resolve-community-info dissoc community-id))
 
-(defn community-failed-to-resolve [db community-id]
+(defn community-failed-to-resolve
+  [db community-id]
   (update db :communities/resolve-community-info dissoc community-id))
 
-(defn community-resolving [db community-id]
+(defn community-resolving
+  [db community-id]
   (assoc-in db [:communities/resolve-community-info community-id] true))
 
 (fx/defn handle-community-failed-to-resolve
@@ -42,7 +45,8 @@
   [{:keys [db]} community-id]
   {:db (community-failed-to-resolve db community-id)})
 
-(defn community-link [id]
+(defn community-link
+  [id]
   (str "https://join.status.im/c/" id))
 
 (fx/defn handle-community-resolved
@@ -51,14 +55,15 @@
   (fx/merge cofx
             (cond-> {:db (community-resolved db community-id)}
               (some? community)
-              (assoc :dispatch [::cache-link-preview-data
-                                (community-link community-id) community]))
+              (assoc :dispatch
+                     [::cache-link-preview-data
+                      (community-link community-id) community]))
             (models.communities/handle-community community)))
 
 (fx/defn resolve-community-info
   {:events [::resolve-community-info]}
   [{:keys [db]} community-id]
-  {:db (community-resolving db community-id)
+  {:db             (community-resolving db community-id)
    ::json-rpc/call [{:method     "wakuext_requestCommunityInfoFromMailserver"
                      :params     [community-id]
                      :on-success #(re-frame/dispatch [::community-resolved community-id %])
@@ -72,9 +77,10 @@
   {::json-rpc/call [{:method     "wakuext_getLinkPreviewData"
                      :params     [link]
                      :on-success #(re-frame/dispatch [::cache-link-preview-data link %])
-                     :on-error   #(re-frame/dispatch [::cache-link-preview-data
-                                                      link
-                                                      {:error (str  "Can't get preview data for " link)}])}]})
+                     :on-error   #(re-frame/dispatch
+                                   [::cache-link-preview-data
+                                    link
+                                    {:error (str "Can't get preview data for " link)}])}]})
 
 (fx/defn cache-link-preview-data
   {:events [::cache-link-preview-data]}
@@ -95,7 +101,8 @@
   [{:keys [db] :as cofx} enabled?]
   (multiaccounts.update/multiaccount-update
    cofx
-   :link-preview-request-enabled (boolean enabled?)
+   :link-preview-request-enabled
+   (boolean enabled?)
    {}))
 
 (fx/defn request-link-preview-whitelist
@@ -108,5 +115,6 @@
 (fx/defn save-link-preview-whitelist
   {:events [::link-preview-whitelist-received]}
   [{:keys [db]} whitelist]
-  {:db (assoc db :link-previews-whitelist
+  {:db (assoc db
+              :link-previews-whitelist
               whitelist)})

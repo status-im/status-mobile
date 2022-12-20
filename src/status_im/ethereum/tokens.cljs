@@ -1,8 +1,7 @@
 (ns status-im.ethereum.tokens
   (:require [clojure.string :as string]
             [status-im.ethereum.core :as ethereum])
-  (:require-macros
-   [status-im.ethereum.macros :as ethereum.macros :refer [resolve-icons]]))
+  (:require-macros [status-im.ethereum.macros :as ethereum.macros :refer [resolve-icons]]))
 
 (def default-native-currency
   (memoize
@@ -41,17 +40,19 @@
 (def native-currency-symbols
   (set (map #(-> % val :symbol) all-native-currencies)))
 
-(defn native-currency [{:keys [symbol] :as current-network}]
+(defn native-currency
+  [{:keys [symbol] :as current-network}]
   (let [chain (ethereum/network->chain-keyword current-network)]
     (get all-native-currencies chain (default-native-currency symbol))))
 
-(defn ethereum? [symbol]
+(defn ethereum?
+  [symbol]
   (native-currency-symbols symbol))
 
 (def token-icons
   {:mainnet (resolve-icons :mainnet)
-   :xdai (resolve-icons :xdai)
-   :custom []})
+   :xdai    (resolve-icons :xdai)
+   :custom  []})
 
 (def default-token (js/require "../resources/images/tokens/default-token.png"))
 
@@ -61,22 +62,27 @@
       (assoc-in [:icon :source] (get-in token-icons [network (name (:symbol token))] default-token))
       (update :address string/lower-case)))
 
-(defn nfts-for [all-tokens]
+(defn nfts-for
+  [all-tokens]
   (filter :nft? (vals all-tokens)))
 
-(defn sorted-tokens-for [all-tokens]
+(defn sorted-tokens-for
+  [all-tokens]
   (->> (vals all-tokens)
        (filter #(not (:hidden? %)))
        (sort #(compare (string/lower-case (:name %1))
                        (string/lower-case (:name %2))))))
 
-(defn symbol->token [all-tokens symbol]
+(defn symbol->token
+  [all-tokens symbol]
   (some #(when (= symbol (:symbol %)) %) (vals all-tokens)))
 
-(defn address->token [all-tokens address]
+(defn address->token
+  [all-tokens address]
   (get all-tokens (string/lower-case address)))
 
-(defn asset-for [all-tokens current-network symbol]
+(defn asset-for
+  [all-tokens current-network symbol]
   (let [native-coin (native-currency current-network)]
     (if (or (= (:symbol-display native-coin) symbol)
             (= (:symbol native-coin) symbol))

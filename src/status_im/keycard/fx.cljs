@@ -1,11 +1,11 @@
 (ns status-im.keycard.fx
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.types :as types]
+  (:require ["@react-native-async-storage/async-storage" :default AsyncStorage]
+            ["react-native" :refer (BackHandler)]
+            [re-frame.core :as re-frame]
             [status-im.keycard.card :as card]
             [status-im.native-module.core :as status]
-            ["react-native" :refer (BackHandler)]
-            [taoensso.timbre :as log]
-            ["@react-native-async-storage/async-storage" :default AsyncStorage]))
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (re-frame/reg-fx
  :keycard/start-nfc
@@ -188,7 +188,8 @@
  ;;particular screen to be loaded. An fx is easier to re-use and test.
  (fn []
    (re-frame/dispatch [:keycard/add-listener-to-hardware-back-button
-                       (.addEventListener BackHandler "hardwareBackPress"
+                       (.addEventListener BackHandler
+                                          "hardwareBackPress"
                                           (fn []
                                             (re-frame/dispatch [:keycard/back-button-pressed])
                                             true))])))

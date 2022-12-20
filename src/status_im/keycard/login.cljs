@@ -1,15 +1,15 @@
 (ns status-im.keycard.login
-  (:require [status-im.ethereum.core :as ethereum]
-            [status-im2.navigation.events :as navigation]
+  (:require [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.keycard.common :as common]
+            status-im.keycard.fx
+            [status-im.keycard.onboarding :as onboarding]
+            [status-im.keycard.recovery :as recovery]
+            [status-im.signing.core :as signing.core]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]
-            [status-im.keycard.common :as common]
-            [status-im.keycard.recovery :as recovery]
-            [status-im.keycard.onboarding :as onboarding]
-            status-im.keycard.fx
-            [status-im.bottom-sheet.core :as bottom-sheet]
-            [status-im.signing.core :as signing.core]))
+            [status-im2.navigation.events :as navigation]
+            [taoensso.timbre :as log]))
 
 (fx/defn login-got-it-pressed
   {:events [:keycard.login.pin.ui/got-it-pressed
@@ -57,14 +57,17 @@
    cofx
    (signing.core/discard)
    (fn [{:keys [db]}]
-     {:db (-> db
-              (dissoc :popover/popover)
-              (update-in [:keycard :pin] dissoc
-                         :reset :puk)
-              (update-in [:keycard :pin] assoc
-                         :enter-step :reset
-                         :error nil
-                         :status nil))
+     {:db           (-> db
+                        (dissoc :popover/popover)
+                        (update-in [:keycard :pin]
+                                   dissoc
+                                   :reset
+                                   :puk)
+                        (update-in [:keycard :pin]
+                                   assoc
+                                   :enter-step :reset
+                                   :error      nil
+                                   :status     nil))
       :hide-popover nil})
    (when (:multiaccount db)
      (navigation/change-tab :profile))
@@ -76,29 +79,30 @@
 (fx/defn dismiss-frozen-keycard-popover
   {:events [::frozen-keycard-popover-dismissed]}
   [{:keys [db]}]
-  {:db (-> db
-           (dissoc :popover/popover)
-           (update :keycard dissoc :setup-step))
+  {:db           (-> db
+                     (dissoc :popover/popover)
+                     (update :keycard dissoc :setup-step))
    :hide-popover nil})
 
 (fx/defn login-with-keycard
   {:events [:keycard/login-with-keycard]}
   [{:keys [db] :as cofx}]
   (let [{:keys [:pin-retry-counter :puk-retry-counter]
-         :as application-info}
+         :as   application-info}
         (get-in db [:keycard :application-info])
 
-        key-uid                (get-in db [:keycard :application-info :key-uid])
-        paired?                (get-in db [:keycard :application-info :paired?])
-        multiaccount           (get-in db [:multiaccounts/multiaccounts (get-in db [:multiaccounts/login :key-uid])])
-        multiaccount-key-uid   (get multiaccount :key-uid)
+        key-uid (get-in db [:keycard :application-info :key-uid])
+        paired? (get-in db [:keycard :application-info :paired?])
+        multiaccount (get-in db
+                             [:multiaccounts/multiaccounts (get-in db [:multiaccounts/login :key-uid])])
+        multiaccount-key-uid (get multiaccount :key-uid)
         multiaccount-mismatch? (or (nil? multiaccount)
                                    (not= multiaccount-key-uid key-uid))]
     (log/debug "[keycard] login-with-keycard"
                "empty application info" (empty? application-info)
-               "no key-uid" (empty? key-uid)
+               "no key-uid"             (empty? key-uid)
                "multiaccount-mismatch?" multiaccount-mismatch?
-               "no pairing" paired?)
+               "no pairing"             paired?)
     (cond
       (empty? application-info)
       (fx/merge cofx
@@ -143,8 +147,10 @@
   {:events [:multiaccounts.login.callback/get-keycard-keys-success]}
   [{:keys [db] :as cofx} key-uid [encryption-public-key whisper-private-key :as creds]]
   (if (nil? creds)
-    (navigation/set-stack-root cofx :multiaccounts-stack [:multiaccounts
-                                                          :keycard-login-pin])
+    (navigation/set-stack-root cofx
+                               :multiaccounts-stack
+                               [:multiaccounts
+                                :keycard-login-pin])
     (let [{:keys [identicon name]} (get-in db [:multiaccounts/multiaccounts key-uid])
           multiaccount-data        (types/clj->json {:name      name
                                                      :key-uid   key-uid
@@ -160,11 +166,11 @@
                      (update account-data :whisper-public-key ethereum/normalized-hex))
            (assoc-in [:keycard :flow] nil)
            (update :multiaccounts/login assoc
-                   :password encryption-public-key
-                   :key-uid key-uid
-                   :identicon identicon
-                   :name name
-                   :save-password? true))
+                   :password            encryption-public-key
+                   :key-uid             key-uid
+                   :identicon           identicon
+                   :name                name
+                   :save-password?      true))
        :keycard/login-with-keycard
        {:multiaccount-data multiaccount-data
         :key-uid           key-uid
