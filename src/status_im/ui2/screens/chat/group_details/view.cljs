@@ -160,8 +160,8 @@
    (fn []
      (let [{window-height :height} (rn/use-window-dimensions)
            safe-area             (safe-area/use-safe-area)
-           selected-participants (rf/sub [:selected-participants])
-           deselected-members    (rf/sub [:deselected-members])]
+           selected-participants (rf/sub [:group-chat/selected-participants])
+           deselected-members    (rf/sub [:group-chat/deselected-members])]
        [rn/view {:style {:height (- window-height (:top safe-area))}}
         [rn/touchable-opacity
          {:on-press #(rf/dispatch [:bottom-sheet/hide])
