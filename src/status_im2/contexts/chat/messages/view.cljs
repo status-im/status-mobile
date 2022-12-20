@@ -51,23 +51,18 @@
        :accessibility-label :back-button}
 
       :right-section-buttons
-      [{:on-press            #()                            ;; TODO not implemented
+      [{:on-press            #()
         :icon                :i/options
         :accessibility-label :options-button}]}]))
 
-(defn chat-render
-  []
-  (let [;;we want to react only on these fields, do not use full chat map here
+(defn chat-render []
+  (let [;;NOTE: we want to react only on these fields, do not use full chat map here
         {:keys [chat-id show-input?] :as chat} (rf/sub [:chats/current-chat-chat-view])]
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [page-nav]
-     ;; TODO (flexsurfer) this should be in-app notification component in quo2
-     ;; https://github.com/status-im/status-mobile/issues/14527
      [pin-limit-popover/pin-limit-popover chat-id]
      [pin.banner/banner chat-id]
-     ;;MESSAGES LIST
      [messages.list/messages-list {:chat chat :show-input? show-input?}]
-     ;;INPUT COMPOSER
      (when show-input?
        [composer/composer chat-id])]))
 

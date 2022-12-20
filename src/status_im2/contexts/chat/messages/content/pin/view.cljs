@@ -5,8 +5,6 @@
             [quo2.foundations.colors :as colors]
             [utils.re-frame :as rf]
             [i18n.i18n :as i18n]
-
-            ;;TODO (flexsurfer) refactor and move
             [status-im.ui2.screens.chat.messages.message :as old-message]
             [status-im.ui.screens.chat.styles.message.message :as old-style]))
 
@@ -21,7 +19,6 @@
                 :style  style/pin-author-text}
       author-name]]))
 
-;; TODO (flexsurfer) this function need to be refactore according new designs and components
 (defn system-message [{:keys [from in-popover? timestamp-str chat-id] :as message}]
   (let [response-to (:response-to (:content message))
         default-size 36]
@@ -42,7 +39,6 @@
        [rn/touchable-opacity {:style    old-style/message-author-touchable
                               :disabled in-popover?
                               :on-press #(rf/dispatch [:chat.ui/show-profile from])}
-        ; TODO refactor and move
         [old-message/message-author-name from {} 20]]
        [rn/text {:style {:font-size 13}} (str " " (i18n/label :t/pinned-a-message))]
        [rn/text
@@ -52,5 +48,4 @@
                                (old-style/message-timestamp-text))
          :accessibility-label :message-timestamp}
         timestamp-str]]
-      ;; TODO refactor and move
       [old-message/quoted-message {:message-id response-to :chat-id chat-id} (:quoted-message message) true]]]))

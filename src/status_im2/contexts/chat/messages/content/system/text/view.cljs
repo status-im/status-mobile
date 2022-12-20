@@ -4,5 +4,4 @@
 
 (defn text-content [message-data]
   [rn/view {:accessibility-label :chat-item}
-   ;; TODO (flexsurfer) refactor according to the new design and move
    [old-message/render-parsed-text message-data]])

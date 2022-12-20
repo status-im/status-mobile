@@ -120,9 +120,7 @@
    (if (= type :datemark)
      [quo/divider-date value]
      (if (= type :gap)
-       ;; TODO (flexsurfer) new gap functionality is not implemented yet
        [gap/gap item idx messages-list-ref false chat-id]
-       ;; CONTENT
        [rn/view {:padding-horizontal 8}
         [message/message-with-reactions item context]]))])
 

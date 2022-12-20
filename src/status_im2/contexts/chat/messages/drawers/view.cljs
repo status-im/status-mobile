@@ -5,13 +5,10 @@
             [quo2.core :as quo]
             [i18n.i18n :as i18n]
             [status-im2.setup.config :as config]
-
-            ;; TODO (flexsurfer) refactor and move to status-im2
             [status-im.ui.components.react :as react]
             [status-im.ui2.screens.chat.components.reply :as components.reply]))
 
 (defn pin-message [{:keys [chat-id pinned] :as message-data}]
-  ;;TODO (flexsurfer) move this to one event (get data from db not from sub)
   (let [pinned-messages (rf/sub [:chats/pinned chat-id])]
     (if (and (not pinned) (> (count pinned-messages) 2))
       (do
@@ -19,7 +16,8 @@
         (rf/dispatch [:pin-message/show-pin-limit-modal chat-id]))
       (rf/dispatch [:pin-message/send-pin-message (assoc message-data :pinned (not pinned))]))))
 
-(defn get-actions [{:keys [outgoing edit-enabled show-input? content message-pin-enabled pinned community? can-delete-message-for-everyone?] :as message-data}]
+(defn get-actions [{:keys [outgoing content pinned] :as message-data}
+                   {:keys [edit-enabled show-input? can-delete-message-for-everyone? community? message-pin-enabled]}]
   (concat
    (when (and outgoing edit-enabled)
      [{:type     :main
@@ -34,7 +32,6 @@
        :icon     :i/reply
        :id       :reply}])
    [{:type     :main
-     ;; TODO (flexsurfer) move this fo fx (get data from db not from sub)
      :on-press #(react/copy-to-clipboard
                  (components.reply/get-quoted-text-with-mentions
                   (get content :parsed-text)))
@@ -70,9 +67,6 @@
                     :padding-bottom     15}}
    (doall
     (for [[id icon] constants/reactions]
-      ;:let [active (own-reactions id)]]
-      ;;TODO reactions selector should be used https://www.figma.com/file/WQZcp6S0EnzxdTL4taoKDv/Design-System?node-id=9961%3A166549
-      ;; not implemented yet
       ^{:key id}
       [quo/button (merge
                    {:size                40
@@ -85,13 +79,11 @@
                                                           {:message-id message-id
                                                            :emoji-id   id}])
                                             (rf/dispatch [:bottom-sheet/hide]))})
-       ;(when active {:style {:background-color colors/neutral-10}}))
        icon]))])
 
-;; TODO (flexsurfer) this probably should be a component in quo2 https://www.figma.com/file/WQZcp6S0EnzxdTL4taoKDv/Design-System?node-id=5626%3A158317&t=1JiRhBswpVXZ4SYF-3
-(defn reactions-and-actions [message-data]
+(defn reactions-and-actions [message-data context]
   (fn []
-    (let [actions (get-actions message-data)
+    (let [actions (get-actions message-data context)
           main-actions (filter #(= (:type %) :main) actions)
           danger-actions (filter #(= (:type %) :danger) actions)
           admin-actions (filter #(= (:type %) :admin) actions)]
