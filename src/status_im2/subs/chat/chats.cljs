@@ -357,8 +357,8 @@
    (count (filter-selected-contacts selected-contacts contacts))))
 
 (re-frame/reg-sub
- :selected-participants-count
- :<- [:selected-participants]
+ :group-chat/selected-participants-count
+ :<- [:group-chat/selected-participants]
  (fn [selected-participants]
    (count selected-participants)))
 

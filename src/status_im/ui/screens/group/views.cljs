@@ -212,11 +212,18 @@
         (i18n/label :t/next)]}]]))
 
 ;; Add participants to existing group chat
+<<<<<<< HEAD
 (views/defview add-participants-toggle-list
   []
   (views/letsubs [contacts                [:contacts/all-contacts-not-in-current-chat]
                   current-chat            [:chats/current-chat]
                   selected-contacts-count [:selected-participants-count]]
+=======
+(views/defview add-participants-toggle-list []
+  (views/letsubs [contacts [:contacts/all-contacts-not-in-current-chat]
+                  current-chat [:chats/current-chat]
+                  selected-contacts-count [:group-chat/selected-participants-count]]
+>>>>>>> 68cd4c42b... refactor
     (let [current-participants-count (count (:contacts current-chat))]
       [kb-presentation/keyboard-avoiding-view {:style styles/group-container}
        [topbar/topbar

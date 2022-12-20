@@ -59,9 +59,9 @@
 
 (fx/defn remove-members
   {:events [:group-chats.ui/remove-members-pressed]}
-  [{{:keys [current-chat-id deselected-members]} :db :as cofx}]
+  [{{:keys [current-chat-id]} :db :as cofx}]
   {::json-rpc/call [{:method      "wakuext_removeMembersFromGroupChat"
-                     :params      [nil current-chat-id deselected-members]
+                     :params      [nil current-chat-id (get-in cofx [:db :group-chat/deselected-members])]
                      :js-response true
                      :on-success  #(re-frame/dispatch [:chat-updated % true])
                      :on-error #()}]})
@@ -104,6 +104,7 @@
 (fx/defn add-members
   "Add members to a group chat"
   {:events [:group-chats.ui/add-members-pressed]}
+<<<<<<< HEAD
   [{{:keys [current-chat-id selected-participants]} :db :as cofx}]
 <<<<<<< HEAD
   {:json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
@@ -111,8 +112,11 @@
                     :js-response true
                     :on-success  #(re-frame/dispatch [:chat-updated %])}]})
 =======
+=======
+  [{{:keys [current-chat-id]} :db :as cofx}]
+>>>>>>> 607d25f47... refactor
   {::json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
-                     :params      [nil current-chat-id selected-participants]
+                     :params      [nil current-chat-id (get-in cofx [:db :group-chat/selected-participants])]
                      :js-response true
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -224,12 +228,12 @@
 (fx/defn deselect-member
   {:events [:deselect-member]}
   [{:keys [db]} id]
-  {:db (update db :deselected-members conj id)})
+  {:db (update db :group-chat/deselected-members conj id)})
 
 (fx/defn undo-deselect-member
   {:events [:undo-deselect-member]}
   [{:keys [db]} id]
-  {:db (update db :deselected-members disj id)})
+  {:db (update db :group-chat/deselected-members disj id)})
 
 (fx/defn deselect-contact
   {:events [:deselect-contact]}
@@ -244,22 +248,22 @@
 (fx/defn deselect-participant
   {:events [:deselect-participant]}
   [{:keys [db]} id]
-  {:db (update db :selected-participants disj id)})
+  {:db (update db :group-chat/selected-participants disj id)})
 
 (fx/defn select-participant
   {:events [:select-participant]}
   [{:keys [db]} id]
-  {:db (update db :selected-participants conj id)})
+  {:db (update db :group-chat/selected-participants conj id)})
 
 (fx/defn clear-added-participants
   {:events [:group/clear-added-participants]}
   [{db :db}]
-  {:db (assoc db :selected-participants #{})})
+  {:db (assoc db :group-chat/selected-participants #{})})
 
 (fx/defn clear-removed-members
   {:events [:group/clear-removed-members]}
   [{db :db}]
-  {:db (assoc db :deselected-members #{})})
+  {:db (assoc db :group-chat/deselected-members #{})})
 
 (fx/defn show-group-chat-profile
   {:events [:show-group-chat-profile]}
