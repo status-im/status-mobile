@@ -107,7 +107,7 @@
         (when-not (empty? danger-actions)
           [quo/separator])
 
-        ;; DANAGER ACTIONS
+        ;; DANGER ACTIONS
         (for [action danger-actions]
           (let [on-press (:on-press action)]
             ^{:key (:id action)}
